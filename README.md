@@ -1,17 +1,20 @@
 # Wholesale
 
-[![codecov](https://codecov.io/gh/Energinet-DataHub/opengeh-wholesale/branch/main/graph/badge.svg?token=YG4H2IATQ1)](https://codecov.io/gh/Energinet-DataHub/opengeh-wholesale)
+[![`codecov`](https://codecov.io/gh/Energinet-DataHub/opengeh-wholesale/branch/main/graph/badge.svg?token=YG4H2IATQ1)](https://codecov.io/gh/Energinet-DataHub/opengeh-wholesale)
 
-[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=opengeh-wholesale-python&metric=alert_status)](https://sonarcloud.io/dashboard?id=opengeh-wholesale-python)
+[![SonarCloud Status](https://sonarcloud.io/api/project_badges/measure?project=opengeh-wholesale-python&metric=alert_status)](https://sonarcloud.io/dashboard?id=opengeh-wholesale-python)
 
-[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=opengeh-wholesale-dotnet&metric=alert_status)](https://sonarcloud.io/dashboard?id=opengeh-wholesale-dotnet)
+[![SonarCloud Status](https://sonarcloud.io/api/project_badges/measure?project=opengeh-wholesale-dotnet&metric=alert_status)](https://sonarcloud.io/dashboard?id=opengeh-wholesale-dotnet)
 
 ## Table of content
 
 * [Introduction](#introduction)
-* [Context Map](#context-map)
 * [Getting started](#getting-started)
+* [Road Map](#road-map)
+* [Context Map](#context-map)
+* [Architecture](#architecture)
 * [Test](#test)
+* [Where can I get more help?](#where-can-i-get-more-help)
 
 ## Introduction
 
@@ -46,7 +49,7 @@ These are the business processes maintained by this domain:
 
 This section will be updated as we go when adding code and functionality to the domain.
 
-## Roadmap
+## Road Map
 
 The current primary goal is to be able to send an RSM-014 CIM XML document to grid access providers of the grid areas calculated in a preliminary aggregation.
 
