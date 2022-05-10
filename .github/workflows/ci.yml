@@ -21,3 +21,11 @@ on:
 jobs:
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@7.3.0
+
+  create_prerelease:
+    needs: [ci_base]
+    uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@7.3.0
+    with:
+      CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
+    secrets:
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
