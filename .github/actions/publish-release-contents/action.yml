@@ -25,5 +25,7 @@ inputs:
 runs:
   using: composite
   steps:
+    # The calling workflow requires the release folder to be created
+    # (why doesn't it create it by itself then?)
     - shell: bash
-      run: echo "no-op action" # The action and at least one step is required
+      mkdir -p ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure
