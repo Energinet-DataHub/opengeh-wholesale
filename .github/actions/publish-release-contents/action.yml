@@ -14,6 +14,7 @@
 
 # This action is required by the .github repo workflow named `publish-and-deploy-release`
 # as it does a domain-callback to an expected action named `publish-release-contents`.
+
 name: 'Publish release content'
 inputs:
   RELEASE_FOLDER_PATH:
