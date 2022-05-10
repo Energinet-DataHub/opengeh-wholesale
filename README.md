@@ -42,14 +42,24 @@ These are the business processes maintained by this domain:
 | [Request for aggregated tariffs](docs/business-processes/request-for-aggregated-tariffs.md) |
 | [Request for settlement basis](docs/business-processes/request-for-settlement-basis.md) |
 
+## Getting started
+
+This section will be updated as we go when adding code and functionality to the domain.
+
 ## Context Map
 
 ![Context Map!](docs/images/context-map.png)
 
-## Getting started
+## Architecture
 
 This section will be updated as we go when adding code and functionality to the domain.
 
 ## Test
 
 Read about general QA that applies to the entire Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/quality-assurance-and-test.md).
+
+## Where can I get more help?
+
+Read about community for Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/COMMUNITY.md) and learn about how to get involved and get help.
+
+Please note that we have provided a [Dictionary](https://github.com/Energinet-DataHub/green-energy-hub/tree/main/docs/dictionary-and-concepts) to help understand many of the terms used throughout the repository.
