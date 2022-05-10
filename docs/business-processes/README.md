@@ -1,4 +1,4 @@
-# Business Processes - Aggregations Domain
+# Business Processes - Wholesale Domain
 
 For more information about the business processes maintained by this domain click the links below.
 
