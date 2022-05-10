@@ -46,9 +46,17 @@ These are the business processes maintained by this domain:
 
 This section will be updated as we go when adding code and functionality to the domain.
 
+## Roadmap
+
+The current primary goal is to be able to send an RSM-014 CIM XML document to grid access providers of the grid areas calculated in a preliminary aggregation.
+
+A FAS user must be able to initiate the aggregation process and to verify the basis data.
+
+![Context Map!](docs/images/RSM-014-roadmap.drawio.png)
+
 ## Context Map
 
-![Context Map!](docs/images/context-map.png)
+![Context Map!](docs/images/context-map.drawio.png)
 
 ## Architecture
 
