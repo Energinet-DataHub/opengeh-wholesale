@@ -28,4 +28,4 @@ runs:
     # The calling workflow requires the release folder to be created
     # (why doesn't it create it by itself then?)
     - shell: bash
-      mkdir -p ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure
+      run: mkdir -p ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure
