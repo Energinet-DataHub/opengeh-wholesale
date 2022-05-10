@@ -24,3 +24,5 @@ inputs:
 runs:
   using: composite
   steps:
+    - shell: bash
+      run: echo "no-op action" # The action and at least one step is required
