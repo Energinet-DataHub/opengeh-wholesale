@@ -63,7 +63,9 @@ A FAS user must be able to initiate the aggregation process and to verify the ba
 
 ## Architecture
 
-This section will be updated as we go when adding code and functionality to the domain.
+Read about the architecture [here](docs/architecture.md).
+
+![Architecture!](docs/images/architecture.drawio.png)
 
 ## Test
 
