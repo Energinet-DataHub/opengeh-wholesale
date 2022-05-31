@@ -1,8 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "source\WebApi\WebApi.csproj", "{2533166A-FDD9-46C3-B9AD-092B31CD2C8A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosts", "Hosts", "{B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Commands", "Commands", "{CB8DC63A-6E18-4EF9-BA56-2ABAAF2F6920}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Queries", "Queries", "{B2302A5D-4896-49C1-A2E4-34914D112246}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A65AE4F0-E4A5-4F6C-AB74-F8A278C31AD9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2533166A-FDD9-46C3-B9AD-092B31CD2C8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2533166A-FDD9-46C3-B9AD-092B31CD2C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2533166A-FDD9-46C3-B9AD-092B31CD2C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2533166A-FDD9-46C3-B9AD-092B31CD2C8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2533166A-FDD9-46C3-B9AD-092B31CD2C8A} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
 	EndGlobalSection
 EndGlobal
