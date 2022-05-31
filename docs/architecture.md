@@ -32,6 +32,20 @@ Non-terminated jobs registered in the SQL database are monitored. Requested jobs
 
 Details: The manager provides the output path of the results to the `calculator` and adds the path to job in the SQL table.
 
+### `result-sender`
+
+Sends result to actors when aggregation job is complete.
+
+As per integration design by the MessageHub domain the sender creates the necessary CIM XML RSM-014 documents and sends the path to the DataAvailable component of the MessageHub domain. This in turn enables the actors to peek and dequeue the messages.
+
+### `e-sett-result-sender`
+
+Subscribes to job completed events and sends results to [eSett](https://www.esett.com/) for nordic imbalance settlement.
+
+## Selected Use Cases
+
+TBW: View basis data in web
+
 ## Future Considerations
 
 ### Synchronous Access to Basis Data
