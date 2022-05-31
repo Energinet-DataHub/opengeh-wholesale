@@ -27,8 +27,8 @@ the state of time series points as they were at a certain point in time.
 
 ### `integration-event-listener`
 
-Subscribes to integration events of interest from other domains, extracts the content from the Protobuf encoded messages.
-The purpose is the Protobuf decoding, which happens to be much simpler to do in .NET rather than in python.
+Subscribes to integration events of interest from other domains, extracts the content from the [Protocol Buffers](https://developers.google.com/protocol-buffers) (protobuf) encoded messages.
+The purpose is the protobuf decoding, which happens to be much simpler to do in .NET rather than in python.
 
 ### `job-manager`
 
@@ -36,7 +36,7 @@ Manages requested jobs.
 
 Non-terminated jobs registered in the SQL database are monitored.
 Requested jobs are being started as Databricks jobs in the `calculator`.
-The manager continously monitors the Databricks jobs in order to (1) update the job status in the SQL table and
+The manager continuously monitors the Databricks jobs in order to (1) update the job status in the SQL table and
 (2) publish job completed events to `completed-jobs`.
 
 Details: The manager provides the output path of the results to the `calculator` and adds the path to job in the SQL table.
@@ -46,12 +46,12 @@ Details: The manager provides the output path of the results to the `calculator`
 Sends result to actors when aggregation job is complete.
 
 As per integration design by the MessageHub domain the sender creates the necessary CIM XML RSM-014 documents
-and sends the path to the DataAvailable component of the MessageHub domain.
+and sends the path to the `DataAvailable` component of the MessageHub domain.
 This in turn enables the actors to peek and dequeue the messages.
 
 ### `e-sett-result-sender`
 
-Subscribes to job completed events and sends results to [eSett](https://www.esett.com/) for nordic imbalance settlement.
+Subscribes to job completed events and sends results to [eSett](https://www.esett.com/) for Nordic imbalance settlement.
 
 ## Selected Use Cases
 
@@ -76,6 +76,10 @@ When the job completes the `job-manager` notifies the interactive user probably 
 (some yet to be designed and implemented) push notification system. The user can now from this notification access the basis data.
 
 ## Future Considerations
+
+### View and Request DataHub 2 Aggregations
+
+
 
 ### Synchronous Access to Basis Data
 
