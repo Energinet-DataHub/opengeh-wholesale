@@ -10,6 +10,8 @@ Data stored in parquet (possibly in Delta Tables) cannot be read synchronously. 
 
 Direction of arrows between components designate (1) flow of data like messages and/or (2) invocation in which case the arrow origins at the caller and points to the callee.
 
+Systems, domains, and users interacting with the domain are colored green to easily identify the origin of the interactions with the domain.
+
 ![Architecture!](images/architecture.drawio.png)
 
 ## Selected Components
