@@ -77,10 +77,6 @@ When the job completes the `job-manager` notifies the interactive user probably 
 
 ## Future Considerations
 
-### View and Request DataHub 2 Aggregations
-
-
-
 ### Synchronous Access to Basis Data
 
 Interactive user needs to request basis data before they can access them.
