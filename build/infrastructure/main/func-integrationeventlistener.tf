@@ -14,7 +14,7 @@
 module "func_integrationeventlistener" {
   source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=6.0.0"
 
-  name                                      = "Integrationeventlistener"
+  name                                      = "integrationeventlistener"
   project_name                              = var.domain_name_short
   environment_short                         = var.environment_short
   environment_instance                      = var.environment_instance
