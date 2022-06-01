@@ -49,8 +49,8 @@ module "evh_masterdataevents" {
       send    = true
     },
     {
-      name    = "listen",
-      listen  = true
+      name    = "manage",
+      manage  = true
     },
   ]
 }

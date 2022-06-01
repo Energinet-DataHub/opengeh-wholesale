@@ -33,9 +33,10 @@ module "func_integrationeventlistener" {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = true
     FUNCTIONS_WORKER_RUNTIME            = "dotnet-isolated"
     # EndRegion
-    EVENT_HUB_CONNECTION_STRING         = module.evh_masterdataevents.primary_connection_strings["send"]
+    EVENT_HUB_SEND_CONNECTION_STRING    = module.evh_masterdataevents.primary_connection_strings["send"]
+    EVENT_HUB_MANAGE_CONNECTION_STRING  = module.evh_masterdataevents.primary_connection_strings["manage"]
     EVENT_HUB_NAME                      = module.evh_masterdataevents.name
   }
 
-  tags                                    = azurerm_resource_group.this.tags
+  tags                                  = azurerm_resource_group.this.tags
 }
