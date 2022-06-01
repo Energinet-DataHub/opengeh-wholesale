@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "source\WebApi\WebApi.csproj", "{2533166A-FDD9-46C3-B9AD-092B31CD2C8A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosts", "Hosts", "{B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A65AE4F0-E4A5-4F6C-AB74-F8A278C31AD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{9746F437-9232-4F33-B11C-DBE78AF88A79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,12 +12,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2533166A-FDD9-46C3-B9AD-092B31CD2C8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2533166A-FDD9-46C3-B9AD-092B31CD2C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2533166A-FDD9-46C3-B9AD-092B31CD2C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2533166A-FDD9-46C3-B9AD-092B31CD2C8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9746F437-9232-4F33-B11C-DBE78AF88A79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9746F437-9232-4F33-B11C-DBE78AF88A79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9746F437-9232-4F33-B11C-DBE78AF88A79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9746F437-9232-4F33-B11C-DBE78AF88A79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{2533166A-FDD9-46C3-B9AD-092B31CD2C8A} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
+		{9746F437-9232-4F33-B11C-DBE78AF88A79} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
 	EndGlobalSection
 EndGlobal

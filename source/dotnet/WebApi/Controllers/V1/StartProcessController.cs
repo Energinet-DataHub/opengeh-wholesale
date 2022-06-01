@@ -25,8 +25,8 @@ public class StartProcessController : ControllerBase
     
     [HttpPost]
     [MapToApiVersion(Version)]
-    public IActionResult Post()
+    public async Task<IActionResult> StartProcessAsync()
     {
-        return Ok();
+        return await Task.FromResult(Ok());
     }
 }
