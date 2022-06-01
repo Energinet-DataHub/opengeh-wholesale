@@ -30,7 +30,7 @@ module "evhnm_wholesale" {
       data.azurerm_key_vault_secret.snet_vnet_integrations_id.value,
     ]
   }
-  private_dns_resource_group_name = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  private_dns_resource_group_name = var.shared_resources_resource_group_name
 
   tags                            = azurerm_resource_group.this.tags
 }
@@ -51,6 +51,8 @@ module "evh_masterdataevents" {
     {
       name    = "manage",
       manage  = true
+      listen  = true
+      send    = true
     },
   ]
 }
