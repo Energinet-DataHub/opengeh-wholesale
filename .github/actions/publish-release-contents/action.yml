@@ -25,7 +25,8 @@ inputs:
 runs:
   using: composite
   steps:
-    # The calling workflow requires the release folder to be created
-    # (why doesn't it create it by itself then?)
     - shell: bash
-      run: mkdir -p ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure
+      run: |
+        mkdir ${{ inputs.RELEASE_FOLDER_PATH }}
+        mkdir ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure
+        cp -fR ${{ inputs.REPO_FOLDER_PATH }}/build/infrastructure/main ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure/main 2>/dev/null || :
