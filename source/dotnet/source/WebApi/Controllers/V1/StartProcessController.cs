@@ -25,8 +25,8 @@ public class StartProcessController : ControllerBase
     
     [HttpPost]
     [MapToApiVersion(Version)]
-    public string Post()
+    public IActionResult Post()
     {
-        return "start process";
+        return Ok();
     }
 }
