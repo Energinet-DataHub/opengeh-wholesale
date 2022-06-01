@@ -16,6 +16,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
 
+/// <summary>
+/// This controller handle starting a process of a aggregation
+/// </summary>
 [ApiController]
 [ApiVersion(Version)]
 [Route("v{version:apiVersion}/[controller]")]
@@ -23,6 +26,10 @@ public class StartProcessController : ControllerBase
 {
     private const string Version = "1.0";
         
+    /// <summary>
+    /// Starts a process
+    /// </summary>
+    /// <returns>Always 200 OK</returns>
     [HttpPost]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> StartProcessAsync()
