@@ -28,10 +28,13 @@ module "func_integrationeventlistener" {
   always_on                                 = true
   app_settings                              = {
     # Region: Default Values
-    WEBSITE_ENABLE_SYNC_UPDATE_SITE       = true
-    WEBSITE_RUN_FROM_PACKAGE              = 1
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE   = true
-    FUNCTIONS_WORKER_RUNTIME              = "dotnet-isolated"
+    WEBSITE_ENABLE_SYNC_UPDATE_SITE     = true
+    WEBSITE_RUN_FROM_PACKAGE            = 1
+    WEBSITES_ENABLE_APP_SERVICE_STORAGE = true
+    FUNCTIONS_WORKER_RUNTIME            = "dotnet-isolated"
+    # EndRegion
+    EVENT_HUB_CONNECTION_STRING         = module.evh_masterdataevents.primary_connection_strings["send"]
+    EVENT_HUB_NAME                      = module.evh_masterdataevents.name
   }
 
   tags                                    = azurerm_resource_group.this.tags
