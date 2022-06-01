@@ -14,7 +14,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApi.Controllers.V1;
+namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
 
 [ApiController]
 [ApiVersion(Version)]
@@ -22,7 +22,7 @@ namespace WebApi.Controllers.V1;
 public class StartProcessController : ControllerBase
 {
     private const string Version = "1.0";
-    
+        
     [HttpPost]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> StartProcessAsync()
