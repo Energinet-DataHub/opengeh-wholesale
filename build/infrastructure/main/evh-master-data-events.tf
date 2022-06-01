@@ -39,7 +39,7 @@ module "evh_masterdataevents" {
   source                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/eventhub?ref=6.0.0"
 
   name                      = "masterdataevents"
-  namespace_name            = module.evhnm_timeseries.name
+  namespace_name            = module.evhnm_wholesale.name
   resource_group_name       = azurerm_resource_group.this.name
   partition_count           = 4
   message_retention         = 1
