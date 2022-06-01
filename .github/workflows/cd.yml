@@ -11,27 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-name: CI
+name: CD
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
 jobs:
-  ci_base:
-    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@7.3.0
-
-  terraform_validate:
-    uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@2.6.1
-    with:
-      TERRAFORM_WORKING_DIR_PATH: './build/infrastructure/main'
-      TERRAFORM_VERSION: '1.2.1'
-
-  create_prerelease:
-    needs: [ci_base, terraform_validate]
-    uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@7.3.0
-    with:
-      CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
+  publish_and_deploy_release:
+    uses: Energinet-DataHub/.github/.github/workflows/publish-and-deploy-release.yml@7.1.0
     secrets:
       PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+      DEPLOYMENT_WORKFLOW_ID: ${{ secrets.DEPLOYMENT_WORKFLOW_ID  }}
+      DEPLOYMENT_REPOSITORY: ${{ secrets.DEPLOYMENT_REPOSITORY }}
+      DEPLOYMENT_REPOSITORY_OWNER: ${{ secrets.DEPLOYMENT_REPOSITORY_OWNER }}
