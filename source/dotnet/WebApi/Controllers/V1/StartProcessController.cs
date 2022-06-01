@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Contracts.WholesaleProcess;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
@@ -32,7 +33,11 @@ public class StartProcessController : ControllerBase
     /// <returns>Always 200 OK</returns>
     [HttpPost]
     [MapToApiVersion(Version)]
-    public async Task<IActionResult> StartProcessAsync()
+    public async Task<IActionResult> StartProcessAsync(
+        WholesaleProcessType processType,
+        [FromQuery]List<string> gridAreas,
+        DateTimeOffset periodStartDateTime,
+        DateTimeOffset periodEndDateTime)
     {
         return await Task.FromResult(Ok());
     }

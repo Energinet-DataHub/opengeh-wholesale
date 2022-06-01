@@ -25,4 +25,10 @@ limitations under the License.
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Include="..\Contracts\WholesaleProcess\WholesaleProcessType.cs">
+        <Link>Dtos\WholesaleProcess\WholesaleProcessType.cs</Link>
+      </Compile>
+    </ItemGroup>
+
 </Project>
