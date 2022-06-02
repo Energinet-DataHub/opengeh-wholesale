@@ -56,7 +56,7 @@ public class StartProcessControllerTests :
     }
     
     [Fact]
-    public async Task StartProcessAsync_ReturnsOk()
+    public async Task StartProcessAsync_WhenCalled_AlwaysReturnsOk()
     {
         // Act
         var response = await _client.PostAsync(BaseUrl, new StringContent("test"), CancellationToken.None);
