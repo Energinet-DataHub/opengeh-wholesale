@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
 using Domain.MeteringPoints;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
@@ -21,19 +20,18 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener
 {
-    public class MeteringPointPersisterEndpoint
+    public class MeteringPointCreatedListenerEndpoint
     {
-        /// <summary>
-        /// The name of the function.
-        /// Function name affects the URL and thus possibly dependent infrastructure.
-        /// </summary>
-        public const string FunctionName = nameof(MeteringPointPersisterEndpoint);
+        private const string FunctionName = nameof(MeteringPointCreatedListenerEndpoint);
         private readonly MessageExtractor<MeteringPointCreated> _messageExtractor;
+        private readonly IMeteringPointCreatedEventHandler _meteringPointCreatedEventHandler;
 
-        public MeteringPointPersisterEndpoint(
-            MessageExtractor<MeteringPointCreated> messageExtractor)
+        public MeteringPointCreatedListenerEndpoint(
+            MessageExtractor<MeteringPointCreated> messageExtractor,
+            IMeteringPointCreatedEventHandler meteringPointCreatedEventHandler)
         {
             _messageExtractor = messageExtractor;
+            _meteringPointCreatedEventHandler = meteringPointCreatedEventHandler;
         }
 
         [Function(FunctionName)]
@@ -42,11 +40,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                 "%" + EnvironmentSettingNames.MeteringPointCreatedTopicName + "%",
                 "%" + EnvironmentSettingNames.MeteringPointCreatedSubscriptionName + "%",
                 Connection = EnvironmentSettingNames.DataHubListenerConnectionString)]
-            [NotNull] byte[] message)
+            byte[] message)
         {
             var meteringPointCreatedEvent =
                 (MeteringPointCreatedEvent)await _messageExtractor.ExtractAsync(message).ConfigureAwait(false);
-            
+            await _meteringPointCreatedEventHandler.HandleAsync(meteringPointCreatedEvent).ConfigureAwait(false);
         }
     }
 }

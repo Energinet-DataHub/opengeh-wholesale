@@ -28,25 +28,5 @@ namespace Infrastructure.Core.MessagingExtensions
         {
             return base.ExtractAsync(data, cancellationToken);
         }
-
-        public async Task<IInboundMessage> ExtractAsync(Stream data, CancellationToken cancellationToken = default)
-        {
-            if (data == null) throw new ArgumentNullException(nameof(data));
-
-            var bytes = await GetBytesFromStreamAsync(data, cancellationToken).ConfigureAwait(false);
-
-            return await ExtractAsync(bytes, cancellationToken).ConfigureAwait(false);
-        }
-
-        private static async Task<byte[]> GetBytesFromStreamAsync(Stream data, CancellationToken cancellationToken)
-        {
-            var stream = new MemoryStream();
-            await using (stream.ConfigureAwait(false))
-            {
-                await data.CopyToAsync(stream, cancellationToken).ConfigureAwait(false);
-                var bytes = stream.ToArray();
-                return bytes;
-            }
-        }
     }
 }

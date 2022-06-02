@@ -68,20 +68,5 @@ namespace Domain.MeteringPoints
         public ConnectionState ConnectionState { get; }
 
         public SettlementMethod? SettlementMethod { get; }
-
-        public bool HasSameMeteringPointType(MeteringPoint otherMeteringPoint)
-        {
-            return MeteringPointType == otherMeteringPoint.MeteringPointType;
-        }
-
-        public bool HasSameSettlementMethod(MeteringPoint otherMeteringPoint)
-        {
-            return SettlementMethod == otherMeteringPoint.SettlementMethod;
-        }
-
-        public bool HasSameGridAreaLinkId(MeteringPoint otherMeteringPoint)
-        {
-            return GridAreaLinkId == otherMeteringPoint.GridAreaLinkId;
-        }
     }
 }

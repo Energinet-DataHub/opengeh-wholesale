@@ -10,5 +10,9 @@
         <PackageReference Include="Energinet.DataHub.Core.Messaging" Version="1.1.5" />
         <PackageReference Include="NodaTime" Version="3.1.0" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
+    </ItemGroup>
 
 </Project>

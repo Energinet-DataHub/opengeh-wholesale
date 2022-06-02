@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Azure.Messaging.EventHubs" Version="5.7.0" />
+      <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="1.0.0" />
       <PackageReference Include="Energinet.DataHub.Core.Messaging" Version="1.1.5" />
       <PackageReference Include="Energinet.DataHub.Core.Messaging.Protobuf" Version="1.1.5" />
       <PackageReference Include="Google.Protobuf" Version="3.21.1" />
