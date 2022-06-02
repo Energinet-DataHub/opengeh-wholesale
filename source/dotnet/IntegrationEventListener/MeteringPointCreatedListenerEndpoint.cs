@@ -35,6 +35,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
         }
 
         [Function(FunctionName)]
+        //[EventHubOutput("myName", Connection = "")]
         public async Task RunAsync(
             [ServiceBusTrigger(
                 "%" + EnvironmentSettingNames.MeteringPointCreatedTopicName + "%",
