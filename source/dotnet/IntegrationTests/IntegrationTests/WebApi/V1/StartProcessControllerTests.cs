@@ -24,7 +24,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationTests.WebApi.V
 
 [IntegrationTest]
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
-[SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods")]
 public class StartProcessControllerTests : 
     WebApiTestBase<WholesaleWebApiFixture>,
     IClassFixture<WholesaleWebApiFixture>,
