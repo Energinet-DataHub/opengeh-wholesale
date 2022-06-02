@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.Messaging.Protobuf;
 using Energinet.DataHub.Core.Messaging.Transport;
 
-namespace GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions.Serialization
+namespace Infrastructure.Core.MessagingExtensions.Serialization
 {
     public class ProtobufDeserializer<TProtoContract> : MessageDeserializer<TProtoContract>
     {

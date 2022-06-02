@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.Messaging.Transport;
-
-namespace GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Common
 {
-    // ReSharper disable once UnusedTypeParameter
-    // - Type parameter is necessary in order to distinguish instances during resolution of types in dependency container
-    public interface IServiceBusSender<TOutboundMessage>
-        where TOutboundMessage : IOutboundMessage
+    /// <summary>
+    /// Contains names of settings used by the function.
+    /// </summary>
+    public static class EnvironmentSettingNames
     {
-        ServiceBusSender Instance { get; }
+        public const string DataHubListenerConnectionString = "INTEGRATIONEVENT_LISTENER_CONNECTION_STRING";
+        public const string MeteringPointCreatedTopicName = "METERING_POINT_CREATED_TOPIC_NAME";
+        public const string MeteringPointCreatedSubscriptionName = "METERING_POINT_CREATED_SUBSCRIPTION_NAME";
     }
 }

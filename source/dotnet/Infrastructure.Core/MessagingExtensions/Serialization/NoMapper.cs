@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Transport;
 
-namespace GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions.Serialization
+namespace Infrastructure.Core.MessagingExtensions.Serialization
 {
     public class NoMapper : IJsonOutboundMapper
     {

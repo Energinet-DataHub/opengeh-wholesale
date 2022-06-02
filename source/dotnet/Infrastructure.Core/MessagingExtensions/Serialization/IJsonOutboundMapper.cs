@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Transport;
 
-namespace GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions.Serialization
+namespace Infrastructure.Core.MessagingExtensions.Serialization
 {
     /// <summary>
     /// Interface for mapping an outbound message to a DTO that can be used for json serialization

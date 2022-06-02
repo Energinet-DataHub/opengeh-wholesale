@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.Messaging.Transport;
-using GreenEnergyHub.Charges.Application.Messaging;
 
-namespace GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions
+namespace Infrastructure.Core.MessagingExtensions
 {
     public class MessageDispatcher<TOutboundMessage> : MessageDispatcher, IMessageDispatcher<TOutboundMessage>
         where TOutboundMessage : IOutboundMessage

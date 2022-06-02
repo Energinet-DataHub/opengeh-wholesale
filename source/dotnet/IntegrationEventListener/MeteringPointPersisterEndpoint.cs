@@ -13,7 +13,11 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions;
+using Domain.MeteringPoints;
+using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
+using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
+using Infrastructure.Core.MessagingExtensions;
+using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener
 {
@@ -25,14 +29,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
         /// </summary>
         public const string FunctionName = nameof(MeteringPointPersisterEndpoint);
         private readonly MessageExtractor<MeteringPointCreated> _messageExtractor;
-        private readonly IMeteringPointPersister _meteringPointCreatedEventHandler;
 
         public MeteringPointPersisterEndpoint(
-            MessageExtractor<MeteringPointCreated> messageExtractor,
-            IMeteringPointPersister meteringPointCreatedEventHandler)
+            MessageExtractor<MeteringPointCreated> messageExtractor)
         {
             _messageExtractor = messageExtractor;
-            _meteringPointCreatedEventHandler = meteringPointCreatedEventHandler;
         }
 
         [Function(FunctionName)]
@@ -45,10 +46,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
         {
             var meteringPointCreatedEvent =
                 (MeteringPointCreatedEvent)await _messageExtractor.ExtractAsync(message).ConfigureAwait(false);
-
-            await _meteringPointCreatedEventHandler
-                .PersistAsync(meteringPointCreatedEvent)
-                .ConfigureAwait(false);
+            
         }
     }
 }

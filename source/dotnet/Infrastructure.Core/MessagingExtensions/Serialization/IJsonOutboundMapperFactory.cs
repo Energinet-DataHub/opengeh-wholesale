@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Transport;
 
-namespace GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions.Serialization
+namespace Infrastructure.Core.MessagingExtensions.Serialization
 {
     /// <summary>
     /// Interface for factory that can create a JSON mapper for outbound messages

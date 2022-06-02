@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.Messaging.Transport;
 
-namespace GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions.Factories
+namespace Infrastructure.Core.MessagingExtensions
 {
-    public interface IServiceBusMessageFactory
+    public interface IMessageDispatcher<in TOutboundMessage>
+        where TOutboundMessage : IOutboundMessage
     {
-        ServiceBusMessage CreateInternalMessage(string data);
-
-        ServiceBusMessage CreateExternalMessage(byte[] data);
+        public Task DispatchAsync(TOutboundMessage message, CancellationToken cancellationToken = default);
     }
 }

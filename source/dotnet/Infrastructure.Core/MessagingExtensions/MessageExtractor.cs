@@ -12,15 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.Messaging.Transport;
-using GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions.Serialization;
+using Infrastructure.Core.MessagingExtensions.Serialization;
 
-namespace GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions
+namespace Infrastructure.Core.MessagingExtensions
 {
     public class MessageExtractor<TInboundMessage> : MessageExtractor
     {

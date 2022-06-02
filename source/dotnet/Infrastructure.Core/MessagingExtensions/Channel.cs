@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Transport;
 
-namespace GreenEnergyHub.Charges.Infrastructure.Core.MessagingExtensions
+namespace Infrastructure.Core.MessagingExtensions
 {
     // ReSharper disable once UnusedTypeParameter - needed for dependency resolution
     public abstract class Channel<TOutboundMessage> : Channel
