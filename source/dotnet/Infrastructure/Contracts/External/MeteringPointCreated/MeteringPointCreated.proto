@@ -1,0 +1,121 @@
+/* Copyright 2020 Energinet DataHub A/S
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License2");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Metering Point Domain related messages.
+ */
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "Energinet.DataHub.MeteringPoints.IntegrationEventContracts";
+
+/**
+ * Represents the creation of a metering point.
+ */
+
+
+
+message MeteringPointCreated {
+  enum NetSettlementGroup {
+    NSG_NULL = 0;
+    NSG_ZERO = 1;
+    NSG_ONE = 2;
+    NSG_TWO = 3;
+    NSG_THREE = 4;
+    NSG_SIX = 5;
+    NSG_NINETYNINE = 6;
+  }
+
+  enum ProductType {
+    PT_TARIFF = 0;
+    PT_FUELQUANTITY = 1;
+    PT_POWERACTIVE = 2;
+    PT_POWERREACTIVE = 3;
+    PT_ENERGYACTIVE = 4;
+    PT_ENERGYREACTIVE = 5;
+  }
+
+  enum SettlementMethod {
+    SM_NULL = 0;
+    SM_FLEX = 1;
+    SM_PROFILED = 2;
+    SM_NONPROFILED = 3;
+  }
+
+  enum MeteringMethod {
+    MM_PHYSICAL = 0;
+    MM_VIRTUAL = 1;
+    MM_CALCULATED = 2;
+  }
+
+  enum MeterReadingPeriodicity {
+    MRP_HOURLY = 0;
+    MRP_QUARTERLY = 1;
+  }
+
+  enum ConnectionState {
+    CS_NEW = 0; // Always created with connection state new
+  }
+
+  enum UnitType {
+    UT_WH = 0; // Watt per hour
+    UT_KWH = 1; // Kilowatt per hour
+    UT_MWH = 2; // Megawatt per hour
+    UT_GWH = 3; // Gigawatt per hour
+  }
+
+  enum MeteringPointType {
+    MPT_Consumption = 0;
+    MPT_Production = 1;
+    MPT_Exchange = 2;
+    MPT_GridLossCorrection = 3;
+    MPT_Analysis = 4;
+    MPT_VEProduction = 5;
+    MPT_ExchangeReactiveEnergy = 6;
+    MPT_InternalUse = 7;
+    MPT_SurplusProductionGroup = 8;
+    MPT_NetProduction = 9;
+    MPT_SupplyToGrid = 10;
+    MPT_ConsumptionFromGrid = 11;
+    MPT_WholesaleServices = 12;
+    MPT_OwnProduction = 13;
+    MPT_NetFromGrid = 14;
+    MPT_NetToGrid = 15;
+    MPT_TotalConsumption = 16;
+    MPT_ElectricalHeating = 17;
+    MPT_NetConsumption = 18;
+    MPT_OtherConsumption = 19;
+    MPT_OtherProduction = 20;
+  }
+
+  string metering_point_id = 1; // Unique identification for metering point
+  string gsrn_number = 2; // Business facing metering point identifier
+  string grid_area_code = 3; // Signifies which grid area a metering point belongs to
+  SettlementMethod settlement_method = 4;
+  MeteringMethod metering_method = 5; // Metering method denotes how energy quantity is calculated in other domain
+  MeterReadingPeriodicity meter_reading_periodicity = 6; // Denotes how often a energy quantity is read on a metering point
+  NetSettlementGroup net_settlement_group = 7; // Denotes the net settlement group
+  ProductType product = 8;
+  google.protobuf.Timestamp effective_date = 9; // The date on which the metering point is created
+  ConnectionState connection_state = 10; // Denotes which connection state a metering point is created with. For a consumption metering point this is always "New"
+  UnitType unit_type = 11; // Denotes the unit type. For a production metering point this is always a variation of watt/hour
+  google.protobuf.StringValue to_grid_area_code = 12; // Denotes which grid area energy is exchanged to
+  google.protobuf.StringValue from_grid_area_code = 13; // Denotes which grid area energy is exchange from
+  MeteringPointType metering_point_type = 14; // Defines the type of metering point created
+  google.protobuf.StringValue parent_gsrn_number = 15; // Business facing metering point identifier for this metering points parent
+
+}

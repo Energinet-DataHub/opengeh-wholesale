@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <LangVersion>10</LangVersion>
   </PropertyGroup>
   <!--
