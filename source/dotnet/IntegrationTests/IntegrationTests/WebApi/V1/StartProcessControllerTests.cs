@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
 using FluentAssertions;
@@ -23,6 +24,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationTests.WebApi.V
 
 [IntegrationTest]
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
+[SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods")]
 public class StartProcessControllerTests : 
     WebApiTestBase<WholesaleWebApiFixture>,
     IClassFixture<WholesaleWebApiFixture>,
@@ -54,7 +56,7 @@ public class StartProcessControllerTests :
     }
     
     [Fact]
-    public async Task StartProcessAsync()
+    public async Task StartProcessAsync_ReturnsOk()
     {
         // Act
         var response = await _client.PostAsync(BaseUrl, new StringContent("test"), CancellationToken.None);
