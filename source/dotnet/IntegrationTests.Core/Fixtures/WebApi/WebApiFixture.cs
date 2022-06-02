@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using IntegrationTestCore.Fixtures.WebApi;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace IntegrationTestCore.Fixtures.WebApi
+namespace IntegrationTests.Core.Fixtures.WebApi
 {
     /// <summary>
     /// An xUnit fixture for supporting integration testing of a WebApi
@@ -34,7 +32,7 @@ namespace IntegrationTestCore.Fixtures.WebApi
             TestLogger = new TestDiagnosticsLogger();
         }
 
-        public ITestDiagnosticsLogger TestLogger { get; }
+        private ITestDiagnosticsLogger TestLogger { get; }
 
         public async Task InitializeAsync()
         {

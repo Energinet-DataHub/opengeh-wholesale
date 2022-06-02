@@ -12,38 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-using System.Security.Claims;
-using Energinet.DataHub.Core.App.Common.Abstractions.Security;
+using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-using Moq;
 
-namespace IntegrationTestCore.Fixtures.WebApi
+namespace IntegrationTests.Core.Fixtures.WebApi
 {
-    public class WebApiFactory : WebApplicationFactory<Program>
+    public class WebApiFactory : WebApplicationFactory<Startup>
     {
-        public Mock<IJwtTokenValidator>? JwtTokenValidatorMock { get; private set; }
-
-        /// <summary>
-        /// IMPORTANT: Call after 'factory.CreateClient()' to ensure 'builder.ConfigureServices' has been executed.
-        ///
-        /// We reset the mock first because the mock instance is shared between tests. This way we can
-        /// reconfigure the mock per test.
-        /// </summary>
-        public void ReconfigureJwtTokenValidatorMock(bool isValid)
-        {
-            JwtTokenValidatorMock.Reset();
-
-            var claims = new ClaimsPrincipal();
-            JwtTokenValidatorMock!
-                .Setup(m => m.ValidateTokenAsync(It.IsAny<string>()))
-                .ReturnsAsync((IsValid: isValid, ClaimsPrincipal: claims));
-        }
-
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             if (builder == null)
@@ -52,9 +29,6 @@ namespace IntegrationTestCore.Fixtures.WebApi
             // This can be used for changing registrations in the container (e.g. for mocks).
             builder.ConfigureServices(services =>
             {
-                // var sp = services.BuildServiceProvider();
-                // using var scope = sp.CreateScope();
-                // var scopedServices = scope.ServiceProvider;
             });
         }
 

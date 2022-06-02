@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace IntegrationTestCore.Fixtures.WebApi
+namespace IntegrationTests.Core.Fixtures.WebApi
 {
     public static class WebApiConfigurationBuilder
     {

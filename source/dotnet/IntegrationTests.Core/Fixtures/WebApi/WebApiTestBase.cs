@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Diagnostics;
 using Xunit.Abstractions;
 
-namespace IntegrationTestCore.Fixtures.WebApi
+namespace IntegrationTests.Core.Fixtures.WebApi
 {
     [DebuggerStepThrough]
     public abstract class WebApiTestBase<TFixture> : IDisposable
@@ -28,7 +27,7 @@ namespace IntegrationTestCore.Fixtures.WebApi
             Fixture.SetTestOutputHelper(testOutputHelper);
         }
 
-        protected TFixture Fixture { get; }
+        private TFixture Fixture { get; }
 
         public void Dispose()
         {

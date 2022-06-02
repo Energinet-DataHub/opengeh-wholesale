@@ -13,9 +13,7 @@
 // limitations under the License.
 
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using IntegrationTestCore.Fixtures.WebApi;
+using IntegrationTests.Core.Fixtures.WebApi;
 using Xunit;
 using Xunit.Categories;
 using FluentAssertions;
@@ -63,11 +61,5 @@ public class StartProcessControllerTests :
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
-
-    [Fact]
-    public void Po()
-    {
-        Assert.Equal(1, 1);
     }
 }

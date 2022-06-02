@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{25A9C2D4-2368-4A34-A404-5D181827BB69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTestCore", "IntegrationTestCore\IntegrationTestCore.csproj", "{38E9D759-9CBF-4799-B708-5B9C1D51737E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests.Core", "IntegrationTests.Core\IntegrationTests.Core.csproj", "{38E9D759-9CBF-4799-B708-5B9C1D51737E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

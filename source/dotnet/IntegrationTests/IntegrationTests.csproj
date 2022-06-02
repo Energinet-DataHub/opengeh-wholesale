@@ -25,7 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\IntegrationTestCore\IntegrationTestCore.csproj" />
+      <ProjectReference Include="..\IntegrationTests.Core\IntegrationTests.Core.csproj" />
     </ItemGroup>
 
 </Project>

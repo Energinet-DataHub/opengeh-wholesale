@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace WebApi
+using Xunit;
+
+namespace IntegrationTests.Core.Fixtures.WebApi
 {
     /// <summary>
-    /// Contains names of settings used by the web api.
+    /// A xUnit collection fixture for ensuring tests don't run in parallel.
+    ///
+    /// xUnit documentation of collection fixtures:
+    ///  * https://xunit.net/docs/shared-context#collection-fixture
     /// </summary>
-    public static class EnvironmentSettingNames
+    [CollectionDefinition(nameof(WholesaleWebApiCollectionFixture))]
+    public class WholesaleWebApiCollectionFixture : ICollectionFixture<WholesaleWebApiFixture>
     {
-        // JWT Token auth
-        public const string FrontEndOpenIdUrl = "FRONTEND_OPEN_ID_URL";
-        public const string FrontEndServiceAppId = "FRONTEND_SERVICE_APP_ID";
     }
 }
