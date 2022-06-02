@@ -1,11 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <Nullable>enable</Nullable>
-
         <IsPackable>false</IsPackable>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <AssemblyName>Energinet.DataHub.Wholesale.IntegrationTests</AssemblyName>
+        <RootNamespace>Energinet.DataHub.Wholesale.IntegrationTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\IntegrationTests.Core\IntegrationTests.Core.csproj" />
+        <ProjectReference Include="..\IntegrationTests.Core\IntegrationTests.Core.csproj" />
     </ItemGroup>
 
 </Project>

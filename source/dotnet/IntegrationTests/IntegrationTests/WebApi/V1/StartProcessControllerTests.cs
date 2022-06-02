@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using System.Net;
-using IntegrationTests.Core.Fixtures.WebApi;
-using Xunit;
-using Xunit.Categories;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
 using FluentAssertions;
+using Xunit;
 using Xunit.Abstractions;
+using Xunit.Categories;
 
-namespace IntegrationTests.IntegrationTests.WebApi.V1;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationTests.WebApi.V1;
 
 [IntegrationTest]
 [Collection(nameof(WholesaleWebApiCollectionFixture))]

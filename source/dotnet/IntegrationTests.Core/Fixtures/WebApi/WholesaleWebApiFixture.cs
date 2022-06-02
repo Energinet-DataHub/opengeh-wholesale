@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace IntegrationTests.Core.Fixtures.WebApi
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
 {
     public class WholesaleWebApiFixture : WebApiFixture
     {
