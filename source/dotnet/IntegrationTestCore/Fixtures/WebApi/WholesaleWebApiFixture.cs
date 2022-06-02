@@ -33,6 +33,7 @@ namespace IntegrationTestCore.Fixtures.WebApi
         /// <inheritdoc/>
         protected override async Task OnInitializeWebApiDependenciesAsync(IConfiguration localSettingsSnapshot)
         {
+            await Task.CompletedTask;
         }
     }
 }

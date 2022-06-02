@@ -52,11 +52,6 @@ namespace IntegrationTestCore.Fixtures.WebApi
             // This can be used for changing registrations in the container (e.g. for mocks).
             builder.ConfigureServices(services =>
             {
-                UnregisterService<IJwtTokenValidator>(services);
-
-                JwtTokenValidatorMock = new Mock<IJwtTokenValidator>();
-                services.AddScoped<IJwtTokenValidator>(_ => JwtTokenValidatorMock.Object);
-
                 // var sp = services.BuildServiceProvider();
                 // using var scope = sp.CreateScope();
                 // var scopedServices = scope.ServiceProvider;

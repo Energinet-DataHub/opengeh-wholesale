@@ -56,12 +56,18 @@ public class StartProcessControllerTests :
     }
     
     [Fact]
-    public async Task GetAsync_WhenMeteringPointIdHasChargeLinks_ReturnsOkAndCorrectContentType()
+    public async Task StartProcessAsync()
     {
         // Act
-        var response = await _client.GetAsync($"{BaseUrl}");
+        var response = await _client.PostAsync(BaseUrl, new StringContent("test"), CancellationToken.None);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public void Po()
+    {
+        Assert.Equal(1, 1);
     }
 }
