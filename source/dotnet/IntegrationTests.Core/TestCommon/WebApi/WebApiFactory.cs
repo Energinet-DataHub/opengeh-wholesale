@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi
 {
     public class WebApiFactory : WebApplicationFactory<Startup>
     {

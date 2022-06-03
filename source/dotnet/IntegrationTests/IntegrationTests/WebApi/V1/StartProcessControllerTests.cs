@@ -15,6 +15,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -24,14 +25,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationTests.WebApi.V
 
 [IntegrationTest]
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class StartProcessControllerTests : 
+public class StartProcessControllerTests :
     WebApiTestBase<WholesaleWebApiFixture>,
     IClassFixture<WholesaleWebApiFixture>,
     IClassFixture<WebApiFactory>,
     IAsyncLifetime
 {
     private const string BaseUrl = "/v1/StartProcess";
-    
+
     private readonly HttpClient _client;
 
     public StartProcessControllerTests(
@@ -53,7 +54,7 @@ public class StartProcessControllerTests :
         _client.Dispose();
         return Task.CompletedTask;
     }
-    
+
     [Fact]
     public async Task StartProcessAsync_WhenCalled_AlwaysReturnsOk()
     {

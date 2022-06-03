@@ -13,9 +13,10 @@
 // limitations under the License.
 
 using System.Diagnostics;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi
 {
     [DebuggerStepThrough]
     public abstract class WebApiTestBase<TFixture> : IDisposable
