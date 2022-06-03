@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Domain.MeteringPoints;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 using Infrastructure.Core.MessagingExtensions;
@@ -24,19 +25,21 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
     {
         private const string FunctionName = nameof(MeteringPointCreatedListenerEndpoint);
         private readonly MessageExtractor<MeteringPointCreated> _messageExtractor;
-        private readonly IMeteringPointCreatedEventHandler _meteringPointCreatedEventHandler;
+        private readonly IJsonSerializer _jsonSerializer;
 
         public MeteringPointCreatedListenerEndpoint(
             MessageExtractor<MeteringPointCreated> messageExtractor,
-            IMeteringPointCreatedEventHandler meteringPointCreatedEventHandler)
+            IJsonSerializer jsonSerializer)
         {
             _messageExtractor = messageExtractor;
-            _meteringPointCreatedEventHandler = meteringPointCreatedEventHandler;
+            _jsonSerializer = jsonSerializer;
         }
 
         [Function(FunctionName)]
-        //[EventHubOutput("myName", Connection = "")]
-        public async Task RunAsync(
+        [EventHubOutput(
+            EnvironmentSettingNames.MasterDataEventHubName,
+            Connection = EnvironmentSettingNames.MasterDataEventHubConnectionString)]
+        public async Task<string> RunAsync(
             [ServiceBusTrigger(
                 "%" + EnvironmentSettingNames.MeteringPointCreatedTopicName + "%",
                 "%" + EnvironmentSettingNames.MeteringPointCreatedSubscriptionName + "%",
@@ -45,7 +48,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
         {
             var meteringPointCreatedEvent =
                 (MeteringPointCreatedEvent)await _messageExtractor.ExtractAsync(message).ConfigureAwait(false);
-            await _meteringPointCreatedEventHandler.HandleAsync(meteringPointCreatedEvent).ConfigureAwait(false);
+            return _jsonSerializer.Serialize(meteringPointCreatedEvent);
         }
     }
 }
