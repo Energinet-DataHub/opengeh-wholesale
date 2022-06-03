@@ -42,7 +42,7 @@ jobs:
       TERRAFORM_VERSION: '1.2.1'
 
   create_prerelease:
-    needs: [ci_base, terraform_validate]
+    needs: [ci_base, terraform_validate, dotnet_solution_ci]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@7.3.0
     with:
       CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
