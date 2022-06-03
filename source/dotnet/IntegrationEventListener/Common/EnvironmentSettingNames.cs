@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Common
         public const string DataHubListenerConnectionString = "INTEGRATIONEVENT_LISTENER_CONNECTION_STRING";
         public const string MeteringPointCreatedTopicName = "METERING_POINT_CREATED_TOPIC_NAME";
         public const string MeteringPointCreatedSubscriptionName = "METERING_POINT_CREATED_SUBSCRIPTION_NAME";
-        public const string MasterDataEventHubName = "MASTER_DATA_EVENTHUB_NAME";
-        public const string MasterDataEventHubConnectionString = "MASTER_DATA_EVENTHUB_CONNECTIONSTRING";
+        public const string MasterDataEventHubName = "EVENT_HUB_NAME";
+        public const string MasterDataEventHubConnectionString = "EVENT_HUB_SEND_CONNECTION_STRING";
     }
 }
