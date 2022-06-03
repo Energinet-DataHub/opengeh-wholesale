@@ -1,7 +1,9 @@
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Transport;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
+using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 using Infrastructure.Core.MessagingExtensions.Registration;
+using Infrastructure.Core.Registration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -22,6 +24,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
 
         private static void ConfigureServices(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
         {
+            serviceCollection.AddApplicationInsightsTelemetryWorkerService(
+                EnvironmentHelper.GetEnv(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+            
             serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
             serviceCollection.AddScoped<MessageExtractor>();
             serviceCollection.ConfigureProtobufReception();
