@@ -23,7 +23,7 @@ The wholesale domain is in charge of doing calculations on the time series sent 
 The main calculations the domain is responsible to process are consumption, production, exchange between grid areas and the current grid loss within a grid area.  
 All calculations return a result for grid area, balance responsible parties and energy suppliers.
 
-The times series sent to Green Energy Hub is processed and enriched in the [Time Series domain](https://github.com/Energinet-DataHub/geh-timeseries) before they can be picked up by the Aggregations domain.
+The times series sent to Green Energy Hub is processed and enriched in the [Time Series domain](https://github.com/Energinet-DataHub/geh-timeseries) before they can be picked up by the wholesale domain.
 
 The calculated results are packaged and forwarded to the legitimate market participants:
 
