@@ -36,14 +36,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
         }
 
         [Function(FunctionName)]
-        [EventHubOutput(
-            EnvironmentSettingNames.MasterDataEventHubName,
+        [EventHubOutput("%" + EnvironmentSettingNames.MasterDataEventHubName + "%",
             Connection = EnvironmentSettingNames.MasterDataEventHubConnectionString)]
         public async Task<string> RunAsync(
             [ServiceBusTrigger(
                 "%" + EnvironmentSettingNames.MeteringPointCreatedTopicName + "%",
                 "%" + EnvironmentSettingNames.MeteringPointCreatedSubscriptionName + "%",
-                Connection = EnvironmentSettingNames.DataHubListenerConnectionString)]
+                Connection = EnvironmentSettingNames.IntegrationEventConnectionListenerString)]
             byte[] message)
         {
             var meteringPointCreatedEvent =

@@ -23,14 +23,14 @@ public class MeteringPointCreatedEvent : IInboundMessage
         
     public MeteringPointCreatedEvent(
         string meteringPointId,
-        Guid gridAreaLinkId,
+        string gridAreaCode,
         SettlementMethod? settlementMethod,
         ConnectionState connectionState,
         Instant effectiveDate,
         MeteringPointType meteringPointType)
     {
         MeteringPointId = meteringPointId;
-        GridAreaLinkId = gridAreaLinkId;
+        GridAreaCode = gridAreaCode;
         SettlementMethod = settlementMethod;
         ConnectionState = connectionState;
         EffectiveDate = effectiveDate;
@@ -40,7 +40,7 @@ public class MeteringPointCreatedEvent : IInboundMessage
 
     public string MeteringPointId { get; }
 
-    public Guid GridAreaLinkId { get; }
+    public string GridAreaCode { get; }
 
     public SettlementMethod? SettlementMethod { get; }
 

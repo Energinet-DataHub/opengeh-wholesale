@@ -3,13 +3,13 @@
     "Values": {
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
         "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-        
-        "APPINSIGHTS_INSTRUMENTATIONKEY": "<App insights instrumentation key>",
-        "INTEGRATION_EVENT_LISTENER_CONNECTION_STRING": "<sb listener connection string for integration events>",
-        "MASTERDATA_EVENTHUB_CONNECTIONSTRING": "<eventhub connection string for master data events",
-        
-        "CONSUMPTION_METERING_POINT_CREATED_TOPIC_NAME": "consumption-metering-point-created",
-        "CONSUMPTION_METERING_POINT_CREATED_SUBSCRIPTION_NAME": "consumption-metering-point-created-to-aggregations",
-        "MASTERDATA_EVENTHUB_NAME": "masterdataevents"
+
+        "APPINSIGHTS_INSTRUMENTATIONKEY": "",
+        "INTEGRATIONEVENT_LISTENER_CONNECTION_STRING": "",
+        "EVENT_HUB_SEND_CONNECTION_STRING": "",
+
+        "METERING_POINT_CREATED_TOPIC_NAME": "consumption-metering-point-created",
+        "METERING_POINT_CREATED_SUBSCRIPTION_NAME": "consumption-metering-point-created-to-aggregations",
+        "EVENT_HUB_NAME": "masterdataevents"
     }
 }

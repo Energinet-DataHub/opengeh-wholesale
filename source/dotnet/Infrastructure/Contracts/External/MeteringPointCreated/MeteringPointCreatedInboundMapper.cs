@@ -80,7 +80,7 @@ namespace Infrastructure.Contracts.External.MeteringPointCreated
             
             return new MeteringPointCreatedEvent(
                 meteringPointCreated.GsrnNumber,
-                Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaCode name is wrong - it's a grid area link id
+                meteringPointCreated.GridAreaCode, // The GridAreaCode name is wrong - it's a grid area link id
                 settlementMethod,
                 connectionState,
                 plusNanoseconds,
