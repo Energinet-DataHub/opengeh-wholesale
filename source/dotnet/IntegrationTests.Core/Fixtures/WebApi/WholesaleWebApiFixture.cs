@@ -25,7 +25,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
         public WholesaleWebApiFixture()
         {
             AuthorizationConfiguration = new AuthorizationConfiguration(
-                "aggregation",
                 "u002",
                 "integrationtest.local.settings.json",
                 "AZURE_SECRETS_KEYVAULT_URL");

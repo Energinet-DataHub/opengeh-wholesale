@@ -29,7 +29,6 @@ public class AuthorizationConfiguration
     public IConfigurationRoot SecretsConfiguration { get; }
 
     public AuthorizationConfiguration(
-        string clientName,
         string environment,
         string localSettingsJsonFilename,
         string azureSecretsKeyVaultUrlKey)
