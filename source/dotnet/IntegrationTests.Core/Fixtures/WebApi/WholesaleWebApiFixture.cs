@@ -12,15 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.Authorization;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
+using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
 {
     public class WholesaleWebApiFixture : WebApiFixture
     {
+        public AuthorizationConfiguration AuthorizationConfiguration { get; }
         public WholesaleWebApiFixture()
         {
+            AuthorizationConfiguration = new AuthorizationConfiguration(
+                "aggregation",
+                "u002",
+                "integrationtest.local.settings.json",
+                "AZURE_SECRETS_KEYVAULT_URL");
         }
 
         /// <inheritdoc/>
@@ -31,6 +39,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
         /// <inheritdoc/>
         protected override async Task OnInitializeWebApiDependenciesAsync(IConfiguration localSettingsSnapshot)
         {
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl, AuthorizationConfiguration.FrontendOpenIdUrl);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId, AuthorizationConfiguration.FrontendAppId);
             await Task.CompletedTask;
         }
     }

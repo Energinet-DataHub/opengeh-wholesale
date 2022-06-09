@@ -42,6 +42,7 @@ public class StartProcessControllerTests :
         : base(wholesaleWebApiFixture, testOutputHelper)
     {
         _client = factory.CreateClient();
+        // factory.ReconfigureJwtTokenValidatorMock(isValid: true);
     }
 
     public Task InitializeAsync()
