@@ -4,7 +4,7 @@ The drawing shows most of the terms and conceptual models relating to aggregatio
 
 ![here!](images/process-terms.drawio.png)
 
-The following expressions exemplify the domain langauge.
+The following expressions exemplify the domain language.
 
 - When a user selects to **start a process** (in the client) a **batch** is created
 - The batch executes all the **processes** of the selected **process type**
