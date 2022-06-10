@@ -28,16 +28,18 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration
         /// <param name="serviceCollection">ServiceCollection container</param>
         public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection)
         {
-            var address = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
-                          throw new Exception($"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
-            var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
-                           throw new Exception($"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
-
             serviceCollection.AddScoped<JwtTokenMiddleware>();
             serviceCollection.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
             serviceCollection.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
             serviceCollection.AddScoped<ClaimsPrincipalContext>();
-            serviceCollection.AddScoped(_ => new OpenIdSettings(address, audience));
+            serviceCollection.AddScoped(_ =>
+            {
+                var address = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
+                              throw new Exception($"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
+                var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
+                               throw new Exception($"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
+                return new OpenIdSettings(address, audience);
+            });
         }
     }
 }

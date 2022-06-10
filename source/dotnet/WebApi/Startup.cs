@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
@@ -36,6 +37,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        app.UseRouting();
         // Configure the HTTP request pipeline.
         if (env.IsDevelopment())
         {
@@ -43,12 +45,15 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        else
+        {
+            // This middleware has to be configured after 'UseRouting' for 'AllowAnonymousAttribute' to work.
+            // We dont want JwtToken when running locally
+            app.UseMiddleware<JwtTokenMiddleware>();
+
+        }
 
         app.UseHttpsRedirection();
-        app.UseRouting();
-
-        // This middleware has to be configured after 'UseRouting' for 'AllowAnonymousAttribute' to work.
-        app.UseMiddleware<JwtTokenMiddleware>();
 
         app.UseEndpoints(endpoints =>
         {
