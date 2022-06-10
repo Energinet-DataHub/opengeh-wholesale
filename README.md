@@ -12,7 +12,7 @@
 * [Getting started](#getting-started)
 * [Road Map](#road-map)
 * [Context Map](#context-map)
-* [Architecture](#architecture)
+* [Understanding the Domain](#understanding-the-domain)
 * [Test](#test)
 * [Where can I get more help?](#where-can-i-get-more-help)
 
@@ -55,17 +55,19 @@ The current primary goal is to be able to send an RSM-014 CIM XML document to gr
 
 A FAS user must be able to initiate the aggregation process and to verify the basis data.
 
-![Context Map!](docs/images/rsm-014-roadmap.drawio.png)
+![Road Map!](docs/images/rsm-014-roadmap.drawio.png)
 
-## Context Map
+## Understanding the Domain
+
+The domain is downstream to most other domains in the DataHub. This is the context map.
 
 ![Context Map!](docs/images/context-map.drawio.png)
-
-## Architecture
 
 Read about the architecture [here](docs/architecture.md).
 
 ![Architecture!](docs/images/architecture.drawio.png)
+
+Learn about the aggregation processes terms [here](docs/process-terms.md).
 
 ## Test
 
