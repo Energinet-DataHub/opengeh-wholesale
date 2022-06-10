@@ -45,11 +45,11 @@ public class Startup
         }
 
         app.UseHttpsRedirection();
+        app.UseRouting();
 
         // This middleware has to be configured after 'UseRouting' for 'AllowAnonymousAttribute' to work.
         app.UseMiddleware<JwtTokenMiddleware>();
 
-        app.UseRouting();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

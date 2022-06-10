@@ -47,6 +47,7 @@ public class StartProcessControllerTests :
 
     public Task InitializeAsync()
     {
+        _client.DefaultRequestHeaders.Add("Authorization", $"Bearer xxx");
         return Task.CompletedTask;
     }
 
