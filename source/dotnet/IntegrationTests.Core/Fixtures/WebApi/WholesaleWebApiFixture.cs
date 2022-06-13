@@ -12,18 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
+using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.WebApi;
-
-public static class Program
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
 {
-    public static void Main(string[] args)
+    public class WholesaleWebApiFixture : WebApiFixture
     {
-        CreateWebHostBuilder(args).Build().Run();
-    }
+        public WholesaleWebApiFixture()
+        {
+        }
 
-    private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-        WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>();
+        /// <inheritdoc/>
+        protected override void OnConfigureEnvironment()
+        {
+        }
+
+        /// <inheritdoc/>
+        protected override async Task OnInitializeWebApiDependenciesAsync(IConfiguration localSettingsSnapshot)
+        {
+            await Task.CompletedTask;
+        }
+    }
 }
