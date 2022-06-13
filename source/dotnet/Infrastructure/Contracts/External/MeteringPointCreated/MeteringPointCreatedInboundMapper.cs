@@ -74,10 +74,10 @@ namespace Infrastructure.Contracts.External.MeteringPointCreated
             var settlementMethod = MapSettlementMethod(meteringPointCreated.SettlementMethod);
             var connectionState = MapConnectionState(meteringPointCreated.ConnectionState);
             var meteringPointType = MapMeteringPointType(meteringPointCreated.MeteringPointType);
-            
+
             var instant = Instant.FromUnixTimeSeconds(meteringPointCreated.EffectiveDate.Seconds);
             var plusNanoseconds = instant.PlusNanoseconds(meteringPointCreated.EffectiveDate.Nanos);
-            
+
             return new MeteringPointCreatedEvent(
                 meteringPointCreated.GsrnNumber,
                 meteringPointCreated.GridAreaCode, // The GridAreaCode name is wrong - it's a grid area link id

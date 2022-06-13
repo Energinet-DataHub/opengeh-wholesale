@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Domain.MeteringPoints;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
@@ -25,18 +26,22 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
     {
         private const string FunctionName = nameof(MeteringPointCreatedListenerEndpoint);
         private readonly MessageExtractor<MeteringPointCreated> _messageExtractor;
+        private readonly IIntegrationEventContext _integrationEventContext;
         private readonly IJsonSerializer _jsonSerializer;
 
         public MeteringPointCreatedListenerEndpoint(
             MessageExtractor<MeteringPointCreated> messageExtractor,
+            IIntegrationEventContext integrationEventContext,
             IJsonSerializer jsonSerializer)
         {
             _messageExtractor = messageExtractor;
+            _integrationEventContext = integrationEventContext;
             _jsonSerializer = jsonSerializer;
         }
 
         [Function(FunctionName)]
-        [EventHubOutput("%" + EnvironmentSettingNames.MasterDataEventHubName + "%",
+        [EventHubOutput(
+            "%" + EnvironmentSettingNames.MasterDataEventHubName + "%",
             Connection = EnvironmentSettingNames.MasterDataEventHubConnectionString)]
         public async Task<string> RunAsync(
             [ServiceBusTrigger(
