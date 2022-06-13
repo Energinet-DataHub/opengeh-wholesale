@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Middleware;
+using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
@@ -23,6 +26,7 @@ public class Startup
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+        services.AddJwtTokenSecurity();
         services.AddApiVersioning(config =>
         {
             config.DefaultApiVersion = new ApiVersion(1, 0);
@@ -33,6 +37,7 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        app.UseRouting();
         // Configure the HTTP request pipeline.
         if (env.IsDevelopment())
         {
@@ -40,10 +45,16 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+        else
+        {
+            // This middleware has to be configured after 'UseRouting' for 'AllowAnonymousAttribute' to work.
+            // We dont want JwtToken when running locally
+            app.UseMiddleware<JwtTokenMiddleware>();
+
+        }
 
         app.UseHttpsRedirection();
 
-        app.UseRouting();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
