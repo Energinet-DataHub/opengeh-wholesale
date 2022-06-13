@@ -18,7 +18,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_wholesale" {
-  source                = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=6.1.0"
+  source                = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=5.4.0"
 
   name                  = "data"
   project_name          = var.domain_name_short
