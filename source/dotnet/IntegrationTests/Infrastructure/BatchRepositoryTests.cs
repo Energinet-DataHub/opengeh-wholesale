@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
 using FluentAssertions;
@@ -38,7 +39,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var gridAreasIds = new List<Guid>{Guid.NewGuid(), Guid.NewGuid()};
+        var gridAreasIds = new List<GridAreaId>{ new(), new() };
         var batch = new Batch(WholesaleProcessType.BalanceFixing, gridAreasIds);
         var sut = new BatchRepository(writeContext);
 

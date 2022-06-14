@@ -13,29 +13,35 @@
 // limitations under the License.
 
 using System.Text.Json;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 
-public class BatchEntityConfiguration : IEntityTypeConfiguration<Domain.BatchAggregate.Batch>
+public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
 {
-    private static readonly string _aggregateTableName = nameof(Domain.BatchAggregate.Batch);
+    private static readonly string _aggregateTableName = nameof(Batch);
 
-    public void Configure(EntityTypeBuilder<Domain.BatchAggregate.Batch> builder)
+    public void Configure(EntityTypeBuilder<Batch> builder)
     {
         builder.ToTable(_aggregateTableName);
 
         builder.HasKey(b => b.Id);
-        builder.Property(b => b.Id).ValueGeneratedNever();
+        builder
+            .Property(b => b.Id)
+            .HasConversion(b => b.Id, id => new BatchId(id))
+            .ValueGeneratedNever();
 
         builder.Property(b => b.ExecutionState);
 
         // Grid area IDs are stored as a JSON array
         builder
             .Property(b => b.GridAreaIds)
+            .HasDefaultValue(new List<GridAreaId>())
             .HasConversion(
-                l => JsonSerializer.Serialize(l, (JsonSerializerOptions?)null),
-                s => JsonSerializer.Deserialize<List<Guid>>(s, (JsonSerializerOptions?)null) ?? new List<Guid>());
+                l => JsonSerializer.Serialize(l.Select(id => id.Id), (JsonSerializerOptions?)null),
+                s => JsonSerializer.Deserialize<List<Guid>>(s, (JsonSerializerOptions?)null)!.Select(id => new GridAreaId(id)).ToList());
     }
 }
