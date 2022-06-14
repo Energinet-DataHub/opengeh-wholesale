@@ -22,13 +22,12 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Private setters are needed by EF Core")]
 public class DatabaseContext : DbContext, IDatabaseContext
 {
-#nullable disable
     public DatabaseContext(DbContextOptions<DatabaseContext> options)
         : base(options)
     {
     }
 
-    public DbSet<Batch> Batches { get; private set; }
+    public DbSet<Batch> Batches { get; private set; } = null!;
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
