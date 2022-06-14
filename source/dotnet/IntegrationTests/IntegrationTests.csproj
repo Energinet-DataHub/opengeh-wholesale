@@ -49,8 +49,4 @@ limitations under the License.
       </None>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="IntegrationTests\NewFolder\" />
-    </ItemGroup>
-
 </Project>
