@@ -22,7 +22,7 @@ limitations under the License.
     <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventListener</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="2.4.0-alpha-91" />
+    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="2.4.0-alpha-94" />
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.EventHubs" Version="5.1.0" />
