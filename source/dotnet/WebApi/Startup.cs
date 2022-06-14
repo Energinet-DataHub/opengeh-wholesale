@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.WebApp.Middleware;
+using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
@@ -33,6 +36,9 @@ public class Startup
             config.AssumeDefaultVersionWhenUnspecified = true;
             config.ReportApiVersions = true;
         });
+
+        services.AddScoped<IBatchApplicationService, BatchApplicationService>();
+        services.AddScoped<IBatchRepository, BatchRepository>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

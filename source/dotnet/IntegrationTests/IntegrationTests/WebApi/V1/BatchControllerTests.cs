@@ -25,17 +25,17 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationTests.WebApi.V
 
 [IntegrationTest]
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class StartProcessControllerTests :
+public class BatchControllerTests :
     WebApiTestBase<WholesaleWebApiFixture>,
     IClassFixture<WholesaleWebApiFixture>,
     IClassFixture<WebApiFactory>,
     IAsyncLifetime
 {
-    private const string BaseUrl = "/v1/StartProcess";
+    private const string BaseUrl = "/v1/batch";
 
     private readonly HttpClient _client;
 
-    public StartProcessControllerTests(
+    public BatchControllerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
@@ -58,7 +58,7 @@ public class StartProcessControllerTests :
     }
 
     [Fact]
-    public async Task StartProcessAsync_WhenCalled_AlwaysReturnsOk()
+    public async Task CreateAsync_WhenCalled_AlwaysReturnsOk()
     {
         // Act
         var response = await _client.PostAsync(BaseUrl, new StringContent("test"), CancellationToken.None);
