@@ -21,16 +21,6 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="**/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Internal</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <CompileOutputs>True</CompileOutputs>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
