@@ -36,8 +36,8 @@ module "func_integrationeventlistener" {
     EVENT_HUB_SEND_CONNECTION_STRING                      = module.evh_masterdataevents.primary_connection_strings["send"]
     EVENT_HUB_MANAGE_CONNECTION_STRING                    = module.evh_masterdataevents.primary_connection_strings["manage"]
     EVENT_HUB_NAME                                        = module.evh_masterdataevents.name
-    METERING_POINT_CREATED_TOPIC_NAME                     = data.azurerm_key_vault_secret.sbt_consumption_metering_point_created_name.value
-    METERING_POINT_CREATED_SUBSCRIPTION_NAME              = data.azurerm_key_vault_secret.sbs_consumption_metering_point_created_to_aggregations_name.value
+    METERING_POINT_CREATED_SUBSCRIPTION_NAME              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-metering-point-created-sub-wholesale-name)"
+    METERING_POINT_CREATED_TOPIC_NAME                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-metering-point-created-name)"
   }
 
   tags                                  = azurerm_resource_group.this.tags
