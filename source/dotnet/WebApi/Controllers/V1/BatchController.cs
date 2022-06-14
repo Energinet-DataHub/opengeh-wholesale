@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
@@ -45,7 +46,7 @@ public class BatchController : ControllerBase
         WholesaleProcessType processType,
         [FromQuery]List<Guid> gridAreas)
     {
-        await _batchApplicationService.CreateAsync(processType, gridAreas);
+        await _batchApplicationService.CreateAsync(processType, gridAreas.Select(id => new GridAreaId(id)));
         return Ok();
     }
 }

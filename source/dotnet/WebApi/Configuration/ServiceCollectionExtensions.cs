@@ -17,29 +17,52 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
+using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using EntityFrameworkCore.SqlServer.NodaTime.Extensions;
+using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
+
+internal static class ServiceCollectionExtensions
 {
-    internal static class ServiceCollectionExtensions
+    /// <summary>
+    /// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
+    /// </summary>
+    /// <param name="serviceCollection">ServiceCollection container</param>
+    public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection)
     {
-        /// <summary>
-        /// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
-        /// </summary>
-        /// <param name="serviceCollection">ServiceCollection container</param>
-        public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection)
+        serviceCollection.AddScoped<JwtTokenMiddleware>();
+        serviceCollection.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
+        serviceCollection.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
+        serviceCollection.AddScoped<ClaimsPrincipalContext>();
+        serviceCollection.AddScoped(_ =>
         {
-            serviceCollection.AddScoped<JwtTokenMiddleware>();
-            serviceCollection.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
-            serviceCollection.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
-            serviceCollection.AddScoped<ClaimsPrincipalContext>();
-            serviceCollection.AddScoped(_ =>
-            {
-                var address = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
-                              throw new Exception($"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
-                var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
-                               throw new Exception($"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
-                return new OpenIdSettings(address, audience);
-            });
-        }
+            var address = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
+                          throw new Exception(
+                              $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
+            var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
+                           throw new Exception(
+                               $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
+            return new OpenIdSettings(address, audience);
+        });
+    }
+
+    public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString(EnvironmentSettingNames.DbConnectionString);
+        if (connectionString == null)
+            throw new ArgumentNullException(EnvironmentSettingNames.DbConnectionString, "does not exist in configuration settings");
+
+        services.AddDbContext<DatabaseContext>(
+            options => options.UseSqlServer(connectionString, o => o.UseNodaTime()));
+
+        services.AddScoped<IDatabaseContext, DatabaseContext>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IBatchApplicationService, BatchApplicationService>();
+        services.AddScoped<IBatchRepository, BatchRepository>();
     }
 }
