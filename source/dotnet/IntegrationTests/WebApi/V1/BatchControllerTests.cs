@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
@@ -21,7 +20,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationTests.WebApi.V1;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi.V1;
 
 [IntegrationTest]
 [Collection(nameof(WholesaleWebApiCollectionFixture))]

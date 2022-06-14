@@ -14,12 +14,19 @@
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 
 public class BatchRepository : IBatchRepository
 {
-    public Task AddAsync(Batch batch)
+    private readonly IDatabaseContext _context;
+
+    public BatchRepository(IDatabaseContext context)
     {
-        return Task.CompletedTask;
+        _context = context;
+    }
+
+    public async Task AddAsync(Batch batch)
+    {
+        await _context.Batches.AddAsync(batch);
     }
 }

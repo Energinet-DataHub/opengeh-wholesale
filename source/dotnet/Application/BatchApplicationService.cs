@@ -20,15 +20,18 @@ namespace Energinet.DataHub.Wholesale.Application;
 public class BatchApplicationService : IBatchApplicationService
 {
     private readonly IBatchRepository _batchRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public BatchApplicationService(IBatchRepository batchRepository)
+    public BatchApplicationService(IBatchRepository batchRepository, IUnitOfWork unitOfWork)
     {
         _batchRepository = batchRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task CreateAsync(WholesaleProcessType processType, List<Guid> gridAreas)
     {
         var batch = new Batch(processType, gridAreas);
         await _batchRepository.AddAsync(batch);
+        await _unitOfWork.CommitAsync();
     }
 }

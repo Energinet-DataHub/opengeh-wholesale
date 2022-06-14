@@ -12,22 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Microsoft.EntityFrameworkCore;
+
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+
+public interface IDatabaseContext
 {
+    DbSet<Batch> Batches { get; }
+
     /// <summary>
-    /// Contains names of settings used by the web api.
+    /// Saves changes to the database.
     /// </summary>
-    public static class EnvironmentSettingNames
-    {
-        // Function
-        public const string AzureWebJobsStorage = "AzureWebJobsStorage";
-
-        // Environment specific settings
-        public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
-        public const string DbConnectionString = "DB_CONNECTION_STRING";
-
-        // JWT Token auth
-        public const string FrontEndOpenIdUrl = "FRONTEND_OPEN_ID_URL";
-        public const string FrontEndServiceAppId = "FRONTEND_SERVICE_APP_ID";
-    }
+    Task<int> SaveChangesAsync();
 }

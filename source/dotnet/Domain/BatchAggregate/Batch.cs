@@ -18,12 +18,25 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public class Batch
 {
-    public WholesaleProcessType ProcessType { get; }
-    public List<Guid> GridAreas { get; }
-
-    public Batch(WholesaleProcessType processType, List<Guid> gridAreas)
+    public Batch(WholesaleProcessType processType, List<Guid> gridAreaIds)
     {
+        Id = Guid.NewGuid();
+        ExecutionState = BatchExecutionState.Requested;
         ProcessType = processType;
-        GridAreas = gridAreas;
+        GridAreaIds = gridAreaIds;
     }
+
+    /// <summary>
+    /// Required by Entity Framework
+    /// </summary>
+    // ReSharper disable once UnusedMember.Local
+    private Batch()
+    {
+        GridAreaIds = new List<Guid>();
+    }
+
+    public Guid Id { get; }
+    public WholesaleProcessType ProcessType { get; }
+    public List<Guid> GridAreaIds { get; }
+    public BatchExecutionState ExecutionState { get; }
 }

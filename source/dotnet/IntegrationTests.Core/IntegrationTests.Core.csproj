@@ -42,6 +42,7 @@ limitations under the License.
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\DatabaseMigration\DatabaseMigration.csproj" />
         <ProjectReference Include="..\WebApi\WebApi.csproj" />
     </ItemGroup>
 
