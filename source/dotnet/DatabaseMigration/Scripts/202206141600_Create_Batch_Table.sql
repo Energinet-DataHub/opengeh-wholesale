@@ -1,4 +1,8 @@
-﻿CREATE TABLE [dbo].[Batch]
+﻿drop table if exists dbo.BatchGridArea
+drop table if exists dbo.[Batch]
+go
+
+CREATE TABLE [dbo].[Batch]
 (
     [Id] [uniqueidentifier] NOT NULL,
     [GridAreaIds] [varchar](MAX) NOT NULL, -- JSON array
