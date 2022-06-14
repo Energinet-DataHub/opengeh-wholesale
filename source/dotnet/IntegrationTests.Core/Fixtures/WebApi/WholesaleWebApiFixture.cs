@@ -22,6 +22,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
     public class WholesaleWebApiFixture : WebApiFixture
     {
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
+
         public WholesaleWebApiFixture()
         {
             AuthorizationConfiguration = new AuthorizationConfiguration(

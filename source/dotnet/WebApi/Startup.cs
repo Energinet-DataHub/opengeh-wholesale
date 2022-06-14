@@ -50,7 +50,6 @@ public class Startup
             // This middleware has to be configured after 'UseRouting' for 'AllowAnonymousAttribute' to work.
             // We dont want JwtToken when running locally
             app.UseMiddleware<JwtTokenMiddleware>();
-
         }
 
         app.UseHttpsRedirection();

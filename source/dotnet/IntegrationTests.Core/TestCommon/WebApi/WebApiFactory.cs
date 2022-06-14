@@ -41,6 +41,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi
                 .Setup(m => m.ValidateTokenAsync(It.IsAny<string>()))
                 .ReturnsAsync((IsValid: isValid, ClaimsPrincipal: claims));
         }
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             if (builder == null)
