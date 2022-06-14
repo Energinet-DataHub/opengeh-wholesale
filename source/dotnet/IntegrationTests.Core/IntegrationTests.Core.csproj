@@ -23,6 +23,9 @@ limitations under the License.
 
     <ItemGroup>
         <PackageReference Include="Energinet.DataHub.Core.App.Common.Abstractions" Version="2.3.3" />
+        <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="2.3.3" />
+        <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="2.3.3" />
+        <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="2.3.3" />
         <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="2.3.3" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.5" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />

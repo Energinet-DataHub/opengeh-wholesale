@@ -12,19 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi;
+using System.Reflection;
+using DbUp;
+using DbUp.Engine;
 
-public static class Program
+namespace Energinet.DataHub.Wholesale.DatabaseMigration
 {
-    public static void Main(string[] args)
+    public static class Upgrader
     {
-        CreateWebHostBuilder(args).Build().Run();
-    }
+        public static DatabaseUpgradeResult DatabaseUpgrade(string? connectionString)
+        {
+            var upgrader =
+                DeployChanges.To
+                    .SqlDatabase(connectionString)
+                    .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
+                    .LogToConsole()
+                    .Build();
 
-    private static IHostBuilder CreateWebHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
+            var result = upgrader.PerformUpgrade();
+            return result;
+        }
+    }
 }
