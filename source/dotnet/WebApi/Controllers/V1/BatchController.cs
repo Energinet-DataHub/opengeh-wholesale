@@ -13,32 +13,39 @@
 // limitations under the License.
 
 using Energinet.DataHub.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Application;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
 
 /// <summary>
-/// This controller handle starting a process of a aggregation
+/// Handle process batches.
 /// </summary>
 [ApiController]
 [ApiVersion(Version)]
 [Route("v{version:apiVersion}/[controller]")]
-public class StartProcessController : ControllerBase
+public class BatchController : ControllerBase
 {
+    private readonly IBatchApplicationService _batchApplicationService;
+
+    public BatchController(IBatchApplicationService batchApplicationService)
+    {
+        _batchApplicationService = batchApplicationService;
+    }
+
     private const string Version = "1.0";
-        
+
     /// <summary>
-    /// Starts a process
+    /// Create a batch.
     /// </summary>
     /// <returns>Always 200 OK</returns>
     [HttpPost]
     [MapToApiVersion(Version)]
-    public async Task<IActionResult> StartProcessAsync(
+    public async Task<IActionResult> CreateAsync(
         WholesaleProcessType processType,
-        [FromQuery]List<string> gridAreas,
-        DateTimeOffset periodStartDateTime,
-        DateTimeOffset periodEndDateTime)
+        [FromQuery]List<Guid> gridAreas)
     {
-        return await Task.FromResult(Ok());
+        await _batchApplicationService.CreateAsync(processType, gridAreas);
+        return Ok();
     }
 }
