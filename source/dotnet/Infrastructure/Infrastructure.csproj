@@ -24,4 +24,9 @@ limitations under the License.
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="EntityFrameworkCore.SqlServer.NodaTime" Version="5.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
+    </ItemGroup>
+
 </Project>

@@ -12,12 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain;
 
-namespace Energinet.DataHub.Wholesale.Application;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 
-public interface IBatchApplicationService
+public class UnitOfWork : IUnitOfWork
 {
-    Task CreateAsync(WholesaleProcessType processType, IEnumerable<GridAreaId> gridAreas);
+    private readonly IDatabaseContext _databaseContext;
+
+    public UnitOfWork(IDatabaseContext databaseContext)
+    {
+        _databaseContext = databaseContext;
+    }
+
+    public async Task CommitAsync()
+    {
+        await _databaseContext.SaveChangesAsync();
+    }
 }
