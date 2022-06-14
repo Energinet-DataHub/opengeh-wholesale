@@ -15,11 +15,11 @@
 using System.ComponentModel;
 using Energinet.DataHub.Core.Messaging.Protobuf;
 using Energinet.DataHub.Core.Messaging.Transport;
-using Energinet.DataHub.Wholesale.Infrastructure.MeteringPoints;
+using Energinet.DataHub.Wholesale.Application.MeteringPoints;
 using NodaTime;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated.Types;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Contracts.External.MeteringPointCreated
+namespace Energinet.DataHub.Wholesale.Application.Contracts.External.MeteringPointCreated
 {
     public class MeteringPointCreatedInboundMapper : ProtobufInboundMapper<
         Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated>
