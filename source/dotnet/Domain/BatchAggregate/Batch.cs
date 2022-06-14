@@ -19,12 +19,14 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public class Batch
 {
+    private readonly List<GridAreaId> _gridAreaIds;
+
     public Batch(WholesaleProcessType processType, IEnumerable<GridAreaId> gridAreaIds)
     {
         Id = new BatchId();
         ExecutionState = BatchExecutionState.Requested;
         ProcessType = processType;
-        GridAreaIds = gridAreaIds.ToList();
+        _gridAreaIds = gridAreaIds.ToList();
     }
 
     /// <summary>
@@ -34,11 +36,13 @@ public class Batch
     private Batch()
     {
         Id = null!;
-        GridAreaIds = new List<GridAreaId>();
+        _gridAreaIds = new List<GridAreaId>();
     }
 
     public BatchId Id { get; }
     public WholesaleProcessType ProcessType { get; }
-    public List<GridAreaId> GridAreaIds { get; }
+
+    public IReadOnlyCollection<GridAreaId> GridAreaIds => _gridAreaIds;
+
     public BatchExecutionState ExecutionState { get; }
 }
