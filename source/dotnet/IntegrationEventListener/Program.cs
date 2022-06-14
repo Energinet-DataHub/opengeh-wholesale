@@ -22,7 +22,6 @@ using Infrastructure.Core.MessagingExtensions.Registration;
 using Infrastructure.Core.Registration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener
 {

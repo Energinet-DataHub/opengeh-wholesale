@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Domain.MeteringPoints
+namespace Energinet.DataHub.Wholesale.Infrastructure.MeteringPoints
 {
     public enum ConnectionState
     {

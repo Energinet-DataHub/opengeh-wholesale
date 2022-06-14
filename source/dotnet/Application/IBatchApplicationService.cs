@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Domain.MeteringPoints
+using Energinet.DataHub.Contracts.WholesaleProcess;
+
+namespace Energinet.DataHub.Wholesale.Application;
+
+public interface IBatchApplicationService
 {
-    public enum SettlementMethod
-    {
-        Unknown = 0,
-        Profiled = 1,
-        NonProfiled = 2,
-        Flex = 3,
-    }
+    Task CreateAsync(WholesaleProcessType processType, List<Guid> gridAreas);
 }

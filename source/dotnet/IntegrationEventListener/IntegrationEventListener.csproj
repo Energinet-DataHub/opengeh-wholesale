@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -44,7 +44,7 @@ limitations under the License.
         </None>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
       <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
     </ItemGroup>
 </Project>

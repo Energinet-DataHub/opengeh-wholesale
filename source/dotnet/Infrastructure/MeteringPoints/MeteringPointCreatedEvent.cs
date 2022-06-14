@@ -14,9 +14,10 @@
 
 using Energinet.DataHub.Core.Messaging.MessageTypes.Common;
 using Energinet.DataHub.Core.Messaging.Transport;
+using Energinet.DataHub.Wholesale.Infrastructure.MeteringPoints;
 using NodaTime;
 
-namespace Domain.MeteringPoints;
+namespace Energinet.DataHub.Wholesale.Infrastructure.MeteringPoints;
 
 public class MeteringPointCreatedEvent : IInboundMessage
 {

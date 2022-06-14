@@ -45,7 +45,8 @@ namespace Infrastructure.Core.MessagingExtensions.Registration
         /// <exception cref="ArgumentNullException"><paramref name="oneOfCase"/> is <c>null</c></exception>
         public ProtobufOneOfConfiguration<TOneOf> FromOneOf(Func<TOneOf, Enum> oneOfCase)
         {
-            if (_getMessageType != null) throw new InvalidOperationException("OneOf already defined");
+            if (_getMessageType != null)
+                throw new InvalidOperationException("OneOf already defined");
             _getMessageType = oneOfCase ?? throw new ArgumentNullException(nameof(oneOfCase));
             return this;
         }
@@ -67,7 +68,8 @@ namespace Infrastructure.Core.MessagingExtensions.Registration
         {
             var targetType = typeof(TOneOf);
             var propertyInfo = targetType.GetProperty("Parser");
-            if (propertyInfo == null) throw new InvalidOperationException("No parser found on type " + targetType.Name);
+            if (propertyInfo == null)
+                throw new InvalidOperationException("No parser found on type " + targetType.Name);
 
             var parser = propertyInfo.GetValue(null) as MessageParser;
 
@@ -109,17 +111,20 @@ namespace Infrastructure.Core.MessagingExtensions.Registration
             /// </summary>
             public override IMessage Parse(byte[] data)
             {
-                var envelope = _parser.ParseFrom(data) as TOneOf;
-                if (envelope == null) throw new InvalidOperationException("Invalid data");
+                if (_parser.ParseFrom(data) is not TOneOf envelope)
+                    throw new InvalidOperationException("Invalid data");
 
-                if (_getMessageType == null) return envelope;
+                if (_getMessageType == null)
+                    return envelope;
 
                 var enumType = _getMessageType(envelope);
                 var propertyName = Enum.GetName(enumType.GetType(), enumType);
-                if (propertyName == null) throw new InvalidOperationException("Invalid contract");
+                if (propertyName == null)
+                    throw new InvalidOperationException("Invalid contract");
 
                 var propertyInfo = envelope.GetType().GetProperty(propertyName);
-                if (propertyInfo == null) throw new InvalidOperationException();
+                if (propertyInfo == null)
+                    throw new InvalidOperationException();
 
                 var message = propertyInfo.GetValue(envelope) as IMessage;
 

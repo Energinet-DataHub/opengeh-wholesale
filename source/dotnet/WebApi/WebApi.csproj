@@ -28,9 +28,9 @@ limitations under the License.
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="..\Contracts\WholesaleProcess\WholesaleProcessType.cs">
-        <Link>Dtos\WholesaleProcess\WholesaleProcessType.cs</Link>
-      </Compile>
+      <ProjectReference Include="..\Application\Application.csproj" />
+      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
     </ItemGroup>
 
 </Project>

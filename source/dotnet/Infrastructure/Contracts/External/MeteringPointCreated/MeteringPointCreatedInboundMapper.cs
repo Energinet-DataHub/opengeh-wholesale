@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using System.ComponentModel;
-using Domain.MeteringPoints;
 using Energinet.DataHub.Core.Messaging.Protobuf;
 using Energinet.DataHub.Core.Messaging.Transport;
+using Energinet.DataHub.Wholesale.Infrastructure.MeteringPoints;
 using NodaTime;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated.Types;
 
-namespace Infrastructure.Contracts.External.MeteringPointCreated
+namespace Energinet.DataHub.Wholesale.Infrastructure.Contracts.External.MeteringPointCreated
 {
     public class MeteringPointCreatedInboundMapper : ProtobufInboundMapper<
         Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated>

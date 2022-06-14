@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Domain.MeteringPoints;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
+using Energinet.DataHub.Wholesale.Infrastructure.MeteringPoints;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 using Infrastructure.Core.MessagingExtensions;
 using Microsoft.Azure.Functions.Worker;
@@ -50,8 +50,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                 Connection = EnvironmentSettingNames.IntegrationEventConnectionListenerString)]
             byte[] message)
         {
-            var meteringPointCreatedEvent =
-                (MeteringPointCreatedEvent)await _messageExtractor.ExtractAsync(message).ConfigureAwait(false);
+            var meteringPointCreatedEvent = (MeteringPointCreatedEvent)await _messageExtractor
+                .ExtractAsync(message)
+                .ConfigureAwait(false);
 
             return _jsonSerializer.Serialize(new
             {
