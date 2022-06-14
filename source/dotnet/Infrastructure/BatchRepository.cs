@@ -20,6 +20,6 @@ public class BatchRepository : IBatchRepository
 {
     public Task AddAsync(Batch batch)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }
