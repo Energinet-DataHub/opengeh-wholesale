@@ -15,13 +15,13 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <AssemblyName>Energinet.DataHub.Wholesale.Application</AssemblyName>
-        <RootNamespace>Energinet.DataHub.Wholesale.Application</RootNamespace>
-    </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.Application</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Application</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Domain\Domain.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
 
 </Project>

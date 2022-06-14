@@ -15,27 +15,23 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<AssemblyName>Energinet.DataHub.Wholesale.Domain</AssemblyName>
-		<RootNamespace>Energinet.DataHub.Wholesale.Domain</RootNamespace>
-	</PropertyGroup>
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.Domain</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Domain</RootNamespace>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<Compile Include="..\Contracts\WholesaleProcess\WholesaleProcessType.cs">
-			<Link>WholesaleProcessType.cs</Link>
-		</Compile>
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Contracts\WholesaleProcess\WholesaleProcessType.cs">
+      <Link>WholesaleProcessType.cs</Link>
+    </Compile>
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Energinet.DataHub.Core.Messaging" Version="1.1.5" />
-		<PackageReference Include="NodaTime" Version="3.1.0" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NodaTime" Version="3.1.0" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
+  </ItemGroup>
 
 </Project>

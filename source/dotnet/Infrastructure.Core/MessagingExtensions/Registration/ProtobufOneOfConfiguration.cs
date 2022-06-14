@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Protobuf;
+using Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions.Serialization;
 using Google.Protobuf;
-using Infrastructure.Core.MessagingExtensions.Serialization;
 
-namespace Infrastructure.Core.MessagingExtensions.Registration
+namespace Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions.Registration
 {
     public class ProtobufOneOfConfiguration<TOneOf>
     where TOneOf : class, IMessage

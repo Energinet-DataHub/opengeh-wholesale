@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -15,22 +15,22 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <AssemblyName>Energinet.DataHub.Wholesale.WebApi</AssemblyName>
-        <RootNamespace>Energinet.DataHub.Wholesale.WebApi</RootNamespace>
-    </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.WebApi</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.WebApi</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="2.3.3" />
-        <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="2.3.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="2.3.3" />
+    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="2.3.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Application\Application.csproj" />
-      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-      <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
+  </ItemGroup>
 
 </Project>

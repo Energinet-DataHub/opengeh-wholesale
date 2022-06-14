@@ -17,9 +17,9 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Transport;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
+using Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions.Registration;
+using Energinet.DataHub.Wholesale.Infrastructure.Core.Registration;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
-using Infrastructure.Core.MessagingExtensions.Registration;
-using Infrastructure.Core.Registration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 

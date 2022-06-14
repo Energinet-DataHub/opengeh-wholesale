@@ -15,35 +15,32 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <AssemblyName>Energinet.DataHub.Wholesale.Infrastructure</AssemblyName>
-        <RootNamespace>Energinet.DataHub.Wholesale.Infrastructure</RootNamespace>
-    </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.Infrastructure</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Infrastructure</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <Protobuf Include="**/*.proto">
-            <GrpcServices>None</GrpcServices>
-            <Access>Public</Access>
-            <ProtoCompile>True</ProtoCompile>
-            <CompileOutputs>True</CompileOutputs>
-            <Generator>MSBuild:Compile</Generator>
-        </Protobuf>
-    </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="**/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Energinet.DataHub.Core.Messaging.Protobuf" Version="1.1.5" />
-      <PackageReference Include="Google.Protobuf" Version="3.21.1" />
-      <PackageReference Include="Grpc.Tools" Version="2.46.3">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Energinet.DataHub.Core.Messaging.Protobuf" Version="1.1.5" />
+    <PackageReference Include="Google.Protobuf" Version="3.21.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.46.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Domain\Domain.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
 
 </Project>

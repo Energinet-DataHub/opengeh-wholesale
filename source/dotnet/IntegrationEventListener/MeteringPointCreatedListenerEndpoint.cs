@@ -15,9 +15,9 @@
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
+using Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions;
 using Energinet.DataHub.Wholesale.Infrastructure.MeteringPoints;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
-using Infrastructure.Core.MessagingExtensions;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener

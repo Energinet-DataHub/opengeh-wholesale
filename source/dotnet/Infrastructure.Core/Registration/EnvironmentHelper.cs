@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Infrastructure.Core.Registration
+namespace Energinet.DataHub.Wholesale.Infrastructure.Core.Registration
 {
     public static class EnvironmentHelper
     {

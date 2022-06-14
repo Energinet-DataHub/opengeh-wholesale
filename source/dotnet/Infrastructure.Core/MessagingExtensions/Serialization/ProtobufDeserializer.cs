@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.Messaging.Protobuf;
 using Energinet.DataHub.Core.Messaging.Transport;
 
-namespace Infrastructure.Core.MessagingExtensions.Serialization
+namespace Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions.Serialization
 {
     public class ProtobufDeserializer<TProtoContract> : MessageDeserializer<TProtoContract>
     {

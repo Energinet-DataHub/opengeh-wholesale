@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Transport;
-using Infrastructure.Core.MessagingExtensions.Serialization;
+using Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions.Serialization;
 
-namespace Infrastructure.Core.MessagingExtensions
+namespace Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions
 {
     public class MessageExtractor<TInboundMessage> : MessageExtractor
     {

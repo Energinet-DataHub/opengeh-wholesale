@@ -14,12 +14,12 @@
 
 using System.Reflection;
 using Energinet.DataHub.Core.Messaging.Protobuf;
+using Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions.Serialization;
 using Google.Protobuf;
-using Infrastructure.Core.MessagingExtensions.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceDescriptor = Microsoft.Extensions.DependencyInjection.ServiceDescriptor;
 
-namespace Infrastructure.Core.MessagingExtensions.Registration
+namespace Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions.Registration
 {
     public static class ServiceCollectionProtobufExtensions
     {
@@ -42,8 +42,10 @@ namespace Infrastructure.Core.MessagingExtensions.Registration
             Action<ProtobufOneOfConfiguration<TProtoContract>> configuration)
             where TProtoContract : class, IMessage
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-            if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+            if (services == null)
+                throw new ArgumentNullException(nameof(services));
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
 
             var config = new ProtobufOneOfConfiguration<TProtoContract>();
             configuration.Invoke(config);
@@ -71,9 +73,12 @@ namespace Infrastructure.Core.MessagingExtensions.Registration
 
             foreach (var type in targetAssembly.GetTypes())
             {
-                if (type.BaseType == null) continue;
-                if (type.BaseType.IsGenericType == false) continue;
-                if (type.BaseType.GetGenericTypeDefinition() == targetType == false) continue;
+                if (type.BaseType == null)
+                    continue;
+                if (type.BaseType.IsGenericType == false)
+                    continue;
+                if (type.BaseType.GetGenericTypeDefinition() == targetType == false)
+                    continue;
 
                 var genericTypeParameter = type.BaseType.GenericTypeArguments[0];
 

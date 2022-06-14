@@ -15,19 +15,17 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.Infrastructure.Core</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Infrastructure.Core</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Azure.Messaging.EventHubs" Version="5.7.0" />
-      <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="1.0.0" />
-      <PackageReference Include="Energinet.DataHub.Core.Messaging" Version="1.1.5" />
-      <PackageReference Include="Energinet.DataHub.Core.Messaging.Protobuf" Version="1.1.5" />
-      <PackageReference Include="Google.Protobuf" Version="3.21.1" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Messaging.EventHubs" Version="5.7.0" />
+    <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="1.0.0" />
+    <PackageReference Include="Energinet.DataHub.Core.Messaging" Version="1.1.5" />
+    <PackageReference Include="Energinet.DataHub.Core.Messaging.Protobuf" Version="1.1.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+  </ItemGroup>
 
 </Project>
