@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Application.MeteringPoints;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.External.MeteringPointCreated;
+using Energinet.DataHub.Wholesale.IntegrationEventListener.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -51,7 +52,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
             serviceCollection.AddSingleton<MeteringPointCreatedInboundMapper>();
 
-            serviceCollection.AddScoped<IMeteringPointCreatedEventHandler, MeteringPointCreatedEventHandler>();
+            serviceCollection.AddScoped<IMeteringPointCreatedDtoFactory, MeteringPointCreatedDtoFactory>();
         }
     }
 }

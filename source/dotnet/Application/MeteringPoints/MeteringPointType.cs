@@ -14,6 +14,10 @@
 
 namespace Energinet.DataHub.Wholesale.Application.MeteringPoints
 {
+    /// <summary>
+    /// WARNING !
+    /// Do not change the numeric values since they are used further downstream for aggregation purposes.
+    /// </summary>
     public enum MeteringPointType
     {
         Unknown = 0,

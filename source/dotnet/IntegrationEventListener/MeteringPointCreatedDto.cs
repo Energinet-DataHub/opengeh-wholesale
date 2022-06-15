@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.MeteringPoints
-{
-    /// <summary>
-    /// WARNING !
-    /// Do not change the numeric values since they are used further downstream for aggregation purposes.
-    /// </summary>
-    public enum SettlementMethod
-    {
-        Unknown = 0,
-        Profiled = 1,
-        NonProfiled = 2,
-        Flex = 3,
-    }
-}
+using NodaTime;
+
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener;
+
+public record MeteringPointCreatedDto(
+    string MeteringPointId,
+    Guid GridAreaLinkId,
+    int? SettlementMethod,
+    int ConnectionState,
+    Instant EffectiveDate,
+    int MeteringPointType,
+    string MessageType,
+    Instant OperationTime);
