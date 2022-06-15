@@ -54,14 +54,17 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                 .ExtractAsync(message)
                 .ConfigureAwait(false);
 
-            var eventMetadata = _integrationEventContext.ReadMetadata();
-
-            return _jsonSerializer.Serialize(new
+            if (_integrationEventContext.TryReadMetadata(out var eventMetadata))
             {
-                eventMetadata.MessageType,
-                eventMetadata.OperationTimestamp,
-                Message = meteringPointCreatedEvent,
-            });
+                return _jsonSerializer.Serialize(new
+                {
+                    eventMetadata.MessageType,
+                    eventMetadata.OperationTimestamp,
+                    Message = meteringPointCreatedEvent,
+                });
+            }
+
+            throw new InvalidOperationException($"Could not read metadata for integration event in {FunctionName}.");
         }
     }
 }
