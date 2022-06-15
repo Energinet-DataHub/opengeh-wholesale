@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.IntegrationEventContext;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
 using Energinet.DataHub.Wholesale.Application.MeteringPoints;
 using Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions;
@@ -26,17 +24,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
     {
         private const string FunctionName = nameof(MeteringPointCreatedListenerEndpoint);
         private readonly MessageExtractor<MeteringPointCreated> _messageExtractor;
-        private readonly IIntegrationEventContext _integrationEventContext;
-        private readonly IJsonSerializer _jsonSerializer;
+        private readonly IMeteringPointCreatedEventHandler _meteringPointCreatedEventHandler;
 
         public MeteringPointCreatedListenerEndpoint(
             MessageExtractor<MeteringPointCreated> messageExtractor,
-            IIntegrationEventContext integrationEventContext,
-            IJsonSerializer jsonSerializer)
+            IMeteringPointCreatedEventHandler meteringPointCreatedEventHandler)
         {
             _messageExtractor = messageExtractor;
-            _integrationEventContext = integrationEventContext;
-            _jsonSerializer = jsonSerializer;
+            _meteringPointCreatedEventHandler = meteringPointCreatedEventHandler;
         }
 
         [Function(FunctionName)]
@@ -54,17 +49,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                 .ExtractAsync(message)
                 .ConfigureAwait(false);
 
-            if (_integrationEventContext.TryReadMetadata(out var eventMetadata))
-            {
-                return _jsonSerializer.Serialize(new
-                {
-                    eventMetadata.MessageType,
-                    eventMetadata.OperationTimestamp,
-                    Message = meteringPointCreatedEvent,
-                });
-            }
-
-            throw new InvalidOperationException($"Could not read metadata for integration event in {FunctionName}.");
+            return _meteringPointCreatedEventHandler.Handle(meteringPointCreatedEvent);
         }
     }
 }

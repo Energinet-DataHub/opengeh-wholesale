@@ -27,8 +27,6 @@ option csharp_namespace = "Energinet.DataHub.MeteringPoints.IntegrationEventCont
  * Represents the creation of a metering point.
  */
 
-
-
 message MeteringPointCreated {
   enum NetSettlementGroup {
     NSG_NULL = 0;

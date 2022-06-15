@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.Application.MeteringPoints;
 using NodaTime;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated.Types;
 
-namespace Energinet.DataHub.Wholesale.Application.Contracts.External.MeteringPointCreated
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.External.MeteringPointCreated
 {
     public class MeteringPointCreatedInboundMapper : ProtobufInboundMapper<
         Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated>
