@@ -13,36 +13,38 @@
 // limitations under the License.
 
 using System.ComponentModel;
-using Energinet.DataHub.Core.Messaging.Protobuf;
-using Energinet.DataHub.Core.Messaging.Transport;
 using Energinet.DataHub.Wholesale.Application.MeteringPoints;
 using NodaTime;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated.Types;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.External.MeteringPointCreated
-{
-    public class MeteringPointCreatedInboundMapper : ProtobufInboundMapper<
-        Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated>
-    {
-        public static SettlementMethod? MapSettlementMethod(mpTypes.SettlementMethod settlementMethod) =>
-            settlementMethod switch
-            {
-                mpTypes.SettlementMethod.SmFlex => SettlementMethod.Flex,
-                mpTypes.SettlementMethod.SmProfiled => SettlementMethod.Profiled,
-                mpTypes.SettlementMethod.SmNonprofiled => SettlementMethod.NonProfiled,
-                mpTypes.SettlementMethod.SmNull => null,
-                _ => throw new InvalidEnumArgumentException(
-                    $"Provided SettlementMethod value '{settlementMethod}' is invalid and cannot be mapped."),
-            };
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.External.MeteringPointCreated;
 
-        public static ConnectionState MapConnectionState(mpTypes.ConnectionState connectionState) => connectionState switch
+public class MeteringPointCreatedInboundMapper
+{
+    public static SettlementMethod? MapSettlementMethod(mpTypes.SettlementMethod settlementMethod)
+    {
+        return settlementMethod switch
+        {
+            mpTypes.SettlementMethod.SmFlex => SettlementMethod.Flex,
+            mpTypes.SettlementMethod.SmProfiled => SettlementMethod.Profiled,
+            mpTypes.SettlementMethod.SmNonprofiled => SettlementMethod.NonProfiled,
+            mpTypes.SettlementMethod.SmNull => null,
+            _ => throw new InvalidEnumArgumentException($"Provided SettlementMethod value '{settlementMethod}' is invalid and cannot be mapped."),
+        };
+    }
+
+    public static ConnectionState MapConnectionState(mpTypes.ConnectionState connectionState)
+    {
+        return connectionState switch
         {
             mpTypes.ConnectionState.CsNew => ConnectionState.New,
-            _ => throw new InvalidEnumArgumentException(
-                $"Provided ConnectionState value '{connectionState}' is invalid and cannot be mapped."),
+            _ => throw new InvalidEnumArgumentException($"Provided ConnectionState value '{connectionState}' is invalid and cannot be mapped."),
         };
+    }
 
-        public static MeteringPointType MapMeteringPointType(mpTypes.MeteringPointType meteringPointType) => meteringPointType switch
+    public static MeteringPointType MapMeteringPointType(mpTypes.MeteringPointType meteringPointType)
+    {
+        return meteringPointType switch
         {
             mpTypes.MeteringPointType.MptAnalysis => MeteringPointType.Analysis,
             mpTypes.MeteringPointType.MptConsumption => MeteringPointType.Consumption,
@@ -65,26 +67,27 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.Externa
             mpTypes.MeteringPointType.MptNetToGrid => MeteringPointType.NetToGrid,
             mpTypes.MeteringPointType.MptSupplyToGrid => MeteringPointType.SupplyToGrid,
             mpTypes.MeteringPointType.MptSurplusProductionGroup => MeteringPointType.SurplusProductionGroup,
-            _ => throw new InvalidEnumArgumentException(
-                    $"Provided MeteringPointType value '{meteringPointType}' is invalid and cannot be mapped."),
+            _ => throw new InvalidEnumArgumentException($"Provided MeteringPointType value '{meteringPointType}' is invalid and cannot be mapped."),
         };
+    }
 
-        protected override IInboundMessage Convert(Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated meteringPointCreated)
-        {
-            var settlementMethod = MapSettlementMethod(meteringPointCreated.SettlementMethod);
-            var connectionState = MapConnectionState(meteringPointCreated.ConnectionState);
-            var meteringPointType = MapMeteringPointType(meteringPointCreated.MeteringPointType);
+    public MeteringPointCreatedEvent Convert(
+        MeteringPoints.IntegrationEventContracts.MeteringPointCreated meteringPointCreated)
+    {
+        var settlementMethod = MapSettlementMethod(meteringPointCreated.SettlementMethod);
+        var connectionState = MapConnectionState(meteringPointCreated.ConnectionState);
+        var meteringPointType = MapMeteringPointType(meteringPointCreated.MeteringPointType);
 
-            var instant = Instant.FromUnixTimeSeconds(meteringPointCreated.EffectiveDate.Seconds);
-            var plusNanoseconds = instant.PlusNanoseconds(meteringPointCreated.EffectiveDate.Nanos);
+        var instant = Instant.FromUnixTimeSeconds(meteringPointCreated.EffectiveDate.Seconds);
+        var plusNanoseconds = instant.PlusNanoseconds(meteringPointCreated.EffectiveDate.Nanos);
 
-            return new MeteringPointCreatedEvent(
-                meteringPointCreated.GsrnNumber,
-                Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
-                settlementMethod,
-                connectionState,
-                plusNanoseconds,
-                meteringPointType);
-        }
+        return new MeteringPointCreatedEvent(
+            meteringPointCreated.GsrnNumber,
+            Guid.Parse(meteringPointCreated
+                .GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
+            settlementMethod,
+            connectionState,
+            plusNanoseconds,
+            meteringPointType);
     }
 }

@@ -14,8 +14,8 @@
 
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
 using Energinet.DataHub.Wholesale.Application.MeteringPoints;
-using Energinet.DataHub.Wholesale.Infrastructure.Core.MessagingExtensions;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
+using Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.External.MeteringPointCreated;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener
@@ -23,14 +23,15 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
     public class MeteringPointCreatedListenerEndpoint
     {
         private const string FunctionName = nameof(MeteringPointCreatedListenerEndpoint);
-        private readonly MessageExtractor<MeteringPointCreated> _messageExtractor;
+
+        private readonly MeteringPointCreatedInboundMapper _meteringPointCreatedInboundMapper;
         private readonly IMeteringPointCreatedEventHandler _meteringPointCreatedEventHandler;
 
         public MeteringPointCreatedListenerEndpoint(
-            MessageExtractor<MeteringPointCreated> messageExtractor,
+            MeteringPointCreatedInboundMapper meteringPointCreatedInboundMapper,
             IMeteringPointCreatedEventHandler meteringPointCreatedEventHandler)
         {
-            _messageExtractor = messageExtractor;
+            _meteringPointCreatedInboundMapper = meteringPointCreatedInboundMapper;
             _meteringPointCreatedEventHandler = meteringPointCreatedEventHandler;
         }
 
@@ -38,18 +39,17 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
         [EventHubOutput(
             "%" + EnvironmentSettingNames.MasterDataEventHubName + "%",
             Connection = EnvironmentSettingNames.MasterDataEventHubConnectionString)]
-        public async Task<string> RunAsync(
+        public Task<string> RunAsync(
             [ServiceBusTrigger(
                 "%" + EnvironmentSettingNames.MeteringPointCreatedTopicName + "%",
                 "%" + EnvironmentSettingNames.MeteringPointCreatedSubscriptionName + "%",
                 Connection = EnvironmentSettingNames.IntegrationEventConnectionListenerString)]
             byte[] message)
         {
-            var meteringPointCreatedEvent = (MeteringPointCreatedEvent)await _messageExtractor
-                .ExtractAsync(message)
-                .ConfigureAwait(false);
+            var meteringPointCreatedEvent = _meteringPointCreatedInboundMapper
+                .Convert(MeteringPointCreated.Parser.ParseFrom(message));
 
-            return _meteringPointCreatedEventHandler.Handle(meteringPointCreatedEvent);
+            return Task.FromResult(_meteringPointCreatedEventHandler.Handle(meteringPointCreatedEvent));
         }
     }
 }

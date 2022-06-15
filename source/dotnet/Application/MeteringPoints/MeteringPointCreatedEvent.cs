@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Messaging.MessageTypes.Common;
-using Energinet.DataHub.Core.Messaging.Transport;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Application.MeteringPoints;
 
-public sealed class MeteringPointCreatedEvent : IInboundMessage
+public sealed class MeteringPointCreatedEvent
 {
     public MeteringPointCreatedEvent(
         string meteringPointId,
@@ -34,7 +32,6 @@ public sealed class MeteringPointCreatedEvent : IInboundMessage
         ConnectionState = connectionState;
         EffectiveDate = effectiveDate;
         MeteringPointType = meteringPointType;
-        Transaction = new Transaction();
     }
 
     public string MeteringPointId { get; }
@@ -48,6 +45,4 @@ public sealed class MeteringPointCreatedEvent : IInboundMessage
     public Instant EffectiveDate { get; }
 
     public MeteringPointType MeteringPointType { get; }
-
-    public Transaction Transaction { get; set; }
 }
