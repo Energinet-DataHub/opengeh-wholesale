@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
     {
         [Theory]
         [InlineAutoMoqData]
-        public void Test(
+        public void Create_InvalidEventMetadata_ThrowsException(
             Mock<IIntegrationEventContext> integrationEventContext,
             MeteringPointCreatedEvent meteringPointCreatedEvent)
         {
@@ -39,7 +39,38 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
 
             // Act & Assert
             sut.Invoking(x => x.Create(meteringPointCreatedEvent))
-                .Should().Throw<InvalidOperationException>();
+               .Should()
+               .Throw<InvalidOperationException>();
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public void Create_HasEventMetadata_ReturnsValidDto(
+            Mock<IIntegrationEventContext> integrationEventContext,
+            MeteringPointCreatedEvent meteringPointCreatedEvent,
+            IntegrationEventMetadata integrationEventMetadata)
+        {
+            // Arrange
+            var outEventMetadata = integrationEventMetadata;
+
+            integrationEventContext
+                .Setup(x => x.TryReadMetadata(out outEventMetadata))
+                .Returns(true);
+
+            var sut = new MeteringPointCreatedDtoFactory(integrationEventContext.Object);
+
+            // Act
+            var actual = sut.Create(meteringPointCreatedEvent);
+
+            // Assert
+            actual.MeteringPointId.Should().Be(meteringPointCreatedEvent.MeteringPointId);
+            actual.GridAreaLinkId.Should().Be(meteringPointCreatedEvent.GridAreaLinkId);
+            actual.SettlementMethod.Should().Be((int?)meteringPointCreatedEvent.SettlementMethod);
+            actual.ConnectionState.Should().Be((int)meteringPointCreatedEvent.ConnectionState);
+            actual.EffectiveDate.Should().Be(meteringPointCreatedEvent.EffectiveDate);
+            actual.MeteringPointType.Should().Be((int)meteringPointCreatedEvent.MeteringPointType);
+            actual.MessageType.Should().Be(integrationEventMetadata.MessageType);
+            actual.OperationTime.Should().Be(integrationEventMetadata.OperationTimestamp);
         }
     }
 }
