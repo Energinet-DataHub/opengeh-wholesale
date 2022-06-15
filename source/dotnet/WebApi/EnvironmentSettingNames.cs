@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.WebApi
 
         // Environment specific settings
         public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
-        public const string ChargeDbConnectionString = "CHARGE_DB_CONNECTION_STRING";
+        public const string DbConnectionString = "DB_CONNECTION_STRING";
 
         // JWT Token auth
         public const string FrontEndOpenIdUrl = "FRONTEND_OPEN_ID_URL";

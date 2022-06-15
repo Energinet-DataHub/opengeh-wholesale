@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
 using Energinet.DataHub.Wholesale.WebApi;
@@ -25,11 +26,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
 
         public WholesaleWebApiFixture()
         {
+            DatabaseManager = new WholesaleDatabaseManager();
             AuthorizationConfiguration = new AuthorizationConfiguration(
                 "u002",
                 "integrationtest.local.settings.json",
                 "AZURE_SECRETS_KEYVAULT_URL");
         }
+
+        public WholesaleDatabaseManager DatabaseManager { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureEnvironment()
@@ -39,9 +43,22 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
         /// <inheritdoc/>
         protected override async Task OnInitializeWebApiDependenciesAsync(IConfiguration localSettingsSnapshot)
         {
+            await DatabaseManager.CreateDatabaseAsync();
+
+            // Overwrites the setting so the Web Api app uses the database we have control of in the test
+            Environment.SetEnvironmentVariable(
+                $"CONNECTIONSTRINGS:{EnvironmentSettingNames.DbConnectionString}",
+                DatabaseManager.ConnectionString);
+
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl, AuthorizationConfiguration.FrontendOpenIdUrl);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId, AuthorizationConfiguration.FrontendAppId);
             await Task.CompletedTask;
+        }
+
+        /// <inheritdoc/>
+        protected override async Task OnDisposeWebApiDependenciesAsync()
+        {
+            await DatabaseManager.DeleteDatabaseAsync();
         }
     }
 }

@@ -13,18 +13,36 @@
 // limitations under the License.
 
 using Energinet.DataHub.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public class Batch
 {
+    private readonly List<GridAreaId> _gridAreaIds;
+
+    public Batch(WholesaleProcessType processType, IEnumerable<GridAreaId> gridAreaIds)
+    {
+        Id = new BatchId();
+        ExecutionState = BatchExecutionState.Requested;
+        ProcessType = processType;
+        _gridAreaIds = gridAreaIds.ToList();
+    }
+
+    /// <summary>
+    /// Required by Entity Framework
+    /// </summary>
+    // ReSharper disable once UnusedMember.Local
+    private Batch()
+    {
+        Id = null!;
+        _gridAreaIds = new List<GridAreaId>();
+    }
+
+    public BatchId Id { get; }
     public WholesaleProcessType ProcessType { get; }
 
-    public List<Guid> GridAreas { get; }
+    public IReadOnlyCollection<GridAreaId> GridAreaIds => _gridAreaIds;
 
-    public Batch(WholesaleProcessType processType, List<Guid> gridAreas)
-    {
-        ProcessType = processType;
-        GridAreas = gridAreas;
-    }
+    public BatchExecutionState ExecutionState { get; }
 }

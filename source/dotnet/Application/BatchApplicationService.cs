@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Energinet DataHub A/S
+// Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -13,22 +13,27 @@
 // limitations under the License.
 
 using Energinet.DataHub.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application;
 
 public class BatchApplicationService : IBatchApplicationService
 {
     private readonly IBatchRepository _batchRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public BatchApplicationService(IBatchRepository batchRepository)
+    public BatchApplicationService(IBatchRepository batchRepository, IUnitOfWork unitOfWork)
     {
         _batchRepository = batchRepository;
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task CreateAsync(WholesaleProcessType processType, List<Guid> gridAreas)
+    public async Task CreateAsync(WholesaleProcessType processType, IEnumerable<GridAreaId> gridAreas)
     {
         var batch = new Batch(processType, gridAreas);
-        await _batchRepository.AddAsync(batch).ConfigureAwait(false);
+        await _batchRepository.AddAsync(batch);
+        await _unitOfWork.CommitAsync();
     }
 }
