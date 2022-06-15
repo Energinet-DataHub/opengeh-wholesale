@@ -80,7 +80,7 @@ namespace Energinet.DataHub.Wholesale.Application.Contracts.External.MeteringPoi
 
             return new MeteringPointCreatedEvent(
                 meteringPointCreated.GsrnNumber,
-                meteringPointCreated.GridAreaCode, // The GridAreaCode name is wrong - it's a grid area link id
+                Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
                 settlementMethod,
                 connectionState,
                 plusNanoseconds,
