@@ -45,3 +45,4 @@ jobs:
       AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID }}
       AZURE_SPN_SECRET: ${{ secrets.AZURE_SPN_SECRET }}
       AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+      AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
