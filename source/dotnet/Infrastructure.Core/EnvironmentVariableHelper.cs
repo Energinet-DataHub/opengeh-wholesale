@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Core.Registration
+namespace Energinet.DataHub.Wholesale.Infrastructure.Core
 {
-    public static class EnvironmentHelper
+    public static class EnvironmentVariableHelper
     {
-        public static string GetEnv(string variableName)
+        public static string GetEnvVariable(string variableName)
         {
             return Environment.GetEnvironmentVariable(variableName) ??
                    throw new Exception($"Function app is missing required environment variable '{variableName}'");

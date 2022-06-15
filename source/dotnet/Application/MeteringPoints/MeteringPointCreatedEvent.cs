@@ -18,18 +18,18 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Application.MeteringPoints;
 
-public class MeteringPointCreatedEvent : IInboundMessage
+public sealed class MeteringPointCreatedEvent : IInboundMessage
 {
     public MeteringPointCreatedEvent(
         string meteringPointId,
-        string gridAreaCode,
+        Guid gridAreaLinkId,
         SettlementMethod? settlementMethod,
         ConnectionState connectionState,
         Instant effectiveDate,
         MeteringPointType meteringPointType)
     {
         MeteringPointId = meteringPointId;
-        GridAreaCode = gridAreaCode;
+        GridAreaLinkId = gridAreaLinkId;
         SettlementMethod = settlementMethod;
         ConnectionState = connectionState;
         EffectiveDate = effectiveDate;
@@ -39,7 +39,7 @@ public class MeteringPointCreatedEvent : IInboundMessage
 
     public string MeteringPointId { get; }
 
-    public string GridAreaCode { get; }
+    public Guid GridAreaLinkId { get; }
 
     public SettlementMethod? SettlementMethod { get; }
 
