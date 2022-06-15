@@ -32,7 +32,7 @@ module "app_wholesale_api" {
     {
       name  = "DB_CONNECTION_STRING"
       type  = "SQLAzure"
-      value = local.MS_CHARGE_DB_CONNECTION_STRING
+      value = local.DB_CONNECTION_STRING
     }
   ]
 
