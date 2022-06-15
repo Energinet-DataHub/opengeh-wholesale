@@ -1,4 +1,4 @@
-// Copyright 2020 Energinet DataHub A/S
+﻿// Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -27,14 +27,13 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
 [Route("v{version:apiVersion}/[controller]")]
 public class BatchController : ControllerBase
 {
+    private const string Version = "1.0";
     private readonly IBatchApplicationService _batchApplicationService;
 
     public BatchController(IBatchApplicationService batchApplicationService)
     {
         _batchApplicationService = batchApplicationService;
     }
-
-    private const string Version = "1.0";
 
     /// <summary>
     /// Create a batch.
@@ -46,7 +45,7 @@ public class BatchController : ControllerBase
         WholesaleProcessType processType,
         [FromQuery]List<Guid> gridAreas)
     {
-        await _batchApplicationService.CreateAsync(processType, gridAreas.Select(id => new GridAreaId(id)));
+        await _batchApplicationService.CreateAsync(processType, gridAreas.Select(id => new GridAreaId(id))).ConfigureAwait(false);
         return Ok();
     }
 }

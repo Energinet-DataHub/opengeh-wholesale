@@ -27,6 +27,6 @@ public class BatchRepository : IBatchRepository
 
     public async Task AddAsync(Batch batch)
     {
-        await _context.Batches.AddAsync(batch);
+        await _context.Batches.AddAsync(batch).ConfigureAwait(false);
     }
 }
