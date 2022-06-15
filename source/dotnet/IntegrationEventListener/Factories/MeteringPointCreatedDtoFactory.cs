@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.MeteringPoints;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Factories
@@ -31,11 +30,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Factories
         {
             if (_integrationEventContext.TryReadMetadata(out var eventMetadata))
             {
-                var settlementMethod = meteringPointCreatedEvent.SettlementMethod != null ? (int)meteringPointCreatedEvent.SettlementMethod.Value : (int?)null;
                 return new MeteringPointCreatedDto(
                     meteringPointCreatedEvent.MeteringPointId,
                     meteringPointCreatedEvent.GridAreaLinkId,
-                    settlementMethod,
+                    (int?)meteringPointCreatedEvent.SettlementMethod,
                     (int)meteringPointCreatedEvent.ConnectionState,
                     meteringPointCreatedEvent.EffectiveDate,
                     (int)meteringPointCreatedEvent.MeteringPointType,
