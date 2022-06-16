@@ -17,11 +17,6 @@ using Energinet.DataHub.Contracts.WholesaleProcess;
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 /// <summary>
-/// A request to create a batch.
+/// An immutable request to create a batch.
 /// </summary>
-public class BatchRequestDto
-{
-    public WholesaleProcessType ProcessType { get; set; }
-
-    public List<string> GridAreaCodes { get; set; } = new();
-}
+public sealed record BatchRequestDto(WholesaleProcessType ProcessType, List<string> GridAreaCodes);

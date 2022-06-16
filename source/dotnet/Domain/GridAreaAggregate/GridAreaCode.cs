@@ -20,7 +20,7 @@ public sealed record GridAreaCode
 {
     public GridAreaCode(string code)
     {
-        if (code == null) throw new ArgumentNullException(nameof(code));
+        ArgumentNullException.ThrowIfNull(code);
         if (!Regex.IsMatch(code, @"^((00\d)|(0[1-9]\d)|([1-9]\d\d))$", RegexOptions.ECMAScript))
             throw new ArgumentException("Code must be 3 characters number with left padded zeros");
 
