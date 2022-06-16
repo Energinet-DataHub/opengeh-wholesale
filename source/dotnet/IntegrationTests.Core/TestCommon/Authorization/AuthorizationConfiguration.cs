@@ -24,6 +24,7 @@ public class AuthorizationConfiguration
     public string FrontendOpenIdUrl { get; }
 
     public string FrontendAppId { get; }
+
     public IConfigurationRoot RootConfiguration { get; }
 
     public IConfigurationRoot SecretsConfiguration { get; }

@@ -12,21 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
-
-public class BatchRepository : IBatchRepository
+namespace Energinet.DataHub.Wholesale.Infrastructure.Core
 {
-    private readonly IDatabaseContext _context;
-
-    public BatchRepository(IDatabaseContext context)
+    public static class EnvironmentVariableHelper
     {
-        _context = context;
-    }
-
-    public async Task AddAsync(Batch batch)
-    {
-        await _context.Batches.AddAsync(batch).ConfigureAwait(false);
+        public static string GetEnvVariable(string variableName)
+        {
+            return Environment.GetEnvironmentVariable(variableName) ??
+                   throw new Exception($"Function app is missing required environment variable '{variableName}'");
+        }
     }
 }

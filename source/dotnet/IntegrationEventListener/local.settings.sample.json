@@ -1,0 +1,15 @@
+{
+    "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "",
+    "INTEGRATIONEVENT_LISTENER_CONNECTION_STRING": "",
+    "EVENT_HUB_SEND_CONNECTION_STRING": "",
+
+    "METERING_POINT_CREATED_TOPIC_NAME": "metering-point-created",
+    "METERING_POINT_CREATED_SUBSCRIPTION_NAME": "metering-point-created-to-wholesale",
+    "EVENT_HUB_NAME": "masterdataevents"
+  }
+}

@@ -33,9 +33,11 @@ module "func_integrationeventlistener" {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = true
     FUNCTIONS_WORKER_RUNTIME            = "dotnet-isolated"
     # EndRegion
-    EVENT_HUB_SEND_CONNECTION_STRING    = module.evh_masterdataevents.primary_connection_strings["send"]
-    EVENT_HUB_MANAGE_CONNECTION_STRING  = module.evh_masterdataevents.primary_connection_strings["manage"]
-    EVENT_HUB_NAME                      = module.evh_masterdataevents.name
+    EVENT_HUB_SEND_CONNECTION_STRING                      = module.evh_masterdataevents.primary_connection_strings["send"]
+    EVENT_HUB_MANAGE_CONNECTION_STRING                    = module.evh_masterdataevents.primary_connection_strings["manage"]
+    EVENT_HUB_NAME                                        = module.evh_masterdataevents.name
+    METERING_POINT_CREATED_SUBSCRIPTION_NAME              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-metering-point-created-sub-wholesale-name)"
+    METERING_POINT_CREATED_TOPIC_NAME                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-metering-point-created-name)"
   }
 
   tags                                  = azurerm_resource_group.this.tags

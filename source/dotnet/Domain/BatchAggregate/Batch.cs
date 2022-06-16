@@ -40,6 +40,7 @@ public class Batch
     }
 
     public BatchId Id { get; }
+
     public WholesaleProcessType ProcessType { get; }
 
     public IReadOnlyCollection<GridAreaId> GridAreaIds => _gridAreaIds;
