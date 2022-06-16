@@ -5,7 +5,7 @@ go
 CREATE TABLE [dbo].[Batch]
 (
     [Id] [uniqueidentifier] NOT NULL,
-    [GridAreaIds] [varchar](MAX) NOT NULL, -- JSON array
+    [GridAreaCodes] [varchar](MAX) NOT NULL, -- JSON array of grid area code strings, e.g. ["004","805"]
     [ExecutionState] [int] NOT NULL,
     CONSTRAINT [PK_Batch] PRIMARY KEY NONCLUSTERED
 (

@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Application.Batches;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
@@ -41,11 +39,9 @@ public class BatchController : ControllerBase
     /// <returns>Always 200 OK</returns>
     [HttpPost]
     [MapToApiVersion(Version)]
-    public async Task<IActionResult> CreateAsync(
-        WholesaleProcessType processType,
-        [FromQuery]List<Guid> gridAreas)
+    public async Task<IActionResult> CreateAsync([FromBody] BatchRequestDto batchRequestDto)
     {
-        await _batchApplicationService.CreateAsync(processType, gridAreas.Select(id => new GridAreaId(id))).ConfigureAwait(false);
+        await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
         return Ok();
     }
 }

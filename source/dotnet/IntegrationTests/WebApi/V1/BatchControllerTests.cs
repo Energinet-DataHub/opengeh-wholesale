@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using System.Net;
+using System.Net.Http.Json;
+using Energinet.DataHub.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
 using FluentAssertions;
@@ -59,8 +62,13 @@ public class BatchControllerTests :
     [Fact]
     public async Task CreateAsync_WhenCalled_AlwaysReturnsOk()
     {
+        // Arrange
+        var batchRequest = new BatchRequestDto(
+            WholesaleProcessType.BalanceFixing,
+            new List<string> { "805" });
+
         // Act
-        var response = await _client.PostAsync(BaseUrl, new StringContent("test"), CancellationToken.None);
+        var response = await _client.PostAsJsonAsync(BaseUrl, batchRequest, CancellationToken.None);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

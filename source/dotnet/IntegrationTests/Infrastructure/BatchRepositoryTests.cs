@@ -39,8 +39,8 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var gridAreasIds = new List<GridAreaId> { new(), new() };
-        var batch = new Batch(WholesaleProcessType.BalanceFixing, gridAreasIds);
+        var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
+        var batch = new Batch(WholesaleProcessType.BalanceFixing, someGridAreasIds);
         var sut = new BatchRepository(writeContext);
 
         // Act
@@ -52,6 +52,6 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
 
         actual.Should().BeEquivalentTo(batch);
-        actual.GridAreaIds.Should().BeEquivalentTo(gridAreasIds);
+        actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
     }
 }
