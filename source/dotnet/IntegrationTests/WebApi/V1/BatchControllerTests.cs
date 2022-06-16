@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Net;
-using System.Text.Json;
+using System.Net.Http.Json;
 using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
@@ -68,10 +68,9 @@ public class BatchControllerTests :
             ProcessType = WholesaleProcessType.BalanceFixing,
             GridAreaCodes = new List<string> { "805" },
         };
-        var body = new StringContent(JsonSerializer.Serialize(batchRequest));
 
         // Act
-        var response = await _client.PostAsync(BaseUrl, body, CancellationToken.None);
+        var response = await _client.PostAsJsonAsync(BaseUrl, batchRequest, CancellationToken.None);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
