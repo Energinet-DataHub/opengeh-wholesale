@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -16,17 +16,14 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.Infrastructure</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.Infrastructure</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.Infrastructure.Core</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Infrastructure.Core</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <PackageReference Include="Azure.Messaging.EventHubs" Version="5.7.0" />
+    <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
   </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="EntityFrameworkCore.SqlServer.NodaTime" Version="5.0.1" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
-    </ItemGroup>
 
 </Project>

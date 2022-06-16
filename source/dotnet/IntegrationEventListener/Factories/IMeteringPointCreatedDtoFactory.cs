@@ -12,21 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Application.MeteringPoints;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Factories;
 
-public class BatchRepository : IBatchRepository
+public interface IMeteringPointCreatedDtoFactory
 {
-    private readonly IDatabaseContext _context;
-
-    public BatchRepository(IDatabaseContext context)
-    {
-        _context = context;
-    }
-
-    public async Task AddAsync(Batch batch)
-    {
-        await _context.Batches.AddAsync(batch).ConfigureAwait(false);
-    }
+    MeteringPointCreatedDto Create(MeteringPointCreatedEvent meteringPointCreatedEvent);
 }

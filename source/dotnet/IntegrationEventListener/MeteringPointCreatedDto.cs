@@ -12,21 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener;
 
-public class BatchRepository : IBatchRepository
-{
-    private readonly IDatabaseContext _context;
-
-    public BatchRepository(IDatabaseContext context)
-    {
-        _context = context;
-    }
-
-    public async Task AddAsync(Batch batch)
-    {
-        await _context.Batches.AddAsync(batch).ConfigureAwait(false);
-    }
-}
+public record MeteringPointCreatedDto(
+    string MeteringPointId,
+    Guid GridAreaLinkId,
+    int? SettlementMethod,
+    int ConnectionState,
+    Instant EffectiveDate,
+    int MeteringPointType,
+    string MessageType,
+    Instant OperationTime);

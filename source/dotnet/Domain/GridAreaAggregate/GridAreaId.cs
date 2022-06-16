@@ -1,4 +1,4 @@
-// Copyright 2020 Energinet DataHub A/S
+﻿// Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@ namespace Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
 public sealed record GridAreaId(Guid Id)
 {
-    public GridAreaId() : this(Guid.NewGuid())
+    public GridAreaId()
+        : this(Guid.NewGuid())
     {
     }
 }

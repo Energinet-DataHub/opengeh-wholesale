@@ -39,7 +39,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var gridAreasIds = new List<GridAreaId>{ new(), new() };
+        var gridAreasIds = new List<GridAreaId> { new(), new() };
         var batch = new Batch(WholesaleProcessType.BalanceFixing, gridAreasIds);
         var sut = new BatchRepository(writeContext);
 

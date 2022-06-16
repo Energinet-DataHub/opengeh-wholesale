@@ -12,21 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
-
-public class BatchRepository : IBatchRepository
+namespace Energinet.DataHub.Wholesale.Application.MeteringPoints
 {
-    private readonly IDatabaseContext _context;
-
-    public BatchRepository(IDatabaseContext context)
+    /// <summary>
+    /// WARNING !
+    /// Do not change the numeric values since they are used further downstream for aggregation purposes.
+    /// </summary>
+    public enum ConnectionState
     {
-        _context = context;
-    }
-
-    public async Task AddAsync(Batch batch)
-    {
-        await _context.Batches.AddAsync(batch).ConfigureAwait(false);
+        Unknown = 0,
+        New = 1,
+        Connected = 2,
+        Disconnected = 3,
+        ClosedDown = 4,
     }
 }
