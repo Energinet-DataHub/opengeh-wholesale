@@ -43,7 +43,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
         [EventHubOutput(
             "%" + EnvironmentSettingNames.MasterDataEventHubName + "%",
             Connection = EnvironmentSettingNames.MasterDataEventHubConnectionString)]
-        public Task<string> RunAsync(
+        public string Run(
             [ServiceBusTrigger(
                 "%" + EnvironmentSettingNames.MeteringPointCreatedTopicName + "%",
                 "%" + EnvironmentSettingNames.MeteringPointCreatedSubscriptionName + "%",
@@ -53,7 +53,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             var meteringPointCreatedEvent = _meteringPointCreatedInboundMapper
                 .Convert(MeteringPointCreated.Parser.ParseFrom(message));
 
-            return Task.FromResult(_jsonSerializer.Serialize(_meteringPointCreatedDtoFactory.Create(meteringPointCreatedEvent)));
+            return _jsonSerializer.Serialize(_meteringPointCreatedDtoFactory.Create(meteringPointCreatedEvent));
         }
     }
 }
