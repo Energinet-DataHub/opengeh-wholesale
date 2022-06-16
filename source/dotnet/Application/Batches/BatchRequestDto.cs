@@ -19,4 +19,4 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 /// <summary>
 /// An immutable request to create a batch.
 /// </summary>
-public sealed record BatchRequestDto(WholesaleProcessType ProcessType, List<string> GridAreaCodes);
+public sealed record BatchRequestDto(WholesaleProcessType ProcessType, IEnumerable<string> GridAreaCodes);

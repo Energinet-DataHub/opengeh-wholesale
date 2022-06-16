@@ -63,11 +63,9 @@ public class BatchControllerTests :
     public async Task CreateAsync_WhenCalled_AlwaysReturnsOk()
     {
         // Arrange
-        var batchRequest = new BatchRequestDto
-        {
-            ProcessType = WholesaleProcessType.BalanceFixing,
-            GridAreaCodes = new List<string> { "805" },
-        };
+        var batchRequest = new BatchRequestDto(
+            WholesaleProcessType.BalanceFixing,
+            new List<string> { "805" });
 
         // Act
         var response = await _client.PostAsJsonAsync(BaseUrl, batchRequest, CancellationToken.None);
