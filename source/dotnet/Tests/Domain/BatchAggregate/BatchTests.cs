@@ -23,17 +23,25 @@ namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 public class BatchTests
 {
     [Fact]
-    public void Ctor_CreatesImmutableGridAreaIds()
+    public void Ctor_CreatesImmutableGridAreaCodes()
     {
         // Arrange
-        var gridAreaIds = new List<GridAreaId> { new(), new() };
-        var sut = new Batch(WholesaleProcessType.BalanceFixing, gridAreaIds);
+        var someGridAreaCodes = new List<GridAreaCode> { new("004"), new("805") };
+        var sut = new Batch(WholesaleProcessType.BalanceFixing, someGridAreaCodes);
 
         // Act
-        var unexpectedGridAreaId = new GridAreaId();
-        gridAreaIds.Add(unexpectedGridAreaId);
+        var unexpectedGridAreaCode = new GridAreaCode("777");
+        someGridAreaCodes.Add(unexpectedGridAreaCode);
 
         // Assert
-        sut.GridAreaIds.Should().NotContain(unexpectedGridAreaId);
+        sut.GridAreaCodes.Should().NotContain(unexpectedGridAreaCode);
+    }
+
+    [Fact]
+    public void Ctor_WhenNoGridAreaCodes_ThrowsArgumentException()
+    {
+        // ReSharper disable once CollectionNeverUpdated.Local
+        var emptyGridAreaCodes = new List<GridAreaCode>();
+        Assert.Throws<ArgumentException>(() => new Batch(WholesaleProcessType.BalanceFixing, emptyGridAreaCodes));
     }
 }

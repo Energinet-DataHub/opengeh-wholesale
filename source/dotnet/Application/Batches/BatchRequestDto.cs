@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public interface IBatchApplicationService
-{
-    Task CreateAsync(WholesaleProcessType processType, IEnumerable<GridAreaId> gridAreas);
-}
+/// <summary>
+/// An immutable request to create a batch.
+/// </summary>
+public sealed record BatchRequestDto(WholesaleProcessType ProcessType, IEnumerable<string> GridAreaCodes);

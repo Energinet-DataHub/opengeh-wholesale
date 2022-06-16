@@ -37,13 +37,13 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
         builder.Property(b => b.ExecutionState);
 
         // Grid area IDs are stored as a JSON array
-        var gridAreaIds = builder.Metadata
-            .FindNavigation(nameof(Batch.GridAreaIds));
-        gridAreaIds.SetPropertyAccessMode(PropertyAccessMode.Field);
+        var gridAreaCodes = builder.Metadata
+            .FindNavigation(nameof(Batch.GridAreaCodes));
+        gridAreaCodes.SetPropertyAccessMode(PropertyAccessMode.Field);
         builder
-            .Property(b => b.GridAreaIds)
+            .Property(b => b.GridAreaCodes)
             .HasConversion(
-                l => JsonSerializer.Serialize(l.Select(id => id.Id), (JsonSerializerOptions?)null),
-                s => JsonSerializer.Deserialize<List<Guid>>(s, (JsonSerializerOptions?)null)!.Select(id => new GridAreaId(id)).ToList());
+                l => JsonSerializer.Serialize(l.Select(code => code.Code), (JsonSerializerOptions?)null),
+                s => JsonSerializer.Deserialize<List<string>>(s, (JsonSerializerOptions?)null)!.Select(code => new GridAreaCode(code)).ToList());
     }
 }
