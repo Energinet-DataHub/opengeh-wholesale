@@ -28,7 +28,7 @@ limitations under the License.
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Scripts\202206141600_Create_Batch_Table.sql" />
+      <EmbeddedResource Include="Scripts\202206161400_Create_Batch_Table.sql" />
     </ItemGroup>
 
 </Project>
