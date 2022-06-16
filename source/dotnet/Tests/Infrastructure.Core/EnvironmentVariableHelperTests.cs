@@ -39,17 +39,11 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Core
         [InlineAutoMoqData]
         public void GetEnvVariable_WhenNotHasVariable_ThrowsException(string name)
         {
-            try
-            {
-                // Arrange + Act
-                var actual = EnvironmentVariableHelper.GetEnvVariable(name);
-                actual.Should().Be("must_not_happen");
-            }
-            catch (Exception ex)
-            {
-                // Assert
-                ex.Message.Should().Contain(name);
-            }
+            Assert
+                .Throws<Exception>(() => EnvironmentVariableHelper.GetEnvVariable(name))
+                .Message
+                .Should()
+                .Contain(name);
         }
     }
 }
