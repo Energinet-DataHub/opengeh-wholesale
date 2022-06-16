@@ -88,11 +88,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                 .AddLiveCheck()
                 .AddAzureEventHub(
                     masterDataEventHubConnectionString,
-                    masterDataEventHubName)
+                    masterDataEventHubName,
+                    name: "MasterDataEventHubExists")
                 .AddAzureServiceBusSubscription(
                     serviceBusConnectionString,
                     meteringPointCreatedTopicName,
-                    meteringPointCreatedSubscriptionName);
+                    meteringPointCreatedSubscriptionName,
+                    name: "MeteringPointCreatedSubscriptionExists");
         }
     }
 }
