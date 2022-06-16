@@ -37,7 +37,7 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Core
 
         [Theory]
         [InlineAutoMoqData]
-        public void GetEnvVariable_NoVariable_ThrowsException(string name)
+        public void GetEnvVariable_WhenNotHasVariable_ThrowsException(string name)
         {
             try
             {
