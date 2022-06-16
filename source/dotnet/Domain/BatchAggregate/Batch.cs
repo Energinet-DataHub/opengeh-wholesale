@@ -19,14 +19,17 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public class Batch
 {
-    private readonly List<GridAreaId> _gridAreaIds;
+    private readonly List<GridAreaCode> _gridAreaCodes;
 
-    public Batch(WholesaleProcessType processType, IEnumerable<GridAreaId> gridAreaIds)
+    public Batch(WholesaleProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes)
     {
         Id = new BatchId();
         ExecutionState = BatchExecutionState.Requested;
         ProcessType = processType;
-        _gridAreaIds = gridAreaIds.ToList();
+
+        _gridAreaCodes = gridAreaCodes.ToList();
+        if (!_gridAreaCodes.Any())
+            throw new ArgumentException("Batch must contain at least one grid area code.");
     }
 
     /// <summary>
@@ -36,14 +39,14 @@ public class Batch
     private Batch()
     {
         Id = null!;
-        _gridAreaIds = new List<GridAreaId>();
+        _gridAreaCodes = new List<GridAreaCode>();
     }
 
     public BatchId Id { get; }
 
     public WholesaleProcessType ProcessType { get; }
 
-    public IReadOnlyCollection<GridAreaId> GridAreaIds => _gridAreaIds;
+    public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes;
 
     public BatchExecutionState ExecutionState { get; }
 }
