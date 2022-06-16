@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
@@ -31,26 +32,38 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             using var host = new HostBuilder()
                 .ConfigureFunctionsWorkerDefaults(builder =>
                 {
+                    builder.UseMiddleware<CorrelationIdMiddleware>();
+                    builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
                     builder.UseMiddleware<IntegrationEventMetadataMiddleware>();
                 })
-                .ConfigureServices(ConfigureServices)
+                .ConfigureServices(Middlewares)
+                .ConfigureServices(Infrastructure)
+                .ConfigureServices(Host)
                 .Build();
 
             await host.RunAsync().ConfigureAwait(false);
         }
 
-        private static void ConfigureServices(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        private static void Middlewares(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
+            serviceCollection.AddScoped<CorrelationIdMiddleware>();
+            serviceCollection.AddScoped<FunctionTelemetryScopeMiddleware>();
+            serviceCollection.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
+            serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
+        }
+
+        private static void Infrastructure(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
         {
             serviceCollection.AddLogging();
             serviceCollection.AddApplicationInsightsTelemetryWorkerService(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
-
-            serviceCollection.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
-            serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
-
             serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
-            serviceCollection.AddSingleton<MeteringPointCreatedInboundMapper>();
+        }
 
+        private static void Host(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddSingleton<MeteringPointCreatedInboundMapper>();
             serviceCollection.AddScoped<IMeteringPointCreatedDtoFactory, MeteringPointCreatedDtoFactory>();
         }
     }
