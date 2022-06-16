@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Core
     {
         [Theory]
         [InlineAutoMoqData]
-        public void GetEnvVariable_HasVariable_ReturnsVariable(string name, string expected)
+        public void GetEnvVariable_WhenHasVariable_ReturnsVariable(string name, string expected)
         {
             // Arrange
             Environment.SetEnvironmentVariable(name, expected);
