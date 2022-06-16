@@ -18,6 +18,7 @@ using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Function;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
 using Google.Protobuf;
 using Xunit;
 using Xunit.Abstractions;

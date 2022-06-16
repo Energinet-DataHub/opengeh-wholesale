@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture
 {
     /// <summary>
     /// A xUnit collection fixture for ensuring tests don't run in parallel.

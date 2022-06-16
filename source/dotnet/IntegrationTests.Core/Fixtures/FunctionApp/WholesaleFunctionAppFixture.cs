@@ -35,13 +35,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 "u002",
                 "integrationtest.local.settings.json",
                 "AZURE_SECRETS_KEYVAULT_URL");
-            // ServiceBusResourceProvider = new ServiceBusResourceProvider(
-            //     IntegrationTestConfiguration.ServiceBusConnectionString, TestLogger);
-            //
-            // EventHubResourceProvider = new EventHubResourceProvider(
-            //     IntegrationTestConfiguration.EventHubConnectionString,
-            //     new AzureResourceManagementSettings(),
-            //     TestLogger);
+            ServiceBusResourceProvider = new ServiceBusResourceProvider(
+                IntegrationTestConfiguration.ServiceBusConnectionString, TestLogger);
+
+            EventHubResourceProvider = new EventHubResourceProvider(
+                IntegrationTestConfiguration.EventHubConnectionString,
+                new AzureResourceManagementSettings(),
+                TestLogger);
         }
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
@@ -52,9 +52,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
-        //private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
+        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
-       // private EventHubResourceProvider EventHubResourceProvider { get; }
+        private EventHubResourceProvider EventHubResourceProvider { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
@@ -78,20 +78,19 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         /// <inheritdoc/>
         protected override async Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
         {
-            await Task.CompletedTask.ConfigureAwait(false);
             AzuriteManager.StartAzurite();
 
-            // var eventHubResource = await EventHubResourceProvider
-            //     .BuildEventHub("wholesaleeventhub")
-            //     .SetEnvironmentVariableToEventHubName(EnvironmentSettingNames.MasterDataEventHubName)
-            //     .CreateAsync();
-            //
-            // MeteringPointCreatedTopic = await ServiceBusResourceProvider
-            //     .BuildTopic("metering-point-created")
-            //     .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.MeteringPointCreatedTopicName)
-            //     .AddSubscription("metering-point-created-sub-wholesale")
-            //     .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName)
-            //     .CreateAsync();
+            var eventHubResource = await EventHubResourceProvider
+                .BuildEventHub("wholesaleeventhub")
+                .SetEnvironmentVariableToEventHubName(EnvironmentSettingNames.MasterDataEventHubName)
+                .CreateAsync();
+
+            MeteringPointCreatedTopic = await ServiceBusResourceProvider
+                .BuildTopic("metering-point-created")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.MeteringPointCreatedTopicName)
+                .AddSubscription("metering-point-created-sub-wholesale")
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName)
+                .CreateAsync();
         }
 
         /// <inheritdoc/>
@@ -107,11 +106,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         protected override async Task OnDisposeFunctionAppDependenciesAsync()
         {
             AzuriteManager.Dispose();
-            await Task.CompletedTask.ConfigureAwait(false);
 
             // => Service Bus
-            // await ServiceBusResourceProvider.DisposeAsync();
-            // await EventHubResourceProvider.DisposeAsync();
+            await ServiceBusResourceProvider.DisposeAsync();
+            await EventHubResourceProvider.DisposeAsync();
         }
 
         private static string GetBuildConfiguration()
