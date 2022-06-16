@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Diagnostics;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi
@@ -28,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi
             Fixture.SetTestOutputHelper(testOutputHelper);
         }
 
-        private TFixture Fixture { get; }
+        protected TFixture Fixture { get; }
 
         public void Dispose()
         {
