@@ -33,6 +33,7 @@ jobs:
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
       DOTNET_VERSION: '6.0.201'
+      PREPARE_OUTPUTS: true
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -41,16 +42,8 @@ jobs:
       AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
       AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
-  integrationeventlistener_func_ci:
-    needs: [ci_base, dotnet_solution_ci, terraform_validate]
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-create-function-artifact.yml@7.3.0
-    with:
-      CSPROJ_FILE_PATH: 'source\dotnet\IntegrationEventListener\IntegrationEventListener.csproj'
-      DOTNET_VERSION: '6.0.201'
-      ARTIFACT_NAME: integrationeventlistener
-
   create_prerelease:
-    needs: [ci_base, terraform_validate, dotnet_solution_ci, integrationeventlistener_func_ci]
+    needs: [ci_base, terraform_validate, dotnet_solution_ci]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@7.3.0
     with:
       CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
