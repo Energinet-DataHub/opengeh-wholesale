@@ -40,3 +40,23 @@ runs:
           --no-restore \
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\functions\integrationeventlistener'
+
+    - name: Publish Web API
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\WebApi\WebApi.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '${{ inputs.OUTPUT_PATH }}\functions\webapi'
+
+    - name: Publish Database Migration
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\DatabaseMigration\DatabaseMigration.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '${{ inputs.OUTPUT_PATH }}\databasemigration'
