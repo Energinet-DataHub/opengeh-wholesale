@@ -22,6 +22,12 @@ jobs:
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@7.3.0
 
+  terraform_validate:
+    uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@2.6.1
+    with:
+      TERRAFORM_WORKING_DIR_PATH: './build/infrastructure/main'
+      TERRAFORM_VERSION: '1.2.1'
+
   dotnet_solution_ci:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.3.0
     with:
@@ -35,14 +41,16 @@ jobs:
       AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
       AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
-  terraform_validate:
-    uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@2.6.1
+  integrationeventlistener_func_ci:
+    needs: [ci_base, dotnet_solution_ci, terraform_validate]
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-create-function-artifact.yml@7.3.0
     with:
-      TERRAFORM_WORKING_DIR_PATH: './build/infrastructure/main'
-      TERRAFORM_VERSION: '1.2.1'
+      CSPROJ_FILE_PATH: 'source\dotnet\IntegrationEventListener\IntegrationEventListener.csproj'
+      DOTNET_VERSION: '6.0.201'
+      ARTIFACT_NAME: integrationeventlistener
 
   create_prerelease:
-    needs: [ci_base, terraform_validate, dotnet_solution_ci]
+    needs: [ci_base, terraform_validate, dotnet_solution_ci, integrationeventlistener_func_ci]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@7.3.0
     with:
       CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
