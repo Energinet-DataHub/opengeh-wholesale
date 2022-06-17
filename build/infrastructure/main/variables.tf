@@ -43,3 +43,8 @@ variable shared_resources_resource_group_name {
   type          = string
   description   = "Name of the Resource Group, that contains the shared resources."
 }
+
+variable enable_health_check_alerts {
+  type          = bool
+  description   = "Specify if health check alerts for Azure Functions and App Services should be enabled."
+}

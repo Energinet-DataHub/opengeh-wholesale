@@ -22,8 +22,8 @@ limitations under the License.
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="2.3.3" />
-        <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="2.3.3" />
+        <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="2.3.4" />
+        <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="2.3.4" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.5" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
         <PackageReference Include="Moq" Version="4.18.1" />
