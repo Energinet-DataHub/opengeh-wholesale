@@ -31,8 +31,8 @@ runs:
         mkdir ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure
         cp -fR ${{ inputs.REPO_FOLDER_PATH }}/build/infrastructure/main ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure/main 2>/dev/null || :
 
-    - name: Publish IntegrationEventListener to release folder
-      uses: actions/download-artifact@v2
+    - name: Publish dotnet artifact to release folder
+      uses: actions/download-artifact@v3
       with:
-        name: integrationeventlistener
-        path: ${{ inputs.RELEASE_FOLDER_PATH }}/functions/integrationeventlistener
+        name: dotnet
+        path: ${{ inputs.RELEASE_FOLDER_PATH }}
