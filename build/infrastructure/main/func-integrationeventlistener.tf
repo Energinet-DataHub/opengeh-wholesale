@@ -26,6 +26,9 @@ module "func_integrationeventlistener" {
   application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
   log_analytics_workspace_id                = data.azurerm_key_vault_secret.log_shared_id.value
   always_on                                 = true
+  health_check_path                         = "/api/monitor/ready"
+  health_check_alert_action_group_id        = data.azurerm_key_vault_secret.primary_action_group_id.value
+  health_check_alert_enabled                = var.enable_health_check_alerts
   app_settings                              = {
     # Region: Default Values
     WEBSITE_ENABLE_SYNC_UPDATE_SITE     = true
@@ -38,7 +41,7 @@ module "func_integrationeventlistener" {
     EVENT_HUB_NAME                                        = module.evh_masterdataevents.name
     INTEGRATIONEVENT_LISTENER_CONNECTION_STRING           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     INTEGRATIONEVENT_MANAGER_CONNECTION_STRING            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
-    METERING_POINT_CREATED_SUBSCRIPTION_NAME              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-metering-point-created-sub-wholesale-name)"
+    METERING_POINT_CREATED_SUBSCRIPTION_NAME              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-metering-point-created-to-wholesale-name)"
     METERING_POINT_CREATED_TOPIC_NAME                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-metering-point-created-name)"
   }
 

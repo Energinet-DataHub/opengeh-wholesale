@@ -37,6 +37,11 @@ data "azurerm_key_vault_secret" "mssql_data_url" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "primary_action_group_id" {
+  name         = "ag-primary-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "snet_vnet_integrations_id" {
   name         = "snet-vnet-integrations-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
