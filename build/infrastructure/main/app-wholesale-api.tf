@@ -15,7 +15,7 @@
 module "app_wholesale_api" {
   source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=6.0.0"
 
-  name                                      = "api"
+  name                                      = "webapi"
   project_name                              = var.domain_name_short
   environment_short                         = var.environment_short
   environment_instance                      = var.environment_instance
