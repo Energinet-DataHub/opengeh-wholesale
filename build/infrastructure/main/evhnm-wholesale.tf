@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module "evhnm_wholesale" {
-  source                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/eventhub-namespace?ref=6.0.0"
+  source                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/eventhub-namespace?ref=7.0.0"
 
   name                            = "wholesale"
   project_name                    = var.domain_name_short
@@ -36,7 +36,7 @@ module "evhnm_wholesale" {
 }
 
 module "evh_masterdataevents" {
-  source                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/eventhub?ref=6.0.0"
+  source                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/eventhub?ref=7.0.0"
 
   name                      = "masterdataevents"
   namespace_name            = module.evhnm_wholesale.name
