@@ -38,10 +38,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             ServiceBusResourceProvider = new ServiceBusResourceProvider(
                 IntegrationTestConfiguration.ServiceBusConnectionString, TestLogger);
 
-            EventHubResourceProvider = new EventHubResourceProvider(
-                IntegrationTestConfiguration.EventHubConnectionString,
-                new AzureResourceManagementSettings(),
-                TestLogger);
+            ////EventHubResourceProvider = new EventHubResourceProvider(
+            ////    IntegrationTestConfiguration.EventHubConnectionString,
+            ////    new AzureResourceManagementSettings(),
+            ////    TestLogger);
         }
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
@@ -54,7 +54,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
         private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
-        private EventHubResourceProvider EventHubResourceProvider { get; }
+        ////private EventHubResourceProvider EventHubResourceProvider { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
@@ -65,7 +65,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             var currentDir = Environment.CurrentDirectory;
 
             var buildConfiguration = GetBuildConfiguration();
-            hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\GreenEnergyHub.Charges.FunctionHost\\bin\\{buildConfiguration}\\net6.0"; //TODO FIX THIS
+            hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\IntegrationEventListener\\bin\\{buildConfiguration}\\net6.0"; //TODO FIX THIS
         }
 
         /// <inheritdoc/>
@@ -73,6 +73,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionListenerString, ServiceBusResourceProvider.ConnectionString);
         }
 
         /// <inheritdoc/>
@@ -80,10 +81,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             AzuriteManager.StartAzurite();
 
-            var eventHubResource = await EventHubResourceProvider
-                .BuildEventHub("wholesaleeventhub")
-                .SetEnvironmentVariableToEventHubName(EnvironmentSettingNames.MasterDataEventHubName)
-                .CreateAsync();
+            ////var eventHubResource = await EventHubResourceProvider
+            ////    .BuildEventHub("wholesaleeventhub")
+            ////    .SetEnvironmentVariableToEventHubName(EnvironmentSettingNames.MasterDataEventHubName)
+            ////    .CreateAsync();
 
             MeteringPointCreatedTopic = await ServiceBusResourceProvider
                 .BuildTopic("metering-point-created")
@@ -109,7 +110,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
             // => Service Bus
             await ServiceBusResourceProvider.DisposeAsync();
-            await EventHubResourceProvider.DisposeAsync();
+            ////await EventHubResourceProvider.DisposeAsync();
         }
 
         private static string GetBuildConfiguration()
