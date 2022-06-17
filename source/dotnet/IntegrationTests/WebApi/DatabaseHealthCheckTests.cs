@@ -57,8 +57,10 @@ public class DatabaseHealthCheckTests :
     [Fact]
     public async Task When_DatabaseIsDeletedAndRequestReadinessStatus_Then_ResponseIsServiceUnavailableAndUnhealthy()
     {
+        // Arrange
         await Fixture.DatabaseManager.DeleteDatabaseAsync();
 
+        // Act
         var actualResponse = await _client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
 
         // Assert
