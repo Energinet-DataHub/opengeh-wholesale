@@ -76,8 +76,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
             serviceCollection.AddScoped<HealthCheckEndpoint>();
 
-            var masterDataEventHubConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MasterDataEventHubConnectionString);
-            var masterDataEventHubName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MasterDataEventHubName);
+            var integrationEventsEventHubConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsEventHubConnectionString);
+            var integrationEventsEventHubName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsEventHubName);
 
             var serviceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventConnectionManagerString);
             var meteringPointCreatedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedTopicName);
@@ -87,9 +87,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                 .AddHealthChecks()
                 .AddLiveCheck()
                 .AddAzureEventHub(
-                    masterDataEventHubConnectionString,
-                    masterDataEventHubName,
-                    name: "MasterDataEventHubExists")
+                    integrationEventsEventHubConnectionString,
+                    integrationEventsEventHubName,
+                    name: "IntegrationEventsEventHubExists")
                 .AddAzureServiceBusSubscription(
                     serviceBusConnectionString,
                     meteringPointCreatedTopicName,
