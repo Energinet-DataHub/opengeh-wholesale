@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,6 +44,8 @@ public class Startup
         });
 
         services.AddCommandStack(Configuration);
+
+        ConfigureHealthChecks(services);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -65,6 +70,17 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+
+            // Health check
+            endpoints.MapLiveHealthChecks();
+            endpoints.MapReadyHealthChecks();
         });
+    }
+
+    private static void ConfigureHealthChecks(IServiceCollection services)
+    {
+        services.AddHealthChecks()
+            .AddLiveCheck()
+            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck");
     }
 }

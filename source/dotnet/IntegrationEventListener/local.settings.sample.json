@@ -1,11 +1,12 @@
 {
-    "IsEncrypted": false,
+  "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
 
     "APPINSIGHTS_INSTRUMENTATIONKEY": "",
-    "INTEGRATIONEVENT_LISTENER_CONNECTION_STRING": "",
+    "INTEGRATIONEVENT_LISTENER_CONNECTION_STRING": "<connection string for shared ServiceBus integration events>",
+    "INTEGRATIONEVENT_MANAGER_CONNECTION_STRING": "<connection string for health checking of ServiceBus, with added 'Manage' right>",
     "EVENT_HUB_SEND_CONNECTION_STRING": "",
 
     "METERING_POINT_CREATED_TOPIC_NAME": "metering-point-created",

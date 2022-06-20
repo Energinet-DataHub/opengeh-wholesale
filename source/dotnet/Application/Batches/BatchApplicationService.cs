@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public class BatchApplicationService : IBatchApplicationService
 {
@@ -30,9 +29,9 @@ public class BatchApplicationService : IBatchApplicationService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task CreateAsync(WholesaleProcessType processType, IEnumerable<GridAreaId> gridAreas)
+    public async Task CreateAsync(BatchRequestDto batchRequestDto)
     {
-        var batch = new Batch(processType, gridAreas);
+        var batch = new Batch(batchRequestDto.ProcessType, batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c)));
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }

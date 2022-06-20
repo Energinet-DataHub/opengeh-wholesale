@@ -24,6 +24,7 @@ limitations under the License.
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="2.4.0" />
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="5.0.17" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 

@@ -13,43 +13,38 @@
 // limitations under the License.
 
 using System.Net;
-using System.Net.Http.Json;
-using Energinet.DataHub.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
 using FluentAssertions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi.V1;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
 
 [IntegrationTest]
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class BatchControllerTests :
+public class DatabaseHealthCheckTests :
     WebApiTestBase<WholesaleWebApiFixture>,
     IClassFixture<WholesaleWebApiFixture>,
     IClassFixture<WebApiFactory>,
     IAsyncLifetime
 {
-    private const string BaseUrl = "/v1/batch";
-
     private readonly HttpClient _client;
 
-    public BatchControllerTests(
+    public DatabaseHealthCheckTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
         : base(wholesaleWebApiFixture, testOutputHelper)
     {
         _client = factory.CreateClient();
-        factory.ReconfigureJwtTokenValidatorMock(isValid: true);
     }
 
     public Task InitializeAsync()
     {
-        _client.DefaultRequestHeaders.Add("Authorization", $"Bearer xxx");
         return Task.CompletedTask;
     }
 
@@ -60,17 +55,18 @@ public class BatchControllerTests :
     }
 
     [Fact]
-    public async Task CreateAsync_WhenCalled_AlwaysReturnsOk()
+    public async Task When_DatabaseIsDeletedAndRequestReadinessStatus_Then_ResponseIsServiceUnavailableAndUnhealthy()
     {
         // Arrange
-        var batchRequest = new BatchRequestDto(
-            WholesaleProcessType.BalanceFixing,
-            new List<string> { "805" });
+        await Fixture.DatabaseManager.DeleteDatabaseAsync();
 
         // Act
-        var response = await _client.PostAsJsonAsync(BaseUrl, batchRequest, CancellationToken.None);
+        var actualResponse = await _client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+
+        var actualContent = await actualResponse.Content.ReadAsStringAsync();
+        actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Unhealthy));
     }
 }

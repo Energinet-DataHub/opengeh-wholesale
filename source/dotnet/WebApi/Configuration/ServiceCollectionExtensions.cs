@@ -17,7 +17,7 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
-using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -39,16 +39,14 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
         serviceCollection.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
         serviceCollection.AddScoped<ClaimsPrincipalContext>();
-        serviceCollection.AddScoped(_ =>
-        {
-            var address = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
-                          throw new Exception(
-                              $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
-            var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
-                           throw new Exception(
-                               $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
-            return new OpenIdSettings(address, audience);
-        });
+
+        var address = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
+                      throw new Exception(
+                          $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
+        var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
+                       throw new Exception(
+                           $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
+        serviceCollection.AddScoped(_ => new OpenIdSettings(address, audience));
     }
 
     public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)

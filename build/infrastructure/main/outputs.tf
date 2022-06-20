@@ -11,15 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-terraform {
-  required_version = "=1.2.2"
 
-  required_providers {
-    # It is recommended to pin to a given version of the Azure provider
-    azurerm = "=3.9.0"
-  }
-}
-
-provider "azurerm" {
-  features {}
+output ms_wholesale_connection_string {
+  description = "Connection string of the wholesale database created in the shared server"
+  value       = local.DB_CONNECTION_STRING
+  sensitive   = true
 }

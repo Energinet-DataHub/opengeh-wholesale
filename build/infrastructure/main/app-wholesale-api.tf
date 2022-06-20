@@ -13,9 +13,9 @@
 # limitations under the License.
 
 module "app_wholesale_api" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=6.0.0"
+  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=7.0.0"
 
-  name                                      = "api"
+  name                                      = "webapi"
   project_name                              = var.domain_name_short
   environment_short                         = var.environment_short
   environment_instance                      = var.environment_instance
@@ -25,8 +25,14 @@ module "app_wholesale_api" {
   application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
   vnet_integration_subnet_id                = data.azurerm_key_vault_secret.snet_vnet_integrations_id.value
   private_endpoint_subnet_id                = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  health_check_path                         = "/monitor/ready"
+  health_check_alert_action_group_id        = data.azurerm_key_vault_secret.primary_action_group_id.value
+  health_check_alert_enabled                = var.enable_health_check_alerts
 
-  app_settings                              = {}
+  app_settings                              = {
+    FRONTEND_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)",
+    FRONTEND_SERVICE_APP_ID = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)",
+  }
 
   connection_strings                        = [
     {
@@ -40,10 +46,10 @@ module "app_wholesale_api" {
 }
 
 module "kvs_app_wholesale_api_base_url" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=6.0.0"
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=7.0.0"
 
   name          = "app-wholesale-api-base-url"
-  value         = "https://${module.app_wholesale_api.default_site_hostname}"
+  value         = "https://${module.app_wholesale_api.default_hostname}"
   key_vault_id  = data.azurerm_key_vault.kv_shared_resources.id
 
   tags          = azurerm_resource_group.this.tags
