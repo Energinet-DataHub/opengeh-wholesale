@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.DatabaseMigration
         {
             var connectionString =
                 args.FirstOrDefault()
-                ?? "Server=localhost;Database=AggregationMasterData;Trusted_Connection=True;";
+                ?? "Server=localhost;Database=Wholesale;Trusted_Connection=True;";
 
             var result = Upgrader.DatabaseUpgrade(connectionString);
 
