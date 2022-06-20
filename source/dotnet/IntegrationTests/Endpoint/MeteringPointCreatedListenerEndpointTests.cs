@@ -14,11 +14,13 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Function;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
+using FluentAssertions;
 using Google.Protobuf;
 using Xunit;
 using Xunit.Abstractions;
@@ -51,6 +53,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
             public async Task When_ReceivingMeteringPointCreatedMessage_MeteringPointCreatedDtoIsSentToEventHub()
             {
                 // Arrange
+                Fixture.EventHubListener!.Reset();
+                using var whenAllEvent = await Fixture.EventHubListener
+                    .WhenAny()
+                    .VerifyCountAsync(1).ConfigureAwait(false);
                 var message = CreateServiceBusMessage();
 
                 // Act
@@ -58,6 +64,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
 
                 // Assert
                 await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(MeteringPointCreatedListenerEndpoint)).ConfigureAwait(false);
+
+                var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
+                allReceived.Should().BeTrue();
+                var events = Fixture.EventHubListener.ReceivedEvents;
             }
 
             private static ServiceBusMessage CreateServiceBusMessage()
