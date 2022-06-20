@@ -39,16 +39,14 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
         serviceCollection.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
         serviceCollection.AddScoped<ClaimsPrincipalContext>();
-        serviceCollection.AddScoped(_ =>
-        {
-            var address = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
-                          throw new Exception(
-                              $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
-            var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
-                           throw new Exception(
-                               $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
-            return new OpenIdSettings(address, audience);
-        });
+
+        var address = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
+                      throw new Exception(
+                          $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
+        var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
+                       throw new Exception(
+                           $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
+        serviceCollection.AddScoped(_ => new OpenIdSettings(address, audience));
     }
 
     public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)
