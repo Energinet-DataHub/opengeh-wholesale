@@ -20,11 +20,9 @@ using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Infrastructure;
 
-[IntegrationTest]
 public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 {
     private readonly WholesaleDatabaseManager _databaseManager;
