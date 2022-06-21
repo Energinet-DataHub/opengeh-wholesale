@@ -54,7 +54,7 @@ public class BearerTokenTests :
     {
         // Arrange
         using var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Remove("Authorization");
+        client.DefaultRequestHeaders.Remove(JwtBearerHttpHeader);
         _factory.ReconfigureJwtTokenValidatorMock(SuppliedJwtTokenIsValid);
 
         // Act
