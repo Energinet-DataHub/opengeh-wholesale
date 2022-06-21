@@ -15,7 +15,7 @@
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 
-namespace TestHelpers
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions
 {
     public static class TimestampExtensions
     {

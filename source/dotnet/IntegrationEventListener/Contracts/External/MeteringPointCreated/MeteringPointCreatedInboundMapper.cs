@@ -14,8 +14,7 @@
 
 using System.ComponentModel;
 using Energinet.DataHub.Wholesale.Application.MeteringPoints;
-using Google.Protobuf.WellKnownTypes;
-using NodaTime;
+using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated.Types;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.External.MeteringPointCreated;
@@ -88,13 +87,7 @@ public class MeteringPointCreatedInboundMapper
                 .GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
             settlementMethod,
             connectionState,
-            ToInstant(meteringPointCreated.EffectiveDate),
+            meteringPointCreated.EffectiveDate.ToInstant(),
             meteringPointType);
-    }
-
-    private static Instant ToInstant(Timestamp timestamp)
-    {
-        var instant = Instant.FromUnixTimeSeconds(timestamp.Seconds);
-        return instant.PlusNanoseconds(timestamp.Nanos);
     }
 }
