@@ -79,7 +79,7 @@ public class MeteringPointCreatedInboundMapper
         var meteringPointType = MapMeteringPointType(meteringPointCreated.MeteringPointType);
 
         var instant = Instant.FromUnixTimeSeconds(meteringPointCreated.EffectiveDate.Seconds);
-        var plusNanoseconds = instant.PlusNanoseconds(meteringPointCreated.EffectiveDate.Nanos);
+        var secondsPlusNanos = instant.PlusNanoseconds(meteringPointCreated.EffectiveDate.Nanos);
 
         return new MeteringPointCreatedEvent(
             meteringPointCreated.GsrnNumber,
@@ -87,7 +87,7 @@ public class MeteringPointCreatedInboundMapper
                 .GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
             settlementMethod,
             connectionState,
-            plusNanoseconds,
+            secondsPlusNanos,
             meteringPointType);
     }
 }

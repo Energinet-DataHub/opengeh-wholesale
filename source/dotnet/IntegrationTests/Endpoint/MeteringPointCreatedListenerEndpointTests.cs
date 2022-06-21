@@ -15,13 +15,16 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Function;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
 using FluentAssertions;
 using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Categories;
@@ -57,7 +60,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
                 using var whenAllEvent = await Fixture.EventHubListener
                     .WhenAny()
                     .VerifyCountAsync(1).ConfigureAwait(false);
-                var message = CreateServiceBusMessage();
+                var message = CreateServiceBusMessage(out var effectiveDate);
+                var jsonSerializer = new JsonSerializer();
 
                 // Act
                 await Fixture.MeteringPointCreatedTopic!.SenderClient.SendMessageAsync(message);
@@ -68,13 +72,17 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
                 var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
                 allReceived.Should().BeTrue();
                 var events = Fixture.EventHubListener.ReceivedEvents;
+
+                //Only one event is expected
+                var json = events.Single().Data.ToString();
+                var actual = jsonSerializer.Deserialize<MeteringPointCreatedDto>(json);
+                actual.EffectiveDate.Should().Be(effectiveDate.ToInstant());
             }
 
-            private static ServiceBusMessage CreateServiceBusMessage()
+            private static ServiceBusMessage CreateServiceBusMessage(out Timestamp effectiveDate)
             {
                 var date = new DateTime(2021, 1, 2, 3, 4, 5, DateTimeKind.Utc);
-                var effectiveDate = Google.Protobuf.WellKnownTypes.
-                    Timestamp.FromDateTime(
+                effectiveDate = Timestamp.FromDateTime(
                         DateTime.SpecifyKind(
                             new DateTime(2020, 01, 01, 0, 0, 0),
                             DateTimeKind.Utc));
