@@ -15,7 +15,6 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
         <OutputType>Exe</OutputType>
         <AssemblyName>Energinet.DataHub.Wholesale.ProcessManager</AssemblyName>
@@ -41,9 +40,6 @@ limitations under the License.
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
-    </ItemGroup>
-    <ItemGroup>
-        <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
