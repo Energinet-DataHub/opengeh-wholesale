@@ -66,6 +66,7 @@ public class Startup
         }
 
         app.UseHttpsRedirection();
+        app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
