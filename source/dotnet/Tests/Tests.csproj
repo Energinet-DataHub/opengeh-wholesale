@@ -23,7 +23,6 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
-    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,7 +30,7 @@ limitations under the License.
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageReference Include="Moq" Version="4.18.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="2.3.4" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="2.4.4" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
