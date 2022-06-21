@@ -18,11 +18,9 @@ using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
 
-[IntegrationTest]
 [Collection(nameof(BearerTokenTests))]
 public class BearerTokenTests :
     WebApiTestBase<WholesaleWebApiFixture>,
