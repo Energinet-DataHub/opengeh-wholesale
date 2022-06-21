@@ -48,7 +48,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             await host.RunAsync().ConfigureAwait(false);
         }
 
-        private static void Middlewares(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        private static void Middlewares(IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
             serviceCollection.AddScoped<CorrelationIdMiddleware>();
@@ -57,7 +57,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
         }
 
-        private static void Infrastructure(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        private static void Infrastructure(IServiceCollection serviceCollection)
         {
             serviceCollection.AddLogging();
             serviceCollection.AddApplicationInsightsTelemetryWorkerService(
@@ -65,13 +65,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
         }
 
-        private static void Host(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        private static void Host(IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<MeteringPointCreatedInboundMapper>();
             serviceCollection.AddScoped<IMeteringPointCreatedDtoFactory, MeteringPointCreatedDtoFactory>();
         }
 
-        private static void HealthCheck(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        private static void HealthCheck(IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
             serviceCollection.AddScoped<HealthCheckEndpoint>();
