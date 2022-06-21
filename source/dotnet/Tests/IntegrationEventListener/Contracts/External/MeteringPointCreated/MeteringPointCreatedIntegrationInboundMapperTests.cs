@@ -40,16 +40,16 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.Contracts.E
             meteringPointCreatedEvent.ConnectionState = mpTypes.ConnectionState.CsNew;
 
             // Act
-            var converted = sut.Convert(meteringPointCreatedEvent);
+            var actual = sut.Convert(meteringPointCreatedEvent);
 
             // Assert
-            converted.Should().NotContainNullsOrEmptyEnumerables();
-            converted.MeteringPointId.Should().Be(meteringPointCreatedEvent.GsrnNumber);
-            converted.EffectiveDate.Should().Be(meteringPointCreatedEvent.EffectiveDate.ToInstant());
-            converted.GridAreaLinkId.Should().Be(meteringPointCreatedEvent.GridAreaCode);
-            converted.SettlementMethod.Should().Be(SettlementMethod.Flex);
-            converted.ConnectionState.Should().Be(ConnectionState.New);
-            converted.MeteringPointType.Should().Be(MeteringPointType.Consumption);
+            actual.Should().NotContainNullsOrEmptyEnumerables();
+            actual.MeteringPointId.Should().Be(meteringPointCreatedEvent.GsrnNumber);
+            actual.EffectiveDate.Should().Be(meteringPointCreatedEvent.EffectiveDate.ToInstant());
+            actual.GridAreaLinkId.Should().Be(meteringPointCreatedEvent.GridAreaCode);
+            actual.SettlementMethod.Should().Be(SettlementMethod.Flex);
+            actual.ConnectionState.Should().Be(ConnectionState.New);
+            actual.MeteringPointType.Should().Be(MeteringPointType.Consumption);
         }
 
         [Theory]
