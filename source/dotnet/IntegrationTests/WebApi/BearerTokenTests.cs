@@ -78,4 +78,19 @@ public class BearerTokenTests :
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
+
+    [Fact]
+    public async Task Request_with_valid_bearer_token_does_not_return_401_Unauthorized()
+    {
+        // Arrange
+        using var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Add(JwtBearerHttpHeader, JwtBearerToken);
+        _factory.ReconfigureJwtTokenValidatorMock(SuppliedJwtTokenIsValid);
+
+        // Act
+        var response = await client.GetAsync(BaseUrl);
+
+        // Assert
+        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+    }
 }
