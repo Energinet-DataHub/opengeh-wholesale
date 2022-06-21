@@ -27,11 +27,9 @@ using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
 
-    [IntegrationTest]
     public class MeteringPointCreatedListenerEndpointTests
     {
         [Collection(nameof(WholesaleFunctionAppCollectionFixture))]
