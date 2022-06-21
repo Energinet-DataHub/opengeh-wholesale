@@ -30,7 +30,7 @@ public class BearerTokenTests :
 {
     private const string BaseUrl = "/v1/batch";
     private const bool SuppliedJwtTokenIsValid = true;
-    private const bool SuppliedJwtTokenIsInValid = false;
+    private const bool SuppliedJwtTokenIsInvalid = false;
     private const string JwtBearerHttpHeader = "Authorization";
     private const string JwtBearerToken = "Bearer xxx";
 
@@ -70,7 +70,7 @@ public class BearerTokenTests :
         // Arrange
         using var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Add(JwtBearerHttpHeader, JwtBearerToken);
-        _factory.ReconfigureJwtTokenValidatorMock(SuppliedJwtTokenIsInValid);
+        _factory.ReconfigureJwtTokenValidatorMock(SuppliedJwtTokenIsInvalid);
 
         // Act
         var response = await client.GetAsync(BaseUrl);
