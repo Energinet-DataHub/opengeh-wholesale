@@ -79,6 +79,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionListenerString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionManagerString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsEventHubConnectionString, EventHubResourceProvider.ConnectionString);
         }
 
         /// <inheritdoc/>
