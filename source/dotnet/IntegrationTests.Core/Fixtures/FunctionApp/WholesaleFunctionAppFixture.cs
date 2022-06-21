@@ -47,11 +47,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 TestLogger);
         }
 
-        public EventHubListenerMock? EventHubListener { get; set; }
+        public EventHubListenerMock EventHubListener { get; private set; } = null!;
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
 
-        public TopicResource? MeteringPointCreatedTopic { get; private set; }
+        public TopicResource MeteringPointCreatedTopic { get; private set; } = null!;
 
         public EventHubResourceProvider EventHubResourceProvider { get; }
 
