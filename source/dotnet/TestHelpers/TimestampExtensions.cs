@@ -12,25 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Core
+namespace TestHelpers
 {
     public static class TimestampExtensions
     {
-        public static Instant ToInstant([NotNull] this Timestamp timestamp)
+        public static Instant ToInstant(this Timestamp timestamp)
         {
             var instant = Instant.FromUnixTimeSeconds(timestamp.Seconds);
             return instant.PlusNanoseconds(timestamp.Nanos);
-        }
-
-        public static Timestamp TruncateToSeconds([NotNull] this Timestamp timestamp)
-        {
-            var result = new Timestamp(timestamp);
-            result.Nanos = 0;
-            return result;
         }
     }
 }

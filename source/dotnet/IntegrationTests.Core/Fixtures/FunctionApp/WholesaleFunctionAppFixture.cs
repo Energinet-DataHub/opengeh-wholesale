@@ -67,8 +67,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             if (hostSettings == null)
                 return;
 
-            var currentDir = Environment.CurrentDirectory;
-
             var buildConfiguration = GetBuildConfiguration();
             hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\IntegrationEventListener\\bin\\{buildConfiguration}\\net6.0";
         }
