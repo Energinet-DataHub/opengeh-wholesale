@@ -36,12 +36,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 "u002",
                 "integrationtest.local.settings.json",
                 "AZURE_SECRETS_KEYVAULT_URL");
+
             ServiceBusResourceProvider = new ServiceBusResourceProvider(
-                IntegrationTestConfiguration.ServiceBusConnectionString, TestLogger);
+                IntegrationTestConfiguration.ServiceBusConnectionString,
+                TestLogger);
 
             EventHubResourceProvider = new EventHubResourceProvider(
                 IntegrationTestConfiguration.EventHubConnectionString,
-                new AzureResourceManagementSettings(),
+                IntegrationTestConfiguration.ResourceManagementSettings,
                 TestLogger);
         }
 
@@ -86,10 +88,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
             var eventHubResource = await EventHubResourceProvider
                 .BuildEventHub("wholesaleeventhub")
-                .SetEnvironmentVariableToEventHubName(EnvironmentSettingNames.MasterDataEventHubName)
+                .SetEnvironmentVariableToEventHubName(EnvironmentSettingNames.IntegrationEventsEventHubName)
                 .CreateAsync();
 
             EventHubListener = new EventHubListenerMock(EventHubResourceProvider.ConnectionString, eventHubResource.Name, "UseDevelopmentStorage=true", "container", TestLogger);
+
             await EventHubListener.InitializeAsync().ConfigureAwait(false);
 
             MeteringPointCreatedTopic = await ServiceBusResourceProvider
