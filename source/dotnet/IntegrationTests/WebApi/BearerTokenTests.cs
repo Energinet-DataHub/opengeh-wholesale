@@ -50,7 +50,7 @@ public class BearerTokenTests :
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
-    public async Task Request_missing_bearer_token_returns_401_Unauthorized()
+    public async Task Request_WhenMissingBearerToken_Returns401Unauthorized()
     {
         // Arrange
         using var client = _factory.CreateClient();
@@ -65,7 +65,7 @@ public class BearerTokenTests :
     }
 
     [Fact]
-    public async Task Request_with_invalid_bearer_token_returns_401_Unauthorized()
+    public async Task Request_WhenInvalidBearerToken_Returns401Unauthorized()
     {
         // Arrange
         using var client = _factory.CreateClient();
@@ -80,7 +80,7 @@ public class BearerTokenTests :
     }
 
     [Fact]
-    public async Task Request_with_valid_bearer_token_does_not_return_401_Unauthorized()
+    public async Task Request_WhenValidBearerToken_DoesNotReturn401Unauthorized()
     {
         // Arrange
         using var client = _factory.CreateClient();
