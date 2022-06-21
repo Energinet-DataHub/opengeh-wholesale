@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.Contracts.E
     {
         [Theory]
         [InlineAutoMoqData]
-        public void MeteringPointCreatedIntegrationInboundMapper_WhenCalled_ShouldMapToProtobufWithCorrectValues(
+        public void MeteringPointCreatedIntegrationInboundMapper_WhenCalled_ShouldMapToMeteringPointCreatedEventWithCorrectValues(
             Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated meteringPointCreatedEvent,
             MeteringPointCreatedInboundMapper sut)
         {
