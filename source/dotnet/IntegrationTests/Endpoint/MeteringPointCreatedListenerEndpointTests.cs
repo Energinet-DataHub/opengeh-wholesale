@@ -69,13 +69,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
                 // Assert
                 await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(MeteringPointCreatedListenerEndpoint)).ConfigureAwait(false);
 
-                var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
-                allReceived.Should().BeTrue();
-                var events = Fixture.EventHubListener.ReceivedEvents;
-
-                //Only one event is expected
-                var json = events.Single().Data.ToString();
-                var actual = jsonSerializer.Deserialize<MeteringPointCreatedDto>(json);
+                // Only one event is expected
+                var actual = jsonSerializer.Deserialize<MeteringPointCreatedDto>(
+                    Fixture.EventHubListener
+                        .ReceivedEvents.Single()
+                        .Data.ToString());
                 actual.EffectiveDate.Should().Be(effectiveDate.ToInstant());
             }
 
