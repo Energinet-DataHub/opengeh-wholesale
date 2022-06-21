@@ -71,13 +71,4 @@ public class BatchControllerTests :
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
-
-    [Fact]
-    public async Task Request_missing_bearer_token_returns_401_Unauthorized()
-    {
-        _client.DefaultRequestHeaders.Remove("Authorization");
-        var response = await _client.GetAsync(BaseUrl);
-
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
 }
