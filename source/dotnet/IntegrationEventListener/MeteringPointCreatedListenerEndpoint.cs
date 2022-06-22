@@ -24,11 +24,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
     {
         private const string FunctionName = nameof(MeteringPointCreatedListenerEndpoint);
 
-        private readonly IMeteringPointCreatedDtoFactory _meteringPointCreatedDtoFactory;
+        private readonly MeteringPointCreatedDtoFactory _meteringPointCreatedDtoFactory;
         private readonly IJsonSerializer _jsonSerializer;
 
         public MeteringPointCreatedListenerEndpoint(
-            IMeteringPointCreatedDtoFactory meteringPointCreatedDtoFactory,
+            MeteringPointCreatedDtoFactory meteringPointCreatedDtoFactory,
             IJsonSerializer jsonSerializer)
         {
             _meteringPointCreatedDtoFactory = meteringPointCreatedDtoFactory;
