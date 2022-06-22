@@ -12,9 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public interface IBatchApplicationService
 {
+    /// <summary>
+    /// Create a new batch with state <see cref="BatchExecutionState.Requested"/>.
+    /// </summary>
     Task CreateAsync(BatchRequestDto batchRequestDto);
+
+    /// <summary>
+    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Requested"/>.
+    /// </summary>
+    Task StartRequestedAsync();
+
+    /// <summary>
+    /// Update state of batches that are not yet known to have terminated.
+    /// The state is determined based upon the (Spark) job execution of the batch and its processes.
+    /// </summary>
+    Task UpdateBatchStatesAsync();
 }

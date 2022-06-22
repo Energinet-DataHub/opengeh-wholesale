@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 public class BatchBuilder
 {
     private BatchExecutionState? _state;
-    private List<GridAreaCode> _gridAreaCodes = new();
+    private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
 
     public BatchBuilder WithState(BatchExecutionState state)
     {

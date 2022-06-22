@@ -12,25 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Application.Processes;
 
-/// <summary>
-/// IMPORTANT: Do not change numeric values as it'll affect persistence or communication.
-/// </summary>
-public enum BatchExecutionState
+public interface IProcessCompletedPublisher
 {
-    /// <summary>
-    /// The batch has been requested.
-    /// </summary>
-    Requested = 0,
-
-    /// <summary>
-    /// The batch is currently executing.
-    /// </summary>
-    Executing = 1,
-
-    /// <summary>
-    /// The batch has (successfully) completed.
-    /// </summary>
-    Completed = 2,
+    Task PublishAsync(List<ProcessCompletedEventDto> completedProcesses);
 }

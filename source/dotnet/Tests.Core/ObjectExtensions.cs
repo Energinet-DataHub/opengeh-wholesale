@@ -12,25 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Tests;
 
-/// <summary>
-/// IMPORTANT: Do not change numeric values as it'll affect persistence or communication.
-/// </summary>
-public enum BatchExecutionState
+public static class ObjectExtensions
 {
     /// <summary>
-    /// The batch has been requested.
+    /// Returns the object wrapped in a list.
     /// </summary>
-    Requested = 0,
-
-    /// <summary>
-    /// The batch is currently executing.
-    /// </summary>
-    Executing = 1,
-
-    /// <summary>
-    /// The batch has (successfully) completed.
-    /// </summary>
-    Completed = 2,
+    public static List<T> InList<T>(this T o) => new() { o };
 }

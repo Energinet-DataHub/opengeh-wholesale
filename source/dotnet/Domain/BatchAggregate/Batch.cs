@@ -52,9 +52,17 @@ public class Batch
 
     public void Complete()
     {
+        if (ExecutionState != BatchExecutionState.Executing)
+            throw new InvalidOperationException("Batch cannot be completed because it is not in state executing.");
+
+        ExecutionState = BatchExecutionState.Completed;
+    }
+
+    public void SetExecuting()
+    {
         if (ExecutionState != BatchExecutionState.Requested)
             throw new InvalidOperationException("Batch cannot be completed because it is not in state requested.");
 
-        ExecutionState = BatchExecutionState.Completed;
+        ExecutionState = BatchExecutionState.Executing;
     }
 }

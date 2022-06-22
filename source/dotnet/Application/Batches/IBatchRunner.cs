@@ -12,25 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-/// <summary>
-/// IMPORTANT: Do not change numeric values as it'll affect persistence or communication.
-/// </summary>
-public enum BatchExecutionState
+namespace Energinet.DataHub.Wholesale.Application.Batches;
+
+public interface IBatchRunner
 {
     /// <summary>
-    /// The batch has been requested.
+    /// Initiate the long running process of executing the batches.
     /// </summary>
-    Requested = 0,
+    Task BeginExecuteAsync(List<Batch> requestedBatches);
 
     /// <summary>
-    /// The batch is currently executing.
+    /// Get those of the <paramref name="candidateBatches"/> that are completed.
     /// </summary>
-    Executing = 1,
-
-    /// <summary>
-    /// The batch has (successfully) completed.
-    /// </summary>
-    Completed = 2,
+    Task<List<Batch>> GetCompletedAsync(List<Batch> candidateBatches);
 }

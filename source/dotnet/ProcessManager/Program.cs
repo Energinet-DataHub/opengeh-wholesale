@@ -18,9 +18,17 @@ using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
+using EntityFrameworkCore.SqlServer.NodaTime.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -38,6 +46,8 @@ public class Program
                 builder.UseMiddleware<IntegrationEventMetadataMiddleware>();
             })
             .ConfigureServices(Middlewares)
+            .ConfigureServices(Applications)
+            .ConfigureServices(Domains)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(HealthCheck)
             .Build();
@@ -54,12 +64,32 @@ public class Program
         serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
     }
 
+    private static void Applications(IServiceCollection services)
+    {
+        services.AddScoped<IBatchApplicationService, BatchApplicationService>();
+        services.AddScoped<IBatchRunner, BatchRunner>();
+        services.AddScoped<IProcessCompletedPublisher, ProcessCompletedPublisher>();
+    }
+
+    private static void Domains(IServiceCollection services)
+    {
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IBatchRepository, BatchRepository>();
+    }
+
     private static void Infrastructure(IServiceCollection serviceCollection)
     {
         serviceCollection.AddLogging();
         serviceCollection.AddApplicationInsightsTelemetryWorkerService(
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+
+        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+
+        var connectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
+        serviceCollection.AddDbContext<DatabaseContext>(options =>
+            options.UseSqlServer(connectionString, o => o.UseNodaTime()));
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)

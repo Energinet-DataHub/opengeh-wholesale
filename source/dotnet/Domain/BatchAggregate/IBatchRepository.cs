@@ -17,4 +17,10 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 public interface IBatchRepository
 {
     Task AddAsync(Batch batch);
+
+    Task<List<Batch>> GetRequestedAsync();
+
+    Task<List<Batch>> GetExecutingAsync();
+
+    Task<List<Batch>> GetCompletedAsync();
 }

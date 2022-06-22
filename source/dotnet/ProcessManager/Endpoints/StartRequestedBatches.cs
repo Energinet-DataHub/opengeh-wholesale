@@ -12,25 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Application.Batches;
+using Microsoft.Azure.Functions.Worker;
 
-/// <summary>
-/// IMPORTANT: Do not change numeric values as it'll affect persistence or communication.
-/// </summary>
-public enum BatchExecutionState
+namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
+
+public static class StartRequestedBatches
 {
-    /// <summary>
-    /// The batch has been requested.
-    /// </summary>
-    Requested = 0,
-
-    /// <summary>
-    /// The batch is currently executing.
-    /// </summary>
-    Executing = 1,
-
-    /// <summary>
-    /// The batch has (successfully) completed.
-    /// </summary>
-    Completed = 2,
+    [Function("TriggerExecution")]
+    public static async Task RunAsync(
+        [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
+        FunctionContext context,
+        IBatchApplicationService batchApplicationService)
+    {
+        await batchApplicationService.StartRequestedAsync().ConfigureAwait(false);
+    }
 }
