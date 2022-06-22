@@ -16,13 +16,14 @@ limitations under the License.
 
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
-        <AssemblyName>Energinet.DataHub.Wholesale.SenderFunctionApp</AssemblyName>
-        <RootNamespace>Energinet.DataHub.Wholesale.SenderFunctionApp</RootNamespace>
+        <OutputType>Exe</OutputType>
+        <AssemblyName>Energinet.DataHub.Wholesale.Sender</AssemblyName>
+        <RootNamespace>Energinet.DataHub.Wholesale.Sender</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="2.4.0" />
+        <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Abstractions" Version="1.1.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.4.0" />
         <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
@@ -35,5 +36,8 @@ limitations under the License.
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
     </ItemGroup>
 </Project>
