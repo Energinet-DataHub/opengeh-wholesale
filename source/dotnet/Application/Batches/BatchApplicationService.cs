@@ -36,9 +36,7 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
     {
-        var gridAreaCodes = batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c));
-        var batch = new Batch(batchRequestDto.ProcessType, gridAreaCodes);
-
+        var batch = CreateBatch(batchRequestDto);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
@@ -62,6 +60,13 @@ public class BatchApplicationService : IBatchApplicationService
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
 
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
+    }
+
+    private static Batch CreateBatch(BatchRequestDto batchRequestDto)
+    {
+        var gridAreaCodes = batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c));
+        var batch = new Batch(batchRequestDto.ProcessType, gridAreaCodes);
+        return batch;
     }
 
     private List<ProcessCompletedEventDto> CreateProcessCompletedEvents(List<Batch> completedBatches)

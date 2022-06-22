@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
 public static class StartRequestedBatches
 {
-    [Function("TriggerExecution")]
+    [Function(nameof(StartRequestedBatches))]
     public static async Task RunAsync(
         [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
         FunctionContext context,

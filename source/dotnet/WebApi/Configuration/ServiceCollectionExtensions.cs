@@ -64,7 +64,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
         services.AddScoped<IBatchRepository, BatchRepository>();
-        services.AddScoped<IBatchRunner, BatchRunner>();
-        services.AddScoped<IProcessCompletedPublisher, ProcessCompletedPublisher>();
+        services.AddScoped<IBatchRunner, BatchRunnerMock>();
+        services.AddScoped<IProcessCompletedPublisher, ProcessCompletedPublisherMock>();
     }
 }

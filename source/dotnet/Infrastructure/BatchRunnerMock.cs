@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure;
 
-public class BatchRunner : IBatchRunner
+public class BatchRunnerMock : IBatchRunner
 {
     public Task BeginExecuteAsync(List<Batch> requestedBatches)
     {

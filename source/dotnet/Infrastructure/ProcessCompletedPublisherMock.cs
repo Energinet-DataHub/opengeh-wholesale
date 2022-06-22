@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Application.Processes;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure;
 
-public class ProcessCompletedPublisher : IProcessCompletedPublisher
+public class ProcessCompletedPublisherMock : IProcessCompletedPublisher
 {
     public Task PublishAsync(List<ProcessCompletedEventDto> completedProcesses)
     {

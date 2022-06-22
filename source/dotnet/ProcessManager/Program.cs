@@ -67,8 +67,8 @@ public class Program
     private static void Applications(IServiceCollection services)
     {
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
-        services.AddScoped<IBatchRunner, BatchRunner>();
-        services.AddScoped<IProcessCompletedPublisher, ProcessCompletedPublisher>();
+        services.AddScoped<IBatchRunner, BatchRunnerMock>();
+        services.AddScoped<IProcessCompletedPublisher, ProcessCompletedPublisherMock>();
     }
 
     private static void Domains(IServiceCollection services)
