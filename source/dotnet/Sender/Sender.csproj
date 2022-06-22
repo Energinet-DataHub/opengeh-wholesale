@@ -18,8 +18,11 @@ limitations under the License.
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
+        <AssemblyName>Energinet.DataHub.Wholesale.SenderFunctionApp</AssemblyName>
+        <RootNamespace>Energinet.DataHub.Wholesale.SenderFunctionApp</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="2.4.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Abstractions" Version="1.1.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.4.0" />
         <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
