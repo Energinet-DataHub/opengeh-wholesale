@@ -15,8 +15,7 @@
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.External.MeteringPointCreated;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.Factories;
+using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener
@@ -25,16 +24,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
     {
         private const string FunctionName = nameof(MeteringPointCreatedListenerEndpoint);
 
-        private readonly MeteringPointCreatedInboundMapper _meteringPointCreatedInboundMapper;
         private readonly IMeteringPointCreatedDtoFactory _meteringPointCreatedDtoFactory;
         private readonly IJsonSerializer _jsonSerializer;
 
         public MeteringPointCreatedListenerEndpoint(
-            MeteringPointCreatedInboundMapper meteringPointCreatedInboundMapper,
             IMeteringPointCreatedDtoFactory meteringPointCreatedDtoFactory,
             IJsonSerializer jsonSerializer)
         {
-            _meteringPointCreatedInboundMapper = meteringPointCreatedInboundMapper;
             _meteringPointCreatedDtoFactory = meteringPointCreatedDtoFactory;
             _jsonSerializer = jsonSerializer;
         }
@@ -50,10 +46,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                 Connection = EnvironmentSettingNames.IntegrationEventConnectionListenerString)]
             byte[] message)
         {
-            var meteringPointCreatedEvent = _meteringPointCreatedInboundMapper
-                .Convert(MeteringPointCreated.Parser.ParseFrom(message));
+            var meteringPointCreatedDto = _meteringPointCreatedDtoFactory
+                .Create(MeteringPointCreated.Parser.ParseFrom(message));
 
-            return _jsonSerializer.Serialize(_meteringPointCreatedDtoFactory.Create(meteringPointCreatedEvent));
+            return _jsonSerializer.Serialize(meteringPointCreatedDto);
         }
     }
 }

@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.MeteringPoints
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints
 {
     /// <summary>
     /// WARNING !
     /// Do not change the numeric values since they are used further downstream for aggregation purposes.
     /// </summary>
-    public enum ConnectionState
+    public enum SettlementMethod
     {
         Unknown = 0,
-        New = 1,
-        Connected = 2,
-        Disconnected = 3,
-        ClosedDown = 4,
+        Profiled = 1,
+        NonProfiled = 2,
+        Flex = 3,
     }
 }

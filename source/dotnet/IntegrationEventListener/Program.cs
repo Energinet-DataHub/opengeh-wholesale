@@ -20,8 +20,7 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.External.MeteringPointCreated;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.Factories;
+using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -67,7 +66,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
 
         private static void Host(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<MeteringPointCreatedInboundMapper>();
+            serviceCollection.AddSingleton<MeteringPointCreatedDtoFactory>();
             serviceCollection.AddScoped<IMeteringPointCreatedDtoFactory, MeteringPointCreatedDtoFactory>();
         }
 

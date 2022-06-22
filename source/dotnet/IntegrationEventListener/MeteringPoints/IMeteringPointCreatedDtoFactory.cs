@@ -12,16 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventListener;
-
-public record MeteringPointCreatedDto(
-    string MeteringPointId,
-    Guid GridAreaLinkId,
-    int? SettlementMethod,
-    int ConnectionState,
-    Instant EffectiveDate,
-    int MeteringPointType,
-    string MessageType,
-    Instant OperationTime);
+public interface IMeteringPointCreatedDtoFactory
+{
+    MeteringPointCreatedDto Create(DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated meteringPointCreated);
+}
