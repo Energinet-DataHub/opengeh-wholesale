@@ -45,8 +45,4 @@ limitations under the License.
         <ProjectReference Include="..\WebApi\WebApi.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="TestHelpers" />
-    </ItemGroup>
-
 </Project>
