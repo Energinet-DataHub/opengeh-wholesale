@@ -22,64 +22,45 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
+
+[Collection(nameof(WholesaleFunctionAppCollectionFixture))]
+public class HealthCheckEndpointTests : FunctionAppTestBase<WholesaleFunctionAppFixture>
 {
-    [Collection(nameof(WholesaleFunctionAppCollectionFixture))]
-    public class HealthCheckEndpointTests : FunctionAppTestBase<WholesaleFunctionAppFixture>
+    public HealthCheckEndpointTests(WholesaleFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
+        : base(fixture, testOutputHelper)
     {
-        public HealthCheckEndpointTests(WholesaleFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
-            : base(fixture, testOutputHelper)
-        {
-        }
+    }
 
-        [Fact]
-        public async Task When_RequestLivenessStatus_Then_ResponseIsOkAndHealthy()
-        {
-            // Arrange
-            var requestMessage = HttpRequestGenerator.CreateHttpGetRequest("api/monitor/live");
+    [Fact]
+    public async Task When_RequestLivenessStatus_Then_ResponseIsOkAndHealthy()
+    {
+        // Arrange
+        var requestMessage = HttpRequestGenerator.CreateHttpGetRequest("api/monitor/live");
 
-            // Act
-            var actualResponse = await Fixture.HostManager.HttpClient.SendAsync(requestMessage);
+        // Act
+        var actualResponse = await Fixture.HostManager.HttpClient.SendAsync(requestMessage);
 
-            // Assert
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var actualContent = await actualResponse.Content.ReadAsStringAsync();
-            actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
-        }
+        var actualContent = await actualResponse.Content.ReadAsStringAsync();
+        actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
+    }
 
-        [Fact]
-        public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
-        {
-            // Arrange
-            var requestMessage = HttpRequestGenerator.CreateHttpGetRequest("api/monitor/ready");
+    [Fact]
+    public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
+    {
+        // Arrange
+        var requestMessage = HttpRequestGenerator.CreateHttpGetRequest("api/monitor/ready");
 
-            // Act
-            var actualResponse = await Fixture.HostManager.HttpClient.SendAsync(requestMessage);
+        // Act
+        var actualResponse = await Fixture.HostManager.HttpClient.SendAsync(requestMessage);
 
-            // Assert
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var actualContent = await actualResponse.Content.ReadAsStringAsync();
-            actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
-        }
-
-        [Fact]
-        public async Task When_EventHubIsDeletedAndRequestReadinessStatus_Then_ResponseIsServiceUnavailableAndUnhealthy()
-        {
-            // Arrange
-            await Fixture.EventHubResourceProvider.DisposeAsync();
-
-            var requestMessage = HttpRequestGenerator.CreateHttpGetRequest("api/monitor/ready");
-
-            // Act
-            var actualResponse = await Fixture.HostManager.HttpClient.SendAsync(requestMessage);
-
-            // Assert
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
-
-            var actualContent = await actualResponse.Content.ReadAsStringAsync();
-            actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Unhealthy));
-        }
+        var actualContent = await actualResponse.Content.ReadAsStringAsync();
+        actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
     }
 }
