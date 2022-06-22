@@ -101,7 +101,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
 
             // Assert
             actual.Should().NotContainNullsOrEmptyEnumerables();
-            actual.MeteringPointId.Should().Be(meteringPointCreatedEvent.GsrnNumber);
+            actual.GsrnNumber.Should().Be(meteringPointCreatedEvent.GsrnNumber);
             actual.EffectiveDate.Should().Be(meteringPointCreatedEvent.EffectiveDate.ToInstant());
             actual.GridAreaLinkId.Should().Be(meteringPointCreatedEvent.GridAreaCode);
             actual.SettlementMethod.Should().Be(SettlementMethod.Flex);
