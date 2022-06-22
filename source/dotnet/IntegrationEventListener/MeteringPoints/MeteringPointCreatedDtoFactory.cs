@@ -13,15 +13,48 @@
 // limitations under the License.
 
 using System.ComponentModel;
-using Energinet.DataHub.Wholesale.Application.MeteringPoints;
+using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated.Types;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.External.MeteringPointCreated;
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
-public class MeteringPointCreatedInboundMapper
+public class MeteringPointCreatedDtoFactory
 {
-    public static SettlementMethod? MapSettlementMethod(mpTypes.SettlementMethod settlementMethod)
+    private readonly IIntegrationEventContext _integrationEventContext;
+
+    public MeteringPointCreatedDtoFactory(IIntegrationEventContext integrationEventContext)
+    {
+        _integrationEventContext = integrationEventContext;
+    }
+
+    public MeteringPointCreatedDto Create(DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated meteringPointCreated)
+    {
+        ArgumentNullException.ThrowIfNull(meteringPointCreated);
+
+        var settlementMethod = MapSettlementMethod(meteringPointCreated.SettlementMethod);
+        var connectionState = MapConnectionState(meteringPointCreated.ConnectionState);
+        var meteringPointType = MapMeteringPointType(meteringPointCreated.MeteringPointType);
+        var resolution = MapResolutionType(meteringPointCreated.MeterReadingPeriodicity);
+
+        if (_integrationEventContext.TryReadMetadata(out var eventMetadata))
+        {
+            return new MeteringPointCreatedDto(
+                meteringPointCreated.GsrnNumber,
+                Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
+                settlementMethod,
+                connectionState,
+                meteringPointCreated.EffectiveDate.ToInstant(),
+                meteringPointType,
+                eventMetadata.MessageType,
+                eventMetadata.OperationTimestamp,
+                resolution);
+        }
+
+        throw new InvalidOperationException($"Could not read metadata for integration event in {nameof(MeteringPointCreatedDtoFactory)}.");
+    }
+
+    private static SettlementMethod? MapSettlementMethod(mpTypes.SettlementMethod settlementMethod)
     {
         return settlementMethod switch
         {
@@ -33,7 +66,7 @@ public class MeteringPointCreatedInboundMapper
         };
     }
 
-    public static ConnectionState MapConnectionState(mpTypes.ConnectionState connectionState)
+    private static ConnectionState MapConnectionState(mpTypes.ConnectionState connectionState)
     {
         return connectionState switch
         {
@@ -42,7 +75,17 @@ public class MeteringPointCreatedInboundMapper
         };
     }
 
-    public static MeteringPointType MapMeteringPointType(mpTypes.MeteringPointType meteringPointType)
+    private static Resolution MapResolutionType(mpTypes.MeterReadingPeriodicity readingPeriodicity)
+    {
+        return readingPeriodicity switch
+        {
+            mpTypes.MeterReadingPeriodicity.MrpHourly => Resolution.Hourly,
+            mpTypes.MeterReadingPeriodicity.MrpQuarterly => Resolution.Quaterly,
+            _ => throw new InvalidEnumArgumentException($"Provided ConnectionState value '{readingPeriodicity}' is invalid and cannot be mapped."),
+        };
+    }
+
+    private static MeteringPointType MapMeteringPointType(mpTypes.MeteringPointType meteringPointType)
     {
         return meteringPointType switch
         {
@@ -69,25 +112,5 @@ public class MeteringPointCreatedInboundMapper
             mpTypes.MeteringPointType.MptSurplusProductionGroup => MeteringPointType.SurplusProductionGroup,
             _ => throw new InvalidEnumArgumentException($"Provided MeteringPointType value '{meteringPointType}' is invalid and cannot be mapped."),
         };
-    }
-
-    public MeteringPointCreatedEvent Convert(
-        MeteringPoints.IntegrationEventContracts.MeteringPointCreated meteringPointCreated)
-    {
-        if (meteringPointCreated == null)
-            throw new InvalidOperationException(nameof(meteringPointCreated));
-
-        var settlementMethod = MapSettlementMethod(meteringPointCreated.SettlementMethod);
-        var connectionState = MapConnectionState(meteringPointCreated.ConnectionState);
-        var meteringPointType = MapMeteringPointType(meteringPointCreated.MeteringPointType);
-
-        return new MeteringPointCreatedEvent(
-            meteringPointCreated.GsrnNumber,
-            Guid.Parse(meteringPointCreated
-                .GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
-            settlementMethod,
-            connectionState,
-            meteringPointCreated.EffectiveDate.ToInstant(),
-            meteringPointType);
     }
 }

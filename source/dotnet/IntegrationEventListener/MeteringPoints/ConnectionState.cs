@@ -12,35 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.MeteringPoints
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints
 {
     /// <summary>
     /// WARNING !
     /// Do not change the numeric values since they are used further downstream for aggregation purposes.
     /// </summary>
-    public enum MeteringPointType
+    public enum ConnectionState
     {
         Unknown = 0,
-        Consumption = 1,
-        Production = 2,
-        Exchange = 3,
-        VeProduction = 4,
-        Analysis = 5,
-        SurplusProductionGroup = 6,
-        NetProduction = 7,
-        SupplyToGrid = 8,
-        ConsumptionFromGrid = 9,
-        WholesaleService = 10,
-        OwnProduction = 11,
-        NetFromGrid = 12,
-        NetToGrid = 13,
-        TotalConsumption = 14,
-        GridLossCorrection = 15,
-        ElectricalHeating = 16,
-        NetConsumption = 17,
-        OtherConsumption = 18,
-        OtherProduction = 19,
-        ExchangeReactiveEnergy = 20,
-        InternalUse = 21,
+        New = 1,
+        Connected = 2,
+        Disconnected = 3,
+        ClosedDown = 4,
     }
 }
