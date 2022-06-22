@@ -67,7 +67,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
         private static void Host(IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<MeteringPointCreatedDtoFactory>();
-            serviceCollection.AddScoped<IMeteringPointCreatedDtoFactory, MeteringPointCreatedDtoFactory>();
+            serviceCollection.AddScoped<MeteringPointCreatedDtoFactory>();
         }
 
         private static void HealthCheck(IServiceCollection serviceCollection)

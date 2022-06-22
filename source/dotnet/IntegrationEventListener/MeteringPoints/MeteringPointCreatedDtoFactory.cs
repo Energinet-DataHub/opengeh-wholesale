@@ -19,7 +19,7 @@ using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.Meter
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
-public class MeteringPointCreatedDtoFactory : IMeteringPointCreatedDtoFactory
+public class MeteringPointCreatedDtoFactory
 {
     private readonly IIntegrationEventContext _integrationEventContext;
 
