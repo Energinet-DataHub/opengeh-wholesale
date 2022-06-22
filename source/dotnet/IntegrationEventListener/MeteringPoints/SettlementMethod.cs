@@ -12,11 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.MeteringPoints;
-
-namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Factories;
-
-public interface IMeteringPointCreatedDtoFactory
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints
 {
-    MeteringPointCreatedDto Create(MeteringPointCreatedEvent meteringPointCreatedEvent);
+    /// <summary>
+    /// WARNING !
+    /// Do not change the numeric values since they are used further downstream for aggregation purposes.
+    /// </summary>
+    public enum SettlementMethod
+    {
+        Unknown = 0,
+        Profiled = 1,
+        NonProfiled = 2,
+        Flex = 3,
+    }
 }

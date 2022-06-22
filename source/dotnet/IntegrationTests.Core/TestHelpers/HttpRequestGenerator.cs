@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.MeteringPoints
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestHelpers
 {
-    /// <summary>
-    /// WARNING !
-    /// Do not change the numeric values since they are used further downstream for aggregation purposes.
-    /// </summary>
-    public enum ConnectionState
+    public static class HttpRequestGenerator
     {
-        Unknown = 0,
-        New = 1,
-        Connected = 2,
-        Disconnected = 3,
-        ClosedDown = 4,
+        public static HttpRequestMessage CreateHttpGetRequest(string endpointUrl)
+        {
+            return CreateHttpRequest(HttpMethod.Get, endpointUrl);
+        }
+
+        private static HttpRequestMessage CreateHttpRequest(HttpMethod httpMethod, string endpointUrl)
+        {
+            var request = new HttpRequestMessage(httpMethod, endpointUrl);
+            return request;
+        }
     }
 }
