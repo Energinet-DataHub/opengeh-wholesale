@@ -50,6 +50,16 @@ runs:
           --no-restore \
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\functions\processmanager'
+    
+    - name: Publish Sender
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\Sender\Sender.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '${{ inputs.OUTPUT_PATH }}\functions\sender'
 
     - name: Publish Web API
       shell: bash
