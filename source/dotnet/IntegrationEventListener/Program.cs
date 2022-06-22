@@ -81,6 +81,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             var serviceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventConnectionManagerString);
             var meteringPointCreatedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedTopicName);
             var meteringPointCreatedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName);
+            var meteringPointConnectedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedTopicName);
+            var meteringPointConnectedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName);
 
             serviceCollection
                 .AddHealthChecks()
@@ -93,7 +95,12 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                     serviceBusConnectionString,
                     meteringPointCreatedTopicName,
                     meteringPointCreatedSubscriptionName,
-                    name: "MeteringPointCreatedSubscriptionExists");
+                    name: "MeteringPointCreatedSubscriptionExists")
+                .AddAzureServiceBusSubscription(
+                    serviceBusConnectionString,
+                    meteringPointConnectedTopicName,
+                    meteringPointConnectedSubscriptionName,
+                    name: "MeteringPointConnectedSubscriptionExists");
         }
     }
 }
