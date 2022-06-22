@@ -30,8 +30,7 @@ public class MeteringPointCreatedDtoFactory : IMeteringPointCreatedDtoFactory
 
     public MeteringPointCreatedDto Create(DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated meteringPointCreated)
     {
-        if (meteringPointCreated == null)
-            throw new InvalidOperationException(nameof(meteringPointCreated));
+        ArgumentNullException.ThrowIfNull(meteringPointCreated);
 
         var settlementMethod = MapSettlementMethod(meteringPointCreated.SettlementMethod);
         var connectionState = MapConnectionState(meteringPointCreated.ConnectionState);
@@ -55,7 +54,7 @@ public class MeteringPointCreatedDtoFactory : IMeteringPointCreatedDtoFactory
         throw new InvalidOperationException($"Could not read metadata for integration event in {nameof(MeteringPointCreatedDtoFactory)}.");
     }
 
-    public static SettlementMethod? MapSettlementMethod(mpTypes.SettlementMethod settlementMethod)
+    private static SettlementMethod? MapSettlementMethod(mpTypes.SettlementMethod settlementMethod)
     {
         return settlementMethod switch
         {
@@ -67,7 +66,7 @@ public class MeteringPointCreatedDtoFactory : IMeteringPointCreatedDtoFactory
         };
     }
 
-    public static ConnectionState MapConnectionState(mpTypes.ConnectionState connectionState)
+    private static ConnectionState MapConnectionState(mpTypes.ConnectionState connectionState)
     {
         return connectionState switch
         {
@@ -76,7 +75,7 @@ public class MeteringPointCreatedDtoFactory : IMeteringPointCreatedDtoFactory
         };
     }
 
-    public static Resolution MapResolutionType(mpTypes.MeterReadingPeriodicity readingPeriodicity)
+    private static Resolution MapResolutionType(mpTypes.MeterReadingPeriodicity readingPeriodicity)
     {
         return readingPeriodicity switch
         {
@@ -86,7 +85,7 @@ public class MeteringPointCreatedDtoFactory : IMeteringPointCreatedDtoFactory
         };
     }
 
-    public static MeteringPointType MapMeteringPointType(mpTypes.MeteringPointType meteringPointType)
+    private static MeteringPointType MapMeteringPointType(mpTypes.MeteringPointType meteringPointType)
     {
         return meteringPointType switch
         {

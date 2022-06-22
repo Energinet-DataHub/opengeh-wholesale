@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using Moq;
+using NodaTime;
 using Xunit;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated.Types;
 
@@ -109,30 +110,38 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
         }
 
         [Theory]
-        [InlineAutoMoqData]
-        public void Convert_WhenCalledWithNull_ShouldThrow(MeteringPointCreatedDtoFactory sut)
-        {
-            Assert.Throws<InvalidOperationException>(() => sut.Create(null!));
-        }
-
-        [Theory]
         [InlineData(mpTypes.SettlementMethod.SmFlex, SettlementMethod.Flex)]
         [InlineData(mpTypes.SettlementMethod.SmNonprofiled, SettlementMethod.NonProfiled)]
         [InlineData(mpTypes.SettlementMethod.SmProfiled, SettlementMethod.Profiled)]
         [InlineData(mpTypes.SettlementMethod.SmNull, null)]
         public void MapSettlementMethod_WhenCalled_ShouldMapCorrectly(mpTypes.SettlementMethod protoSettlementMethod, SettlementMethod? expectedSettlementMethod)
         {
-            var actual =
-                MeteringPointCreatedDtoFactory.MapSettlementMethod(protoSettlementMethod);
+            // Arrange
+            var meteringPointCreated = CreateValidMeteringPointCreated();
+            meteringPointCreated.SettlementMethod = protoSettlementMethod;
+            var sut = CreateTarget();
 
-            actual.Should().Be(expectedSettlementMethod);
+            // Act
+            var actual = sut.Create(meteringPointCreated);
+
+            // Assert
+            actual.SettlementMethod.Should().Be(expectedSettlementMethod);
         }
 
         [Fact]
         public void MapSettlementMethod_WhenCalledWithInvalidEnum_Throws()
         {
-            Assert.Throws<InvalidEnumArgumentException>(
-                () => MeteringPointCreatedDtoFactory.MapSettlementMethod((mpTypes.SettlementMethod)9999));
+            // Arrange
+            const mpTypes.SettlementMethod invalidValue = (mpTypes.SettlementMethod)100;
+            var meteringPointCreated = CreateValidMeteringPointCreated();
+            meteringPointCreated.SettlementMethod = invalidValue;
+            var sut = CreateTarget();
+
+            // Act + Assert
+            sut
+                .Invoking(s => s.Create(meteringPointCreated))
+                .Should()
+                .Throw<InvalidEnumArgumentException>();
         }
 
         [Theory]
@@ -141,16 +150,33 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
             mpTypes.ConnectionState protoConnectionState,
             ConnectionState expectedConnectionState)
         {
-            var actual = MeteringPointCreatedDtoFactory.MapConnectionState(protoConnectionState);
+            // Arrange
+            var meteringPointCreated = CreateValidMeteringPointCreated();
+            meteringPointCreated.ConnectionState = protoConnectionState;
+            var sut = CreateTarget();
 
-            actual.Should().Be(expectedConnectionState);
+            // Act
+            var actual = sut.Create(meteringPointCreated);
+
+            // Assert
+            actual.ConnectionState.Should().Be(expectedConnectionState);
         }
 
         [Fact]
         public void MapConnectionState_WhenCalledWithInvalidEnum_Throws()
         {
-            Assert.Throws<InvalidEnumArgumentException>(
-                () => MeteringPointCreatedDtoFactory.MapConnectionState((mpTypes.ConnectionState)9999));
+            // Arrange
+            const mpTypes.ConnectionState invalidValue = (mpTypes.ConnectionState)100;
+            var meteringPointCreated = CreateValidMeteringPointCreated();
+            meteringPointCreated.ConnectionState = invalidValue;
+
+            var sut = CreateTarget();
+
+            // Act + Assert
+            sut
+                .Invoking(s => s.Create(meteringPointCreated))
+                .Should()
+                .Throw<InvalidEnumArgumentException>();
         }
 
         [Theory]
@@ -178,10 +204,88 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
             mpTypes.MeteringPointType protoMeteringType,
             MeteringPointType expectedMeteringPointType)
         {
-            var actual =
-                MeteringPointCreatedDtoFactory.MapMeteringPointType(protoMeteringType);
+            // Arrange
+            var meteringPointCreated = CreateValidMeteringPointCreated();
+            meteringPointCreated.MeteringPointType = protoMeteringType;
+            var sut = CreateTarget();
 
-            actual.Should().Be(expectedMeteringPointType);
+            // Act
+            var actual = sut.Create(meteringPointCreated);
+
+            // Assert
+            actual.MeteringPointType.Should().Be(expectedMeteringPointType);
+        }
+
+        [Fact]
+        public void MapMeteringPointType_WhenCalledWithInvalidEnum_Throws()
+        {
+            // Arrange
+            const mpTypes.MeteringPointType invalidValue = (mpTypes.MeteringPointType)100;
+            var meteringPointCreated = CreateValidMeteringPointCreated();
+            meteringPointCreated.MeteringPointType = invalidValue;
+            var sut = CreateTarget();
+
+            // Act + Assert
+            sut
+                .Invoking(s => s.Create(meteringPointCreated))
+                .Should()
+                .Throw<InvalidEnumArgumentException>();
+        }
+
+        [Theory]
+        [InlineData(mpTypes.MeterReadingPeriodicity.MrpHourly, Resolution.Hourly)]
+        [InlineData(mpTypes.MeterReadingPeriodicity.MrpQuarterly, Resolution.Quaterly)]
+        public void MapResolutionType_WhenCalled_ShouldMapCorrectly(
+            mpTypes.MeterReadingPeriodicity protoPeriodicity,
+            Resolution expectedResolution)
+        {
+            // Arrange
+            var meteringPointCreated = CreateValidMeteringPointCreated();
+            meteringPointCreated.MeterReadingPeriodicity = protoPeriodicity;
+            var sut = CreateTarget();
+
+            // Act
+            var actual = sut.Create(meteringPointCreated);
+
+            // Assert
+            actual.Resolution.Should().Be(expectedResolution);
+        }
+
+        [Fact]
+        public void MapResolutionType_WhenCalledWithInvalidEnum_Throws()
+        {
+            // Arrange
+            const mpTypes.MeterReadingPeriodicity invalidValue = (mpTypes.MeterReadingPeriodicity)100;
+            var meteringPointCreated = CreateValidMeteringPointCreated();
+            meteringPointCreated.MeterReadingPeriodicity = invalidValue;
+            var sut = CreateTarget();
+
+            // Act + Assert
+            sut
+                .Invoking(s => s.Create(meteringPointCreated))
+                .Should()
+                .Throw<InvalidEnumArgumentException>();
+        }
+
+        private static MeteringPointCreatedDtoFactory CreateTarget()
+        {
+            var integrationEventContext = new Mock<IIntegrationEventContext>();
+            var outEventMetadata = new IntegrationEventMetadata("fake_value", Instant.FromDateTimeUtc(DateTime.UtcNow));
+
+            integrationEventContext
+                .Setup(x => x.TryReadMetadata(out outEventMetadata))
+                .Returns(true);
+
+            return new MeteringPointCreatedDtoFactory(integrationEventContext.Object);
+        }
+
+        private static MeteringPointCreated CreateValidMeteringPointCreated()
+        {
+            return new MeteringPointCreated
+            {
+                GridAreaCode = "3448BFAD-6783-4502-95FC-D57E09228D72",
+                EffectiveDate = Timestamp.FromDateTime(DateTime.UtcNow),
+            };
         }
     }
 }
