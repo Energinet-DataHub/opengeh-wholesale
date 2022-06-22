@@ -24,6 +24,7 @@ limitations under the License.
     <ItemGroup>
         <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="2.3.4" />
         <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="2.3.4" />
+        <PackageReference Include="FluentAssertions" Version="6.7.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.5" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
         <PackageReference Include="Moq" Version="4.18.1" />
@@ -40,7 +41,12 @@ limitations under the License.
 
     <ItemGroup>
         <ProjectReference Include="..\DatabaseMigration\DatabaseMigration.csproj" />
+        <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
         <ProjectReference Include="..\WebApi\WebApi.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="TestHelpers" />
     </ItemGroup>
 
 </Project>

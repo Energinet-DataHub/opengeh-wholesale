@@ -20,11 +20,9 @@ using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
 
-[IntegrationTest]
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
 public class DatabaseHealthCheckTests :
     WebApiTestBase<WholesaleWebApiFixture>,
