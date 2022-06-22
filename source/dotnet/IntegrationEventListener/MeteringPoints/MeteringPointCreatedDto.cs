@@ -17,7 +17,7 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
 public record MeteringPointCreatedDto(
-    string MeteringPointId,
+    string GsrnNumber,
     Guid GridAreaLinkId,
     SettlementMethod? SettlementMethod,
     ConnectionState ConnectionState,
