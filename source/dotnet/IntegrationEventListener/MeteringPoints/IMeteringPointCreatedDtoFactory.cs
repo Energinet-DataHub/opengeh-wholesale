@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
+
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
 public interface IMeteringPointCreatedDtoFactory
 {
-    MeteringPointCreatedDto Create(DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated meteringPointCreated);
+    MeteringPointCreatedDto Create(MeteringPointCreated meteringPointCreated);
 }
