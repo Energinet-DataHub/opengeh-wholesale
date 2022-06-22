@@ -48,5 +48,13 @@ public class Batch
 
     public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes;
 
-    public BatchExecutionState ExecutionState { get; }
+    public BatchExecutionState ExecutionState { get; private set; }
+
+    public void Complete()
+    {
+        if (ExecutionState != BatchExecutionState.Requested)
+            throw new InvalidOperationException("Batch cannot be completed because it is not in state requested.");
+
+        ExecutionState = BatchExecutionState.Completed;
+    }
 }

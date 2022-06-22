@@ -27,7 +27,7 @@ public class BatchTests
     {
         // Arrange
         var someGridAreaCodes = new List<GridAreaCode> { new("004"), new("805") };
-        var sut = new Batch(WholesaleProcessType.BalanceFixing, someGridAreaCodes);
+        var sut = new BatchBuilder().WithGridAreaCodes(someGridAreaCodes).Build();
 
         // Act
         var unexpectedGridAreaCode = new GridAreaCode("777");
@@ -43,5 +43,25 @@ public class BatchTests
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
         Assert.Throws<ArgumentException>(() => new Batch(WholesaleProcessType.BalanceFixing, emptyGridAreaCodes));
+    }
+
+    [Fact]
+    public void Complete_WhenComplete_ThrowsInvalidOperationException()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
+        Assert.Throws<InvalidOperationException>(() => sut.Complete());
+    }
+
+    [Fact]
+    public void Complete_WhenRequested_CompletesBatch()
+    {
+        // Arrange
+        var sut = new BatchBuilder().Build();
+
+        // Act
+        sut.Complete();
+
+        // Assert
+        sut.ExecutionState.Should().Be(BatchExecutionState.Completed);
     }
 }

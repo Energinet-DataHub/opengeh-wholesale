@@ -23,6 +23,7 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
+    <ProjectReference Include="..\Tests.Core\Tests.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
