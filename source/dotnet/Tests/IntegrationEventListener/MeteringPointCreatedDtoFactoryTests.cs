@@ -186,6 +186,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
         [InlineData(mpTypes.MeteringPointType.MptElectricalHeating, MeteringPointType.ElectricalHeating)]
         [InlineData(mpTypes.MeteringPointType.MptExchange, MeteringPointType.Exchange)]
         [InlineData(mpTypes.MeteringPointType.MptExchangeReactiveEnergy, MeteringPointType.ExchangeReactiveEnergy)]
+        [InlineData(mpTypes.MeteringPointType.MptGridLossCorrection, MeteringPointType.GridLossCorrection)]
         [InlineData(mpTypes.MeteringPointType.MptInternalUse, MeteringPointType.InternalUse)]
         [InlineData(mpTypes.MeteringPointType.MptNetConsumption, MeteringPointType.NetConsumption)]
         [InlineData(mpTypes.MeteringPointType.MptNetFromGrid, MeteringPointType.NetFromGrid)]
