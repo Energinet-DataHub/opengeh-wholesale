@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Abstractions;

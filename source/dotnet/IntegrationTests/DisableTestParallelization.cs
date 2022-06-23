@@ -12,19 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture
-{
-    /// <summary>
-    /// An xUnit collection fixture for ensuring tests don't run in parallel.
-    ///
-    /// xUnit documentation of collection fixtures:
-    ///  * https://xunit.net/docs/shared-context#collection-fixture
-    /// </summary>
-    [CollectionDefinition(nameof(WholesaleFunctionAppCollectionFixture))]
-    public class WholesaleFunctionAppCollectionFixture : ICollectionFixture<WholesaleFunctionAppFixture>
-    {
-    }
-}
+// xUnit documentation:
+//  * https://xunit.net/docs/running-tests-in-parallel.html
+// This is required because our fixtures cannot be executed in parallel.
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
