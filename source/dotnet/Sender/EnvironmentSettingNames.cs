@@ -17,4 +17,7 @@ namespace Energinet.DataHub.Wholesale.Sender;
 public static class EnvironmentSettingNames
 {
     public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
+    public const string CompletedProcessTopicName = "COMPLETED_PROCESS_TOPIC_NAME";
+    public const string CompletedProcessSubscriptionName = "COMPLETED_PROCESS_SUBSCRIPTION_NAME";
+    public const string ServiceBusConnectionString = "SERVICE_BUS_CONNECTION_STRING";
 }
