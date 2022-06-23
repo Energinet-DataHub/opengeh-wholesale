@@ -68,8 +68,14 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
             Mock<ICorrelationContext> correlationContext,
             Mock<IIntegrationEventContext> integrationEventContext,
             MeteringPointCreated meteringPointCreatedEvent,
-            IntegrationEventMetadata integrationEventMetadata)
+            IntegrationEventMetadata integrationEventMetadata,
+            Guid correlationId)
         {
+            // Arrange
+            correlationContext
+                .Setup(x => x.Id)
+                .Returns(correlationId.ToString());
+
             integrationEventContext
                 .Setup(x => x.ReadMetadata())
                 .Returns(integrationEventMetadata);
