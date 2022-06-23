@@ -40,5 +40,15 @@ public class CompletedProcessSenderEndpointTests
             Fixture.HostManager.ClearHostLog();
             return Task.CompletedTask;
         }
+
+        public Task CompletedProcessTestAsync()
+        {
+            // Arrange
+
+            // Act
+
+            // Assert
+            return Task.CompletedTask;
+        }
     }
 }

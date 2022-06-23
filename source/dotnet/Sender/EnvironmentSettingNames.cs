@@ -20,4 +20,6 @@ public static class EnvironmentSettingNames
     public const string CompletedProcessTopicName = "COMPLETED_PROCESS_TOPIC_NAME";
     public const string CompletedProcessSubscriptionName = "COMPLETED_PROCESS_SUBSCRIPTION_NAME";
     public const string ServiceBusConnectionString = "SERVICE_BUS_CONNECTION_STRING";
+    public const string DataAvailableQueueName = "DATA_AVAILABLE_QUEUE_NAME";
+    public const string DataAvailableServiceBusConnectionString = "DATA_AVAILABLE_SERVICE_BUS_CONNECTION_STRING";
 }

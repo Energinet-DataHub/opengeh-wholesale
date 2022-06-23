@@ -12,22 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Domain.Dtos.CompletedProcessSenderEvents;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Sender;
 
 public class CompletedProcessSenderEndpoint
 {
-    public const string FunctionName = nameof(CompletedProcessSenderEndpoint);
+    private const string FunctionName = nameof(CompletedProcessSenderEndpoint);
+    private readonly JsonSerializer _jsonSerializer;
+
+    public CompletedProcessSenderEndpoint(JsonSerializer jsonSerializer)
+    {
+        _jsonSerializer = jsonSerializer;
+    }
 
     [Function(FunctionName)]
-    public async Task RunAsync(
+    [ServiceBusOutput(EnvironmentSettingNames.DataAvailableQueueName, ServiceBusEntityType.Queue, Connection = EnvironmentSettingNames.DataAvailableServiceBusConnectionString)]
+    public async Task<CompletedProcess> RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.CompletedProcessTopicName + "%",
             "%" + EnvironmentSettingNames.CompletedProcessSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusConnectionString)]
         byte[] message)
     {
-        await Task.CompletedTask.ConfigureAwait(false);
+        return await DeserializeByteArrayAsync<CompletedProcess>(message).ConfigureAwait(false);
+    }
+
+    private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)
+    {
+        var stream = new MemoryStream(data);
+        await using (stream.ConfigureAwait(false))
+        {
+            return (T)await _jsonSerializer.DeserializeAsync(stream, typeof(T)).ConfigureAwait(false);
+        }
     }
 }
