@@ -22,10 +22,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
 
 public class CompletedProcessSenderEndpointTests
 {
-    [Collection(nameof(WholesaleFunctionAppCollectionFixture))]
-    public class RunAsync : FunctionAppTestBase<WholesaleFunctionAppFixture>, IAsyncLifetime
+    [Collection(nameof(SenderFunctionAppCollectionFixture))]
+    public class RunAsync : FunctionAppTestBase<SenderFunctionAppFixture>, IAsyncLifetime
     {
-        public RunAsync(WholesaleFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
+        public RunAsync(SenderFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
             : base(fixture, testOutputHelper)
         {
         }

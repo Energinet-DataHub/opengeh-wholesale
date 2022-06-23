@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.Sender;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +34,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 "u002",
                 "integrationtest.local.settings.json",
                 "AZURE_SECRETS_KEYVAULT_URL");
+
+            ServiceBusResourceProvider = new ServiceBusResourceProvider(
+                IntegrationTestConfiguration.ServiceBusConnectionString,
+                TestLogger);
         }
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
@@ -40,6 +45,12 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         private AzuriteManager AzuriteManager { get; }
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
+
+        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
+
+        private TopicResource CompletedProcessTopic { get; set; } = null!;
+
+        private QueueResource DataAvailableQueue { get; set; } = null!;
 
         /// <inheritdoc/>
         protected override void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
@@ -57,10 +68,21 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         }
 
         /// <inheritdoc/>
-        protected override Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
+        protected override async Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
         {
             AzuriteManager.StartAzurite();
-            return Task.CompletedTask;
+
+            CompletedProcessTopic = await ServiceBusResourceProvider
+                .BuildTopic("process-created")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.CompletedProcessTopicName)
+                .AddSubscription("process-created-sub-wholesale")
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.CompletedProcessSubscriptionName)
+                .CreateAsync();
+
+            DataAvailableQueue = await ServiceBusResourceProvider
+                .BuildQueue("data-available")
+                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.DataAvailableQueueName)
+                .CreateAsync();
         }
 
         /// <inheritdoc/>
@@ -73,10 +95,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisposeFunctionAppDependenciesAsync()
+        protected override async Task OnDisposeFunctionAppDependenciesAsync()
         {
             AzuriteManager.Dispose();
-            return Task.CompletedTask;
+            await ServiceBusResourceProvider.DisposeAsync();
         }
 
         private static string GetBuildConfiguration()
