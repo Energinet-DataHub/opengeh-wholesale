@@ -29,7 +29,7 @@ public class CompletedProcessSenderEndpoint
     }
 
     [Function(FunctionName)]
-    [ServiceBusOutput(EnvironmentSettingNames.DataAvailableQueueName, ServiceBusEntityType.Queue, Connection = EnvironmentSettingNames.DataAvailableServiceBusConnectionString)]
+    [ServiceBusOutput(EnvironmentSettingNames.DataAvailableQueueName, Connection = EnvironmentSettingNames.DataAvailableServiceBusConnectionString)]
     public async Task<CompletedProcess> RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.CompletedProcessTopicName + "%",

@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.Sender;
@@ -38,9 +39,19 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             ServiceBusResourceProvider = new ServiceBusResourceProvider(
                 IntegrationTestConfiguration.ServiceBusConnectionString,
                 TestLogger);
+
+            QueueServiceBusResourceProvider = new ServiceBusResourceProvider(
+                IntegrationTestConfiguration.ServiceBusConnectionString,
+                TestLogger);
         }
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
+
+        public ServiceBusListenerMock ServiceBusListener { get; private set; } = null!;
+
+        public TopicResource CompletedProcessTopic { get; set; } = null!;
+
+        public QueueResource DataAvailableQueue { get; set; } = null!;
 
         private AzuriteManager AzuriteManager { get; }
 
@@ -48,9 +59,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
         private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
-        private TopicResource CompletedProcessTopic { get; set; } = null!;
-
-        private QueueResource DataAvailableQueue { get; set; } = null!;
+        private ServiceBusResourceProvider QueueServiceBusResourceProvider { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
@@ -72,16 +81,22 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             AzuriteManager.StartAzurite();
 
+            DataAvailableQueue = await QueueServiceBusResourceProvider
+                .BuildQueue("data-available")
+                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.DataAvailableQueueName)
+                .CreateAsync();
+
+            ServiceBusListener = new ServiceBusListenerMock(
+                QueueServiceBusResourceProvider.ConnectionString,
+                TestLogger);
+
+            await ServiceBusListener.AddQueueListenerAsync(DataAvailableQueue.Name);
+
             CompletedProcessTopic = await ServiceBusResourceProvider
                 .BuildTopic("process-created")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.CompletedProcessTopicName)
                 .AddSubscription("process-created-sub-wholesale")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.CompletedProcessSubscriptionName)
-                .CreateAsync();
-
-            DataAvailableQueue = await ServiceBusResourceProvider
-                .BuildQueue("data-available")
-                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.DataAvailableQueueName)
                 .CreateAsync();
         }
 
