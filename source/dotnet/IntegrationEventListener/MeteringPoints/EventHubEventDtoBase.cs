@@ -16,10 +16,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
-public record MeteringPointConnectedDto(
-    string GsrnNumber,
-    Instant EffectiveDate,
+public abstract record EventHubEventDtoBase(
     string CorrelationId,
     string MessageType,
-    Instant OperationTime)
-    : EventHubEventDtoBase(CorrelationId, MessageType, OperationTime);
+    Instant OperationTime);

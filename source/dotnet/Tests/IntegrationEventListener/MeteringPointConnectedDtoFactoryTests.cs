@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
@@ -30,21 +31,28 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
         [Theory]
         [InlineAutoMoqData]
         public void Create_HasEventMetadata_ReturnsValidDto(
+            Mock<ICorrelationContext> correlationContext,
             Mock<IIntegrationEventContext> integrationEventContext,
             MeteringPointConnected meteringPointConnectedEvent,
-            IntegrationEventMetadata integrationEventMetadata)
+            IntegrationEventMetadata integrationEventMetadata,
+            Guid correlationId)
         {
             // Arrange
+            correlationContext
+                .Setup(x => x.Id)
+                .Returns(correlationId.ToString());
+
             integrationEventContext
                 .Setup(x => x.ReadMetadata())
                 .Returns(integrationEventMetadata);
 
-            var sut = new MeteringPointConnectedDtoFactory(integrationEventContext.Object);
+            var sut = new MeteringPointConnectedDtoFactory(correlationContext.Object, integrationEventContext.Object);
 
             // Act
             var actual = sut.Create(meteringPointConnectedEvent);
 
             // Assert
+            actual.CorrelationId.Should().Be(correlationId.ToString());
             actual.MessageType.Should().Be(integrationEventMetadata.MessageType);
             actual.OperationTime.Should().Be(integrationEventMetadata.OperationTimestamp);
         }
@@ -52,6 +60,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
         [Theory]
         [InlineAutoMoqData]
         public void Create_WhenCalled_ShouldMapToMeteringPointConnectedEventWithCorrectValues(
+            Mock<ICorrelationContext> correlationContext,
             Mock<IIntegrationEventContext> integrationEventContext,
             MeteringPointConnected meteringPointConnectedEvent,
             IntegrationEventMetadata integrationEventMetadata)
@@ -60,7 +69,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
                 .Setup(x => x.ReadMetadata())
                 .Returns(integrationEventMetadata);
 
-            var sut = new MeteringPointConnectedDtoFactory(integrationEventContext.Object);
+            var sut = new MeteringPointConnectedDtoFactory(correlationContext.Object, integrationEventContext.Object);
 
             meteringPointConnectedEvent.EffectiveDate = Timestamp.FromDateTime(new DateTime(2021, 10, 31, 23, 00, 00, 00, DateTimeKind.Utc));
 

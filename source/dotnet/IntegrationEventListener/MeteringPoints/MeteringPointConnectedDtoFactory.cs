@@ -13,16 +13,21 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
 public class MeteringPointConnectedDtoFactory
 {
+    private readonly ICorrelationContext _correlationContext;
     private readonly IIntegrationEventContext _integrationEventContext;
 
-    public MeteringPointConnectedDtoFactory(IIntegrationEventContext integrationEventContext)
+    public MeteringPointConnectedDtoFactory(
+        ICorrelationContext correlationContext,
+        IIntegrationEventContext integrationEventContext)
     {
+        _correlationContext = correlationContext;
         _integrationEventContext = integrationEventContext;
     }
 
@@ -35,6 +40,7 @@ public class MeteringPointConnectedDtoFactory
         return new MeteringPointConnectedDto(
                 meteringPointConnected.GsrnNumber,
                 meteringPointConnected.EffectiveDate.ToInstant(),
+                _correlationContext.Id,
                 eventMetadata.MessageType,
                 eventMetadata.OperationTimestamp);
     }

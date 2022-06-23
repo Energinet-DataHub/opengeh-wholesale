@@ -49,4 +49,8 @@ limitations under the License.
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Endpoint\" />
+    </ItemGroup>
+
 </Project>

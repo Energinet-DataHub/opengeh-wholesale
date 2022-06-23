@@ -29,7 +29,7 @@ using Google.Protobuf.WellKnownTypes;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationEventListener;
 
 public class MeteringPointConnectedListenerEndpointTests
 {
@@ -85,6 +85,8 @@ public class MeteringPointConnectedListenerEndpointTests
                 Fixture.EventHubListener
                     .ReceivedEvents.Single()
                     .Data.ToString());
+
+            actual.CorrelationId.Should().Be(message.CorrelationId);
             actual.EffectiveDate.Should().Be(effectiveDate.ToInstant());
         }
 

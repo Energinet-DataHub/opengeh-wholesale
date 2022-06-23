@@ -14,6 +14,7 @@
 
 using System.ComponentModel;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated.Types;
 
@@ -21,10 +22,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
 public class MeteringPointCreatedDtoFactory
 {
+    private readonly ICorrelationContext _correlationContext;
     private readonly IIntegrationEventContext _integrationEventContext;
 
-    public MeteringPointCreatedDtoFactory(IIntegrationEventContext integrationEventContext)
+    public MeteringPointCreatedDtoFactory(
+        ICorrelationContext correlationContext,
+        IIntegrationEventContext integrationEventContext)
     {
+        _correlationContext = correlationContext;
         _integrationEventContext = integrationEventContext;
     }
 
@@ -46,9 +51,10 @@ public class MeteringPointCreatedDtoFactory
             connectionState,
             meteringPointCreated.EffectiveDate.ToInstant(),
             meteringPointType,
+            resolution,
+            _correlationContext.Id,
             eventMetadata.MessageType,
-            eventMetadata.OperationTimestamp,
-            resolution);
+            eventMetadata.OperationTimestamp);
     }
 
     private static SettlementMethod? MapSettlementMethod(mpTypes.SettlementMethod settlementMethod)

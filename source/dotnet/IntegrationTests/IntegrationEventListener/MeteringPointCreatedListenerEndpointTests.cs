@@ -85,6 +85,8 @@ public class MeteringPointCreatedListenerEndpointTests
                 Fixture.EventHubListener
                     .ReceivedEvents.Single()
                     .Data.ToString());
+
+            actual.CorrelationId.Should().Be(message.CorrelationId);
             actual.EffectiveDate.Should().Be(effectiveDate.ToInstant());
         }
 

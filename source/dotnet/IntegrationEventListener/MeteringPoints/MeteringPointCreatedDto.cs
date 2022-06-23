@@ -23,6 +23,8 @@ public record MeteringPointCreatedDto(
     ConnectionState ConnectionState,
     Instant EffectiveDate,
     MeteringPointType MeteringPointType,
+    Resolution Resolution,
+    string CorrelationId,
     string MessageType,
-    Instant OperationTime,
-    Resolution Resolution);
+    Instant OperationTime)
+    : EventHubEventDtoBase(CorrelationId, MessageType, OperationTime);
