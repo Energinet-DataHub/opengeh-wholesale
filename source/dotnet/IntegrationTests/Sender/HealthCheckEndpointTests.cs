@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestHelpers;
@@ -22,12 +23,12 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Sender;
 
-[Collection(nameof(WholesaleFunctionAppCollectionFixture))]
-public class HealthCheckEndpointTests : FunctionAppTestBase<WholesaleFunctionAppFixture>
+[Collection(nameof(SenderFunctionAppCollectionFixture))]
+public class HealthCheckEndpointTests : FunctionAppTestBase<SenderFunctionAppFixture>
 {
-    public HealthCheckEndpointTests(WholesaleFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
+    public HealthCheckEndpointTests(SenderFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
         : base(fixture, testOutputHelper)
     {
     }
@@ -36,7 +37,7 @@ public class HealthCheckEndpointTests : FunctionAppTestBase<WholesaleFunctionApp
     public async Task When_RequestLivenessStatus_Then_ResponseIsOkAndHealthy()
     {
         // Arrange
-        var requestMessage = HttpRequestGenerator.CreateHttpGetRequest("api/monitor/live");
+        var requestMessage = HttpRequestGenerator.CreateHttpGetRequest($"api{HealthChecksConstants.LiveHealthCheckEndpointRoute}");
 
         // Act
         var actualResponse = await Fixture.HostManager.HttpClient.SendAsync(requestMessage);
@@ -52,7 +53,7 @@ public class HealthCheckEndpointTests : FunctionAppTestBase<WholesaleFunctionApp
     public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
     {
         // Arrange
-        var requestMessage = HttpRequestGenerator.CreateHttpGetRequest("api/monitor/ready");
+        var requestMessage = HttpRequestGenerator.CreateHttpGetRequest($"api{HealthChecksConstants.ReadyHealthCheckEndpointRoute}");
 
         // Act
         var actualResponse = await Fixture.HostManager.HttpClient.SendAsync(requestMessage);
