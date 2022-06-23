@@ -21,6 +21,8 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
+using EntityFrameworkCore.SqlServer.NodaTime.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -56,10 +58,11 @@ public class Program
 
     private static void Infrastructure(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddLogging();
-        serviceCollection.AddApplicationInsightsTelemetryWorkerService(
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+        serviceCollection.AddApplicationInsightsTelemetryWorkerService(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+
+        var connectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
+        serviceCollection.AddDbContext<DatabaseContext>(options => options.UseSqlServer(connectionString, o => o.UseNodaTime()));
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)
