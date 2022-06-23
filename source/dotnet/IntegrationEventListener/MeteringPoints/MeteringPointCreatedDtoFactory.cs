@@ -14,8 +14,9 @@
 
 using System.ComponentModel;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
+using Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
-using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated.Types;
+using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated.Types;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
@@ -28,7 +29,7 @@ public class MeteringPointCreatedDtoFactory
         _integrationEventContext = integrationEventContext;
     }
 
-    public MeteringPointCreatedDto Create(DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated meteringPointCreated)
+    public MeteringPointCreatedDto Create(MeteringPointCreated meteringPointCreated)
     {
         ArgumentNullException.ThrowIfNull(meteringPointCreated);
 

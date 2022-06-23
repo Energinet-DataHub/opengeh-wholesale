@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
+using Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
+using Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Microsoft.Azure.Functions.Worker;
@@ -47,7 +47,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             byte[] message)
         {
             var meteringPointCreatedDto = _meteringPointCreatedDtoFactory
-                .Create(MeteringPointCreated.Parser.ParseFrom(message));
+                .Create(MeteringPointCreated.Parser
+                    .ParseFrom(message));
 
             return _jsonSerializer.Serialize(meteringPointCreatedDto);
         }
