@@ -16,10 +16,10 @@ namespace Energinet.DataHub.Wholesale.Domain.Dtos.CompletedProcessSenderEvents;
 
 public class CompletedProcess
 {
-    public CompletedProcess(string gsrnNr)
+    public CompletedProcess(string gridAreaCode)
     {
-        GsrnNr = gsrnNr;
+        GridAreaCode = gridAreaCode;
     }
 
-    public string GsrnNr { get; set; }
+    public string GridAreaCode { get; set; }
 }
