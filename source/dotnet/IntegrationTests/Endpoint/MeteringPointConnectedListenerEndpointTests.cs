@@ -33,10 +33,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
 
 public class MeteringPointConnectedListenerEndpointTests
 {
-    [Collection(nameof(WholesaleFunctionAppCollectionFixture))]
-    public class RunAsync : FunctionAppTestBase<WholesaleFunctionAppFixture>, IAsyncLifetime
+    [Collection(nameof(IntegrationEventListenerFunctionAppCollectionFixture))]
+    public class RunAsync : FunctionAppTestBase<IntegrationEventListenerFunctionAppFixture>, IAsyncLifetime
     {
-        public RunAsync(WholesaleFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
+        public RunAsync(IntegrationEventListenerFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
             : base(fixture, testOutputHelper)
         {
         }

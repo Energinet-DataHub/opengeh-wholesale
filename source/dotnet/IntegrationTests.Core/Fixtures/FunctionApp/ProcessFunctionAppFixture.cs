@@ -16,21 +16,21 @@ using System.Diagnostics;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
+using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 {
-    public class WholesaleFunctionAppFixture : FunctionAppFixture
+    public class ProcessFunctionAppFixture : FunctionAppFixture
     {
-        public WholesaleFunctionAppFixture()
+        public ProcessFunctionAppFixture()
         {
             AzuriteManager = new AzuriteManager();
+            DatabaseManager = new WholesaleDatabaseManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
             AuthorizationConfiguration = new AuthorizationConfiguration(
                 "u002",
@@ -40,22 +40,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             ServiceBusResourceProvider = new ServiceBusResourceProvider(
                 IntegrationTestConfiguration.ServiceBusConnectionString,
                 TestLogger);
-
-            EventHubResourceProvider = new EventHubResourceProvider(
-                IntegrationTestConfiguration.EventHubConnectionString,
-                IntegrationTestConfiguration.ResourceManagementSettings,
-                TestLogger);
         }
 
-        public EventHubListenerMock EventHubListener { get; private set; } = null!;
+        public WholesaleDatabaseManager DatabaseManager { get; }
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
 
-        public TopicResource MeteringPointCreatedTopic { get; private set; } = null!;
-
-        public TopicResource MeteringPointConnectedTopic { get; private set; } = null!;
-
-        public EventHubResourceProvider EventHubResourceProvider { get; }
+        public TopicResource ProcessCompletedTopic { get; private set; } = null!;
 
         private AzuriteManager AzuriteManager { get; }
 
@@ -66,11 +57,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         /// <inheritdoc/>
         protected override void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
         {
-            if (hostSettings == null)
-                return;
+            ArgumentNullException.ThrowIfNull(hostSettings);
 
             var buildConfiguration = GetBuildConfiguration();
-            hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\IntegrationEventListener\\bin\\{buildConfiguration}\\net6.0";
+            hostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\ProcessManager\\bin\\{buildConfiguration}\\net6.0";
         }
 
         /// <inheritdoc/>
@@ -78,9 +68,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionListenerString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionManagerString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsEventHubConnectionString, EventHubResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenerConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
         }
 
         /// <inheritdoc/>
@@ -88,27 +78,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             AzuriteManager.StartAzurite();
 
-            var eventHubResource = await EventHubResourceProvider
-                .BuildEventHub("wholesaleeventhub")
-                .SetEnvironmentVariableToEventHubName(EnvironmentSettingNames.IntegrationEventsEventHubName)
-                .CreateAsync();
+            await DatabaseManager.CreateDatabaseAsync();
 
-            EventHubListener = new EventHubListenerMock(EventHubResourceProvider.ConnectionString, eventHubResource.Name, "UseDevelopmentStorage=true", "container", TestLogger);
-
-            await EventHubListener.InitializeAsync().ConfigureAwait(false);
-
-            MeteringPointCreatedTopic = await ServiceBusResourceProvider
-                .BuildTopic("metering-point-created")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.MeteringPointCreatedTopicName)
-                .AddSubscription("metering-point-created-to-wholesale")
-                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName)
-                .CreateAsync();
-
-            MeteringPointConnectedTopic = await ServiceBusResourceProvider
-                .BuildTopic("metering-point-connected")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.MeteringPointConnectedTopicName)
-                .AddSubscription("metering-point-connected-to-wholesale")
-                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName)
+            ProcessCompletedTopic = await ServiceBusResourceProvider
+                .BuildTopic("process-completed")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
                 .CreateAsync();
         }
 
@@ -126,9 +100,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             AzuriteManager.Dispose();
 
-            // => Service Bus
             await ServiceBusResourceProvider.DisposeAsync();
-            await EventHubResourceProvider.DisposeAsync();
+            await DatabaseManager.DeleteDatabaseAsync();
         }
 
         private static string GetBuildConfiguration()

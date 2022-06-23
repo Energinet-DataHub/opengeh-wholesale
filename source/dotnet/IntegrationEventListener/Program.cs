@@ -58,7 +58,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
 
         private static void Infrastructure(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddLogging();
             serviceCollection.AddApplicationInsightsTelemetryWorkerService(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
             serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
