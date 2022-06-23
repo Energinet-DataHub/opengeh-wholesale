@@ -30,15 +30,12 @@ public class MeteringPointConnectedDtoFactory
     {
         ArgumentNullException.ThrowIfNull(meteringPointConnected);
 
-        if (_integrationEventContext.TryReadMetadata(out var eventMetadata))
-        {
-            return new MeteringPointConnectedDto(
+        var eventMetadata = _integrationEventContext.ReadMetadata();
+
+        return new MeteringPointConnectedDto(
                 meteringPointConnected.GsrnNumber,
                 meteringPointConnected.EffectiveDate.ToInstant(),
                 eventMetadata.MessageType,
                 eventMetadata.OperationTimestamp);
-        }
-
-        throw new InvalidOperationException($"Could not read metadata for integration event in {nameof(MeteringPointConnectedDtoFactory)}.");
     }
 }

@@ -32,36 +32,15 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
     {
         [Theory]
         [InlineAutoMoqData]
-        public void Create_InvalidEventMetadata_ThrowsException(
-            Mock<IIntegrationEventContext> integrationEventContext,
-            MeteringPointCreated meteringPointCreatedEvent)
-        {
-            // Arrange
-            var integrationEventMetadata = It.IsAny<IntegrationEventMetadata?>();
-            integrationEventContext
-                .Setup(x => x.TryReadMetadata(out integrationEventMetadata))
-                .Returns(false);
-            var sut = new MeteringPointCreatedDtoFactory(integrationEventContext.Object);
-
-            // Act & Assert
-            sut.Invoking(x => x.Create(meteringPointCreatedEvent))
-               .Should()
-               .Throw<InvalidOperationException>();
-        }
-
-        [Theory]
-        [InlineAutoMoqData]
         public void Create_HasEventMetadata_ReturnsValidDto(
             Mock<IIntegrationEventContext> integrationEventContext,
             MeteringPointCreated meteringPointCreatedEvent,
             IntegrationEventMetadata integrationEventMetadata)
         {
             // Arrange
-            var outEventMetadata = integrationEventMetadata;
-
             integrationEventContext
-                .Setup(x => x.TryReadMetadata(out outEventMetadata))
-                .Returns(true);
+                .Setup(x => x.ReadMetadata())
+                .Returns(integrationEventMetadata);
 
             meteringPointCreatedEvent.GridAreaCode = Guid.NewGuid().ToString();
 
@@ -82,11 +61,9 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
             MeteringPointCreated meteringPointCreatedEvent,
             IntegrationEventMetadata integrationEventMetadata)
         {
-            var outEventMetadata = integrationEventMetadata;
-
             integrationEventContext
-                .Setup(x => x.TryReadMetadata(out outEventMetadata))
-                .Returns(true);
+                .Setup(x => x.ReadMetadata())
+                .Returns(integrationEventMetadata);
 
             var sut = new MeteringPointCreatedDtoFactory(integrationEventContext.Object);
 
@@ -274,8 +251,8 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
             var outEventMetadata = new IntegrationEventMetadata("fake_value", Instant.FromDateTimeUtc(DateTime.UtcNow));
 
             integrationEventContext
-                .Setup(x => x.TryReadMetadata(out outEventMetadata))
-                .Returns(true);
+                .Setup(x => x.ReadMetadata())
+                .Returns(outEventMetadata);
 
             return new MeteringPointCreatedDtoFactory(integrationEventContext.Object);
         }

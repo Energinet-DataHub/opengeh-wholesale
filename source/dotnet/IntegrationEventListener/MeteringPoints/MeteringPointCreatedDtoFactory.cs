@@ -37,21 +37,18 @@ public class MeteringPointCreatedDtoFactory
         var meteringPointType = MapMeteringPointType(meteringPointCreated.MeteringPointType);
         var resolution = MapResolutionType(meteringPointCreated.MeterReadingPeriodicity);
 
-        if (_integrationEventContext.TryReadMetadata(out var eventMetadata))
-        {
-            return new MeteringPointCreatedDto(
-                meteringPointCreated.GsrnNumber,
-                Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
-                settlementMethod,
-                connectionState,
-                meteringPointCreated.EffectiveDate.ToInstant(),
-                meteringPointType,
-                eventMetadata.MessageType,
-                eventMetadata.OperationTimestamp,
-                resolution);
-        }
+        var eventMetadata = _integrationEventContext.ReadMetadata();
 
-        throw new InvalidOperationException($"Could not read metadata for integration event in {nameof(MeteringPointCreatedDtoFactory)}.");
+        return new MeteringPointCreatedDto(
+            meteringPointCreated.GsrnNumber,
+            Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
+            settlementMethod,
+            connectionState,
+            meteringPointCreated.EffectiveDate.ToInstant(),
+            meteringPointType,
+            eventMetadata.MessageType,
+            eventMetadata.OperationTimestamp,
+            resolution);
     }
 
     private static SettlementMethod? MapSettlementMethod(mpTypes.SettlementMethod settlementMethod)
