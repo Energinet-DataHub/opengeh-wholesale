@@ -55,7 +55,6 @@ public class Program
 
     private static void Infrastructure(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddLogging();
         serviceCollection.AddApplicationInsightsTelemetryWorkerService(
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
