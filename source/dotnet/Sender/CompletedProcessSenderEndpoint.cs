@@ -34,7 +34,7 @@ public class CompletedProcessSenderEndpoint
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.CompletedProcessTopicName + "%",
             "%" + EnvironmentSettingNames.CompletedProcessSubscriptionName + "%",
-            Connection = EnvironmentSettingNames.ServiceBusConnectionString)]
+            Connection = EnvironmentSettingNames.CompletedProcessServiceBusConnectionString)]
         byte[] message)
     {
         return await DeserializeByteArrayAsync<CompletedProcess>(message).ConfigureAwait(false);
