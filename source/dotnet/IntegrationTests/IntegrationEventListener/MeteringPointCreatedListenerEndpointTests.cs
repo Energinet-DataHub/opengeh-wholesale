@@ -29,14 +29,14 @@ using Google.Protobuf.WellKnownTypes;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationEventListener;
 
 public class MeteringPointCreatedListenerEndpointTests
 {
-    [Collection(nameof(WholesaleFunctionAppCollectionFixture))]
-    public class RunAsync : FunctionAppTestBase<WholesaleFunctionAppFixture>, IAsyncLifetime
+    [Collection(nameof(IntegrationEventListenerFunctionAppCollectionFixture))]
+    public class RunAsync : FunctionAppTestBase<IntegrationEventListenerFunctionAppFixture>, IAsyncLifetime
     {
-        public RunAsync(WholesaleFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
+        public RunAsync(IntegrationEventListenerFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
             : base(fixture, testOutputHelper)
         {
         }
