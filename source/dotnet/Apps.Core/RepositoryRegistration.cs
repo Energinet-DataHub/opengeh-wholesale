@@ -12,9 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Microsoft.Extensions.DependencyInjection;
 
-public static class EnvironmentSettingNames
+namespace Energinet.DataHub.Wholesale.Apps.Core
 {
-    public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
+    internal static class RepositoryRegistration
+    {
+        public static void AddRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IBatchRepository, BatchRepository>();
+        }
+    }
 }

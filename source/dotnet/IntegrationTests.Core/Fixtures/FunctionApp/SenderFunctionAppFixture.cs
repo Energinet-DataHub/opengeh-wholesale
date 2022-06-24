@@ -18,8 +18,8 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
-using Energinet.DataHub.Wholesale.Sender;
 using Microsoft.Extensions.Configuration;
+using HostSettings = Energinet.DataHub.Wholesale.Sender.Configuration.Settings;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 {
@@ -53,7 +53,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         /// <inheritdoc/>
         protected override void OnConfigureEnvironment()
         {
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            Environment.SetEnvironmentVariable(HostSettings.AppInsightsInstrumentationKey.Key, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            Environment.SetEnvironmentVariable(HostSettings.AzureWebJobsStorage.Key, "UseDevelopmentStorage=true");
         }
 
         /// <inheritdoc/>

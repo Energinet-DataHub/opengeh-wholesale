@@ -21,36 +21,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
-public class Startup
+public sealed class Startup : Apps.Core.StartupBase
 {
+    private readonly IConfiguration _configuration;
+
     public Startup(IConfiguration configuration)
     {
-        Configuration = configuration;
-    }
-
-    public IConfiguration Configuration { get; }
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddControllers();
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
-        services.AddJwtTokenSecurity();
-        services.AddApiVersioning(config =>
-        {
-            config.DefaultApiVersion = new ApiVersion(1, 0);
-            config.AssumeDefaultVersionWhenUnspecified = true;
-            config.ReportApiVersions = true;
-        });
-
-        services.AddCommandStack(Configuration);
-
-        ConfigureHealthChecks(services);
+        _configuration = configuration;
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseRouting();
+
         // Configure the HTTP request pipeline.
         if (env.IsDevelopment())
         {
@@ -78,7 +61,28 @@ public class Startup
         });
     }
 
-    private static void ConfigureHealthChecks(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
+    {
+        Initialize(_configuration, services);
+    }
+
+    protected override void Configure(IConfiguration configuration, IServiceCollection services)
+    {
+        services.AddControllers();
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+        services.AddJwtTokenSecurity(configuration);
+        services.AddApiVersioning(config =>
+        {
+            config.DefaultApiVersion = new ApiVersion(1, 0);
+            config.AssumeDefaultVersionWhenUnspecified = true;
+            config.ReportApiVersions = true;
+        });
+
+        HealthCheck(services);
+    }
+
+    private static void HealthCheck(IServiceCollection services)
     {
         services.AddHealthChecks()
             .AddLiveCheck()

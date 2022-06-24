@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Apps.Core.Configuration;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
-using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.Extensions.Configuration;
+using HostSettings = Energinet.DataHub.Wholesale.WebApi.Configuration.Settings;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
 {
@@ -45,13 +46,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
         {
             await DatabaseManager.CreateDatabaseAsync();
 
-            // Overwrites the setting so the Web Api app uses the database we have control of in the test
-            Environment.SetEnvironmentVariable(
-                $"CONNECTIONSTRINGS:{EnvironmentSettingNames.DbConnectionString}",
-                DatabaseManager.ConnectionString);
-
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl, AuthorizationConfiguration.FrontendOpenIdUrl);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId, AuthorizationConfiguration.FrontendAppId);
+            Environment.SetEnvironmentVariable(Settings.DatabaseConnectionString.Key, DatabaseManager.ConnectionString);
+            Environment.SetEnvironmentVariable(HostSettings.FrontEndOpenIdUrl.Key, AuthorizationConfiguration.FrontendOpenIdUrl);
+            Environment.SetEnvironmentVariable(HostSettings.FrontEndServiceAppId.Key, AuthorizationConfiguration.FrontendAppId);
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
         }
 

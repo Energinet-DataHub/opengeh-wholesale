@@ -18,10 +18,11 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Wholesale.Apps.Core.Configuration;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
-using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.Configuration;
+using HostSettings = Energinet.DataHub.Wholesale.ProcessManager.Configuration.Settings;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 {
@@ -66,11 +67,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         /// <inheritdoc/>
         protected override void OnConfigureEnvironment()
         {
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenerConnectionString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
+            Environment.SetEnvironmentVariable(HostSettings.AppInsightsInstrumentationKey.Key, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            Environment.SetEnvironmentVariable(HostSettings.AzureWebJobsStorage.Key, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(HostSettings.ServiceBusManageConnectionString.Key, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(Settings.DatabaseConnectionString.Key, DatabaseManager.ConnectionString);
+            Environment.SetEnvironmentVariable(Settings.ServiceBusListenerConnectionString.Key, ServiceBusResourceProvider.ConnectionString);
         }
 
         /// <inheritdoc/>
@@ -82,7 +83,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
             ProcessCompletedTopic = await ServiceBusResourceProvider
                 .BuildTopic("process-completed")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
+                .SetEnvironmentVariableToTopicName(Settings.ProcessCompletedTopicName.Key)
                 .CreateAsync();
         }
 
