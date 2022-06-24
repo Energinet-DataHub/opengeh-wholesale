@@ -43,7 +43,7 @@ module "func_processmanager" {
   app_settings                              = {
     SERVICE_BUS_SEND_CONNECTION_STRING               = module.sb_wholesale.primary_connection_strings["send"]
     SERVICE_BUS_MANAGE_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["manage"]
-    PROCESS_COMPLETED_TOPIC_NAME                     = "completed-process"
+    PROCESS_COMPLETED_TOPIC_NAME                     = module.sbt_completed_process.name
   }
 
   tags                                  = azurerm_resource_group.this.tags
