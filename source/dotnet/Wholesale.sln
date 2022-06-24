@@ -1,32 +1,37 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A65AE4F0-E4A5-4F6C-AB74-F8A278C31AD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{9746F437-9232-4F33-B11C-DBE78AF88A79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "WebApi\WebApi.csproj", "{9746F437-9232-4F33-B11C-DBE78AF88A79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{25A9C2D4-2368-4A34-A404-5D181827BB69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{25A9C2D4-2368-4A34-A404-5D181827BB69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests.Core", "IntegrationTests.Core\IntegrationTests.Core.csproj", "{38E9D759-9CBF-4799-B708-5B9C1D51737E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.Core", "IntegrationTests.Core\IntegrationTests.Core.csproj", "{38E9D759-9CBF-4799-B708-5B9C1D51737E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseMigration", "DatabaseMigration\DatabaseMigration.csproj", "{ABA195E8-C392-42BA-958E-F03447A2B301}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseMigration", "DatabaseMigration\DatabaseMigration.csproj", "{ABA195E8-C392-42BA-958E-F03447A2B301}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{F163CC59-E435-4274-9316-7EF7463BA8E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{F163CC59-E435-4274-9316-7EF7463BA8E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{24EE32CA-FA3D-4ABB-BA24-BC600D0D7B2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{24EE32CA-FA3D-4ABB-BA24-BC600D0D7B2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{1D30AFD7-C79E-4D22-833F-64F76DE59BB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{1D30AFD7-C79E-4D22-833F-64F76DE59BB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{29B77280-062B-4AB0-A67D-8AF9C346299F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{29B77280-062B-4AB0-A67D-8AF9C346299F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEventListener", "IntegrationEventListener\IntegrationEventListener.csproj", "{295543A8-17B5-45AC-92AF-AB8CB2C73E27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationEventListener", "IntegrationEventListener\IntegrationEventListener.csproj", "{295543A8-17B5-45AC-92AF-AB8CB2C73E27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Core", "Infrastructure.Core\Infrastructure.Core.csproj", "{78BBC6A5-D641-4779-80AA-16F6F0140832}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.Core", "Infrastructure.Core\Infrastructure.Core.csproj", "{78BBC6A5-D641-4779-80AA-16F6F0140832}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessManager", "ProcessManager\ProcessManager.csproj", "{40710EC6-776E-4723-B188-421432DA90D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessManager", "ProcessManager\ProcessManager.csproj", "{40710EC6-776E-4723-B188-421432DA90D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sender", "Sender\Sender.csproj", "{FF7C0086-D637-4265-A667-85275B4E05EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sender", "Sender\Sender.csproj", "{FF7C0086-D637-4265-A667-85275B4E05EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Apps.Core", "Apps.Core\Apps.Core.csproj", "{1FF6FC3B-142B-469E-A334-08778E3888C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,6 +87,13 @@ Global
 		{FF7C0086-D637-4265-A667-85275B4E05EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF7C0086-D637-4265-A667-85275B4E05EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF7C0086-D637-4265-A667-85275B4E05EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF6FC3B-142B-469E-A334-08778E3888C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF6FC3B-142B-469E-A334-08778E3888C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF6FC3B-142B-469E-A334-08778E3888C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF6FC3B-142B-469E-A334-08778E3888C3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9746F437-9232-4F33-B11C-DBE78AF88A79} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
@@ -92,5 +104,9 @@ Global
 		{295543A8-17B5-45AC-92AF-AB8CB2C73E27} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
 		{40710EC6-776E-4723-B188-421432DA90D9} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
 		{FF7C0086-D637-4265-A667-85275B4E05EF} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
+		{1FF6FC3B-142B-469E-A334-08778E3888C3} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FFC7768F-4305-450F-8A8A-59F79B39ACCA}
 	EndGlobalSection
 EndGlobal

@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi;
+using Energinet.DataHub.Wholesale.Application.Batches;
+using Microsoft.Extensions.DependencyInjection;
 
-public static class Program
+namespace Energinet.DataHub.Wholesale.Apps.Core;
+
+internal static class ApplicationServiceRegistration
 {
-    public static async Task Main(string[] args)
+    public static void AddApplicationServices(this IServiceCollection services)
     {
-        using var host = Host
-            .CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(builder => builder.UseStartup<Startup>())
-            .Build();
-
-        await host.RunAsync().ConfigureAwait(false);
+        services.AddScoped<IBatchApplicationService, BatchApplicationService>();
     }
 }

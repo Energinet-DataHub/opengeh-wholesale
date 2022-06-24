@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi;
+namespace Energinet.DataHub.Wholesale.Apps.Core.Configuration;
 
-public static class Program
+public static class Settings
 {
-    public static async Task Main(string[] args)
-    {
-        using var host = Host
-            .CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(builder => builder.UseStartup<Startup>())
-            .Build();
+    public static Setting<string> DatabaseConnectionString { get; }
+        = new("DB_CONNECTION_STRING");
 
-        await host.RunAsync().ConfigureAwait(false);
-    }
+    public static Setting<string> ServiceBusListenerConnectionString { get; }
+        = new("SERVICE_BUS_LISTENER_CONNECTION_STRING");
+
+    public static Setting<string> ProcessCompletedTopicName { get; }
+        = new("PROCESS_COMPLETED_TOPIC_NAME");
 }

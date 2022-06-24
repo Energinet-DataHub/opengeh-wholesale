@@ -12,17 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi;
+using Energinet.DataHub.Wholesale.Apps.Core.Configuration;
 
-public static class Program
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
+
+public static class Settings
 {
-    public static async Task Main(string[] args)
-    {
-        using var host = Host
-            .CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(builder => builder.UseStartup<Startup>())
-            .Build();
+    public static Setting<string> AzureWebJobsStorage { get; }
+        = new("AzureWebJobsStorage");
 
-        await host.RunAsync().ConfigureAwait(false);
-    }
+    public static Setting<string> AppInsightsInstrumentationKey { get; }
+        = new("APPINSIGHTS_INSTRUMENTATIONKEY");
+
+    public static Setting<string> FrontEndOpenIdUrl { get; }
+        = new("FRONTEND_OPEN_ID_URL");
+
+    public static Setting<string> FrontEndServiceAppId { get; }
+        = new("FRONTEND_SERVICE_APP_ID");
 }
