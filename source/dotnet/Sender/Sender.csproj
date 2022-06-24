@@ -16,14 +16,17 @@ limitations under the License.
 
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
         <OutputType>Exe</OutputType>
         <AssemblyName>Energinet.DataHub.Wholesale.Sender</AssemblyName>
         <RootNamespace>Energinet.DataHub.Wholesale.Sender</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="6.0.3" />
         <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="2.4.0" />
         <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
+        <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Abstractions" Version="1.1.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.0.13" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.4.0" />
@@ -37,6 +40,10 @@ limitations under the License.
         <None Update="local.settings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        </None>
+        <None Update="local.settings.sample.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
     </ItemGroup>
     <ItemGroup>

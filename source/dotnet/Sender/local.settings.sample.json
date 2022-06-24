@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "",
+    "COMPLETED_PROCESS_TOPIC_NAME": "",
+    "COMPLETED_PROCESS_SUBSCRIPTION_NAME": "",
+    "COMPLETED_PROCESS_SERVICE_BUS_CONNECTION_STRING": "",
+
+    "DATA_AVAILABLE_QUEUE_NAME": "",
+    "DATA_AVAILABLE_SERVICE_BUS_CONNECTION_STRING": ""
+  }
+}

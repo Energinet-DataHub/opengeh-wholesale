@@ -65,8 +65,22 @@ public class Program
         serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
         serviceCollection.AddScoped<HealthCheckEndpoint>();
 
+        var completedProcessServiceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CompletedProcessServiceBusConnectionString);
+        var completedProcessTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CompletedProcessTopicName);
+        var completedProcessSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CompletedProcessSubscriptionName);
+
+        var dataAvailableServiceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DataAvailableServiceBusConnectionString);
+        var dataAvailableQueueName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DataAvailableQueueName);
+
         serviceCollection
             .AddHealthChecks()
-            .AddLiveCheck();
+            .AddLiveCheck()
+            .AddAzureServiceBusSubscription(
+                completedProcessServiceBusConnectionString,
+                completedProcessTopicName,
+                completedProcessSubscriptionName)
+            .AddAzureServiceBusQueue(
+                dataAvailableServiceBusConnectionString,
+                dataAvailableQueueName);
     }
 }

@@ -29,7 +29,9 @@ public class CompletedProcessSenderEndpoint
     }
 
     [Function(FunctionName)]
-    [ServiceBusOutput(EnvironmentSettingNames.DataAvailableQueueName, Connection = EnvironmentSettingNames.DataAvailableServiceBusConnectionString)]
+    [ServiceBusOutput(
+        "%" + EnvironmentSettingNames.DataAvailableQueueName + "%",
+        Connection = EnvironmentSettingNames.DataAvailableServiceBusConnectionString)]
     public async Task<CompletedProcess> RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.CompletedProcessTopicName + "%",
@@ -37,7 +39,8 @@ public class CompletedProcessSenderEndpoint
             Connection = EnvironmentSettingNames.CompletedProcessServiceBusConnectionString)]
         byte[] message)
     {
-        return await DeserializeByteArrayAsync<CompletedProcess>(message).ConfigureAwait(false);
+        var completedProcess = await DeserializeByteArrayAsync<CompletedProcess>(message).ConfigureAwait(false);
+        return completedProcess;
     }
 
     private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)
