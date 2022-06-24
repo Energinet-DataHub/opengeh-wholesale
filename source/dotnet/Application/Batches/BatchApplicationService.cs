@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes;
-using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
@@ -23,14 +22,15 @@ public class BatchApplicationService : IBatchApplicationService
 {
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IBatchRunner _batchRunner;
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
 
-    public BatchApplicationService(IBatchRepository batchRepository, IUnitOfWork unitOfWork, IBatchRunner batchRunner, IProcessCompletedPublisher processCompletedPublisher)
+    public BatchApplicationService(
+        IBatchRepository batchRepository,
+        IUnitOfWork unitOfWork,
+        IProcessCompletedPublisher processCompletedPublisher)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
-        _batchRunner = batchRunner;
         _processCompletedPublisher = processCompletedPublisher;
     }
 
@@ -43,20 +43,12 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task StartPendingAsync()
     {
-        var requestedBatches = await _batchRepository.GetRequestedAsync().ConfigureAwait(false);
-        await _batchRunner.BeginExecuteAsync(requestedBatches).ConfigureAwait(false);
+        var batches = await _batchRepository.GetPendingAsync().ConfigureAwait(false);
 
-        requestedBatches.ForEach(b => b.SetExecuting());
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
-    }
-
-    public async Task UpdateBatchStatesAsync()
-    {
-        var executingBatches = await _batchRepository.GetExecutingAsync().ConfigureAwait(false);
-        var completedBatches = await _batchRunner.GetCompletedAsync(executingBatches).ConfigureAwait(false);
-        completedBatches.ForEach(b => b.Complete());
-
-        var completedProcesses = CreateProcessCompletedEvents(completedBatches);
+        // For now we simulate that batches completes immediately after being started
+        batches.ForEach(b => b.SetExecuting());
+        batches.ForEach(b => b.Complete());
+        var completedProcesses = CreateProcessCompletedEvents(batches);
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
 
         await _unitOfWork.CommitAsync().ConfigureAwait(false);

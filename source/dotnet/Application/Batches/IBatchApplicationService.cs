@@ -27,10 +27,4 @@ public interface IBatchApplicationService
     /// Create and start all processes of batches with state <see cref="BatchExecutionState.Pending"/>.
     /// </summary>
     Task StartPendingAsync();
-
-    /// <summary>
-    /// Update state of batches that are not yet known to have terminated.
-    /// The state is determined based upon the (Spark) job execution of the batch and its processes.
-    /// </summary>
-    Task UpdateBatchStatesAsync();
 }

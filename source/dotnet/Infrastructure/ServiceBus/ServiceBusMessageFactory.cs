@@ -26,7 +26,7 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         _correlationContext = correlationContext;
     }
 
-    public IEnumerable<ServiceBusMessage> Create<TMessage>(List<TMessage> messages)
+    public IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages)
     {
         return messages.Select(message =>
             new ServiceBusMessage

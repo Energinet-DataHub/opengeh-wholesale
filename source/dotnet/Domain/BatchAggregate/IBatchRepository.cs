@@ -18,7 +18,7 @@ public interface IBatchRepository
 {
     Task AddAsync(Batch batch);
 
-    Task<List<Batch>> GetRequestedAsync();
+    Task<List<Batch>> GetPendingAsync();
 
     Task<List<Batch>> GetExecutingAsync();
 
