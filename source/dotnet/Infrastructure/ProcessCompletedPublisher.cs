@@ -21,19 +21,19 @@ namespace Energinet.DataHub.Wholesale.Infrastructure;
 public class ProcessCompletedPublisher : IProcessCompletedPublisher
 {
     private readonly ServiceBusSender _serviceBusSender;
-    private readonly IServiceBusMessageFactory _serviceBusMessageFactor;
+    private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
 
     public ProcessCompletedPublisher(
         ServiceBusSender serviceBusSender,
-        IServiceBusMessageFactory serviceBusMessageFactor)
+        IServiceBusMessageFactory serviceBusMessageFactory)
     {
         _serviceBusSender = serviceBusSender;
-        _serviceBusMessageFactor = serviceBusMessageFactor;
+        _serviceBusMessageFactory = serviceBusMessageFactory;
     }
 
     public async Task PublishAsync(List<ProcessCompletedEventDto> completedProcesses)
     {
-        var messages = _serviceBusMessageFactor.Create(completedProcesses);
+        var messages = _serviceBusMessageFactory.Create(completedProcesses);
         await _serviceBusSender.SendMessagesAsync(messages).ConfigureAwait(false);
     }
 }

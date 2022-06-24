@@ -88,12 +88,12 @@ public class Program
 
     private static void Infrastructure(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddLogging();
         serviceCollection.AddApplicationInsightsTelemetryWorkerService(
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+        serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);

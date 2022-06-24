@@ -17,17 +17,19 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 {
-    public class ProcessFunctionAppFixture : FunctionAppFixture
+    public class ProcessManagerFunctionAppFixture : FunctionAppFixture
     {
-        public ProcessFunctionAppFixture()
+        public ProcessManagerFunctionAppFixture()
         {
             AzuriteManager = new AzuriteManager();
             DatabaseManager = new WholesaleDatabaseManager();
@@ -47,6 +49,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
 
         public TopicResource ProcessCompletedTopic { get; private set; } = null!;
+
+        public ServiceBusTestListener ProcessCompletedListener { get; private set; } = null!;
 
         private AzuriteManager AzuriteManager { get; }
 
@@ -80,10 +84,16 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
             await DatabaseManager.CreateDatabaseAsync();
 
+            var processCompletedSubscriptionName = "process-completed-sub";
             ProcessCompletedTopic = await ServiceBusResourceProvider
                 .BuildTopic("process-completed")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
+                .AddSubscription(processCompletedSubscriptionName)
                 .CreateAsync();
+
+            var processCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
+            await processCompletedListener.AddTopicSubscriptionListenerAsync(ProcessCompletedTopic.Name, processCompletedSubscriptionName);
+            ProcessCompletedListener = new ServiceBusTestListener(processCompletedListener);
         }
 
         /// <inheritdoc/>

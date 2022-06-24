@@ -17,14 +17,21 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public static class StartPendingBatches
+public class StartPendingBatches
 {
-    [Function(nameof(StartPendingBatches))]
-    public static async Task RunAsync(
-        [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
-        FunctionContext context,
-        IBatchApplicationService batchApplicationService)
+    private readonly IBatchApplicationService _batchApplicationService;
+
+    public StartPendingBatches(IBatchApplicationService batchApplicationService)
     {
-        await batchApplicationService.StartPendingAsync().ConfigureAwait(false);
+        _batchApplicationService = batchApplicationService;
+    }
+
+    // Executes every 10 seconds (see the [TimerTrigger] below)
+    [Function(nameof(StartPendingBatches))]
+    public async Task RunAsync(
+        [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
+        FunctionContext context)
+    {
+        await _batchApplicationService.StartPendingAsync().ConfigureAwait(false);
     }
 }

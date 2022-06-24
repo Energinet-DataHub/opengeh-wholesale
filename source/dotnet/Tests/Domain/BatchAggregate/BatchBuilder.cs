@@ -29,6 +29,12 @@ public class BatchBuilder
         return this;
     }
 
+    public BatchBuilder WithGridAreaCode(string gridAreaCode)
+    {
+        _gridAreaCodes = new GridAreaCode(gridAreaCode).InList();
+        return this;
+    }
+
     public BatchBuilder WithGridAreaCodes(List<GridAreaCode> gridAreaCodes)
     {
         _gridAreaCodes = gridAreaCodes;

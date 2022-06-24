@@ -25,11 +25,11 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
-[Collection(nameof(ProcessFunctionAppCollectionFixture))]
-public class DatabaseHealthCheckTests : FunctionAppTestBase<ProcessFunctionAppFixture>
+[Collection(nameof(ProcessManagerFunctionAppCollectionFixture))]
+public class DatabaseHealthCheckTests : FunctionAppTestBase<ProcessManagerFunctionAppFixture>
 {
-    public DatabaseHealthCheckTests(ProcessFunctionAppFixture processFunctionAppFixture, ITestOutputHelper testOutputHelper)
-        : base(processFunctionAppFixture, testOutputHelper)
+    public DatabaseHealthCheckTests(ProcessManagerFunctionAppFixture processManagerFunctionAppFixture, ITestOutputHelper testOutputHelper)
+        : base(processManagerFunctionAppFixture, testOutputHelper)
     {
     }
 

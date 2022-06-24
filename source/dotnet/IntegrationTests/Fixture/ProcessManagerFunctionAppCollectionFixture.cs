@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
 /// xUnit documentation of collection fixtures:
 ///  * https://xunit.net/docs/shared-context#collection-fixture
 /// </summary>
-[CollectionDefinition(nameof(ProcessFunctionAppCollectionFixture))]
-public class ProcessFunctionAppCollectionFixture : ICollectionFixture<ProcessFunctionAppFixture>
+[CollectionDefinition(nameof(ProcessManagerFunctionAppCollectionFixture))]
+public class ProcessManagerFunctionAppCollectionFixture : ICollectionFixture<ProcessManagerFunctionAppFixture>
 {
 }
