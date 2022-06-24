@@ -53,6 +53,7 @@ public class StartPendingBatchesEndpointTests
         {
             // Arrange
             var gridAreaCode = CreateGridAreaCode();
+            await CreateAndSavePendingBatch(gridAreaCode);
 
             using var eventualProcessCompletedEvent = await Fixture
                 .ProcessCompletedListener
