@@ -16,9 +16,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Function;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
-using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -43,10 +41,7 @@ public class StartPendingBatchesEndpointTests
             return Task.CompletedTask;
         }
 
-        public Task DisposeAsync()
-        {
-            return Task.CompletedTask;
-        }
+        public Task DisposeAsync() => Task.CompletedTask;
 
         [Fact]
         public async Task When_PendingBatchCreated_Then_ProcessCompletedEventIsPublished()
@@ -57,18 +52,14 @@ public class StartPendingBatchesEndpointTests
 
             using var eventualProcessCompletedEvent = await Fixture
                 .ProcessCompletedListener
-                .ListenForMessageAsync<ProcessCompletedEventDto>(e => e.GridAreaCode == gridAreaCode)
-                .ConfigureAwait(false);
+                .ListenForMessageAsync<ProcessCompletedEventDto>(e => e.GridAreaCode == gridAreaCode);
 
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
-
-            // Assert: Await timer triggered endpoint has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartPendingBatches)).ConfigureAwait(false);
 
             // Assert: The process completed events have been published
             var isProcessCompletedEventReceived = eventualProcessCompletedEvent
                 .MessageAwaiter!
-                .Wait(TimeSpan.FromSeconds(5));
+                .Wait(TimeSpan.FromSeconds(20));
             isProcessCompletedEventReceived.Should().BeTrue();
         }
 
@@ -87,7 +78,7 @@ public class StartPendingBatchesEndpointTests
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
             // Assert: Await timer triggered endpoint has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartPendingBatches)).ConfigureAwait(false);
+            await Task.Delay(20);
 
             // Assert: The pending batch is now complete
             await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
@@ -95,10 +86,12 @@ public class StartPendingBatchesEndpointTests
             actualBatch.ExecutionState.Should().Be(BatchExecutionState.Completed);
         }
 
+        private static readonly Random _generator = new();
+
         /// <summary>
         /// Create a grid area code with valid format.
         /// </summary>
-        private static string CreateGridAreaCode() => new Random().Next(100, 1000).ToString();
+        private static string CreateGridAreaCode() => _generator.Next(100, 1000).ToString();
 
         private async Task<BatchId> CreateAndSavePendingBatch(string gridAreaCode)
         {
