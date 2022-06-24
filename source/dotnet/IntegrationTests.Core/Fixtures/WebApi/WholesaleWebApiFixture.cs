@@ -46,11 +46,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
         {
             await DatabaseManager.CreateDatabaseAsync();
 
-            // Overwrites the setting so the Web Api app uses the database we have control of in the test
-            Environment.SetEnvironmentVariable(
-                $"CONNECTIONSTRINGS:{Settings.DatabaseConnectionString.Key}",
-                DatabaseManager.ConnectionString);
-
+            Environment.SetEnvironmentVariable(Settings.DatabaseConnectionString.Key, DatabaseManager.ConnectionString);
             Environment.SetEnvironmentVariable(HostSettings.FrontEndOpenIdUrl.Key, AuthorizationConfiguration.FrontendOpenIdUrl);
             Environment.SetEnvironmentVariable(HostSettings.FrontEndServiceAppId.Key, AuthorizationConfiguration.FrontendAppId);
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
