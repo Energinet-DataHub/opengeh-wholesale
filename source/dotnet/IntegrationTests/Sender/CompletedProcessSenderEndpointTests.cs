@@ -25,7 +25,7 @@ using Google.Protobuf;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Sender;
 
 public class CompletedProcessSenderEndpointTests
 {

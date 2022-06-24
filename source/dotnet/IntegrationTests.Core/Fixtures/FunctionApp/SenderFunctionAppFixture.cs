@@ -36,11 +36,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 "integrationtest.local.settings.json",
                 "AZURE_SECRETS_KEYVAULT_URL");
 
-            ServiceBusResourceProvider = new ServiceBusResourceProvider(
+            CompletedProcessServiceBusResourceProvider = new ServiceBusResourceProvider(
                 IntegrationTestConfiguration.ServiceBusConnectionString,
                 TestLogger);
 
-            QueueServiceBusResourceProvider = new ServiceBusResourceProvider(
+            DataAvailableServiceBusResourceProvider = new ServiceBusResourceProvider(
                 IntegrationTestConfiguration.ServiceBusConnectionString,
                 TestLogger);
         }
@@ -57,9 +57,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
-        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
+        private ServiceBusResourceProvider CompletedProcessServiceBusResourceProvider { get; }
 
-        private ServiceBusResourceProvider QueueServiceBusResourceProvider { get; }
+        private ServiceBusResourceProvider DataAvailableServiceBusResourceProvider { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
@@ -74,6 +74,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         protected override void OnConfigureEnvironment()
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CompletedProcessServiceBusConnectionString, CompletedProcessServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DataAvailableServiceBusConnectionString, DataAvailableServiceBusResourceProvider.ConnectionString);
         }
 
         /// <inheritdoc/>
@@ -81,21 +83,21 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             AzuriteManager.StartAzurite();
 
-            DataAvailableQueue = await QueueServiceBusResourceProvider
+            DataAvailableQueue = await DataAvailableServiceBusResourceProvider
                 .BuildQueue("data-available")
                 .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.DataAvailableQueueName)
                 .CreateAsync();
 
             ServiceBusListener = new ServiceBusListenerMock(
-                QueueServiceBusResourceProvider.ConnectionString,
+                DataAvailableServiceBusResourceProvider.ConnectionString,
                 TestLogger);
 
             await ServiceBusListener.AddQueueListenerAsync(DataAvailableQueue.Name);
 
-            CompletedProcessTopic = await ServiceBusResourceProvider
-                .BuildTopic("process-created")
+            CompletedProcessTopic = await CompletedProcessServiceBusResourceProvider
+                .BuildTopic("completed-process")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.CompletedProcessTopicName)
-                .AddSubscription("process-created-sub-wholesale")
+                .AddSubscription("completed-process-sub-wholesale")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.CompletedProcessSubscriptionName)
                 .CreateAsync();
         }
@@ -113,7 +115,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         protected override async Task OnDisposeFunctionAppDependenciesAsync()
         {
             AzuriteManager.Dispose();
-            await ServiceBusResourceProvider.DisposeAsync();
+            await CompletedProcessServiceBusResourceProvider.DisposeAsync();
+            await DataAvailableServiceBusResourceProvider.DisposeAsync();
         }
 
         private static string GetBuildConfiguration()
