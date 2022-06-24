@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
@@ -22,17 +22,50 @@ public class BatchApplicationService : IBatchApplicationService
 {
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IProcessCompletedPublisher _processCompletedPublisher;
 
-    public BatchApplicationService(IBatchRepository batchRepository, IUnitOfWork unitOfWork)
+    public BatchApplicationService(
+        IBatchRepository batchRepository,
+        IUnitOfWork unitOfWork,
+        IProcessCompletedPublisher processCompletedPublisher)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
+        _processCompletedPublisher = processCompletedPublisher;
     }
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
     {
-        var batch = new Batch(batchRequestDto.ProcessType, batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c)));
+        var batch = CreateBatch(batchRequestDto);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
+    }
+
+    public async Task StartPendingAsync()
+    {
+        var batches = await _batchRepository.GetPendingAsync().ConfigureAwait(false);
+
+        // For now we simulate that batches completes immediately after being started
+        batches.ForEach(b => b.SetExecuting());
+        batches.ForEach(b => b.Complete());
+        var completedProcesses = CreateProcessCompletedEvents(batches);
+        await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
+
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+    }
+
+    private static Batch CreateBatch(BatchRequestDto batchRequestDto)
+    {
+        var gridAreaCodes = batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c));
+        var batch = new Batch(batchRequestDto.ProcessType, gridAreaCodes);
+        return batch;
+    }
+
+    private List<ProcessCompletedEventDto> CreateProcessCompletedEvents(List<Batch> completedBatches)
+    {
+        return completedBatches
+            .SelectMany(b => b.GridAreaCodes)
+            .Select(c => new ProcessCompletedEventDto(c.Code))
+            .ToList();
     }
 }
