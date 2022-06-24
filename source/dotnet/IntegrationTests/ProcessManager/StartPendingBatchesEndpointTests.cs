@@ -40,7 +40,6 @@ public class StartPendingBatchesEndpointTests
         public Task InitializeAsync()
         {
             Fixture.ProcessCompletedListener.Reset();
-            Fixture.HostManager.ClearHostLog();
             return Task.CompletedTask;
         }
 
@@ -72,11 +71,7 @@ public class StartPendingBatchesEndpointTests
             // Arrange
             var gridAreaCode = CreateGridAreaCode();
             var batchId = await CreateAndSavePendingBatch(gridAreaCode);
-
-            using var eventualProcessCompletedEvent = await Fixture
-                .ProcessCompletedListener
-                .ListenForMessageAsync<ProcessCompletedEventDto>(e => e.GridAreaCode == gridAreaCode)
-                .ConfigureAwait(false);
+            Fixture.HostManager.ClearHostLog();
 
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
