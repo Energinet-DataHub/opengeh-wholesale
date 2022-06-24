@@ -12,19 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Microsoft.Azure.Functions.Worker;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Registration;
 
-namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
-
-public static class StartRequestedBatches
-{
-    [Function(nameof(StartRequestedBatches))]
-    public static async Task RunAsync(
-        [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
-        FunctionContext context,
-        IBatchApplicationService batchApplicationService)
-    {
-        await batchApplicationService.StartPendingAsync().ConfigureAwait(false);
-    }
-}
+/// <summary>
+/// Allow different instances of same type to be registered as singletons and at
+/// the same time allowed to be distinguished at injection time depending on the dependent.
+/// </summary>
+/// <param name="Instance"></param>
+/// <typeparam name="TInstance">The type of the instance.</typeparam>
+/// <typeparam name="TDependent">The type of the class depending on the instance.</typeparam>
+public sealed record TargetedSingleton<TInstance, TDependent>(TInstance Instance);

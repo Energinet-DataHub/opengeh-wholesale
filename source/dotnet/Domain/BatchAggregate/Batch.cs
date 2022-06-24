@@ -24,7 +24,7 @@ public class Batch
     public Batch(WholesaleProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes)
     {
         Id = new BatchId();
-        ExecutionState = BatchExecutionState.Requested;
+        ExecutionState = BatchExecutionState.Pending;
         ProcessType = processType;
 
         _gridAreaCodes = gridAreaCodes.ToList();
@@ -60,7 +60,7 @@ public class Batch
 
     public void SetExecuting()
     {
-        if (ExecutionState != BatchExecutionState.Requested)
+        if (ExecutionState != BatchExecutionState.Pending)
             throw new InvalidOperationException("Batch cannot be completed because it is not in state requested.");
 
         ExecutionState = BatchExecutionState.Executing;

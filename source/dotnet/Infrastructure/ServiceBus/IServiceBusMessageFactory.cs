@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Processes;
+using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure;
+namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
-public class ProcessCompletedPublisherMock : IProcessCompletedPublisher
+public interface IServiceBusMessageFactory
 {
-    public Task PublishAsync(List<ProcessCompletedEventDto> completedProcesses)
-    {
-        // Future work will publish events to topic
-        return Task.CompletedTask;
-    }
+    IEnumerable<ServiceBusMessage> Create<TMessage>(List<TMessage> messages);
 }

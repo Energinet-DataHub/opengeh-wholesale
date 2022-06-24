@@ -19,14 +19,14 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 public interface IBatchApplicationService
 {
     /// <summary>
-    /// Create a new batch with state <see cref="BatchExecutionState.Requested"/>.
+    /// Create a new batch with state <see cref="BatchExecutionState.Pending"/>.
     /// </summary>
     Task CreateAsync(BatchRequestDto batchRequestDto);
 
     /// <summary>
-    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Requested"/>.
+    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Pending"/>.
     /// </summary>
-    Task StartRequestedAsync();
+    Task StartPendingAsync();
 
     /// <summary>
     /// Update state of batches that are not yet known to have terminated.

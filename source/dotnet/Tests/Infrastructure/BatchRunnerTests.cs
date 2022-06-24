@@ -24,7 +24,7 @@ public class BatchRunnerTests
 {
     [Theory]
     [InlineAutoMoqData(BatchExecutionState.Completed)]
-    [InlineAutoMoqData(BatchExecutionState.Requested)]
+    [InlineAutoMoqData(BatchExecutionState.Pending)]
     public async Task GetCompletedAsync_WhenAnyNotExecuting_ThrowsArgumentException(BatchExecutionState state, BatchRunnerMock sut)
     {
         var batch = new BatchBuilder().WithState(state).Build();

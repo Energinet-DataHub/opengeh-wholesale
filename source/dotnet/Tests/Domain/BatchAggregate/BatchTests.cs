@@ -48,7 +48,7 @@ public class BatchTests
     [Fact]
     public void Complete_WhenRequested_ThrowsInvalidOperationException()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Requested).Build();
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
         Assert.Throws<InvalidOperationException>(() => sut.Complete());
     }
 
@@ -84,7 +84,7 @@ public class BatchTests
     [Fact]
     public void SetExecuting_WhenRequested_ExecutesBatch()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Requested).Build();
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
         sut.SetExecuting();
         sut.ExecutionState.Should().Be(BatchExecutionState.Executing);
     }

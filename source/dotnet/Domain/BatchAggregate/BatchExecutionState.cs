@@ -20,9 +20,9 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 public enum BatchExecutionState
 {
     /// <summary>
-    /// The batch has been requested.
+    /// The batch is pending.
     /// </summary>
-    Requested = 0,
+    Pending = 0,
 
     /// <summary>
     /// The batch is currently executing.

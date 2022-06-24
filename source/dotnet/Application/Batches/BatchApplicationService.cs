@@ -41,7 +41,7 @@ public class BatchApplicationService : IBatchApplicationService
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task StartRequestedAsync()
+    public async Task StartPendingAsync()
     {
         var requestedBatches = await _batchRepository.GetRequestedAsync().ConfigureAwait(false);
         await _batchRunner.BeginExecuteAsync(requestedBatches).ConfigureAwait(false);
