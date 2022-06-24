@@ -14,7 +14,7 @@
 module "func_processmanager" {
   source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=7.0.0"
 
-  name                                      = "processmanager"
+  name                                      = "procmanager"
   project_name                              = var.domain_name_short
   environment_short                         = var.environment_short
   environment_instance                      = var.environment_instance
@@ -32,15 +32,8 @@ module "func_processmanager" {
   dotnet_framework_version                  = "6"
   use_dotnet_isolated_runtime               = true
 
-  connection_strings                        = [
-    {
-      name  = "DB_CONNECTION_STRING"
-      type  = "SQLAzure"
-      value = local.DB_CONNECTION_STRING
-    }
-  ]
-
   app_settings                              = {
+    DB_CONNECTION_STRING                             = local.DB_CONNECTION_STRING
     SERVICE_BUS_SEND_CONNECTION_STRING               = module.sb_wholesale.primary_connection_strings["send"]
     SERVICE_BUS_MANAGE_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["manage"]
     PROCESS_COMPLETED_TOPIC_NAME                     = module.sbt_completed_process.name
