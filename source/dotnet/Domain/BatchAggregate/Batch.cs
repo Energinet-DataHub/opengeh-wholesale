@@ -61,7 +61,7 @@ public class Batch
     public void SetExecuting()
     {
         if (ExecutionState != BatchExecutionState.Pending)
-            throw new InvalidOperationException("Batch cannot be completed because it is not in state requested.");
+            throw new InvalidOperationException("Batch cannot be completed because it is not in state pending.");
 
         ExecutionState = BatchExecutionState.Executing;
     }

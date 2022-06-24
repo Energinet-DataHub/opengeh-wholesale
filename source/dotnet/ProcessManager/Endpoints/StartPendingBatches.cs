@@ -17,9 +17,9 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public static class StartRequestedBatches
+public static class StartPendingBatches
 {
-    [Function(nameof(StartRequestedBatches))]
+    [Function(nameof(StartPendingBatches))]
     public static async Task RunAsync(
         [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
         FunctionContext context,
