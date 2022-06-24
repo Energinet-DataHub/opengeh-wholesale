@@ -16,7 +16,9 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Function;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
+using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +40,7 @@ public class StartPendingBatchesEndpointTests
         public Task InitializeAsync()
         {
             Fixture.ProcessCompletedListener.Reset();
+            Fixture.HostManager.ClearHostLog();
             return Task.CompletedTask;
         }
 
@@ -78,7 +81,7 @@ public class StartPendingBatchesEndpointTests
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
             // Assert: Await timer triggered endpoint has executed before actually asserting
-            await Task.Delay(20);
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartPendingBatches));
 
             // Assert: The pending batch is now complete
             await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
