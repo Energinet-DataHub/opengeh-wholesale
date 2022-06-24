@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventListener;
-
-public record MeteringPointCreatedDto(
-    string MeteringPointId,
-    Guid GridAreaLinkId,
-    int? SettlementMethod,
-    int ConnectionState,
-    Instant EffectiveDate,
-    int MeteringPointType,
-    string MessageType,
-    Instant OperationTime);
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions
+{
+    public static class TimestampExtensions
+    {
+        public static Instant ToInstant(this Timestamp timestamp)
+        {
+            var instant = Instant.FromUnixTimeSeconds(timestamp.Seconds);
+            return instant.PlusNanoseconds(timestamp.Nanos);
+        }
+    }
+}

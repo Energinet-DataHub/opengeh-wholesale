@@ -26,7 +26,6 @@ limitations under the License.
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.5" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
-        <PackageReference Include="xunit.categories" Version="2.0.6" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -43,6 +42,9 @@ limitations under the License.
 
     <ItemGroup>
       <None Update="integrationtest.local.settings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="functionapphost.settings.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

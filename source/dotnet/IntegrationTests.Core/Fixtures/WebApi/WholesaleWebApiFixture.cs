@@ -52,13 +52,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl, AuthorizationConfiguration.FrontendOpenIdUrl);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId, AuthorizationConfiguration.FrontendAppId);
-            await Task.CompletedTask;
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
         }
 
         /// <inheritdoc/>
-        protected override async Task OnDisposeWebApiDependenciesAsync()
+        protected override Task OnDisposeWebApiDependenciesAsync()
         {
-            await DatabaseManager.DeleteDatabaseAsync();
+            return DatabaseManager.DeleteDatabaseAsync();
         }
     }
 }

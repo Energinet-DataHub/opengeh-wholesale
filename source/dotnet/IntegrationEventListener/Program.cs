@@ -20,8 +20,7 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.Contracts.External.MeteringPointCreated;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.Factories;
+using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,7 +47,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             await host.RunAsync().ConfigureAwait(false);
         }
 
-        private static void Middlewares(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        private static void Middlewares(IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
             serviceCollection.AddScoped<CorrelationIdMiddleware>();
@@ -57,21 +56,19 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
         }
 
-        private static void Infrastructure(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        private static void Infrastructure(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddLogging();
             serviceCollection.AddApplicationInsightsTelemetryWorkerService(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
             serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
         }
 
-        private static void Host(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        private static void Host(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<MeteringPointCreatedInboundMapper>();
-            serviceCollection.AddScoped<IMeteringPointCreatedDtoFactory, MeteringPointCreatedDtoFactory>();
+            serviceCollection.AddScoped<MeteringPointCreatedDtoFactory>();
         }
 
-        private static void HealthCheck(HostBuilderContext hostBuilderContext, IServiceCollection serviceCollection)
+        private static void HealthCheck(IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
             serviceCollection.AddScoped<HealthCheckEndpoint>();

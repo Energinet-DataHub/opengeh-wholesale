@@ -21,11 +21,9 @@ using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi.V1;
 
-[IntegrationTest]
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
 public class BatchControllerTests :
     WebApiTestBase<WholesaleWebApiFixture>,
