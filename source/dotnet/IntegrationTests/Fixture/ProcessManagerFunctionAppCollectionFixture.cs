@@ -12,22 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
+using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
 
-public class UnitOfWork : IUnitOfWork
+/// <summary>
+/// An xUnit collection fixture for ensuring tests don't run in parallel.
+///
+/// xUnit documentation of collection fixtures:
+///  * https://xunit.net/docs/shared-context#collection-fixture
+/// </summary>
+[CollectionDefinition(nameof(ProcessManagerFunctionAppCollectionFixture))]
+public class ProcessManagerFunctionAppCollectionFixture : ICollectionFixture<ProcessManagerFunctionAppFixture>
 {
-    private readonly IDatabaseContext _databaseContext;
-
-    public UnitOfWork(IDatabaseContext databaseContext)
-    {
-        _databaseContext = databaseContext;
-    }
-
-    public async Task CommitAsync()
-    {
-        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
-    }
 }

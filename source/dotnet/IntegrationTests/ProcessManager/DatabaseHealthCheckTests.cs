@@ -25,15 +25,15 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
-[Collection(nameof(ProcessFunctionAppCollectionFixture))]
-public class DatabaseHealthCheckTests : FunctionAppTestBase<ProcessFunctionAppFixture>
+[Collection(nameof(ProcessManagerFunctionAppCollectionFixture))]
+public class DatabaseHealthCheckTests : FunctionAppTestBase<ProcessManagerFunctionAppFixture>
 {
-    public DatabaseHealthCheckTests(ProcessFunctionAppFixture processFunctionAppFixture, ITestOutputHelper testOutputHelper)
-        : base(processFunctionAppFixture, testOutputHelper)
+    public DatabaseHealthCheckTests(ProcessManagerFunctionAppFixture processManagerFunctionAppFixture, ITestOutputHelper testOutputHelper)
+        : base(processManagerFunctionAppFixture, testOutputHelper)
     {
     }
 
-    [Fact]
+    [Fact(Skip = "This test needs refactoring as it causes other tests in same test run to fail.")]
     public async Task When_DatabaseIsDeletedAndRequestReadinessStatus_Then_ResponseIsServiceUnavailableAndUnhealthy()
     {
         try

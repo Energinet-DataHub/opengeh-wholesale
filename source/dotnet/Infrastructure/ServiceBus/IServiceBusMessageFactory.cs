@@ -12,22 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Domain;
+using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
-public class UnitOfWork : IUnitOfWork
+public interface IServiceBusMessageFactory
 {
-    private readonly IDatabaseContext _databaseContext;
-
-    public UnitOfWork(IDatabaseContext databaseContext)
-    {
-        _databaseContext = databaseContext;
-    }
-
-    public async Task CommitAsync()
-    {
-        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
-    }
+    IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages);
 }

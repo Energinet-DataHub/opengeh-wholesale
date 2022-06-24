@@ -21,10 +21,13 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.6.0" />
+      <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="2.4.0" />
       <PackageReference Include="EntityFrameworkCore.SqlServer.NodaTime" Version="5.0.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.17" />
     </ItemGroup>
