@@ -12,22 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Domain;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Registration;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public class UnitOfWork : IUnitOfWork
-{
-    private readonly IDatabaseContext _databaseContext;
-
-    public UnitOfWork(IDatabaseContext databaseContext)
-    {
-        _databaseContext = databaseContext;
-    }
-
-    public async Task CommitAsync()
-    {
-        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
-    }
-}
+/// <summary>
+/// Allow different instances of same type to be registered as singletons and at
+/// the same time allowed to be distinguished at injection time depending on the dependent.
+/// </summary>
+/// <param name="Instance"></param>
+/// <typeparam name="TInstance">The type of the instance.</typeparam>
+/// <typeparam name="TDependent">The type of the class depending on the instance.</typeparam>
+public sealed record TargetedSingleton<TInstance, TDependent>(TInstance Instance);

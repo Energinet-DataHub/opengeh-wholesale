@@ -29,7 +29,7 @@ public static class EnvironmentSettingNames
     /// <summary>
     /// Connection string to subscribe to the wholesale domain service bus queues and topics.
     /// </summary>
-    public const string ServiceBusListenerConnectionString = "SERVICE_BUS_LISTENER_CONNECTION_STRING";
+    public const string ServiceBusSendConnectionString = "SERVICE_BUS_SEND_CONNECTION_STRING";
 
     /// <summary>
     /// The service bus topic for completed process events.
