@@ -15,6 +15,7 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
         <OutputType>Exe</OutputType>
         <AssemblyName>Energinet.DataHub.Wholesale.ProcessManager</AssemblyName>
