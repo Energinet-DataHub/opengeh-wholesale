@@ -13,26 +13,16 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
-    private readonly ICorrelationContext _correlationContext;
-
-    public ServiceBusMessageFactory(ICorrelationContext correlationContext)
-    {
-        _correlationContext = correlationContext;
-    }
-
     public IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages)
     {
-        return messages.Select(message =>
-            new ServiceBusMessage
-            {
-                Body = new BinaryData(message),
-                CorrelationId = _correlationContext.Id,
-            });
+        return messages.Select(message => new ServiceBusMessage
+        {
+            Body = new BinaryData(message),
+        });
     }
 }
