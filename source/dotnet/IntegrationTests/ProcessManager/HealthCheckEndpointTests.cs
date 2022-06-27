@@ -25,10 +25,10 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
-[Collection(nameof(ProcessFunctionAppCollectionFixture))]
-public class HealthCheckEndpointTests : FunctionAppTestBase<ProcessFunctionAppFixture>
+[Collection(nameof(ProcessManagerFunctionAppCollectionFixture))]
+public class HealthCheckEndpointTests : FunctionAppTestBase<ProcessManagerFunctionAppFixture>
 {
-    public HealthCheckEndpointTests(ProcessFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
+    public HealthCheckEndpointTests(ProcessManagerFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
         : base(fixture, testOutputHelper)
     {
     }
@@ -54,8 +54,6 @@ public class HealthCheckEndpointTests : FunctionAppTestBase<ProcessFunctionAppFi
     {
         // Arrange
         var requestMessage = HttpRequestGenerator.CreateHttpGetRequest($"api{HealthChecksConstants.ReadyHealthCheckEndpointRoute}");
-
-        await Task.Delay(10000);
 
         // Act
         var actualResponse = await Fixture.HostManager.HttpClient.SendAsync(requestMessage);

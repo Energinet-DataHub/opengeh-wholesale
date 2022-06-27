@@ -14,8 +14,23 @@
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
+/// <summary>
+/// IMPORTANT: Do not change numeric values as it'll affect persistence or communication.
+/// </summary>
 public enum BatchExecutionState
 {
-    Requested,
-    Completed,
+    /// <summary>
+    /// The batch is pending.
+    /// </summary>
+    Pending = 0,
+
+    /// <summary>
+    /// The batch is currently executing.
+    /// </summary>
+    Executing = 1,
+
+    /// <summary>
+    /// The batch has (successfully) completed.
+    /// </summary>
+    Completed = 2,
 }

@@ -38,6 +38,7 @@ limitations under the License.
 
     <ItemGroup>
         <ProjectReference Include="..\IntegrationTests.Core\IntegrationTests.Core.csproj" />
+        <ProjectReference Include="..\Tests\Tests.csproj" />
     </ItemGroup>
 
     <ItemGroup>

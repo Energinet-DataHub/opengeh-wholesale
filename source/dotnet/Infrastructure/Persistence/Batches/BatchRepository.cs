@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 
@@ -28,5 +29,20 @@ public class BatchRepository : IBatchRepository
     public async Task AddAsync(Batch batch)
     {
         await _context.Batches.AddAsync(batch).ConfigureAwait(false);
+    }
+
+    public Task<List<Batch>> GetPendingAsync() => GetByStateAsync(BatchExecutionState.Pending);
+
+    public Task<List<Batch>> GetExecutingAsync() => GetByStateAsync(BatchExecutionState.Executing);
+
+    public Task<List<Batch>> GetCompletedAsync() => GetByStateAsync(BatchExecutionState.Completed);
+
+    private async Task<List<Batch>> GetByStateAsync(BatchExecutionState state)
+    {
+        return await _context
+            .Batches
+            .Where(b => b.ExecutionState == state)
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 }

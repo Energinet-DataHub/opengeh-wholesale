@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain;
+namespace Energinet.DataHub.Wholesale.Application.Processes;
 
-public interface IUnitOfWork
+public interface IProcessCompletedPublisher
 {
-    Task CommitAsync();
+    Task PublishAsync(List<ProcessCompletedEventDto> completedProcesses);
 }
