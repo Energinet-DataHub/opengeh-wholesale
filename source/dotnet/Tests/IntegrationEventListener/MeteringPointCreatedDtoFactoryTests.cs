@@ -264,7 +264,10 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
         {
             var correlationContext = new Mock<ICorrelationContext>();
             var integrationEventContext = new Mock<IIntegrationEventContext>();
-            var outEventMetadata = new IntegrationEventMetadata("fake_value", Instant.FromDateTimeUtc(DateTime.UtcNow));
+            var outEventMetadata = new IntegrationEventMetadata(
+                "fake_value",
+                Instant.FromDateTimeUtc(DateTime.UtcNow),
+                "BB2E6420-EC56-4462-9499-47F2D7B30DBB");
 
             integrationEventContext
                 .Setup(x => x.ReadMetadata())

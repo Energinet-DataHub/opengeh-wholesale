@@ -68,7 +68,11 @@ public class MeteringPointCreatedListenerEndpointTests
 
             var meteringPointCreatedEvent = CreateMeteringPointCreatedEvent(effectiveDate);
             var operationTimestamp = new DateTime(2021, 1, 2, 3, 4, 5, DateTimeKind.Utc);
-            var message = ServiceBusTestMessage.Create(meteringPointCreatedEvent.ToByteArray(), operationTimestamp);
+            var correlationId = Guid.NewGuid().ToString();
+            var message = ServiceBusTestMessage.Create(
+                meteringPointCreatedEvent.ToByteArray(),
+                operationTimestamp,
+                correlationId);
             var jsonSerializer = new JsonSerializer();
 
             // Act
@@ -86,7 +90,7 @@ public class MeteringPointCreatedListenerEndpointTests
                     .ReceivedEvents.Single()
                     .Data.ToString());
 
-            actual.CorrelationId.Should().Be(message.CorrelationId);
+            actual.CorrelationId.Should().Be(correlationId);
             actual.EffectiveDate.Should().Be(effectiveDate.ToInstant());
         }
 
