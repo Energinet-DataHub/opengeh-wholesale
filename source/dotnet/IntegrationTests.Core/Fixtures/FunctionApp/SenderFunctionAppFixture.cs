@@ -21,6 +21,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.Sender;
+using Energinet.DataHub.Wholesale.Sender.Configuration;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
@@ -74,8 +75,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         protected override void OnConfigureEnvironment()
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CompletedProcessServiceBusConnectionString, CompletedProcessServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DataAvailableServiceBusConnectionString, DataAvailableServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, CompletedProcessServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString, DataAvailableServiceBusResourceProvider.ConnectionString);
         }
 
         /// <inheritdoc/>
@@ -85,7 +86,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
             DataAvailableQueue = await DataAvailableServiceBusResourceProvider
                 .BuildQueue("data-available")
-                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.DataAvailableQueueName)
+                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubDataAvailableQueueName)
                 .CreateAsync();
 
             ServiceBusListener = new ServiceBusListenerMock(
@@ -96,9 +97,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
             CompletedProcessTopic = await CompletedProcessServiceBusResourceProvider
                 .BuildTopic("completed-process")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.CompletedProcessTopicName)
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
                 .AddSubscription("completed-process-sub-sender")
-                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.CompletedProcessSubscriptionName)
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ProcessCompletedSubscriptionName)
                 .CreateAsync();
         }
 

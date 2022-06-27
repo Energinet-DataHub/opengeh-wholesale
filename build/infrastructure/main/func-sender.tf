@@ -32,5 +32,20 @@ module "func_sender" {
   dotnet_framework_version                  = "6"
   use_dotnet_isolated_runtime               = true
 
+  app_settings                              = {
+    SERVICE_BUS_LISTEN_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["listen"]
+    SERVICE_BUS_MANAGE_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["manage"]
+    PROCESS_COMPLETED_TOPIC_NAME                     = module.sbt_completed_process.name
+    PROCESS_COMPLETED_SUBSCRIPTION_NAME              = "completed-process-sub-sender"
+
+    # Message Hub
+    MESSAGEHUB_STORAGE_CONNECTION_STRING             = data.azurerm_key_vault_secret.messagehub_storage_connection_string.value
+    MESSAGEHUB_STORAGE_CONTAINER                     = data.azurerm_key_vault_secret.messagehub_storage_container.value
+    MESSAGEHUB_SERVICE_BUS_CONNECTION_STRING         = 
+    MESSAGEHUB_DATAAVAILABLE_QUEUE                   = data.azurerm_key_vault_secret.messagehub_dataavailable_queue.value
+    MESSAGEHUB_BUNDLEREQUEST_QUEUE                   = data.azurerm_key_vault_secret.messagehub_bundlerequest_queue.value
+    MESSAGEHUB_BUNDLEREPLY_QUEUE                     = data.azurerm_key_vault_secret.messagehub_bundlereply_queue.value
+  }
+
   tags                                  = azurerm_resource_group.this.tags
 }

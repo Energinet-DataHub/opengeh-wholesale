@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender;
+namespace Energinet.DataHub.Wholesale.Sender.Configuration;
 
 public static class EnvironmentSettingNames
 {
     public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
-    public const string CompletedProcessTopicName = "COMPLETED_PROCESS_TOPIC_NAME";
-    public const string CompletedProcessSubscriptionName = "COMPLETED_PROCESS_SUBSCRIPTION_NAME";
-    public const string CompletedProcessServiceBusConnectionString = "COMPLETED_PROCESS_SERVICE_BUS_CONNECTION_STRING";
-    public const string DataAvailableQueueName = "DATA_AVAILABLE_QUEUE_NAME";
-    public const string DataAvailableServiceBusConnectionString = "DATA_AVAILABLE_SERVICE_BUS_CONNECTION_STRING";
+    public const string ProcessCompletedTopicName = "PROCESS_COMPLETED_TOPIC_NAME";
+    public const string ProcessCompletedSubscriptionName = "PROCESS_COMPLETED_SUBSCRIPTION_NAME";
+    public const string ServiceBusListenConnectionString = "SERVICE_BUS_LISTEN_CONNECTION_STRING";
+    public const string ServiceBusManageConnectionString = "SERVICE_BUS_MANAGE_CONNECTION_STRING";
+    public const string MessageHubDataAvailableQueueName = "DATA_AVAILABLE_QUEUE_NAME";
+    public const string MessageHubServiceBusConnectionString = "MESSAGE_HUB_SERVICE_BUS_CONNECTION_STRING";
 }

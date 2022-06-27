@@ -25,6 +25,7 @@ limitations under the License.
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="6.0.3" />
         <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="2.4.0" />
+        <PackageReference Include="Energinet.DataHub.MessageHub.Client" Version="3.0.0" />
         <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Abstractions" Version="1.1.0" />
@@ -32,6 +33,8 @@ limitations under the License.
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.4.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.3.0" OutputItemType="Analyzer" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.6.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.6" />
+        <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="6.0.1" />
     </ItemGroup>
     <ItemGroup>
         <None Update="host.json">
@@ -47,7 +50,11 @@ limitations under the License.
         </None>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Domain\Domain.csproj" />
       <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Include="..\Contracts\WholesaleProcess\ProcessCompletedEventDto.cs">
+        <Link>Application\ProcessCompletedEventDto.cs</Link>
+      </Compile>
     </ItemGroup>
 </Project>

@@ -24,4 +24,10 @@ limitations under the License.
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Contracts\WholesaleProcess\ProcessCompletedEventDto.cs">
+      <Link>Processes\ProcessCompletedEventDto.cs</Link>
+    </Compile>
+  </ItemGroup>
+
 </Project>

@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.Dtos.CompletedProcessSenderEvents;
+using Energinet.DataHub.MessageHub.Model.Model;
+using Energinet.DataHub.Wholesale.Application.Processes;
 
-public class CompletedProcess
+namespace Energinet.DataHub.Wholesale.Sender.Application;
+
+public interface IDataAvailableNotificationFactory
 {
-    public CompletedProcess(string gridAreaCode)
-    {
-        GridAreaCode = gridAreaCode;
-    }
-
-    public string GridAreaCode { get; set; }
+    DataAvailableNotificationDto Create(ProcessCompletedEventDto completedProcessEvent);
 }
