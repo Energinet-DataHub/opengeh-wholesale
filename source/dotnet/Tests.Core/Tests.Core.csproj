@@ -16,6 +16,7 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+      <IsPackable>false</IsPackable>
       <AssemblyName>Energinet.DataHub.Wholesale.Tests.Core</AssemblyName>
       <RootNamespace>Energinet.DataHub.Wholesale.Tests.Core</RootNamespace>
     </PropertyGroup>
