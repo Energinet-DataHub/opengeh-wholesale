@@ -13,20 +13,19 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Function;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
-using Energinet.DataHub.Wholesale.Sender.Endpoints;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Sender;
 
-public class CompletedProcessSenderEndpointTests
+public class DataAvailableSenderEndpointTests
 {
     [Collection(nameof(SenderFunctionAppCollectionFixture))]
     public class RunAsync : FunctionAppTestBase<SenderFunctionAppFixture>, IAsyncLifetime
@@ -47,37 +46,29 @@ public class CompletedProcessSenderEndpointTests
             return Task.CompletedTask;
         }
 
-        [Fact]
-        public async Task CompletedProcessTestAsync()
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task When_ProcessCompleted_Then_DataAvailableIsReceivedInMessageHub(
+            Guid correlationId,
+            DateTime operationTimestamp)
         {
             // Arrange
-            using var whenAllEvent = await Fixture.ServiceBusListener
-                .WhenAny()
-                .VerifyCountAsync(1)
+            var completedProcess = new ProcessCompletedEventDto("805");
+            using var eventualDataAvailableEvent = await Fixture
+                .DataAvailableListener
+                .ListenForMessageAsync(correlationId.ToString())
                 .ConfigureAwait(false);
 
-            var completedProcess = new ProcessCompletedEventDto("123");
-            var operationTimestamp = new DateTime(2021, 1, 2, 3, 4, 5, DateTimeKind.Utc);
-            var byteArray = ConvertObjectToByteArray(completedProcess);
-            var message = ServiceBusTestMessage.Create(byteArray, operationTimestamp, Guid.NewGuid().ToString());
+            var message = ServiceBusTestMessage.Create(completedProcess, operationTimestamp.AsUtc(), correlationId.ToString());
 
             // Act
             await Fixture.CompletedProcessTopic.SenderClient.SendMessageAsync(message);
 
             // Assert
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(DataAvailableSenderEndpoint))
-                .ConfigureAwait(false);
-
-            var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
-            allReceived.Should().BeTrue();
-        }
-
-        private byte[] ConvertObjectToByteArray(ProcessCompletedEventDto completedProcess)
-        {
-            using var m = new MemoryStream();
-            using var writer = new BinaryWriter(m);
-            writer.Write(completedProcess.GridAreaCode);
-            return m.ToArray();
+            var isDataAvailableEventReceived = eventualDataAvailableEvent
+                .MessageAwaiter!
+                .Wait(TimeSpan.FromSeconds(10));
+            isDataAvailableEventReceived.Should().BeTrue();
         }
     }
 }

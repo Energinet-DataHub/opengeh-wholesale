@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.Sender.Configuration;
 using Microsoft.Extensions.Configuration;
@@ -51,7 +52,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
         public WholesaleDatabaseManager DatabaseManager { get; }
 
-        public ServiceBusListenerMock ServiceBusListener { get; private set; } = null!;
+        public ServiceBusTestListener DataAvailableListener { get; private set; } = null!;
 
         public TopicResource CompletedProcessTopic { get; set; } = null!;
 
@@ -98,11 +99,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubDataAvailableQueueName)
                 .CreateAsync();
 
-            ServiceBusListener = new ServiceBusListenerMock(
-                MessageHubServiceBusResourceProvider.ConnectionString,
-                TestLogger);
-
-            await ServiceBusListener.AddQueueListenerAsync(DataAvailableQueue.Name);
+            var messageHubListener = new ServiceBusListenerMock(MessageHubServiceBusResourceProvider.ConnectionString, TestLogger);
+            await messageHubListener.AddQueueListenerAsync(DataAvailableQueue.Name);
+            DataAvailableListener = new ServiceBusTestListener(messageHubListener);
 
             CompletedProcessTopic = await CompletedProcessServiceBusResourceProvider
                 .BuildTopic("completed-process")

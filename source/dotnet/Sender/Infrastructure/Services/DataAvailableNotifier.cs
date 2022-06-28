@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.MessageHub.Client.DataAvailable;
 using Energinet.DataHub.Wholesale.Application.Processes;
-using Energinet.DataHub.Wholesale.Sender.Domain;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Models;
 
 namespace Energinet.DataHub.Wholesale.Sender.Application;
 

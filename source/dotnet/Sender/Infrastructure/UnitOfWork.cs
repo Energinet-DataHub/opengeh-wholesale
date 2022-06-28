@@ -12,9 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Domain;
+using Energinet.DataHub.Wholesale.Sender.Application;
 
-public interface IProcessRepository
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure;
+
+public class UnitOfWork : IUnitOfWork
 {
-    Task AddAsync(Process process);
+    private readonly IDatabaseContext _databaseContext;
+
+    public UnitOfWork(IDatabaseContext databaseContext)
+    {
+        _databaseContext = databaseContext;
+    }
+
+    public async Task CommitAsync()
+    {
+        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
+    }
 }

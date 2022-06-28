@@ -12,21 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Sender.Domain;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Models;
 
-namespace Energinet.DataHub.Wholesale.Sender.Persistence.Process;
-
-public class ProcessRepository : IProcessRepository
-{
-    private readonly IDatabaseContext _context;
-
-    public ProcessRepository(IDatabaseContext context)
-    {
-        _context = context;
-    }
-
-    public async Task AddAsync(Domain.Process process)
-    {
-        await _context.Processes.AddAsync(process).ConfigureAwait(false);
-    }
-}
+public sealed record MessageHubReference(Guid Value);

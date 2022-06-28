@@ -14,11 +14,11 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Sender.Persistence;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure;
 
 public interface IDatabaseContext
 {
-    DbSet<Domain.Process> Processes { get; }
+    DbSet<Models.Process> Processes { get; }
 
     Task<int> SaveChangesAsync();
 }

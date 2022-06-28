@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Sender.Domain;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Sender.Persistence.Process;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Process;
 
-public class ProcessEntityConfiguration : IEntityTypeConfiguration<Domain.Process>
+public class ProcessEntityConfiguration : IEntityTypeConfiguration<Models.Process>
 {
-    public void Configure(EntityTypeBuilder<Domain.Process> builder)
+    public void Configure(EntityTypeBuilder<Models.Process> builder)
     {
-        builder.ToTable(nameof(Domain.Process));
+        builder.ToTable(nameof(Models.Process));
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id).ValueGeneratedNever();
 
