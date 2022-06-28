@@ -16,7 +16,6 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.MessageHub.Client.DataAvailable;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Models;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
@@ -27,22 +26,19 @@ public class DataAvailableNotifier : IDataAvailableNotifier
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProcessRepository _processRepository;
     private readonly IDataAvailableNotificationFactory _dataAvailableNotificationFactory;
-    private readonly ILogger _logger;
 
     public DataAvailableNotifier(
         IDataAvailableNotificationSender notificationSender,
         ICorrelationContext correlationContext,
         IUnitOfWork unitOfWork,
         IProcessRepository processRepository,
-        IDataAvailableNotificationFactory dataAvailableNotificationFactory,
-        ILogger<DataAvailableNotifier> logger)
+        IDataAvailableNotificationFactory dataAvailableNotificationFactory)
     {
         _notificationSender = notificationSender;
         _correlationContext = correlationContext;
         _unitOfWork = unitOfWork;
         _processRepository = processRepository;
         _dataAvailableNotificationFactory = dataAvailableNotificationFactory;
-        _logger = logger;
     }
 
     public async Task NotifyAsync(ProcessCompletedEventDto completedProcessEvent)
@@ -50,10 +46,6 @@ public class DataAvailableNotifier : IDataAvailableNotifier
         var notification = _dataAvailableNotificationFactory.Create(completedProcessEvent);
         await CreateAndAddProcessAsync(completedProcessEvent, notification.Uuid).ConfigureAwait(false);
         await _notificationSender.SendAsync(_correlationContext.Id, notification).ConfigureAwait(false);
-        _logger.LogDebug(
-            "Notification with correlation id '{CorrelationContextId}' has been sent. Notification: {Notification}",
-            _correlationContext.Id,
-            notification);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
