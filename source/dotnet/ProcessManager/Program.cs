@@ -16,6 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;

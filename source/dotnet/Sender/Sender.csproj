@@ -22,7 +22,7 @@ limitations under the License.
         <RootNamespace>Energinet.DataHub.Wholesale.Sender</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="3.0.0" />
+        <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="4.0.0" />
         <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Abstractions" Version="1.1.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.0.13" />

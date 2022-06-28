@@ -14,6 +14,7 @@
 
 using System.ComponentModel;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointCreated.Types;
 
@@ -21,10 +22,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
 public class MeteringPointCreatedDtoFactory
 {
+    private readonly ICorrelationContext _correlationContext;
     private readonly IIntegrationEventContext _integrationEventContext;
 
-    public MeteringPointCreatedDtoFactory(IIntegrationEventContext integrationEventContext)
+    public MeteringPointCreatedDtoFactory(
+        ICorrelationContext correlationContext,
+        IIntegrationEventContext integrationEventContext)
     {
+        _correlationContext = correlationContext;
         _integrationEventContext = integrationEventContext;
     }
 
@@ -37,21 +42,19 @@ public class MeteringPointCreatedDtoFactory
         var meteringPointType = MapMeteringPointType(meteringPointCreated.MeteringPointType);
         var resolution = MapResolutionType(meteringPointCreated.MeterReadingPeriodicity);
 
-        if (_integrationEventContext.TryReadMetadata(out var eventMetadata))
-        {
-            return new MeteringPointCreatedDto(
-                meteringPointCreated.GsrnNumber,
-                Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
-                settlementMethod,
-                connectionState,
-                meteringPointCreated.EffectiveDate.ToInstant(),
-                meteringPointType,
-                eventMetadata.MessageType,
-                eventMetadata.OperationTimestamp,
-                resolution);
-        }
+        var eventMetadata = _integrationEventContext.ReadMetadata();
 
-        throw new InvalidOperationException($"Could not read metadata for integration event in {nameof(MeteringPointCreatedDtoFactory)}.");
+        return new MeteringPointCreatedDto(
+            meteringPointCreated.GsrnNumber,
+            Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
+            settlementMethod,
+            connectionState,
+            meteringPointCreated.EffectiveDate.ToInstant(),
+            meteringPointType,
+            resolution,
+            _correlationContext.Id,
+            eventMetadata.MessageType,
+            eventMetadata.OperationTimestamp);
     }
 
     private static SettlementMethod? MapSettlementMethod(mpTypes.SettlementMethod settlementMethod)

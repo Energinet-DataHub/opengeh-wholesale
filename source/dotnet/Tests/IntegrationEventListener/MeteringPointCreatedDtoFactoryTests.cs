@@ -14,6 +14,7 @@
 
 using System.ComponentModel;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
 using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
@@ -32,45 +33,31 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
     {
         [Theory]
         [InlineAutoMoqData]
-        public void Create_InvalidEventMetadata_ThrowsException(
-            Mock<IIntegrationEventContext> integrationEventContext,
-            MeteringPointCreated meteringPointCreatedEvent)
-        {
-            // Arrange
-            var integrationEventMetadata = It.IsAny<IntegrationEventMetadata?>();
-            integrationEventContext
-                .Setup(x => x.TryReadMetadata(out integrationEventMetadata))
-                .Returns(false);
-            var sut = new MeteringPointCreatedDtoFactory(integrationEventContext.Object);
-
-            // Act & Assert
-            sut.Invoking(x => x.Create(meteringPointCreatedEvent))
-               .Should()
-               .Throw<InvalidOperationException>();
-        }
-
-        [Theory]
-        [InlineAutoMoqData]
         public void Create_HasEventMetadata_ReturnsValidDto(
+            Mock<ICorrelationContext> correlationContext,
             Mock<IIntegrationEventContext> integrationEventContext,
             MeteringPointCreated meteringPointCreatedEvent,
-            IntegrationEventMetadata integrationEventMetadata)
+            IntegrationEventMetadata integrationEventMetadata,
+            Guid correlationId)
         {
             // Arrange
-            var outEventMetadata = integrationEventMetadata;
+            correlationContext
+                .Setup(x => x.Id)
+                .Returns(correlationId.ToString());
 
             integrationEventContext
-                .Setup(x => x.TryReadMetadata(out outEventMetadata))
-                .Returns(true);
+                .Setup(x => x.ReadMetadata())
+                .Returns(integrationEventMetadata);
 
             meteringPointCreatedEvent.GridAreaCode = Guid.NewGuid().ToString();
 
-            var sut = new MeteringPointCreatedDtoFactory(integrationEventContext.Object);
+            var sut = new MeteringPointCreatedDtoFactory(correlationContext.Object, integrationEventContext.Object);
 
             // Act
             var actual = sut.Create(meteringPointCreatedEvent);
 
             // Assert
+            actual.CorrelationId.Should().Be(correlationId.ToString());
             actual.MessageType.Should().Be(integrationEventMetadata.MessageType);
             actual.OperationTime.Should().Be(integrationEventMetadata.OperationTimestamp);
         }
@@ -78,17 +65,22 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
         [Theory]
         [InlineAutoMoqData]
         public void MeteringPointCreatedIntegrationInboundMapper_WhenCalled_ShouldMapToMeteringPointCreatedEventWithCorrectValues(
+            Mock<ICorrelationContext> correlationContext,
             Mock<IIntegrationEventContext> integrationEventContext,
             MeteringPointCreated meteringPointCreatedEvent,
-            IntegrationEventMetadata integrationEventMetadata)
+            IntegrationEventMetadata integrationEventMetadata,
+            Guid correlationId)
         {
-            var outEventMetadata = integrationEventMetadata;
+            // Arrange
+            correlationContext
+                .Setup(x => x.Id)
+                .Returns(correlationId.ToString());
 
             integrationEventContext
-                .Setup(x => x.TryReadMetadata(out outEventMetadata))
-                .Returns(true);
+                .Setup(x => x.ReadMetadata())
+                .Returns(integrationEventMetadata);
 
-            var sut = new MeteringPointCreatedDtoFactory(integrationEventContext.Object);
+            var sut = new MeteringPointCreatedDtoFactory(correlationContext.Object, integrationEventContext.Object);
 
             meteringPointCreatedEvent.GridAreaCode = Guid.NewGuid().ToString();
             meteringPointCreatedEvent.EffectiveDate = Timestamp.FromDateTime(new DateTime(2021, 10, 31, 23, 00, 00, 00, DateTimeKind.Utc));
@@ -270,14 +262,18 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
 
         private static MeteringPointCreatedDtoFactory CreateTarget()
         {
+            var correlationContext = new Mock<ICorrelationContext>();
             var integrationEventContext = new Mock<IIntegrationEventContext>();
-            var outEventMetadata = new IntegrationEventMetadata("fake_value", Instant.FromDateTimeUtc(DateTime.UtcNow));
+            var outEventMetadata = new IntegrationEventMetadata(
+                "fake_value",
+                Instant.FromDateTimeUtc(DateTime.UtcNow),
+                "BB2E6420-EC56-4462-9499-47F2D7B30DBB");
 
             integrationEventContext
-                .Setup(x => x.TryReadMetadata(out outEventMetadata))
-                .Returns(true);
+                .Setup(x => x.ReadMetadata())
+                .Returns(outEventMetadata);
 
-            return new MeteringPointCreatedDtoFactory(integrationEventContext.Object);
+            return new MeteringPointCreatedDtoFactory(correlationContext.Object, integrationEventContext.Object);
         }
 
         private static MeteringPointCreated CreateValidMeteringPointCreated()
