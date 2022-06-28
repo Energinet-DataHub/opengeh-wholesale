@@ -38,7 +38,7 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
 
         // Grid area IDs are stored as a JSON array
         var gridAreaCodes = builder.Metadata
-            .FindNavigation(nameof(Batch.GridAreaCodes));
+            .FindNavigation(nameof(Batch.GridAreaCodes))!;
         gridAreaCodes.SetPropertyAccessMode(PropertyAccessMode.Field);
         builder
             .Property(b => b.GridAreaCodes)

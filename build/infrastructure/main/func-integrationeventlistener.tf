@@ -40,6 +40,8 @@ module "func_integrationeventlistener" {
     INTEGRATIONEVENT_MANAGER_CONNECTION_STRING            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
     METERING_POINT_CREATED_SUBSCRIPTION_NAME              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-metering-point-created-to-wholesale-name)"
     METERING_POINT_CREATED_TOPIC_NAME                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-metering-point-created-name)"
+    METERING_POINT_CONNECTED_SUBSCRIPTION_NAME            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-metering-point-connected-to-wholesale-name)"
+    METERING_POINT_CONNECTED_TOPIC_NAME                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-metering-point-connected-name)"
   }
 
   tags                                  = azurerm_resource_group.this.tags
