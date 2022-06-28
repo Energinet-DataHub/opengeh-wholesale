@@ -35,10 +35,10 @@ jobs:
       ENVIRONMENT_REPOSITORY_PATH: ${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}
 
   update_coverage_report:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.3.0
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.6.0
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
-      DOTNET_VERSION: '6.0.201'
+      DOTNET_VERSION: '6.0.301'
       USE_AZURE_FUNCTIONS_TOOLS: true
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
