@@ -17,4 +17,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 public static class Debug
 {
     public const string Abc = "Abc";
+
+    public static string TestMe()
+    {
+        return Abc + "aaa";
+    }
 }
