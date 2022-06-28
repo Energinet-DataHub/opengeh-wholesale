@@ -12,6 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Models;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
-public sealed record MessageHubReference(Guid Value);
+public class Process
+{
+    public Process(MessageHubReference messageHubReference, string gridAreaCode)
+    {
+        if (gridAreaCode.Length != 3)
+            throw new ArgumentException("Grid area code must be 3 characters long.");
+        Id = Guid.NewGuid();
+        MessageHubReference = messageHubReference;
+        GridAreaCode = gridAreaCode;
+    }
+
+    public Guid Id { get; }
+
+    public MessageHubReference MessageHubReference { get; }
+
+    public string GridAreaCode { get; }
+}

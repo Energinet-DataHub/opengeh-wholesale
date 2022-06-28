@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Process;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
-public class ProcessEntityConfiguration : IEntityTypeConfiguration<Models.Process>
+public class ProcessEntityConfiguration : IEntityTypeConfiguration<Process>
 {
-    public void Configure(EntityTypeBuilder<Models.Process> builder)
+    public void Configure(EntityTypeBuilder<Process> builder)
     {
-        builder.ToTable(nameof(Models.Process));
+        builder.ToTable(nameof(Process));
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id).ValueGeneratedNever();
 
         builder
             .Property(p => p.MessageHubReference)
             .HasConversion(
-                reference => reference.Value,
-                value => new MessageHubReference(value));
+                reference => reference.Value.ToString(),
+                value => new MessageHubReference(Guid.Parse(value)));
         builder.Property(p => p.GridAreaCode);
     }
 }

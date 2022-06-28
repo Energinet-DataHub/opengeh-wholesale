@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.MessageHub.Client.DataAvailable;
 using Energinet.DataHub.Wholesale.Application.Processes;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Models;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
@@ -54,7 +54,7 @@ public class DataAvailableNotifier : IDataAvailableNotifier
         Guid notificationUuid)
     {
         var messageHubReference = new MessageHubReference(notificationUuid);
-        var process = new Models.Process(messageHubReference, completedProcessEvent.GridAreaCode);
+        var process = new Process(messageHubReference, completedProcessEvent.GridAreaCode);
         await _processRepository.AddAsync(process).ConfigureAwait(false);
     }
 }

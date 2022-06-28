@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Models;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
-public interface IProcessRepository
-{
-    Task AddAsync(Process process);
-}
+public sealed record MessageHubReference(Guid Value);

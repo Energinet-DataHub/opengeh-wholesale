@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Process;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 
 public class DatabaseContext : DbContext, IDatabaseContext
 {
@@ -24,7 +24,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
     {
     }
 
-    public DbSet<Models.Process> Processes { get; private set; } = null!;
+    public DbSet<Process> Processes { get; private set; } = null!;
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 

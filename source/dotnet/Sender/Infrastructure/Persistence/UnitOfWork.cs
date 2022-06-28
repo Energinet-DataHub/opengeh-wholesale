@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Models;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Process;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 
-public class ProcessRepository : IProcessRepository
+public class UnitOfWork : IUnitOfWork
 {
-    private readonly IDatabaseContext _context;
+    private readonly IDatabaseContext _databaseContext;
 
-    public ProcessRepository(IDatabaseContext context)
+    public UnitOfWork(IDatabaseContext databaseContext)
     {
-        _context = context;
+        _databaseContext = databaseContext;
     }
 
-    public async Task AddAsync(Models.Process process)
+    public async Task CommitAsync()
     {
-        await _context.Processes.AddAsync(process).ConfigureAwait(false);
+        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
     }
 }

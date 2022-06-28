@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Models;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
-public class Process
+public class ProcessRepository : IProcessRepository
 {
-    public Process(MessageHubReference messageHubReference, string gridAreaCode)
+    private readonly IDatabaseContext _context;
+
+    public ProcessRepository(IDatabaseContext context)
     {
-        Id = Guid.NewGuid();
-        MessageHubReference = messageHubReference;
-        GridAreaCode = gridAreaCode;
+        _context = context;
     }
 
-    public Guid Id { get; }
-
-    public MessageHubReference MessageHubReference { get; }
-
-    public string GridAreaCode { get; }
+    public async Task AddAsync(Process process)
+    {
+        await _context.Processes.AddAsync(process).ConfigureAwait(false);
+    }
 }

@@ -42,7 +42,7 @@ module "func_sender" {
     PROCESS_COMPLETED_SUBSCRIPTION_NAME              = local.COMPLETED_PROCESS_SUBSCRIPTION
 
     # Message Hub
-    MESSAGEHUB_SERVICE_BUS_CONNECTION_STRING         = data.azurerm_key_vault_secret.messagehub_service_bus_connection_string.value
+    MESSAGE_HUB_SERVICE_BUS_CONNECTION_STRING        = data.azurerm_key_vault_secret.messagehub_service_bus_connection_string.value
     MESSAGE_HUB_DATA_AVAILABLE_QUEUE_NAME            = data.azurerm_key_vault_secret.messagehub_data_available_queue_name.value
     MESSAGE_HUB_REPLY_QUEUE_NAME                     = data.azurerm_key_vault_secret.messagehub_reply_queue_name.value
     MESSAGEHUB_STORAGE_CONNECTION_STRING             = data.azurerm_key_vault_secret.messagehub_storage_connection_string.value

@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.EntityFrameworkCore;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure;
-
-public interface IDatabaseContext
+public interface IProcessRepository
 {
-    DbSet<Models.Process> Processes { get; }
-
-    Task<int> SaveChangesAsync();
+    Task AddAsync(Process process);
 }
