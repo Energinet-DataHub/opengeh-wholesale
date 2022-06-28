@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Function;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
 using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
-using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -94,13 +95,15 @@ public class StartPendingBatchesEndpointTests
         private async Task<BatchId> CreateAndSavePendingBatch(string gridAreaCode)
         {
             await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
-            var pendingBatch = new BatchBuilder()
-                .WithState(BatchExecutionState.Pending)
-                .WithGridAreaCode(gridAreaCode)
-                .Build();
-            await dbContext.Batches.AddAsync(pendingBatch);
+            //var pendingBatch = new BatchBuilder()
+            //    .WithState(BatchExecutionState.Pending)
+            //    .WithGridAreaCode(gridAreaCode)
+            //    .Build();
+            var batch = new Batch(WholesaleProcessType.BalanceFixing, new[] { new GridAreaCode(gridAreaCode) });
+
+            await dbContext.Batches.AddAsync(batch);
             await dbContext.SaveChangesAsync();
-            return pendingBatch.Id;
+            return batch.Id;
         }
     }
 }
