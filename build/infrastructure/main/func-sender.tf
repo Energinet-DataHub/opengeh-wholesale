@@ -33,18 +33,20 @@ module "func_sender" {
   use_dotnet_isolated_runtime               = true
 
   app_settings                              = {
-    SERVICE_BUS_LISTEN_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["listen"]
+    DB_CONNECTION_STRING                             = local.DB_CONNECTION_STRING
+
+    # Service Bus
     SERVICE_BUS_MANAGE_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["manage"]
+    SERVICE_BUS_LISTEN_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["listen"]
     PROCESS_COMPLETED_TOPIC_NAME                     = module.sbt_completed_process.name
-    PROCESS_COMPLETED_SUBSCRIPTION_NAME              = "completed-process-sub-sender"
+    PROCESS_COMPLETED_SUBSCRIPTION_NAME              = local.COMPLETED_PROCESS_SUBSCRIPTION
 
     # Message Hub
+    MESSAGEHUB_SERVICE_BUS_CONNECTION_STRING         = data.azurerm_key_vault_secret.messagehub_service_bus_connection_string.value
+    MESSAGE_HUB_DATA_AVAILABLE_QUEUE_NAME            = data.azurerm_key_vault_secret.messagehub_data_available_queue_name.value
+    MESSAGE_HUB_REPLY_QUEUE_NAME                     = data.azurerm_key_vault_secret.messagehub_reply_queue_name.value
     MESSAGEHUB_STORAGE_CONNECTION_STRING             = data.azurerm_key_vault_secret.messagehub_storage_connection_string.value
-    MESSAGEHUB_STORAGE_CONTAINER                     = data.azurerm_key_vault_secret.messagehub_storage_container.value
-    MESSAGEHUB_SERVICE_BUS_CONNECTION_STRING         = 
-    MESSAGEHUB_DATAAVAILABLE_QUEUE                   = data.azurerm_key_vault_secret.messagehub_dataavailable_queue.value
-    MESSAGEHUB_BUNDLEREQUEST_QUEUE                   = data.azurerm_key_vault_secret.messagehub_bundlerequest_queue.value
-    MESSAGEHUB_BUNDLEREPLY_QUEUE                     = data.azurerm_key_vault_secret.messagehub_bundlereply_queue.value
+    MESSAGE_HUB_STORAGE_CONTAINER_NAME               = data.azurerm_key_vault_secret.messagehub_storage_container_name.value
   }
 
   tags                                  = azurerm_resource_group.this.tags

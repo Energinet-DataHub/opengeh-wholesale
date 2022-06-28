@@ -17,10 +17,17 @@ namespace Energinet.DataHub.Wholesale.Sender.Configuration;
 public static class EnvironmentSettingNames
 {
     public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
+
+    public const string DatabaseConnectionString = "DB_CONNECTION_STRING";
+
+    public const string ServiceBusManageConnectionString = "SERVICE_BUS_MANAGE_CONNECTION_STRING";
+    public const string ServiceBusListenConnectionString = "SERVICE_BUS_LISTEN_CONNECTION_STRING";
     public const string ProcessCompletedTopicName = "PROCESS_COMPLETED_TOPIC_NAME";
     public const string ProcessCompletedSubscriptionName = "PROCESS_COMPLETED_SUBSCRIPTION_NAME";
-    public const string ServiceBusListenConnectionString = "SERVICE_BUS_LISTEN_CONNECTION_STRING";
-    public const string ServiceBusManageConnectionString = "SERVICE_BUS_MANAGE_CONNECTION_STRING";
-    public const string MessageHubDataAvailableQueueName = "DATA_AVAILABLE_QUEUE_NAME";
+
     public const string MessageHubServiceBusConnectionString = "MESSAGE_HUB_SERVICE_BUS_CONNECTION_STRING";
+    public const string MessageHubDataAvailableQueueName = "MESSAGE_HUB_DATA_AVAILABLE_QUEUE_NAME";
+    public const string MessageHubReplyQueueName = "MESSAGE_HUB_REPLY_QUEUE_NAME";
+    public const string MessageHubStorageConnectionString = "MESSAGE_HUB_STORAGE_CONNECTION_STRING";
+    public const string MessageHubStorageContainerName = "MESSAGE_HUB_STORAGE_CONTAINER_NAME";
 }

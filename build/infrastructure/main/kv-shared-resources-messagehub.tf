@@ -12,32 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-data "azurerm_key_vault_secret" "messagehub_storage_connection_string" {
-  name         = "todo"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "messagehub_storage_container" {
-  name         = "st-marketres-postofficereply-container-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "messagehub_service_bus_connection_string" {
   name         = "todo"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "messagehub_dataavailable_queue" {
+data "azurerm_key_vault_secret" "messagehub_data_available_queue_name" {
   name         = "sbq-data-available-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "messagehub_request_queue" {
-  name         = "sbq-wholesale-dequeue-name"
+data "azurerm_key_vault_secret" "messagehub_reply_queue_name" {
+  name         = "sbq-wholesale-reply-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "messagehub_reply_queue" {
-  name         = "sbq-wholesale-reply-name"
+data "azurerm_key_vault_secret" "messagehub_storage_connection_string" {
+  name         = "todo"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "messagehub_storage_container_name" {
+  name         = "st-marketres-postofficereply-container-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+# ????????????????????
+data "azurerm_key_vault_secret" "messagehub_request_queue" {
+  name         = "sbq-wholesale-dequeue-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
