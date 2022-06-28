@@ -36,9 +36,3 @@ data "azurerm_key_vault_secret" "messagehub_storage_container_name" {
   name         = "st-marketres-postofficereply-container-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
-
-# ????????????????????
-data "azurerm_key_vault_secret" "messagehub_request_queue" {
-  name         = "sbq-wholesale-dequeue-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}

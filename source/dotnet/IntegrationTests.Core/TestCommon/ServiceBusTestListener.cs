@@ -86,7 +86,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon
             return receivedMessage =>
             {
                 result.Body = receivedMessage.Body;
-                result.CorrelationId = (string)receivedMessage.ApplicationProperties["OperationCorrelationId"];
+                if (receivedMessage.ApplicationProperties.TryGetValue("OperationCorrelationId", out var correlationId))
+                    result.CorrelationId = (string)correlationId;
                 return Task.CompletedTask;
             };
         }
