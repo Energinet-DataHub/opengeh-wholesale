@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <AssemblyName>Energinet.DataHub.Wholesale.Contracts</AssemblyName>
+      <RootNamespace>Energinet.DataHub.Wholesale.Contracts</RootNamespace>
+    </PropertyGroup>
+
+</Project>

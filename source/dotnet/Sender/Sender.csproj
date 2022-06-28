@@ -50,11 +50,7 @@ limitations under the License.
         </None>
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\Contracts\Contracts.csproj" />
       <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Include="..\Contracts\WholesaleProcess\ProcessCompletedEventDto.cs">
-        <Link>Application\ProcessCompletedEventDto.cs</Link>
-      </Compile>
     </ItemGroup>
 </Project>

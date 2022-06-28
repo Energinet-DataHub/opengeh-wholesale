@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
@@ -21,7 +21,7 @@ public class Batch
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
 
-    public Batch(WholesaleProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes)
+    public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes)
     {
         Id = new BatchId();
         ExecutionState = BatchExecutionState.Pending;
@@ -44,7 +44,7 @@ public class Batch
 
     public BatchId Id { get; }
 
-    public WholesaleProcessType ProcessType { get; }
+    public ProcessType ProcessType { get; }
 
     public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes;
 
