@@ -15,11 +15,9 @@
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using FluentAssertions;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Tests.Application.MeteringPoints;
 
-[UnitTest]
 public class ConnectionStateTests
 {
     [Theory]
