@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Sender.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -25,7 +26,11 @@ public class ProcessEntityConfiguration : IEntityTypeConfiguration<Domain.Proces
         builder.HasKey(p => p.Id);
         builder.Property(p => p.Id).ValueGeneratedNever();
 
-        builder.Property(p => p.MessageHubReference);
+        builder
+            .Property(p => p.MessageHubReference)
+            .HasConversion(
+                reference => reference.Value,
+                value => new MessageHubReference(value));
         builder.Property(p => p.GridAreaCode);
     }
 }
