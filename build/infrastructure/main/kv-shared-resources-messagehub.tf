@@ -13,7 +13,7 @@
 # limitations under the License.
 
 data "azurerm_key_vault_secret" "messagehub_service_bus_connection_string" {
-  name         = "todo"
+  name         = "sb-domain-relay-send-connection-string"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
@@ -28,7 +28,7 @@ data "azurerm_key_vault_secret" "messagehub_reply_queue_name" {
 }
 
 data "azurerm_key_vault_secret" "messagehub_storage_connection_string" {
-  name         = "todo"
+  name         = "st-marketres-primary-connection-string"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
