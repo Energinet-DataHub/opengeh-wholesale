@@ -23,10 +23,10 @@ namespace Energinet.DataHub.Wholesale.Sender.Endpoints;
 public class DataAvailableSenderEndpoint
 {
     private const string FunctionName = nameof(DataAvailableSenderEndpoint);
-    private readonly JsonSerializer _jsonSerializer;
+    private readonly IJsonSerializer _jsonSerializer;
     private readonly IDataAvailableNotifier _dataAvailableNotifier;
 
-    public DataAvailableSenderEndpoint(JsonSerializer jsonSerializer, IDataAvailableNotifier dataAvailableNotifier)
+    public DataAvailableSenderEndpoint(IJsonSerializer jsonSerializer, IDataAvailableNotifier dataAvailableNotifier)
     {
         _jsonSerializer = jsonSerializer;
         _dataAvailableNotifier = dataAvailableNotifier;

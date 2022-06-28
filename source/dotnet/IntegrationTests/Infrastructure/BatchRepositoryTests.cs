@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
 using FluentAssertions;
@@ -38,7 +38,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var batch = new Batch(WholesaleProcessType.BalanceFixing, someGridAreasIds);
+        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds);
         var sut = new BatchRepository(writeContext);
 
         // Act

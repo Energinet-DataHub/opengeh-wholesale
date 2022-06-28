@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Sender.Persistence;
 
 public class DatabaseContext : DbContext, IDatabaseContext
 {
-    protected DatabaseContext(DbContextOptions<DatabaseContext> options)
+    public DatabaseContext(DbContextOptions<DatabaseContext> options)
         : base(options)
     {
     }

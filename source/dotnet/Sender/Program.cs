@@ -21,9 +21,12 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MessageHub.Client;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Sender.Application;
 using Energinet.DataHub.Wholesale.Sender.Configuration;
+using Energinet.DataHub.Wholesale.Sender.Domain;
 using Energinet.DataHub.Wholesale.Sender.Monitor;
 using Energinet.DataHub.Wholesale.Sender.Persistence;
+using Energinet.DataHub.Wholesale.Sender.Persistence.Process;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,13 +44,49 @@ public static class Program
                 builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
                 builder.UseMiddleware<IntegrationEventMetadataMiddleware>();
             })
-            .ConfigureServices(Middlewares)
+            .ConfigureServices(ApplicationServices)
+            .ConfigureServices(DomainServices)
+            .ConfigureServices(MiddlewareServices)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(MessageHub)
             .ConfigureServices(HealthCheck)
             .Build();
 
         await host.RunAsync().ConfigureAwait(false);
+    }
+
+    private static void ApplicationServices(IServiceCollection services)
+    {
+        services.AddScoped<IDataAvailableNotifier, DataAvailableNotifier>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IDataAvailableNotificationFactory, DataAvailableNotificationFactory>();
+    }
+
+    private static void DomainServices(IServiceCollection services)
+    {
+        services.AddScoped<IProcessRepository, ProcessRepository>();
+    }
+
+    private static void MiddlewareServices(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
+        serviceCollection.AddScoped<CorrelationIdMiddleware>();
+        serviceCollection.AddScoped<FunctionTelemetryScopeMiddleware>();
+        serviceCollection.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
+        serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
+    }
+
+    private static void Infrastructure(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddApplicationInsightsTelemetryWorkerService(
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+        serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+
+        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
+        var connectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
+        serviceCollection.AddDbContext<DatabaseContext>(options =>
+            options.UseSqlServer(connectionString, o => o.UseNodaTime()));
     }
 
     private static void MessageHub(IServiceCollection services)
@@ -63,27 +102,6 @@ public static class Program
             new MessageHubConfig(dataAvailableQueue, domainReplyQueue),
             storageServiceConnectionString,
             new StorageConfig(azureBlobStorageContainerName));
-    }
-
-    private static void Middlewares(IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
-        serviceCollection.AddScoped<CorrelationIdMiddleware>();
-        serviceCollection.AddScoped<FunctionTelemetryScopeMiddleware>();
-        serviceCollection.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
-        serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
-    }
-
-    private static void Infrastructure(IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddApplicationInsightsTelemetryWorkerService(
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
-        serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
-
-        var connectionString =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
-        serviceCollection.AddDbContext<DatabaseContext>(options =>
-            options.UseSqlServer(connectionString, o => o.UseNodaTime()));
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)
