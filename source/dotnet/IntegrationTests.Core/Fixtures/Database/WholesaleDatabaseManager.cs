@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
 using Energinet.DataHub.Wholesale.DatabaseMigration;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-using EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
