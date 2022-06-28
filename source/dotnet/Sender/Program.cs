@@ -109,7 +109,7 @@ public static class Program
         serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
         serviceCollection.AddScoped<HealthCheckEndpoint>();
 
-        var completedProcessServiceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusListenConnectionString);
+        var serviceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusListenConnectionString);
         var completedProcessTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
         var completedProcessSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedSubscriptionName);
 
@@ -119,8 +119,12 @@ public static class Program
         serviceCollection
             .AddHealthChecks()
             .AddLiveCheck()
+            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
+            .AddAzureServiceBusTopic(
+                serviceBusConnectionString,
+                completedProcessTopicName)
             .AddAzureServiceBusSubscription(
-                completedProcessServiceBusConnectionString,
+                serviceBusConnectionString,
                 completedProcessTopicName,
                 completedProcessSubscriptionName)
             .AddAzureServiceBusQueue(
