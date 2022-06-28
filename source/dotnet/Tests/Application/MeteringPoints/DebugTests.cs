@@ -25,7 +25,7 @@ public class DebugTests
     [Fact]
     public void Value_IsDefinedCorrectly()
     {
-        Debug.Abc.Should().Be("Abcaaa");
+        Debug.TestMe().Should().Be("Abcaaa");
     }
 
     [Fact]
