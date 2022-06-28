@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon
         public static DoProvider WhenCorrelationId(this ServiceBusListenerMock provider, string? correlationId = null)
         {
             return provider.When(request =>
-                request.CorrelationId == correlationId);
+                request.ApplicationProperties["OperationCorrelationId"].Equals(correlationId));
         }
     }
 }

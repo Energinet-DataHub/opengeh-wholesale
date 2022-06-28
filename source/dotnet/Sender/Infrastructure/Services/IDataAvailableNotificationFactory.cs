@@ -15,7 +15,7 @@
 using Energinet.DataHub.MessageHub.Model.Model;
 using Energinet.DataHub.Wholesale.Application.Processes;
 
-namespace Energinet.DataHub.Wholesale.Sender.Application;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 public interface IDataAvailableNotificationFactory
 {

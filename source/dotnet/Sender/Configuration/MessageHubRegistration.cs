@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.Sender.Configuration;
 
 public static class MessageHubRegistration
 {
-        /// <summary>
+    /// <summary>
     /// Post office provides a NuGet package to handle the configuration, but it's for SimpleInjector
     /// and thus not applicable in this function host. See also
     /// https://github.com/Energinet-DataHub/geh-post-office/blob/main/source/PostOffice.Communicator.SimpleInjector/source/PostOffice.Communicator.SimpleInjector/ServiceCollectionExtensions.cs

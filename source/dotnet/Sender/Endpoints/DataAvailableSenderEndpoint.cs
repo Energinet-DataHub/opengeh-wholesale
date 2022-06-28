@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes;
-using Energinet.DataHub.Wholesale.Sender.Application;
 using Energinet.DataHub.Wholesale.Sender.Configuration;
 using Microsoft.Azure.Functions.Worker;
 

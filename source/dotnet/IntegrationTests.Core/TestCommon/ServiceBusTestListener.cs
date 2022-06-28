@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Text.Json;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon
@@ -35,12 +36,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon
                     var deserializedMessage = JsonSerializer.Deserialize<TMessage>(message.Body);
                     return predicate(deserializedMessage!);
                 })
-                .VerifyOnceAsync(receivedMessage =>
-                {
-                    result.Body = receivedMessage.Body;
-                    result.CorrelationId = receivedMessage.CorrelationId;
-                    return Task.CompletedTask;
-                }).ConfigureAwait(false);
+                .VerifyOnceAsync(MessageHandler(result)).ConfigureAwait(false);
             return result;
         }
 
@@ -49,12 +45,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon
             var result = new EventualServiceBusMessage();
             result.MessageAwaiter = await _serviceBusListenerMock
                 .WhenCorrelationId(correlationId)
-                .VerifyOnceAsync(receivedMessage =>
-                {
-                    result.Body = receivedMessage.Body;
-                    result.CorrelationId = receivedMessage.CorrelationId;
-                    return Task.CompletedTask;
-                }).ConfigureAwait(false);
+                .VerifyOnceAsync(MessageHandler(result)).ConfigureAwait(false);
             return result;
         }
 
@@ -88,6 +79,16 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon
         public async ValueTask DisposeAsync()
         {
             await _serviceBusListenerMock.DisposeAsync();
+        }
+
+        private static Func<ServiceBusReceivedMessage, Task> MessageHandler(EventualServiceBusMessage result)
+        {
+            return receivedMessage =>
+            {
+                result.Body = receivedMessage.Body;
+                result.CorrelationId = (string)receivedMessage.ApplicationProperties["OperationCorrelationId"];
+                return Task.CompletedTask;
+            };
         }
     }
 }

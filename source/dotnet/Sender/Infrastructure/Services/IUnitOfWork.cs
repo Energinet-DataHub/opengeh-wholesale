@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Application;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 public interface IUnitOfWork
 {

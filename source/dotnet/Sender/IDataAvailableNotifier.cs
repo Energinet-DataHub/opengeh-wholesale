@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Application.Processes;
 
-namespace Energinet.DataHub.Wholesale.Sender.Application;
+namespace Energinet.DataHub.Wholesale.Sender;
 
 public interface IDataAvailableNotifier
 {
