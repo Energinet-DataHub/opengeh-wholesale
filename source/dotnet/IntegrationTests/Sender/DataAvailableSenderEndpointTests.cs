@@ -43,6 +43,7 @@ public class DataAvailableSenderEndpointTests
         public Task DisposeAsync()
         {
             Fixture.HostManager.ClearHostLog();
+            Fixture.MessageHubMock.Clear();
             return Task.CompletedTask;
         }
 
@@ -69,6 +70,26 @@ public class DataAvailableSenderEndpointTests
                 .MessageAwaiter!
                 .Wait(TimeSpan.FromSeconds(10));
             isDataAvailableEventReceived.Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task Given_ProcessCompleted_When_MeteredDataResponsiblePeeks_Then_MessageHubReceivesReply(
+            Guid correlationId,
+            DateTime operationTimestamp)
+        {
+            // Arrange
+            var completedProcess = new ProcessCompletedEventDto("805");
+            var message = ServiceBusTestMessage.Create(completedProcess, operationTimestamp.AsUtc(), correlationId.ToString());
+
+            // Act -> Publish process completed event, which will transitively invoke
+            await Fixture.CompletedProcessTopic.SenderClient.SendMessageAsync(message);
+
+            // Assert
+            await Fixture.MessageHubMock.WaitForNotificationsInDataAvailableQueueAsync(correlationId.ToString());
+            var response = await Fixture.MessageHubMock.PeekAsync();
+            response.Content.Should().NotBeNull();
+            response.CorrelationId.Should().Be(correlationId);
         }
     }
 }
