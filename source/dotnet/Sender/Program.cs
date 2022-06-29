@@ -22,7 +22,6 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MessageHub.Client;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Sender.Configuration;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -109,26 +108,25 @@ public static class Program
         serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
         serviceCollection.AddScoped<HealthCheckEndpoint>();
 
-        var serviceBusManageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
-        var completedProcessTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
-        var completedProcessSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedSubscriptionName);
-
-        var dataHubServiceBusManageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DataHubServiceBusManageConnectionString);
-        var dataAvailableQueueName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubDataAvailableQueueName);
-
         serviceCollection
             .AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
+            .AddDbContextCheck<DatabaseContext>()
             .AddAzureServiceBusTopic(
-                serviceBusManageConnectionString,
-                completedProcessTopicName)
+                EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.ProcessCompletedTopicName.Val())
             .AddAzureServiceBusSubscription(
-                serviceBusManageConnectionString,
-                completedProcessTopicName,
-                completedProcessSubscriptionName)
+                EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.ProcessCompletedTopicName.Val(),
+                EnvironmentSettingNames.ProcessCompletedSubscriptionName.Val())
             .AddAzureServiceBusQueue(
-                dataHubServiceBusManageConnectionString,
-                dataAvailableQueueName);
+                EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.MessageHubDataAvailableQueueName.Val())
+            .AddAzureServiceBusQueue(
+                connectionString: EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
+                queueName: EnvironmentSettingNames.MessageHubRequestQueue.Val())
+            .AddAzureServiceBusQueue(
+                connectionString: EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
+                queueName: EnvironmentSettingNames.MessageHubReplyQueueName.Val());
     }
 }

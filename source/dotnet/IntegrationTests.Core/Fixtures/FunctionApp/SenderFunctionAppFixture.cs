@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.MessageHub.IntegrationTesting;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
@@ -54,6 +55,12 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
         public QueueResource DataAvailableQueue { get; set; } = null!;
 
+        public QueueResource MessageHubRequestQueue { get; set; } = null!;
+
+        public QueueResource MessageHubReplyQueue { get; set; } = null!;
+
+        public MessageHubSimulation MessageHubMock { get; set; } = null!;
+
         private AzuriteManager AzuriteManager { get; }
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
@@ -80,8 +87,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubRequestQueue, "xx");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubReplyQueueName, "<currently unused>");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubStorageConnectionString, "<currently unused>");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubStorageContainerName, "<currently unused>");
         }
@@ -93,6 +98,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
             await DatabaseManager.CreateDatabaseAsync();
 
+            CompletedProcessTopic = await ServiceBusResourceProvider
+                .BuildTopic("completed-process")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
+                .AddSubscription("completed-process-sub-sender")
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ProcessCompletedSubscriptionName)
+                .CreateAsync();
+
             DataAvailableQueue = await ServiceBusResourceProvider
                 .BuildQueue("data-available")
                 .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubDataAvailableQueueName)
@@ -102,12 +114,37 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             await messageHubListener.AddQueueListenerAsync(DataAvailableQueue.Name);
             DataAvailableListener = new ServiceBusTestListener(messageHubListener);
 
-            CompletedProcessTopic = await ServiceBusResourceProvider
-                .BuildTopic("completed-process")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
-                .AddSubscription("completed-process-sub-sender")
-                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ProcessCompletedSubscriptionName)
+            MessageHubRequestQueue = await ServiceBusResourceProvider
+                .BuildQueue("messagehub-request")
+                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubRequestQueue)
                 .CreateAsync();
+
+            MessageHubRequestQueue = await ServiceBusResourceProvider
+                .BuildQueue("messagehub-reply")
+                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubReplyQueueName)
+                .CreateAsync();
+
+            const string messageHubStorageConnectionString = "UseDevelopmentStorage=true";
+            const string messageHubStorageContainerName = "messagehub-reply";
+            Environment.SetEnvironmentVariable(
+                EnvironmentSettingNames.MessageHubStorageConnectionString,
+                messageHubStorageConnectionString);
+            Environment.SetEnvironmentVariable(
+                EnvironmentSettingNames.MessageHubStorageContainerName,
+                messageHubStorageContainerName);
+
+            var messageHubSimulationConfig = new MessageHubSimulationConfig(
+                ServiceBusResourceProvider.ConnectionString,
+                DataAvailableQueue.Name,
+                MessageHubRequestQueue.Name,
+                MessageHubReplyQueue.Name,
+                messageHubStorageConnectionString,
+                messageHubStorageContainerName);
+
+            messageHubSimulationConfig.PeekTimeout = TimeSpan.FromSeconds(20.0);
+            messageHubSimulationConfig.WaitTimeout = TimeSpan.FromSeconds(20.0);
+
+            MessageHubMock = new MessageHubSimulation(messageHubSimulationConfig);
         }
 
         /// <inheritdoc/>

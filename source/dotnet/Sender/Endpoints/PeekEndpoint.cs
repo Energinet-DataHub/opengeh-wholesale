@@ -26,12 +26,12 @@ public class PeekEndpoint
 {
     private const string FunctionName = nameof(PeekEndpoint);
     private readonly IRequestBundleParser _requestBundleParser;
-    private readonly IDocumentSender _bundleSender;
+    private readonly IDocumentSender _documentSender;
 
-    public PeekEndpoint(IRequestBundleParser requestBundleParser, IDocumentSender bundleSender)
+    public PeekEndpoint(IRequestBundleParser requestBundleParser, IDocumentSender documentSender)
     {
         _requestBundleParser = requestBundleParser;
-        _bundleSender = bundleSender;
+        _documentSender = documentSender;
     }
 
     [Function(FunctionName)]
@@ -43,6 +43,6 @@ public class PeekEndpoint
         byte[] data)
     {
         var request = _requestBundleParser.Parse(data);
-        return _bundleSender.SendAsync(request);
+        return _documentSender.SendAsync(request);
     }
 }
