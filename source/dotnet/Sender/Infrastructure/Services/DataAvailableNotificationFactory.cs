@@ -32,6 +32,7 @@ public class DataAvailableNotificationFactory : IDataAvailableNotificationFactor
         var notification = new DataAvailableNotificationDto(
             messageHubReference,
 #pragma warning disable CS0618
+            // This is a temporary solution which allow us to avoid integrating with the actor registry at the moment
             new LegacyActorIdDto(recipientGln),
 #pragma warning restore CS0618
             new MessageTypeDto("process-completed"),
