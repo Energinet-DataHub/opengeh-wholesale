@@ -27,17 +27,18 @@ def integration_events_persister(
     checkpoint_path: str,
     integration_events_path: str
     ):
-    events = (streamingDf.withColumn(
-        "body", from_json(col("body").cast('string'), schema))
-        .select(
-            col("*"),
-            col("body.*")
-        ).drop("body")
+    
+    events = (streamingDf
+        #.withColumn("body", from_json(col("body")), schema)
+        #.select(
+        #    col("*"),
+        #    col("body.*")
         .withColumn("year", year(col("enqueuedTime")))
         .withColumn("month", month(col("enqueuedTime")))
         .withColumn("day", dayofmonth(col("enqueuedTime"))))
 
     return events.writeStream.partitionBy("year", "month", "day") \
-        .format("console") \
+        .format("parquet") \
+        .option("checkpointLocation", checkpoint_path) \
         .start(integration_events_path) \
         .awaitTermination()

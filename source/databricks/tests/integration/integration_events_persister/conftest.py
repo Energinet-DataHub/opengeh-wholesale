@@ -1,4 +1,4 @@
-# Copyright 2020 Energinet DataHub A/S
+    # Copyright 2020 Energinet DataHub A/S
 #
 # Licensed under the Apache License, Version 2.0 (the "License2");
 # you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ def parquet_reader(spark: SparkSession, delta_lake_path: str):
         data = spark.sparkContext.emptyRDD()
         try:
             data = spark.read.format("parquet").load(f"{delta_lake_path}/{path}")
+            data.show(truncate=False)
         except Exception:
             pass
         return data

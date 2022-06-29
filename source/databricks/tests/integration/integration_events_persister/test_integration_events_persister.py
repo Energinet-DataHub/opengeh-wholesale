@@ -24,7 +24,7 @@ import pytest
 from package import integration_events_persister
 from tests.integration.utils import streaming_job_asserter
 
-
+@pytest.fixture(scope="session")
 def integration_events_persister_tester(
     spark,
     databricks_path,
