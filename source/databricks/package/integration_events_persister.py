@@ -17,7 +17,7 @@ sys.path.append(r'/workspaces/opengeh-wholesale/source/databricks')
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
-    year, month, dayofmonth, col, from_json)
+    year, month, dayofmonth, col)
 from package.schemas import (
     eventhub_integration_events_schema as schema)
 
@@ -27,12 +27,10 @@ def integration_events_persister(
     checkpoint_path: str,
     integration_events_path: str
     ):
-    
-    events = (streamingDf
-        #.withColumn("body", from_json(col("body")), schema)
-        #.select(
-        #    col("*"),
-        #    col("body.*")
+
+    events = (streamingDf.select(
+        col("*"),
+        col("body.*")).drop("body")
         .withColumn("year", year(col("enqueuedTime")))
         .withColumn("month", month(col("enqueuedTime")))
         .withColumn("day", dayofmonth(col("enqueuedTime"))))
@@ -40,5 +38,4 @@ def integration_events_persister(
     return events.writeStream.partitionBy("year", "month", "day") \
         .format("parquet") \
         .option("checkpointLocation", checkpoint_path) \
-        .start(integration_events_path) \
-        .awaitTermination()
+        .start(integration_events_path)
