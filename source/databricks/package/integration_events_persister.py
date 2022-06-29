@@ -12,9 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
+sys.path.append(r'/workspaces/opengeh-wholesale/source/databricks')
+
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
-    year, month, dayofmonth, col, from_json, schema)
+    year, month, dayofmonth, col, from_json)
+from package.schemas import (
+    eventhub_integration_events_schema as schema)
 
 
 def integration_events_persister(
@@ -23,15 +28,16 @@ def integration_events_persister(
     integration_events_path: str
     ):
     events = (streamingDf.withColumn(
-        "body", from_json(col("body").cast('string'), schema))
+        "body", from_json(col("body").cast('string'),  schema))
         .select(
             col("*"),
             col("body.*")
         ).drop("body")
         .withColumn("year", year(col("enqueuedTime")))
         .withColumn("month", month(col("enqueuedTime")))
-        .withColumn("day", dayofmonth(col("enqueuedTime")))
-        .stat()
-        .awaitTermination())
+        .withColumn("day", dayofmonth(col("enqueuedTime"))))
 
-    events.show()
+    events.writeStream.partitionBy("year", "month", "day") \
+        .format("console") \
+        .start("dbfs:/test/meteringpointsEvents") \
+        .awaitTermination()

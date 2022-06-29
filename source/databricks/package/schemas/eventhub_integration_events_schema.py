@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyspark.sql.types import StringType, StructType, StructField, TimestampType
 
-eventhub_timeseries_schema = StructType([
+eventhub_integration_events_schema = StructType([
     StructField("GsrnNumber", StringType(), True),
     StructField("GridAreaLinkId", StringType(), True),
     StructField("SettlementMethod", StringType(), True),

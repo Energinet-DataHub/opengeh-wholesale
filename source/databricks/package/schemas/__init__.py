@@ -11,5 +11,5 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .eventhub_timeseries_schema import eventhub_timeseries_schema
+from .eventhub_integration_events_schema import eventhub_integration_events_schema
 from .time_series_points_schema import time_series_points_schema

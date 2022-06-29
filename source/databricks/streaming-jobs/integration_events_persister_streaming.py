@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import sys
-sys.path.append(r'/workspaces/geh-timeseries/source/databricks')
+sys.path.append(r'/workspaces/opengeh-wholesale/source/databricks')
 sys.path.append(r'/opt/conda/lib/python3.8/site-packages')
 
 import configargparse
@@ -32,12 +32,12 @@ args, unknown_args = p.parse_known_args()
 
 spark = initialize_spark(args)
 
-integration_events_path = f"args.integration_events_path"
-integration_events_checkpoint_path = f"args.integration_events_checkpoint_path"
+integration_events_path = "integration_events_path"
+integration_events_checkpoint_path = "checkpoint"
 
 input_configuration = {}
 input_configuration["eventhubs.connectionString"] = spark.sparkContext._gateway.jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt("Endpoint=sb://evhns-wholesale-wholsal-u-001.servicebus.windows.net;EntityPath=masterdataevents;SharedAccessKeyName=manage;SharedAccessKey=CkZMSjFuBL74TYK3zPuxmeyAV+1/J0FnNxRTM5QJKV4=")
-streamingDF = (spark.readStream.format("eventhubs").options(**input_configuration).load())
+streamingDF = (spark.readStream.format("eventhubs").options(**input_configuration).option("startingOffsets", "earliest").load())
 
 # start the timeseries persister job
-integration_events_persister(streamingDF, checkpoint_path, integration_events_path)
+integration_events_persister(streamingDF, integration_events_checkpoint_path, integration_events_path)
