@@ -32,9 +32,6 @@ public class DataAvailableSenderEndpoint
     }
 
     [Function(FunctionName)]
-    [ServiceBusOutput(
-        "%" + EnvironmentSettingNames.MessageHubDataAvailableQueueName + "%",
-        Connection = EnvironmentSettingNames.MessageHubServiceBusConnectionString)]
     public async Task RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.ProcessCompletedTopicName + "%",
