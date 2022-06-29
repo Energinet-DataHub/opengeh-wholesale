@@ -111,22 +111,27 @@ public static class Program
         serviceCollection
             .AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>()
+            .AddDbContextCheck<DatabaseContext>("DatabaseContext")
             .AddAzureServiceBusTopic(
+                "ProcessCompletedTopic",
                 EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
                 EnvironmentSettingNames.ProcessCompletedTopicName.Val())
             .AddAzureServiceBusSubscription(
+                "ProcessCompletedSubscription",
                 EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
                 EnvironmentSettingNames.ProcessCompletedTopicName.Val(),
                 EnvironmentSettingNames.ProcessCompletedSubscriptionName.Val())
             .AddAzureServiceBusQueue(
+                "MessageHubDataAvailableQueue",
                 EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
                 EnvironmentSettingNames.MessageHubDataAvailableQueueName.Val())
             .AddAzureServiceBusQueue(
-                connectionString: EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
-                queueName: EnvironmentSettingNames.MessageHubRequestQueue.Val())
+                "MessageHubRequestQueue",
+                EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.MessageHubRequestQueueName.Val())
             .AddAzureServiceBusQueue(
-                connectionString: EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
-                queueName: EnvironmentSettingNames.MessageHubReplyQueueName.Val());
+                "MessageHubReplyQueue",
+                EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.MessageHubReplyQueueName.Val());
     }
 }

@@ -81,14 +81,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
+            Environment.SetEnvironmentVariable("AzureWebJobsStorage", "UseDevelopmentStorage=true");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DataHubServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubStorageConnectionString, "<currently unused>");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubStorageContainerName, "<currently unused>");
         }
 
         /// <inheritdoc/>
@@ -116,7 +115,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
             MessageHubRequestQueue = await ServiceBusResourceProvider
                 .BuildQueue("messagehub-request", requiresSession: true)
-                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubRequestQueue)
+                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubRequestQueueName)
                 .CreateAsync();
 
             MessageHubReplyQueue = await ServiceBusResourceProvider
@@ -125,7 +124,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 .CreateAsync();
 
             const string messageHubStorageConnectionString = "UseDevelopmentStorage=true";
-            const string messageHubStorageContainerName = "messagehub-reply";
+            const string messageHubStorageContainerName = "messagehub-container";
             Environment.SetEnvironmentVariable(
                 EnvironmentSettingNames.MessageHubStorageConnectionString,
                 messageHubStorageConnectionString);
@@ -160,8 +159,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         protected override async Task OnDisposeFunctionAppDependenciesAsync()
         {
             AzuriteManager.Dispose();
+            await MessageHubMock.DisposeAsync();
             await DatabaseManager.DeleteDatabaseAsync();
             await ServiceBusResourceProvider.DisposeAsync();
+            await DataAvailableListener.DisposeAsync();
         }
 
         private static string GetBuildConfiguration()
