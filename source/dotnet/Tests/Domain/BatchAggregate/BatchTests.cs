@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
 using Xunit;
 
@@ -42,7 +42,7 @@ public class BatchTests
     {
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
-        Assert.Throws<ArgumentException>(() => new Batch(WholesaleProcessType.BalanceFixing, emptyGridAreaCodes));
+        Assert.Throws<ArgumentException>(() => new Batch(ProcessType.BalanceFixing, emptyGridAreaCodes));
     }
 
     [Fact]

@@ -12,9 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
-public static class EnvironmentSettingNames
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
+
+public class UnitOfWork : IUnitOfWork
 {
-    public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
+    private readonly IDatabaseContext _databaseContext;
+
+    public UnitOfWork(IDatabaseContext databaseContext)
+    {
+        _databaseContext = databaseContext;
+    }
+
+    public async Task CommitAsync()
+    {
+        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
+    }
 }
