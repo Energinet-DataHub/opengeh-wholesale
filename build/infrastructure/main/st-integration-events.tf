@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-locals {
-    DATA_LAKE_CONTAINER_NAME           = "integration-events"
-    COMPLETED_PROCESS_SUBSCRIPTION     = "completed-process-sub-sender"
-    DB_CONNECTION_STRING               = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_wholesale.name};Persist Security Info=False;User ID=${data.azurerm_key_vault_secret.mssql_data_admin_name.value};Password=${data.azurerm_key_vault_secret.mssql_data_admin_password.value};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
+resource "azurerm_storage_container" "integration_events_container" {
+  name                  = local.DATA_LAKE_CONTAINER_NAME
+  storage_account_name  = data.azurerm_key_vault_secret.st_shared_data_lake_name.value
 }
