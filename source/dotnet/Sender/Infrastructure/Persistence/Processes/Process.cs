@@ -18,8 +18,6 @@ public class Process
 {
     public Process(MessageHubReference messageHubReference, string gridAreaCode)
     {
-        if (gridAreaCode.Length != 3)
-            throw new ArgumentException("Grid area code must be 3 characters long.");
         Id = Guid.NewGuid();
         MessageHubReference = messageHubReference;
         GridAreaCode = gridAreaCode;
