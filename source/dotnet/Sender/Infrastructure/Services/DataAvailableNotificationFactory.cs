@@ -27,7 +27,7 @@ public class DataAvailableNotificationFactory : IDataAvailableNotificationFactor
         var recipientGln = GetMdrGlnForGridArea(completedProcessEvent.GridAreaCode);
 
         // Unused when not supporting bundling
-        var unusedRelativeWeight = -1;
+        var unusedRelativeWeight = 1;
 
         var notification = new DataAvailableNotificationDto(
             messageHubReference,
