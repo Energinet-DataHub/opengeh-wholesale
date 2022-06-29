@@ -20,7 +20,11 @@ public static class EnvironmentSettingNames
 
     public const string DatabaseConnectionString = "DB_CONNECTION_STRING";
 
-    public const string ServiceBusManageConnectionString = "SERVICE_BUS_MANAGE_CONNECTION_STRING";
+    /// <summary>
+    /// Used for health check of all inter domain service bus connections (integration events and Message Hub)
+    /// </summary>
+    public const string DataHubServiceBusManageConnectionString = "INTEGRATIONEVENT_MANAGER_CONNECTION_STRING";
+
     public const string ServiceBusListenConnectionString = "SERVICE_BUS_LISTEN_CONNECTION_STRING";
     public const string ProcessCompletedTopicName = "PROCESS_COMPLETED_TOPIC_NAME";
     public const string ProcessCompletedSubscriptionName = "PROCESS_COMPLETED_SUBSCRIPTION_NAME";

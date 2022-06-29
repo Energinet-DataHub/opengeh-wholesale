@@ -109,11 +109,11 @@ public static class Program
         serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
         serviceCollection.AddScoped<HealthCheckEndpoint>();
 
-        var serviceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusListenConnectionString);
+        var dataHubServiceBusManageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DataHubServiceBusManageConnectionString);
+
         var completedProcessTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
         var completedProcessSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedSubscriptionName);
 
-        var dataAvailableServiceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString);
         var dataAvailableQueueName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubDataAvailableQueueName);
 
         serviceCollection
@@ -121,14 +121,14 @@ public static class Program
             .AddLiveCheck()
             .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
             .AddAzureServiceBusTopic(
-                serviceBusConnectionString,
+                dataHubServiceBusManageConnectionString,
                 completedProcessTopicName)
             .AddAzureServiceBusSubscription(
-                serviceBusConnectionString,
+                dataHubServiceBusManageConnectionString,
                 completedProcessTopicName,
                 completedProcessSubscriptionName)
             .AddAzureServiceBusQueue(
-                dataAvailableServiceBusConnectionString,
+                dataHubServiceBusManageConnectionString,
                 dataAvailableQueueName);
     }
 }
