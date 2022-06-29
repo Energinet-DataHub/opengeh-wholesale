@@ -39,11 +39,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 "integrationtest.local.settings.json",
                 "AZURE_SECRETS_KEYVAULT_URL");
 
-            CompletedProcessServiceBusResourceProvider = new ServiceBusResourceProvider(
-                IntegrationTestConfiguration.ServiceBusConnectionString,
-                TestLogger);
-
-            MessageHubServiceBusResourceProvider = new ServiceBusResourceProvider(
+            ServiceBusResourceProvider = new ServiceBusResourceProvider(
                 IntegrationTestConfiguration.ServiceBusConnectionString,
                 TestLogger);
         }
@@ -62,9 +58,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
-        private ServiceBusResourceProvider CompletedProcessServiceBusResourceProvider { get; }
-
-        private ServiceBusResourceProvider MessageHubServiceBusResourceProvider { get; }
+        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
@@ -80,8 +74,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, CompletedProcessServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString, MessageHubServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DataHubServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubReplyQueueName, "<currently unused>");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubStorageConnectionString, "<currently unused>");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubStorageContainerName, "<currently unused>");
@@ -94,16 +89,16 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
             await DatabaseManager.CreateDatabaseAsync();
 
-            DataAvailableQueue = await MessageHubServiceBusResourceProvider
+            DataAvailableQueue = await ServiceBusResourceProvider
                 .BuildQueue("data-available")
                 .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubDataAvailableQueueName)
                 .CreateAsync();
 
-            var messageHubListener = new ServiceBusListenerMock(MessageHubServiceBusResourceProvider.ConnectionString, TestLogger);
+            var messageHubListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
             await messageHubListener.AddQueueListenerAsync(DataAvailableQueue.Name);
             DataAvailableListener = new ServiceBusTestListener(messageHubListener);
 
-            CompletedProcessTopic = await CompletedProcessServiceBusResourceProvider
+            CompletedProcessTopic = await ServiceBusResourceProvider
                 .BuildTopic("completed-process")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
                 .AddSubscription("completed-process-sub-sender")
@@ -125,8 +120,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             AzuriteManager.Dispose();
             await DatabaseManager.DeleteDatabaseAsync();
-            await CompletedProcessServiceBusResourceProvider.DisposeAsync();
-            await MessageHubServiceBusResourceProvider.DisposeAsync();
+            await ServiceBusResourceProvider.DisposeAsync();
         }
 
         private static string GetBuildConfiguration()
