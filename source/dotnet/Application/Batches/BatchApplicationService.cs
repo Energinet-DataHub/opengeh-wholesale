@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
@@ -57,7 +59,12 @@ public class BatchApplicationService : IBatchApplicationService
     private static Batch CreateBatch(BatchRequestDto batchRequestDto)
     {
         var gridAreaCodes = batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c));
-        var batch = new Batch(batchRequestDto.ProcessType, gridAreaCodes);
+        var processType = batchRequestDto.ProcessType switch
+        {
+            WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
+        };
+        var batch = new Batch(processType, gridAreaCodes);
         return batch;
     }
 

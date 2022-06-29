@@ -12,15 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Contracts.WholesaleProcess;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
-/// <summary>
-/// Defines the wholesale process type
-/// </summary>
-public enum WholesaleProcessType
+public class Process
 {
-    /// <summary>
-    /// Balance fixing
-    /// </summary>
-    BalanceFixing,
+    public Process(MessageHubReference messageHubReference, string gridAreaCode)
+    {
+        Id = Guid.NewGuid();
+        MessageHubReference = messageHubReference;
+        GridAreaCode = gridAreaCode;
+    }
+
+    public Guid Id { get; }
+
+    public MessageHubReference MessageHubReference { get; }
+
+    public string GridAreaCode { get; }
 }

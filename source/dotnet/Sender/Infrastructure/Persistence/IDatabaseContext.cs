@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
+using Microsoft.EntityFrameworkCore;
 
-/// <summary>
-/// Defines the wholesale process type
-/// </summary>
-public enum WholesaleProcessType
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
+
+public interface IDatabaseContext
 {
-    /// <summary>
-    /// Balance fixing
-    /// </summary>
-    BalanceFixing,
+    DbSet<Process> Processes { get; }
+
+    Task<int> SaveChangesAsync();
 }
