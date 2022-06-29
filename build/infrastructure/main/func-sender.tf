@@ -34,6 +34,9 @@ module "func_sender" {
 
   app_settings                              = {
     DB_CONNECTION_STRING                             = local.DB_CONNECTION_STRING
+    
+    # Used for health check of all inter domain service bus connections (integration events and Message Hub)
+    INTEGRATIONEVENT_MANAGER_CONNECTION_STRING       = data.azurerm_key_vault_secret.sb_domain_relay_manage_connection_string.value
 
     # Service Bus
     SERVICE_BUS_MANAGE_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["manage"]
