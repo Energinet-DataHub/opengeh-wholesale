@@ -32,12 +32,12 @@ args, unknown_args = p.parse_known_args()
 
 spark = initialize_spark(args)
 
-integration_events_path = f"args.integration_events_path"
-integration_events_checkpoint_path = f"args.integration_events_checkpoint_path"
+integration_events_path = f"{args.integration_events_path}"
+integration_events_checkpoint_path = f"{args.integration_events_checkpoint_path}"
 
 input_configuration = {}
-input_configuration["eventhubs.connectionString"] = spark.sparkContext._gateway.jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt(arg.integration_events_path)
+input_configuration["eventhubs.connectionString"] = spark.sparkContext._gateway.jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt(f"{args.integration_events_path}")
 streamingDF = (spark.readStream.format("eventhubs").options(**input_configuration).load())
 
 # start the timeseries persister job
-integration_events_persister(streamingDF, checkpoint_path, integration_events_path)
+integration_events_persister(streamingDF, integration_events_checkpoint_path, integration_events_path)

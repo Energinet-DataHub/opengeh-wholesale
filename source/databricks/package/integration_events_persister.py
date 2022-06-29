@@ -28,7 +28,7 @@ def integration_events_persister(
     integration_events_path: str
     ):
     events = (streamingDf.withColumn(
-        "body", from_json(col("body").cast('string'),  schema))
+        "body", from_json(col("body").cast('string'), schema))
         .select(
             col("*"),
             col("body.*")
@@ -37,7 +37,7 @@ def integration_events_persister(
         .withColumn("month", month(col("enqueuedTime")))
         .withColumn("day", dayofmonth(col("enqueuedTime"))))
 
-    events.writeStream.partitionBy("year", "month", "day") \
+    return events.writeStream.partitionBy("year", "month", "day") \
         .format("console") \
-        .start("dbfs:/test/meteringpointsEvents") \
+        .start(integration_events_path) \
         .awaitTermination()
