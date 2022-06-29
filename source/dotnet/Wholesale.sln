@@ -30,7 +30,17 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessManager", "ProcessManager\ProcessManager.csproj", "{40710EC6-776E-4723-B188-421432DA90D9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Core", "Tests.Core\Tests.Core.csproj", "{5C8335E7-4410-4327-A802-1698E7945D76}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sender", "Sender\Sender.csproj", "{FF7C0086-D637-4265-A667-85275B4E05EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionFolder", "_SolutionFolder", "{2F06D7A0-5E4C-4245-8E2E-CD342C13C840}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		stylecop.json = stylecop.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,6 +100,10 @@ Global
 		{FF7C0086-D637-4265-A667-85275B4E05EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF7C0086-D637-4265-A667-85275B4E05EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF7C0086-D637-4265-A667-85275B4E05EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

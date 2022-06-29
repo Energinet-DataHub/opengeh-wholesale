@@ -21,12 +21,6 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Contracts\WholesaleProcess\WholesaleProcessType.cs">
-      <Link>WholesaleProcessType.cs</Link>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="NodaTime" Version="3.1.0" />
   </ItemGroup>
 

@@ -20,7 +20,7 @@ module "sbt_completed_process" {
 
   subscriptions       = [
     {
-      name                = "completed-process-sub-sender"
+      name                = local.COMPLETED_PROCESS_SUBSCRIPTION
       max_delivery_count  = 1
     },
   ]

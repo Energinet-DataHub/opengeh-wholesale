@@ -12,22 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Infrastructure;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Sender;
 
-public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
+public class ProcessRepositoryTests : IClassFixture<SenderDatabaseFixture>
 {
-    private readonly WholesaleDatabaseManager _databaseManager;
+    private readonly SenderDatabaseManager _databaseManager;
 
-    public BatchRepositoryTests(WholesaleDatabaseFixture fixture)
+    public ProcessRepositoryTests(SenderDatabaseFixture fixture)
     {
         _databaseManager = fixture.DatabaseManager;
     }
@@ -37,19 +34,17 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds);
-        var sut = new BatchRepository(writeContext);
+        var sut = new ProcessRepository(writeContext);
+        var expectedProcess = new Process(new MessageHubReference(Guid.NewGuid()), "805");
 
         // Act
-        await sut.AddAsync(batch);
+        await sut.AddAsync(expectedProcess);
         await writeContext.SaveChangesAsync();
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
+        var actual = await readContext.Processes.SingleAsync(p => p.Id == expectedProcess.Id);
 
-        actual.Should().BeEquivalentTo(batch);
-        actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
+        actual.Should().BeEquivalentTo(expectedProcess);
     }
 }

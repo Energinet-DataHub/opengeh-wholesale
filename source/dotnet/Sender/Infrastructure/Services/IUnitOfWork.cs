@@ -12,15 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Contracts.WholesaleProcess;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
-/// <summary>
-/// Defines the wholesale process type
-/// </summary>
-public enum WholesaleProcessType
+public interface IUnitOfWork
 {
-    /// <summary>
-    /// Balance fixing
-    /// </summary>
-    BalanceFixing,
+    Task CommitAsync();
 }

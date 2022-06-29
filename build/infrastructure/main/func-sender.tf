@@ -32,5 +32,25 @@ module "func_sender" {
   dotnet_framework_version                  = "6"
   use_dotnet_isolated_runtime               = true
 
+  app_settings                              = {
+    DB_CONNECTION_STRING                             = local.DB_CONNECTION_STRING
+    
+    # Used for health check of all inter domain service bus connections (integration events and Message Hub)
+    INTEGRATIONEVENT_MANAGER_CONNECTION_STRING       = data.azurerm_key_vault_secret.sb_domain_relay_manage_connection_string.value
+
+    # Service Bus
+    SERVICE_BUS_MANAGE_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["manage"]
+    SERVICE_BUS_LISTEN_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["listen"]
+    PROCESS_COMPLETED_TOPIC_NAME                     = module.sbt_completed_process.name
+    PROCESS_COMPLETED_SUBSCRIPTION_NAME              = local.COMPLETED_PROCESS_SUBSCRIPTION
+
+    # Message Hub
+    MESSAGE_HUB_SERVICE_BUS_CONNECTION_STRING        = data.azurerm_key_vault_secret.messagehub_service_bus_connection_string.value
+    MESSAGE_HUB_DATA_AVAILABLE_QUEUE_NAME            = data.azurerm_key_vault_secret.messagehub_data_available_queue_name.value
+    MESSAGE_HUB_REPLY_QUEUE_NAME                     = data.azurerm_key_vault_secret.messagehub_reply_queue_name.value
+    MESSAGE_HUB_STORAGE_CONNECTION_STRING            = data.azurerm_key_vault_secret.messagehub_storage_connection_string.value
+    MESSAGE_HUB_STORAGE_CONTAINER_NAME               = data.azurerm_key_vault_secret.messagehub_storage_container_name.value
+  }
+
   tags                                  = azurerm_resource_group.this.tags
 }
