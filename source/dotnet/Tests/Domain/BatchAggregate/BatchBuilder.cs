@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 
 namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 
@@ -43,7 +43,7 @@ public class BatchBuilder
 
     public Batch Build()
     {
-        var batch = new Batch(WholesaleProcessType.BalanceFixing, _gridAreaCodes);
+        var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes);
         if (_state != null)
             batch.SetPrivateProperty(b => b.ExecutionState, _state);
         return batch;

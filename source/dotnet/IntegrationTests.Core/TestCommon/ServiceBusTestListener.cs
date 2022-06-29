@@ -35,44 +35,25 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon
                     var deserializedMessage = JsonSerializer.Deserialize<TMessage>(message.Body);
                     return predicate(deserializedMessage!);
                 })
-                .VerifyOnceAsync(receivedMessage =>
+                .VerifyOnceAsync(message =>
                 {
-                    result.Body = receivedMessage.Body;
-                    result.CorrelationId = receivedMessage.CorrelationId;
+                    result.Body = message.Body;
                     return Task.CompletedTask;
                 }).ConfigureAwait(false);
             return result;
         }
 
-        public async Task<EventualServiceBusMessage> ListenForMessageAsync(string correlationId)
+        public async Task<EventualServiceBusMessage> ListenForDataAvailableMessageAsync(string correlationId)
         {
             var result = new EventualServiceBusMessage();
             result.MessageAwaiter = await _serviceBusListenerMock
-                .WhenCorrelationId(correlationId)
+                .WhenDataAvailableCorrelationId(correlationId)
                 .VerifyOnceAsync(receivedMessage =>
                 {
                     result.Body = receivedMessage.Body;
-                    result.CorrelationId = receivedMessage.CorrelationId;
+                    result.CorrelationId = (string)receivedMessage.ApplicationProperties["OperationCorrelationId"];
                     return Task.CompletedTask;
                 }).ConfigureAwait(false);
-            return result;
-        }
-
-        public async Task<EventualServiceBusEvents> ListenForEventsAsync(
-            string correlationId,
-            int expectedCount)
-        {
-            var result = new EventualServiceBusEvents();
-            result.CountdownEvent = await _serviceBusListenerMock
-                .WhenCorrelationId(correlationId)
-                .VerifyCountAsync(expectedCount, receivedMessage =>
-                {
-                    result.Body = receivedMessage.Body;
-                    result.CorrelationId = receivedMessage.CorrelationId;
-                    return Task.CompletedTask;
-                })
-                .ConfigureAwait(false);
-
             return result;
         }
 

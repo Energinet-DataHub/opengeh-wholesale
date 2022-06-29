@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Contracts.WholesaleProcess;
+using Energinet.DataHub.MessageHub.Model.Model;
+using Energinet.DataHub.Wholesale.Application.Processes;
 
-/// <summary>
-/// Defines the wholesale process type
-/// </summary>
-public enum WholesaleProcessType
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
+
+public interface IDataAvailableNotificationFactory
 {
-    /// <summary>
-    /// Balance fixing
-    /// </summary>
-    BalanceFixing,
+    DataAvailableNotificationDto Create(ProcessCompletedEventDto completedProcessEvent);
 }

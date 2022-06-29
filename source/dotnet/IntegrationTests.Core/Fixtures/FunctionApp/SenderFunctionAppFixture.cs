@@ -17,8 +17,12 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
-using Energinet.DataHub.Wholesale.Sender;
+using Energinet.DataHub.Wholesale.Sender.Configuration;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
@@ -28,18 +32,33 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         public SenderFunctionAppFixture()
         {
             AzuriteManager = new AzuriteManager();
+            DatabaseManager = new WholesaleDatabaseManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
             AuthorizationConfiguration = new AuthorizationConfiguration(
                 "u002",
                 "integrationtest.local.settings.json",
                 "AZURE_SECRETS_KEYVAULT_URL");
+
+            ServiceBusResourceProvider = new ServiceBusResourceProvider(
+                IntegrationTestConfiguration.ServiceBusConnectionString,
+                TestLogger);
         }
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
 
+        public WholesaleDatabaseManager DatabaseManager { get; }
+
+        public ServiceBusTestListener DataAvailableListener { get; private set; } = null!;
+
+        public TopicResource CompletedProcessTopic { get; set; } = null!;
+
+        public QueueResource DataAvailableQueue { get; set; } = null!;
+
         private AzuriteManager AzuriteManager { get; }
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
+
+        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
@@ -54,13 +73,38 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         protected override void OnConfigureEnvironment()
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DataHubServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubReplyQueueName, "<currently unused>");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubStorageConnectionString, "<currently unused>");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubStorageContainerName, "<currently unused>");
         }
 
         /// <inheritdoc/>
-        protected override Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
+        protected override async Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
         {
             AzuriteManager.StartAzurite();
-            return Task.CompletedTask;
+
+            await DatabaseManager.CreateDatabaseAsync();
+
+            DataAvailableQueue = await ServiceBusResourceProvider
+                .BuildQueue("data-available")
+                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubDataAvailableQueueName)
+                .CreateAsync();
+
+            var messageHubListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
+            await messageHubListener.AddQueueListenerAsync(DataAvailableQueue.Name);
+            DataAvailableListener = new ServiceBusTestListener(messageHubListener);
+
+            CompletedProcessTopic = await ServiceBusResourceProvider
+                .BuildTopic("completed-process")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
+                .AddSubscription("completed-process-sub-sender")
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ProcessCompletedSubscriptionName)
+                .CreateAsync();
         }
 
         /// <inheritdoc/>
@@ -73,10 +117,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         }
 
         /// <inheritdoc/>
-        protected override Task OnDisposeFunctionAppDependenciesAsync()
+        protected override async Task OnDisposeFunctionAppDependenciesAsync()
         {
             AzuriteManager.Dispose();
-            return Task.CompletedTask;
+            await DatabaseManager.DeleteDatabaseAsync();
+            await ServiceBusResourceProvider.DisposeAsync();
         }
 
         private static string GetBuildConfiguration()

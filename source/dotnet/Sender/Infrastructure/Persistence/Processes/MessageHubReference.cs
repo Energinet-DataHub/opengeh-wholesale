@@ -12,15 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Contracts.WholesaleProcess;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
-/// <summary>
-/// Defines the wholesale process type
-/// </summary>
-public enum WholesaleProcessType
-{
-    /// <summary>
-    /// Balance fixing
-    /// </summary>
-    BalanceFixing,
-}
+public sealed record MessageHubReference(Guid Value);
