@@ -25,6 +25,7 @@ public static class EnvironmentSettingNames
     /// </summary>
     public const string DataHubServiceBusManageConnectionString = "INTEGRATIONEVENT_MANAGER_CONNECTION_STRING";
 
+    public const string ServiceBusManageConnectionString = "SERVICE_BUS_MANAGE_CONNECTION_STRING";
     public const string ServiceBusListenConnectionString = "SERVICE_BUS_LISTEN_CONNECTION_STRING";
     public const string ProcessCompletedTopicName = "PROCESS_COMPLETED_TOPIC_NAME";
     public const string ProcessCompletedSubscriptionName = "PROCESS_COMPLETED_SUBSCRIPTION_NAME";
