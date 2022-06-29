@@ -56,7 +56,7 @@ public class DataAvailableSenderEndpointTests
             var completedProcess = new ProcessCompletedEventDto("805");
             using var eventualDataAvailableEvent = await Fixture
                 .DataAvailableListener
-                .ListenForMessageAsync(correlationId.ToString())
+                .ListenForDataAvailableMessageAsync(correlationId.ToString())
                 .ConfigureAwait(false);
 
             var message = ServiceBusTestMessage.Create(completedProcess, operationTimestamp.AsUtc(), correlationId.ToString());

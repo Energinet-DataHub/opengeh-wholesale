@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon
@@ -36,34 +35,25 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon
                     var deserializedMessage = JsonSerializer.Deserialize<TMessage>(message.Body);
                     return predicate(deserializedMessage!);
                 })
-                .VerifyOnceAsync(MessageHandler(result)).ConfigureAwait(false);
+                .VerifyOnceAsync(message =>
+                {
+                    result.Body = message.Body;
+                    return Task.CompletedTask;
+                }).ConfigureAwait(false);
             return result;
         }
 
-        public async Task<EventualServiceBusMessage> ListenForMessageAsync(string correlationId)
+        public async Task<EventualServiceBusMessage> ListenForDataAvailableMessageAsync(string correlationId)
         {
             var result = new EventualServiceBusMessage();
             result.MessageAwaiter = await _serviceBusListenerMock
-                .WhenCorrelationId(correlationId)
-                .VerifyOnceAsync(MessageHandler(result)).ConfigureAwait(false);
-            return result;
-        }
-
-        public async Task<EventualServiceBusEvents> ListenForEventsAsync(
-            string correlationId,
-            int expectedCount)
-        {
-            var result = new EventualServiceBusEvents();
-            result.CountdownEvent = await _serviceBusListenerMock
-                .WhenCorrelationId(correlationId)
-                .VerifyCountAsync(expectedCount, receivedMessage =>
+                .WhenDataAvailableCorrelationId(correlationId)
+                .VerifyOnceAsync(receivedMessage =>
                 {
                     result.Body = receivedMessage.Body;
-                    result.CorrelationId = receivedMessage.CorrelationId;
+                    result.CorrelationId = (string)receivedMessage.ApplicationProperties["OperationCorrelationId"];
                     return Task.CompletedTask;
-                })
-                .ConfigureAwait(false);
-
+                }).ConfigureAwait(false);
             return result;
         }
 
@@ -79,17 +69,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon
         public async ValueTask DisposeAsync()
         {
             await _serviceBusListenerMock.DisposeAsync();
-        }
-
-        private static Func<ServiceBusReceivedMessage, Task> MessageHandler(EventualServiceBusMessage result)
-        {
-            return receivedMessage =>
-            {
-                result.Body = receivedMessage.Body;
-                if (receivedMessage.ApplicationProperties.TryGetValue("OperationCorrelationId", out var correlationId))
-                    result.CorrelationId = (string)correlationId;
-                return Task.CompletedTask;
-            };
         }
     }
 }
