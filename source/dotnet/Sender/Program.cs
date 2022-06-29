@@ -113,25 +113,25 @@ public static class Program
             .AddLiveCheck()
             .AddDbContextCheck<DatabaseContext>("DatabaseContext")
             .AddAzureServiceBusTopic(
-                "ProcessCompletedTopic",
-                EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
-                EnvironmentSettingNames.ProcessCompletedTopicName.Val())
-            .AddAzureServiceBusSubscription(
-                "ProcessCompletedSubscription",
                 EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
                 EnvironmentSettingNames.ProcessCompletedTopicName.Val(),
-                EnvironmentSettingNames.ProcessCompletedSubscriptionName.Val())
+                "ProcessCompletedTopic")
+            .AddAzureServiceBusSubscription(
+                EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.ProcessCompletedTopicName.Val(),
+                EnvironmentSettingNames.ProcessCompletedSubscriptionName.Val(),
+                "ProcessCompletedSubscription")
             .AddAzureServiceBusQueue(
-                "MessageHubDataAvailableQueue",
                 EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
-                EnvironmentSettingNames.MessageHubDataAvailableQueueName.Val())
+                EnvironmentSettingNames.MessageHubDataAvailableQueueName.Val(),
+                "MessageHubDataAvailableQueue")
             .AddAzureServiceBusQueue(
-                "MessageHubRequestQueue",
                 EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
-                EnvironmentSettingNames.MessageHubRequestQueueName.Val())
+                EnvironmentSettingNames.MessageHubRequestQueueName.Val(),
+                "MessageHubRequestQueue")
             .AddAzureServiceBusQueue(
-                "MessageHubReplyQueue",
                 EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
-                EnvironmentSettingNames.MessageHubReplyQueueName.Val());
+                EnvironmentSettingNames.MessageHubReplyQueueName.Val(),
+                "MessageHubReplyQueue");
     }
 }
