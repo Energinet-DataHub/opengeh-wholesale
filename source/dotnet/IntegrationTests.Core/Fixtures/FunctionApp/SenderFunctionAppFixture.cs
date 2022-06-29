@@ -133,15 +133,16 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 messageHubStorageContainerName);
 
             var messageHubSimulationConfig = new MessageHubSimulationConfig(
-                ServiceBusResourceProvider.ConnectionString,
-                DataAvailableQueue.Name,
-                MessageHubRequestQueue.Name,
-                MessageHubReplyQueue.Name,
-                messageHubStorageConnectionString,
-                messageHubStorageContainerName);
-
-            messageHubSimulationConfig.PeekTimeout = TimeSpan.FromSeconds(20.0);
-            messageHubSimulationConfig.WaitTimeout = TimeSpan.FromSeconds(20.0);
+                serviceBusReadWriteConnectionString: ServiceBusResourceProvider.ConnectionString,
+                dataAvailableQueueName: DataAvailableQueue.Name,
+                domainQueueName: MessageHubRequestQueue.Name,
+                domainReplyQueueName: MessageHubReplyQueue.Name,
+                blobStorageConnectionString: messageHubStorageConnectionString,
+                blobStorageContainerName: messageHubStorageContainerName)
+            {
+                PeekTimeout = TimeSpan.FromSeconds(value: 2000.0),
+                WaitTimeout = TimeSpan.FromSeconds(value: 2000.0),
+            };
 
             MessageHubMock = new MessageHubSimulation(messageHubSimulationConfig);
         }
