@@ -115,12 +115,12 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             DataAvailableListener = new ServiceBusTestListener(messageHubListener);
 
             MessageHubRequestQueue = await ServiceBusResourceProvider
-                .BuildQueue("messagehub-request")
+                .BuildQueue("messagehub-request", requiresSession: true)
                 .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubRequestQueue)
                 .CreateAsync();
 
             MessageHubReplyQueue = await ServiceBusResourceProvider
-                .BuildQueue("messagehub-reply")
+                .BuildQueue("messagehub-reply", requiresSession: true)
                 .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubReplyQueueName)
                 .CreateAsync();
 
