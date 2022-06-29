@@ -22,6 +22,11 @@ data "azurerm_key_vault_secret" "messagehub_data_available_queue_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "messagehub_request_queue_name" {
+  name         = "sbq-wholesale-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "messagehub_reply_queue_name" {
   name         = "sbq-wholesale-reply-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id

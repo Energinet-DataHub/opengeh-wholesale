@@ -32,6 +32,7 @@ public static class EnvironmentSettingNames
 
     public const string MessageHubServiceBusConnectionString = "MESSAGE_HUB_SERVICE_BUS_CONNECTION_STRING";
     public const string MessageHubDataAvailableQueueName = "MESSAGE_HUB_DATA_AVAILABLE_QUEUE_NAME";
+    public const string MessageHubRequestQueue = "MESSAGE_HUB_REQUEST_QUEUE_NAME";
     public const string MessageHubReplyQueueName = "MESSAGE_HUB_REPLY_QUEUE_NAME";
     public const string MessageHubStorageConnectionString = "MESSAGE_HUB_STORAGE_CONNECTION_STRING";
     public const string MessageHubStorageContainerName = "MESSAGE_HUB_STORAGE_CONTAINER_NAME";
