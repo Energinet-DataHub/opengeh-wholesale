@@ -119,7 +119,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubRequestQueue)
                 .CreateAsync();
 
-            MessageHubRequestQueue = await ServiceBusResourceProvider
+            MessageHubReplyQueue = await ServiceBusResourceProvider
                 .BuildQueue("messagehub-reply")
                 .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubReplyQueueName)
                 .CreateAsync();
