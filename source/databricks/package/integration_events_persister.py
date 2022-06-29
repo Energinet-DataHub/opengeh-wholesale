@@ -12,43 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import StringType
-from pyspark.sql.functions import year, month, dayofmonth
-from package.codelists import Colname
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import (
+    year, month, dayofmonth, col, from_json, schema)
 
 
-def process_eventhub_item(df, epoch_id, integration_events_path):
-    """
-    Store received integration events ??? partitioned by the time of receival ???.
+def integration_events_persister(
+    streamingDf: DataFrame,
+    checkpoint_path: str,
+    integration_events_path: str
+    ):
+    events = (streamingDf.withColumn(
+        "body", from_json(col("body").cast('string'), schema))
+        .select(
+            col("*"),
+            col("body.*")
+        ).drop("body")
+        .withColumn("year", year(col("enqueuedTime")))
+        .withColumn("month", month(col("enqueuedTime")))
+        .withColumn("day", dayofmonth(col("enqueuedTime")))
+        .stat()
+        .awaitTermination())
 
-    ?? Time of receival is currently defined as the time the messages are enqueued
-    on the EventHub. ??
-    
-    start up with clipping stuff out of sebastians AzureEventHub Notebook
-    """
-    df = (
-        df.withColumn(Colname.year, year(df.enqueuedTime))
-        .withColumn(Colname.month, month(df.enqueuedTime))
-        .withColumn(Colname.day, dayofmonth(df.enqueuedTime))
-        .withColumn(Colname.timeseries, df.body.cast(StringType()))
-        .select(Colname.timeseries, Colname.year, Colname.month, Colname.day)
-    )
-
-    (df
-     .write.partitionBy(Colname.year, Colname.month, Colname.day)
-     .format("parquet")
-     .mode("append")
-     .save(integration_events_path))
-
-
-def integration_events_persister(streamingDf: DataFrame, checkpoint_path: str, integration_events_path: str):
-    return (
-        streamingDf.writeStream.option("checkpointLocation", checkpoint_path)
-        .foreachBatch(
-            lambda df, epochId: process_eventhub_item(
-                df, epochId, integration_events_path
-            )
-        )
-        .start()
-    )
+    events.show()

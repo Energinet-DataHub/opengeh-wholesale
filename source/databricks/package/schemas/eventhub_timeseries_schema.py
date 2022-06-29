@@ -11,32 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql.types import StringType, StructType, StructField, ArrayType, IntegerType, DecimalType
+from pyspark.sql.types import StringType, StructType, StructField, TimestampType
 
 eventhub_timeseries_schema = StructType([
-    StructField('Document', StructType([
-        StructField('Id', StringType(), True),
-        StructField('CreatedDateTime', StringType(), False),
-        StructField('Sender', StructType([
-            StructField('Id', StringType(), True),
-            StructField('BusinessProcessRole', StringType(), True)
-        ]), True)]), True),
-    StructField('Series', ArrayType(StructType([
-                StructField('Id', StringType(), True),
-                StructField('TransactionId', StringType(), False),
-                StructField('MeteringPointId', StringType(), False),
-                StructField('MeteringPointType', StringType(), True),
-                StructField('RegistrationDateTime', StringType(), True),
-                StructField('Product', StringType(), True),
-                StructField('Period', StructType([
-                    StructField('Resolution', IntegerType(), False),
-                    StructField('StartDateTime', StringType(), False),
-                    StructField('EndDateTime', StringType(), True),
-                    StructField('Points', ArrayType(StructType([
-                        StructField('Quantity', DecimalType(38, 3), False),
-                        StructField('Quality', IntegerType(), False),
-                        StructField('Position', IntegerType(), False),
-                    ])), False),
-                ]), False)
-                ]), False))
+    StructField("GsrnNumber", StringType(), True),
+    StructField("GridAreaLinkId", StringType(), True),
+    StructField("SettlementMethod", StringType(), True),
+    StructField("ConnectionState", StringType(), True),
+    StructField("EffectiveDate", TimestampType(), True),
+    StructField("MeteringPointType", StringType(), True),
+    StructField("Resolution", StringType(), True),
+    StructField("CorrelationId", StringType(), True),
+    StructField("MessageType", StringType(), True),
+    StructField("OperationTime", TimestampType(), True)
 ])
