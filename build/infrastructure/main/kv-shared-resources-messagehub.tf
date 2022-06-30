@@ -12,13 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-data "azurerm_key_vault_secret" "messagehub_service_bus_connection_string" {
+data "azurerm_key_vault_secret" "messagehub_service_bus_send_connection_string" {
   name         = "sb-domain-relay-send-connection-string"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "messagehub_service_bus_listen_connection_string" {
+  name         = "sb-domain-relay-listen-connection-string"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
 data "azurerm_key_vault_secret" "messagehub_data_available_queue_name" {
   name         = "sbq-data-available-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "messagehub_request_queue_name" {
+  name         = "sbq-wholesale-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 

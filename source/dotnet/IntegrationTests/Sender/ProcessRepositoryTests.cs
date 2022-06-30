@@ -30,12 +30,12 @@ public class ProcessRepositoryTests : IClassFixture<SenderDatabaseFixture>
     }
 
     [Fact]
-    public async Task AddAsync_AddsBatch()
+    public async Task AddAsync_AddsProcess()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var sut = new ProcessRepository(writeContext);
-        var expectedProcess = new Process(new MessageHubReference(Guid.NewGuid()), "805");
+        var expectedProcess = new Process(new MessageHubReference(Guid.NewGuid()), CreateGridAreaCode());
 
         // Act
         await sut.AddAsync(expectedProcess);
@@ -46,5 +46,29 @@ public class ProcessRepositoryTests : IClassFixture<SenderDatabaseFixture>
         var actual = await readContext.Processes.SingleAsync(p => p.Id == expectedProcess.Id);
 
         actual.Should().BeEquivalentTo(expectedProcess);
+    }
+
+    [Fact]
+    public async Task GetAsync_ReturnsProcess()
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var expectedProcess = new Process(new MessageHubReference(Guid.NewGuid()), CreateGridAreaCode());
+        await writeContext.Processes.AddAsync(expectedProcess);
+        await writeContext.SaveChangesAsync();
+
+        await using var readContext = _databaseManager.CreateDbContext();
+        var sut = new ProcessRepository(readContext);
+
+        // Act
+        var actual = await sut.GetAsync(expectedProcess.MessageHubReference);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expectedProcess);
+    }
+
+    private static string CreateGridAreaCode()
+    {
+        return new Random().Next(100, 1000).ToString();
     }
 }

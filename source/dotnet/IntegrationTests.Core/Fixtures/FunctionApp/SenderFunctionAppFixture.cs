@@ -17,10 +17,9 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.MessageHub.IntegrationTesting;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.Sender.Configuration;
 using Microsoft.Extensions.Configuration;
@@ -48,11 +47,15 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
         public WholesaleDatabaseManager DatabaseManager { get; }
 
-        public ServiceBusTestListener DataAvailableListener { get; private set; } = null!;
-
         public TopicResource CompletedProcessTopic { get; set; } = null!;
 
         public QueueResource DataAvailableQueue { get; set; } = null!;
+
+        public QueueResource MessageHubRequestQueue { get; set; } = null!;
+
+        public QueueResource MessageHubReplyQueue { get; set; } = null!;
+
+        public MessageHubSimulation MessageHubMock { get; set; } = null!;
 
         private AzuriteManager AzuriteManager { get; }
 
@@ -74,13 +77,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
+            Environment.SetEnvironmentVariable("AzureWebJobsStorage", "UseDevelopmentStorage=true");
+
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DataHubServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubReplyQueueName, "<currently unused>");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubStorageConnectionString, "<currently unused>");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubStorageContainerName, "<currently unused>");
+
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
         }
 
         /// <inheritdoc/>
@@ -90,21 +94,46 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
 
             await DatabaseManager.CreateDatabaseAsync();
 
-            DataAvailableQueue = await ServiceBusResourceProvider
-                .BuildQueue("data-available")
-                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubDataAvailableQueueName)
-                .CreateAsync();
-
-            var messageHubListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
-            await messageHubListener.AddQueueListenerAsync(DataAvailableQueue.Name);
-            DataAvailableListener = new ServiceBusTestListener(messageHubListener);
-
             CompletedProcessTopic = await ServiceBusResourceProvider
                 .BuildTopic("completed-process")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
                 .AddSubscription("completed-process-sub-sender")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ProcessCompletedSubscriptionName)
                 .CreateAsync();
+
+            DataAvailableQueue = await ServiceBusResourceProvider
+                .BuildQueue("data-available")
+                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubDataAvailableQueueName)
+                .CreateAsync();
+
+            MessageHubRequestQueue = await ServiceBusResourceProvider
+                .BuildQueue("messagehub-request", requiresSession: true)
+                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubRequestQueueName)
+                .CreateAsync();
+
+            MessageHubReplyQueue = await ServiceBusResourceProvider
+                .BuildQueue("messagehub-reply", requiresSession: true)
+                .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubReplyQueueName)
+                .CreateAsync();
+
+            const string messageHubStorageConnectionString = "UseDevelopmentStorage=true";
+            const string messageHubStorageContainerName = "messagehub-container";
+            Environment.SetEnvironmentVariable(
+                EnvironmentSettingNames.MessageHubStorageConnectionString,
+                messageHubStorageConnectionString);
+            Environment.SetEnvironmentVariable(
+                EnvironmentSettingNames.MessageHubStorageContainerName,
+                messageHubStorageContainerName);
+
+            var messageHubSimulationConfig = new MessageHubSimulationConfig(
+                serviceBusReadWriteConnectionString: ServiceBusResourceProvider.ConnectionString,
+                dataAvailableQueueName: DataAvailableQueue.Name,
+                domainQueueName: MessageHubRequestQueue.Name,
+                domainReplyQueueName: MessageHubReplyQueue.Name,
+                blobStorageConnectionString: messageHubStorageConnectionString,
+                blobStorageContainerName: messageHubStorageContainerName);
+
+            MessageHubMock = new MessageHubSimulation(messageHubSimulationConfig);
         }
 
         /// <inheritdoc/>
@@ -120,6 +149,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         protected override async Task OnDisposeFunctionAppDependenciesAsync()
         {
             AzuriteManager.Dispose();
+            await MessageHubMock.DisposeAsync();
             await DatabaseManager.DeleteDatabaseAsync();
             await ServiceBusResourceProvider.DisposeAsync();
         }
