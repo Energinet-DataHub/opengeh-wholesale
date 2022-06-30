@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
@@ -58,7 +59,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
 
         private static void Infrastructure(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddLogging();
             serviceCollection.AddApplicationInsightsTelemetryWorkerService(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
             serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
@@ -66,8 +66,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
 
         private static void Host(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<MeteringPointCreatedDtoFactory>();
             serviceCollection.AddScoped<MeteringPointCreatedDtoFactory>();
+            serviceCollection.AddScoped<MeteringPointConnectedDtoFactory>();
         }
 
         private static void HealthCheck(IServiceCollection serviceCollection)
@@ -81,6 +81,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             var serviceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventConnectionManagerString);
             var meteringPointCreatedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedTopicName);
             var meteringPointCreatedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName);
+            var meteringPointConnectedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedTopicName);
+            var meteringPointConnectedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName);
 
             serviceCollection
                 .AddHealthChecks()
@@ -93,7 +95,12 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                     serviceBusConnectionString,
                     meteringPointCreatedTopicName,
                     meteringPointCreatedSubscriptionName,
-                    name: "MeteringPointCreatedSubscriptionExists");
+                    name: "MeteringPointCreatedSubscriptionExists")
+                .AddAzureServiceBusSubscription(
+                    serviceBusConnectionString,
+                    meteringPointConnectedTopicName,
+                    meteringPointConnectedSubscriptionName,
+                    name: "MeteringPointConnectedSubscriptionExists");
         }
     }
 }

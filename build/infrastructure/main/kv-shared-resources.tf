@@ -17,23 +17,9 @@ data "azurerm_key_vault" "kv_shared_resources" {
   resource_group_name = var.shared_resources_resource_group_name
 }
 
-data "azurerm_key_vault_secret" "mssql_data_name" {
-  name         = "mssql-data-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "mssql_data_admin_name" {
-  name         = "mssql-data-admin-user-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "mssql_data_admin_password" {
-  name         = "mssql-data-admin-user-password"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "mssql_data_url" {
-  name         = "mssql-data-url"
+# Used for health check of all inter domain service bus connections (integration events and Message Hub)
+data "azurerm_key_vault_secret" "sb_domain_relay_manage_connection_string" {
+  name         = "sb-domain-relay-manage-connection-string"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
@@ -64,5 +50,9 @@ data "azurerm_key_vault_secret" "appi_shared_instrumentation_key" {
 
 data "azurerm_key_vault_secret" "log_shared_id" {
   name         = "log-shared-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+data "azurerm_key_vault_secret" "st_shared_data_lake_name" {
+  name         = "st-data-lake-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

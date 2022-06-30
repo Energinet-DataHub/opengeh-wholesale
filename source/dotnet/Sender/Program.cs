@@ -15,17 +15,25 @@
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.MessageHub.Client;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Sender.Configuration;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 using Energinet.DataHub.Wholesale.Sender.Monitor;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Energinet.DataHub.Wholesale.Sender;
 
-public class Program
+public static class Program
 {
     public static async Task Main()
     {
@@ -36,15 +44,30 @@ public class Program
                 builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
                 builder.UseMiddleware<IntegrationEventMetadataMiddleware>();
             })
-            .ConfigureServices(Middlewares)
+            .ConfigureServices(ApplicationServices)
+            .ConfigureServices(DomainServices)
+            .ConfigureServices(MiddlewareServices)
             .ConfigureServices(Infrastructure)
+            .ConfigureServices(MessageHub)
             .ConfigureServices(HealthCheck)
             .Build();
 
         await host.RunAsync().ConfigureAwait(false);
     }
 
-    private static void Middlewares(IServiceCollection serviceCollection)
+    private static void ApplicationServices(IServiceCollection services)
+    {
+        services.AddScoped<IDataAvailableNotifier, DataAvailableNotifier>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IDataAvailableNotificationFactory, DataAvailableNotificationFactory>();
+    }
+
+    private static void DomainServices(IServiceCollection services)
+    {
+        services.AddScoped<IProcessRepository, ProcessRepository>();
+    }
+
+    private static void MiddlewareServices(IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<CorrelationIdMiddleware>();
@@ -55,10 +78,30 @@ public class Program
 
     private static void Infrastructure(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddLogging();
         serviceCollection.AddApplicationInsightsTelemetryWorkerService(
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+
+        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
+        var connectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
+        serviceCollection.AddDbContext<DatabaseContext>(options =>
+            options.UseSqlServer(connectionString, o => o.UseNodaTime()));
+    }
+
+    private static void MessageHub(IServiceCollection services)
+    {
+        var serviceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString);
+        var dataAvailableQueue = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubDataAvailableQueueName);
+        var domainReplyQueue = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubReplyQueueName);
+        var storageServiceConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubStorageConnectionString);
+        var azureBlobStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubStorageContainerName);
+
+        services.AddMessageHub(
+            serviceBusConnectionString,
+            new MessageHubConfig(dataAvailableQueue, domainReplyQueue),
+            storageServiceConnectionString,
+            new StorageConfig(azureBlobStorageContainerName));
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)
@@ -66,8 +109,26 @@ public class Program
         serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
         serviceCollection.AddScoped<HealthCheckEndpoint>();
 
+        var serviceBusManageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
+        var completedProcessTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
+        var completedProcessSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedSubscriptionName);
+
+        var dataHubServiceBusManageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DataHubServiceBusManageConnectionString);
+        var dataAvailableQueueName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubDataAvailableQueueName);
+
         serviceCollection
             .AddHealthChecks()
-            .AddLiveCheck();
+            .AddLiveCheck()
+            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
+            .AddAzureServiceBusTopic(
+                serviceBusManageConnectionString,
+                completedProcessTopicName)
+            .AddAzureServiceBusSubscription(
+                serviceBusManageConnectionString,
+                completedProcessTopicName,
+                completedProcessSubscriptionName)
+            .AddAzureServiceBusQueue(
+                dataHubServiceBusManageConnectionString,
+                dataAvailableQueueName);
     }
 }

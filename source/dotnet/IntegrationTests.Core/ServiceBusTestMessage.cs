@@ -12,23 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core;
 
 public static class ServiceBusTestMessage
 {
-    public static ServiceBusMessage Create(byte[] data, DateTime operationTimestamp)
+    public static ServiceBusMessage Create(byte[] data, DateTime operationTimestamp, string operationCorrelationId)
     {
-        var serviceBusMessage = new ServiceBusMessage(data)
-        {
-            CorrelationId = Guid.NewGuid().ToString().Replace("-", string.Empty),
-        };
+        var serviceBusMessage = new ServiceBusMessage(data);
+        Configure(serviceBusMessage, operationTimestamp, operationCorrelationId);
+        return serviceBusMessage;
+    }
+
+    public static ServiceBusMessage Create<TData>(TData data, DateTime operationTimestamp, string operationCorrelationId)
+    {
+        var body = JsonSerializer.Serialize(data);
+        var serviceBusMessage = new ServiceBusMessage(body);
+        Configure(serviceBusMessage, operationTimestamp, operationCorrelationId);
+        return serviceBusMessage;
+    }
+
+    private static void Configure(ServiceBusMessage serviceBusMessage, DateTime operationTimestamp, string operationCorrelationId)
+    {
+        serviceBusMessage.CorrelationId = Guid.NewGuid().ToString().Replace("-", string.Empty);
         serviceBusMessage.ApplicationProperties.Add("operationTimestamp", operationTimestamp.ToUniversalTime());
-        serviceBusMessage.ApplicationProperties.Add("OperationCorrelationId", "1bf1b76337f14b78badc248a3289d021");
+        serviceBusMessage.ApplicationProperties.Add("OperationCorrelationId", operationCorrelationId);
         serviceBusMessage.ApplicationProperties.Add("MessageVersion", 1);
         serviceBusMessage.ApplicationProperties.Add("MessageType", "MeteringPointCreated");
         serviceBusMessage.ApplicationProperties.Add("EventIdentification", "2542ed0d242e46b68b8b803e93ffbf7b");
-        return serviceBusMessage;
     }
 }

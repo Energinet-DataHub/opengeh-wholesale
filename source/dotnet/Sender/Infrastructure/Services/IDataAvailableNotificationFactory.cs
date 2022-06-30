@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender;
+using Energinet.DataHub.MessageHub.Model.Model;
+using Energinet.DataHub.Wholesale.Application.Processes;
 
-public static class EnvironmentSettingNames
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
+
+public interface IDataAvailableNotificationFactory
 {
-    public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
+    DataAvailableNotificationDto Create(ProcessCompletedEventDto completedProcessEvent);
 }

@@ -29,14 +29,14 @@ using Google.Protobuf.WellKnownTypes;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Endpoint;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationEventListener;
 
-public class MeteringPointCreatedListenerEndpointTests
+public class MeteringPointConnectedListenerEndpointTests
 {
-    [Collection(nameof(WholesaleFunctionAppCollectionFixture))]
-    public class RunAsync : FunctionAppTestBase<WholesaleFunctionAppFixture>, IAsyncLifetime
+    [Collection(nameof(IntegrationEventListenerFunctionAppCollectionFixture))]
+    public class RunAsync : FunctionAppTestBase<IntegrationEventListenerFunctionAppFixture>, IAsyncLifetime
     {
-        public RunAsync(WholesaleFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
+        public RunAsync(IntegrationEventListenerFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
             : base(fixture, testOutputHelper)
         {
         }
@@ -53,7 +53,7 @@ public class MeteringPointCreatedListenerEndpointTests
         }
 
         [Fact]
-        public async Task When_ReceivingMeteringPointCreatedMessage_MeteringPointCreatedDtoIsSentToEventHub()
+        public async Task When_ReceivingMeteringPointConnectedMessage_MeteringPointConnectedDtoIsSentToEventHub()
         {
             // Arrange
             using var whenAllEvent = await Fixture.EventHubListener
@@ -66,42 +66,43 @@ public class MeteringPointCreatedListenerEndpointTests
                     new DateTime(2020, 01, 01, 0, 0, 0),
                     DateTimeKind.Utc));
 
-            var meteringPointCreatedEvent = CreateMeteringPointCreatedEvent(effectiveDate);
+            var meteringPointConnectedEvent = CreateMeteringPointConnectedEvent(effectiveDate);
             var operationTimestamp = new DateTime(2021, 1, 2, 3, 4, 5, DateTimeKind.Utc);
-            var message = ServiceBusTestMessage.Create(meteringPointCreatedEvent.ToByteArray(), operationTimestamp);
+            var correlationId = Guid.NewGuid().ToString();
+            var message = ServiceBusTestMessage.Create(
+                meteringPointConnectedEvent.ToByteArray(),
+                operationTimestamp,
+                correlationId);
             var jsonSerializer = new JsonSerializer();
 
             // Act
-            await Fixture.MeteringPointCreatedTopic.SenderClient.SendMessageAsync(message);
+            await Fixture.MeteringPointConnectedTopic.SenderClient.SendMessageAsync(message);
 
             // Assert
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(MeteringPointCreatedListenerEndpoint)).ConfigureAwait(false);
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(MeteringPointConnectedListenerEndpoint)).ConfigureAwait(false);
 
             var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
             allReceived.Should().BeTrue();
 
             // Only one event is expected
-            var actual = jsonSerializer.Deserialize<MeteringPointCreatedDto>(
+            var actual = jsonSerializer.Deserialize<MeteringPointConnectedDto>(
                 Fixture.EventHubListener
                     .ReceivedEvents.Single()
                     .Data.ToString());
+
+            actual.CorrelationId.Should().Be(correlationId);
             actual.EffectiveDate.Should().Be(effectiveDate.ToInstant());
         }
 
-        private static MeteringPointCreated CreateMeteringPointCreatedEvent(Timestamp effectiveDate)
+        private static MeteringPointConnected CreateMeteringPointConnectedEvent(Timestamp effectiveDate)
         {
             var r = new Random();
             var meteringPointId = r.Next(1, 100000);
-            return new MeteringPointCreated
+            return new MeteringPointConnected
             {
-                MeteringPointId = Guid.NewGuid().ToString(),
-                ConnectionState = MeteringPointCreated.Types.ConnectionState.CsNew,
+                MeteringpointId = Guid.NewGuid().ToString(),
                 EffectiveDate = effectiveDate,
-                GridAreaCode = Guid.NewGuid().ToString(),
                 GsrnNumber = meteringPointId.ToString(),
-                MeteringPointType = MeteringPointCreated.Types.MeteringPointType.MptConsumption,
-                MeteringMethod = MeteringPointCreated.Types.MeteringMethod.MmPhysical,
-                SettlementMethod = MeteringPointCreated.Types.SettlementMethod.SmFlex,
             };
         }
     }

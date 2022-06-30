@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
@@ -21,10 +21,10 @@ public class Batch
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
 
-    public Batch(WholesaleProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes)
+    public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes)
     {
         Id = new BatchId();
-        ExecutionState = BatchExecutionState.Requested;
+        ExecutionState = BatchExecutionState.Pending;
         ProcessType = processType;
 
         _gridAreaCodes = gridAreaCodes.ToList();
@@ -44,9 +44,25 @@ public class Batch
 
     public BatchId Id { get; }
 
-    public WholesaleProcessType ProcessType { get; }
+    public ProcessType ProcessType { get; }
 
     public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes;
 
-    public BatchExecutionState ExecutionState { get; }
+    public BatchExecutionState ExecutionState { get; private set; }
+
+    public void Complete()
+    {
+        if (ExecutionState != BatchExecutionState.Executing)
+            throw new InvalidOperationException("Batch cannot be completed because it is not in state executing.");
+
+        ExecutionState = BatchExecutionState.Completed;
+    }
+
+    public void SetExecuting()
+    {
+        if (ExecutionState != BatchExecutionState.Pending)
+            throw new InvalidOperationException("Batch cannot be completed because it is not in state pending.");
+
+        ExecutionState = BatchExecutionState.Executing;
+    }
 }

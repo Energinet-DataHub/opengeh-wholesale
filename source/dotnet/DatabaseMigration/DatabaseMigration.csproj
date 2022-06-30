@@ -17,7 +17,6 @@ limitations under the License.
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <AssemblyName>Energinet.DataHub.Wholesale.DatabaseMigration</AssemblyName>
         <RootNamespace>Energinet.DataHub.Wholesale.DatabaseMigration</RootNamespace>
@@ -29,6 +28,8 @@ limitations under the License.
 
     <ItemGroup>
       <EmbeddedResource Include="Scripts\202206161400_Create_Batch_Table.sql" />
+      <EmbeddedResource Include="Scripts\202206281330_Create_MessageHub_Process_Table.sql" />
+      
     </ItemGroup>
 
 </Project>

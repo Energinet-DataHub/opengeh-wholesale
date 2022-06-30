@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
 using Xunit;
 
@@ -27,7 +27,7 @@ public class BatchTests
     {
         // Arrange
         var someGridAreaCodes = new List<GridAreaCode> { new("004"), new("805") };
-        var sut = new Batch(WholesaleProcessType.BalanceFixing, someGridAreaCodes);
+        var sut = new BatchBuilder().WithGridAreaCodes(someGridAreaCodes).Build();
 
         // Act
         var unexpectedGridAreaCode = new GridAreaCode("777");
@@ -42,6 +42,50 @@ public class BatchTests
     {
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
-        Assert.Throws<ArgumentException>(() => new Batch(WholesaleProcessType.BalanceFixing, emptyGridAreaCodes));
+        Assert.Throws<ArgumentException>(() => new Batch(ProcessType.BalanceFixing, emptyGridAreaCodes));
+    }
+
+    [Fact]
+    public void Complete_WhenPending_ThrowsInvalidOperationException()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        Assert.Throws<InvalidOperationException>(() => sut.Complete());
+    }
+
+    [Fact]
+    public void Complete_WhenComplete_ThrowsInvalidOperationException()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
+        Assert.Throws<InvalidOperationException>(() => sut.Complete());
+    }
+
+    [Fact]
+    public void Complete_WhenExecuting_CompletesBatch()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
+        sut.Complete();
+        sut.ExecutionState.Should().Be(BatchExecutionState.Completed);
+    }
+
+    [Fact]
+    public void SetExecuting_WhenExecuting_ThrowsInvalidOperationException()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
+        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting());
+    }
+
+    [Fact]
+    public void SetExecuting_WhenComplete_ThrowsInvalidOperationException()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
+        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting());
+    }
+
+    [Fact]
+    public void SetExecuting_WhenPending_ExecutesBatch()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        sut.SetExecuting();
+        sut.ExecutionState.Should().Be(BatchExecutionState.Executing);
     }
 }

@@ -12,19 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
-using Xunit;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture
-{
-    /// <summary>
-    /// An xUnit collection fixture for ensuring tests don't run in parallel.
-    ///
-    /// xUnit documentation of collection fixtures:
-    ///  * https://xunit.net/docs/shared-context#collection-fixture
-    /// </summary>
-    [CollectionDefinition(nameof(WholesaleFunctionAppCollectionFixture))]
-    public class WholesaleFunctionAppCollectionFixture : ICollectionFixture<WholesaleFunctionAppFixture>
-    {
-    }
-}
+namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
+
+public record MeteringPointConnectedDto(
+    string GsrnNumber,
+    Instant EffectiveDate,
+    string CorrelationId,
+    string MessageType,
+    Instant OperationTime)
+    : EventHubEventDtoBase(CorrelationId, MessageType, OperationTime);
