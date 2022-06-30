@@ -90,7 +90,7 @@ public static class Program
 
     private static void MessageHub(IServiceCollection services)
     {
-        var messageHubSendBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubServiceBusSendConnectionString.Val());
+        var messageHubSendBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubServiceBusSendConnectionString);
         var dataAvailableQueue = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubDataAvailableQueueName);
         var domainReplyQueue = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubReplyQueueName);
         var storageServiceConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubStorageConnectionString);
