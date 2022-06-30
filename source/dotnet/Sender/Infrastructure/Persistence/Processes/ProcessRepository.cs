@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
 public class ProcessRepository : IProcessRepository
@@ -26,5 +28,14 @@ public class ProcessRepository : IProcessRepository
     public async Task AddAsync(Process process)
     {
         await _context.Processes.AddAsync(process).ConfigureAwait(false);
+    }
+
+    public Task<Process> GetAsync(MessageHubReference messageHubReference)
+    {
+        return _context
+            .Processes
+            .FromSqlInterpolated(
+                $"SELECT * FROM messagehub.Process WHERE MessageHubReference = {messageHubReference.Value}")
+            .SingleAsync();
     }
 }

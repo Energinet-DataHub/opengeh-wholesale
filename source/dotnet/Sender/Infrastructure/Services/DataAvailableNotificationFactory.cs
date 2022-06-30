@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 public class DataAvailableNotificationFactory : IDataAvailableNotificationFactory
 {
-    private const string CimDocumentType = "NotifyWholesaleServices";
+    private const string CimDocumentType = "NotifyAggregatedMeasureData";
 
     public DataAvailableNotificationDto Create(ProcessCompletedEventDto completedProcessEvent)
     {

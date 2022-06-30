@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
+using Energinet.DataHub.MessageHub.Model.Model;
 
-public interface IProcessRepository
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
+
+public interface IDocumentFactory
 {
-    Task AddAsync(Process process);
-
-    Task<Process> GetAsync(MessageHubReference messageHubReference);
+    public Task CreateAsync(DataBundleRequestDto request, Stream outputStream);
 }

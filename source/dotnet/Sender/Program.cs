@@ -22,7 +22,6 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MessageHub.Client;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Sender.Configuration;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -30,6 +29,7 @@ using Energinet.DataHub.Wholesale.Sender.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Sender;
 
@@ -45,7 +45,6 @@ public static class Program
                 builder.UseMiddleware<IntegrationEventMetadataMiddleware>();
             })
             .ConfigureServices(ApplicationServices)
-            .ConfigureServices(DomainServices)
             .ConfigureServices(MiddlewareServices)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(MessageHub)
@@ -57,23 +56,22 @@ public static class Program
 
     private static void ApplicationServices(IServiceCollection services)
     {
+        services.AddScoped<IDocumentSender, DocumentSender>();
+    }
+
+    private static void MiddlewareServices(IServiceCollection services)
+    {
+        services.AddScoped(typeof(IClock), _ => SystemClock.Instance);
         services.AddScoped<IDataAvailableNotifier, DataAvailableNotifier>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IDocumentFactory, DocumentFactory>();
         services.AddScoped<IDataAvailableNotificationFactory, DataAvailableNotificationFactory>();
-    }
-
-    private static void DomainServices(IServiceCollection services)
-    {
         services.AddScoped<IProcessRepository, ProcessRepository>();
-    }
-
-    private static void MiddlewareServices(IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
-        serviceCollection.AddScoped<CorrelationIdMiddleware>();
-        serviceCollection.AddScoped<FunctionTelemetryScopeMiddleware>();
-        serviceCollection.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
-        serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
+        services.AddScoped<ICorrelationContext, CorrelationContext>();
+        services.AddScoped<CorrelationIdMiddleware>();
+        services.AddScoped<FunctionTelemetryScopeMiddleware>();
+        services.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
+        services.AddScoped<IntegrationEventMetadataMiddleware>();
     }
 
     private static void Infrastructure(IServiceCollection serviceCollection)
@@ -91,14 +89,14 @@ public static class Program
 
     private static void MessageHub(IServiceCollection services)
     {
-        var serviceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString);
+        var messageHubSendConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubServiceBusSendConnectionString);
         var dataAvailableQueue = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubDataAvailableQueueName);
         var domainReplyQueue = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubReplyQueueName);
         var storageServiceConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubStorageConnectionString);
         var azureBlobStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubStorageContainerName);
 
         services.AddMessageHub(
-            serviceBusConnectionString,
+            messageHubSendConnectionString,
             new MessageHubConfig(dataAvailableQueue, domainReplyQueue),
             storageServiceConnectionString,
             new StorageConfig(azureBlobStorageContainerName));
@@ -109,26 +107,30 @@ public static class Program
         serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
         serviceCollection.AddScoped<HealthCheckEndpoint>();
 
-        var serviceBusManageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
-        var completedProcessTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
-        var completedProcessSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedSubscriptionName);
-
-        var dataHubServiceBusManageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DataHubServiceBusManageConnectionString);
-        var dataAvailableQueueName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubDataAvailableQueueName);
-
         serviceCollection
             .AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
+            .AddDbContextCheck<DatabaseContext>("DatabaseContext")
             .AddAzureServiceBusTopic(
-                serviceBusManageConnectionString,
-                completedProcessTopicName)
+                EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.ProcessCompletedTopicName.Val(),
+                "ProcessCompletedTopic")
             .AddAzureServiceBusSubscription(
-                serviceBusManageConnectionString,
-                completedProcessTopicName,
-                completedProcessSubscriptionName)
+                EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.ProcessCompletedTopicName.Val(),
+                EnvironmentSettingNames.ProcessCompletedSubscriptionName.Val(),
+                "ProcessCompletedSubscription")
             .AddAzureServiceBusQueue(
-                dataHubServiceBusManageConnectionString,
-                dataAvailableQueueName);
+                EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.MessageHubDataAvailableQueueName.Val(),
+                "MessageHubDataAvailableQueue")
+            .AddAzureServiceBusQueue(
+                EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.MessageHubRequestQueueName.Val(),
+                "MessageHubRequestQueue")
+            .AddAzureServiceBusQueue(
+                EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
+                EnvironmentSettingNames.MessageHubReplyQueueName.Val(),
+                "MessageHubReplyQueue");
     }
 }
