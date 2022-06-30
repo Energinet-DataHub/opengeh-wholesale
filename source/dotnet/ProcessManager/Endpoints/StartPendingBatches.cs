@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Microsoft.Azure.Functions.Worker;
 
@@ -20,10 +21,12 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 public class StartPendingBatches
 {
     private readonly IBatchApplicationService _batchApplicationService;
+    private readonly ICorrelationContext _correlationContext;
 
-    public StartPendingBatches(IBatchApplicationService batchApplicationService)
+    public StartPendingBatches(IBatchApplicationService batchApplicationService, ICorrelationContext correlationContext)
     {
         _batchApplicationService = batchApplicationService;
+        _correlationContext = correlationContext;
     }
 
     // Executes every 10 seconds (see the [TimerTrigger] below)
@@ -32,6 +35,10 @@ public class StartPendingBatches
         [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
         FunctionContext context)
     {
+        // CorrelationIdMiddleware does not currently support timer triggered functions,
+        // so we need to add a correlation ID ourselves
+        _correlationContext.SetId(Guid.NewGuid().ToString());
+
         await _batchApplicationService.StartPendingAsync().ConfigureAwait(false);
     }
 }
