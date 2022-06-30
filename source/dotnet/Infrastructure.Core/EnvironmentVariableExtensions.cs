@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Core;
 
-public interface IProcessRepository
+public static class EnvironmentVariableExtensions
 {
-    Task AddAsync(Process process);
-
-    Task<Process> GetAsync(MessageHubReference messageHubReference);
+    public static string Val(this string environmentVariable) =>
+        EnvironmentVariableHelper.GetEnvVariable(environmentVariable);
 }
