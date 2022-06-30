@@ -64,7 +64,6 @@ public class DataAvailableSenderEndpointTests
             await Fixture.MessageHubMock.WaitForNotificationsInDataAvailableQueueAsync(correlationId.ToString());
             var response = await Fixture.MessageHubMock.PeekAsync();
             response.Content.Should().NotBeNull();
-            response.CorrelationId.Should().Be(correlationId);
         }
     }
 }
