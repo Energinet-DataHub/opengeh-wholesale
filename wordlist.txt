@@ -3,6 +3,7 @@ CIM
 codecov
 Databricks
 DataHub
+debugz
 dequeue
 dk
 energinet
@@ -19,6 +20,7 @@ opengeh-wholesale
 protobuf
 ptvsd
 pytest
+readme
 RSM
 SonarCloud
 TSO
