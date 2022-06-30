@@ -13,7 +13,7 @@
 
 ## Get workspace ready for development
 
-- Open ***geh-timeseries*** folder in Visual Studio Code
+- Open ***opengeh-wholesale*** folder in Visual Studio Code
 
 - Select ***Remote Explorer*** in the left toolbar
 

@@ -17,3 +17,6 @@ protobuf
 RSM
 SonarCloud
 TSO
+pytest
+opengeh-wholesale
+ptvsd
