@@ -1,5 +1,5 @@
 
-# Getting started with Databricks development in Time Series
+# Getting started with Databricks development in Wholesale
 
 ## Install necessary tools needed for development
 
