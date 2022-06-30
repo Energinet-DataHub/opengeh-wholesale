@@ -49,31 +49,6 @@ public class DataAvailableSenderEndpointTests
 
         [Theory]
         [InlineAutoMoqData]
-        public async Task When_ProcessCompleted_Then_DataAvailableIsReceivedInMessageHub(
-            Guid correlationId,
-            DateTime operationTimestamp)
-        {
-            // Arrange
-            var completedProcess = new ProcessCompletedEventDto("805");
-            using var eventualDataAvailableEvent = await Fixture
-                .DataAvailableListener
-                .ListenForDataAvailableMessageAsync(correlationId.ToString())
-                .ConfigureAwait(false);
-
-            var message = ServiceBusTestMessage.Create(completedProcess, operationTimestamp.AsUtc(), correlationId.ToString());
-
-            // Act
-            await Fixture.CompletedProcessTopic.SenderClient.SendMessageAsync(message);
-
-            // Assert
-            var isDataAvailableEventReceived = eventualDataAvailableEvent
-                .MessageAwaiter!
-                .Wait(TimeSpan.FromSeconds(10));
-            isDataAvailableEventReceived.Should().BeTrue();
-        }
-
-        [Theory(Skip = "TODO BJARKE: Must fix this in PR #107")]
-        [InlineAutoMoqData]
         public async Task Given_ProcessCompleted_When_MeteredDataResponsiblePeeks_Then_MessageHubReceivesReply(
             Guid correlationId,
             DateTime operationTimestamp)

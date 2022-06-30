@@ -90,14 +90,14 @@ public static class Program
 
     private static void MessageHub(IServiceCollection services)
     {
-        var serviceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString);
+        var messageHubSendBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubServiceBusSendConnectionString.Val());
         var dataAvailableQueue = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubDataAvailableQueueName);
         var domainReplyQueue = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubReplyQueueName);
         var storageServiceConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubStorageConnectionString);
         var azureBlobStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MessageHubStorageContainerName);
 
         services.AddMessageHub(
-            serviceBusConnectionString,
+            messageHubSendBusConnectionString,
             new MessageHubConfig(dataAvailableQueue, domainReplyQueue),
             storageServiceConnectionString,
             new StorageConfig(azureBlobStorageContainerName));

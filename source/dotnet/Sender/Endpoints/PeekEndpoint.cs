@@ -38,7 +38,7 @@ public class PeekEndpoint
     public Task RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.MessageHubRequestQueueName + "%",
-            Connection = EnvironmentSettingNames.MessageHubServiceBusConnectionString,
+            Connection = EnvironmentSettingNames.ServiceBusListenConnectionString,
             IsSessionsEnabled = true)]
         byte[] data)
     {

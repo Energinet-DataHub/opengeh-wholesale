@@ -30,7 +30,8 @@ public static class EnvironmentSettingNames
     public const string ProcessCompletedTopicName = "PROCESS_COMPLETED_TOPIC_NAME";
     public const string ProcessCompletedSubscriptionName = "PROCESS_COMPLETED_SUBSCRIPTION_NAME";
 
-    public const string MessageHubServiceBusConnectionString = "MESSAGE_HUB_SERVICE_BUS_CONNECTION_STRING";
+    public const string MessageHubServiceBusSendConnectionString = "MESSAGE_HUB_SERVICE_BUS_SEND_CONNECTION_STRING";
+    public const string MessageHubServiceBusListenConnectionString = "MESSAGE_HUB_SERVICE_BUS_LISTEN_CONNECTION_STRING";
     public const string MessageHubDataAvailableQueueName = "MESSAGE_HUB_DATA_AVAILABLE_QUEUE_NAME";
     public const string MessageHubRequestQueueName = "MESSAGE_HUB_REQUEST_QUEUE_NAME";
     public const string MessageHubReplyQueueName = "MESSAGE_HUB_REPLY_QUEUE_NAME";

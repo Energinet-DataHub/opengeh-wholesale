@@ -17,11 +17,9 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.MessageHub.IntegrationTesting;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.Sender.Configuration;
 using Microsoft.Extensions.Configuration;
@@ -48,8 +46,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
 
         public WholesaleDatabaseManager DatabaseManager { get; }
-
-        public ServiceBusTestListener DataAvailableListener { get; private set; } = null!;
 
         public TopicResource CompletedProcessTopic { get; set; } = null!;
 
@@ -87,7 +83,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
         }
 
         /// <inheritdoc/>
@@ -108,10 +105,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 .BuildQueue("data-available")
                 .SetEnvironmentVariableToQueueName(EnvironmentSettingNames.MessageHubDataAvailableQueueName)
                 .CreateAsync();
-
-            var messageHubListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
-            await messageHubListener.AddQueueListenerAsync(DataAvailableQueue.Name);
-            DataAvailableListener = new ServiceBusTestListener(messageHubListener);
 
             MessageHubRequestQueue = await ServiceBusResourceProvider
                 .BuildQueue("messagehub-request", requiresSession: true)
@@ -138,11 +131,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
                 domainQueueName: MessageHubRequestQueue.Name,
                 domainReplyQueueName: MessageHubReplyQueue.Name,
                 blobStorageConnectionString: messageHubStorageConnectionString,
-                blobStorageContainerName: messageHubStorageContainerName)
-            {
-                PeekTimeout = TimeSpan.FromSeconds(value: 2000.0),
-                WaitTimeout = TimeSpan.FromSeconds(value: 2000.0),
-            };
+                blobStorageContainerName: messageHubStorageContainerName);
 
             MessageHubMock = new MessageHubSimulation(messageHubSimulationConfig);
         }
@@ -163,7 +152,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
             await MessageHubMock.DisposeAsync();
             await DatabaseManager.DeleteDatabaseAsync();
             await ServiceBusResourceProvider.DisposeAsync();
-            await DataAvailableListener.DisposeAsync();
         }
 
         private static string GetBuildConfiguration()
