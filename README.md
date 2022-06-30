@@ -8,13 +8,15 @@
 
 ## Table of content
 
-* [Introduction](#introduction)
-* [Getting started](#getting-started)
-* [Road Map](#road-map)
-* [Context Map](#context-map)
-* [Understanding the Domain](#understanding-the-domain)
-* [Test](#test)
-* [Where can I get more help?](#where-can-i-get-more-help)
+- [Wholesale](#wholesale)
+  - [Table of content](#table-of-content)
+  - [Introduction](#introduction)
+  - [Getting started](#getting-started)
+  - [Road Map](#road-map)
+  - [Understanding the Domain](#understanding-the-domain)
+  - [Databricks](#databricks)
+  - [Test](#test)
+  - [Where can I get more help?](#where-can-i-get-more-help)
 
 ## Introduction
 
@@ -68,6 +70,10 @@ Read about the architecture [here](docs/architecture.md).
 ![Architecture!](docs/images/architecture.drawio.png)
 
 Learn about the aggregation processes terms [here](docs/process-terms.md).
+
+## Databricks
+
+[Databricks readme](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/databricks_setup/source/databricks/README.md)
 
 ## Test
 
