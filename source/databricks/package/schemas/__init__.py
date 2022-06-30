@@ -12,4 +12,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from .eventhub_integration_events_schema import eventhub_integration_events_schema
-from .time_series_points_schema import time_series_points_schema

@@ -19,7 +19,9 @@ sys.path.append(r'/opt/conda/lib/python3.8/site-packages')
 import configargparse
 
 from package import integration_events_persister, initialize_spark
-from pyspark.sql.functions import from_json
+from pyspark.sql.functions import from_json, col
+from package.schemas import (
+    eventhub_integration_events_schema as schema)
 
 
 p = configargparse.ArgParser(description='Timeseries events stream ingestor', formatter_class=configargparse.ArgumentDefaultsHelpFormatter)

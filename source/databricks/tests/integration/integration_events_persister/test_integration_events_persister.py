@@ -15,14 +15,13 @@
 import sys
 import os
 import shutil
-import subprocess
-from pyspark.sql import SparkSession
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
 
-import asyncio
+
 import pytest
 from package import integration_events_persister
 from tests.integration.utils import streaming_job_asserter
+
 
 @pytest.fixture(scope="session")
 def integration_events_persister_tester(
