@@ -53,8 +53,13 @@
 
 - To debug tests you need to execute the following command
 
+    Using debugz.sh with the following command
+    ````text
+    sh debugz.sh
+    ````
+    Or using command inside debugz.sh
     ```text
-    python -m ptvsd --host 0.0.0.0 --port 3000 --wait -m pytest
+    python -m ptvsd --host 0.0.0.0 --port 3000 --wait -m pytest -v
     ```
 
 - Create a ***launch.json*** file in the ***Run and Debug*** panel and add the following
