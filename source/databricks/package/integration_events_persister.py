@@ -20,11 +20,7 @@ from pyspark.sql.functions import (
     year, month, dayofmonth, col)
 
 
-def integration_events_persister(
-    streamingDf: DataFrame,
-    checkpoint_path: str,
-    integration_events_path: str
-    ):
+def integration_events_persister(streamingDf: DataFrame, checkpoint_path: str, integration_events_path: str):
     events = (streamingDf.select(
         col("*"),
         col("body.*")).drop("body")
