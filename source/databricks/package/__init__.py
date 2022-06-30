@@ -14,4 +14,3 @@
 
 from .data_loader import initialize_spark
 from .integration_events_persister import integration_events_persister
-from .table_creator import create_delta_table_if_empty
