@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.MessageHub.Model.Model;
-using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
