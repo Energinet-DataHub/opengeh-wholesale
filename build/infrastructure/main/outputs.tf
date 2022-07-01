@@ -12,6 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+output evh_wholesale_listen_connection_string {
+  description = "Connectionstring for the eventhub"
+  value       = module.evhnm_wholesale.primary_connection_strings["listen"]
+  sensitive   = true
+}
+
+output databricks_workspace_url {
+  description = "URL of the created Databricks workspace"
+  value       = data.azurerm_key_vault_secret.dbw_shared_workspace_url.value
+  sensitive   = true
+}
+
 output ms_wholesale_connection_string {
   description = "Connection string of the wholesale database created in the shared server"
   value       = local.DB_CONNECTION_STRING
