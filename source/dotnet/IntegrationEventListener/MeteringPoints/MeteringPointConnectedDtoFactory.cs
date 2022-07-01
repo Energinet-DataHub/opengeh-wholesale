@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+using Energinet.DataHub.MeteringPoints.IntegrationEvents.Connect;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
@@ -31,7 +32,7 @@ public class MeteringPointConnectedDtoFactory
         _integrationEventContext = integrationEventContext;
     }
 
-    public MeteringPointConnectedDto Create(DataHub.MeteringPoints.IntegrationEventContracts.MeteringPointConnected meteringPointConnected)
+    public MeteringPointConnectedDto Create(MeteringPointConnected meteringPointConnected)
     {
         ArgumentNullException.ThrowIfNull(meteringPointConnected);
 
