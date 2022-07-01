@@ -53,6 +53,6 @@ data "azurerm_key_vault_secret" "st_shared_data_lake_name" {
 }
 
 data "azurerm_key_vault_secret" "dbw_shared_workspace_url" {
-  name         = "dbw-shared-workspace-url "
+  name         = "dbw-shared-workspace-url"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
