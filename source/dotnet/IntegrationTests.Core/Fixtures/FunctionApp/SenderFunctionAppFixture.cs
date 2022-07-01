@@ -21,7 +21,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.MessageHub.IntegrationTesting;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Authorization;
-using Energinet.DataHub.Wholesale.Sender.Configuration;
+using Energinet.DataHub.Wholesale.Sender;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp
