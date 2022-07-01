@@ -1,0 +1,7 @@
+# Exclude directory created by wheel creation
+package.egg-info
+dist
+
+# Exclude files and directory created by codecov
+htmlcov
+coverage.json
