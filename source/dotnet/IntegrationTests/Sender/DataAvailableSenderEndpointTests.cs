@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core;
 using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
