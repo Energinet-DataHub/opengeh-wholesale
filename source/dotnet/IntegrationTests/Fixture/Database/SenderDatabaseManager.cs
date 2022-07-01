@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
 using Energinet.DataHub.Wholesale.DatabaseMigration;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
