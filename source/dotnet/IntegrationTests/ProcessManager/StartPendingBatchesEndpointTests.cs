@@ -15,11 +15,12 @@
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.Function;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
 using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
-using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -94,10 +95,11 @@ public class StartPendingBatchesEndpointTests
         private async Task<BatchId> CreateAndSavePendingBatch(string gridAreaCode)
         {
             await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
-            var pendingBatch = new BatchBuilder()
-                .WithState(BatchExecutionState.Pending)
-                .WithGridAreaCode(gridAreaCode)
-                .Build();
+
+            var pendingBatch = new Batch(
+                ProcessType.BalanceFixing,
+                new[] { new GridAreaCode(gridAreaCode) });
+
             await dbContext.Batches.AddAsync(pendingBatch);
             await dbContext.SaveChangesAsync();
             return pendingBatch.Id;

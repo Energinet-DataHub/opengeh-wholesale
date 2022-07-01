@@ -12,21 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application;
+namespace Energinet.DataHub.Wholesale.Tests;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public class UnitOfWork : IUnitOfWork
+public static class ObjectExtensions
 {
-    private readonly IDatabaseContext _databaseContext;
-
-    public UnitOfWork(IDatabaseContext databaseContext)
-    {
-        _databaseContext = databaseContext;
-    }
-
-    public async Task CommitAsync()
-    {
-        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
-    }
+    /// <summary>
+    /// Returns the object wrapped in a list.
+    /// </summary>
+    public static List<T> InList<T>(this T o) => new() { o };
 }

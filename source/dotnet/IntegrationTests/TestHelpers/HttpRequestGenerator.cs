@@ -12,21 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application;
-
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public class UnitOfWork : IUnitOfWork
+namespace Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers
 {
-    private readonly IDatabaseContext _databaseContext;
-
-    public UnitOfWork(IDatabaseContext databaseContext)
+    public static class HttpRequestGenerator
     {
-        _databaseContext = databaseContext;
-    }
+        public static HttpRequestMessage CreateHttpGetRequest(string endpointUrl)
+        {
+            return CreateHttpRequest(HttpMethod.Get, endpointUrl);
+        }
 
-    public async Task CommitAsync()
-    {
-        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
+        private static HttpRequestMessage CreateHttpRequest(HttpMethod httpMethod, string endpointUrl)
+        {
+            var request = new HttpRequestMessage(httpMethod, endpointUrl);
+            return request;
+        }
     }
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.FunctionApp;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture;

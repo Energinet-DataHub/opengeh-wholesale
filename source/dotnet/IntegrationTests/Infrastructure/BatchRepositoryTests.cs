@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
