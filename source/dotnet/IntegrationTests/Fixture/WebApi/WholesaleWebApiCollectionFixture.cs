@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
-
-/// <summary>
-/// An xUnit collection fixture for ensuring tests don't run in parallel.
-///
-/// xUnit documentation of collection fixtures:
-///  * https://xunit.net/docs/shared-context#collection-fixture
-/// </summary>
-[CollectionDefinition(nameof(SenderFunctionAppCollectionFixture))]
-public class SenderFunctionAppCollectionFixture : ICollectionFixture<SenderFunctionAppFixture>
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.WebApi
 {
+    /// <summary>
+    /// A xUnit collection fixture for ensuring tests don't run in parallel.
+    ///
+    /// xUnit documentation of collection fixtures:
+    ///  * https://xunit.net/docs/shared-context#collection-fixture
+    /// </summary>
+    [CollectionDefinition(nameof(WholesaleWebApiCollectionFixture))]
+    public class WholesaleWebApiCollectionFixture : ICollectionFixture<WholesaleWebApiFixture>
+    {
+    }
 }

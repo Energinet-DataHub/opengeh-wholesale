@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using Energinet.DataHub.Wholesale.Tests.Core;
 
 namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 

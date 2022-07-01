@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -38,8 +38,11 @@ limitations under the License.
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\IntegrationTests.Core\IntegrationTests.Core.csproj" />
-        <ProjectReference Include="..\Tests\Tests.csproj" />
+      <ProjectReference Include="..\DatabaseMigration\DatabaseMigration.csproj" />
+      <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
+      <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
+      <ProjectReference Include="..\Sender\Sender.csproj" />
+      <ProjectReference Include="..\WebApi\WebApi.csproj" />
     </ItemGroup>
 
     <ItemGroup>

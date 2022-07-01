@@ -12,18 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
-using Xunit;
+namespace Energinet.DataHub.Wholesale.Tests;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
-
-/// <summary>
-/// An xUnit collection fixture for ensuring tests don't run in parallel.
-///
-/// xUnit documentation of collection fixtures:
-///  * https://xunit.net/docs/shared-context#collection-fixture
-/// </summary>
-[CollectionDefinition(nameof(SenderFunctionAppCollectionFixture))]
-public class SenderFunctionAppCollectionFixture : ICollectionFixture<SenderFunctionAppFixture>
+public static class ObjectExtensions
 {
+    /// <summary>
+    /// Returns the object wrapped in a list.
+    /// </summary>
+    public static List<T> InList<T>(this T o) => new() { o };
 }

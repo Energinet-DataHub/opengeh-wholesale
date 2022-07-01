@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
-using Xunit;
-
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
-
-/// <summary>
-/// An xUnit collection fixture for ensuring tests don't run in parallel.
-///
-/// xUnit documentation of collection fixtures:
-///  * https://xunit.net/docs/shared-context#collection-fixture
-/// </summary>
-[CollectionDefinition(nameof(SenderFunctionAppCollectionFixture))]
-public class SenderFunctionAppCollectionFixture : ICollectionFixture<SenderFunctionAppFixture>
+namespace Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers
 {
+    public static class HttpRequestGenerator
+    {
+        public static HttpRequestMessage CreateHttpGetRequest(string endpointUrl)
+        {
+            return CreateHttpRequest(HttpMethod.Get, endpointUrl);
+        }
+
+        private static HttpRequestMessage CreateHttpRequest(HttpMethod httpMethod, string endpointUrl)
+        {
+            var request = new HttpRequestMessage(httpMethod, endpointUrl);
+            return request;
+        }
+    }
 }

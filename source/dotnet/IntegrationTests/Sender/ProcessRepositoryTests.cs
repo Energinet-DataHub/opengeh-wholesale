@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
