@@ -51,7 +51,7 @@ resource "databricks_job" "integration_events_persister_streaming_job" {
   } 
 
   spark_python_task {
-    python_file = "dbfs:/wholesale/wholesale_integration_events_persister_streaming.py"
+    python_file = "dbfs:/streaming-jobs/integration_events_persister_streaming.py"
     parameters  = [
          "--data-storage-account-name=${data.azurerm_key_vault_secret.st_data_lake_name.value}",
          "--data-storage-account-key=${data.azurerm_key_vault_secret.st_data_lake_primary_access_key.value}",
