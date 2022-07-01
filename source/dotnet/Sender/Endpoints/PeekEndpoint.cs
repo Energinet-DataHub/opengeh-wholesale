@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.MessageHub.Model.Peek;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Sender.Endpoints;

@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.MessageHub.Model.Model;
 
-namespace Energinet.DataHub.Wholesale.Sender
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services
 {
     public interface IDocumentSender
     {
