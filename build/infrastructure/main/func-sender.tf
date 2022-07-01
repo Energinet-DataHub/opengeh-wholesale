@@ -36,7 +36,7 @@ module "func_sender" {
     DB_CONNECTION_STRING                             = local.DB_CONNECTION_STRING
     
     # Used for health check of all inter domain service bus connections (integration events and Message Hub)
-    INTEGRATIONEVENT_MANAGER_CONNECTION_STRING       = data.azurerm_key_vault_secret.sb_domain_relay_manage_connection_string.value
+    INTEGRATIONEVENT_MANAGER_CONNECTION_STRING       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
 
     # Service Bus
     SERVICE_BUS_MANAGE_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["manage"]
@@ -45,13 +45,13 @@ module "func_sender" {
     PROCESS_COMPLETED_SUBSCRIPTION_NAME              = local.COMPLETED_PROCESS_SUBSCRIPTION
 
     # Message Hub
-    MESSAGE_HUB_SERVICE_BUS_SEND_CONNECTION_STRING   = data.azurerm_key_vault_secret.messagehub_service_bus_send_connection_string.value
-    MESSAGE_HUB_SERVICE_BUS_LISTEN_CONNECTION_STRING = data.azurerm_key_vault_secret.messagehub_service_bus_listen_connection_string.value
-    MESSAGE_HUB_DATA_AVAILABLE_QUEUE_NAME            = data.azurerm_key_vault_secret.messagehub_data_available_queue_name.value
-    MESSAGE_HUB_REQUEST_QUEUE_NAME                   = data.azurerm_key_vault_secret.messagehub_request_queue_name.value
-    MESSAGE_HUB_REPLY_QUEUE_NAME                     = data.azurerm_key_vault_secret.messagehub_reply_queue_name.value
-    MESSAGE_HUB_STORAGE_CONNECTION_STRING            = data.azurerm_key_vault_secret.messagehub_storage_connection_string.value
-    MESSAGE_HUB_STORAGE_CONTAINER_NAME               = data.azurerm_key_vault_secret.messagehub_storage_container_name.value
+    MESSAGE_HUB_SERVICE_BUS_SEND_CONNECTION_STRING   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
+    MESSAGE_HUB_SERVICE_BUS_LISTEN_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
+    MESSAGE_HUB_DATA_AVAILABLE_QUEUE_NAME            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-data-available-name)"
+    MESSAGE_HUB_REQUEST_QUEUE_NAME                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-name)"
+    MESSAGE_HUB_REPLY_QUEUE_NAME                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-reply-name)"
+    MESSAGE_HUB_STORAGE_CONNECTION_STRING            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketres-primary-connection-string)"
+    MESSAGE_HUB_STORAGE_CONTAINER_NAME               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketres-postofficereply-container-name)"
   }
 
   tags                                  = azurerm_resource_group.this.tags
