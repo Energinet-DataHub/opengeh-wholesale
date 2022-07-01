@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 
 public sealed record ProcessCompletedEventDto(string GridAreaCode);
