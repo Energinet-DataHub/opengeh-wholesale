@@ -14,7 +14,7 @@
 
 output evh_wholesale_listen_connection_string {
   description = "Connectionstring for the eventhub"
-  value       = module.evhnm_wholesale.primary_connection_strings["listen"]
+  value       = module.evh_masterdataevents.primary_connection_strings["listen"]
   sensitive   = true
 }
 
