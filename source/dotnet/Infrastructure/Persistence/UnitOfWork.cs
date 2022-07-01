@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Domain;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 

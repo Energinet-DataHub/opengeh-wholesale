@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints
     /// WARNING !
     /// Do not change the numeric values since they are used further downstream for aggregation purposes.
     /// </summary>
-   public enum Resolution
+    public enum Resolution
     {
         Unknown = 0,
         Hourly = 1,
