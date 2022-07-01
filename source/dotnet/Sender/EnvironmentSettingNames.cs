@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Configuration;
+namespace Energinet.DataHub.Wholesale.Sender;
 
 public static class EnvironmentSettingNames
 {
