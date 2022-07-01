@@ -15,7 +15,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Energinet.DataHub.Wholesale.Tests
+namespace Energinet.DataHub.Wholesale.Tests.Core
 {
     public static class ReflectionExtensions
     {

@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Sender.Endpoints;

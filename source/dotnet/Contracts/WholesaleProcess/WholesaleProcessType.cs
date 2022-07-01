@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Contracts.WholesaleProcess;
+namespace Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 
 /// <summary>
 /// Defines the wholesale process type
