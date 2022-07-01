@@ -3,6 +3,7 @@ CIM
 codecov
 Databricks
 DataHub
+debugz
 dequeue
 dk
 energinet
@@ -10,10 +11,17 @@ Energinet
 eSett
 FAS
 greenenergyhub
+json
 Lakehouse
 MessageHub
 NuGet
+opengeh
+opengeh-wholesale
 protobuf
+ptvsd
+pytest
+readme
 RSM
 SonarCloud
 TSO
+WSL
