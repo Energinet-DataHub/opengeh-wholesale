@@ -25,6 +25,7 @@ from package.schemas import (
     eventhub_integration_events_schema as schema)
 from package.schemas import eventhub_container_schema
 
+
 @pytest.fixture(scope="session")
 def integration_events_persister_tester(
     spark,
