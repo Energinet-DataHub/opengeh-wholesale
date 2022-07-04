@@ -21,22 +21,21 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 public class DocumentFactory : IDocumentFactory
 {
-    private const string CimTemplate = @"""<?xml version=""1.0"" encoding=""UTF-8""?>
+    private const string CimTemplate = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <cim:NotifyAggregatedMeasureData_MarketDocument xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:cim=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"" xsi:schemaLocation=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1 urn-ediel-org-measure-notifyaggregatedmeasuredata-0-1.xsd"">
-	<cim:mRID>123321321</cim:mRID>
-	<cim:type>E31</cim:type>
-	<cim:process.processType>D04</cim:process.processType>
-	<cim:businessSector.type>23</cim:businessSector.type>
-	<cim:sender_MarketParticipant.mRID codingScheme=""A10"">5790001330552</cim:sender_MarketParticipant.mRID>
-	<cim:sender_MarketParticipant.marketRole.type>DGL</cim:sender_MarketParticipant.marketRole.type>
-	<cim:receiver_MarketParticipant.mRID codingScheme=""A10"">{recipientGln}</cim:receiver_MarketParticipant.mRID>
-	<cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
-	<cim:createdDateTime>{createdDateTime}</cim:createdDateTime>
-	<cim:Series>
+    <cim:mRID>123321321</cim:mRID>
+    <cim:type>E31</cim:type>
+    <cim:process.processType>D04</cim:process.processType>
+    <cim:businessSector.type>23</cim:businessSector.type>
+    <cim:sender_MarketParticipant.mRID codingScheme=""A10"">5790001330552</cim:sender_MarketParticipant.mRID>
+    <cim:sender_MarketParticipant.marketRole.type>DGL</cim:sender_MarketParticipant.marketRole.type>
+    <cim:receiver_MarketParticipant.mRID codingScheme=""A10"">{recipientGln}</cim:receiver_MarketParticipant.mRID>
+    <cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
+    <cim:createdDateTime>{createdDateTime}</cim:createdDateTime>
+    <cim:Series>
         <!-- content will be added in future releases -->
-	</cim:Series>
-</cim:NotifyAggregatedMeasureData_MarketDocument>
-""";
+    </cim:Series>
+</cim:NotifyAggregatedMeasureData_MarketDocument>";
 
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;

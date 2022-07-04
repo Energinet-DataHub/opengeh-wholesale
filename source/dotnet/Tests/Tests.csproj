@@ -24,6 +24,7 @@ limitations under the License.
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
+    <ProjectReference Include="..\Sender\Sender.csproj" />
   </ItemGroup>
 
   <ItemGroup>
