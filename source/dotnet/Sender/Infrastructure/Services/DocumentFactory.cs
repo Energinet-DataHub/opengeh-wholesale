@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 public class DocumentFactory : IDocumentFactory
 {
-    private const string CimTemplate = @"""<?xml version=""1.0"" encoding=""UTF-8""?>
+    private const string CimTemplate = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <cim:NotifyAggregatedMeasureData_MarketDocument xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:cim=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"" xsi:schemaLocation=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1 urn-ediel-org-measure-notifyaggregatedmeasuredata-0-1.xsd"">
 	<cim:mRID>123321321</cim:mRID>
 	<cim:type>E31</cim:type>
@@ -36,7 +36,7 @@ public class DocumentFactory : IDocumentFactory
         <!-- content will be added in future releases -->
 	</cim:Series>
 </cim:NotifyAggregatedMeasureData_MarketDocument>
-""";
+";
 
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;
