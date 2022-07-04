@@ -14,8 +14,8 @@
 
 using System.Net;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.Fixtures.WebApi;
-using Energinet.DataHub.Wholesale.IntegrationTests.Core.TestCommon.WebApi;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;

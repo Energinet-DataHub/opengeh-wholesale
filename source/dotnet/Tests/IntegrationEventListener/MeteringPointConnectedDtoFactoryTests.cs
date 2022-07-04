@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
-using Energinet.DataHub.MeteringPoints.IntegrationEventContracts;
+using Energinet.DataHub.MeteringPoints.IntegrationEvents.Connect;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using FluentAssertions;
