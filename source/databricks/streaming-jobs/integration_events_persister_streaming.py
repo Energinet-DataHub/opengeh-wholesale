@@ -19,9 +19,6 @@ sys.path.append(r'/opt/conda/lib/python3.8/site-packages')
 import configargparse
 
 from package import integration_events_persister, initialize_spark
-from pyspark.sql.functions import from_json, col
-from package.schemas import (
-    eventhub_integration_events_schema as schema)
 
 
 p = configargparse.ArgParser(description='Timeseries events stream ingestor', formatter_class=configargparse.ArgumentDefaultsHelpFormatter)
@@ -40,7 +37,7 @@ integration_events_checkpoint_path = f"{args.integration_events_checkpoint_path}
 
 input_configuration = {}
 input_configuration["eventhubs.connectionString"] = spark.sparkContext._gateway.jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt(f"{args.integration_events_path}")
-streamingDF = (spark.readStream.format("eventhubs").options(**input_configuration).load().withColumn("body", col("body")).cast('string').withColumn("body", from_json(col("body")), schema))
+streamingDF = spark.readStream.format("eventhubs").options(**input_configuration).load()
 
 # start the timeseries persister job
 integration_events_persister(streamingDF, integration_events_checkpoint_path, integration_events_path)
