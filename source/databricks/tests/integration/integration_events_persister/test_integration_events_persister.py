@@ -23,7 +23,6 @@ from package import integration_events_persister
 from tests.integration.utils import streaming_job_asserter
 from package.schemas import (
     eventhub_integration_events_schema as schema)
-from package.schemas import eventhub_container_schema
 
 
 @pytest.fixture(scope="session")
