@@ -22,7 +22,6 @@ from package.schemas import (
     eventhub_integration_events_schema as schema)
 
 
-# integration_events_persister
 def integration_events_persister(streamingDf: DataFrame, checkpoint_path: str, integration_events_path: str):
     streamingDf = (streamingDf
                    .withColumn("body", col("body").cast("string"))
