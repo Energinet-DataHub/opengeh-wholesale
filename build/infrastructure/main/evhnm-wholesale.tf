@@ -54,5 +54,9 @@ module "evh_masterdataevents" {
       listen  = true
       send    = true
     },
+    {
+      name    = "listen",
+      listen  = true
+    }
   ]
 }

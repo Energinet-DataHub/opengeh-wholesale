@@ -11,21 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+terraform {
+  required_version = "1.2.2"
 
-output evh_wholesale_listen_connection_string {
-  description = "Connectionstring for the eventhub"
-  value       = module.evh_masterdataevents.primary_connection_strings["listen"]
-  sensitive   = true
+  required_providers {
+    databricks = {
+      source = "databrickslabs/databricks"
+      version = "0.5.1"
+    }
+    azurerm = "=3.9.0"
+  }
 }
 
-output databricks_workspace_url {
-  description = "URL of the created Databricks workspace"
-  value       = data.azurerm_key_vault_secret.dbw_shared_workspace_url.value
-  sensitive   = true
+provider "databricks" {
+  azure_workspace_resource_id = data.azurerm_key_vault_secret.dbw_databricks_workspace_id.value
 }
 
-output ms_wholesale_connection_string {
-  description = "Connection string of the wholesale database created in the shared server"
-  value       = local.DB_CONNECTION_STRING
-  sensitive   = true
+provider "azurerm" {
+  features {}
 }
