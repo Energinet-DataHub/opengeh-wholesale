@@ -21,6 +21,8 @@ sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
 import pytest
 from package import integration_events_persister
 from tests.integration.utils import streaming_job_asserter
+from package.schemas import (
+    eventhub_integration_events_schema as schema)
 
 
 @pytest.fixture(scope="session")
@@ -43,10 +45,10 @@ def integration_events_persister_tester(
 
     os.makedirs(event_hub_streaming_simulation_path)
     f = open(f"{event_hub_streaming_simulation_path}/test.json", 'w')
-    f.write('{"body":{"GsrnNumber":"575387199703339827","GridAreaLinkId":"f5a0cdeb-79dd-4a18-a20a-1210fb84daf0","SettlementMethod":"2","ConnectionState":"1","EffectiveDate":"2021-09-25T22:00:00.000Z","MeteringPointType":"1","Resolution":"1","CorrelationId":"00-106dd5f611c1f2478f54d47e244318b8-044879afbff6c946-00","MessageType":"MeteringPointCreated","OperationTime":"2022-06-29T11:26:31.000Z"},"partition":"0","offset":"8589936200","sequenceNumber":25,"enqueuedTime":"2022-06-29T11:26:41.003Z","properties":{"Diagnostic-Id":"00-3fac0b8fc6488252d3f9847f72178ec2-52587d983735b766-00"},"systemProperties":{}}')
+    f.write('{"body":"{\'GsrnNumber\':\'575387199703339827\',\'GridAreaLinkId\':\'f5a0cdeb-79dd-4a18-a20a-1210fb84daf0\',\'SettlementMethod\':\'2\',\'ConnectionState\':\'1\',\'EffectiveDate\':\'2021-09-25T22:00:00.000Z\',\'MeteringPointType\':\'1\',\'Resolution\':\'1\',\'CorrelationId\':\'00-106dd5f611c1f2478f54d47e244318b8-044879afbff6c946-00\',\'MessageType\':\'MeteringPointCreated\',\'OperationTime\':\'2022-06-29T11:26:31.000Z\'}","partition":"0","offset":"8589936200","sequenceNumber":25,"enqueuedTime":"2022-06-29T11:26:41.003Z","properties":{"Diagnostic-Id":"00-3fac0b8fc6488252d3f9847f72178ec2-52587d983735b766-00"},"systemProperties":{}}')
     f.close()
 
-    streamingDF = (spark.readStream.option("startingOffsets", "earliest").json(event_hub_streaming_simulation_path))
+    streamingDF = (spark.readStream.option("startingOffsets", "earliest").format("json").load(event_hub_streaming_simulation_path))
 
     return integration_events_persister(streamingDF, checkpoint_path, integration_events_path)
 

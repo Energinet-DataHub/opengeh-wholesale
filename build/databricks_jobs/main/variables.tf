@@ -11,21 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-output evh_wholesale_listen_connection_string {
-  description = "Connectionstring for the eventhub"
-  value       = module.evh_masterdataevents.primary_connection_strings["listen"]
-  sensitive   = true
+variable shared_resources_keyvault_name {
+  type          = string
+  description   = "Name of the KeyVault, that contains the shared secrets"
 }
 
-output databricks_workspace_url {
-  description = "URL of the created Databricks workspace"
-  value       = data.azurerm_key_vault_secret.dbw_shared_workspace_url.value
-  sensitive   = true
+variable shared_resources_resource_group_name {
+  type          = string
+  description   = "Name of the Resource Group, that contains the shared resources."
 }
 
-output ms_wholesale_connection_string {
-  description = "Connection string of the wholesale database created in the shared server"
-  value       = local.DB_CONNECTION_STRING
-  sensitive   = true
+variable resource_group_name {
+  type        = string
+  description = "Resource Group that the infrastructure code is deployed into."
+}
+
+variable evh_wholesale_listen_connection_string {
+  type        = string
+  description = "Connectionstring for the wholesale eventhub"
 }
