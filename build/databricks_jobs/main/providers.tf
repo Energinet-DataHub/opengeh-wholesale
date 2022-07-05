@@ -17,7 +17,7 @@ terraform {
   required_providers {
     databricks = {
       source = "databricks/databricks"
-      version = "0.5.1"
+      version = "1.0.0"
     }
     azurerm = "=3.9.0"
   }
