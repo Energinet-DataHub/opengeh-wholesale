@@ -18,7 +18,7 @@ data "databricks_spark_version" "latest_lts" {
 
 resource "databricks_job" "integration_events_persister_streaming_job" {
   name = "IntegrationEventsPersisterStreamingJob"
-  max_retries = 2
+  max_retries = -1
   max_concurrent_runs = 1   
   always_running = true
 
