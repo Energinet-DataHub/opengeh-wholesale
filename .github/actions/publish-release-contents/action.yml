@@ -36,10 +36,10 @@ runs:
       run: |
         cp -fR ${{ inputs.REPO_FOLDER_PATH }}/build/databricks_jobs ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure/databricks_jobs 2>/dev/null || :
 
-    - name: Publish Databricks jobs code to release folder
+    - name: Publish streaming-jobs to release folder
       shell: bash
       run: |
-        cp -fR ${{ inputs.REPO_FOLDER_PATH }}/source/databricks/jobs ${{ inputs.RELEASE_FOLDER_PATH }} 2>/dev/null || :
+        cp -fR ${{ inputs.REPO_FOLDER_PATH }}/source/databricks/streaming-jobs ${{ inputs.RELEASE_FOLDER_PATH }} 2>/dev/null || :
 
     - name: Publish wheel to release folder
       uses: actions/download-artifact@v3
