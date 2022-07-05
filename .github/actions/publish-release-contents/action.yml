@@ -34,7 +34,7 @@ runs:
     - name: Publish Streaming cluster Infrastructure to release folder
       shell: bash
       run: |
-        cp -fR ${{ inputs.REPO_FOLDER_PATH }}/build/databricks_streaming_cluster ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure/databricks_streaming_cluster 2>/dev/null || :
+        cp -fR ${{ inputs.REPO_FOLDER_PATH }}/build/databricks_jobs ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure/databricks_jobs 2>/dev/null || :
 
     - name: Publish streaming-jobs to release folder
       shell: bash

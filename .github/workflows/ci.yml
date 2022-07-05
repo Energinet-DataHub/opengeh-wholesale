@@ -52,7 +52,7 @@ jobs:
   terraform_validate_streaming_cluster:
     uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@7.6.0
     with:
-      TERRAFORM_WORKING_DIR_PATH: './build/databricks_streaming_cluster'
+      TERRAFORM_WORKING_DIR_PATH: './build/databricks_jobs'
       TERRAFORM_VERSION: '1.2.2'
   
   wheel_ci:
