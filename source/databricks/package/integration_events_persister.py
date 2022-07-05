@@ -24,8 +24,8 @@ from package.schemas import (
 
 def integration_events_persister(streamingDf: DataFrame, checkpoint_path: str, integration_events_path: str):
     streamingDf = (streamingDf
-        .withColumn("body", col("body").cast("string"))
-        .withColumn("body", from_json(col("body"), schema)))
+                   .withColumn("body", col("body").cast("string"))
+                   .withColumn("body", from_json(col("body"), schema)))
     events = (streamingDf.select(
         col("*"),
         col("body.*")).drop("body")
