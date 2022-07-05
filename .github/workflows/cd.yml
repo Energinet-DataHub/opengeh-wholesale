@@ -47,7 +47,7 @@ jobs:
       AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
       AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
-  update_coverage_report_python:
+  update_python_coverage_report:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@7.6.0
     with:
       PATH_STATIC_CHECKS: './source'
