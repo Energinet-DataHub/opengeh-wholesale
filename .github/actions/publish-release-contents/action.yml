@@ -41,7 +41,7 @@ runs:
       run: |
         cp -fR ${{ inputs.REPO_FOLDER_PATH }}/source/databricks/streaming-jobs ${{ inputs.RELEASE_FOLDER_PATH }} 2>/dev/null || :
 
-    - name: Publish wheel to release folder
+    - name: Publish Python wheel to release folder
       uses: actions/download-artifact@v3
       with:
         name: wheel
