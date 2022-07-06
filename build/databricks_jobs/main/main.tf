@@ -51,10 +51,10 @@ resource "databricks_job" "integration_events_persister_streaming_job" {
 
     library {
       whl = "dbfs:/package/package-1.0-py3-none-any.whl"
-    } 
+    }
 
     python_wheel_task {
-      package_name = "package-1.0-py3-none-any.whl"
+      package_name = "package"
       entry_point = "do_launch"
       parameters  = [
           "--data-storage-account-name=${data.azurerm_key_vault_secret.st_data_lake_name.value}",
