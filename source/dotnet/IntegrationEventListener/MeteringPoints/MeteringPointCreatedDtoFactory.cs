@@ -45,6 +45,7 @@ public class MeteringPointCreatedDtoFactory
         var eventMetadata = _integrationEventContext.ReadMetadata();
 
         return new MeteringPointCreatedDto(
+            meteringPointCreated.MeteringPointId,
             meteringPointCreated.GsrnNumber,
             Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
             settlementMethod,
