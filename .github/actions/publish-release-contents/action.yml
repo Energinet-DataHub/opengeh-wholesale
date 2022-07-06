@@ -31,10 +31,10 @@ runs:
         mkdir ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure
         cp -fR ${{ inputs.REPO_FOLDER_PATH }}/build/infrastructure/main ${{ inputs.RELEASE_FOLDER_PATH }}/infrastructure 2>/dev/null || :
 
-    - name: Publish streaming-jobs to release folder
+    - name: Publish jobs to release folder
       shell: bash
       run: |
-        cp -fR ${{ inputs.REPO_FOLDER_PATH }}/source/databricks/streaming-jobs ${{ inputs.RELEASE_FOLDER_PATH }} 2>/dev/null || :
+        cp -fR ${{ inputs.REPO_FOLDER_PATH }}/source/databricks/jobs ${{ inputs.RELEASE_FOLDER_PATH }} 2>/dev/null || :
 
     - name: Publish Python wheel to release folder
       uses: actions/download-artifact@v3
