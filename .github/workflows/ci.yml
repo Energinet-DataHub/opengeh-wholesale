@@ -57,7 +57,7 @@ jobs:
     needs: [wheel_ci]
     uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@7.6.0
     with:
-      TERRAFORM_WORKING_DIR_PATH: "./build/primary/main"
+      TERRAFORM_WORKING_DIR_PATH: "./build/infrastructure/main"
       TERRAFORM_VERSION: '1.2.2'
 
   create_prerelease:
