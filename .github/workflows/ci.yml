@@ -43,20 +43,8 @@ jobs:
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,W503,E122,E123,E126,F811'
       TEST_REPORT_PATH: ./source/databricks/htmlcov/
 
-  terraform_validate:
-    uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@7.6.0
-    with:
-      TERRAFORM_WORKING_DIR_PATH: './build/infrastructure/main'
-      TERRAFORM_VERSION: '1.2.2'
-  
-  terraform_validate_streaming_cluster:
-    uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@7.6.0
-    with:
-      TERRAFORM_WORKING_DIR_PATH: './build/databricks_jobs'
-      TERRAFORM_VERSION: '1.2.2'
-  
   wheel_ci:
-    needs: [databricks_ci, terraform_validate, terraform_validate_streaming_cluster]
+    needs: [databricks_ci]
     uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@7.6.0
     with:
       PYHTON_VERSION: '3.8.6'
@@ -64,6 +52,13 @@ jobs:
       WHEEL_WORKING_DIRECTORY: './source/databricks'
       ARTIFACT_NAME: 'wheel'
       ARTIFACT_PATH: './source/databricks/dist'
+
+  terraform_validate:
+    needs: [wheel_ci]
+    uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@7.6.0
+    with:
+      TERRAFORM_WORKING_DIR_PATH: "./build/primary/main"
+      TERRAFORM_VERSION: '1.2.2'
 
   create_prerelease:
     needs: [ci_base, terraform_validate, dotnet_solution_ci, wheel_ci]
