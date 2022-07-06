@@ -19,5 +19,7 @@ setup(name='package',
       long_description='',
       long_description_content_type='text/markdown',
       license='MIT',
-      packages=find_packages()
-      )
+      packages=find_packages(),
+      entry_points={
+            "console_scripts": ["do_launch = package:do_my_stuff"]
+      })
