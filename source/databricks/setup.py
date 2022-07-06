@@ -20,6 +20,11 @@ setup(name='package',
       long_description_content_type='text/markdown',
       license='MIT',
       packages=find_packages(),
+      install_requires=[
+          'ConfigArgParse==1.5.3',
+          'pyspark==3.3.0',
+          'azure-storage-blob==12.7.1'
+      ],
       entry_points={
             "console_scripts": ["do_launch = package.integration_events_persister_streaming:do_my_stuff"]
       })
