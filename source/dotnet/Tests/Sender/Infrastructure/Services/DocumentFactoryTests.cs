@@ -18,6 +18,7 @@ using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
+using FluentAssertions;
 using Moq;
 using NodaTime.Text;
 using Xunit;
@@ -28,7 +29,7 @@ public class DocumentFactoryTests
 {
     private const string Expected = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <cim:NotifyAggregatedMeasureData_MarketDocument xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:cim=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"" xsi:schemaLocation=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1 urn-ediel-org-measure-notifyaggregatedmeasuredata-0-1.xsd"">
-    <cim:mRID>123321321</cim:mRID>
+    <cim:mRID>f0de3417-71ce-426e-9001-12600da9102a</cim:mRID>
     <cim:type>E31</cim:type>
     <cim:process.processType>D04</cim:process.processType>
     <cim:businessSector.type>23</cim:businessSector.type>
@@ -50,12 +51,17 @@ public class DocumentFactoryTests
     public async Task CreateAsync_ReturnsRsm014(
         DataBundleRequestDto request,
         Guid anyNotificationId,
+        [Frozen] Mock<IDocumentIdGenerator> documentIdGeneratorMock,
         [Frozen] Mock<IProcessRepository> processRepositoryMock,
         [Frozen] Mock<IStorageHandler> storageHandlerMock,
         [Frozen] Mock<NodaTime.IClock> clockMock,
         DocumentFactory sut)
     {
         // Arrange
+        documentIdGeneratorMock
+            .Setup(generator => generator.Create())
+            .Returns("f0de3417-71ce-426e-9001-12600da9102a");
+
         var anyGridAreaCode = "805";
         processRepositoryMock
             .Setup(repository => repository.GetAsync(It.IsAny<MessageHubReference>()))
@@ -79,7 +85,6 @@ public class DocumentFactoryTests
         using var stringReader = new StreamReader(outStream);
         var actual = await stringReader.ReadToEndAsync();
 
-        Assert.Equal(Expected, actual);
-        //actual.Should().Be(Expected);
+        actual.Should().Be(Expected);
     }
 }
