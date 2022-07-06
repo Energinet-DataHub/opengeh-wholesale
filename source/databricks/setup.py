@@ -21,5 +21,5 @@ setup(name='package',
       license='MIT',
       packages=find_packages(),
       entry_points={
-            "console_scripts": ["do_launch = package:do_my_stuff"]
+            "console_scripts": ["do_launch = package.integration_events_persister_streaming:do_my_stuff"]
       })
