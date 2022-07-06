@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-data "databricks_spark_version" "latest_lts" {
-  long_term_support = true
-}
-
 resource "databricks_job" "integration_events_persister_streaming_job" {
   name = "IntegrationEventsPersisterStreamingJob"
   max_retries = -1
