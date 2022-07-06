@@ -18,6 +18,11 @@ setup(name='package',
       description='Tools for wholesale streaming',
       long_description='',
       long_description_content_type='text/markdown',
-      license='MIT',
-      packages=find_packages()
+      license='MIT',      
+      packages=find_packages(),
+      install_requires=[
+          'ConfigArgParse==1.5.3',
+          'pyspark==3.3.0',
+          'azure-storage-blob==12.7.1'
+      ],
       )
