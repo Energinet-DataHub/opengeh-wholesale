@@ -17,14 +17,15 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
 public record MeteringPointCreatedDto(
-    string GsrnNumber,
-    Guid GridAreaLinkId,
-    SettlementMethod? SettlementMethod,
-    ConnectionState ConnectionState,
-    Instant EffectiveDate,
-    MeteringPointType MeteringPointType,
-    Resolution Resolution,
-    string CorrelationId,
-    string MessageType,
-    Instant OperationTime)
-    : EventHubEventDtoBase(CorrelationId, MessageType, OperationTime);
+        string MeteringPointId,
+        string GsrnNumber,
+        Guid GridAreaLinkId,
+        SettlementMethod? SettlementMethod,
+        ConnectionState ConnectionState,
+        Instant EffectiveDate,
+        MeteringPointType MeteringPointType,
+        Resolution Resolution,
+        string CorrelationId,
+        string MessageType,
+        Instant OperationTime)
+        : EventHubEventDtoBase(CorrelationId, MessageType, OperationTime);

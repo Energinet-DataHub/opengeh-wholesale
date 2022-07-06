@@ -39,10 +39,11 @@ public class MeteringPointConnectedDtoFactory
         var eventMetadata = _integrationEventContext.ReadMetadata();
 
         return new MeteringPointConnectedDto(
-                meteringPointConnected.GsrnNumber,
-                meteringPointConnected.EffectiveDate.ToInstant(),
-                _correlationContext.Id,
-                eventMetadata.MessageType,
-                eventMetadata.OperationTimestamp);
+            meteringPointConnected.MeteringpointId,
+            meteringPointConnected.GsrnNumber,
+            meteringPointConnected.EffectiveDate.ToInstant(),
+            _correlationContext.Id,
+            eventMetadata.MessageType,
+            eventMetadata.OperationTimestamp);
     }
 }
