@@ -22,45 +22,48 @@ resource "databricks_job" "integration_events_persister_streaming_job" {
   max_concurrent_runs = 1   
   always_running = true
 
-  new_cluster {
-    spark_version           = data.databricks_spark_version.latest_lts.id
-    node_type_id            = "Standard_DS3_v2"
-    num_workers    = 1
-  }
-	
-  library {
-    maven {
-      coordinates = "com.microsoft.azure:azure-eventhubs-spark_2.12:2.3.17"
+  task {
+    task_key = "unique_job_${uuid()}"
+
+    new_cluster {
+      spark_version           = data.databricks_spark_version.latest_lts.id
+      node_type_id            = "Standard_DS3_v2"
+      num_workers    = 1
+    }
+    
+    library {
+      maven {
+        coordinates = "com.microsoft.azure:azure-eventhubs-spark_2.12:2.3.17"
+      }
+    }
+
+    library {
+      pypi {
+        package = "configargparse==1.2.3"
+      }
+    }
+
+    library {
+      pypi {
+        package = "azure-storage-blob==12.7.1"
+      }
+    }
+
+    library {
+      whl = "dbfs:/package/package-1.0-py3-none-any.whl"
+    } 
+
+    spark_python_task {
+      python_file = "dbfs:/wholesale/integration_events_persister_streaming.py"
+      parameters  = [
+          "--data-storage-account-name=${data.azurerm_key_vault_secret.st_data_lake_name.value}",
+          "--data-storage-account-key=${data.azurerm_key_vault_secret.st_data_lake_primary_access_key.value}",
+          "--event-hub-connectionstring=${var.evh_wholesale_listen_connection_string}",
+          "--integration-events-path=abfss://integration-events@${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net/events",
+          "--integration-events-checkpoint-path=abfss://integration-events@${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net/events-checkpoint",
+      ]
     }
   }
-
-  library {
-    pypi {
-      package = "configargparse==1.2.3"
-    }
-  }
-
-  library {
-    pypi {
-      package = "azure-storage-blob==12.7.1"
-    }
-  }
-
-  library {
-    whl = "dbfs:/package/package-1.0-py3-none-any.whl"
-  } 
-
-  spark_python_task {
-    python_file = "dbfs:/wholesale/integration_events_persister_streaming.py"
-    parameters  = [
-         "--data-storage-account-name=${data.azurerm_key_vault_secret.st_data_lake_name.value}",
-         "--data-storage-account-key=${data.azurerm_key_vault_secret.st_data_lake_primary_access_key.value}",
-         "--event-hub-connectionstring=${var.evh_wholesale_listen_connection_string}",
-         "--integration-events-path=abfss://integration-events@${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net/events",
-         "--integration-events-checkpoint-path=abfss://integration-events@${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net/events-checkpoint",
-    ]
-  }
-
 
   email_notifications {
     no_alert_for_skipped_runs = true

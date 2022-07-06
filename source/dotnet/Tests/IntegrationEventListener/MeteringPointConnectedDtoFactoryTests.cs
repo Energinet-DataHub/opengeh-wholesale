@@ -85,6 +85,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
             // Assert
             actual.Should().NotContainNullsOrEmptyEnumerables();
             actual.GsrnNumber.Should().Be(meteringPointConnectedEvent.GsrnNumber);
+            actual.MeteringPointId.Should().Be(meteringPointConnectedEvent.MeteringpointId);
             actual.EffectiveDate.Should().Be(meteringPointConnectedEvent.EffectiveDate.ToInstant());
         }
     }

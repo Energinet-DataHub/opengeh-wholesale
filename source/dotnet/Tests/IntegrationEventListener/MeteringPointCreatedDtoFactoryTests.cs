@@ -99,6 +99,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
             actual.SettlementMethod.Should().Be(SettlementMethod.Flex);
             actual.ConnectionState.Should().Be(ConnectionState.New);
             actual.MeteringPointType.Should().Be(MeteringPointType.Consumption);
+            actual.MeteringPointId.Should().Be(meteringPointCreatedEvent.MeteringPointId);
         }
 
         [Theory]
