@@ -65,6 +65,7 @@ public static class Program
         services.AddScoped<IDataAvailableNotifier, DataAvailableNotifier>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDocumentFactory, DocumentFactory>();
+        services.AddScoped<IDocumentIdGenerator, DocumentIdGenerator>();
         services.AddScoped<IDataAvailableNotificationFactory, DataAvailableNotificationFactory>();
         services.AddScoped<IProcessRepository, ProcessRepository>();
         services.AddScoped<ICorrelationContext, CorrelationContext>();

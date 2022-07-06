@@ -23,7 +23,7 @@ public class DocumentFactory : IDocumentFactory
 {
     private const string CimTemplate = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <cim:NotifyAggregatedMeasureData_MarketDocument xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:cim=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"" xsi:schemaLocation=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1 urn-ediel-org-measure-notifyaggregatedmeasuredata-0-1.xsd"">
-    <cim:mRID>123321321</cim:mRID>
+    <cim:mRID>{documentId}</cim:mRID>
     <cim:type>E31</cim:type>
     <cim:process.processType>D04</cim:process.processType>
     <cim:businessSector.type>23</cim:businessSector.type>
@@ -40,12 +40,14 @@ public class DocumentFactory : IDocumentFactory
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;
     private readonly IClock _clock;
+    private readonly IDocumentIdGenerator _documentIdGenerator;
 
-    public DocumentFactory(IProcessRepository processRepository, IStorageHandler storageHandler, IClock clock)
+    public DocumentFactory(IProcessRepository processRepository, IStorageHandler storageHandler, IClock clock, IDocumentIdGenerator documentIdGenerator)
     {
         _processRepository = processRepository;
         _storageHandler = storageHandler;
         _clock = clock;
+        _documentIdGenerator = documentIdGenerator;
     }
 
     public async Task CreateAsync(DataBundleRequestDto request, Stream outputStream)
@@ -61,6 +63,7 @@ public class DocumentFactory : IDocumentFactory
         var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
 
         var document = CimTemplate
+            .Replace("{documentId}", _documentIdGenerator.Create())
             .Replace("{recipientGln}", GetMdrGlnForGridArea(process.GridAreaCode))
             .Replace("{createdDateTime}", _clock.GetCurrentInstant().ToString());
 
