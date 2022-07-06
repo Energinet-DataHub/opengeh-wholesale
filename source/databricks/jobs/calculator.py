@@ -14,6 +14,7 @@
 
 import click
 
+
 @click.command()
 @click.option('--data-storage-account-name', type=str, required=True)
 @click.option('--data-storage-account-key', type=str, required=True)
@@ -22,6 +23,7 @@ import click
 @click.option('--process-results-path', type=str, required=True)
 def run():
     pass
+
 
 if __name__ == '__main__':
     run()
