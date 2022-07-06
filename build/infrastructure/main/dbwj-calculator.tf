@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "databricks_job" "integration_events_persister_streaming_job" {
-  name = "IntegrationEventsPersisterStreamingJob"
-  max_retries = -1
-  max_concurrent_runs = 1   
-  always_running = true
+resource "databricks_job" "calculator_job" {
+  name = "CalculatorJob"
+  max_retries = 2
+  max_concurrent_runs = 100
+  always_running = false
 
   task {
     task_key = "unique_job_${uuid()}"
@@ -24,12 +24,15 @@ resource "databricks_job" "integration_events_persister_streaming_job" {
     new_cluster {
       spark_version           = data.databricks_spark_version.latest_lts.id
       node_type_id            = "Standard_DS3_v2"
-      num_workers    = 1
+      autoscale {
+        min_workers = 1
+        max_workers = 4
+      }
     }
-    
+
     library {
-      maven {
-        coordinates = "com.microsoft.azure:azure-eventhubs-spark_2.12:2.3.17"
+      pypi {
+        package = "azure-storage-blob==12.7.1"
       }
     }
 
@@ -38,13 +41,13 @@ resource "databricks_job" "integration_events_persister_streaming_job" {
     } 
 
     spark_python_task {
-      python_file = "dbfs:/wholesale/integration_events_persister_streaming.py"
+      python_file = "dbfs:/wholesale/calculator.py"
       parameters  = [
           "--data-storage-account-name=${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}",
           "--data-storage-account-key=${data.azurerm_key_vault_secret.kvs_st_data_lake_primary_access_key.value}",
-          "--event-hub-connectionstring=${module.evh_masterdataevents.primary_connection_strings["listen"]}",
           "--integration-events-path=abfss://${local.INTERGRATION_EVENTS_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events",
-          "--integration-events-checkpoint-path=abfss://${local.INTERGRATION_EVENTS_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events-checkpoint",
+          "--time-series-points-path=abfss://timeseries-data@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/time-series-points",
+          "--process-results-path=abfss://${local.PROCESSES_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/results",
       ]
     }
   }
