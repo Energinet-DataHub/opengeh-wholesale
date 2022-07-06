@@ -50,6 +50,8 @@ public class Batch
 
     public BatchExecutionState ExecutionState { get; private set; }
 
+    public int RunId { get; private set; }
+
     public void Complete()
     {
         if (ExecutionState != BatchExecutionState.Executing)
@@ -58,11 +60,14 @@ public class Batch
         ExecutionState = BatchExecutionState.Completed;
     }
 
-    public void SetExecuting()
+    public void SetExecuting(int runId)
     {
+        ArgumentNullException.ThrowIfNull(runId);
+
         if (ExecutionState != BatchExecutionState.Pending)
             throw new InvalidOperationException("Batch cannot be completed because it is not in state pending.");
 
         ExecutionState = BatchExecutionState.Executing;
+        RunId = runId;
     }
 }

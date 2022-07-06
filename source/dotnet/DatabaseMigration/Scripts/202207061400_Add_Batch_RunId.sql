@@ -1,0 +1,2 @@
+﻿ALTER TABLE Batch
+    ALTER COLUMN RunId INT;

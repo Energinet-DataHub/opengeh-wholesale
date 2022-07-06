@@ -14,19 +14,16 @@
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Application.Databricks;
 
-public interface IBatchApplicationService
+public interface IDatabricksClient
 {
     /// <summary>
-    /// Create a new batch with state <see cref="BatchExecutionState.Pending"/>.
+    /// Start a Databricks job.
     /// </summary>
-    Task CreateAsync(BatchRequestDto batchRequestDto);
+    /// <param name="batch"></param>
+    /// <returns>The Databricks run ID</returns>
+    Task<int> BeginRunAsync(Batch batch);
 
-    /// <summary>
-    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task StartPendingAsync();
-
-    Task UpdateExecutionStateAsync();
+    Task<List<DatabricksJob>> GetJobStatesAsync();
 }

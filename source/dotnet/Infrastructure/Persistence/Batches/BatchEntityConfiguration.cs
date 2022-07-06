@@ -35,6 +35,7 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
             .ValueGeneratedNever();
 
         builder.Property(b => b.ExecutionState);
+        builder.Property(b => b.RunId);
 
         // Grid area IDs are stored as a JSON array
         var gridAreaCodes = builder.Metadata

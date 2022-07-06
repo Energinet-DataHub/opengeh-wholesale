@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.Databricks;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Databricks;
 
-public interface IBatchApplicationService
+public class DatabricksClient : IDatabricksClient
 {
-    /// <summary>
-    /// Create a new batch with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task CreateAsync(BatchRequestDto batchRequestDto);
+    public Task<int> BeginRunAsync(Batch batch)
+    {
+        throw new NotImplementedException();
+    }
 
-    /// <summary>
-    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task StartPendingAsync();
-
-    Task UpdateExecutionStateAsync();
+    public Task<List<DatabricksJob>> GetJobStatesAsync()
+    {
+        throw new NotImplementedException();
+    }
 }
