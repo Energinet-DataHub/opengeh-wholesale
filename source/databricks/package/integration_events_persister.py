@@ -13,27 +13,31 @@
 # limitations under the License.
 
 import sys
-sys.path.append(r'/workspaces/opengeh-wholesale/source/databricks')
+
+sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import (
-    year, month, dayofmonth, col, from_json)
-from package.schemas import (
-    eventhub_integration_events_schema as schema)
+from pyspark.sql.functions import year, month, dayofmonth, col, from_json
+from package.schemas import eventhub_integration_events_schema as schema
 
 
 # integration_events_persister
-def integration_events_persister(streamingDf: DataFrame, checkpoint_path: str, integration_events_path: str):
-    streamingDf = (streamingDf
-                   .withColumn("body", col("body").cast("string"))
-                   .withColumn("body", from_json(col("body"), schema)))
-    events = (streamingDf.select(
-        col("*"),
-        col("body.*")).drop("body")
+def integration_events_persister(
+    streamingDf: DataFrame, checkpoint_path: str, integration_events_path: str
+):
+    streamingDf = streamingDf.withColumn("body", col("body").cast("string")).withColumn(
+        "body", from_json(col("body"), schema)
+    )
+    events = (
+        streamingDf.select(col("*"), col("body.*"))
+        .drop("body")
         .withColumn("year", year(col("enqueuedTime")))
         .withColumn("month", month(col("enqueuedTime")))
-        .withColumn("day", dayofmonth(col("enqueuedTime"))))
-    return events.writeStream.partitionBy("year", "month", "day") \
-        .format("parquet") \
-        .option("checkpointLocation", checkpoint_path) \
+        .withColumn("day", dayofmonth(col("enqueuedTime")))
+    )
+    return (
+        events.writeStream.partitionBy("year", "month", "day")
+        .format("parquet")
+        .option("checkpointLocation", checkpoint_path)
         .start(integration_events_path)
+    )
