@@ -57,7 +57,7 @@ resource "databricks_job" "integration_events_persister_streaming_job" {
       python_file = "dbfs:/wholesale/integration_events_persister_streaming.py"
       parameters  = [
           "--data-storage-account-name=${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}",
-          "--data-storage-account-key=${data.azurerm_key_vault_secret.st_data_lake_primary_access_key.value}",
+          "--data-storage-account-key=${data.azurerm_key_vault_secret.kvs_st_data_lake_primary_access_key.value}",
           "--event-hub-connectionstring=${module.evh_masterdataevents.primary_connection_strings["listen"]}",
           "--integration-events-path=abfss://integration-events@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events",
           "--integration-events-checkpoint-path=abfss://integration-events@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events-checkpoint",
