@@ -38,18 +38,6 @@ resource "databricks_job" "integration_events_persister_streaming_job" {
     }
 
     library {
-      pypi {
-        package = "configargparse==1.2.3"
-      }
-    }
-
-    library {
-      pypi {
-        package = "azure-storage-blob==12.7.1"
-      }
-    }
-
-    library {
       whl = "dbfs:/package/package-1.0-py3-none-any.whl"
     } 
 

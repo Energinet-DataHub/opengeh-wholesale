@@ -22,4 +22,9 @@ setup(name='package',
       packages=find_packages(),
       entry_points={
             "console_scripts": ["do_launch = package.integration_events_persister_streaming:do_my_stuff"]
-      })
+      },
+      install_requires=[
+          'ConfigArgParse==1.5.3',
+          'pyspark==3.3.0',
+          'azure-storage-blob==12.7.1'
+      ])
