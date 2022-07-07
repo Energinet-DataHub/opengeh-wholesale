@@ -1,23 +1,11 @@
-﻿// Copyright 2020 Energinet DataHub A/S
-//
-// Licensed under the Apache License, Version 2.0 (the "License2");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿using System;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
-using Energinet.DataHub.Wholesale.Application.Databricks;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Databricks;
-
-public class DatabricksClient : IDisposable, IDatabricksClient
+public class DatabricksClient // : IDisposable
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="DatabricksClient"/> class.
@@ -31,27 +19,27 @@ public class DatabricksClient : IDisposable, IDatabricksClient
 
         var handler = new HttpClientHandler
         {
-            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
         };
 
         var httpClient = new HttpClient(handler, false)
         {
-            BaseAddress = apiUrl, Timeout = TimeSpan.FromSeconds(timeoutSeconds)
+            BaseAddress = apiUrl, Timeout = TimeSpan.FromSeconds(timeoutSeconds),
         };
 
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
 
-        this.Clusters = new ClustersApiClient(httpClient);
-        this.Jobs = new JobsApiClient(httpClient);
-        this.Dbfs = new DbfsApiClient(httpClient);
-        this.Secrets = new SecretsApiClient(httpClient);
-        this.Groups = new GroupsApiClient(httpClient);
-        this.Libraries = new LibrariesApiClient(httpClient);
-        this.Token = new TokenApiClient(httpClient);
-        this.Workspace = new WorkspaceApiClient(httpClient);
-        this.InstancePool = new InstancePoolApiClient(httpClient);
+        Clusters = new ClustersApiClient(httpClient);
+        Jobs = new JobsApiClient(httpClient);
+        Dbfs = new DbfsApiClient(httpClient);
+        Secrets = new SecretsApiClient(httpClient);
+        Groups = new GroupsApiClient(httpClient);
+        Libraries = new LibrariesApiClient(httpClient);
+        Token = new TokenApiClient(httpClient);
+        Workspace = new WorkspaceApiClient(httpClient);
+        InstancePool = new InstancePoolApiClient(httpClient);
     }
 
     /// <summary>
@@ -86,15 +74,15 @@ public class DatabricksClient : IDisposable, IDatabricksClient
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
 
-        this.Clusters = new ClustersApiClient(httpClient);
-        this.Jobs = new JobsApiClient(httpClient);
-        this.Dbfs = new DbfsApiClient(httpClient);
-        this.Secrets = new SecretsApiClient(httpClient);
-        this.Groups = new GroupsApiClient(httpClient);
-        this.Libraries = new LibrariesApiClient(httpClient);
-        this.Token = new TokenApiClient(httpClient);
-        this.Workspace = new WorkspaceApiClient(httpClient);
-        this.InstancePool = new InstancePoolApiClient(httpClient);
+        Clusters = new ClustersApiClient(httpClient);
+        Jobs = new JobsApiClient(httpClient);
+        Dbfs = new DbfsApiClient(httpClient);
+        Secrets = new SecretsApiClient(httpClient);
+        Groups = new GroupsApiClient(httpClient);
+        Libraries = new LibrariesApiClient(httpClient);
+        Token = new TokenApiClient(httpClient);
+        Workspace = new WorkspaceApiClient(httpClient);
+        InstancePool = new InstancePoolApiClient(httpClient);
     }
 
     /// <summary>
@@ -113,15 +101,15 @@ public class DatabricksClient : IDisposable, IDatabricksClient
         IGroupsApi groupsApi, ILibrariesApi librariesApi, ITokenApi tokenApi, IWorkspaceApi workspaceApi,
         IInstancePoolApi instancePoolApi)
     {
-        this.Clusters = clusterApi;
-        this.Jobs = jobsApi;
-        this.Dbfs = dbfsApi;
-        this.Secrets = secretsApi;
-        this.Groups = groupsApi;
-        this.Libraries = librariesApi;
-        this.Token = tokenApi;
-        this.Workspace = workspaceApi;
-        this.InstancePool = instancePoolApi;
+        Clusters = clusterApi;
+        Jobs = jobsApi;
+        Dbfs = dbfsApi;
+        Secrets = secretsApi;
+        Groups = groupsApi;
+        Libraries = librariesApi;
+        Token = tokenApi;
+        Workspace = workspaceApi;
+        InstancePool = instancePoolApi;
     }
 
     /// <summary>
