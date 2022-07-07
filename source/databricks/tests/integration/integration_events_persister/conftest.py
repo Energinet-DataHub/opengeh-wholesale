@@ -17,7 +17,6 @@ import shutil
 import pytest
 from pyspark.sql import SparkSession
 
-from package import integration_events_persister
 from pyspark.sql.types import (
     StructType,
     StructField,
@@ -36,22 +35,6 @@ time_series_received_schema = StructType(
         StructField("body", StringType(), True),
     ]
 )
-
-
-@pytest.fixture(scope="session")
-def integration_events_persister(spark, delta_lake_path, integration_tests_path):
-    checkpoint_path = f"{delta_lake_path}/unprocessed_time_series/checkpoint"
-    time_series_unprocessed_path = f"{delta_lake_path}/unprocessed_time_series"
-    if(os.path.exists(time_series_unprocessed_path)):
-        shutil.rmtree(time_series_unprocessed_path)
-    streamingDf = spark.readStream.schema(time_series_received_schema).json(
-        f"{integration_tests_path}/time_series_persister/time_series_received*.json"
-    )
-    job = integration_events_persister(
-        streamingDf, checkpoint_path, time_series_unprocessed_path
-    )
-
-    return job
 
 
 @pytest.fixture(scope="session")

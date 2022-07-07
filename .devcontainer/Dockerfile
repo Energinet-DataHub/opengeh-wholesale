@@ -27,7 +27,7 @@ RUN apt-get update; \
 
 # Install spark packages with mamba 
 RUN mamba install --quiet --yes --satisfied-skip-solve \
-    'pyarrow=2.0.*' 'rope=0.18.*' 'pytest=7.1.*' 'autopep8=1.5.*' 'configargparse=1.2.3'  \
+    'pyarrow=2.0.*' 'rope=0.18.*' 'pytest=7.1.*' 'configargparse=1.2.3'  \
     'coverage=6.3.*' 'azure-storage-blob=12.8.*' 'pytest-mock=3.7.*'
 
 # Install python packages used in pyspark development 
