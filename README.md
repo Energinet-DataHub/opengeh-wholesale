@@ -72,7 +72,7 @@ Learn about the aggregation processes terms [here](docs/process-terms.md).
 
 ## Databricks
 
-[Databricks readme](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/databricks_setup/source/databricks/README.md)
+[Databricks readme](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#readme)
 
 ## Test
 
