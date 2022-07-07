@@ -50,7 +50,7 @@ public class Batch
 
     public BatchExecutionState ExecutionState { get; private set; }
 
-    public int RunId { get; private set; }
+    public long RunId { get; private set; }
 
     public void Complete()
     {
@@ -60,7 +60,7 @@ public class Batch
         ExecutionState = BatchExecutionState.Completed;
     }
 
-    public void SetExecuting(int runId)
+    public void SetExecuting(long runId)
     {
         ArgumentNullException.ThrowIfNull(runId);
 

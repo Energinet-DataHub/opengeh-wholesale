@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Databricks;
+using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -26,18 +26,18 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
-    private readonly IDatabricksClient _databricksClient;
+    private readonly IJobRunner _jobRunner;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         IProcessCompletedPublisher processCompletedPublisher,
-        IDatabricksClient databricksClient)
+        IJobRunner jobRunner)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _processCompletedPublisher = processCompletedPublisher;
-        _databricksClient = databricksClient ?? throw new ArgumentNullException(nameof(databricksClient));
+        _jobRunner = jobRunner;
     }
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
@@ -53,8 +53,8 @@ public class BatchApplicationService : IBatchApplicationService
 
         foreach (var batch in batches)
         {
-            var runId = await _databricksClient.BeginRunAsync(batch).ConfigureAwait(false);
-            batch.SetExecuting(runId);
+            var runId = await _jobRunner.SubmitJobAsync(batch).ConfigureAwait(false);
+            batch.SetExecuting(runId.Id);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
@@ -64,12 +64,11 @@ public class BatchApplicationService : IBatchApplicationService
         var batches = await _batchRepository.GetExecutingAsync().ConfigureAwait(false);
         if (!batches.Any()) return;
 
-        var states = await _databricksClient.GetJobStatesAsync().ConfigureAwait(false);
         var completedBatches = new List<Batch>();
         foreach (var batch in batches)
         {
-            var state = states.Single(s => s.RunId == batch.RunId);
-            if (state == State.Completed)
+            var state = await _jobRunner.GetJobStateAsync(new JobRunId(batch.RunId)).ConfigureAwait(false);
+            if (state == JobState.Completed)
             {
                 batch.Complete();
                 completedBatches.Add(batch);

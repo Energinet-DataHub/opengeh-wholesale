@@ -71,21 +71,21 @@ public class BatchTests
     public void SetExecuting_WhenExecuting_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
-        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting());
+        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting(1));
     }
 
     [Fact]
     public void SetExecuting_WhenComplete_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
-        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting());
+        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting(1));
     }
 
     [Fact]
     public void SetExecuting_WhenPending_ExecutesBatch()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
-        sut.SetExecuting();
+        sut.SetExecuting(1);
         sut.ExecutionState.Should().Be(BatchExecutionState.Executing);
     }
 }

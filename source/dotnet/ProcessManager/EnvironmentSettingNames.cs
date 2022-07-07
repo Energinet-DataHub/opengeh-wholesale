@@ -35,4 +35,14 @@ public static class EnvironmentSettingNames
     /// The service bus topic for completed process events.
     /// </summary>
     public const string ProcessCompletedTopicName = "PROCESS_COMPLETED_TOPIC_NAME";
+
+    /// <summary>
+    /// data
+    /// </summary>
+    public const string DatabricksWorkspaceUrl = "DATABRICKS_WORKSPACE_URL";
+
+    /// <summary>
+    /// token
+    /// </summary>
+    public const string DatabricksWorkspaceToken = "DATABRICKS_WORKSPACE_TOKEN";
 }
