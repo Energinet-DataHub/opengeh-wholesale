@@ -19,10 +19,9 @@ from pyspark.sql import SparkSession
 
 @pytest.fixture(scope="session")
 def spark() -> SparkSession:
-    return (SparkSession
-            .builder
-            .config("spark.sql.streaming.schemaInference", True)
-            .getOrCreate())
+    return SparkSession.builder.config(
+        "spark.sql.streaming.schemaInference", True
+    ).getOrCreate()
 
 
 @pytest.fixture(scope="session")

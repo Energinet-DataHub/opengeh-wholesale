@@ -24,12 +24,14 @@ from pyspark.sql import SparkSession
 # Create Spark Conf/Session.
 @pytest.fixture(scope="session")
 def spark():
-    spark_conf = SparkConf(loadDefaults=True) \
-        .set("spark.sql.session.timeZone", "UTC") \
-        .set("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-        .set("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+    spark_conf = (
+        SparkConf(loadDefaults=True)
+        .set("spark.sql.session.timeZone", "UTC")
+        .set("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+        .set(
+            "spark.sql.catalog.spark_catalog",
+            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+        )
+    )
 
-    return SparkSession \
-        .builder \
-        .config(conf=spark_conf) \
-        .getOrCreate()
+    return SparkSession.builder.config(conf=spark_conf).getOrCreate()
