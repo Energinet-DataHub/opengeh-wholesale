@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class Resolution():
+class Resolution:
     quarter = "1"
     hour = "2"
     day = "3"

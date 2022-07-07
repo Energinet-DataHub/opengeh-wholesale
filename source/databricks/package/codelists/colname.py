@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class Colname():
+class Colname:
     added_grid_loss = "added_grid_loss"
     added_system_correction = "added_system_correction"
     aggregated_quality = "aggregated_quality"

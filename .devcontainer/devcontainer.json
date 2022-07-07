@@ -2,12 +2,11 @@
 	"name": "Spark Dev",
 	"build": {
 		"dockerfile": "Dockerfile",
-		"args": {
-		}
+		"args": {}
 	},
-    "extensions": [
-        "ms-dotnettools.dotnet-interactive-vscode",
-        "ms-python.python",
+	"extensions": [
+		"ms-dotnettools.dotnet-interactive-vscode",
+		"ms-python.python",
 		"littlefoxteam.vscode-python-test-adapter",
 		"hbenl.vscode-test-explorer",
 		"eamodio.gitlens",
@@ -16,26 +15,27 @@
 		"christian-kohler.path-intellisense",
 		"Gruntfuggly.todo-tree",
 		"DavidAnson.vscode-markdownlint",
-        "kevinglasson.cornflakes-linter",
-        "KevinRose.vsc-python-indent"
-    ],
-
+		"kevinglasson.cornflakes-linter",
+		"KevinRose.vsc-python-indent"
+	],
 	// Set *default* container specific settings.json values on container create.
-	"settings": { 
+	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash",
-        "python.linting.flake8Enabled": true
+		"python.linting.flake8Enabled": true,
+		"editor.formatOnSave": true,
+		"python.formatting.provider": "black",
+		"python.defaultInterpreterPath": "/opt/conda/bin/python",
+		"python.languageServer": "Jedi"
 	},
-
 	"containerEnv": {
 		"GRANT_SUDO": "yes"
 	},
-
-    "forwardPorts": [5567],
-	
-    "appPort": [ "5567:5050" ],
-
+	"forwardPorts": [
+		5567
+	],
+	"appPort": [
+		"5567:5050"
+	],
 	"overrideCommand": false,
-
 	"containerUser": "root"
-
 }
