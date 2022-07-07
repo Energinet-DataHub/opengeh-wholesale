@@ -24,4 +24,5 @@ readme
 RSM
 SonarCloud
 TSO
+Whitespace
 WSL
