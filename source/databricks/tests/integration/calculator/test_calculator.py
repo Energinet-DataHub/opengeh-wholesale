@@ -29,7 +29,9 @@ def test_calculator(databricks_path):
             "--time-series-points-path",
             "foo",
             "--process-results-path",
-            "foo",
+            "__balance_fixing.json",
+            "--batch-id",
+            "123",
         ]
     )
 
