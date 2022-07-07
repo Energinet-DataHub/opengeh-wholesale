@@ -26,5 +26,5 @@ setup(name='package',
           'azure-storage-blob==12.7.1'
       ],
       entry_points={
-            'console_scripts': ['integration_event_persister = package.integration_events_persister_streaming:start']
+            'console_scripts': ['start_stream = package.integration_events_persister_streaming:start']
       })
