@@ -44,6 +44,7 @@ public class Startup
         });
 
         services.AddCommandStack(Configuration);
+        services.AddApplicationInsightsTelemetry();
 
         ConfigureHealthChecks(services);
     }
