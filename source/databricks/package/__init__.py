@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .data_loader import initialize_spark
+from .spark_initializor import initialize_spark
 from .integration_events_persister import integration_events_persister

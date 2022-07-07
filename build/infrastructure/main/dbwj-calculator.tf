@@ -31,17 +31,12 @@ resource "databricks_job" "calculator_job" {
     }
 
     library {
-      pypi {
-        package = "azure-storage-blob==12.7.1"
-      }
-    }
-
-    library {
       whl = "dbfs:/package/package-1.0-py3-none-any.whl"
     } 
 
     spark_python_task {
-      python_file = "dbfs:/wholesale/calculator.py"
+      package_name = "package"
+      entry_point = "start_calculator"
       parameters  = [
           "--data-storage-account-name=${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}",
           "--data-storage-account-key=${data.azurerm_key_vault_secret.kvs_st_data_lake_primary_access_key.value}",

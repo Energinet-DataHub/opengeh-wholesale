@@ -16,24 +16,21 @@ from pyspark import SparkConf
 from pyspark.sql.session import SparkSession
 
 
-def initialize_spark(args):
-    args_dict = vars(args)
+def initialize_spark(data_storage_account_name, data_storage_account_key, shared_storage_account_name=None, shared_storage_account_key=None):
     # Set spark config with storage account names/keys and the session timezone so that datetimes are displayed consistently (in UTC)
     spark_conf = (
         SparkConf(loadDefaults=True)
         .set(
-            f"fs.azure.account.key.{args.data_storage_account_name}.dfs.core.windows.net",
-            args.data_storage_account_key,
+            f"fs.azure.account.key.{data_storage_account_name}.dfs.core.windows.net",
+            data_storage_account_key,
         )
         .set("spark.sql.session.timeZone", "UTC")
         .set("spark.databricks.io.cache.enabled", "True")
-        .set("spark.databricks.delta.formatCheck.enabled", "False")
-        .set("spark.databricks.delta.schema.autoMerge.enabled", "True")
     )
-    if args_dict.get("shared_storage_account_name") is not None:
+    if shared_storage_account_name is not None:
         spark_conf.set(
-            f"fs.azure.account.key.{args.shared_storage_account_name}.dfs.core.windows.net",
-            args.shared_storage_account_key,
+            f"fs.azure.account.key.{shared_storage_account_name}.dfs.core.windows.net",
+            shared_storage_account_key,
         )
 
     return SparkSession.builder.config(conf=spark_conf).getOrCreate()

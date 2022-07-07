@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 setup(
     name="package",
     version=1.0,
-    description="Tools for wholesale streaming",
+    description="Tools for wholesale",
     long_description="",
     long_description_content_type="text/markdown",
     license="MIT",
@@ -25,10 +25,12 @@ setup(
         "ConfigArgParse==1.5.3",
         "pyspark==3.3.0",
         "azure-storage-blob==12.7.1",
+        "click==8.1.3"
     ],
     entry_points={
         "console_scripts": [
-            "start_stream = package.integration_events_persister_streaming:start"
+            "start_stream = package.integration_events_persister_streaming:start",
+            "start_calculator = package.calculator:start"
         ]
     },
 )
