@@ -1,2 +1,2 @@
 ﻿ALTER TABLE Batch
-    ALTER COLUMN RunId INT;
+    ADD RunId BIGINT NULL;
