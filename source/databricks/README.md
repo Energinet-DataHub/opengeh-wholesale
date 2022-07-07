@@ -1,5 +1,7 @@
 # Databricks
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 ## Table of content
 
 * [Getting started with Databricks development in Time Series](#getting-started-with-databrick-development-in-time-series)
@@ -8,8 +10,6 @@
 * [Styling and Formatting](#styling-and-formatting)
 
 ## Getting started with Databricks development in Wholesale
-
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ### Install necessary tools needed for development
 
