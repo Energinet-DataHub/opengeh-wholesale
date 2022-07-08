@@ -75,6 +75,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
+
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, "https://nowhere.azuredatabricks.net");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, "fake_token");
         }
 
         /// <inheritdoc/>

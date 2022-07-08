@@ -115,7 +115,7 @@ public class Program
                 client.CreateSender(processCompletedTopicName));
         });
 
-        serviceCollection.AddSingleton<DatabricksClient>(_ => DatabricksClient
+        serviceCollection.AddSingleton(_ => DatabricksClient
             .CreateClient(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl),
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken)));
