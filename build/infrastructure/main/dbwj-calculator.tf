@@ -34,7 +34,7 @@ resource "databricks_job" "calculator_job" {
       whl = "dbfs:/package/package-1.0-py3-none-any.whl"
     } 
 
-    spark_python_task {
+    python_wheel_task {
       package_name = "package"
       entry_point = "start_calculator"
       parameters  = [
