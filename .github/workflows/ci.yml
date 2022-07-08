@@ -40,7 +40,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@7.6.0
     with:
       PATH_STATIC_CHECKS: './source/databricks'
-      IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,W503,E122,E123,E126,F811,E203'
+      IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203'
       TEST_REPORT_PATH: ./source/databricks/htmlcov/
 
   wheel_ci:
