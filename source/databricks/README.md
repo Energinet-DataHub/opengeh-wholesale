@@ -99,4 +99,6 @@ The following Flake8 codes are ignored:
 * Whitespace before ':' ([E203](https://www.flake8rules.com/rules/E203.html)) (*Needed for black you work well with Flake8, see documentation [here](https://github.com/psf/black/blob/main/docs/guides/using_black_with_other_tools.md#flake8)*)
 * Line too long (82 &gt; 79 characters) ([E501](https://www.flake8rules.com/rules/E501.html)) (*Only ignored in CI step*)
 
+Links to files containing  Flake8 ignore [tox.ini](../../tox.ini) and [ci.yml](../../.github/workflows/ci.yml)
+
 We are using standard [Black code style](https://github.com/psf/black/blob/main/docs/the_black_code_style/current_style.md#the-black-code-style).
