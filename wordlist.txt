@@ -1,4 +1,5 @@
 callee
+ci
 CIM
 codecov
 Databricks
@@ -11,6 +12,7 @@ Energinet
 eSett
 FAS
 greenenergyhub
+ini
 json
 Lakehouse
 MessageHub
@@ -23,5 +25,8 @@ pytest
 readme
 RSM
 SonarCloud
+tox
 TSO
+Whitespace
 WSL
+yml
