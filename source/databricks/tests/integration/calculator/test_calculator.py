@@ -12,10 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import shutil
 import subprocess
 
 
-def test_calculator(databricks_path):
+def test_calculator_returns_exit_code_0(databricks_path, file_path_finder):
+    # Arrange
+    result_path = (
+        f"{file_path_finder(__file__)}/.test_calculator_returns_exit_code_0.json"
+    )
+
+    # Remove test folders in order to avoid side effects from previous/other test runs
+    shutil.rmtree(result_path, ignore_errors=True)
+
+    # Act
     exit_code = subprocess.call(
         [
             "python",
@@ -29,7 +40,7 @@ def test_calculator(databricks_path):
             "--time-series-points-path",
             "foo",
             "--process-results-path",
-            "__balance_fixing.json",
+            result_path,
             "--batch-id",
             "123",
         ]

@@ -41,6 +41,7 @@ def start(
     df_805 = df_seq.withColumn("grid_area", lit("805"))
     df_806 = df_seq.withColumn("grid_area", lit("806"))
     df = df_805.union(df_806)
+    df = df.withColumn("quantity", lit(None)).withColumn("quality", lit(None))
     df.show(1000)
     df.coalesce(1).write.partitionBy("grid_area").json(
         f"{process_results_path}/batch_id={batch_id}"
