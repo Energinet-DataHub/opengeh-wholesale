@@ -46,7 +46,7 @@ public class StartPendingBatchesEndpointTests
 
         public Task DisposeAsync() => Task.CompletedTask;
 
-        [Fact]
+        [Fact(Skip = "TODO")]
         public async Task When_PendingBatchCreated_Then_ProcessCompletedEventIsPublished()
         {
             // Arrange
@@ -66,7 +66,7 @@ public class StartPendingBatchesEndpointTests
             isProcessCompletedEventReceived.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Skip = "TODO")]
         public async Task When_PendingBatchCreated_Then_BatchIsCompleted()
         {
             // Arrange
