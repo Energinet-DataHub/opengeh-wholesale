@@ -26,7 +26,7 @@ def run(
     data_storage_account_key,
     integration_events_path,
     time_series_points_path,
-    process_results_path
+    process_results_path,
 ):
     pass
 
