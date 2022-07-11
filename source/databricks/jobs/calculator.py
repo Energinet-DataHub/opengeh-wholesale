@@ -32,4 +32,8 @@ def run(
 
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except SystemExit as e:
+        if e.code != 0:
+            raise
