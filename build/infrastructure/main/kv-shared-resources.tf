@@ -61,3 +61,13 @@ data "azurerm_key_vault_secret" "kvs_st_data_lake_primary_access_key" {
   name         = "st-data-lake-primary-access-key"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "dbw_shared_workspace_token" {
+  name         = "dbw-shared-workspace-token"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "dbw_shared_workspace_url" {
+  name         = "dbw-shared-workspace-url"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
