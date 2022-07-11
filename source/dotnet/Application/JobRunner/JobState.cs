@@ -13,9 +13,11 @@
 // limitations under the License.
 
 namespace Energinet.DataHub.Wholesale.Application.JobRunner;
+
 public enum JobState
 {
     Running,
     Completed,
+    Cancelled,
     Failed,
 }

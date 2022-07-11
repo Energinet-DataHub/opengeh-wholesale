@@ -62,17 +62,32 @@ public class BatchApplicationService : IBatchApplicationService
     public async Task UpdateExecutionStateAsync()
     {
         var batches = await _batchRepository.GetExecutingAsync().ConfigureAwait(false);
-        if (!batches.Any()) return;
+        if (!batches.Any())
+            return;
 
         var completedBatches = new List<Batch>();
+
         foreach (var batch in batches)
         {
             // The batch will have received a RunId when the batch have started.
-            var state = await _jobRunner.GetJobStateAsync(batch.RunId!).ConfigureAwait(false);
+            var runId = batch.RunId!;
+
+            var state = await _jobRunner
+                .GetJobStateAsync(runId)
+                .ConfigureAwait(false);
+
             if (state == JobState.Completed)
             {
                 batch.Complete();
                 completedBatches.Add(batch);
+            }
+            else if (state == JobState.Cancelled)
+            {
+                // TODO: ?
+            }
+            else if (state == JobState.Failed)
+            {
+                // TODO: ?
             }
         }
 

@@ -115,10 +115,17 @@ public class Program
                 client.CreateSender(processCompletedTopicName));
         });
 
-        serviceCollection.AddSingleton(_ => DatabricksClient
-            .CreateClient(
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl),
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken)));
+        serviceCollection.AddScoped<DatabricksJobSelector>();
+
+        serviceCollection.AddSingleton(_ =>
+        {
+            const string targetProtocol = "https://";
+
+            var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
+            var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
+
+            return DatabricksClient.CreateClient(targetProtocol + dbwUrl, dbwToken);
+        });
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)
