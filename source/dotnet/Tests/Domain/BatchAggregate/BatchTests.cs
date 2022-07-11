@@ -22,6 +22,8 @@ namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 
 public class BatchTests
 {
+    private static readonly JobRunId _fakeJobRunId = new JobRunId(1);
+
     [Fact]
     public void Ctor_CreatesImmutableGridAreaCodes()
     {
@@ -71,21 +73,21 @@ public class BatchTests
     public void SetExecuting_WhenExecuting_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
-        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting(1));
+        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting(_fakeJobRunId));
     }
 
     [Fact]
     public void SetExecuting_WhenComplete_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
-        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting(1));
+        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting(_fakeJobRunId));
     }
 
     [Fact]
     public void SetExecuting_WhenPending_ExecutesBatch()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
-        sut.SetExecuting(1);
+        sut.SetExecuting(_fakeJobRunId);
         sut.ExecutionState.Should().Be(BatchExecutionState.Executing);
     }
 }

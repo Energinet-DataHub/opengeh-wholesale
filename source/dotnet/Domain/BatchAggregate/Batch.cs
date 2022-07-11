@@ -50,7 +50,7 @@ public class Batch
 
     public BatchExecutionState ExecutionState { get; private set; }
 
-    public long RunId { get; private set; }
+    public JobRunId? RunId { get; private set; }
 
     public void Complete()
     {
@@ -60,14 +60,14 @@ public class Batch
         ExecutionState = BatchExecutionState.Completed;
     }
 
-    public void SetExecuting(long runId)
+    public void SetExecuting(JobRunId jobRunId)
     {
-        ArgumentNullException.ThrowIfNull(runId);
+        ArgumentNullException.ThrowIfNull(jobRunId);
 
         if (ExecutionState != BatchExecutionState.Pending)
             throw new InvalidOperationException("Batch cannot be completed because it is not in state pending.");
 
         ExecutionState = BatchExecutionState.Executing;
-        RunId = runId;
+        RunId = jobRunId;
     }
 }

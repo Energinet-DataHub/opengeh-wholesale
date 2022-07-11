@@ -53,8 +53,8 @@ public class BatchApplicationService : IBatchApplicationService
 
         foreach (var batch in batches)
         {
-            var runId = await _jobRunner.SubmitJobAsync(batch).ConfigureAwait(false);
-            batch.SetExecuting(runId.Id);
+            var jobRunId = await _jobRunner.SubmitJobAsync(batch).ConfigureAwait(false);
+            batch.SetExecuting(jobRunId);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
@@ -67,7 +67,8 @@ public class BatchApplicationService : IBatchApplicationService
         var completedBatches = new List<Batch>();
         foreach (var batch in batches)
         {
-            var state = await _jobRunner.GetJobStateAsync(new JobRunId(batch.RunId)).ConfigureAwait(false);
+            // The batch will have received a RunId when the batch have started.
+            var state = await _jobRunner.GetJobStateAsync(batch.RunId!).ConfigureAwait(false);
             if (state == JobState.Completed)
             {
                 batch.Complete();

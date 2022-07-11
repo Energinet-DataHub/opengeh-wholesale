@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.JobRunner;
+namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public sealed record JobRunId(long Id);
