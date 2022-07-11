@@ -34,6 +34,10 @@ def run(
 if __name__ == "__main__":
     try:
         run()
+
+    # TODO: Try to remove when using wheel directly.
+    # Clicks uses sys.exit(0) when job completes, which is intepreted as an error.
+    # https://github.com/ipython/ipython/issues/12831#issuecomment-1064866151
     except SystemExit as e:
         if e.code != 0:
             raise
