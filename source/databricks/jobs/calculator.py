@@ -21,12 +21,14 @@ import click
 @click.option("--integration-events-path", type=str, required=True)
 @click.option("--time-series-points-path", type=str, required=True)
 @click.option("--process-results-path", type=str, required=True)
+@click.option("--batch-id", type=str, required=True)
 def run(
     data_storage_account_name,
     data_storage_account_key,
     integration_events_path,
     time_series_points_path,
     process_results_path,
+    batch_id,
 ):
     pass
 
