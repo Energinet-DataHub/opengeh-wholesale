@@ -25,7 +25,12 @@
 		"editor.formatOnSave": true,
 		"python.formatting.provider": "black",
 		"python.defaultInterpreterPath": "/opt/conda/bin/python",
-		"python.languageServer": "Jedi"
+		"python.languageServer": "Jedi",
+		"markdownlint.config": {
+			"MD007": {
+				"indent": 4
+			}
+		}
 	},
 	"containerEnv": {
 		"GRANT_SUDO": "yes"

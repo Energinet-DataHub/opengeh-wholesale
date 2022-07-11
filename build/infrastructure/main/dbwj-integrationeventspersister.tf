@@ -19,6 +19,7 @@ resource "databricks_job" "integration_events_persister_streaming_job" {
   always_running = true
 
   task {
+    # The job must be recreated with each deployment and this is achieved using a unique resource id.
     task_key = "unique_job_${uuid()}"
 
     new_cluster {
