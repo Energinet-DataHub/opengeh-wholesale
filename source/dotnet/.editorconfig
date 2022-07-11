@@ -273,7 +273,6 @@ dotnet_diagnostic.CA1303.severity = suggestion
 dotnet_diagnostic.CA1715.severity = error
 dotnet_diagnostic.CA1001.severity = warning
 dotnet_diagnostic.CA1009.severity = warning
-dotnet_diagnostic.CA1014.severity = none
 dotnet_diagnostic.CA1016.severity = warning
 dotnet_diagnostic.CA1033.severity = warning
 dotnet_diagnostic.CA1049.severity = warning
@@ -291,10 +290,10 @@ dotnet_diagnostic.CA1410.severity = warning
 dotnet_diagnostic.CA1415.severity = warning
 dotnet_diagnostic.CA1812.severity = suggestion
 dotnet_diagnostic.CA1821.severity = warning
-dotnet_diagnostic.CA1848.severity = suggestion
 dotnet_diagnostic.CA1900.severity = warning
 dotnet_diagnostic.CA1901.severity = warning
 dotnet_diagnostic.CA2002.severity = warning
+dotnet_diagnostic.CA2007.severity = error
 dotnet_diagnostic.CA2100.severity = warning
 dotnet_diagnostic.CA2101.severity = warning
 dotnet_diagnostic.CA2108.severity = warning
@@ -336,7 +335,6 @@ dotnet_diagnostic.CA2238.severity = warning
 dotnet_diagnostic.CA2240.severity = warning
 dotnet_diagnostic.CA2241.severity = warning
 dotnet_diagnostic.CA2242.severity = warning
-dotnet_diagnostic.CA2254.severity = suggestion
 dotnet_diagnostic.CS1591.severity = none
 
 ###############################
@@ -409,10 +407,10 @@ dotnet_diagnostic.SA1132.severity = error
 dotnet_diagnostic.SA1133.severity = error
 dotnet_diagnostic.SA1134.severity = error
 dotnet_diagnostic.SA1200.severity = none
-dotnet_diagnostic.SA1201.severity = error
+dotnet_diagnostic.SA1201.severity = none
 dotnet_diagnostic.SA1202.severity = error
 dotnet_diagnostic.SA1203.severity = error
-dotnet_diagnostic.SA1204.severity = error
+dotnet_diagnostic.SA1204.severity = none
 dotnet_diagnostic.SA1205.severity = error
 dotnet_diagnostic.SA1206.severity = error
 dotnet_diagnostic.SA1207.severity = error
@@ -472,7 +470,7 @@ dotnet_diagnostic.SA1517.severity = error
 dotnet_diagnostic.SA1518.severity = error
 dotnet_diagnostic.SA1519.severity = error
 dotnet_diagnostic.SA1520.severity = error
-dotnet_diagnostic.SA1600.severity = error
+dotnet_diagnostic.SA1600.severity = suggestion
 dotnet_diagnostic.SA1601.severity = error
 dotnet_diagnostic.SA1602.severity = error
 dotnet_diagnostic.SA1604.severity = error
@@ -520,16 +518,8 @@ dotnet_diagnostic.SX1309.severity = error
 # C# Test Conventions                                        #
 ##############################################################
 
-[*{.test,Tests}.cs]
+[**Tests**.cs]
 
 dotnet_diagnostic.VSTHRD200.severity = none
 dotnet_diagnostic.CA1707.severity = none
-
-###############################
-# Code Style rules (IDE)      #
-###############################
-
-# See rules here: https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/
-
-# IDE0079: Remove unnecessary suppression
-dotnet_diagnostic.IDE0079.severity = warning
+dotnet_diagnostic.CA2007.severity = none
