@@ -140,15 +140,15 @@ dotnet_code_quality_unused_parameters = all:suggestion
 # See https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-naming-conventions?view=vs-2019
 
 # Style Definitions
-dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+dotnet_naming_style.pascal_case_style.capitalization             = pascal_case
 
 # Use PascalCase for constant fields
 dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = error
-dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols = constant_fields
-dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case_style
-dotnet_naming_symbols.constant_fields.applicable_kinds = field
-dotnet_naming_symbols.constant_fields.applicable_accessibilities = *
-dotnet_naming_symbols.constant_fields.required_modifiers = const
+dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields
+dotnet_naming_rule.constant_fields_should_be_pascal_case.style    = pascal_case_style
+dotnet_naming_symbols.constant_fields.applicable_kinds            = field
+dotnet_naming_symbols.constant_fields.applicable_accessibilities  = *
+dotnet_naming_symbols.constant_fields.required_modifiers          = const
 
 # Instance fields are camelCase and start with _
 dotnet_naming_rule.instance_fields_should_be_camel_case.severity = suggestion
@@ -201,8 +201,7 @@ csharp_style_unused_value_assignment_preference = discard_variable:suggestion
 
 # Index and range preferences
 csharp_style_prefer_index_operator = true:suggestion
-csharp_style_prefer_range_operator = true::
-silent
+csharp_style_prefer_range_operator = true::silent
 
 # Misc. preferences
 csharp_style_deconstructed_variable_declaration = true:suggestion
@@ -213,7 +212,7 @@ csharp_prefer_simple_using_statement = false:error
 csharp_style_prefer_switch_expression = true:suggestion
 
 # Modifier preferences
-csharp_preferred_modifier_order = public, private, protected, internal, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, volatile, async:suggestion
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion
 
 ###############################
 # C# Formatting Rules         #
@@ -274,6 +273,7 @@ dotnet_diagnostic.CA1303.severity = suggestion
 dotnet_diagnostic.CA1715.severity = error
 dotnet_diagnostic.CA1001.severity = warning
 dotnet_diagnostic.CA1009.severity = warning
+dotnet_diagnostic.CA1014.severity = none
 dotnet_diagnostic.CA1016.severity = warning
 dotnet_diagnostic.CA1033.severity = warning
 dotnet_diagnostic.CA1049.severity = warning
@@ -291,10 +291,10 @@ dotnet_diagnostic.CA1410.severity = warning
 dotnet_diagnostic.CA1415.severity = warning
 dotnet_diagnostic.CA1812.severity = suggestion
 dotnet_diagnostic.CA1821.severity = warning
+dotnet_diagnostic.CA1848.severity = suggestion
 dotnet_diagnostic.CA1900.severity = warning
 dotnet_diagnostic.CA1901.severity = warning
 dotnet_diagnostic.CA2002.severity = warning
-dotnet_diagnostic.CA2007.severity = error
 dotnet_diagnostic.CA2100.severity = warning
 dotnet_diagnostic.CA2101.severity = warning
 dotnet_diagnostic.CA2108.severity = warning
@@ -336,6 +336,7 @@ dotnet_diagnostic.CA2238.severity = warning
 dotnet_diagnostic.CA2240.severity = warning
 dotnet_diagnostic.CA2241.severity = warning
 dotnet_diagnostic.CA2242.severity = warning
+dotnet_diagnostic.CA2254.severity = suggestion
 dotnet_diagnostic.CS1591.severity = none
 
 ###############################
@@ -408,10 +409,10 @@ dotnet_diagnostic.SA1132.severity = error
 dotnet_diagnostic.SA1133.severity = error
 dotnet_diagnostic.SA1134.severity = error
 dotnet_diagnostic.SA1200.severity = none
-dotnet_diagnostic.SA1201.severity = none
+dotnet_diagnostic.SA1201.severity = error
 dotnet_diagnostic.SA1202.severity = error
 dotnet_diagnostic.SA1203.severity = error
-dotnet_diagnostic.SA1204.severity = none
+dotnet_diagnostic.SA1204.severity = error
 dotnet_diagnostic.SA1205.severity = error
 dotnet_diagnostic.SA1206.severity = error
 dotnet_diagnostic.SA1207.severity = error
@@ -471,7 +472,7 @@ dotnet_diagnostic.SA1517.severity = error
 dotnet_diagnostic.SA1518.severity = error
 dotnet_diagnostic.SA1519.severity = error
 dotnet_diagnostic.SA1520.severity = error
-dotnet_diagnostic.SA1600.severity = suggestion
+dotnet_diagnostic.SA1600.severity = error
 dotnet_diagnostic.SA1601.severity = error
 dotnet_diagnostic.SA1602.severity = error
 dotnet_diagnostic.SA1604.severity = error
@@ -519,8 +520,16 @@ dotnet_diagnostic.SX1309.severity = error
 # C# Test Conventions                                        #
 ##############################################################
 
-[**Tests**.cs]
+[*{.test,Tests}.cs]
 
 dotnet_diagnostic.VSTHRD200.severity = none
 dotnet_diagnostic.CA1707.severity = none
-dotnet_diagnostic.CA2007.severity = none
+
+###############################
+# Code Style rules (IDE)      #
+###############################
+
+# See rules here: https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/
+
+# IDE0079: Remove unnecessary suppression
+dotnet_diagnostic.IDE0079.severity = warning

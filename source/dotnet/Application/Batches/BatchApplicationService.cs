@@ -81,14 +81,6 @@ public class BatchApplicationService : IBatchApplicationService
                 batch.Complete();
                 completedBatches.Add(batch);
             }
-            else if (state == JobState.Cancelled)
-            {
-                // TODO: ?
-            }
-            else if (state == JobState.Failed)
-            {
-                // TODO: ?
-            }
         }
 
         var completedProcesses = CreateProcessCompletedEvents(completedBatches);
