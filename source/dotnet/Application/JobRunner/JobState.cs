@@ -12,21 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Application.JobRunner;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
-
-public interface IBatchApplicationService
+public enum JobState
 {
-    /// <summary>
-    /// Create a new batch with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task CreateAsync(BatchRequestDto batchRequestDto);
-
-    /// <summary>
-    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task StartPendingAsync();
-
-    Task UpdateExecutionStateAsync();
+    Running,
+    Completed,
+    Canceled,
+    Failed,
 }

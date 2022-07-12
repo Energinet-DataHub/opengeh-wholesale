@@ -12,21 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
-public interface IBatchApplicationService
+public sealed class DatabricksJobSelector
 {
-    /// <summary>
-    /// Create a new batch with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task CreateAsync(BatchRequestDto batchRequestDto);
+    private readonly DatabricksClient _client;
 
-    /// <summary>
-    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task StartPendingAsync();
+    public DatabricksJobSelector(DatabricksClient client)
+    {
+        _client = client;
+    }
 
-    Task UpdateExecutionStateAsync();
+    public async Task<Job> SelectCalculatorJobAsync()
+    {
+        var knownJobs = await _client.Jobs.List().ConfigureAwait(false);
+        return knownJobs.Single(j => j.Settings.Name == "CalculatorJob");
+    }
 }

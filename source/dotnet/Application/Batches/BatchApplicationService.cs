@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -25,15 +26,18 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
+    private readonly IJobRunner _jobRunner;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
-        IProcessCompletedPublisher processCompletedPublisher)
+        IProcessCompletedPublisher processCompletedPublisher,
+        IJobRunner jobRunner)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _processCompletedPublisher = processCompletedPublisher;
+        _jobRunner = jobRunner;
     }
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
@@ -47,10 +51,39 @@ public class BatchApplicationService : IBatchApplicationService
     {
         var batches = await _batchRepository.GetPendingAsync().ConfigureAwait(false);
 
-        // For now we simulate that batches completes immediately after being started
-        batches.ForEach(b => b.SetExecuting());
-        batches.ForEach(b => b.Complete());
-        var completedProcesses = CreateProcessCompletedEvents(batches);
+        foreach (var batch in batches)
+        {
+            var jobRunId = await _jobRunner.SubmitJobAsync(batch).ConfigureAwait(false);
+            batch.SetExecuting(jobRunId);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        }
+    }
+
+    public async Task UpdateExecutionStateAsync()
+    {
+        var batches = await _batchRepository.GetExecutingAsync().ConfigureAwait(false);
+        if (!batches.Any())
+            return;
+
+        var completedBatches = new List<Batch>();
+
+        foreach (var batch in batches)
+        {
+            // The batch will have received a RunId when the batch have started.
+            var runId = batch.RunId!;
+
+            var state = await _jobRunner
+                .GetJobStateAsync(runId)
+                .ConfigureAwait(false);
+
+            if (state == JobState.Completed)
+            {
+                batch.Complete();
+                completedBatches.Add(batch);
+            }
+        }
+
+        var completedProcesses = CreateProcessCompletedEvents(completedBatches);
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
 
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
