@@ -18,17 +18,17 @@ resource "databricks_job" "calculator_job" {
   max_concurrent_runs = 100
   always_running = false
 
+  new_cluster {
+    spark_version           = data.databricks_spark_version.latest_lts.id
+    node_type_id            = "Standard_DS3_v2"
+    autoscale {
+      min_workers = 1
+      max_workers = 4
+    }
+  }
+
   task {
     task_key = "unique_job_${uuid()}"
-
-    new_cluster {
-      spark_version           = data.databricks_spark_version.latest_lts.id
-      node_type_id            = "Standard_DS3_v2"
-      autoscale {
-        min_workers = 1
-        max_workers = 4
-      }
-    }
 
     library {
       pypi {
