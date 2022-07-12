@@ -12,27 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace DatabricksClientManager
 {
     public sealed class DatabricksClientManager : IAsyncDisposable
     {
+        private readonly DatabricksHttpListener _client;
+
         public DatabricksClientManager()
         {
+            _client = new DatabricksHttpListener(DatabricksUrl);
         }
 
         public string DatabricksUrl { get; set; } = "http://localhost:8000/";
 
         public string DatabricksToken { get; } = "no_token";
 
+        public void InitializeClient()
+        {
+#pragma warning disable VSTHRD110, CS4014
+            _client.BeginListenAsync();
+#pragma warning restore VSTHRD110, CS4014
+        }
+
         public ValueTask DisposeAsync()
         {
-            throw new NotImplementedException();
+            _client.Dispose();
+            return ValueTask.CompletedTask;
         }
     }
 }
