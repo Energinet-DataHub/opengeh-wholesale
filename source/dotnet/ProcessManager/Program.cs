@@ -36,6 +36,7 @@ using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
@@ -119,7 +120,7 @@ public class Program
 
         serviceCollection.AddSingleton(_ =>
         {
-            var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl); //TODO ITS MISSING HTTPS://
+            var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
             var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
 
             return DatabricksClient.CreateClient(dbwUrl, dbwToken);
@@ -143,6 +144,9 @@ public class Program
             .AddAzureServiceBusTopic(
                 serviceBusConnectionString,
                 processCompletedTopicName,
-                name: "ProcessCompletedTopicExists");
+                name: "ProcessCompletedTopicExists")
+            .AddDatabricksCheck(
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl),
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken));
     }
 }
