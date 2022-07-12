@@ -59,7 +59,7 @@ public sealed class DatabricksJobRunner : IJobRunner
             RunResultState.SUCCESS => JobState.Completed,
             RunResultState.FAILED => JobState.Failed,
             RunResultState.TIMEDOUT => JobState.Failed,
-            RunResultState.CANCELED => JobState.Cancelled,
+            RunResultState.CANCELED => JobState.Canceled,
             null => JobState.Running,
             _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
         };

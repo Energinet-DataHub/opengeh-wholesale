@@ -18,6 +18,6 @@ public enum JobState
 {
     Running,
     Completed,
-    Cancelled,
+    Canceled,
     Failed,
 }

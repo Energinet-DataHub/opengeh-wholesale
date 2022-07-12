@@ -19,6 +19,11 @@ using Newtonsoft.Json;
 
 namespace DatabricksClientManager;
 
+/// <summary>
+/// There is currently no Databricks environment for integration testing.
+/// This class functions as a web server for Databricks REST API, mocking the calls.
+/// The API exposes a single CalculatorJob and allows for triggering runs using its job id.
+/// </summary>
 public sealed class DatabricksHttpListener : IDisposable
 {
     // https://github.com/Azure/azure-databricks-client/blob/master/csharp/Microsoft.Azure.Databricks.Client/JobsApiClient.cs
@@ -37,8 +42,7 @@ public sealed class DatabricksHttpListener : IDisposable
     {
         _listener.Start();
 
-        var requests = new HashSet<Task>();
-        requests.Add(_listener.GetContextAsync());
+        var requests = new HashSet<Task> { _listener.GetContextAsync() };
 
         while (!_cancellationTokenSource.Token.IsCancellationRequested)
         {
@@ -95,7 +99,8 @@ public sealed class DatabricksHttpListener : IDisposable
     {
         var id = long.Parse(context.Request.QueryString["run_id"] ?? string.Empty);
 
-        if (VerifyRunId(context, id)) return;
+        if (VerifyRunId(context, id))
+            return;
 
         var run = new Run { RunId = id, State = new RunState { ResultState = RunResultState.SUCCESS } };
 
@@ -137,7 +142,8 @@ public sealed class DatabricksHttpListener : IDisposable
 
     private void HandleJobRunNowRequest(HttpListenerContext context)
     {
-        if (VerifyJobRequest(context)) return;
+        if (VerifyJobRequest(context))
+            return;
 
         var runIdentifier = new RunIdentifier { RunId = Random.Shared.NextInt64() };
         _runs.Add(runIdentifier);
