@@ -105,12 +105,30 @@ public sealed class DatabricksHttpListener : IDisposable
         context.Response.Close(Encoding.UTF8.GetBytes(serialized), true);
     }
 
+    private static void HandleJoblistRequest(HttpListenerContext context)
+    {
+        var calculatorJob = new Job
+        {
+            JobId = JobId,
+            Settings =
+                new JobSettings
+                {
+                    Name = "CalculatorJob",
+                    SparkPythonTask = new SparkPythonTask { Parameters = new List<string>() },
+                },
+        };
+
+        var serialized = JsonConvert.SerializeObject(new { jobs = new[] { calculatorJob } });
+
+        context.Response.StatusCode = 200;
+        context.Response.Close(Encoding.UTF8.GetBytes(serialized), true);
+    }
+
     private bool VerifyRunId(HttpListenerContext context, long id)
     {
         if (_runs.All(x => x.RunId != id))
         {
-            context.Response.StatusCode = 500;
-            context.Response.Close();
+            FakeServerErrorAndClose(context);
             return true;
         }
 
@@ -137,30 +155,16 @@ public sealed class DatabricksHttpListener : IDisposable
         var actualSettings = JsonConvert.DeserializeObject<RunNowSettings>(settings);
         if (actualSettings!.JobId != JobId)
         {
-            context.Response.StatusCode = 500;
-            context.Response.Close();
+            FakeServerErrorAndClose(context);
             return true;
         }
 
         return false;
     }
 
-    private static void HandleJoblistRequest(HttpListenerContext context)
+    private static void FakeServerErrorAndClose(HttpListenerContext context)
     {
-        var calculatorJob = new Job
-        {
-            JobId = JobId,
-            Settings =
-                new JobSettings
-                    {
-                        Name = "CalculatorJob",
-                        SparkPythonTask = new SparkPythonTask { Parameters = new List<string>() },
-                    },
-        };
-
-        var serialized = JsonConvert.SerializeObject(new { jobs = new[] { calculatorJob } });
-
-        context.Response.StatusCode = 200;
-        context.Response.Close(Encoding.UTF8.GetBytes(serialized), true);
+        context.Response.StatusCode = 500;
+        context.Response.Close();
     }
 }
