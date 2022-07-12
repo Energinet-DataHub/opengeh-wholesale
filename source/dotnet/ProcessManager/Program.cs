@@ -119,12 +119,10 @@ public class Program
 
         serviceCollection.AddSingleton(_ =>
         {
-            const string targetProtocol = "https://";
-
-            var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
+            var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl); //TODO ITS MISSING HTTPS://
             var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
 
-            return DatabricksClient.CreateClient(targetProtocol + dbwUrl, dbwToken);
+            return DatabricksClient.CreateClient(dbwUrl, dbwToken);
         });
     }
 

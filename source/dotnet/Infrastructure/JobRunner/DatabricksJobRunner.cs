@@ -68,7 +68,7 @@ public sealed class DatabricksJobRunner : IJobRunner
     private static RunParameters MergeRunParameters(Job job, Batch batch)
     {
         var sourceParams =
-            job.Settings.SparkPythonTask?.Parameters ?? // Python file
+            job.Settings.SparkPythonTask?.Parameters ?? // Python file remove this in PR #157
             job.Settings.SparkSubmitTask?.Parameters ?? // Wheel
             throw new InvalidOperationException($"Parameters for job {job.JobId} could not be found.");
 

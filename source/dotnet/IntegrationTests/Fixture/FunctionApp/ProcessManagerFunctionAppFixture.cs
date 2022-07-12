@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics;
+using DatabricksClientManager;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -42,7 +43,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             ServiceBusResourceProvider = new ServiceBusResourceProvider(
                 IntegrationTestConfiguration.ServiceBusConnectionString,
                 TestLogger);
+
+            DatabricksManager = new DatabricksManager();
         }
+
+        public DatabricksManager DatabricksManager { get; }
 
         public WholesaleDatabaseManager DatabaseManager { get; }
 
@@ -76,8 +81,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, "https://nowhere.azuredatabricks.net");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, "fake_token");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksManager.DatabricksUrl);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksManager.DatabricksToken);
         }
 
         /// <inheritdoc/>
@@ -86,6 +91,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             AzuriteManager.StartAzurite();
 
             await DatabaseManager.CreateDatabaseAsync();
+            DatabricksManager.BeginListen();
 
             var processCompletedSubscriptionName = "process-completed-sub";
             ProcessCompletedTopic = await ServiceBusResourceProvider

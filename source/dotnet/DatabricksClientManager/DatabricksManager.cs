@@ -14,11 +14,11 @@
 
 namespace DatabricksClientManager
 {
-    public sealed class DatabricksClientManager : IAsyncDisposable
+    public sealed class DatabricksManager : IAsyncDisposable
     {
         private readonly DatabricksHttpListener _client;
 
-        public DatabricksClientManager()
+        public DatabricksManager()
         {
             _client = new DatabricksHttpListener(DatabricksUrl);
         }
@@ -27,7 +27,7 @@ namespace DatabricksClientManager
 
         public string DatabricksToken { get; } = "no_token";
 
-        public void InitializeClient()
+        public void BeginListen()
         {
 #pragma warning disable VSTHRD110, CS4014
             _client.BeginListenAsync();
