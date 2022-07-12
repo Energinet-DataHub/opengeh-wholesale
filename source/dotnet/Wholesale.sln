@@ -38,6 +38,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionFolder", "_Solutio
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabricksClientManager", "DatabricksClientManager\DatabricksClientManager.csproj", "{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -92,6 +94,10 @@ Global
 		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +110,7 @@ Global
 		{295543A8-17B5-45AC-92AF-AB8CB2C73E27} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
 		{40710EC6-776E-4723-B188-421432DA90D9} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
 		{FF7C0086-D637-4265-A667-85275B4E05EF} = {B6F5E0F9-7534-48E8-B4C3-719C6CE14BA0}
+		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B} = {A65AE4F0-E4A5-4F6C-AB74-F8A278C31AD9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D2B1040C-316B-406A-B2AB-671DB0449FAB}

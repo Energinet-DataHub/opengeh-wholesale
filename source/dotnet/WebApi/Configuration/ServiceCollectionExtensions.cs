@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.App.Common.Security;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -63,5 +64,6 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
         services.AddScoped<IBatchRepository, BatchRepository>();
         services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
+        services.AddScoped<IJobRunner>(_ => null!); // Unused in the use cases of this app
     }
 }

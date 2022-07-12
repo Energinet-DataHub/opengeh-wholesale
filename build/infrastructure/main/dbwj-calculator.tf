@@ -37,6 +37,12 @@ resource "databricks_job" "calculator_job" {
     }
 
     library {
+      pypi {
+        package = "click==8.1.3"
+      }
+    }
+    
+    library {
       whl = "dbfs:/package/package-1.0-py3-none-any.whl"
     } 
 
