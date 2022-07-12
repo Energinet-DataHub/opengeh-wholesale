@@ -37,6 +37,8 @@ module "func_processmanager" {
     SERVICE_BUS_SEND_CONNECTION_STRING               = module.sb_wholesale.primary_connection_strings["send"]
     SERVICE_BUS_MANAGE_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["manage"]
     PROCESS_COMPLETED_TOPIC_NAME                     = module.sbt_completed_process.name
+    DATABRICKS_WORKSPACE_TOKEN                       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
+    DATABRICKS_WORKSPACE_URL                         = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
   }
 
   tags                                  = azurerm_resource_group.this.tags

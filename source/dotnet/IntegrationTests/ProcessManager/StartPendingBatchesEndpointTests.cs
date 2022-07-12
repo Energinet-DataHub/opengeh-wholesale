@@ -59,6 +59,13 @@ public class StartPendingBatchesEndpointTests
 
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
+            // Assert: Await timer triggered endpoints has executed before actually asserting
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartPendingBatches));
+
+            // clear log to ensure that initial run of UpdateBatchExecutionState does not count.
+            Fixture.HostManager.ClearHostLog();
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(UpdateBatchExecutionState));
+
             // Assert: The process completed events have been published
             var isProcessCompletedEventReceived = eventualProcessCompletedEvent
                 .MessageAwaiter!
@@ -76,8 +83,12 @@ public class StartPendingBatchesEndpointTests
 
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
-            // Assert: Await timer triggered endpoint has executed before actually asserting
+            // Assert: Await timer triggered endpoints has executed before actually asserting
             await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartPendingBatches));
+
+            // clear log to ensure that initial run of UpdateBatchExecutionState does not count.
+            Fixture.HostManager.ClearHostLog();
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(UpdateBatchExecutionState));
 
             // Assert: The pending batch is now complete
             await using var dbContext = Fixture.DatabaseManager.CreateDbContext();

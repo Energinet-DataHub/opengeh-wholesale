@@ -14,19 +14,11 @@
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Application.JobRunner;
 
-public interface IBatchApplicationService
+public interface IJobRunner
 {
-    /// <summary>
-    /// Create a new batch with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task CreateAsync(BatchRequestDto batchRequestDto);
+    Task<JobState> GetJobStateAsync(JobRunId jobRunId);
 
-    /// <summary>
-    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task StartPendingAsync();
-
-    Task UpdateExecutionStateAsync();
+    Task<JobRunId> SubmitJobAsync(Batch batch);
 }
