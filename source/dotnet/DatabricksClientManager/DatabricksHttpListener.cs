@@ -117,7 +117,7 @@ public sealed class DatabricksHttpListener : IDisposable
         {
             JobId = JobId,
             Settings =
-                new JobSettings21
+                new WheelJobSettings
                 {
                     Name = "CalculatorJob",
                     PythonWheelTask = new PythonWheelTask { Parameters = new List<string>() },

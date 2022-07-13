@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
 {
-    public class RunSettings21
+    public class WheelRunSettings
     {
         [JsonProperty(PropertyName = "spark_python_task")]
         public SparkPythonTask SparkPythonTask { get; set; }

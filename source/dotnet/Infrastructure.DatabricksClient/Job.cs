@@ -35,7 +35,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
         /// Settings for this job and all of its runs. These settings can be updated using the resetJob method.
         /// </summary>
         [JsonProperty(PropertyName = "settings")]
-        public JobSettings21 Settings { get; set; }
+        public WheelJobSettings Settings { get; set; }
 
         /// <summary>
         /// The time at which this job was created in epoch milliseconds (milliseconds since 1/1/1970 UTC).

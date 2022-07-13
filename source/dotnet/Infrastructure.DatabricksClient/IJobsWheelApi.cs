@@ -21,6 +21,6 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
         /// <summary>
         /// Lists all jobs.
         /// </summary>
-        Task<IEnumerable<WheelJob>> List21(CancellationToken cancellationToken = default);
+        Task<IEnumerable<WheelJob>> ListWheel(CancellationToken cancellationToken = default);
     }
 }

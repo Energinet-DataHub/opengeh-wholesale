@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
         {
         }
 
-        public async Task<IEnumerable<WheelJob>> List21(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WheelJob>> ListWheel(CancellationToken cancellationToken = default)
         {
             const string requestUri = "jobs/list";
             var jobList = await HttpGet<dynamic>(HttpClient, requestUri, cancellationToken).ConfigureAwait(false);

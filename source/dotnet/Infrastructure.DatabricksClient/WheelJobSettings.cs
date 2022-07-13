@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
     /// <summary>
     /// Settings for a job. These settings can be updated using the resetJob method.
     /// </summary>
-    public class JobSettings21 : RunSettings21
+    public class WheelJobSettings : WheelRunSettings
     {
         /// <summary>
         /// An optional name for the job. The default value is Untitled.
