@@ -22,6 +22,8 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
     /// The client is extended with a method for reading jobs created using Python Wheels, using Job API 2.1.
     /// Because the Job API 2.0 does not support reading python wheel settings.
     /// Which is used when we run new jobs and need to know the existing parameters of the job.
+    /// The code is based on https://github.com/Azure/azure-databricks-client and can be replaced by the official
+    /// package when support for Job API 2.1 is added.
     /// </summary>
     public sealed class DatabricksWheelClient : IDisposable
     {
