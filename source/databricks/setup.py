@@ -25,12 +25,11 @@ setup(
         "ConfigArgParse==1.5.3",
         "pyspark==3.3.0",
         "azure-storage-blob==12.7.1",
-        "click==8.1.3"
     ],
     entry_points={
         "console_scripts": [
             "start_stream = package.integration_events_persister_streaming:start",
-            "start_calculator = package.calculator:start_job"
+            "start_calculator = package.calculator_job:start",
         ]
     },
 )
