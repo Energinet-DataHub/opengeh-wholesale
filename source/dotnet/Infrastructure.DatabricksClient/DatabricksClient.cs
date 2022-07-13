@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
     /// </summary>
     public sealed class DatabricksWheelClient : IDisposable
     {
-        private const string Version = "2.1";
+        private const string Version = "2.0";
         private readonly HttpClient _httpClient;
 
         /// <summary>
