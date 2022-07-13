@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient;
 using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
@@ -21,11 +22,11 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 public sealed class DatabricksJobRunner : IJobRunner
 {
     private readonly DatabricksJobSelector _databricksJobSelector;
-    private readonly DatabricksClient _client;
+    private readonly DatabricksClient21 _client;
 
     public DatabricksJobRunner(
         DatabricksJobSelector databricksJobSelector,
-        DatabricksClient client)
+        DatabricksClient21 client)
     {
         _databricksJobSelector = databricksJobSelector;
         _client = client;
@@ -65,11 +66,11 @@ public sealed class DatabricksJobRunner : IJobRunner
         };
     }
 
-    private static RunParameters MergeRunParameters(Job job, Batch batch)
+    private static RunParameters MergeRunParameters(Job21 job, Batch batch)
     {
         var sourceParams =
             job.Settings.SparkPythonTask?.Parameters ?? // Python file remove this in PR #157
-            job.Settings.SparkSubmitTask?.Parameters ?? // Wheel
+            job.Settings.PythonWheelTask?.Parameters ?? // Wheel
             throw new InvalidOperationException($"Parameters for job {job.JobId} could not be found.");
 
         var invocationParam = $"--batch-id={batch.Id.Id}";

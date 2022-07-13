@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Azure.Databricks.Client;
+using Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
 public sealed class DatabricksJobSelector
 {
-    private readonly DatabricksClient _client;
+    private readonly DatabricksClient21 _client;
 
-    public DatabricksJobSelector(DatabricksClient client)
+    public DatabricksJobSelector(DatabricksClient21 client)
     {
         _client = client;
     }
 
-    public async Task<Job> SelectCalculatorJobAsync()
+    public async Task<Job21> SelectCalculatorJobAsync()
     {
-        var knownJobs = await _client.Jobs.List().ConfigureAwait(false);
+        var knownJobs = await _client.Jobs.List21().ConfigureAwait(false);
         return knownJobs.Single(j => j.Settings.Name == "CalculatorJob");
     }
 }
