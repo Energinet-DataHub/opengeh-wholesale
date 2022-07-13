@@ -17,17 +17,17 @@ using System.Net.Http.Headers;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
 {
+    /// <summary>
+    /// A databricks client based on the DatabricksClient, which is using Job API 2.0.
+    /// The client is extended with a method for reading jobs created using Python Wheels, using Job API 2.1.
+    /// </summary>
     public sealed class DatabricksClient21 : IDisposable
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DatabricksClient"/> class.
-        /// </summary>
-        /// <param name="baseUrl">The base URL of the databricks portal. ex. https://southcentralus.azuredatabricks.net</param>
-        /// <param name="token">The access token.</param>
-        /// <param name="timeoutSeconds">The timeout in seconds for the http requests.</param>
+        private const string Version = "2.1";
+
         private DatabricksClient21(string baseUrl, string token, long timeoutSeconds = 30)
         {
-            var apiUrl = new Uri(new Uri(baseUrl), "api/2.0/");
+            var apiUrl = new Uri(new Uri(baseUrl), $"api/{Version}/");
 
             var handler = new HttpClientHandler
             {
