@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionFolder", "_Solutio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabricksClientManager", "DatabricksClientManager\DatabricksClientManager.csproj", "{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.DatabricksClient", "Infrastructure.DatabricksClient\Infrastructure.DatabricksClient.csproj", "{902AE74C-5B0C-4DB2-80BB-F9A94367EB8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,6 +100,10 @@ Global
 		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{902AE74C-5B0C-4DB2-80BB-F9A94367EB8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{902AE74C-5B0C-4DB2-80BB-F9A94367EB8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{902AE74C-5B0C-4DB2-80BB-F9A94367EB8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{902AE74C-5B0C-4DB2-80BB-F9A94367EB8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

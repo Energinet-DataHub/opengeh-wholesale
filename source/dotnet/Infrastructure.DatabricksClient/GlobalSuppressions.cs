@@ -12,22 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
-
-public sealed class DatabricksJobSelector
-{
-    private readonly DatabricksWheelClient _wheelClient;
-
-    public DatabricksJobSelector(DatabricksWheelClient wheelClient)
-    {
-        _wheelClient = wheelClient;
-    }
-
-    public async Task<WheelJob> SelectCalculatorJobAsync()
-    {
-        var knownJobs = await _wheelClient.Jobs.ListWheel().ConfigureAwait(false);
-        return knownJobs.Single(j => j.Settings.Name == "CalculatorJob");
-    }
-}
+[assembly: SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "MS")]

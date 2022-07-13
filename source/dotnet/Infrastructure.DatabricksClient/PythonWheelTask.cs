@@ -12,22 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient;
+using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
-
-public sealed class DatabricksJobSelector
+namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
 {
-    private readonly DatabricksWheelClient _wheelClient;
-
-    public DatabricksJobSelector(DatabricksWheelClient wheelClient)
+    public class PythonWheelTask
     {
-        _wheelClient = wheelClient;
-    }
-
-    public async Task<WheelJob> SelectCalculatorJobAsync()
-    {
-        var knownJobs = await _wheelClient.Jobs.ListWheel().ConfigureAwait(false);
-        return knownJobs.Single(j => j.Settings.Name == "CalculatorJob");
+        /// <summary>
+        /// Command line parameters that will be passed to spark submit.
+        /// </summary>
+        [JsonProperty(PropertyName = "parameters")]
+        public List<string> Parameters { get; set; }
     }
 }
