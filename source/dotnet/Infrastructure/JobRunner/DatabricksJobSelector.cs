@@ -27,7 +27,10 @@ public sealed class DatabricksJobSelector
 
     public async Task<WheelJob> SelectCalculatorJobAsync()
     {
-        var knownJobs = await _wheelClient.Jobs.ListWheel().ConfigureAwait(false);
-        return knownJobs.Single(j => j.Settings.Name == "CalculatorJob");
+        var knownJobs = await _wheelClient.Jobs.List().ConfigureAwait(false);
+        var calculatorJob = knownJobs.Single(j => j.Settings.Name == "CalculatorJob");
+
+        // To get the python_wheel_task, we must explicitly fetch the job.
+        return await _wheelClient.Jobs.GetWheel(calculatorJob.JobId).ConfigureAwait(false);
     }
 }

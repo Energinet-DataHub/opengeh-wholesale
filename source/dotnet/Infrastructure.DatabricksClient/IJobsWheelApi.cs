@@ -18,9 +18,6 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
 {
     public interface IJobsWheelApi : IJobsApi
     {
-        /// <summary>
-        /// Lists all jobs.
-        /// </summary>
-        Task<IEnumerable<WheelJob>> ListWheel(CancellationToken cancellationToken = default);
+        Task<WheelJob> GetWheel(long jobId, CancellationToken cancellationToken = default);
     }
 }
