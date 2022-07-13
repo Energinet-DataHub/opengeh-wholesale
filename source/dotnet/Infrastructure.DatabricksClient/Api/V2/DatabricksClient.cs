@@ -15,7 +15,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
+namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient.Api.V2
 {
     /// <summary>
     /// A databricks client based on the Microsoft.Azure.DatabricksClient, which is using Job API 2.0.

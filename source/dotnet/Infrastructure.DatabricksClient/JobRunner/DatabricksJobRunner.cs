@@ -14,10 +14,10 @@
 
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient;
+using Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient.Api.V2;
 using Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
+namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient.JobRunner;
 
 public sealed class DatabricksJobRunner : IJobRunner
 {
