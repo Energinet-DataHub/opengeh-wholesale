@@ -18,16 +18,16 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
 public sealed class DatabricksJobSelector
 {
-    private readonly DatabricksClient21 _client;
+    private readonly DatabricksWheelClient _wheelClient;
 
-    public DatabricksJobSelector(DatabricksClient21 client)
+    public DatabricksJobSelector(DatabricksWheelClient wheelClient)
     {
-        _client = client;
+        _wheelClient = wheelClient;
     }
 
-    public async Task<Job21> SelectCalculatorJobAsync()
+    public async Task<WheelJob> SelectCalculatorJobAsync()
     {
-        var knownJobs = await _client.Jobs.List21().ConfigureAwait(false);
+        var knownJobs = await _wheelClient.Jobs.List21().ConfigureAwait(false);
         return knownJobs.Single(j => j.Settings.Name == "CalculatorJob");
     }
 }

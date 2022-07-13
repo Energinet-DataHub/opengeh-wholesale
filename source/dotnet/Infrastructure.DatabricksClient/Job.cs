@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
 {
-    public class Job21
+    public class WheelJob
     {
         /// <summary>
         /// The canonical identifier for this job.

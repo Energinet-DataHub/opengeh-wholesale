@@ -16,20 +16,20 @@ using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
 {
-    public class JobsApiClient21 : JobsApiClient, IJobsApi21
+    public class JobsApiClient21 : JobsApiClient, IJobsWheelApi
     {
         public JobsApiClient21(HttpClient httpClient)
             : base(httpClient)
         {
         }
 
-        public async Task<IEnumerable<Job21>> List21(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<WheelJob>> List21(CancellationToken cancellationToken = default)
         {
             const string requestUri = "jobs/list";
             var jobList = await HttpGet<dynamic>(HttpClient, requestUri, cancellationToken).ConfigureAwait(false);
             return PropertyExists(jobList, "jobs")
-                ? jobList.jobs.ToObject<IEnumerable<Job21>>()
-                : Enumerable.Empty<Job21>();
+                ? jobList.jobs.ToObject<IEnumerable<WheelJob>>()
+                : Enumerable.Empty<WheelJob>();
         }
     }
 }

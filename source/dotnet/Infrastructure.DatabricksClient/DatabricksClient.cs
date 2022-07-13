@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
     /// Because the Job API 2.0 does not support reading python wheel settings.
     /// Which is used when we run new jobs and need to know the existing parameters of the job.
     /// </summary>
-    public sealed class DatabricksClient21 : IDisposable
+    public sealed class DatabricksWheelClient : IDisposable
     {
         private const string Version = "2.1";
         private readonly HttpClient _httpClient;
@@ -34,12 +34,12 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
         /// <param name="baseUrl">Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net</param>
         /// <param name="token">The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token </param>
         /// <param name="timeoutSeconds">Web request time out in seconds</param>
-        public static DatabricksClient21 CreateClient(string baseUrl, string token, long timeoutSeconds = 30)
+        public static DatabricksWheelClient CreateClient(string baseUrl, string token, long timeoutSeconds = 30)
         {
-            return new DatabricksClient21(baseUrl, token, timeoutSeconds);
+            return new DatabricksWheelClient(baseUrl, token, timeoutSeconds);
         }
 
-        private DatabricksClient21(string baseUrl, string token, long timeoutSeconds = 30)
+        private DatabricksWheelClient(string baseUrl, string token, long timeoutSeconds = 30)
         {
             var apiUrl = new Uri(new Uri(baseUrl), $"api/{Version}/");
 
@@ -67,7 +67,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
             return httpClient;
         }
 
-        public IJobsApi21 Jobs { get; }
+        public IJobsWheelApi Jobs { get; }
 
         public void Dispose()
         {

@@ -113,7 +113,7 @@ public sealed class DatabricksHttpListener : IDisposable
 
     private static void HandleJoblistRequest(HttpListenerContext context)
     {
-        var calculatorJob = new Job21
+        var calculatorJob = new WheelJob
         {
             JobId = JobId,
             Settings =

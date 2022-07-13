@@ -123,7 +123,7 @@ public class Program
             var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
             var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
 
-            return DatabricksClient21.CreateClient(dbwUrl, dbwToken);
+            return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
     }
 

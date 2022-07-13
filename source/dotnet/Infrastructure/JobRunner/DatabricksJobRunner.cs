@@ -22,14 +22,14 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 public sealed class DatabricksJobRunner : IJobRunner
 {
     private readonly DatabricksJobSelector _databricksJobSelector;
-    private readonly DatabricksClient21 _client;
+    private readonly DatabricksWheelClient _wheelClient;
 
     public DatabricksJobRunner(
         DatabricksJobSelector databricksJobSelector,
-        DatabricksClient21 client)
+        DatabricksWheelClient wheelClient)
     {
         _databricksJobSelector = databricksJobSelector;
-        _client = client;
+        _wheelClient = wheelClient;
     }
 
     public async Task<JobRunId> SubmitJobAsync(Batch batch)
@@ -40,7 +40,7 @@ public sealed class DatabricksJobRunner : IJobRunner
 
         var runParameters = MergeRunParameters(calculatorJob, batch);
 
-        var runId = await _client
+        var runId = await _wheelClient
             .Jobs
             .RunNow(calculatorJob.JobId, runParameters)
             .ConfigureAwait(false);
@@ -50,7 +50,7 @@ public sealed class DatabricksJobRunner : IJobRunner
 
     public async Task<JobState> GetJobStateAsync(JobRunId jobRunId)
     {
-        var runState = await _client
+        var runState = await _wheelClient
             .Jobs
             .RunsGet(jobRunId.Id)
             .ConfigureAwait(false);
@@ -66,7 +66,7 @@ public sealed class DatabricksJobRunner : IJobRunner
         };
     }
 
-    private static RunParameters MergeRunParameters(Job21 job, Batch batch)
+    private static RunParameters MergeRunParameters(WheelJob job, Batch batch)
     {
         var sourceParams =
             job.Settings.SparkPythonTask?.Parameters ?? // Python file remove this in PR #157

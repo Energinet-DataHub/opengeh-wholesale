@@ -16,11 +16,11 @@ using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
 {
-    public interface IJobsApi21 : IJobsApi
+    public interface IJobsWheelApi : IJobsApi
     {
         /// <summary>
         /// Lists all jobs.
         /// </summary>
-        Task<IEnumerable<Job21>> List21(CancellationToken cancellationToken = default);
+        Task<IEnumerable<WheelJob>> List21(CancellationToken cancellationToken = default);
     }
 }
