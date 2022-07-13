@@ -14,3 +14,4 @@
 
 from .spark_initializor import initialize_spark
 from .integration_events_persister import integration_events_persister
+from .calculator import calculator

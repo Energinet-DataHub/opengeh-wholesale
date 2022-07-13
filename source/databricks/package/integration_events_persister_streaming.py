@@ -17,9 +17,8 @@ import sys
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
 sys.path.append(r"/opt/conda/lib/python3.8/site-packages")
 
-import configargparse
-
 from package import integration_events_persister, initialize_spark
+import configargparse
 
 
 def start():
