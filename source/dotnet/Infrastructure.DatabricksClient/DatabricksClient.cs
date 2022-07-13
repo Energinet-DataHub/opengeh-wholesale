@@ -18,17 +18,38 @@ using System.Net.Http.Headers;
 namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
 {
     /// <summary>
-    /// A databricks client based on the DatabricksClient, which is using Job API 2.0.
+    /// A databricks client based on the Microsoft.Azure.DatabricksClient, which is using Job API 2.0.
     /// The client is extended with a method for reading jobs created using Python Wheels, using Job API 2.1.
+    /// Because the Job API 2.0 does not support reading python wheel settings.
+    /// Which is used when we run new jobs and need to know the existing parameters of the job.
     /// </summary>
     public sealed class DatabricksClient21 : IDisposable
     {
         private const string Version = "2.1";
+        private readonly HttpClient _httpClient;
+
+        /// <summary>
+        /// Create client object with specified base URL, access token and timeout.
+        /// </summary>
+        /// <param name="baseUrl">Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net</param>
+        /// <param name="token">The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token </param>
+        /// <param name="timeoutSeconds">Web request time out in seconds</param>
+        public static DatabricksClient21 CreateClient(string baseUrl, string token, long timeoutSeconds = 30)
+        {
+            return new DatabricksClient21(baseUrl, token, timeoutSeconds);
+        }
 
         private DatabricksClient21(string baseUrl, string token, long timeoutSeconds = 30)
         {
             var apiUrl = new Uri(new Uri(baseUrl), $"api/{Version}/");
 
+            _httpClient = CreateHttpClient(token, timeoutSeconds, apiUrl);
+
+            Jobs = new JobsApiClient21(_httpClient);
+        }
+
+        private static HttpClient CreateHttpClient(string token, long timeoutSeconds, Uri apiUrl)
+        {
             var handler = new HttpClientHandler
             {
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
@@ -43,25 +64,14 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-
-            Jobs = new JobsApiClient21(httpClient);
-        }
-
-        /// <summary>
-        /// Create client object with specified base URL, access token and timeout.
-        /// </summary>
-        /// <param name="baseUrl">Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net</param>
-        /// <param name="token">The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token </param>
-        /// <param name="timeoutSeconds">Web request time out in seconds</param>
-        public static DatabricksClient21 CreateClient(string baseUrl, string token, long timeoutSeconds = 30)
-        {
-            return new DatabricksClient21(baseUrl, token, timeoutSeconds);
+            return httpClient;
         }
 
         public IJobsApi21 Jobs { get; }
 
         public void Dispose()
         {
+            _httpClient.Dispose();
             Jobs.Dispose();
         }
     }
