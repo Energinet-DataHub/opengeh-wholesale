@@ -21,7 +21,7 @@ import configargparse
 
 def start():
     p = configargparse.ArgParser(
-        description="Timeseries events stream ingestor",
+        description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
     p.add("--data-storage-account-name", type=str, required=True)
@@ -32,6 +32,6 @@ def start():
     p.add("--batch-id", type=str, required=True)
 
     args, unknown_args = p.parse_known_args()
-
     spark = initialize_spark(args.data_storage_account_name, args.data_storage_account_key)
+
     calculator(spark, args.process_results_path, args.batch_id)

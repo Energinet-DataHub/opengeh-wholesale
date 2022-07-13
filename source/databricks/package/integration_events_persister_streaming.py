@@ -23,7 +23,7 @@ import configargparse
 
 def start():
     p = configargparse.ArgParser(
-        description="Timeseries events stream ingestor",
+        description="Integration events stream ingestor",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
     p.add("--data-storage-account-name", type=str, required=True)
@@ -33,7 +33,6 @@ def start():
     p.add("--integration-events-checkpoint-path", type=str, required=True)
 
     args, unknown_args = p.parse_known_args()
-
     spark = initialize_spark(args.data_storage_account_name, args.data_storage_account_key)
 
     integration_events_path = f"{args.integration_events_path}"
@@ -49,7 +48,6 @@ def start():
         spark.readStream.format("eventhubs").options(**input_configuration).load()
     )
 
-    # start the timeseries persister job
     integration_events_persister(
         streamingDF, integration_events_checkpoint_path, integration_events_path
     )
