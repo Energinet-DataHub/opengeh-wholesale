@@ -14,6 +14,7 @@
 
 using System.Net;
 using System.Text;
+using Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient;
 using Microsoft.Azure.Databricks.Client;
 using Newtonsoft.Json;
 
@@ -112,14 +113,14 @@ public sealed class DatabricksHttpListener : IDisposable
 
     private static void HandleJoblistRequest(HttpListenerContext context)
     {
-        var calculatorJob = new Job
+        var calculatorJob = new Job21
         {
             JobId = JobId,
             Settings =
-                new JobSettings
+                new JobSettings21
                 {
                     Name = "CalculatorJob",
-                    SparkPythonTask = new SparkPythonTask { Parameters = new List<string>() },
+                    PythonWheelTask = new PythonWheelTask { Parameters = new List<string>() },
                 },
         };
 

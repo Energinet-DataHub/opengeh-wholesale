@@ -33,4 +33,8 @@ limitations under the License.
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure.DatabricksClient\Infrastructure.DatabricksClient.csproj" />
+  </ItemGroup>
+
 </Project>
