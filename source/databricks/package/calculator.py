@@ -25,7 +25,7 @@ def calculator(
     df_seq = spark.createDataFrame(rdd, schema=IntegerType()).withColumnRenamed(
         "value", "position"
     )
-    
+
     df_805 = df_seq.withColumn("grid_area", lit("805"))
     df_806 = df_seq.withColumn("grid_area", lit("806"))
     df = df_805.union(df_806)
