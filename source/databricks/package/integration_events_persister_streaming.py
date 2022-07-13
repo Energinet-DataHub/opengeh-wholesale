@@ -35,7 +35,7 @@ def start():
 
     args, unknown_args = p.parse_known_args()
 
-    spark = initialize_spark(args)
+    spark = initialize_spark(args.data_storage_account_name, args.data_storage_account_key)
 
     integration_events_path = f"{args.integration_events_path}"
     integration_events_checkpoint_path = f"{args.integration_events_checkpoint_path}"
