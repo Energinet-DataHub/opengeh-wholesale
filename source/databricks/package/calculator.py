@@ -14,8 +14,8 @@
 
 from pyspark.sql.functions import lit
 from pyspark.sql.types import StructType, StructField, IntegerType
+from package import initialize_spark
 import click
-from spark_initializor import initialize_spark
 
 
 @click.command()
@@ -42,19 +42,6 @@ def start(
     df_806 = df_seq.withColumn("grid_area", lit("806"))
     df = df_805.union(df_806)
     df = df.withColumn("quantity", lit(None)).withColumn("quality", lit(None))
-    df.show(1000)
     df.coalesce(1).write.partitionBy("grid_area").json(
         f"{process_results_path}/batch_id={batch_id}"
     )
-
-
-if __name__ == "__main__":
-    try:
-        start()
-
-    # TODO: Try to remove when using wheel directly. PR #157
-    # Clicks uses sys.exit(0) when job completes, which is intepreted as an error.
-    # https://github.com/ipython/ipython/issues/12831#issuecomment-1064866151
-    except SystemExit as e:
-        if e.code != 0:
-            raise
