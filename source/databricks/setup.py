@@ -30,7 +30,7 @@ setup(
     entry_points={
         "console_scripts": [
             "start_stream = package.integration_events_persister_streaming:start",
-            "start_calculator = package.calculator:start"
+            "start_calculator = package.calculator:start_job"
         ]
     },
 )
