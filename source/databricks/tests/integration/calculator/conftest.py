@@ -12,6 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .spark_initializor import initialize_spark
-from .integration_events_persister import integration_events_persister
-from .calculator import calculator
+import pytest
+import glob
+import os
+from pathlib import Path
+
+
+@pytest.fixture(scope="session")
+def json_lines_reader():
+    def f(path: str):
+        return Path(path).read_text()
+
+    return f
+
+
+@pytest.fixture(scope="session")
+def find_first_file():
+    def f(path: str, pattern: str):
+        os.chdir(path)
+        for filePath in glob.glob(pattern):
+            return filePath
+        raise Exception("Target test file not found.")
+
+    return f

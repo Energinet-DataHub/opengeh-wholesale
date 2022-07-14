@@ -16,11 +16,11 @@ namespace DatabricksClientManager
 {
     public sealed class DatabricksManager : IAsyncDisposable
     {
-        private readonly DatabricksHttpListener _client;
+        private readonly DatabricksHttpListener _listener;
 
         public DatabricksManager()
         {
-            _client = new DatabricksHttpListener(DatabricksUrl);
+            _listener = new DatabricksHttpListener(DatabricksUrl);
         }
 
         public string DatabricksUrl { get; set; } = "http://localhost:8000/";
@@ -30,13 +30,13 @@ namespace DatabricksClientManager
         public void BeginListen()
         {
 #pragma warning disable VSTHRD110, CS4014
-            _client.BeginListenAsync();
+            _listener.BeginListenAsync();
 #pragma warning restore VSTHRD110, CS4014
         }
 
         public ValueTask DisposeAsync()
         {
-            _client.Dispose();
+            _listener.Dispose();
             return ValueTask.CompletedTask;
         }
     }
