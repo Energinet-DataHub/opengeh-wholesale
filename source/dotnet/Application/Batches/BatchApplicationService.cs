@@ -101,11 +101,11 @@ public class BatchApplicationService : IBatchApplicationService
         return batch;
     }
 
-    private List<ProcessCompletedEventDto> CreateProcessCompletedEvents(List<Batch> completedBatches)
+    private List<ProcessCompletedEventDto> CreateProcessCompletedEvents(IEnumerable<Batch> completedBatches)
     {
         return completedBatches
-            .SelectMany(b => b.GridAreaCodes)
-            .Select(c => new ProcessCompletedEventDto(c.Code))
+            .SelectMany(b => b.GridAreaCodes.Select(g => new { b.Id, g.Code }))
+            .Select(c => new ProcessCompletedEventDto(c.Code, c.Id.Id))
             .ToList();
     }
 }

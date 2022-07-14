@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 
-public sealed record ProcessCompletedEventDto(string GridAreaCode);
+public sealed record ProcessCompletedEventDto(string GridAreaCode, Guid BatchId);
