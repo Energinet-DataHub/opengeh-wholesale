@@ -18,6 +18,6 @@ from package import calculator
 
 def test_calculator(spark, delta_lake_path):
     process_results_path = f"{delta_lake_path}/results"
-    
+
     calculator(spark, process_results_path, 42)
     assert True, "Not one"
