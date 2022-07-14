@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
+using Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
 {
-    public class WheelRunSettings
+    public interface IJobsWheelApi : IJobsApi
     {
-        [JsonProperty(PropertyName = "tasks")]
-        public List<JobTask> Tasks { get; set; }
+        /// <summary>
+        /// Lists all jobs.
+        /// </summary>
+        Task<IEnumerable<WheelJob>> ListWheel(CancellationToken cancellationToken = default);
     }
 }

@@ -16,8 +16,8 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.Components.DatabricksClient</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Components.DatabricksClient</RootNamespace>
     <Nullable>disable</Nullable>
   </PropertyGroup>
 

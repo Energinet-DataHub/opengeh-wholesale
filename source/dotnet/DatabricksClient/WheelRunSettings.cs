@@ -14,14 +14,11 @@
 
 using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
 {
-    public class PythonWheelTask
+    public class WheelRunSettings
     {
-        /// <summary>
-        /// Command line parameters that will be passed to spark submit.
-        /// </summary>
-        [JsonProperty(PropertyName = "parameters")]
-        public List<string> Parameters { get; set; }
+        [JsonProperty(PropertyName = "tasks")]
+        public List<JobTask> Tasks { get; set; }
     }
 }

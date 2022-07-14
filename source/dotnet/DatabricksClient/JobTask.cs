@@ -14,7 +14,7 @@
 
 using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient;
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient;
 
 public class JobTask
 {
