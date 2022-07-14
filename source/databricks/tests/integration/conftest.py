@@ -25,14 +25,29 @@ def spark() -> SparkSession:
 
 
 @pytest.fixture(scope="session")
-def integration_tests_path() -> str:
+def file_path_finder():
+    """
+    Returns the path of the file.
+    Please note that this only works if current folder haven't been changed prior using us.chdir().
+    The correctness also relies on the prerequisite that this function is actually located in a
+    file located directly in the integration tests folder.
+    """
+
+    def finder(file):
+        return os.path.dirname(os.path.realpath(file))
+
+    return finder
+
+
+@pytest.fixture(scope="session")
+def integration_tests_path(file_path_finder) -> str:
     """
     Returns the integration tests folder path.
     Please note that this only works if current folder haven't been changed prior using us.chdir().
     The correctness also relies on the prerequisite that this function is actually located in a
     file located directly in the integration tests folder.
     """
-    return os.path.dirname(os.path.realpath(__file__))
+    return file_path_finder(__file__)
 
 
 @pytest.fixture(scope="session")

@@ -12,42 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
+from pyspark.sql.functions import lit
+from pyspark.sql.types import StructType, StructField, IntegerType
 
-sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
-sys.path.append(r"/opt/conda/lib/python3.8/site-packages")
-
-from package import integration_events_persister, initialize_spark
+from package import calculator, initialize_spark
 import configargparse
 
 
 def start():
     p = configargparse.ArgParser(
-        description="Integration events stream ingestor",
+        description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--event-hub-connectionstring", type=str, required=True)
     p.add("--integration-events-path", type=str, required=True)
-    p.add("--integration-events-checkpoint-path", type=str, required=True)
+    p.add("--time-series-points-path", type=str, required=True)
+    p.add("--process-results-path", type=str, required=True)
+    p.add("--batch-id", type=str, required=True)
 
     args, unknown_args = p.parse_known_args()
     spark = initialize_spark(args.data_storage_account_name, args.data_storage_account_key)
 
-    integration_events_path = f"{args.integration_events_path}"
-    integration_events_checkpoint_path = f"{args.integration_events_checkpoint_path}"
-
-    input_configuration = {}
-    input_configuration[
-        "eventhubs.connectionString"
-    ] = spark.sparkContext._gateway.jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt(
-        f"{args.event_hub_connectionstring}"
-    )
-    streamingDF = (
-        spark.readStream.format("eventhubs").options(**input_configuration).load()
-    )
-
-    integration_events_persister(
-        streamingDF, integration_events_checkpoint_path, integration_events_path
-    )
+    calculator(spark, args.process_results_path, args.batch_id)

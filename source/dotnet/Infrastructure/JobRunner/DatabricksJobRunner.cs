@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.JobRunner;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Microsoft.Azure.Databricks.Client;
 
@@ -21,14 +22,14 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 public sealed class DatabricksJobRunner : IJobRunner
 {
     private readonly DatabricksJobSelector _databricksJobSelector;
-    private readonly DatabricksClient _client;
+    private readonly DatabricksWheelClient _wheelClient;
 
     public DatabricksJobRunner(
         DatabricksJobSelector databricksJobSelector,
-        DatabricksClient client)
+        DatabricksWheelClient wheelClient)
     {
         _databricksJobSelector = databricksJobSelector;
-        _client = client;
+        _wheelClient = wheelClient;
     }
 
     public async Task<JobRunId> SubmitJobAsync(Batch batch)
@@ -39,7 +40,7 @@ public sealed class DatabricksJobRunner : IJobRunner
 
         var runParameters = MergeRunParameters(calculatorJob, batch);
 
-        var runId = await _client
+        var runId = await _wheelClient
             .Jobs
             .RunNow(calculatorJob.JobId, runParameters)
             .ConfigureAwait(false);
@@ -49,7 +50,7 @@ public sealed class DatabricksJobRunner : IJobRunner
 
     public async Task<JobState> GetJobStateAsync(JobRunId jobRunId)
     {
-        var runState = await _client
+        var runState = await _wheelClient
             .Jobs
             .RunsGet(jobRunId.Id)
             .ConfigureAwait(false);
@@ -65,11 +66,12 @@ public sealed class DatabricksJobRunner : IJobRunner
         };
     }
 
-    private static RunParameters MergeRunParameters(Job job, Batch batch)
+    private static RunParameters MergeRunParameters(WheelJob job, Batch batch)
     {
+        var pythonWheelTask = job.Settings.Tasks.FirstOrDefault(x => x.PythonWheelTask != null);
+
         var sourceParams =
-            job.Settings.SparkPythonTask?.Parameters ?? // Python file remove this in PR #157
-            job.Settings.SparkSubmitTask?.Parameters ?? // Wheel
+            pythonWheelTask?.PythonWheelTask?.Parameters ??
             throw new InvalidOperationException($"Parameters for job {job.JobId} could not be found.");
 
         var invocationParam = $"--batch-id={batch.Id.Id}";
