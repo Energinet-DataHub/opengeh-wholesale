@@ -54,7 +54,7 @@ public class DataAvailableSenderEndpointTests
             DateTime operationTimestamp)
         {
             // Arrange
-            var completedProcess = new ProcessCompletedEventDto("805");
+            var completedProcess = new ProcessCompletedEventDto("805", Guid.NewGuid());
             var message = ServiceBusTestMessage.Create(completedProcess, operationTimestamp.AsUtc(), correlationId.ToString());
 
             // Act -> Publish process completed event, which will transitively invoke
