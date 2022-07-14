@@ -19,6 +19,6 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
     public class WheelRunSettings
     {
         [JsonProperty(PropertyName = "tasks")]
-        public List<JobTask> Tasks { get; set; }
+        public List<JobWheelTask> Tasks { get; set; }
     }
 }

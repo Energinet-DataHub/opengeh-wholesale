@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 

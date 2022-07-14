@@ -14,10 +14,9 @@
 
 using System.Net;
 using System.Text;
-using Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Microsoft.Azure.Databricks.Client;
 using Newtonsoft.Json;
-using JobTask = Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient.JobTask;
 
 namespace DatabricksClientManager;
 
@@ -121,7 +120,7 @@ public sealed class DatabricksHttpListener : IDisposable
                 new WheelJobSettings
                 {
                     Name = "CalculatorJob",
-                    Tasks = new List<JobTask>
+                    Tasks = new List<JobWheelTask>
                     {
                         new()
                         {
