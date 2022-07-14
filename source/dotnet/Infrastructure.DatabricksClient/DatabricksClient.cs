@@ -15,7 +15,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient.Api.V2
+namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient
 {
     /// <summary>
     /// A databricks client based on the Microsoft.Azure.DatabricksClient, which is using Job API 2.0.
@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient.Api.V2
     /// </summary>
     public sealed class DatabricksWheelClient : IDisposable
     {
-        private const string Version = "2.0";
+        private const string Version = "2.1";
         private readonly HttpClient _httpClient;
 
         /// <summary>
