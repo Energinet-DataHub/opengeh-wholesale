@@ -23,13 +23,10 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
         {
         }
 
-        public async Task<IEnumerable<WheelJob>> ListWheel(CancellationToken cancellationToken = default)
+        public async Task<WheelJob> GetWheel(long jobId, CancellationToken cancellationToken = default)
         {
-            const string requestUri = "jobs/list";
-            var jobList = await HttpGet<dynamic>(HttpClient, requestUri, cancellationToken).ConfigureAwait(false);
-            return PropertyExists(jobList, "jobs")
-                ? jobList.jobs.ToObject<IEnumerable<WheelJob>>()
-                : Enumerable.Empty<WheelJob>();
+            var requestUri = $"jobs/get?job_id={jobId}";
+            return await HttpGet<WheelJob>(HttpClient, requestUri, cancellationToken).ConfigureAwait(false);
         }
     }
 }
