@@ -13,11 +13,13 @@
 # limitations under the License.
 
 import pytest
-from package import calculator
 
 
-def test_calculator(spark, delta_lake_path, json_reader):
-    process_results_path = f"{delta_lake_path}/results"
-    calculator(spark, process_results_path, 42)
-    json = json_reader(f"{delta_lake_path}/results/grid_area=805/*.json")
-    assert True, "Not one"
+@pytest.fixture(scope="session")
+def json_reader():
+    def f(path: str):
+        fil = open(f"{path}", "r")
+        stuff = fil.readall()
+        return stuff
+
+    return f
