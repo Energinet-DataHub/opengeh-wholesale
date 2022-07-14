@@ -14,6 +14,7 @@
 
 using System.Net;
 using System.Text;
+using Energinet.DataHub.Wholesale.Infrastructure.DatabricksClient;
 using Microsoft.Azure.Databricks.Client;
 using Newtonsoft.Json;
 
@@ -75,7 +76,11 @@ public sealed class DatabricksHttpListener : IDisposable
 
         if (context.Request.RawUrl.Contains("jobs/list"))
         {
-            HandleJoblistRequest(context);
+            HandleJobListRequest(context);
+        }
+        else if (context.Request.RawUrl.Contains("jobs/get?"))
+        {
+            HandleJobGetRequest(context);
         }
         else if (context.Request.RawUrl.Contains("jobs/run-now"))
         {
@@ -83,7 +88,7 @@ public sealed class DatabricksHttpListener : IDisposable
         }
         else if (context.Request.RawUrl.Contains("jobs/runs/get?"))
         {
-            HandleJobGetRequest(context);
+            HandleJobRunGetRequest(context);
         }
         else
         {
@@ -96,6 +101,20 @@ public sealed class DatabricksHttpListener : IDisposable
     }
 
     private void HandleJobGetRequest(HttpListenerContext context)
+    {
+        var id = long.Parse(context.Request.QueryString["job_id"] ?? string.Empty);
+
+        if (VerifyJobId(context, id))
+            return;
+
+        var calculatorJob = CreateCalculatorJob();
+        var serialized = JsonConvert.SerializeObject(calculatorJob);
+
+        context.Response.StatusCode = 200;
+        context.Response.Close(Encoding.UTF8.GetBytes(serialized), true);
+    }
+
+    private void HandleJobRunGetRequest(HttpListenerContext context)
     {
         var id = long.Parse(context.Request.QueryString["run_id"] ?? string.Empty);
 
@@ -110,23 +129,39 @@ public sealed class DatabricksHttpListener : IDisposable
         context.Response.Close(Encoding.UTF8.GetBytes(serialized), true);
     }
 
-    private static void HandleJoblistRequest(HttpListenerContext context)
+    private static void HandleJobListRequest(HttpListenerContext context)
     {
-        var calculatorJob = new Job
-        {
-            JobId = JobId,
-            Settings =
-                new JobSettings
-                {
-                    Name = "CalculatorJob",
-                    SparkPythonTask = new SparkPythonTask { Parameters = new List<string>() },
-                },
-        };
-
+        var calculatorJob = CreateCalculatorJob();
         var serialized = JsonConvert.SerializeObject(new { jobs = new[] { calculatorJob } });
 
         context.Response.StatusCode = 200;
         context.Response.Close(Encoding.UTF8.GetBytes(serialized), true);
+    }
+
+    private static WheelJob CreateCalculatorJob()
+    {
+        var calculatorJob = new WheelJob
+        {
+            JobId = JobId,
+            Settings =
+                new WheelJobSettings
+                {
+                    Name = "CalculatorJob",
+                    PythonWheelTask = new PythonWheelTask { Parameters = new List<string>() },
+                },
+        };
+        return calculatorJob;
+    }
+
+    private bool VerifyJobId(HttpListenerContext context, long id)
+    {
+        if (JobId != id)
+        {
+            FakeServerErrorAndClose(context);
+            return true;
+        }
+
+        return false;
     }
 
     private bool VerifyRunId(HttpListenerContext context, long id)
