@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.ResultSender;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -32,15 +34,22 @@ public class DocumentFactory : IDocumentFactory
     <cim:receiver_MarketParticipant.mRID codingScheme=""A10"">{recipientGln}</cim:receiver_MarketParticipant.mRID>
     <cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
     <cim:createdDateTime>{createdDateTime}</cim:createdDateTime>
-    <cim:Series>
-        <!-- content will be added in future releases -->
+    <cim:Series>{Points}
     </cim:Series>
 </cim:NotifyAggregatedMeasureData_MarketDocument>";
+
+    private const string PointTemplate = @"
+			<cim:Point>
+				<cim:position>{Position}</cim:position>
+				<cim:quantity>{Quantity}</cim:quantity>
+				<cim:quality>{Quality}</cim:quality>
+			</cim:Point>";
 
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;
     private readonly IClock _clock;
     private readonly IDocumentIdGenerator _documentIdGenerator;
+    private IResultReader _resultReader;
 
     public DocumentFactory(IProcessRepository processRepository, IStorageHandler storageHandler, IClock clock, IDocumentIdGenerator documentIdGenerator)
     {
@@ -62,12 +71,29 @@ public class DocumentFactory : IDocumentFactory
         var messageHubReference = new MessageHubReference(notificationId);
         var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
 
+        var result = await _resultReader.GetResultAsync(process).ConfigureAwait(false);
+
         var document = CimTemplate
             .Replace("{documentId}", _documentIdGenerator.Create())
             .Replace("{recipientGln}", GetMdrGlnForGridArea(process.GridAreaCode))
-            .Replace("{createdDateTime}", _clock.GetCurrentInstant().ToString());
+            .Replace("{createdDateTime}", _clock.GetCurrentInstant().ToString())
+            .Replace("{Points}", CreatePoints(result));
 
         await WriteToStreamAsync(document, outputStream).ConfigureAwait(false);
+    }
+
+    private string? CreatePoints(BalanceFixingResultDto result)
+    {
+        var sb = new StringBuilder();
+        foreach (var point in result.Points)
+        {
+            sb.Append(PointTemplate
+                .Replace("{Position}", point.Position.ToString())
+                .Replace("{Quantity}", point.Quantity)
+                .Replace("{Quality}", point.Quality));
+        }
+
+        return sb.ToString();
     }
 
     private static string GetMdrGlnForGridArea(string gridAreaCode)

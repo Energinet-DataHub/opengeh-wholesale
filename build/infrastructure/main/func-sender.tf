@@ -52,6 +52,7 @@ module "func_sender" {
     MESSAGE_HUB_REPLY_QUEUE_NAME                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-reply-name)"
     MESSAGE_HUB_STORAGE_CONNECTION_STRING            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketres-primary-connection-string)"
     MESSAGE_HUB_STORAGE_CONTAINER_NAME               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketres-postofficereply-container-name)"
+    RESULTSPATH                                      = "abfss://${local.PROCESSES_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/results"
   }
 
   tags                                  = azurerm_resource_group.this.tags
