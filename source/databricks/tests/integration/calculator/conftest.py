@@ -19,7 +19,7 @@ from pathlib import Path
 
 
 @pytest.fixture(scope="session")
-def json_reader():
+def json_lines_reader():
     def f(path: str):
         return Path(path).read_text()
 

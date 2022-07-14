@@ -16,7 +16,9 @@ import pytest
 from package import calculator
 
 
-def test_calculator(spark, delta_lake_path, find_first_file, json_reader):
+def test_calculator_creates_file(
+    spark, delta_lake_path, find_first_file, json_lines_reader
+):
     batchId = 1234
     process_results_path = f"{delta_lake_path}/results"
 
@@ -26,5 +28,5 @@ def test_calculator(spark, delta_lake_path, find_first_file, json_reader):
         f"{delta_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
     )
 
-    json = json_reader(jsonFile)
-    assert len(json) > 0, "Could verify created json file."
+    result = json_lines_reader(jsonFile)
+    assert len(result) > 0, "Could not verify created json file."
