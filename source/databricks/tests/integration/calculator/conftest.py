@@ -13,13 +13,25 @@
 # limitations under the License.
 
 import pytest
+import glob
+import os
+from pathlib import Path
 
 
 @pytest.fixture(scope="session")
 def json_reader():
     def f(path: str):
-        fil = open(f"{path}", "r")
-        stuff = fil.readall()
-        return stuff
+        return Path(path).read_text()
+
+    return f
+
+
+@pytest.fixture(scope="session")
+def find_first_file():
+    def f(path: str, pattern: str):
+        os.chdir(path)
+        for filePath in glob.glob(pattern):
+            return filePath
+        raise Exception("Target test file not found.")
 
     return f
