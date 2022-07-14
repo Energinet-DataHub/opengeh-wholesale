@@ -49,10 +49,16 @@ public class DocumentFactory : IDocumentFactory
     private readonly IStorageHandler _storageHandler;
     private readonly IClock _clock;
     private readonly IDocumentIdGenerator _documentIdGenerator;
-    private IResultReader _resultReader;
+    private readonly IResultReader _resultReader;
 
-    public DocumentFactory(IProcessRepository processRepository, IStorageHandler storageHandler, IClock clock, IDocumentIdGenerator documentIdGenerator)
+    public DocumentFactory(
+        IResultReader resultReader,
+        IProcessRepository processRepository,
+        IStorageHandler storageHandler,
+        IClock clock,
+        IDocumentIdGenerator documentIdGenerator)
     {
+        _resultReader = resultReader;
         _processRepository = processRepository;
         _storageHandler = storageHandler;
         _clock = clock;
@@ -82,7 +88,7 @@ public class DocumentFactory : IDocumentFactory
         await WriteToStreamAsync(document, outputStream).ConfigureAwait(false);
     }
 
-    private string? CreatePoints(BalanceFixingResultDto result)
+    private string CreatePoints(BalanceFixingResultDto result)
     {
         var sb = new StringBuilder();
         foreach (var point in result.Points)

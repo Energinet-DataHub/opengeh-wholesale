@@ -39,6 +39,7 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services
         {
             using var stream = new MemoryStream();
             await _documentFactory.CreateAsync(request, stream).ConfigureAwait(false);
+            stream.Position = 0;
 
             var path = await _storageHandler.AddStreamToStorageAsync(stream, request).ConfigureAwait(false);
             var response = request.CreateResponse(path);
