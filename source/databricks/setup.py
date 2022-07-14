@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 setup(
     name="package",
     version=1.0,
-    description="Tools for wholesale streaming",
+    description="Tools for wholesale",
     long_description="",
     long_description_content_type="text/markdown",
     license="MIT",
@@ -28,7 +28,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "start_stream = package.integration_events_persister_streaming:start"
+            "start_stream = package.integration_events_persister_streaming:start",
+            "start_calculator = package.calculator_job:start",
         ]
     },
 )
