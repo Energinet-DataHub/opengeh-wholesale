@@ -67,7 +67,7 @@ public class DocumentFactory : IDocumentFactory
             .Replace("{recipientGln}", GetMdrGlnForGridArea(process.GridAreaCode))
             .Replace("{createdDateTime}", _clock.GetCurrentInstant().ToString());
 
-        WriteToStream(document, outputStream);
+        await WriteToStreamAsync(document, outputStream).ConfigureAwait(false);
     }
 
     private static string GetMdrGlnForGridArea(string gridAreaCode)
@@ -81,11 +81,13 @@ public class DocumentFactory : IDocumentFactory
         return gln;
     }
 
-    private static void WriteToStream(string s, Stream outputStream)
+    private static async Task WriteToStreamAsync(string s, Stream outputStream)
     {
         var writer = new StreamWriter(outputStream);
-        writer.Write(s);
-        writer.Flush();
-        outputStream.Position = 0;
+        await using (writer.ConfigureAwait(false))
+        {
+            await writer.WriteAsync(s).ConfigureAwait(false);
+            await writer.FlushAsync().ConfigureAwait(false);
+        }
     }
 }
