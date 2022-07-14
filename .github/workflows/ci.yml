@@ -23,7 +23,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@7.6.0
 
   dotnet_solution_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.6.0
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@temporarily_disable_integration_test
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
       DOTNET_VERSION: '6.0.301'
