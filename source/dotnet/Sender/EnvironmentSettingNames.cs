@@ -37,5 +37,5 @@ public static class EnvironmentSettingNames
     public const string MessageHubReplyQueueName = "MESSAGE_HUB_REPLY_QUEUE_NAME";
     public const string MessageHubStorageConnectionString = "MESSAGE_HUB_STORAGE_CONNECTION_STRING";
     public const string MessageHubStorageContainerName = "MESSAGE_HUB_STORAGE_CONTAINER_NAME";
-    public const string ResultsPath = "RESULTSPATH";
+    public const string ProcessResultsPath = "PROCESS_RESULTS_PATH";
 }

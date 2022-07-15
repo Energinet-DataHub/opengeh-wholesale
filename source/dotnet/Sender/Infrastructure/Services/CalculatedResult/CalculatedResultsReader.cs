@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
+using Azure.Storage.Files.DataLake;
+using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
@@ -22,51 +22,51 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.CalculatedR
 public class CalculatedResultsReader : ICalculatedResultReader
 {
     private readonly IJsonSerializer _jsonSerializer;
-    private readonly BlobContainerClient _blobContainerClient;
+    private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
 
     public CalculatedResultsReader(
         IJsonSerializer jsonSerializer,
-        BlobContainerClient blobContainerClient)
+        DataLakeFileSystemClient dataLakeFileSystemClient)
     {
         _jsonSerializer = jsonSerializer;
-        _blobContainerClient = blobContainerClient;
+        _dataLakeFileSystemClient = dataLakeFileSystemClient;
     }
 
     public async Task<BalanceFixingResultDto> ReadResultAsync(Process process)
     {
-        var resultBlob = await SelectResultBlobAsync(process).ConfigureAwait(false);
+        var resultPath = await SelectResultFilePathAsync(process).ConfigureAwait(false);
 
-        var blobClient = _blobContainerClient.GetBlobClient(resultBlob.Name);
-        var blobStream = await blobClient.DownloadStreamingAsync().ConfigureAwait(false);
+        var fileClient = _dataLakeFileSystemClient.GetFileClient(resultPath);
+        var stream = await fileClient.OpenReadAsync().ConfigureAwait(false);
 
-        using var stream = blobStream.Value;
-        var reader = new StreamReader(stream.Content);
-
-        var points = new List<PointDto>();
-
-        while (await reader.ReadLineAsync().ConfigureAwait(false) is { } nextLine)
+        await using (stream.ConfigureAwait(false))
         {
-            var point = (PointDto)_jsonSerializer.Deserialize(nextLine, typeof(PointDto));
-            points.Add(point);
-        }
+            using var reader = new StreamReader(stream);
 
-        return new BalanceFixingResultDto(points.ToArray());
+            var points = new List<PointDto>();
+
+            while (await reader.ReadLineAsync().ConfigureAwait(false) is { } nextLine)
+            {
+                var point = (PointDto)_jsonSerializer.Deserialize(nextLine, typeof(PointDto));
+                points.Add(point);
+            }
+
+            return new BalanceFixingResultDto(points.ToArray());
+        }
     }
 
-    private async Task<BlobItem> SelectResultBlobAsync(Process process)
+    private async Task<string> SelectResultFilePathAsync(Process process)
     {
         var normBatchId = process.BatchId.ToString().ToLowerInvariant();
         var folder = $"results/batch_id={normBatchId}/grid_area={process.GridAreaCode}/";
 
-        var blobs = _blobContainerClient
-            .GetBlobsAsync(prefix: folder)
-            .ConfigureAwait(false);
+        var directory = _dataLakeFileSystemClient.GetDirectoryClient(folder);
 
-        await foreach (var blob in blobs)
+        await foreach (var pathItem in directory.GetPathsAsync())
         {
-            if (Path.GetExtension(blob.Name) == ".json")
+            if (Path.GetExtension(pathItem.Name) == ".json")
             {
-                return blob;
+                return folder + pathItem.Name;
             }
         }
 

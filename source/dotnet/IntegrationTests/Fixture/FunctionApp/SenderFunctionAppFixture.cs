@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using System.Diagnostics;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -59,8 +57,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
         public MessageHubSimulation MessageHubMock { get; set; } = null!;
 
-        public BlobContainerClient BlobContainerClient { get; private set; } = null!;
-
         private AzuriteManager AzuriteManager { get; }
 
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
@@ -90,7 +86,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ResultsPath, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessResultsPath, "UseDevelopmentStorage=true");
         }
 
         /// <inheritdoc/>
@@ -141,8 +137,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             messageHubSimulationConfig.PeekTimeout = TimeSpan.FromDays(1);
 
             MessageHubMock = new MessageHubSimulation(messageHubSimulationConfig);
-            BlobContainerClient = new BlobContainerClient("UseDevelopmentStorage=true", "processes");
-            await BlobContainerClient.CreateIfNotExistsAsync(PublicAccessType.BlobContainer);
         }
 
         /// <inheritdoc/>
@@ -161,7 +155,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             await MessageHubMock.DisposeAsync();
             await DatabaseManager.DeleteDatabaseAsync();
             await ServiceBusResourceProvider.DisposeAsync();
-            await BlobContainerClient.DeleteIfExistsAsync();
         }
 
         private static string GetBuildConfiguration()

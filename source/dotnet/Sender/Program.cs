@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Storage.Blobs;
+using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
@@ -83,8 +84,8 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
-        serviceCollection.AddSingleton(new BlobContainerClient(
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ResultsPath), "processes"));
+        var dataLakePath = new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessResultsPath));
+        serviceCollection.AddSingleton(new DataLakeFileSystemClient(dataLakePath));
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         var connectionString =
