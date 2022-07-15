@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
@@ -80,6 +81,9 @@ public static class Program
         serviceCollection.AddApplicationInsightsTelemetryWorkerService(
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+
+        serviceCollection.AddSingleton(() => new BlobContainerClient(
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ResultsPath), " processes"));
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         var connectionString =

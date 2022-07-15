@@ -16,7 +16,7 @@ using System.Text;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.ResultSender;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.CalculatedResult;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -49,10 +49,10 @@ public class DocumentFactory : IDocumentFactory
     private readonly IStorageHandler _storageHandler;
     private readonly IClock _clock;
     private readonly IDocumentIdGenerator _documentIdGenerator;
-    private readonly IResultReader _resultReader;
+    private readonly ICalculatedResultReader _resultReader;
 
     public DocumentFactory(
-        IResultReader resultReader,
+        ICalculatedResultReader resultReader,
         IProcessRepository processRepository,
         IStorageHandler storageHandler,
         IClock clock,
@@ -77,7 +77,7 @@ public class DocumentFactory : IDocumentFactory
         var messageHubReference = new MessageHubReference(notificationId);
         var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
 
-        var result = await _resultReader.GetResultAsync(process).ConfigureAwait(false);
+        var result = await _resultReader.ReadResultAsync(process).ConfigureAwait(false);
 
         var document = CimTemplate
             .Replace("{documentId}", _documentIdGenerator.Create())

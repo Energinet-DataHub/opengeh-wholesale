@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.ResultSender;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.CalculatedResult;
 
-public sealed record PointDto(int Position, string Quantity, string Quality);
+public record BalanceFixingResultDto(PointDto[] Points);

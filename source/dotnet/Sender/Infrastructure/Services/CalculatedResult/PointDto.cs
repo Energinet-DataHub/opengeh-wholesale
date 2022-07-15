@@ -12,11 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.CalculatedResult;
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.ResultSender;
-
-public interface IResultReader
-{
-    Task<BalanceFixingResultDto> GetResultAsync(Process process);
-}
+public sealed record PointDto(int Position, string Quantity, string Quality);
