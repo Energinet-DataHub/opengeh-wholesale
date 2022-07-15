@@ -56,17 +56,17 @@ public class CalculatedResultsReader : ICalculatedResultReader
     private async Task<BlobItem> SelectResultBlobAsync(Process process)
     {
         var normBatchId = process.BatchId.ToString().ToLowerInvariant();
-        var folder = $"results/batch_id={normBatchId}/grid_area={process.GridAreaCode}";
+        var folder = $"results/batch_id={normBatchId}/grid_area={process.GridAreaCode}/";
 
         var blobs = _blobContainerClient
-            .GetBlobsByHierarchyAsync(delimiter: "/", prefix: folder)
+            .GetBlobsAsync(prefix: folder)
             .ConfigureAwait(false);
 
         await foreach (var blob in blobs)
         {
-            if (blob.IsBlob && Path.GetExtension(blob.Blob.Name) == ".json")
+            if (Path.GetExtension(blob.Name) == ".json")
             {
-                return blob.Blob;
+                return blob;
             }
         }
 
