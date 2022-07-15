@@ -34,16 +34,31 @@ public class DocumentFactory : IDocumentFactory
     <cim:receiver_MarketParticipant.mRID codingScheme=""A10"">{recipientGln}</cim:receiver_MarketParticipant.mRID>
     <cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
     <cim:createdDateTime>{createdDateTime}</cim:createdDateTime>
-    <cim:Series>{Points}
+    <cim:Series>
+		<cim:mRID>{documentId}</cim:mRID>
+		<cim:version>1</cim:version>
+        <cim:marketEvaluationPoint.type>E18</cim:marketEvaluationPoint.type>
+        <cim:meteringGridArea_Domain.mRID codingScheme=""NDK"">{GridArea}</cim:meteringGridArea_Domain.mRID>
+		<cim:product>8716867000030</cim:product>
+		<cim:quantity_Measure_Unit.name>KWH</cim:quantity_Measure_Unit.name>
+            <cim:Period>
+                <cim:resolution>PT15M</cim:resolution>
+		        <cim:timeInterval>
+				    <cim:start>2022-06-01T23:00Z</cim:start>
+				    <cim:end>2022-06-02T23:00Z</cim:end>
+			     </cim:timeInterval>
+                    {Points}
+            </cim:Period>
     </cim:Series>
 </cim:NotifyAggregatedMeasureData_MarketDocument>";
 
-    private const string PointTemplate = @"
-			<cim:Point>
+    private const string PointTemplate =
+        @"<cim:Point>
 				<cim:position>{Position}</cim:position>
 				<cim:quantity>{Quantity}</cim:quantity>
 				<cim:quality>{Quality}</cim:quality>
-			</cim:Point>";
+		 </cim:Point>
+         ";
 
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;
@@ -83,7 +98,8 @@ public class DocumentFactory : IDocumentFactory
             .Replace("{documentId}", _documentIdGenerator.Create())
             .Replace("{recipientGln}", GetMdrGlnForGridArea(process.GridAreaCode))
             .Replace("{createdDateTime}", _clock.GetCurrentInstant().ToString())
-            .Replace("{Points}", CreatePoints(result));
+            .Replace("{Points}", CreatePoints(result))
+            .Replace("{GridArea}", process.GridAreaCode);
 
         await WriteToStreamAsync(document, outputStream).ConfigureAwait(false);
     }
