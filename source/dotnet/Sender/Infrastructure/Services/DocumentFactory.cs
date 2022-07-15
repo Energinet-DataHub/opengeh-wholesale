@@ -115,7 +115,7 @@ public class DocumentFactory : IDocumentFactory
 
     private static async Task WriteToStreamAsync(string s, Stream outputStream)
     {
-        var writer = new StreamWriter(outputStream);
+        var writer = new StreamWriter(outputStream, leaveOpen: true);
         await using (writer.ConfigureAwait(false))
         {
             await writer.WriteAsync(s).ConfigureAwait(false);
