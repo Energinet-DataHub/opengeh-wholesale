@@ -26,6 +26,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.CalculatedResult;
 using Energinet.DataHub.Wholesale.Sender.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -83,13 +84,15 @@ public static class Program
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
         serviceCollection.AddSingleton(() => new BlobContainerClient(
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ResultsPath), " processes"));
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ResultsPath), "processes"));
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
         serviceCollection.AddDbContext<DatabaseContext>(options =>
             options.UseSqlServer(connectionString, o => o.UseNodaTime()));
+
+        serviceCollection.AddScoped<ICalculatedResultReader, CalculatedResultsReader>();
     }
 
     private static void MessageHub(IServiceCollection services)
