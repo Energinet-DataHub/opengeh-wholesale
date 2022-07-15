@@ -83,7 +83,7 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
-        serviceCollection.AddSingleton(() => new BlobContainerClient(
+        serviceCollection.AddSingleton(new BlobContainerClient(
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ResultsPath), "processes"));
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
