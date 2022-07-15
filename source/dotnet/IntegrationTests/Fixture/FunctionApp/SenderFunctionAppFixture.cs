@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Diagnostics;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -56,6 +58,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
         public QueueResource MessageHubReplyQueue { get; set; } = null!;
 
         public MessageHubSimulation MessageHubMock { get; set; } = null!;
+
+        public BlobContainerClient BlobContainerClient { get; private set; } = null!;
 
         private AzuriteManager AzuriteManager { get; }
 
@@ -136,6 +140,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
                 blobStorageContainerName: messageHubStorageContainerName);
 
             MessageHubMock = new MessageHubSimulation(messageHubSimulationConfig);
+            BlobContainerClient = new BlobContainerClient("UseDevelopmentStorage=true", "processes");
+            await BlobContainerClient.CreateIfNotExistsAsync(PublicAccessType.BlobContainer);
         }
 
         /// <inheritdoc/>
@@ -154,6 +160,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             await MessageHubMock.DisposeAsync();
             await DatabaseManager.DeleteDatabaseAsync();
             await ServiceBusResourceProvider.DisposeAsync();
+            await BlobContainerClient.DeleteIfExistsAsync();
         }
 
         private static string GetBuildConfiguration()
