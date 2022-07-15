@@ -94,9 +94,9 @@ public class DocumentFactory : IDocumentFactory
         foreach (var point in result.Points)
         {
             sb.Append(PointTemplate
-                .Replace("{Position}", point.Position.ToString())
-                .Replace("{Quantity}", point.Quantity)
-                .Replace("{Quality}", point.Quality));
+                .Replace("{Position}", point.position.ToString())
+                .Replace("{Quantity}", point.quantity)
+                .Replace("{Quality}", point.quality));
         }
 
         return sb.ToString();
