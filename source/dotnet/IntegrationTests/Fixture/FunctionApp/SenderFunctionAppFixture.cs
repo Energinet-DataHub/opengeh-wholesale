@@ -86,7 +86,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.MessageHubServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessResultsPath, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculatorResultsConnectionString, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculatorResultsFileSystemName, "processes");
         }
 
         /// <inheritdoc/>

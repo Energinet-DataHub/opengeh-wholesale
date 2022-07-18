@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
@@ -27,7 +26,6 @@ using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.CalculatedResult;
 using Energinet.DataHub.Wholesale.Sender.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,6 +67,7 @@ public static class Program
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDocumentFactory, DocumentFactory>();
         services.AddScoped<IDocumentIdGenerator, DocumentIdGenerator>();
+        services.AddScoped<ISeriesIdGenerator, SeriesIdGenerator>();
         services.AddScoped<IDataAvailableNotificationFactory, DataAvailableNotificationFactory>();
         services.AddScoped<IProcessRepository, ProcessRepository>();
         services.AddScoped<ICorrelationContext, CorrelationContext>();
@@ -84,8 +83,9 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
-        var dataLakePath = new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessResultsPath));
-        serviceCollection.AddSingleton(new DataLakeFileSystemClient(dataLakePath));
+        var calculatorResultConnection = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsConnectionString);
+        var calculatorResultFileSystem = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsFileSystemName);
+        serviceCollection.AddSingleton(new DataLakeFileSystemClient(calculatorResultConnection, calculatorResultFileSystem));
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         var connectionString =

@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Azure.Storage.Files.DataLake;
-using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.CalculatedResult;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 public class CalculatedResultsReader : ICalculatedResultReader
 {
@@ -34,10 +33,8 @@ public class CalculatedResultsReader : ICalculatedResultReader
 
     public async Task<BalanceFixingResultDto> ReadResultAsync(Process process)
     {
-        var resultPath = await SelectResultFilePathAsync(process).ConfigureAwait(false);
-
-        var fileClient = _dataLakeFileSystemClient.GetFileClient(resultPath);
-        var stream = await fileClient.OpenReadAsync().ConfigureAwait(false);
+        var resultsFile = await GetResultsFileAsync(process).ConfigureAwait(false);
+        var stream = await resultsFile.OpenReadAsync().ConfigureAwait(false);
 
         await using (stream.ConfigureAwait(false))
         {
@@ -55,19 +52,15 @@ public class CalculatedResultsReader : ICalculatedResultReader
         }
     }
 
-    private async Task<string> SelectResultFilePathAsync(Process process)
+    private async Task<DataLakeFileClient> GetResultsFileAsync(Process process)
     {
-        var normBatchId = process.BatchId.ToString().ToLowerInvariant();
-        var folder = $"results/batch_id={normBatchId}/grid_area={process.GridAreaCode}/";
+        var directory = $"results/batch_id={process.BatchId}/grid_area={process.GridAreaCode}/";
+        var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
 
-        var directory = _dataLakeFileSystemClient.GetDirectoryClient(folder);
-
-        await foreach (var pathItem in directory.GetPathsAsync())
+        await foreach (var pathItem in directoryClient.GetPathsAsync())
         {
             if (Path.GetExtension(pathItem.Name) == ".json")
-            {
-                return folder + pathItem.Name;
-            }
+                return directoryClient.GetFileClient(pathItem.Name);
         }
 
         throw new InvalidOperationException($"Blob for process {process.Id} was not found.");

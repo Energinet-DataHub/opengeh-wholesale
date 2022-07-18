@@ -16,7 +16,6 @@ using System.Text;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.CalculatedResult;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -35,7 +34,7 @@ public class DocumentFactory : IDocumentFactory
     <cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
     <cim:createdDateTime>{createdDateTime}</cim:createdDateTime>
     <cim:Series>
-		<cim:mRID>{documentId}</cim:mRID>
+		<cim:mRID>{seriesId}</cim:mRID>
 		<cim:version>1</cim:version>
         <cim:marketEvaluationPoint.type>E18</cim:marketEvaluationPoint.type>
         <cim:meteringGridArea_Domain.mRID codingScheme=""NDK"">{GridArea}</cim:meteringGridArea_Domain.mRID>
@@ -64,6 +63,7 @@ public class DocumentFactory : IDocumentFactory
     private readonly IStorageHandler _storageHandler;
     private readonly IClock _clock;
     private readonly IDocumentIdGenerator _documentIdGenerator;
+    private readonly ISeriesIdGenerator _seriesIdGenerator;
     private readonly ICalculatedResultReader _resultReader;
 
     public DocumentFactory(
@@ -71,13 +71,15 @@ public class DocumentFactory : IDocumentFactory
         IProcessRepository processRepository,
         IStorageHandler storageHandler,
         IClock clock,
-        IDocumentIdGenerator documentIdGenerator)
+        IDocumentIdGenerator documentIdGenerator,
+        ISeriesIdGenerator seriesIdGenerator)
     {
         _resultReader = resultReader;
         _processRepository = processRepository;
         _storageHandler = storageHandler;
         _clock = clock;
         _documentIdGenerator = documentIdGenerator;
+        _seriesIdGenerator = seriesIdGenerator;
     }
 
     public async Task CreateAsync(DataBundleRequestDto request, Stream outputStream)
@@ -96,6 +98,7 @@ public class DocumentFactory : IDocumentFactory
 
         var document = CimTemplate
             .Replace("{documentId}", _documentIdGenerator.Create())
+            .Replace("{seriesId}", _seriesIdGenerator.Create())
             .Replace("{recipientGln}", GetMdrGlnForGridArea(process.GridAreaCode))
             .Replace("{createdDateTime}", _clock.GetCurrentInstant().ToString())
             .Replace("{Points}", CreatePoints(result))

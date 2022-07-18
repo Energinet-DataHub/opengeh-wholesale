@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.CalculatedResult;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 public interface ICalculatedResultReader
 {
