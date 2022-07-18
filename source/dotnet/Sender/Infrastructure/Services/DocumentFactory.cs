@@ -34,7 +34,7 @@ public class DocumentFactory : IDocumentFactory
     <cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
     <cim:createdDateTime>{createdDateTime}</cim:createdDateTime>
     <cim:Series>
-		<cim:mRID>{seriesId}</cim:mRID>
+	    <cim:mRID>{seriesId}</cim:mRID>
 		<cim:version>1</cim:version>
         <cim:marketEvaluationPoint.type>E18</cim:marketEvaluationPoint.type>
         <cim:meteringGridArea_Domain.mRID codingScheme=""NDK"">{GridArea}</cim:meteringGridArea_Domain.mRID>
@@ -45,19 +45,20 @@ public class DocumentFactory : IDocumentFactory
 		        <cim:timeInterval>
 				    <cim:start>2022-06-01T23:00Z</cim:start>
 				    <cim:end>2022-06-02T23:00Z</cim:end>
-			     </cim:timeInterval>
-                    {Points}
+			     </cim:timeInterval>{Points}
             </cim:Period>
     </cim:Series>
 </cim:NotifyAggregatedMeasureData_MarketDocument>";
 
-    private const string PointTemplate =
-        @"<cim:Point>
-				<cim:position>{Position}</cim:position>
-				<cim:quantity>{Quantity}</cim:quantity>
-				<cim:quality>{Quality}</cim:quality>
-		 </cim:Point>
-         ";
+    private const string PointTemplate = @"
+                 <cim:Point>
+		             <cim:position>{Position}</cim:position>
+                     <cim:quantity>{Quantity}</cim:quantity>
+                     {Quality}
+		         </cim:Point>";
+
+    private const string QualityTemplate = @"
+                     <cim:quality>{Quality}</cim:quality>";
 
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;
@@ -107,7 +108,7 @@ public class DocumentFactory : IDocumentFactory
         await WriteToStreamAsync(document, outputStream).ConfigureAwait(false);
     }
 
-    private string CreatePoints(BalanceFixingResultDto result)
+    private static string CreatePoints(BalanceFixingResultDto result)
     {
         var sb = new StringBuilder();
         foreach (var point in result.Points)
@@ -115,10 +116,18 @@ public class DocumentFactory : IDocumentFactory
             sb.Append(PointTemplate
                 .Replace("{Position}", point.position.ToString())
                 .Replace("{Quantity}", point.quantity)
-                .Replace("{Quality}", point.quality));
+                .Replace("{Quality}", CreateQuality(point)));
         }
 
         return sb.ToString();
+    }
+
+    private static string CreateQuality(PointDto point)
+    {
+        if (string.IsNullOrWhiteSpace(point.quality))
+            return string.Empty;
+
+        return QualityTemplate.Replace("{Quality}", point.quality);
     }
 
     private static string GetMdrGlnForGridArea(string gridAreaCode)

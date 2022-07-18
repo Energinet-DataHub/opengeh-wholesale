@@ -22,11 +22,10 @@ namespace Energinet.DataHub.Wholesale.DatabaseMigration
     {
         public static DatabaseUpgradeResult DatabaseUpgrade(string? connectionString)
         {
-            var executingAssembly = Assembly.GetExecutingAssembly();
             var upgrader =
                 DeployChanges.To
                     .SqlDatabase(connectionString)
-                    .WithScriptsEmbeddedInAssembly(executingAssembly)
+                    .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
                     .LogToConsole()
                     .Build();
 

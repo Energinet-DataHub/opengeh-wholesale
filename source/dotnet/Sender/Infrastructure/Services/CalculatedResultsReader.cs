@@ -60,7 +60,7 @@ public class CalculatedResultsReader : ICalculatedResultReader
         await foreach (var pathItem in directoryClient.GetPathsAsync())
         {
             if (Path.GetExtension(pathItem.Name) == ".json")
-                return directoryClient.GetFileClient(pathItem.Name);
+                return _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
         }
 
         throw new InvalidOperationException($"Blob for process {process.Id} was not found.");
