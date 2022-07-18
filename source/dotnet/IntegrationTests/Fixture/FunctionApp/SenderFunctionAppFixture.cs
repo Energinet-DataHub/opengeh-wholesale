@@ -135,7 +135,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
                 domainReplyQueueName: MessageHubReplyQueue.Name,
                 blobStorageConnectionString: messageHubStorageConnectionString,
                 blobStorageContainerName: messageHubStorageContainerName);
-            messageHubSimulationConfig.PeekTimeout = TimeSpan.FromDays(1);
 
             MessageHubMock = new MessageHubSimulation(messageHubSimulationConfig);
         }
