@@ -32,9 +32,13 @@ def integration_events_persister_tester(spark, databricks_path, delta_lake_path)
     )
 
     integration_events_path = f"{delta_lake_path}/integration_events"
-    integration_events_checkpoint_path = f"{delta_lake_path}/integration_events_checkpoint"
+    integration_events_checkpoint_path = (
+        f"{delta_lake_path}/integration_events_checkpoint"
+    )
     market_participant_events_path = f"{delta_lake_path}/market_participant_events"
-    market_participant_events_checkpoint_path = f"{delta_lake_path}/market_participant_events_checkpoint"
+    market_participant_events_checkpoint_path = (
+        f"{delta_lake_path}/market_participant_events_checkpoint"
+    )
 
     # Remove test folders in order to avoid side effects from previous/other test runs
     if os.path.exists(event_hub_streaming_simulation_path):
@@ -66,7 +70,7 @@ def integration_events_persister_tester(spark, databricks_path, delta_lake_path)
         integration_events_path,
         integration_events_checkpoint_path,
         market_participant_events_path,
-        market_participant_events_checkpoint_path
+        market_participant_events_checkpoint_path,
     )
 
 

@@ -40,12 +40,20 @@ def integration_events_persister(
         .withColumn("day", dayofmonth(col("enqueuedTime")))
     )
 
-    (events.writeStream.partitionBy("year", "month", "day")
+    market_participant_event_filter = "GridAreaUpdated"
+
+    (
+        events.filter(events.MessageType != market_participant_event_filter)
+        .writeStream.partitionBy("year", "month", "day")
         .format("parquet")
         .option("checkpointLocation", integration_events_checkpoint_path)
-        .start(integration_events_path))
+        .start(integration_events_path)
+    )
 
-    (events.writeStream.partitionBy("year", "month", "day")
+    (
+        events.filter(events.MessageType == market_participant_event_filter)
+        .writeStream.partitionBy("year", "month", "day")
         .format("parquet")
         .option("checkpointLocation", market_participant_events_checkpoint_path)
-        .start(market_participant_events_path))
+        .start(market_participant_events_path)
+    )
