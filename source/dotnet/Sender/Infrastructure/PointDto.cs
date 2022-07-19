@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure;
 
-public sealed record ProcessCompletedEventDto(string GridAreaCode, Guid BatchId);
+// All values of the PointDto must be in lower casing to conform with the spark json output.
+#pragma warning disable SA1300
+public sealed record PointDto(int position, string quantity, string quality);
+#pragma warning restore SA1300
