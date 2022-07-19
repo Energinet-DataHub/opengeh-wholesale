@@ -140,6 +140,9 @@ public static class Program
             .AddAzureServiceBusQueue(
                 EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
                 EnvironmentSettingNames.MessageHubReplyQueueName.Val(),
-                "MessageHubReplyQueue");
+                "MessageHubReplyQueue")
+            .AddDataLakeCheck(
+                EnvironmentSettingNames.CalculatorResultsConnectionString.Val(),
+                EnvironmentSettingNames.CalculatorResultsFileSystemName.Val());
     }
 }

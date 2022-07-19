@@ -47,8 +47,7 @@ public class DataAvailableSenderEndpointTests
             return Task.CompletedTask;
         }
 
-        // TODO: There is currently no way to test DataLake container.
-        [Theory(Skip = "TODO: There is currently no way to test DataLake containers.")]
+        [Theory(Skip = "There is currently no way to test DataLake containers.")]
         [InlineAutoMoqData]
         public async Task Given_ProcessCompleted_When_MeteredDataResponsiblePeeks_Then_MessageHubReceivesReply(
             Guid batchId,
