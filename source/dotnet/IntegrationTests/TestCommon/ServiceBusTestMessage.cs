@@ -37,7 +37,7 @@ public static class ServiceBusTestMessage
     private static void Configure(ServiceBusMessage serviceBusMessage, DateTime operationTimestamp, string operationCorrelationId)
     {
         serviceBusMessage.CorrelationId = Guid.NewGuid().ToString().Replace("-", string.Empty);
-        serviceBusMessage.ApplicationProperties.Add("operationTimestamp", operationTimestamp.ToUniversalTime());
+        serviceBusMessage.ApplicationProperties.Add("OperationTimestamp", operationTimestamp.ToUniversalTime());
         serviceBusMessage.ApplicationProperties.Add("OperationCorrelationId", operationCorrelationId);
         serviceBusMessage.ApplicationProperties.Add("MessageVersion", 1);
         serviceBusMessage.ApplicationProperties.Add("MessageType", "MeteringPointCreated");

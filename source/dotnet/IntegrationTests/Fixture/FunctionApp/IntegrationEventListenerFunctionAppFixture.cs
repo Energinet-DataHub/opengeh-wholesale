@@ -55,6 +55,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
         public TopicResource MeteringPointConnectedTopic { get; private set; } = null!;
 
+        public TopicResource MarketParticipantChangedTopic { get; private set; } = null!;
+
         public EventHubResourceProvider EventHubResourceProvider { get; }
 
         private AzuriteManager AzuriteManager { get; }
@@ -113,6 +115,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.MeteringPointConnectedTopicName)
                 .AddSubscription("metering-point-connected-to-wholesale")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName)
+                .CreateAsync();
+
+            MarketParticipantChangedTopic = await ServiceBusResourceProvider
+                .BuildTopic("market-participant-changed")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.MarketParticipantChangedTopicName)
+                .AddSubscription("market-participant-changed-to-wholesale")
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
                 .CreateAsync();
         }
 
