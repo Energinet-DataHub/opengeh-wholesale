@@ -104,8 +104,8 @@ public class BatchApplicationService : IBatchApplicationService
     private List<ProcessCompletedEventDto> CreateProcessCompletedEvents(List<Batch> completedBatches)
     {
         return completedBatches
-            .SelectMany(b => b.GridAreaCodes)
-            .Select(c => new ProcessCompletedEventDto(c.Code))
+            .SelectMany(b => b.GridAreaCodes.Select(x => new { b.Id, x.Code }))
+            .Select(c => new ProcessCompletedEventDto(c.Code, c.Id.Id))
             .ToList();
     }
 }

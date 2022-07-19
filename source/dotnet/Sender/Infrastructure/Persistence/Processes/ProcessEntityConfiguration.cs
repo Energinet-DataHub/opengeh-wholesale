@@ -31,5 +31,6 @@ public class ProcessEntityConfiguration : IEntityTypeConfiguration<Process>
                 reference => reference.Value.ToString(),
                 value => new MessageHubReference(Guid.Parse(value)));
         builder.Property(p => p.GridAreaCode);
+        builder.Property(p => p.BatchId);
     }
 }

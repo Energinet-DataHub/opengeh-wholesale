@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
-public sealed record ProcessCompletedEventDto(string GridAreaCode, Guid BatchId);
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
+
+public interface ICalculatedResultReader
+{
+    Task<BalanceFixingResultDto> ReadResultAsync(Process process);
+}

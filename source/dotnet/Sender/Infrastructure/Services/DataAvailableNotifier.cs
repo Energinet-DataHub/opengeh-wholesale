@@ -54,7 +54,7 @@ public class DataAvailableNotifier : IDataAvailableNotifier
         Guid notificationUuid)
     {
         var messageHubReference = new MessageHubReference(notificationUuid);
-        var process = new Process(messageHubReference, completedProcessEvent.GridAreaCode);
+        var process = new Process(messageHubReference, completedProcessEvent.GridAreaCode, completedProcessEvent.BatchId);
         await _processRepository.AddAsync(process).ConfigureAwait(false);
     }
 }
