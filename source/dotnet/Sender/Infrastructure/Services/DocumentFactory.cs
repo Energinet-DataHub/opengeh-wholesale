@@ -147,15 +147,13 @@ public class DocumentFactory : IDocumentFactory
 
     private static Interval CalculateTimeInterval()
     {
-        var origin = SystemClock.Instance.GetCurrentInstant();
-        var targetTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
-
-        var localDateTime = origin.InZone(targetTimeZone).LocalDateTime;
-        var localDate = localDateTime.Date;
+        var localDate = new LocalDate(2022, 07, 01);
 
         // These values should be provided by the calculator once they have been computed.
-        var from = localDate.PlusDays(-1);
-        var to = localDate;
+        var from = localDate;
+        var to = localDate.PlusDays(1);
+
+        var targetTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
 
         var fromInstant = from.AtMidnight().InZoneStrictly(targetTimeZone).ToInstant();
         var toInstant = to.AtMidnight().InZoneStrictly(targetTimeZone).ToInstant();
