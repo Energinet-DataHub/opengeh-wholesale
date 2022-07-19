@@ -65,7 +65,7 @@ public class DocumentFactoryTests
         var anyGridAreaCode = "805";
         processRepositoryMock
             .Setup(repository => repository.GetAsync(It.IsAny<MessageHubReference>()))
-            .ReturnsAsync((MessageHubReference messageHubRef) => new Process(messageHubRef, anyGridAreaCode));
+            .ReturnsAsync((MessageHubReference messageHubRef) => new Process(messageHubRef, anyGridAreaCode, Guid.NewGuid()));
 
         storageHandlerMock
             .Setup(handler => handler.GetDataAvailableNotificationIdsAsync(request))

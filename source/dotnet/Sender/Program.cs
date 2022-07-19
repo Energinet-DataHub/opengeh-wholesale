@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
@@ -66,6 +67,7 @@ public static class Program
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDocumentFactory, DocumentFactory>();
         services.AddScoped<IDocumentIdGenerator, DocumentIdGenerator>();
+        services.AddScoped<ISeriesIdGenerator, SeriesIdGenerator>();
         services.AddScoped<IDataAvailableNotificationFactory, DataAvailableNotificationFactory>();
         services.AddScoped<IProcessRepository, ProcessRepository>();
         services.AddScoped<ICorrelationContext, CorrelationContext>();
@@ -81,11 +83,17 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
+        var calculatorResultConnection = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsConnectionString);
+        var calculatorResultFileSystem = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsFileSystemName);
+        serviceCollection.AddSingleton(new DataLakeFileSystemClient(calculatorResultConnection, calculatorResultFileSystem));
+
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
         serviceCollection.AddDbContext<DatabaseContext>(options =>
             options.UseSqlServer(connectionString, o => o.UseNodaTime()));
+
+        serviceCollection.AddScoped<ICalculatedResultReader, CalculatedResultsReader>();
     }
 
     private static void MessageHub(IServiceCollection services)
@@ -132,6 +140,9 @@ public static class Program
             .AddAzureServiceBusQueue(
                 EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
                 EnvironmentSettingNames.MessageHubReplyQueueName.Val(),
-                "MessageHubReplyQueue");
+                "MessageHubReplyQueue")
+            .AddDataLakeCheck(
+                EnvironmentSettingNames.CalculatorResultsConnectionString.Val(),
+                EnvironmentSettingNames.CalculatorResultsFileSystemName.Val());
     }
 }

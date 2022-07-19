@@ -16,11 +16,12 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processe
 
 public class Process
 {
-    public Process(MessageHubReference messageHubReference, string gridAreaCode)
+    public Process(MessageHubReference messageHubReference, string gridAreaCode, Guid batchId)
     {
         Id = Guid.NewGuid();
         MessageHubReference = messageHubReference;
         GridAreaCode = gridAreaCode;
+        BatchId = batchId;
     }
 
     public Guid Id { get; }
@@ -28,4 +29,6 @@ public class Process
     public MessageHubReference MessageHubReference { get; }
 
     public string GridAreaCode { get; }
+
+    public Guid BatchId { get; }
 }

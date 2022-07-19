@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
@@ -21,6 +22,8 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 public class DocumentFactory : IDocumentFactory
 {
+    // <product> is fixed to 8716867000030 (Active Energy) for current document type.
+    // <quantity_Measure_Unit> is fixed to kWh for current document type.
     private const string CimTemplate = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <cim:NotifyAggregatedMeasureData_MarketDocument xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:cim=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"" xsi:schemaLocation=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1 urn-ediel-org-measure-notifyaggregatedmeasuredata-0-1.xsd"">
     <cim:mRID>{documentId}</cim:mRID>
@@ -33,21 +36,53 @@ public class DocumentFactory : IDocumentFactory
     <cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
     <cim:createdDateTime>{createdDateTime}</cim:createdDateTime>
     <cim:Series>
-        <!-- content will be added in future releases -->
+	    <cim:mRID>{seriesId}</cim:mRID>
+		<cim:version>1</cim:version>
+        <cim:marketEvaluationPoint.type>E18</cim:marketEvaluationPoint.type>
+        <cim:meteringGridArea_Domain.mRID codingScheme=""NDK"">{gridArea}</cim:meteringGridArea_Domain.mRID>
+		<cim:product>8716867000030</cim:product>
+		<cim:quantity_Measure_Unit.name>KWH</cim:quantity_Measure_Unit.name>
+            <cim:Period>
+                <cim:resolution>PT15M</cim:resolution>
+		        <cim:timeInterval>
+				    <cim:start>{timeIntervalFrom}</cim:start>
+				    <cim:end>{timeIntervalTo}</cim:end>
+			     </cim:timeInterval>{points}
+            </cim:Period>
     </cim:Series>
 </cim:NotifyAggregatedMeasureData_MarketDocument>";
+
+    private const string PointTemplate = @"
+                 <cim:Point>
+		             <cim:position>{position}</cim:position>
+                     <cim:quantity>{quantity}</cim:quantity>
+                     {quality}
+		         </cim:Point>";
+
+    private const string QualityTemplate = @"
+                     <cim:quality>{quality}</cim:quality>";
 
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;
     private readonly IClock _clock;
     private readonly IDocumentIdGenerator _documentIdGenerator;
+    private readonly ISeriesIdGenerator _seriesIdGenerator;
+    private readonly ICalculatedResultReader _resultReader;
 
-    public DocumentFactory(IProcessRepository processRepository, IStorageHandler storageHandler, IClock clock, IDocumentIdGenerator documentIdGenerator)
+    public DocumentFactory(
+        ICalculatedResultReader resultReader,
+        IProcessRepository processRepository,
+        IStorageHandler storageHandler,
+        IClock clock,
+        IDocumentIdGenerator documentIdGenerator,
+        ISeriesIdGenerator seriesIdGenerator)
     {
+        _resultReader = resultReader;
         _processRepository = processRepository;
         _storageHandler = storageHandler;
         _clock = clock;
         _documentIdGenerator = documentIdGenerator;
+        _seriesIdGenerator = seriesIdGenerator;
     }
 
     public async Task CreateAsync(DataBundleRequestDto request, Stream outputStream)
@@ -62,12 +97,41 @@ public class DocumentFactory : IDocumentFactory
         var messageHubReference = new MessageHubReference(notificationId);
         var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
 
+        var result = await _resultReader.ReadResultAsync(process).ConfigureAwait(false);
+
         var document = CimTemplate
             .Replace("{documentId}", _documentIdGenerator.Create())
+            .Replace("{seriesId}", _seriesIdGenerator.Create())
             .Replace("{recipientGln}", GetMdrGlnForGridArea(process.GridAreaCode))
-            .Replace("{createdDateTime}", _clock.GetCurrentInstant().ToString());
+            .Replace("{createdDateTime}", _clock.GetCurrentInstant().ToString())
+            .Replace("{timeIntervalFrom}", CalculateTimeInterval().Start.ToString())
+            .Replace("{timeIntervalTo}", CalculateTimeInterval().End.ToString())
+            .Replace("{points}", CreatePoints(result))
+            .Replace("{gridArea}", process.GridAreaCode);
 
-        WriteToStream(document, outputStream);
+        await WriteToStreamAsync(document, outputStream).ConfigureAwait(false);
+    }
+
+    private static string CreatePoints(BalanceFixingResultDto result)
+    {
+        var sb = new StringBuilder();
+        foreach (var point in result.Points)
+        {
+            sb.Append(PointTemplate
+                .Replace("{position}", point.position.ToString())
+                .Replace("{quantity}", point.quantity)
+                .Replace("{quality}", CreateQuality(point)));
+        }
+
+        return sb.ToString();
+    }
+
+    private static string CreateQuality(PointDto point)
+    {
+        if (string.IsNullOrWhiteSpace(point.quality))
+            return string.Empty;
+
+        return QualityTemplate.Replace("{quality}", point.quality);
     }
 
     private static string GetMdrGlnForGridArea(string gridAreaCode)
@@ -81,11 +145,29 @@ public class DocumentFactory : IDocumentFactory
         return gln;
     }
 
-    private static void WriteToStream(string s, Stream outputStream)
+    private static Interval CalculateTimeInterval()
     {
-        var writer = new StreamWriter(outputStream);
-        writer.Write(s);
-        writer.Flush();
-        outputStream.Position = 0;
+        var localDate = new LocalDate(2022, 07, 01);
+
+        // These values should be provided by the calculator once they have been computed.
+        var from = localDate;
+        var to = localDate.PlusDays(1);
+
+        var targetTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
+
+        var fromInstant = from.AtMidnight().InZoneStrictly(targetTimeZone).ToInstant();
+        var toInstant = to.AtMidnight().InZoneStrictly(targetTimeZone).ToInstant();
+
+        return new Interval(fromInstant, toInstant);
+    }
+
+    private static async Task WriteToStreamAsync(string s, Stream outputStream)
+    {
+        var writer = new StreamWriter(outputStream, leaveOpen: true);
+        await using (writer.ConfigureAwait(false))
+        {
+            await writer.WriteAsync(s).ConfigureAwait(false);
+            await writer.FlushAsync().ConfigureAwait(false);
+        }
     }
 }

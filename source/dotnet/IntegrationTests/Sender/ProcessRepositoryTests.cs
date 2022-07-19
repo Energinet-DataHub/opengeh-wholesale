@@ -35,7 +35,7 @@ public class ProcessRepositoryTests : IClassFixture<SenderDatabaseFixture>
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var sut = new ProcessRepository(writeContext);
-        var expectedProcess = new Process(new MessageHubReference(Guid.NewGuid()), CreateGridAreaCode());
+        var expectedProcess = new Process(new MessageHubReference(Guid.NewGuid()), CreateGridAreaCode(), Guid.NewGuid());
 
         // Act
         await sut.AddAsync(expectedProcess);
@@ -53,7 +53,7 @@ public class ProcessRepositoryTests : IClassFixture<SenderDatabaseFixture>
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var expectedProcess = new Process(new MessageHubReference(Guid.NewGuid()), CreateGridAreaCode());
+        var expectedProcess = new Process(new MessageHubReference(Guid.NewGuid()), CreateGridAreaCode(), Guid.NewGuid());
         await writeContext.Processes.AddAsync(expectedProcess);
         await writeContext.SaveChangesAsync();
 
