@@ -47,6 +47,8 @@ resource "databricks_job" "integration_events_persister_streaming_job" {
           "--event-hub-connectionstring=${module.evh_masterdataevents.primary_connection_strings["listen"]}",
           "--integration-events-path=abfss://${local.INTERGRATION_EVENTS_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events",
           "--integration-events-checkpoint-path=abfss://${local.INTERGRATION_EVENTS_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events-checkpoint",
+          "--market-participant-events-path=abfss://${local.MARKET_PARTICIPANT_EVENTS_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events",
+          "--market-participant-events-checkpoint-path=abfss://${local.MARKET_PARTICIPANT_EVENTS_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events-checkpoint",
       ]
     }
   }

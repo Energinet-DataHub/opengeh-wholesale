@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.functions import lit
-from pyspark.sql.types import StructType, StructField, IntegerType
-
 from package import calculator, initialize_spark
 import configargparse
 

@@ -23,7 +23,11 @@ from package.schemas import eventhub_integration_events_schema as schema
 
 # integration_events_persister
 def integration_events_persister(
-    streamingDf: DataFrame, checkpoint_path: str, integration_events_path: str
+    streamingDf: DataFrame,
+    integration_events_path: str,
+    integration_events_checkpoint_path: str,
+    market_participant_events_path: str,
+    market_participant_events_checkpoint_path: str,
 ):
     streamingDf = streamingDf.withColumn("body", col("body").cast("string")).withColumn(
         "body", from_json(col("body"), schema)
@@ -35,9 +39,13 @@ def integration_events_persister(
         .withColumn("month", month(col("enqueuedTime")))
         .withColumn("day", dayofmonth(col("enqueuedTime")))
     )
-    return (
-        events.writeStream.partitionBy("year", "month", "day")
+
+    (events.writeStream.partitionBy("year", "month", "day")
         .format("parquet")
-        .option("checkpointLocation", checkpoint_path)
-        .start(integration_events_path)
-    )
+        .option("checkpointLocation", integration_events_checkpoint_path)
+        .start(integration_events_path))
+
+    (events.writeStream.partitionBy("year", "month", "day")
+        .format("parquet")
+        .option("checkpointLocation", market_participant_events_checkpoint_path)
+        .start(market_participant_events_path))

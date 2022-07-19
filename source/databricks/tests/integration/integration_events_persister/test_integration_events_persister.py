@@ -30,16 +30,23 @@ def integration_events_persister_tester(spark, databricks_path, delta_lake_path)
     event_hub_streaming_simulation_path = (
         f"{delta_lake_path}/event_hub_streaming_simulation"
     )
+
     integration_events_path = f"{delta_lake_path}/integration_events"
-    checkpoint_path = f"{delta_lake_path}/checkpoint"
+    integration_events_checkpoint_path = f"{delta_lake_path}/integration_events_checkpoint"
+    market_participant_events_path = f"{delta_lake_path}/market_participant_events"
+    market_participant_events_checkpoint_path = f"{delta_lake_path}/market_participant_events_checkpoint"
 
     # Remove test folders in order to avoid side effects from previous/other test runs
     if os.path.exists(event_hub_streaming_simulation_path):
         shutil.rmtree(event_hub_streaming_simulation_path)
     if os.path.exists(integration_events_path):
         shutil.rmtree(integration_events_path)
-    if os.path.exists(checkpoint_path):
-        shutil.rmtree(checkpoint_path)
+    if os.path.exists(integration_events_checkpoint_path):
+        shutil.rmtree(integration_events_checkpoint_path)
+    if os.path.exists(market_participant_events_path):
+        shutil.rmtree(market_participant_events_path)
+    if os.path.exists(market_participant_events_checkpoint_path):
+        shutil.rmtree(market_participant_events_checkpoint_path)
 
     os.makedirs(event_hub_streaming_simulation_path)
     f = open(f"{event_hub_streaming_simulation_path}/test.json", "w")
@@ -55,7 +62,11 @@ def integration_events_persister_tester(spark, databricks_path, delta_lake_path)
     )
 
     return integration_events_persister(
-        streamingDF, checkpoint_path, integration_events_path
+        streamingDF,
+        integration_events_path,
+        integration_events_checkpoint_path,
+        market_participant_events_path,
+        market_participant_events_checkpoint_path
     )
 
 

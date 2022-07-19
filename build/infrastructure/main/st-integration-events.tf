@@ -13,6 +13,11 @@
 # limitations under the License.
 
 resource "azurerm_storage_container" "integration_events_container" {
-  name                  = local.DATA_LAKE_CONTAINER_NAME
+  name                  = local.INTERGRATION_EVENTS_CONTAINER_NAME
+  storage_account_name  = data.azurerm_key_vault_secret.st_shared_data_lake_name.value
+}
+
+resource "azurerm_storage_container" "market_participant_events_container" {
+  name                  = local.MARKET_PARTICIPANT_EVENTS_CONTAINER_NAME
   storage_account_name  = data.azurerm_key_vault_secret.st_shared_data_lake_name.value
 }

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql.functions import lit
-from pyspark.sql.types import StructType, StructField, IntegerType
+from pyspark.sql.types import IntegerType
 
 
 def calculator(

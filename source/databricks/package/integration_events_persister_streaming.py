@@ -31,12 +31,11 @@ def start():
     p.add("--event-hub-connectionstring", type=str, required=True)
     p.add("--integration-events-path", type=str, required=True)
     p.add("--integration-events-checkpoint-path", type=str, required=True)
+    p.add("--market-participant-events-path", type=str, required=True)
+    p.add("--market-participant-events-checkpoint-path", type=str, required=True)
 
     args, unknown_args = p.parse_known_args()
     spark = initialize_spark(args.data_storage_account_name, args.data_storage_account_key)
-
-    integration_events_path = f"{args.integration_events_path}"
-    integration_events_checkpoint_path = f"{args.integration_events_checkpoint_path}"
 
     input_configuration = {}
     input_configuration[
@@ -49,5 +48,9 @@ def start():
     )
 
     integration_events_persister(
-        streamingDF, integration_events_checkpoint_path, integration_events_path
+        streamingDF,
+        args.integration_events_path,
+        args.integration_events_checkpoint_path,
+        args.market_participant_events_path,
+        args.market_participant_events_checkpoint_path
     )
