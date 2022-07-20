@@ -44,11 +44,11 @@ public class MarketParticipantChangedListenerEndpoint
         "%" + EnvironmentSettingNames.IntegrationEventsEventHubName + "%",
         Connection = EnvironmentSettingNames.IntegrationEventsEventHubConnectionString)]
     public string? Run(
-        [ServiceBusTrigger(
-            "%" + EnvironmentSettingNames.MarketParticipantChangedTopicName + "%",
-            "%" + EnvironmentSettingNames.MarketParticipantChangedSubscriptionName + "%",
-            Connection = EnvironmentSettingNames.IntegrationEventConnectionListenerString)]
         byte[] message)
+        //[ServiceBusTrigger(
+        //    "%" + EnvironmentSettingNames.MarketParticipantChangedTopicName + "%",
+        //    "%" + EnvironmentSettingNames.MarketParticipantChangedSubscriptionName + "%",
+        //    Connection = EnvironmentSettingNames.IntegrationEventConnectionListenerString)]
     {
         var marketParticipantEvent = _sharedIntegrationEventParser.Parse(message);
 

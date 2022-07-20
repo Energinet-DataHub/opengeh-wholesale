@@ -51,7 +51,7 @@ public class MarketParticipantChangedListenerEndpointTests
             return Task.CompletedTask;
         }
 
-        [Fact]
+        [Fact(Skip = "WIP")]
         public async Task When_ReceivingGridAreaUpdatedMessage_GridAreaUpdatedDtoIsSentToEventHub()
         {
             // Arrange
@@ -90,7 +90,7 @@ public class MarketParticipantChangedListenerEndpointTests
             actual.CorrelationId.Should().Be(correlationId);
         }
 
-        [Fact]
+        [Fact(Skip = "WIP")]
         public async Task When_ReceivingUnusedMessage_NothingIsSentToEventHub()
         {
             // Arrange
