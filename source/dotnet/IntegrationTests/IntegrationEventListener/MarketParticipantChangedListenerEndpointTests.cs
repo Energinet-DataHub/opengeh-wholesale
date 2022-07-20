@@ -25,7 +25,6 @@ using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
 using FluentAssertions;
-using NodaTime.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -104,7 +103,7 @@ public class MarketParticipantChangedListenerEndpointTests
             var correlationId = Guid.NewGuid().ToString();
 
             var message = ServiceBusTestMessage.Create(
-                CreateOtherEvent(),
+                CreateUnusedEvent(),
                 operationTimestamp,
                 correlationId);
 
@@ -132,7 +131,7 @@ public class MarketParticipantChangedListenerEndpointTests
                 gridAreaLinkId));
         }
 
-        private static byte[] CreateOtherEvent()
+        private static byte[] CreateUnusedEvent()
         {
             var eventParser = new OrganizationNameChangedIntegrationEventParser();
             return eventParser.Parse(new OrganizationNameChangedIntegrationEvent(
