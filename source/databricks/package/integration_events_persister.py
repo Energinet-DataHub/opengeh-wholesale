@@ -40,7 +40,7 @@ def integration_events_persister(
         .withColumn("day", dayofmonth(col("enqueuedTime")))
     )
 
-    market_participant_event_filter = "GridAreaUpdated"
+    market_participant_event_filter = "GridAreaUpdatedIntegrationEvent"
 
     (
         events.filter(events.MessageType != market_participant_event_filter)
