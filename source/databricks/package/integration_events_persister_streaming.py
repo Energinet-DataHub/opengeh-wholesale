@@ -31,11 +31,11 @@ def start():
     p.add("--event-hub-connectionstring", type=str, required=True)
     p.add("--integration-events-path", type=str, required=True)
     p.add("--integration-events-checkpoint-path", type=str, required=True)
-    p.add("--market-participant-events-path", type=str, required=True)
-    p.add("--market-participant-events-checkpoint-path", type=str, required=True)
 
     args, unknown_args = p.parse_known_args()
-    spark = initialize_spark(args.data_storage_account_name, args.data_storage_account_key)
+    spark = initialize_spark(
+        args.data_storage_account_name, args.data_storage_account_key
+    )
 
     input_configuration = {}
     input_configuration[
@@ -43,6 +43,7 @@ def start():
     ] = spark.sparkContext._gateway.jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt(
         f"{args.event_hub_connectionstring}"
     )
+
     streamingDF = (
         spark.readStream.format("eventhubs").options(**input_configuration).load()
     )
@@ -51,6 +52,4 @@ def start():
         streamingDF,
         args.integration_events_path,
         args.integration_events_checkpoint_path,
-        args.market_participant_events_path,
-        args.market_participant_events_checkpoint_path
     )

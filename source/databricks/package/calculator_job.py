@@ -24,7 +24,6 @@ def start():
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--integration-events-path", type=str, required=True)
-    p.add("--market-participant-events-path", type=str, required=True)
     p.add("--time-series-points-path", type=str, required=True)
     p.add("--process-results-path", type=str, required=True)
     p.add("--batch-id", type=str, required=True)

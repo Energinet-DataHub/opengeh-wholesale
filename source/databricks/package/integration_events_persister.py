@@ -26,12 +26,11 @@ def integration_events_persister(
     streamingDf: DataFrame,
     integration_events_path: str,
     integration_events_checkpoint_path: str,
-    market_participant_events_path: str,
-    market_participant_events_checkpoint_path: str,
 ):
     streamingDf = streamingDf.withColumn("body", col("body").cast("string")).withColumn(
         "body", from_json(col("body"), schema)
     )
+
     events = (
         streamingDf.select(col("*"), col("body.*"))
         .drop("body")
@@ -40,20 +39,9 @@ def integration_events_persister(
         .withColumn("day", dayofmonth(col("enqueuedTime")))
     )
 
-    market_participant_event_filter = "GridAreaUpdatedIntegrationEvent"
-
     (
-        events.filter(events.MessageType != market_participant_event_filter)
-        .writeStream.partitionBy("year", "month", "day")
+        events.writeStream.partitionBy("year", "month", "day")
         .format("parquet")
         .option("checkpointLocation", integration_events_checkpoint_path)
         .start(integration_events_path)
-    )
-
-    (
-        events.filter(events.MessageType == market_participant_event_filter)
-        .writeStream.partitionBy("year", "month", "day")
-        .format("parquet")
-        .option("checkpointLocation", market_participant_events_checkpoint_path)
-        .start(market_participant_events_path)
     )
