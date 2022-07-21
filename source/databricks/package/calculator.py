@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.functions import lit
+from pyspark.sql.functions import lit, col
 from pyspark.sql.types import IntegerType
 
 
 def calculator(
     spark,
+    raw_integration_events_df,
     process_results_path,
     batch_id,
 ):
@@ -26,10 +27,36 @@ def calculator(
         "value", "position"
     )
 
+    integrationEventsDf = prepare_integration_events_df(raw_integration_events_df)
+
     df_805 = df_seq.withColumn("grid_area", lit("805"))
     df_806 = df_seq.withColumn("grid_area", lit("806"))
+
     df = df_805.union(df_806)
+
     df = df.withColumn("quantity", lit(None)).withColumn("quality", lit(None))
     df.coalesce(1).write.mode("overwrite").partitionBy("grid_area").json(
         f"{process_results_path}/batch_id={batch_id}"
+    )
+
+    integrationEventsDf.write.mode("overwrite").json(
+        f"{process_results_path}/test/batch_id={batch_id}"
+    )
+
+
+def prepare_integration_events_df(raw_integration_events_df):
+    gridAreaCodesDf = (
+        raw_integration_events_df.filter(
+            col("MessageType") == "GridAreaUpdatedIntegrationEvent"
+        )
+        .select(col("GridAreaCode"), col("GridAreaLinkId"))
+        .distinct()
+    )
+
+    return (
+        raw_integration_events_df.filter(
+            col("MessageType") != "GridAreaUpdatedIntegrationEvent"
+        )
+        .drop(col("GridAreaCode"))
+        .join(gridAreaCodesDf, "GridAreaLinkId")
     )

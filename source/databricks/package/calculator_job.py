@@ -33,4 +33,10 @@ def start():
         args.data_storage_account_name, args.data_storage_account_key
     )
 
-    calculator(spark, args.process_results_path, args.batch_id)
+    raw_integration_events_df = spark.read.option("mergeSchema", "true").parquet(
+        args.integration_event_path
+    )
+
+    calculator(
+        spark, raw_integration_events_df, args.process_results_path, args.batch_id
+    )

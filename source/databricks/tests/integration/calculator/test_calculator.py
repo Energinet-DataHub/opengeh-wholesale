@@ -14,6 +14,8 @@
 
 import pytest
 from package import calculator
+from pyspark.sql.types import IntegerType
+from package.schemas import eventhub_integration_events_schema
 
 
 def test_calculator_creates_file(
@@ -22,7 +24,11 @@ def test_calculator_creates_file(
     batchId = 1234
     process_results_path = f"{delta_lake_path}/results"
 
-    calculator(spark, process_results_path, batchId)
+    raw_integration_events_df = spark.createDataFrame(
+        [], schema=eventhub_integration_events_schema
+    )
+
+    calculator(spark, raw_integration_events_df, process_results_path, batchId)
 
     jsonFile = find_first_file(
         f"{delta_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
