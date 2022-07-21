@@ -27,7 +27,7 @@ def calculator(
         "value", "position"
     )
 
-    integrationEventsDf = prepare_integration_events_df(raw_integration_events_df)
+    integrationEventsDf = filter_integration_events_df(raw_integration_events_df, "805")
 
     df_805 = df_seq.withColumn("grid_area", lit("805"))
     df_806 = df_seq.withColumn("grid_area", lit("806"))
@@ -44,19 +44,14 @@ def calculator(
     )
 
 
-def prepare_integration_events_df(raw_integration_events_df):
-    gridAreaCodesDf = (
-        raw_integration_events_df.filter(
-            col("MessageType") == "GridAreaUpdatedIntegrationEvent"
-        )
-        .select(col("GridAreaCode"), col("GridAreaLinkId"))
+# Takes all integration events, then filters them based on the specified grid area.
+def filter_integration_events_df(raw_integration_events_df, grid_area_code):
+    grid_area_link_ids_df = (
+        raw_integration_events_df.filter(col("GridAreaCode") == grid_area_code)
+        .select(col("GridAreaLinkId"))
         .distinct()
     )
 
-    return (
-        raw_integration_events_df.filter(
-            col("MessageType") != "GridAreaUpdatedIntegrationEvent"
-        )
-        .drop(col("GridAreaCode"))
-        .join(gridAreaCodesDf, "GridAreaLinkId")
-    )
+    return raw_integration_events_df.filter(
+        col("MessageType") != "GridAreaUpdatedIntegrationEvent"
+    ).join(grid_area_link_ids_df, "GridAreaLinkId")
