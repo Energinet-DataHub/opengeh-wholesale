@@ -44,7 +44,6 @@ jobs:
       TEST_REPORT_PATH: ./source/databricks/htmlcov/
 
   wheel_ci:
-    needs: [databricks_ci]
     uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@7.6.0
     with:
       PYHTON_VERSION: '3.8.6'
@@ -54,14 +53,13 @@ jobs:
       ARTIFACT_PATH: './source/databricks/dist'
 
   terraform_validate:
-    needs: [wheel_ci]
     uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@7.6.0
     with:
       TERRAFORM_WORKING_DIR_PATH: "./build/infrastructure/main"
       TERRAFORM_VERSION: '1.2.2'
 
   create_prerelease:
-    needs: [ci_base, terraform_validate, dotnet_solution_ci, wheel_ci]
+    needs: [ci_base, terraform_validate, dotnet_solution_ci, databricks_ci, wheel_ci]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@7.6.0
     with:
       CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
