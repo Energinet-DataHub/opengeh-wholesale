@@ -16,6 +16,7 @@ from pyspark.sql.types import StringType, StructType, StructField, TimestampType
 eventhub_integration_events_schema = StructType(
     [
         StructField("GsrnNumber", StringType(), True),
+        StructField("GridAreaCode", StringType(), True),
         StructField("GridAreaLinkId", StringType(), True),
         StructField("SettlementMethod", StringType(), True),
         StructField("ConnectionState", StringType(), True),
