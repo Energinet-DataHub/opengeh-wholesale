@@ -34,7 +34,7 @@ def start():
     )
 
     raw_integration_events_df = spark.read.option("mergeSchema", "true").parquet(
-        args.integration_event_path
+        args.integration_events_path
     )
 
     calculator(
