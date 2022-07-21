@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 using FluentAssertions;
 using Moq;
+using NodaTime;
 using NodaTime.Text;
 using Xunit;
 
@@ -40,23 +41,22 @@ public class DocumentFactoryTests
     <cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
     <cim:createdDateTime>2022-07-04T08:05:30Z</cim:createdDateTime>
     <cim:Series>
-	    <cim:mRID>1B8E673E-DBBD-4611-87A9-C7154937786A</cim:mRID>
-		<cim:version>1</cim:version>
+        <cim:mRID>1B8E673E-DBBD-4611-87A9-C7154937786A</cim:mRID>
+        <cim:version>1</cim:version>
         <cim:marketEvaluationPoint.type>E18</cim:marketEvaluationPoint.type>
         <cim:meteringGridArea_Domain.mRID codingScheme=""NDK"">805</cim:meteringGridArea_Domain.mRID>
-		<cim:product>8716867000030</cim:product>
-		<cim:quantity_Measure_Unit.name>KWH</cim:quantity_Measure_Unit.name>
+        <cim:product>8716867000030</cim:product>
+        <cim:quantity_Measure_Unit.name>KWH</cim:quantity_Measure_Unit.name>
             <cim:Period>
                 <cim:resolution>PT15M</cim:resolution>
-		        <cim:timeInterval>
-				    <cim:start>2022-06-30T22:00:00Z</cim:start>
-				    <cim:end>2022-07-01T22:00:00Z</cim:end>
-			     </cim:timeInterval>
+                <cim:timeInterval>
+                    <cim:start>2022-06-30T22:00:00Z</cim:start>
+                    <cim:end>2022-07-01T22:00:00Z</cim:end>
+                </cim:timeInterval>
                  <cim:Point>
-		             <cim:position>1</cim:position>
+                     <cim:position>1</cim:position>
                      <cim:quantity>2</cim:quantity>
-                     
-		         </cim:Point>
+                 </cim:Point>
             </cim:Period>
     </cim:Series>
 </cim:NotifyAggregatedMeasureData_MarketDocument>";
@@ -74,7 +74,7 @@ public class DocumentFactoryTests
         [Frozen] Mock<ISeriesIdGenerator> seriesIdGeneratorMock,
         [Frozen] Mock<IProcessRepository> processRepositoryMock,
         [Frozen] Mock<IStorageHandler> storageHandlerMock,
-        [Frozen] Mock<NodaTime.IClock> clockMock,
+        [Frozen] Mock<IClock> clockMock,
         DocumentFactory sut)
     {
         // Arrange
