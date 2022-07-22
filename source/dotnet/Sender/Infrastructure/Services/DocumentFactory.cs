@@ -36,28 +36,27 @@ public class DocumentFactory : IDocumentFactory
     <cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
     <cim:createdDateTime>{createdDateTime}</cim:createdDateTime>
     <cim:Series>
-	    <cim:mRID>{seriesId}</cim:mRID>
-		<cim:version>1</cim:version>
+        <cim:mRID>{seriesId}</cim:mRID>
+        <cim:version>1</cim:version>
         <cim:marketEvaluationPoint.type>E18</cim:marketEvaluationPoint.type>
         <cim:meteringGridArea_Domain.mRID codingScheme=""NDK"">{gridArea}</cim:meteringGridArea_Domain.mRID>
-		<cim:product>8716867000030</cim:product>
-		<cim:quantity_Measure_Unit.name>KWH</cim:quantity_Measure_Unit.name>
+        <cim:product>8716867000030</cim:product>
+        <cim:quantity_Measure_Unit.name>KWH</cim:quantity_Measure_Unit.name>
             <cim:Period>
                 <cim:resolution>PT15M</cim:resolution>
-		        <cim:timeInterval>
-				    <cim:start>{timeIntervalFrom}</cim:start>
-				    <cim:end>{timeIntervalTo}</cim:end>
-			     </cim:timeInterval>{points}
+                <cim:timeInterval>
+                    <cim:start>{timeIntervalFrom}</cim:start>
+                    <cim:end>{timeIntervalTo}</cim:end>
+                </cim:timeInterval>{points}
             </cim:Period>
     </cim:Series>
 </cim:NotifyAggregatedMeasureData_MarketDocument>";
 
     private const string PointTemplate = @"
                  <cim:Point>
-		             <cim:position>{position}</cim:position>
-                     <cim:quantity>{quantity}</cim:quantity>
-                     {quality}
-		         </cim:Point>";
+                     <cim:position>{position}</cim:position>
+                     <cim:quantity>{quantity}</cim:quantity>{quality}
+                 </cim:Point>";
 
     private const string QualityTemplate = @"
                      <cim:quality>{quality}</cim:quality>";

@@ -47,7 +47,7 @@ public class MeteringPointCreatedDtoFactory
         return new MeteringPointCreatedDto(
             meteringPointCreated.MeteringPointId,
             meteringPointCreated.GsrnNumber,
-            Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaLinkId name is wrong - it's a grid area link id
+            Guid.Parse(meteringPointCreated.GridAreaCode), // The GridAreaCode name is wrong - it's a grid area link id
             settlementMethod,
             connectionState,
             meteringPointCreated.EffectiveDate.ToInstant(),

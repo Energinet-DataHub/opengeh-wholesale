@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.functions import lit
-from pyspark.sql.types import StructType, StructField, IntegerType
-
 from package import calculator, initialize_spark
 import configargparse
 
@@ -32,6 +29,14 @@ def start():
     p.add("--batch-id", type=str, required=True)
 
     args, unknown_args = p.parse_known_args()
-    spark = initialize_spark(args.data_storage_account_name, args.data_storage_account_key)
+    spark = initialize_spark(
+        args.data_storage_account_name, args.data_storage_account_key
+    )
 
-    calculator(spark, args.process_results_path, args.batch_id)
+    raw_integration_events_df = spark.read.option("mergeSchema", "true").parquet(
+        args.integration_events_path
+    )
+
+    calculator(
+        spark, raw_integration_events_df, args.process_results_path, args.batch_id
+    )

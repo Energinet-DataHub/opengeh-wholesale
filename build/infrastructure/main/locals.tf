@@ -13,9 +13,8 @@
 # limitations under the License.
 
 locals {
-    DATA_LAKE_CONTAINER_NAME           = "integration-events"
-    PROCESSES_CONTAINER_NAME           = "processes"
-    INTERGRATION_EVENTS_CONTAINER_NAME = "integration-events"
-    COMPLETED_PROCESS_SUBSCRIPTION     = "completed-process-sub-sender"
-    DB_CONNECTION_STRING               = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_wholesale.name};Persist Security Info=False;User ID=${data.azurerm_key_vault_secret.mssql_data_admin_name.value};Password=${data.azurerm_key_vault_secret.mssql_data_admin_password.value};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
+    PROCESSES_CONTAINER_NAME                 = "processes"
+    INTERGRATION_EVENTS_CONTAINER_NAME       = "integration-events"
+    COMPLETED_PROCESS_SUBSCRIPTION           = "completed-process-sub-sender"
+    DB_CONNECTION_STRING                     = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_wholesale.name};Persist Security Info=False;User ID=${data.azurerm_key_vault_secret.mssql_data_admin_name.value};Password=${data.azurerm_key_vault_secret.mssql_data_admin_password.value};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
 }

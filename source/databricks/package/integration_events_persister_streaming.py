@@ -33,10 +33,9 @@ def start():
     p.add("--integration-events-checkpoint-path", type=str, required=True)
 
     args, unknown_args = p.parse_known_args()
-    spark = initialize_spark(args.data_storage_account_name, args.data_storage_account_key)
-
-    integration_events_path = f"{args.integration_events_path}"
-    integration_events_checkpoint_path = f"{args.integration_events_checkpoint_path}"
+    spark = initialize_spark(
+        args.data_storage_account_name, args.data_storage_account_key
+    )
 
     input_configuration = {}
     input_configuration[
@@ -44,10 +43,13 @@ def start():
     ] = spark.sparkContext._gateway.jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt(
         f"{args.event_hub_connectionstring}"
     )
+
     streamingDF = (
         spark.readStream.format("eventhubs").options(**input_configuration).load()
     )
 
     integration_events_persister(
-        streamingDF, integration_events_checkpoint_path, integration_events_path
+        streamingDF,
+        args.integration_events_path,
+        args.integration_events_checkpoint_path,
     )

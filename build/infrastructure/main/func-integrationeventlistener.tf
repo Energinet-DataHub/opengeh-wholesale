@@ -42,6 +42,8 @@ module "func_integrationeventlistener" {
     METERING_POINT_CREATED_TOPIC_NAME                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-metering-point-created-name)"
     METERING_POINT_CONNECTED_SUBSCRIPTION_NAME            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-metering-point-connected-to-wholesale-name)"
     METERING_POINT_CONNECTED_TOPIC_NAME                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-metering-point-connected-name)"
+    MARKET_PARTICIPANT_CHANGED_SUBSCRIPTION_NAME          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-market-participant-changed-to-aggregations-name)"
+    MARKET_PARTICIPANT_CHANGED_TOPIC_NAME                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-market-participant-changed-name)"
   }
 
   tags                                  = azurerm_resource_group.this.tags

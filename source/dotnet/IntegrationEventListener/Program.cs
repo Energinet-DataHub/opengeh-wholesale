@@ -19,8 +19,10 @@ using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.MarketParticipant.Integration.Model.Parsers;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
+using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Monitor;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,12 +64,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             serviceCollection.AddApplicationInsightsTelemetryWorkerService(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
             serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+            serviceCollection.AddSingleton<ISharedIntegrationEventParser, SharedIntegrationEventParser>();
         }
 
         private static void Host(IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<MeteringPointCreatedDtoFactory>();
             serviceCollection.AddScoped<MeteringPointConnectedDtoFactory>();
+            serviceCollection.AddScoped<GridAreaUpdatedDtoFactory>();
         }
 
         private static void HealthCheck(IServiceCollection serviceCollection)
@@ -83,6 +87,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             var meteringPointCreatedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName);
             var meteringPointConnectedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedTopicName);
             var meteringPointConnectedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName);
+
+            var marketParticipantConnectedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedTopicName);
+            var marketParticipantConnectedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName);
 
             serviceCollection
                 .AddHealthChecks()
@@ -100,7 +107,12 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                     serviceBusConnectionString,
                     meteringPointConnectedTopicName,
                     meteringPointConnectedSubscriptionName,
-                    name: "MeteringPointConnectedSubscriptionExists");
+                    name: "MeteringPointConnectedSubscriptionExists")
+                .AddAzureServiceBusSubscription(
+                    serviceBusConnectionString,
+                    marketParticipantConnectedTopicName,
+                    marketParticipantConnectedSubscriptionName,
+                    name: "MarketParticipantUpdateSubscriptionExists");
         }
     }
 }

@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import shutil
 import pytest
 from package import calculator
+from pyspark.sql.types import IntegerType
+from package.schemas import eventhub_integration_events_schema
 
 
 def test_calculator_creates_file(
@@ -21,8 +25,11 @@ def test_calculator_creates_file(
 ):
     batchId = 1234
     process_results_path = f"{delta_lake_path}/results"
+    integration_events_path = f"{delta_lake_path}/../calculator/test_files"
 
-    calculator(spark, process_results_path, batchId)
+    raw_integration_events_df = spark.read.format("json").load(integration_events_path)
+
+    calculator(spark, raw_integration_events_df, process_results_path, batchId)
 
     jsonFile = find_first_file(
         f"{delta_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
