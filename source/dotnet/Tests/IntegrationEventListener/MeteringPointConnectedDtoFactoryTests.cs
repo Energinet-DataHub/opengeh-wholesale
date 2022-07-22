@@ -23,9 +23,11 @@ using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using Moq;
 using Xunit;
+using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
 {
+    [UnitTest]
     public class MeteringPointConnectedDtoFactoryTests
     {
         [Theory]

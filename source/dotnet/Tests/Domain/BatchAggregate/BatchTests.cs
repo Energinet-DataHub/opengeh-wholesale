@@ -17,9 +17,11 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
 using Xunit;
+using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 
+[UnitTest]
 public class BatchTests
 {
     private static readonly JobRunId _fakeJobRunId = new JobRunId(1);
