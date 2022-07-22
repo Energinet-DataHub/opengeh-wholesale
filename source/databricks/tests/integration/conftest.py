@@ -78,3 +78,14 @@ def delta_reader(spark: SparkSession, delta_lake_path: str):
         return data
 
     return f
+
+
+@pytest.fixture(scope="session")
+def write_str_to_file():
+    def f(dir: str, fileName: str, contents: str):
+        os.makedirs(dir)
+        f = open(f"{dir}/{fileName}", "w")
+        f.write(contents)
+        f.close()
+
+    return f
