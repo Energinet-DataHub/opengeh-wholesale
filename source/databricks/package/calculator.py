@@ -27,7 +27,7 @@ def calculator(
         "value", "position"
     )
 
-    integrationEventsDf = filter_integration_events_df(raw_integration_events_df, "805")
+    filter_integration_events_df(raw_integration_events_df, "805")
 
     df_805 = df_seq.withColumn("grid_area", lit("805"))
     df_806 = df_seq.withColumn("grid_area", lit("806"))
@@ -37,10 +37,6 @@ def calculator(
     df = df.withColumn("quantity", lit(None)).withColumn("quality", lit(None))
     df.coalesce(1).write.mode("overwrite").partitionBy("grid_area").json(
         f"{process_results_path}/batch_id={batch_id}"
-    )
-
-    integrationEventsDf.write.mode("overwrite").json(
-        f"{process_results_path}/test/batch_id={batch_id}"
     )
 
 
