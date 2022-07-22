@@ -16,9 +16,11 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using FluentAssertions;
 using Xunit;
+using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Core
 {
+    [UnitTest]
     public class EnvironmentVariableHelperTests
     {
         [Theory]
