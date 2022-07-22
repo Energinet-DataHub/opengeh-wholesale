@@ -25,19 +25,7 @@ def test_calculator_creates_file(
 ):
     batchId = 1234
     process_results_path = f"{delta_lake_path}/results"
-    integration_events_path = f"{delta_lake_path}/integration_events"
-
-    if os.path.exists(integration_events_path):
-        shutil.rmtree(integration_events_path)
-
-    mp_created = "{'GsrnNumber':'575387199703339827','GridAreaLinkId':'f5a0cdeb-79dd-4a18-a20a-1210fb84daf0','SettlementMethod':'2','ConnectionState':'1','EffectiveDate':'2021-09-25T22:00:00.000Z','MeteringPointType':'1','Resolution':'1','CorrelationId':'00-106dd5f611c1f2478f54d47e244318b8-044879afbff6c946-00','MessageType':'MeteringPointCreated','OperationTime':'2022-06-29T11:26:31.000Z'}"
-    grid_area_updated = "{'GridAreaCode':'805','GridAreaLinkId':'f5a0cdeb-79dd-4a18-a20a-1210fb84daf0','CorrelationId':'00-206dd5f611c1f2478f54d47e244318b8-044879afbff6c946-00','MessageType':'GridAreaUpdatedIntegrationEvent','OperationTime':'2022-06-29T11:26:31.000Z'}"
-
-    write_str_to_file(
-        integration_events_path,
-        "events.json",
-        f"{mp_created}\n{grid_area_updated}",
-    )
+    integration_events_path = f"{delta_lake_path}/../calculator/test_files"
 
     raw_integration_events_df = spark.read.format("json").load(integration_events_path)
 

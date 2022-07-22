@@ -30,7 +30,7 @@ def integration_events_persister_tester(
     spark, databricks_path, delta_lake_path, write_str_to_file
 ):
     event_hub_streaming_simulation_path = (
-        f"{delta_lake_path}/event_hub_streaming_simulation"
+        f"{delta_lake_path}/../integration_events_persister/test_files"
     )
 
     integration_events_path = f"{delta_lake_path}/integration_events"
@@ -39,18 +39,10 @@ def integration_events_persister_tester(
     )
 
     # Remove test folders in order to avoid side effects from previous/other test runs
-    if os.path.exists(event_hub_streaming_simulation_path):
-        shutil.rmtree(event_hub_streaming_simulation_path)
     if os.path.exists(integration_events_path):
         shutil.rmtree(integration_events_path)
     if os.path.exists(integration_events_checkpoint_path):
         shutil.rmtree(integration_events_checkpoint_path)
-
-    write_str_to_file(
-        event_hub_streaming_simulation_path,
-        "event_hub_events.json",
-        "{\"body\":\"{'GsrnNumber':'575387199703339827','GridAreaLinkId':'f5a0cdeb-79dd-4a18-a20a-1210fb84daf0','SettlementMethod':'2','ConnectionState':'1','EffectiveDate':'2021-09-25T22:00:00.000Z','MeteringPointType':'1','Resolution':'1','CorrelationId':'00-106dd5f611c1f2478f54d47e244318b8-044879afbff6c946-00','MessageType':'MeteringPointCreated','OperationTime':'2022-06-29T11:26:31.000Z'}\",\"partition\":\"0\",\"offset\":\"8589936200\",\"sequenceNumber\":25,\"enqueuedTime\":\"2022-06-29T11:26:41.003Z\",\"properties\":{\"Diagnostic-Id\":\"00-3fac0b8fc6488252d3f9847f72178ec2-52587d983735b766-00\"},\"systemProperties\":{}}",
-    )
 
     streamingDF = (
         spark.readStream.option("startingOffsets", "earliest")
