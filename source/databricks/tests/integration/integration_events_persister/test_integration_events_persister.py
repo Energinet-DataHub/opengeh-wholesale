@@ -26,9 +26,7 @@ from package.schemas import eventhub_integration_events_schema as schema
 
 
 @pytest.fixture(scope="session")
-def integration_events_persister_tester(
-    spark, databricks_path, delta_lake_path, write_str_to_file
-):
+def integration_events_persister_tester(spark, databricks_path, delta_lake_path):
     event_hub_streaming_simulation_path = (
         f"{delta_lake_path}/../integration_events_persister/test_files"
     )

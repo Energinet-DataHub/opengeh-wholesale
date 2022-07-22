@@ -21,7 +21,7 @@ from package.schemas import eventhub_integration_events_schema
 
 
 def test_calculator_creates_file(
-    spark, delta_lake_path, write_str_to_file, find_first_file, json_lines_reader
+    spark, delta_lake_path, find_first_file, json_lines_reader
 ):
     batchId = 1234
     process_results_path = f"{delta_lake_path}/results"
