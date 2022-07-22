@@ -15,6 +15,9 @@
     "METERING_POINT_CONNECTED_TOPIC_NAME": "metering-point-connected",
     "METERING_POINT_CONNECTED_SUBSCRIPTION_NAME": "metering-point-connected-to-wholesale",
 
+    "MARKET_PARTICIPANT_CHANGED_TOPIC_NAME": "market-participant-changed",
+    "MARKET_PARTICIPANT_CHANGED_SUBSCRIPTION_NAME": "market-participant-changed-to-wholesale",
+
     "EVENT_HUB_NAME": "masterdataevents"
   }
 }

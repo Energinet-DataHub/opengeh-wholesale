@@ -27,6 +27,8 @@ public static class EnvironmentSettingNames
     public const string MeteringPointCreatedSubscriptionName = "METERING_POINT_CREATED_SUBSCRIPTION_NAME";
     public const string MeteringPointConnectedTopicName = "METERING_POINT_CONNECTED_TOPIC_NAME";
     public const string MeteringPointConnectedSubscriptionName = "METERING_POINT_CONNECTED_SUBSCRIPTION_NAME";
+    public const string MarketParticipantChangedTopicName = "MARKET_PARTICIPANT_CHANGED_TOPIC_NAME";
+    public const string MarketParticipantChangedSubscriptionName = "MARKET_PARTICIPANT_CHANGED_SUBSCRIPTION_NAME";
     public const string IntegrationEventsEventHubName = "EVENT_HUB_NAME";
     public const string IntegrationEventsEventHubConnectionString = "EVENT_HUB_SEND_CONNECTION_STRING";
 }
