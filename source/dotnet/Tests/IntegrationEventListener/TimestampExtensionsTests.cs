@@ -17,9 +17,11 @@ using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Xunit;
+using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener;
 
+[UnitTest]
 public class TimestampExtensionsTests
 {
     [Fact]

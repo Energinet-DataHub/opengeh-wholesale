@@ -24,9 +24,11 @@ using Moq;
 using NodaTime;
 using NodaTime.Text;
 using Xunit;
+using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Tests.Sender.Infrastructure.Services;
 
+[UnitTest]
 public class DocumentFactoryTests
 {
     private const string Expected = @"<?xml version=""1.0"" encoding=""UTF-8""?>

@@ -25,10 +25,12 @@ using Google.Protobuf.WellKnownTypes;
 using Moq;
 using NodaTime;
 using Xunit;
+using Xunit.Categories;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated.Types;
 
 namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
 {
+    [UnitTest]
     public class MeteringPointCreatedDtoFactoryTests
     {
         [Theory]
