@@ -22,7 +22,7 @@ limitations under the License.
         <RootNamespace>Energinet.DataHub.Wholesale.Sender</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="6.0.3" />
+        <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="6.0.4" />
         <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.11.0" />
         <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="4.0.2" />
         <PackageReference Include="Energinet.DataHub.MessageHub.Client" Version="3.0.1" />
