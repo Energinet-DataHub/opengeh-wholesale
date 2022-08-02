@@ -29,5 +29,6 @@ provider "databricks" {
 }
 
 provider "azurerm" {
+  use_oidc = true
   features {}
 }
