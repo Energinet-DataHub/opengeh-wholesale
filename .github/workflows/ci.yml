@@ -26,7 +26,6 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.7.0
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
-      DOTNET_VERSION: '6.0.301'
       USE_AZURE_FUNCTIONS_TOOLS: true
       PREPARE_OUTPUTS: true
     secrets:
