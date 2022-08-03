@@ -17,7 +17,6 @@ import shutil
 import pytest
 from package import calculator
 from pyspark.sql.types import IntegerType
-from package.schemas import eventhub_integration_events_schema
 
 
 def test_calculator_creates_file(
