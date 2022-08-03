@@ -22,6 +22,7 @@ eventhub_integration_events_schema = StructType(
         StructField("ConnectionState", StringType(), True),
         StructField("EffectiveDate", TimestampType(), True),
         StructField("MeteringPointType", StringType(), True),
+        StructField("MeteringPointId", StringType(), True),
         StructField("Resolution", StringType(), True),
         StructField("CorrelationId", StringType(), True),
         StructField("MessageType", StringType(), True),
