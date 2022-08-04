@@ -22,34 +22,34 @@ jobs:
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@7.7.0
 
-  # dotnet_solution_ci:
-  #   uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.7.0
-  #   with:
-  #     SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
-  #     USE_AZURE_FUNCTIONS_TOOLS: true
-  #     PREPARE_OUTPUTS: true
-  #   secrets:
-  #     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  #     AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #     AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
-  #     AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
-  #     AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
+  dotnet_solution_ci:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.7.0
+    with:
+      SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
+      USE_AZURE_FUNCTIONS_TOOLS: true
+      PREPARE_OUTPUTS: true
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
+      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+      AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
-  # databricks_ci:
-  #   uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@7.7.0
-  #   with:
-  #     PATH_STATIC_CHECKS: './source/databricks'
-  #     IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203'
-  #     TEST_REPORT_PATH: ./source/databricks/htmlcov/
+  databricks_ci:
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@7.7.0
+    with:
+      PATH_STATIC_CHECKS: './source/databricks'
+      IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203'
+      TEST_REPORT_PATH: ./source/databricks/htmlcov/
 
-  # wheel_ci:
-  #   uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@7.7.0
-  #   with:
-  #     PYHTON_VERSION: '3.8.6'
-  #     ARCHITECTURE: 'x64'
-  #     WHEEL_WORKING_DIRECTORY: './source/databricks'
-  #     ARTIFACT_NAME: 'wheel'
-  #     ARTIFACT_PATH: './source/databricks/dist'
+  wheel_ci:
+    uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@7.7.0
+    with:
+      PYHTON_VERSION: '3.8.6'
+      ARCHITECTURE: 'x64'
+      WHEEL_WORKING_DIRECTORY: './source/databricks'
+      ARTIFACT_NAME: 'wheel'
+      ARTIFACT_PATH: './source/databricks/dist'
 
   terraform_validate:
     uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@7.7.0
@@ -58,7 +58,7 @@ jobs:
       TERRAFORM_VERSION: '1.2.2'
 
   create_prerelease:
-    needs: [ci_base, terraform_validate] #, dotnet_solution_ci, databricks_ci, wheel_ci]
+    needs: [ci_base, terraform_validate, dotnet_solution_ci, databricks_ci, wheel_ci]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@7.7.0
     with:
       CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
