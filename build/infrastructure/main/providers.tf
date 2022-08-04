@@ -25,9 +25,12 @@ terraform {
 }
 
 provider "databricks" {
-  azure_workspace_resource_id = data.azurerm_key_vault_secret.dbw_databricks_workspace_id.value
+  auth_type = "pat"
+  host      = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
+  token     = data.azurerm_key_vault_secret.dbw_databricks_workspace_token.value
 }
 
 provider "azurerm" {
+  use_oidc = true
   features {}
 }
