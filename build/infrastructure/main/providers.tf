@@ -25,7 +25,7 @@ terraform {
 }
 
 provider "databricks" {
-  host                        = data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value
+  host                        = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
   token                       = data.azurerm_key_vault_secret.dbw_databricks_workspace_token.value
 }
 
