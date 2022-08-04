@@ -14,7 +14,7 @@
 
 resource "databricks_job" "calculator_job" {
   name = "CalculatorJob"
-  max_retries = 2
+  max_retries = -1
   max_concurrent_runs = 100
   always_running = false
 
