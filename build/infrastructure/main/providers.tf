@@ -25,8 +25,9 @@ terraform {
 }
 
 provider "databricks" {
-  host  = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
-  token = data.azurerm_key_vault_secret.dbw_databricks_workspace_token.value
+  auth_type = "pat"
+  host      = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
+  token     = data.azurerm_key_vault_secret.dbw_databricks_workspace_token.value
 }
 
 provider "azurerm" {
