@@ -1,3 +1,4 @@
+# Databricks notebook source
 # Copyright 2020 Energinet DataHub A/S
 #
 # Licensed under the Apache License, Version 2.0 (the "License2");
@@ -12,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Databricks notebook source
 # What has changed with issue #32?
 # - Store event data in the body column
 #   - to avoid constantly growing parquet schema
