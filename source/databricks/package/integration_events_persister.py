@@ -30,9 +30,9 @@ def integration_events_persister(
     events = (
         streamingDf
         .withColumn("storedTime", current_timestamp())
-        .withColumn("year", year(col("storedTime")))
-        .withColumn("month", month(col("storedTime")))
         .withColumn("day", dayofmonth(col("storedTime")))
+        .withColumn("month", month(col("storedTime")))
+        .withColumn("year", year(col("storedTime")))
     )
 
     (
