@@ -17,7 +17,7 @@ import sys
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import year, month, dayofmonth, col, from_json
+from pyspark.sql.functions import year, month, dayofmonth, col, from_json, current_timestamp
 
 
 # integration_events_persister
@@ -29,9 +29,10 @@ def integration_events_persister(
 
     events = (
         streamingDf
-        .withColumn("year", year(col("enqueuedTime")))
-        .withColumn("month", month(col("enqueuedTime")))
-        .withColumn("day", dayofmonth(col("enqueuedTime")))
+        .withColumn("storedTime", current_timestamp())
+        .withColumn("year", year(col("storedTime")))
+        .withColumn("month", month(col("storedTime")))
+        .withColumn("day", dayofmonth(col("storedTime")))
     )
 
     (
