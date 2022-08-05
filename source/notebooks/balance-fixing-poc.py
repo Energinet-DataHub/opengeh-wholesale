@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# COMMAND ----------
-
 # Databricks notebook source
 # What has changed with issue #32?
 # - Store event data in the body column
