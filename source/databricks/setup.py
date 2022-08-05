@@ -27,9 +27,9 @@ setup(
         "azure-storage-blob==12.7.1",
     ],
     entry_points={
-        "console_scripts": {
-            ["start_stream=package.integration_events_persister_streaming:start"],
-            ["start_calculator=package.calculator_job:start"],
-        }
+        "console_scripts": [
+            "start_stream = package.integration_events_persister_streaming:start",
+            "start_calculator = package.calculator_job:start",
+        ]
     },
 )
