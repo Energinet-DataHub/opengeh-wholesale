@@ -91,7 +91,11 @@ public static class Program
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
         serviceCollection.AddDbContext<DatabaseContext>(options =>
-            options.UseSqlServer(connectionString, o => o.UseNodaTime()));
+            options.UseSqlServer(connectionString, o =>
+            {
+                o.UseNodaTime();
+                o.EnableRetryOnFailure();
+            }));
 
         serviceCollection.AddScoped<ICalculatedResultReader, CalculatedResultsReader>();
     }

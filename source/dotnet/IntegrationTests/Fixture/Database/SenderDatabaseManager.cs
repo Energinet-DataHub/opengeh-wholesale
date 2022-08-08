@@ -30,7 +30,11 @@ public class SenderDatabaseManager : SqlServerDatabaseManager<DatabaseContext>
     public override DatabaseContext CreateDbContext()
     {
         var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>()
-            .UseSqlServer(ConnectionString, options => options.UseNodaTime());
+            .UseSqlServer(ConnectionString, options =>
+            {
+                options.UseNodaTime();
+                options.EnableRetryOnFailure();
+            });
 
         return new DatabaseContext(optionsBuilder.Options);
     }

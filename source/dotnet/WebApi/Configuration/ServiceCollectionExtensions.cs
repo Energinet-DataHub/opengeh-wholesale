@@ -57,7 +57,11 @@ internal static class ServiceCollectionExtensions
             throw new ArgumentNullException(EnvironmentSettingNames.DbConnectionString, "does not exist in configuration settings");
 
         services.AddDbContext<DatabaseContext>(
-            options => options.UseSqlServer(connectionString, o => o.UseNodaTime()));
+            options => options.UseSqlServer(connectionString, o =>
+            {
+                o.UseNodaTime();
+                o.EnableRetryOnFailure();
+            }));
 
         services.AddScoped<IDatabaseContext, DatabaseContext>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
