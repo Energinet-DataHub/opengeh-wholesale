@@ -26,9 +26,7 @@ def test_calculator_creates_file(
     process_results_path = f"{delta_lake_path}/results"
     integration_events_path = f"{delta_lake_path}/../calculator/test_files"
 
-    raw_integration_events_df = spark.read.format("json").load(integration_events_path)
-
-    calculator(spark, raw_integration_events_df, process_results_path, batchId)
+    calculator(spark, process_results_path, batchId)
 
     jsonFile = find_first_file(
         f"{delta_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
