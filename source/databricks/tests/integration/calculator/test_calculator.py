@@ -24,7 +24,6 @@ def test_calculator_creates_file(
 ):
     batchId = 1234
     process_results_path = f"{delta_lake_path}/results"
-    integration_events_path = f"{delta_lake_path}/../calculator/test_files"
 
     calculator(spark, process_results_path, batchId)
 
