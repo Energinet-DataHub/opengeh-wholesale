@@ -11,5 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .resolution import Resolution
-from .connection_state import ConnectionState
+
+
+class ConnectionState:
+    new = 1
+    connected = 2
+    disconnected = 3
+    closedDown = 4
