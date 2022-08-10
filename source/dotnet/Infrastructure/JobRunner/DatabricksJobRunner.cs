@@ -74,7 +74,12 @@ public sealed class DatabricksJobRunner : IJobRunner
             pythonWheelTask?.PythonWheelTask?.Parameters ??
             throw new InvalidOperationException($"Parameters for job {job.JobId} could not be found.");
 
-        var invocationParam = $"--batch-id={batch.Id.Id}";
-        return RunParameters.CreatePythonParams(sourceParams.Append(invocationParam));
+        sourceParams.Append($"--batch-id={batch.Id.Id}");
+        sourceParams.Append($"--grid-areas=['805','806']");
+        sourceParams.Append($"--snapshot-datetime={}");
+        sourceParams.Append($"--period-start-datetime={}"); // datetime.strptime('31/05/2022 22:00', '%d/%m/%Y %H:%M')
+        sourceParams.Append($"--period-end-datetime={}"); // datetime.strptime('31/05/2022 22:00', '%d/%m/%Y %H:%M')
+
+        return RunParameters.CreatePythonParams(sourceParams);
     }
 }
