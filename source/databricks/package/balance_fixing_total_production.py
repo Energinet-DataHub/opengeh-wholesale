@@ -12,8 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.functions import lit, col
-from pyspark.sql.types import IntegerType
+from pyspark.sql.functions import lit, col, from_json, row_number, expr, when, lead, last, coalesce, explode
+from pyspark.sql.types import IntegerType, StructField, StringType, TimestampType, StructType
+from pyspark.sql.window import Window
+
+# "Enums"
+metering_point_type_production = 2
+
+resolution_quarter = 2
+resolution_hour = 1
+
+connection_state_created = 1
+connection_state_connected = 2
 
 
 def calculate_balance_fixing_total_production(
@@ -25,15 +35,16 @@ def calculate_balance_fixing_total_production(
     period_start_datetime,
     period_end_datetime
 ):
-    grid_area_df = get_grid_areas(raw_integration_events_df, snapshot_datetime)
-    metering_point_period_df = get_metering_point_periods(raw_integration_events_df, grid_area_df, snapshot_datetime, period_start_datetime, period_end_datetime)
-    enriched_time_series_point_df = get_enriched_time_series_points(raw_time_series_points, snapshot_datetime, period_start_datetime, period_end_datetime)
-    result_df = get_result(metering_point_period_df, time_series_point_df)
+
+    grid_area_df = __get_grid_areas(raw_integration_events_df, snapshot_datetime)
+    metering_point_period_df = __get_metering_point_periods(raw_integration_events_df, grid_area_df, snapshot_datetime, period_start_datetime, period_end_datetime)
+    enriched_time_series_point_df = __get_enriched_time_series_points(raw_time_series_points, snapshot_datetime, period_start_datetime, period_end_datetime)
+    result_df = __get_result(enriched_time_series_point_df)
 
     return result_df
 
 
-def __get_grid_areas(raw_integration_events_df, snapshot_datetime):
+def __get_grid_areas(raw_integration_events_df, grid_areas, snapshot_datetime):
     grid_area_event_schema = StructType(
         [
             StructField("GridAreaCode", StringType(), True),
@@ -43,12 +54,12 @@ def __get_grid_areas(raw_integration_events_df, snapshot_datetime):
         ]
     )
 
-    grid_area_events_df = (spark.read.option("mergeSchema", "true").parquet(path)
+    grid_area_events_df = (raw_integration_events_df
     .where(col("storedTime") <= snapshot_datetime)
     .withColumn("body", col("body").cast("string"))
     .withColumn("body", from_json(col("body"), grid_area_event_schema))
     .where(col("body.MessageType") == "GridAreaUpdatedIntegrationEvent")
-    .where(col("body.GridAreaCode").isin(batch_grid_areas))
+    .where(col("body.GridAreaCode").isin(grid_areas))
     )
 
     # As we only use (currently) immutable data we can just pick any of the update events randomly.
@@ -81,7 +92,7 @@ def __get_metering_point_periods(raw_integration_events_df, grid_area_df, snapsh
         ]
     )
 
-    metering_point_events_df = (spark.read.option("mergeSchema", "true").parquet(path)
+    metering_point_events_df = (raw_integration_events_df
     .where(col("storedTime") <= snapshot_datetime)
     .withColumn("body", col("body").cast("string"))
     .withColumn("body", from_json(col("body"), schema))
@@ -105,15 +116,15 @@ def __get_metering_point_periods(raw_integration_events_df, grid_area_df, snapsh
     # Only include metering points in the selected grid areas
     metering_point_periods_df = (
         metering_point_periods_df
-        .join(grid_area_events_df, metering_point_periods_df["GridAreaLinkId"] == grid_area_events_df["GridAreaLinkId"], "inner")
+        .join(grid_area_df, metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"], "inner")
         .select(metering_point_periods_df["MessageType"], "GsrnNumber", "GridAreaCode", "EffectiveDate", "toEffectiveDate", "Resolution")
     )
 
     return metering_point_events_df
 
 
-def __get_enriched_time_series_points(raw_time_series_points, snapshot_datetime, period_start_datetime, period_end_datetime):
-    timeseries_df = (spark.read.option("mergeSchema", "true").parquet("abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/time-series-points/")
+def __get_enriched_time_series_points(raw_time_series_points, metering_point_period_df, snapshot_datetime, period_start_datetime, period_end_datetime):
+    timeseries_df = (raw_time_series_points
                     .where(col("storedTime") <= snapshot_datetime)
                     .where(col("time") >= period_start_datetime)
                     .where(col("time") < period_end_datetime)
@@ -134,26 +145,26 @@ def __get_enriched_time_series_points(raw_time_series_points, snapshot_datetime,
     #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
     enriched_time_series_point_df = (
         timeseries_df
-        .join(metering_point_periods_df, (metering_point_periods_df["GsrnNumber"] == timeseries_df["GsrnNumber"]) &
-                (timeseries_df["time"] >= metering_point_periods_df["EffectiveDate"]) &
-                (timeseries_df["time"] < metering_point_periods_df["toEffectiveDate"]),
-                                                    "inner")
-        .select("GridAreaCode", metering_point_periods_df["GsrnNumber"], "Resolution", "time", "quantity")
+        .join(metering_point_period_df, (metering_point_period_df["GsrnNumber"] == timeseries_df["GsrnNumber"]) &
+                                        (timeseries_df["time"] >= metering_point_period_df["EffectiveDate"]) &
+                                        (timeseries_df["time"] < metering_point_period_df["toEffectiveDate"]),
+        "inner")
+        .select("GridAreaCode", metering_point_period_df["GsrnNumber"], "Resolution", "time", "quantity")
     )
 
     return enriched_time_series_point_df
 
 
-def __get_result(metering_point_period_df, time_series_point_df):
+def __get_result(enriched_time_series_points_df, batch_grid_areas):
     # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization. To improve performance, consider adding a range join hint.
     #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
 
     # Total production in batch grid areas with quarterly resolution as json file per grid area
-    result_df = (enriched_time_series_point_df
+    result_df = (enriched_time_series_points_df
         .where(col("GridAreaCode").isin(batch_grid_areas))
         .withColumn("quarter_times", when(col("resolution") == resolution_hour, F.array(col("time"), col("time") + expr('INTERVAL 15 minutes'), col("time") + expr('INTERVAL 30 minutes'), col("time") + expr('INTERVAL 45 minutes')))
                                 .when(col("resolution") == resolution_quarter, F.array(col("time"))))
-        .select(timeseriesWithMeteringPoint["*"], explode("quarter_times").alias("quarter_time"))
+        .select(enriched_time_series_points_df["*"], explode("quarter_times").alias("quarter_time"))
         .withColumn("quarter_quantity", when(col("resolution") == resolution_hour, col("quantity") / 4)
                                 .when(col("resolution") == resolution_quarter, col("quantity")))
         .groupBy("GridAreaCode", "quarter_time").sum("quarter_quantity")
