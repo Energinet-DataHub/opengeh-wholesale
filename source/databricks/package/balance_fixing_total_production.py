@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql.functions import (
+    array,
     lit,
     col,
     from_json,
@@ -57,18 +58,17 @@ def calculate_balance_fixing_total_production(
     )
     enriched_time_series_point_df = _get_enriched_time_series_points(
         raw_time_series_points,
+        metering_point_period_df,
         snapshot_datetime,
         period_start_datetime,
         period_end_datetime,
     )
-    result_df = _get_result(metering_point_period_df, enriched_time_series_point_df)
+    result_df = _get_result(enriched_time_series_point_df, batch_grid_areas)
 
     return result_df
 
 
 def _get_grid_areas(raw_integration_events_df, batch_grid_areas, snapshot_datetime):
-    print(batch_grid_areas)
-    
     grid_area_event_schema = StructType(
         [
             StructField("GridAreaCode", StringType(), True),
@@ -77,7 +77,6 @@ def _get_grid_areas(raw_integration_events_df, batch_grid_areas, snapshot_dateti
             StructField("MessageType", StringType(), True),
         ]
     )
-    raw_integration_events_df.withColumn("body", col("body").cast("string")).withColumn("body", from_json(col("body"), grid_area_event_schema)).where(col("body.MessageType") == "GridAreaUpdatedIntegrationEvent").show()
     grid_area_events_df = (
         raw_integration_events_df.where(col("storedTime") <= snapshot_datetime)
         .withColumn("body", col("body").cast("string"))
@@ -132,11 +131,11 @@ def _get_metering_point_periods(
         .withColumn("body", col("body").cast("string"))
         .withColumn("body", from_json(col("body"), schema))
         .where(col("body.MessageType").startswith("MeteringPoint"))
-        .where(col("body.MeteringPointType") == MeteringPointType.production)
         .select(
             "storedTime",
             "body.MessageType",
             "body.MeteringPointId",
+            "body.MeteringPointType",
             "body.GsrnNumber",
             "body.GridAreaLinkId",
             "body.ConnectionState",
@@ -160,7 +159,7 @@ def _get_metering_point_periods(
             "ConnectionState",
             when(
                 col("MessageType") == "MeteringPointCreated",
-                lit(ConnectionState.created),
+                lit(ConnectionState.new),
             ).when(
                 col("MessageType") == "MeteringPointConnected",
                 lit(ConnectionState.connected),
@@ -181,6 +180,7 @@ def _get_metering_point_periods(
         .where(
             col("ConnectionState") == ConnectionState.connected
         )  # Only aggregate when metering points is connected
+        .where(col("MeteringPointType") == MeteringPointType.production)
     )
 
     # Only include metering points in the selected grid areas
@@ -197,7 +197,7 @@ def _get_metering_point_periods(
         "Resolution",
     )
 
-    return metering_point_events_df
+    return metering_point_periods_df
 
 
 def _get_enriched_time_series_points(
@@ -259,13 +259,13 @@ def _get_result(enriched_time_series_points_df, batch_grid_areas):
             "quarter_times",
             when(
                 col("resolution") == Resolution.hour,
-                F.array(
+                array(
                     col("time"),
                     col("time") + expr("INTERVAL 15 minutes"),
                     col("time") + expr("INTERVAL 30 minutes"),
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
-            ).when(col("resolution") == Resolution.quarter, F.array(col("time"))),
+            ).when(col("resolution") == Resolution.quarter, array(col("time"))),
         )
         .select(
             enriched_time_series_points_df["*"],
