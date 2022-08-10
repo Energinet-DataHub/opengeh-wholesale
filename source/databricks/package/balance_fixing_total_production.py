@@ -67,6 +67,8 @@ def calculate_balance_fixing_total_production(
 
 
 def _get_grid_areas(raw_integration_events_df, batch_grid_areas, snapshot_datetime):
+    print(batch_grid_areas)
+    
     grid_area_event_schema = StructType(
         [
             StructField("GridAreaCode", StringType(), True),
@@ -75,7 +77,7 @@ def _get_grid_areas(raw_integration_events_df, batch_grid_areas, snapshot_dateti
             StructField("MessageType", StringType(), True),
         ]
     )
-
+    raw_integration_events_df.withColumn("body", col("body").cast("string")).withColumn("body", from_json(col("body"), grid_area_event_schema)).where(col("body.MessageType") == "GridAreaUpdatedIntegrationEvent").show()
     grid_area_events_df = (
         raw_integration_events_df.where(col("storedTime") <= snapshot_datetime)
         .withColumn("body", col("body").cast("string"))

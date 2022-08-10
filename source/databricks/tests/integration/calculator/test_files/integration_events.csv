@@ -1,27 +1,213 @@
 body,partition,offset,sequenceNumber,enqueuedTime,publisher,partitionKey,properties,systemProperties,storedTime,year,month,day
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogImRmZmIyZGFiLWFlYzgtNDhlMy05YzBiLWQyYzU5Y2ZjYjQ3ZSIsDQogICJHc3JuTnVtYmVyIjogIjU3NjAwMzQzMjcxNjYyMjUzMCIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICJlNDQ= (truncated),3,34359740192,208,2022-08-09T10:10:01.731+0000,null,null,"{""Diagnostic-Id"":""00-df1e771e86c68b4eec9a585992f53074-6b8b44e83c0ec6ec-00""}",{},2022-08-09T10:10:02.005+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogIjk0OTJlMjY3LTgxZmEtNDY1My05ZDgzLThiNjQ1ZTI3OTc1NCIsDQogICJHc3JuTnVtYmVyIjogIjU3OTA1MTk3Njk0MzMyNzcyNCIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICJlNDQ= (truncated),1,34359738368,201,2022-08-09T11:40:30.284+0000,null,null,"{""Diagnostic-Id"":""00-6b2e2c12b511bacca6c157e9db545fbf-2aa0047a564c2655-00""}",{},2022-08-09T11:40:30.505+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogImE2ZDA2MTdlLTlmZWQtNDRjYi1hNWExLWJkYzliMmIyZWYwZSIsDQogICJHc3JuTnVtYmVyIjogIjU3NTY1NDI4OTkwNTUyOTk2MiIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICI0ZjQ= (truncated),0,34359739424,203,2022-08-09T12:14:00.286+0000,null,null,"{""Diagnostic-Id"":""00-5369e10a2d5fb2f224186480b54333a4-f515d16a24e3edf6-00""}",{},2022-08-09T12:14:00.505+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogImE4NjE4YzRkLTk1MmUtNGE2Ni04NGU5LWU3N2NhYTIzYWI4OSIsDQogICJHc3JuTnVtYmVyIjogIjU3NjA3ODM5MDk5NjE0MTM5MSIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICI0ZjQ= (truncated),0,34359738816,202,2022-08-09T12:05:20.266+0000,null,null,"{""Diagnostic-Id"":""00-9f6452383f1d77e0e5bad1862c57cc9e-f1ac2c0958fdf12a-00""}",{},2022-08-09T12:05:20.509+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogIjI3M2Y4ZTZmLWJlYjktNDFlMC1hZjUyLTU4ODZkNTA2OTBkNyIsDQogICJHc3JuTnVtYmVyIjogIjU3Nzk5NjU0NjQyOTgyMjgzMCIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICI0ZjQ= (truncated),2,34359739424,209,2022-08-09T12:13:20.180+0000,null,null,"{""Diagnostic-Id"":""00-f1875b9601e4d64ad8ca6eacfba2ebd0-43c0ede108cdc915-00""}",{},2022-08-09T12:13:20.505+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogIjg2ZDYyMGU3LTZkNzEtNDFjNy05MmQ2LTczZmI5MzE1NTgwYSIsDQogICJHc3JuTnVtYmVyIjogIjU3MDQxNjIyMDU3ODc2NTgxMCIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICI0ZjQ= (truncated),3,34359740800,209,2022-08-09T11:51:50.176+0000,null,null,"{""Diagnostic-Id"":""00-0d00f949fdbe7ed9485d2e99359aaadd-63763f51abd3c1b0-00""}",{},2022-08-09T11:51:50.505+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogImU0ZGU0NWIzLTUxMmEtNDk0Yi1hZjk4LWJkZTViNTI1NWM5MiIsDQogICJHc3JuTnVtYmVyIjogIjU3MDY1MjI2NTM4NTE1NjA4NiIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICJlNDQ= (truncated),0,30064778592,198,2022-08-05T14:24:01.003+0000,null,null,"{""Diagnostic-Id"":""00-ee2eefe31579e5c1554ee6dd139978de-b4dc2d2c13e32879-00""}",{},2022-08-05T14:24:01.512+0000,2022,8,5
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogIjZiNWNlNGY1LTQ5ZmYtNGI4Yi1hZDVlLTY1NGIxYTQzYTcyZiIsDQogICJHc3JuTnVtYmVyIjogIjU3Mzg0OTA0MjMzOTU2NjE4NSIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICJmNWE= (truncated),2,34359740032,210,2022-08-10T08:49:30.739+0000,null,null,"{""Diagnostic-Id"":""00-cf969baad33b920e8dbce41fd8718d29-09ba78ce464293b4-00""}",{},2022-08-10T08:49:31.018+0000,2022,8,10
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogIjY0N2ZmZDE4LTU5OTQtNDQyZS04NTE0LTkxMTY0MDFhZTBkNyIsDQogICJHc3JuTnVtYmVyIjogIjU3NDgwNzY0NjkzNzMwNzYzMSIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICJmNWE= (truncated),3,34359739584,207,2022-08-09T07:35:50.201+0000,null,null,"{""Diagnostic-Id"":""00-9e248c2243c4c79ccaf61303f45dc1d0-f15a468c3ab1decf-00""}",{},2022-08-09T07:35:50.507+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogIjg0MjMwMzVkLTZiOGYtNGM4Ny05ODU2LTkzMDFmMGRiOGI4MiIsDQogICJHc3JuTnVtYmVyIjogIjU3ODc3MTEyOTgzNjUwMjY1OCIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICJmNWE= (truncated),2,34359738368,207,2022-08-09T07:28:51.493+0000,null,null,"{""Diagnostic-Id"":""00-c4e6b71aab923fe98226fdb39ab0dae4-543693975abd8fa7-00""}",{},2022-08-09T07:28:52.024+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogImE2ZDA2MTdlLTlmZWQtNDRjYi1hNWExLWJkYzliMmIyZWYwZSIsDQogICJHc3JuTnVtYmVyIjogIjU3NTY1NDI4OTkwNTUyOTk2MiIsDQogICJFZmZlY3RpdmVEYXRlIjogIjIwMjI= (truncated),1,34359739424,203,2022-08-09T12:14:20.197+0000,null,null,"{""Diagnostic-Id"":""00-a72b0e99a4a32bb671a26d3ac9164482-5a8b58fe000dc374-00""}",{},2022-08-09T12:14:20.505+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogImU0ZGU0NWIzLTUxMmEtNDk0Yi1hZjk4LWJkZTViNTI1NWM5MiIsDQogICJHc3JuTnVtYmVyIjogIjU3MDY1MjI2NTM4NTE1NjA4NiIsDQogICJFZmZlY3RpdmVEYXRlIjogIjIwMjI= (truncated),1,30064776784,198,2022-08-05T14:24:20.261+0000,null,null,"{""Diagnostic-Id"":""00-b36142e6c3b43306500c267d1bc7cb9f-5a98790e57e1e66c-00""}",{},2022-08-05T14:24:20.679+0000,2022,8,5
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogImRmZmIyZGFiLWFlYzgtNDhlMy05YzBiLWQyYzU5Y2ZjYjQ3ZSIsDQogICJHc3JuTnVtYmVyIjogIjU3NjAwMzQzMjcxNjYyMjUzMCIsDQogICJFZmZlY3RpdmVEYXRlIjogIjIwMjI= (truncated),0,34359738368,201,2022-08-09T10:12:30.269+0000,null,null,"{""Diagnostic-Id"":""00-34136af13d2c9d7bbe137de19ebbc65d-ca947f448834e819-00""}",{},2022-08-09T10:12:30.506+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogImE4NjE4YzRkLTk1MmUtNGE2Ni04NGU5LWU3N2NhYTIzYWI4OSIsDQogICJHc3JuTnVtYmVyIjogIjU3NjA3ODM5MDk5NjE0MTM5MSIsDQogICJFZmZlY3RpdmVEYXRlIjogIjIwMjI= (truncated),1,34359738976,202,2022-08-09T12:07:20.142+0000,null,null,"{""Diagnostic-Id"":""00-684219c28b24b099401cffc6a5043454-b4c7b36abe69a422-00""}",{},2022-08-09T12:07:20.505+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogIjk0OTJlMjY3LTgxZmEtNDY1My05ZDgzLThiNjQ1ZTI3OTc1NCIsDQogICJHc3JuTnVtYmVyIjogIjU3OTA1MTk3Njk0MzMyNzcyNCIsDQogICJFZmZlY3RpdmVEYXRlIjogIjIwMjI= (truncated),2,34359738976,208,2022-08-09T11:40:50.214+0000,null,null,"{""Diagnostic-Id"":""00-32a47442186e87550877324c2d1fb0fb-5cc5229cf017fac8-00""}",{},2022-08-09T11:40:50.506+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogIjI3M2Y4ZTZmLWJlYjktNDFlMC1hZjUyLTU4ODZkNTA2OTBkNyIsDQogICJHc3JuTnVtYmVyIjogIjU3Nzk5NjU0NjQyOTgyMjgzMCIsDQogICJFZmZlY3RpdmVEYXRlIjogIjIwMjI= (truncated),3,34359741408,210,2022-08-09T12:14:00.207+0000,null,null,"{""Diagnostic-Id"":""00-0f1a9ce997bdb19c20349d8c116c00aa-0d2d63da46c2f70b-00""}",{},2022-08-09T12:14:00.505+0000,2022,8,9
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogIjM5ZmZmZDhjLWY4MzgtNDdkOS05Y2JmLWQ0MGZmN2QzMDIxNiIsDQogICJHc3JuTnVtYmVyIjogIjU3NzE3NzIxMTE2ODg2MTQwNCIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICI5MTg= (truncated),3,34359738368,205,2022-08-08T08:14:11.058+0000,null,null,"{""Diagnostic-Id"":""00-862be9762302c992156941c896bbe381-dc1254ff6c5a6360-00""}",{},2022-08-08T10:17:34.008+0000,2022,8,8
-ew0KICAiTWV0ZXJpbmdQb2ludElkIjogIjA3Y2ZmYzExLTY3OTItNGE3Yy04YTc1LTRkNDNjYWE3OWUwNSIsDQogICJHc3JuTnVtYmVyIjogIjU3NTk0OTEzMzUwOTM5NzA1MCIsDQogICJHcmlkQXJlYUxpbmtJZCI6ICJmNWE= (truncated),3,34359738976,206,2022-08-08T08:51:40.761+0000,null,null,"{""Diagnostic-Id"":""00-dbae5a36582d938bd6699b7069bb652b-95047da9eded7363-00""}",{},2022-08-08T10:17:34.008+0000,2022,8,8
-eyJHcmlkQXJlYUxpbmtJZCI6ImU0NDZlNDgwLTJjZTYtNDRmNi05ZDQ1LWJkODkxZDRiMzE3NiIsIkdyaWRBcmVhQ29kZSI6IjgwNSIsIkdyaWRBcmVhSWQiOiI4OTgwMUVDMS1BRjEyLTQ2RDktQjA0NC0wNUEwMDRBMEQ0NkM= (truncated),0,30064779200,199,2022-08-05T14:25:12.341+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
-eyJHcmlkQXJlYUxpbmtJZCI6IjRmNDNiMDA2LTNjZGMtNGEyYS1hZmEyLTNlMjliNGJiZWY0NyIsIkdyaWRBcmVhQ29kZSI6IjgwNiIsIkdyaWRBcmVhSWQiOiI2OTZFNURCQS1CMDI4LTRBNUQtQjhCNC1FMEMwMUFGRDNDRkU= (truncated),0,30064779536,200,2022-08-05T14:25:12.373+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
-eyJHcmlkQXJlYUxpbmtJZCI6ImU0NDZlNDgwLTJjZTYtNDRmNi05ZDQ1LWJkODkxZDRiMzE3NiIsIkdyaWRBcmVhQ29kZSI6IjgwNSIsIkdyaWRBcmVhSWQiOiI4OTgwMUVDMS1BRjEyLTQ2RDktQjA0NC0wNUEwMDRBMEQ0NkM= (truncated),3,30064779056,203,2022-08-05T14:25:12.317+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
-eyJHcmlkQXJlYUxpbmtJZCI6IjRmNDNiMDA2LTNjZGMtNGEyYS1hZmEyLTNlMjliNGJiZWY0NyIsIkdyaWRBcmVhQ29kZSI6IjgwNiIsIkdyaWRBcmVhSWQiOiI2OTZFNURCQS1CMDI4LTRBNUQtQjhCNC1FMEMwMUFGRDNDRkU= (truncated),3,30064779392,204,2022-08-05T14:25:12.348+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
-eyJHcmlkQXJlYUxpbmtJZCI6ImU0NDZlNDgwLTJjZTYtNDRmNi05ZDQ1LWJkODkxZDRiMzE3NiIsIkdyaWRBcmVhQ29kZSI6IjgwNSIsIkdyaWRBcmVhSWQiOiI4OTgwMUVDMS1BRjEyLTQ2RDktQjA0NC0wNUEwMDRBMEQ0NkM= (truncated),2,30064777472,205,2022-08-05T14:25:12.313+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
-eyJHcmlkQXJlYUxpbmtJZCI6ImU0NDZlNDgwLTJjZTYtNDRmNi05ZDQ1LWJkODkxZDRiMzE3NiIsIkdyaWRBcmVhQ29kZSI6IjgwNSIsIkdyaWRBcmVhSWQiOiI4OTgwMUVDMS1BRjEyLTQ2RDktQjA0NC0wNUEwMDRBMEQ0NkM= (truncated),2,30064777808,206,2022-08-05T14:25:12.344+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
-eyJHcmlkQXJlYUxpbmtJZCI6IjRmNDNiMDA2LTNjZGMtNGEyYS1hZmEyLTNlMjliNGJiZWY0NyIsIkdyaWRBcmVhQ29kZSI6IjgwNiIsIkdyaWRBcmVhSWQiOiI2OTZFNURCQS1CMDI4LTRBNUQtQjhCNC1FMEMwMUFGRDNDRkU= (truncated),1,30064777232,199,2022-08-05T14:25:12.345+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
-eyJHcmlkQXJlYUxpbmtJZCI6IjRmNDNiMDA2LTNjZGMtNGEyYS1hZmEyLTNlMjliNGJiZWY0NyIsIkdyaWRBcmVhQ29kZSI6IjgwNiIsIkdyaWRBcmVhSWQiOiI2OTZFNURCQS1CMDI4LTRBNUQtQjhCNC1FMEMwMUFGRDNDRkU= (truncated),1,30064777568,200,2022-08-05T14:25:12.361+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
+"{
+  ""MeteringPointId"": ""dffb2dab-aec8-48e3-9c0b-d2c59cfcb47e"",
+  ""GsrnNumber"": ""576003432716622530"",
+  ""GridAreaLinkId"": ""e446e480-2ce6-44f6-9d45-bd891d4b3176"",
+  ""SettlementMethod"": null,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2022-05-13T22:00:00Z"",
+  ""MeteringPointType"": 2,
+  ""Resolution"": 2,
+  ""CorrelationId"": ""00-93dfe5c68af5e446ad4c8ef5763f4be8-f4ba3b88d64f9d26-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-09T10:09:56Z""
+}",3,34359740192,208,2022-08-09T10:10:01.731+0000,null,null,"{""Diagnostic-Id"":""00-df1e771e86c68b4eec9a585992f53074-6b8b44e83c0ec6ec-00""}",{},2022-08-09T10:10:02.005+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""9492e267-81fa-4653-9d83-8b645e279754"",
+  ""GsrnNumber"": ""579051976943327724"",
+  ""GridAreaLinkId"": ""e446e480-2ce6-44f6-9d45-bd891d4b3176"",
+  ""SettlementMethod"": null,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2022-05-13T22:00:00Z"",
+  ""MeteringPointType"": 2,
+  ""Resolution"": 1,
+  ""CorrelationId"": ""00-e9743feb59a80c4082b328e586c9654f-6ea969c563c0a4cd-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-09T11:40:20Z""
+}",1,34359738368,201,2022-08-09T11:40:30.284+0000,null,null,"{""Diagnostic-Id"":""00-6b2e2c12b511bacca6c157e9db545fbf-2aa0047a564c2655-00""}",{},2022-08-09T11:40:30.505+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""a6d0617e-9fed-44cb-a5a1-bdc9b2b2ef0e"",
+  ""GsrnNumber"": ""575654289905529962"",
+  ""GridAreaLinkId"": ""4f43b006-3cdc-4a2a-afa2-3e29b4bbef47"",
+  ""SettlementMethod"": null,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2022-05-13T22:00:00Z"",
+  ""MeteringPointType"": 2,
+  ""Resolution"": 2,
+  ""CorrelationId"": ""00-62a4eb11739b004685ee8e869f59cbbb-4036903b540041bf-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-09T12:13:53Z""
+}",0,34359739424,203,2022-08-09T12:14:00.286+0000,null,null,"{""Diagnostic-Id"":""00-5369e10a2d5fb2f224186480b54333a4-f515d16a24e3edf6-00""}",{},2022-08-09T12:14:00.505+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""a8618c4d-952e-4a66-84e9-e77caa23ab89"",
+  ""GsrnNumber"": ""576078390996141391"",
+  ""GridAreaLinkId"": ""4f43b006-3cdc-4a2a-afa2-3e29b4bbef47"",
+  ""SettlementMethod"": null,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2022-05-13T22:00:00Z"",
+  ""MeteringPointType"": 2,
+  ""Resolution"": 1,
+  ""CorrelationId"": ""00-f718c1f3dfa6e045b0c17690c04b8262-cdad5860da36648e-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-09T12:05:14Z""
+}",0,34359738816,202,2022-08-09T12:05:20.266+0000,null,null,"{""Diagnostic-Id"":""00-9f6452383f1d77e0e5bad1862c57cc9e-f1ac2c0958fdf12a-00""}",{},2022-08-09T12:05:20.509+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""273f8e6f-beb9-41e0-af52-5886d50690d7"",
+  ""GsrnNumber"": ""577996546429822830"",
+  ""GridAreaLinkId"": ""4f43b006-3cdc-4a2a-afa2-3e29b4bbef47"",
+  ""SettlementMethod"": null,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2022-05-13T22:00:00Z"",
+  ""MeteringPointType"": 2,
+  ""Resolution"": 1,
+  ""CorrelationId"": ""00-432a7016f409574a8ed6437eac8c37f9-c003e40f3bd7e6dd-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-09T12:13:16Z""
+}",2,34359739424,209,2022-08-09T12:13:20.180+0000,null,null,"{""Diagnostic-Id"":""00-f1875b9601e4d64ad8ca6eacfba2ebd0-43c0ede108cdc915-00""}",{},2022-08-09T12:13:20.505+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""86d620e7-6d71-41c7-92d6-73fb9315580a"",
+  ""GsrnNumber"": ""570416220578765810"",
+  ""GridAreaLinkId"": ""4f43b006-3cdc-4a2a-afa2-3e29b4bbef47"",
+  ""SettlementMethod"": null,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2022-05-13T22:00:00Z"",
+  ""MeteringPointType"": 2,
+  ""Resolution"": 1,
+  ""CorrelationId"": ""00-0955d48cc737f74ea6c785d6c647ed55-5f32afcc3f781ff4-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-09T11:51:43Z""
+}",3,34359740800,209,2022-08-09T11:51:50.176+0000,null,null,"{""Diagnostic-Id"":""00-0d00f949fdbe7ed9485d2e99359aaadd-63763f51abd3c1b0-00""}",{},2022-08-09T11:51:50.505+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""e4de45b3-512a-494b-af98-bde5b5255c92"",
+  ""GsrnNumber"": ""570652265385156086"",
+  ""GridAreaLinkId"": ""e446e480-2ce6-44f6-9d45-bd891d4b3176"",
+  ""SettlementMethod"": null,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2022-06-13T22:00:00Z"",
+  ""MeteringPointType"": 2,
+  ""Resolution"": 1,
+  ""CorrelationId"": ""00-574f1a7480682d458076b0d953ccf018-400c0a39298e2f3d-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-05T14:23:54Z""
+}",0,30064778592,198,2022-08-05T14:24:01.003+0000,null,null,"{""Diagnostic-Id"":""00-ee2eefe31579e5c1554ee6dd139978de-b4dc2d2c13e32879-00""}",{},2022-08-05T14:24:01.512+0000,2022,8,5
+"{
+  ""MeteringPointId"": ""6b5ce4f5-49ff-4b8b-ad5e-654b1a43a72f"",
+  ""GsrnNumber"": ""573849042339566185"",
+  ""GridAreaLinkId"": ""f5a0cdeb-79dd-4a18-a20a-1210fb84daf0"",
+  ""SettlementMethod"": 2,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2021-09-25T22:00:00Z"",
+  ""MeteringPointType"": 1,
+  ""Resolution"": 1,
+  ""CorrelationId"": ""00-da218e51b8d4cf43896d7c0ec287fcd1-bf17c301d08bc94b-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-10T08:49:22Z""
+}",2,34359740032,210,2022-08-10T08:49:30.739+0000,null,null,"{""Diagnostic-Id"":""00-cf969baad33b920e8dbce41fd8718d29-09ba78ce464293b4-00""}",{},2022-08-10T08:49:31.018+0000,2022,8,10
+"{
+  ""MeteringPointId"": ""647ffd18-5994-442e-8514-9116401ae0d7"",
+  ""GsrnNumber"": ""574807646937307631"",
+  ""GridAreaLinkId"": ""f5a0cdeb-79dd-4a18-a20a-1210fb84daf0"",
+  ""SettlementMethod"": 2,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2021-09-25T22:00:00Z"",
+  ""MeteringPointType"": 1,
+  ""Resolution"": 1,
+  ""CorrelationId"": ""00-130d1593746dcf48a1ee9d1f815fa5f2-c31e9f36e8f74e29-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-09T07:35:45Z""
+}",3,34359739584,207,2022-08-09T07:35:50.201+0000,null,null,"{""Diagnostic-Id"":""00-9e248c2243c4c79ccaf61303f45dc1d0-f15a468c3ab1decf-00""}",{},2022-08-09T07:35:50.507+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""8423035d-6b8f-4c87-9856-9301f0db8b82"",
+  ""GsrnNumber"": ""578771129836502658"",
+  ""GridAreaLinkId"": ""f5a0cdeb-79dd-4a18-a20a-1210fb84daf0"",
+  ""SettlementMethod"": 2,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2021-09-25T22:00:00Z"",
+  ""MeteringPointType"": 1,
+  ""Resolution"": 1,
+  ""CorrelationId"": ""00-c1881e4a01318b46a611c1f859e624ed-b8dd41bc479a4a70-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-09T07:28:49Z""
+}",2,34359738368,207,2022-08-09T07:28:51.493+0000,null,null,"{""Diagnostic-Id"":""00-c4e6b71aab923fe98226fdb39ab0dae4-543693975abd8fa7-00""}",{},2022-08-09T07:28:52.024+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""a6d0617e-9fed-44cb-a5a1-bdc9b2b2ef0e"",
+  ""GsrnNumber"": ""575654289905529962"",
+  ""EffectiveDate"": ""2022-05-15T22:00:00Z"",
+  ""CorrelationId"": ""00-000bdf915dec8b48a586e968b8e6cae9-60e9b645d5280d31-00"",
+  ""MessageType"": ""MeteringPointConnected"",
+  ""OperationTime"": ""2022-08-09T12:14:16Z""
+}",1,34359739424,203,2022-08-09T12:14:20.197+0000,null,null,"{""Diagnostic-Id"":""00-a72b0e99a4a32bb671a26d3ac9164482-5a8b58fe000dc374-00""}",{},2022-08-09T12:14:20.505+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""e4de45b3-512a-494b-af98-bde5b5255c92"",
+  ""GsrnNumber"": ""570652265385156086"",
+  ""EffectiveDate"": ""2022-06-15T22:00:00Z"",
+  ""CorrelationId"": ""00-cf3e713e31a19f40b1aad5d26ed83624-b8157c8727f771dd-00"",
+  ""MessageType"": ""MeteringPointConnected"",
+  ""OperationTime"": ""2022-08-05T14:24:19Z""
+}",1,30064776784,198,2022-08-05T14:24:20.261+0000,null,null,"{""Diagnostic-Id"":""00-b36142e6c3b43306500c267d1bc7cb9f-5a98790e57e1e66c-00""}",{},2022-08-05T14:24:20.679+0000,2022,8,5
+"{
+  ""MeteringPointId"": ""dffb2dab-aec8-48e3-9c0b-d2c59cfcb47e"",
+  ""GsrnNumber"": ""576003432716622530"",
+  ""EffectiveDate"": ""2022-05-15T22:00:00Z"",
+  ""CorrelationId"": ""00-606b88adf28da64a8a50b0423c40f0c7-d3072137bd297fe1-00"",
+  ""MessageType"": ""MeteringPointConnected"",
+  ""OperationTime"": ""2022-08-09T10:12:29Z""
+}",0,34359738368,201,2022-08-09T10:12:30.269+0000,null,null,"{""Diagnostic-Id"":""00-34136af13d2c9d7bbe137de19ebbc65d-ca947f448834e819-00""}",{},2022-08-09T10:12:30.506+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""a8618c4d-952e-4a66-84e9-e77caa23ab89"",
+  ""GsrnNumber"": ""576078390996141391"",
+  ""EffectiveDate"": ""2022-06-15T22:00:00Z"",
+  ""CorrelationId"": ""00-318adc5cdaab8e4dab2d488c0d80db89-9c164a927822f221-00"",
+  ""MessageType"": ""MeteringPointConnected"",
+  ""OperationTime"": ""2022-08-09T12:07:10Z""
+}",1,34359738976,202,2022-08-09T12:07:20.142+0000,null,null,"{""Diagnostic-Id"":""00-684219c28b24b099401cffc6a5043454-b4c7b36abe69a422-00""}",{},2022-08-09T12:07:20.505+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""9492e267-81fa-4653-9d83-8b645e279754"",
+  ""GsrnNumber"": ""579051976943327724"",
+  ""EffectiveDate"": ""2022-05-15T22:00:00Z"",
+  ""CorrelationId"": ""00-c52336f6aa102044b172a2140a03ce9f-c254e107c6fb4b85-00"",
+  ""MessageType"": ""MeteringPointConnected"",
+  ""OperationTime"": ""2022-08-09T11:40:49Z""
+}",2,34359738976,208,2022-08-09T11:40:50.214+0000,null,null,"{""Diagnostic-Id"":""00-32a47442186e87550877324c2d1fb0fb-5cc5229cf017fac8-00""}",{},2022-08-09T11:40:50.506+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""273f8e6f-beb9-41e0-af52-5886d50690d7"",
+  ""GsrnNumber"": ""577996546429822830"",
+  ""EffectiveDate"": ""2022-05-15T22:00:00Z"",
+  ""CorrelationId"": ""00-cefaa49c002b144eb3c0ff3c8b6616ee-a2a1d56437b42597-00"",
+  ""MessageType"": ""MeteringPointConnected"",
+  ""OperationTime"": ""2022-08-09T12:13:50Z""
+}",3,34359741408,210,2022-08-09T12:14:00.207+0000,null,null,"{""Diagnostic-Id"":""00-0f1a9ce997bdb19c20349d8c116c00aa-0d2d63da46c2f70b-00""}",{},2022-08-09T12:14:00.505+0000,2022,8,9
+"{
+  ""MeteringPointId"": ""39fffd8c-f838-47d9-9cbf-d40ff7d30216"",
+  ""GsrnNumber"": ""577177211168861404"",
+  ""GridAreaLinkId"": ""9183def8-c91f-4984-ac02-0ef3f8234033"",
+  ""SettlementMethod"": 2,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2021-09-25T22:00:00Z"",
+  ""MeteringPointType"": 1,
+  ""Resolution"": 1,
+  ""CorrelationId"": ""00-91312fcfb35e654da06f37adf880c15c-0c95513dff36c308-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-08T08:14:02Z""
+}",3,34359738368,205,2022-08-08T08:14:11.058+0000,null,null,"{""Diagnostic-Id"":""00-862be9762302c992156941c896bbe381-dc1254ff6c5a6360-00""}",{},2022-08-08T10:17:34.008+0000,2022,8,8
+"{
+  ""MeteringPointId"": ""07cffc11-6792-4a7c-8a75-4d43caa79e05"",
+  ""GsrnNumber"": ""575949133509397050"",
+  ""GridAreaLinkId"": ""f5a0cdeb-79dd-4a18-a20a-1210fb84daf0"",
+  ""SettlementMethod"": 2,
+  ""ConnectionState"": 1,
+  ""EffectiveDate"": ""2021-09-25T22:00:00Z"",
+  ""MeteringPointType"": 1,
+  ""Resolution"": 1,
+  ""CorrelationId"": ""00-eed06a9a41038e4092d64755c59937dc-ce11b3d45d4925bc-00"",
+  ""MessageType"": ""MeteringPointCreated"",
+  ""OperationTime"": ""2022-08-08T08:51:39Z""
+}",3,34359738976,206,2022-08-08T08:51:40.761+0000,null,null,"{""Diagnostic-Id"":""00-dbae5a36582d938bd6699b7069bb652b-95047da9eded7363-00""}",{},2022-08-08T10:17:34.008+0000,2022,8,8
+"{""GridAreaLinkId"":""e446e480-2ce6-44f6-9d45-bd891d4b3176"",""GridAreaCode"":""805"",""GridAreaId"":""89801EC1-AF12-46D9-B044-05A004A0D46C"",""CorrelationId"":""6b9cbd35-7bc2-436f-805e-3641edb55928"",""MessageType"":""GridAreaUpdatedIntegrationEvent"",""OperationTime"":""2022-07-21T10:18:55.000Z""}",0,30064779200,199,2022-08-05T14:25:12.341+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
+"{""GridAreaLinkId"":""4f43b006-3cdc-4a2a-afa2-3e29b4bbef47"",""GridAreaCode"":""806"",""GridAreaId"":""696E5DBA-B028-4A5D-B8B4-E0C01AFD3CFE"",""CorrelationId"":""27da10a2-5761-4d42-957b-62dcc43e1419"",""MessageType"":""GridAreaUpdatedIntegrationEvent"",""OperationTime"":""2022-07-21T09:30:31.000Z""}",0,30064779536,200,2022-08-05T14:25:12.373+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
+"{""GridAreaLinkId"":""e446e480-2ce6-44f6-9d45-bd891d4b3176"",""GridAreaCode"":""805"",""GridAreaId"":""89801EC1-AF12-46D9-B044-05A004A0D46C"",""CorrelationId"":""4cc02d97-6947-4834-b25a-5911c5ea0fa5"",""MessageType"":""GridAreaUpdatedIntegrationEvent"",""OperationTime"":""2022-07-21T09:56:10.000Z""}",3,30064779056,203,2022-08-05T14:25:12.317+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
+"{""GridAreaLinkId"":""4f43b006-3cdc-4a2a-afa2-3e29b4bbef47"",""GridAreaCode"":""806"",""GridAreaId"":""696E5DBA-B028-4A5D-B8B4-E0C01AFD3CFE"",""CorrelationId"":""4702f49c-fc0f-42ff-b050-84784c479a8c"",""MessageType"":""GridAreaUpdatedIntegrationEvent"",""OperationTime"":""2022-07-21T10:26:33.000Z""}",3,30064779392,204,2022-08-05T14:25:12.348+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
+"{""GridAreaLinkId"":""e446e480-2ce6-44f6-9d45-bd891d4b3176"",""GridAreaCode"":""805"",""GridAreaId"":""89801EC1-AF12-46D9-B044-05A004A0D46C"",""CorrelationId"":""abdffa1d-7035-4d6d-9aed-2b37b6df6931"",""MessageType"":""GridAreaUpdatedIntegrationEvent"",""OperationTime"":""2022-07-21T09:30:25.000Z""}",2,30064777472,205,2022-08-05T14:25:12.313+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
+"{""GridAreaLinkId"":""e446e480-2ce6-44f6-9d45-bd891d4b3176"",""GridAreaCode"":""805"",""GridAreaId"":""89801EC1-AF12-46D9-B044-05A004A0D46C"",""CorrelationId"":""87dd8ea2-7b21-4fd6-841d-b2a0f3dc6ba5"",""MessageType"":""GridAreaUpdatedIntegrationEvent"",""OperationTime"":""2022-07-21T10:26:25.000Z""}",2,30064777808,206,2022-08-05T14:25:12.344+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
+"{""GridAreaLinkId"":""4f43b006-3cdc-4a2a-afa2-3e29b4bbef47"",""GridAreaCode"":""806"",""GridAreaId"":""696E5DBA-B028-4A5D-B8B4-E0C01AFD3CFE"",""CorrelationId"":""cf9e051d-82b6-420f-b066-0ccd6c265f28"",""MessageType"":""GridAreaUpdatedIntegrationEvent"",""OperationTime"":""2022-07-21T10:19:01.000Z""}",1,30064777232,199,2022-08-05T14:25:12.345+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
+"{""GridAreaLinkId"":""4f43b006-3cdc-4a2a-afa2-3e29b4bbef47"",""GridAreaCode"":""806"",""GridAreaId"":""696E5DBA-B028-4A5D-B8B4-E0C01AFD3CFE"",""CorrelationId"":""8c3770f8-351e-4ef0-9baa-50de8402c16c"",""MessageType"":""GridAreaUpdatedIntegrationEvent"",""OperationTime"":""2022-07-21T09:56:17.000Z""}",1,30064777568,200,2022-08-05T14:25:12.361+0000,null,null,{},{},2022-08-05T14:25:12.507+0000,2022,8,5
