@@ -27,13 +27,21 @@ def test_balance_fixing_total_production(
     batch_id = datetime.now().strftime("%Y-%m-%d_%H_%M_%S")
     grid_areas = ["805", "806"]
     snapshot_datetime = datetime.now()
-    period_start_datetime = datetime.strptime('31/05/2022 22:00', '%d/%m/%Y %H:%M')
-    period_end_datetime = datetime.strptime('1/06/2022 22:00', '%d/%m/%Y %H:%M')
-    integration_events_path = f"{delta_lake_path}/../calculator/test_files/integration_events.csv"
-    time_series_points_path = f"{delta_lake_path}/../calculator/test_files/time_series_points.csv"
-    raw_integration_events_df = spark.read.format("csv").load(integration_events_path)
-    raw_time_series_points = spark.read.format("csv").load(time_series_points_path)
-    
+    period_start_datetime = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
+    period_end_datetime = datetime.strptime("1/06/2022 22:00", "%d/%m/%Y %H:%M")
+    integration_events_path = (
+        f"{delta_lake_path}/../calculator/test_files/integration_events.csv"
+    )
+    time_series_points_path = (
+        f"{delta_lake_path}/../calculator/test_files/time_series_points.csv"
+    )
+    raw_integration_events_df = (
+        spark.read.option("header", "true").format("csv").load(integration_events_path)
+    )
+    raw_time_series_points = (
+        spark.read.option("header", "true").format("csv").load(time_series_points_path)
+    )
+
     result = calculate_balance_fixing_total_production(
         raw_integration_events_df,
         raw_time_series_points,
@@ -41,8 +49,7 @@ def test_balance_fixing_total_production(
         grid_areas,
         snapshot_datetime,
         period_start_datetime,
-        period_end_datetime
+        period_end_datetime,
     )
-
 
     assert len(result.count()) > 0, "Could not verify created json file."

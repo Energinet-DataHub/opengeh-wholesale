@@ -15,11 +15,11 @@
 import os
 import shutil
 import pytest
-from package import calculator
+from package import calculate_balance_fixing_total_production
 from pyspark.sql.types import IntegerType
 
-
-def test_calculator_creates_file(
+"""
+def test_calculator_job_creates_file(
     spark, delta_lake_path, find_first_file, json_lines_reader
 ):
     batchId = 1234
@@ -36,3 +36,4 @@ def test_calculator_creates_file(
 
     result = json_lines_reader(jsonFile)
     assert len(result) > 0, "Could not verify created json file."
+"""

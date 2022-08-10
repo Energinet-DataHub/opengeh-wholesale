@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package import calculator, initialize_spark
+from package import calculate_balance_fixing_total_production, initialize_spark
 import configargparse
 
 
@@ -56,13 +56,12 @@ def start():
         args.grid_areas,
         args.snapshot_datetime,
         args.period_start_datetime,
-        args.period_end_datetime
+        args.period_end_datetime,
     )
 
-    (output_df
-        .repartition("grid-area")
-        .write
-        .mode("overwrite")
+    (
+        output_df.repartition("grid-area")
+        .write.mode("overwrite")
         .partitionBy("grid-area")
-        .json(f"{args.process_results_path}/batch-id={batch_id}")
+        .json(f"{args.process_results_path}/batch-id={args.batch_id}")
     )
