@@ -19,26 +19,26 @@ using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
-public sealed class DatabricksJobRunner : IJobRunner
+public sealed class DatabricksCalculatorJobRunner : ICalculatorJobRunner
 {
-    private readonly DatabricksJobSelector _databricksJobSelector;
+    private readonly DatabricksCalculatorJobSelector _databricksCalculatorJobSelector;
     private readonly DatabricksWheelClient _wheelClient;
 
-    public DatabricksJobRunner(
-        DatabricksJobSelector databricksJobSelector,
+    public DatabricksCalculatorJobRunner(
+        DatabricksCalculatorJobSelector databricksCalculatorJobSelector,
         DatabricksWheelClient wheelClient)
     {
-        _databricksJobSelector = databricksJobSelector;
+        _databricksCalculatorJobSelector = databricksCalculatorJobSelector;
         _wheelClient = wheelClient;
     }
 
-    public async Task<JobRunId> SubmitJobAsync(Batch batch)
+    public async Task<JobRunId> SubmitJobAsync(IEnumerable<string> jobParameters)
     {
-        var calculatorJob = await _databricksJobSelector
+        var calculatorJob = await _databricksCalculatorJobSelector
             .SelectCalculatorJobAsync()
             .ConfigureAwait(false);
 
-        var runParameters = MergeRunParameters(calculatorJob, batch);
+        var runParameters = MergeRunParameters(calculatorJob, jobParameters);
 
         var runId = await _wheelClient
             .Jobs
@@ -66,7 +66,7 @@ public sealed class DatabricksJobRunner : IJobRunner
         };
     }
 
-    private static RunParameters MergeRunParameters(WheelJob job, Batch batch)
+    private static RunParameters MergeRunParameters(WheelJob job, IEnumerable<string> jobParameters)
     {
         var pythonWheelTask = job.Settings.Tasks.FirstOrDefault(x => x.PythonWheelTask != null);
 
@@ -74,11 +74,7 @@ public sealed class DatabricksJobRunner : IJobRunner
             pythonWheelTask?.PythonWheelTask?.Parameters ??
             throw new InvalidOperationException($"Parameters for job {job.JobId} could not be found.");
 
-        sourceParams.Append($"--batch-id={batch.Id.Id}");
-        sourceParams.Append($"--grid-areas=['805','806']");
-        sourceParams.Append($"--snapshot-datetime={}");
-        sourceParams.Append($"--period-start-datetime={}"); // datetime.strptime('31/05/2022 22:00', '%d/%m/%Y %H:%M')
-        sourceParams.Append($"--period-end-datetime={}"); // datetime.strptime('31/05/2022 22:00', '%d/%m/%Y %H:%M')
+        sourceParams.AddRange(jobParameters);
 
         return RunParameters.CreatePythonParams(sourceParams);
     }

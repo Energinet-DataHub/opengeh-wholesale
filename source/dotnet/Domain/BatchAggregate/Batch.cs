@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
@@ -30,6 +31,11 @@ public class Batch
         _gridAreaCodes = gridAreaCodes.ToList();
         if (!_gridAreaCodes.Any())
             throw new ArgumentException("Batch must contain at least one grid area code.");
+
+        // Period is currently hardcoded to the 1st of June 2022
+        Period = new Interval(
+            Instant.FromUtc(2022, 5, 31, 22, 00),
+            Instant.FromUtc(2022, 6, 1, 22, 00));
     }
 
     /// <summary>
@@ -51,6 +57,8 @@ public class Batch
     public BatchExecutionState ExecutionState { get; private set; }
 
     public JobRunId? RunId { get; private set; }
+
+    public Interval Period { get; }
 
     public void Complete()
     {

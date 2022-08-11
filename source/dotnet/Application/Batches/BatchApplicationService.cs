@@ -26,18 +26,21 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
-    private readonly IJobRunner _jobRunner;
+    private readonly ICalculatorJobRunner _calculatorJobRunner;
+    private readonly ICalculatorJobParametersFactory _calculatorJobParametersFactory;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         IProcessCompletedPublisher processCompletedPublisher,
-        IJobRunner jobRunner)
+        ICalculatorJobRunner calculatorJobRunner,
+        ICalculatorJobParametersFactory calculatorJobParametersFactory)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _processCompletedPublisher = processCompletedPublisher;
-        _jobRunner = jobRunner;
+        _calculatorJobRunner = calculatorJobRunner;
+        _calculatorJobParametersFactory = calculatorJobParametersFactory;
     }
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
@@ -53,7 +56,8 @@ public class BatchApplicationService : IBatchApplicationService
 
         foreach (var batch in batches)
         {
-            var jobRunId = await _jobRunner.SubmitJobAsync(batch).ConfigureAwait(false);
+            var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);
+            var jobRunId = await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
             batch.SetExecuting(jobRunId);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
@@ -72,7 +76,7 @@ public class BatchApplicationService : IBatchApplicationService
             // The batch will have received a RunId when the batch have started.
             var runId = batch.RunId!;
 
-            var state = await _jobRunner
+            var state = await _calculatorJobRunner
                 .GetJobStateAsync(runId)
                 .ConfigureAwait(false);
 
@@ -105,7 +109,7 @@ public class BatchApplicationService : IBatchApplicationService
     {
         return completedBatches
             .SelectMany(b => b.GridAreaCodes.Select(x => new { b.Id, x.Code }))
-            .Select(c => new ProcessCompletedEventDto(c.Code, c.Id.Id))
+            .Select(c => new ProcessCompletedEventDto(c.Code, c.Id.Value))
             .ToList();
     }
 }

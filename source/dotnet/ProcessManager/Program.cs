@@ -40,7 +40,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
 
-public class Program
+public static class Program
 {
     public static async Task Main()
     {
@@ -73,7 +73,7 @@ public class Program
     private static void Applications(IServiceCollection services)
     {
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
-        services.AddScoped<IJobRunner, DatabricksJobRunner>();
+        services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
         services.AddScoped<IProcessCompletedPublisher>(provider =>
         {
             var sender = provider
@@ -119,7 +119,9 @@ public class Program
                 client.CreateSender(processCompletedTopicName));
         });
 
-        serviceCollection.AddScoped<DatabricksJobSelector>();
+        serviceCollection.AddScoped<DatabricksCalculatorJobSelector>();
+        serviceCollection
+            .AddScoped<ICalculatorJobParametersFactory, DatabricksCalculatorJobParametersFactory>();
 
         serviceCollection.AddSingleton(_ =>
         {

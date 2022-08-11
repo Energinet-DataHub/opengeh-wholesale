@@ -68,6 +68,6 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
         services.AddScoped<IBatchRepository, BatchRepository>();
         services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
-        services.AddScoped<IJobRunner>(_ => null!); // Unused in the use cases of this app
+        services.AddScoped<ICalculatorJobRunner>(_ => null!); // Unused in the use cases of this app
     }
 }
