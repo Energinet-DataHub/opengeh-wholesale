@@ -31,10 +31,10 @@ def start():
 
     # Run parameters
     p.add("--batch-id", type=str, required=True)
-    p.add("--snapshot-datetime", type=str, required=True)
-    p.add("--grid-areas", type=str, required=True)
-    p.add("--period-start-datetime", type=str, required=True)
-    p.add("--period-end-datetime", type=str, required=True)
+    p.add("--batch-snapshot-datetime", type=str, required=True)
+    p.add("--batch-grid-areas", type=str, required=True)
+    p.add("--batch-period-start-datetime", type=str, required=True)
+    p.add("--batch-period-end-datetime", type=str, required=True)
 
     args, unknown_args = p.parse_known_args()
 
@@ -45,18 +45,18 @@ def start():
     raw_integration_events_df = spark.read.option("mergeSchema", "true").parquet(
         args.integration_events_path
     )
-    raw_time_series_points = spark.read.option("mergeSchema", "true").parquet(
+    raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
         args.time_series_points_path
     )
 
     output_df = calculate_balance_fixing_total_production(
         raw_integration_events_df,
-        raw_time_series_points,
+        raw_time_series_points_df,
         args.batch_id,
-        args.grid_areas,
-        args.snapshot_datetime,
-        args.period_start_datetime,
-        args.period_end_datetime,
+        args.batch_grid_areas,
+        args.batch_snapshot_datetime,
+        args.batch_period_start_datetime,
+        args.batch_period_end_datetime,
     )
 
     (

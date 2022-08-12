@@ -45,7 +45,6 @@ def calculate_balance_fixing_total_production(
     period_start_datetime,
     period_end_datetime,
 ):
-
     grid_area_df = _get_grid_areas(
         raw_integration_events_df, batch_grid_areas, snapshot_datetime
     )
