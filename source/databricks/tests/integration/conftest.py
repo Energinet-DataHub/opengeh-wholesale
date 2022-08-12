@@ -28,7 +28,7 @@ def spark() -> SparkSession:
 def file_path_finder():
     """
     Returns the path of the file.
-    Please note that this only works if current folder haven't been changed prior using us.chdir().
+    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
     file located directly in the integration tests folder.
     """
@@ -43,7 +43,7 @@ def file_path_finder():
 def integration_tests_path(file_path_finder) -> str:
     """
     Returns the integration tests folder path.
-    Please note that this only works if current folder haven't been changed prior using us.chdir().
+    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
     file located directly in the integration tests folder.
     """
@@ -59,7 +59,7 @@ def delta_lake_path(integration_tests_path) -> str:
 def databricks_path() -> str:
     """
     Returns the source/databricks folder path.
-    Please note that this only works if current folder haven't been changed prior using us.chdir().
+    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
     file located directly in the integration tests folder.
     """
