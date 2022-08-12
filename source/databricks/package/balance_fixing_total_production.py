@@ -88,11 +88,14 @@ def _get_grid_areas(raw_integration_events_df, batch_grid_areas, snapshot_dateti
     # As we only use (currently) immutable data we can just pick any of the update events randomly.
     # This will, however, change when support for merge of grid areas are added.
     w2 = Window.partitionBy("body.GridAreaCode").orderBy(
-        col("enqueuedTime")
-    )  # skal det ikke være stored time?
+        col("storedTime")  # should be operation timestamp
+    )
+    # only get nevest events
     grid_area_events_df = (
-        grid_area_events_df.withColumn("row", row_number().over(w2))
-        .filter(col("row") == 1)
+        grid_area_events_df.withColumn(
+            "row", row_number().over(w2)
+        )  # orderby storedTime and add row number
+        .filter(col("row") == 1)  # only take newest event
         .drop("row")
         .select("body.GridAreaLinkId", "body.GridAreaCode")
     )
