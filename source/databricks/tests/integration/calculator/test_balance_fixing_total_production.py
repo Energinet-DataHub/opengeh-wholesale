@@ -25,44 +25,45 @@ from package.balance_fixing_total_production import (
     _get_result,
 )
 from pyspark.sql.functions import col
+from pyspark import DataFrame
 
 
 @pytest.fixture(scope="session")
-def batch_grid_areas() -> str:
+def batch_grid_areas() -> list:
     return ["805", "806"]
 
 
 @pytest.fixture(scope="session")
-def snapshot_datetime() -> str:
+def snapshot_datetime() -> datetime:
     return datetime.now()
 
 
 @pytest.fixture(scope="session")
 def batch_id() -> str:
-    return 42
+    return "42"
 
 
 @pytest.fixture(scope="session")
-def raw_integration_events_df(spark, delta_lake_path):
+def raw_integration_events_df(spark, delta_lake_path) -> DataFrame:
     return spark.read.json(
         f"{delta_lake_path}/../calculator/test_files/integration_events.json"
     ).withColumn("body", col("body").cast("binary"))
 
 
 @pytest.fixture(scope="session")
-def raw_time_series_points_df(spark, delta_lake_path):
+def raw_time_series_points_df(spark, delta_lake_path) -> DataFrame:
     return spark.read.json(
         f"{delta_lake_path}/../calculator/test_files/time_series_points.json"
     )
 
 
 @pytest.fixture(scope="session")
-def period_start_datetime() -> str:
+def period_start_datetime() -> datetime:
     return datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
 
 
 @pytest.fixture(scope="session")
-def period_end_datetime() -> str:
+def period_end_datetime() -> datetime:
     return datetime.strptime("1/06/2022 22:00", "%d/%m/%Y %H:%M")
 
 
@@ -89,21 +90,6 @@ def test_balance_fixing_total_production_generates_non_empty_result(
     )
     print(result.count())
     assert result.count() > 0, "Could not verify created json file."
-
-
-def test__get_grid_areas(
-    spark,
-    delta_lake_path,
-    batch_grid_areas,
-    snapshot_datetime,
-    raw_integration_events_df,
-):
-
-    grid_area_df = _get_grid_areas(
-        raw_integration_events_df, batch_grid_areas, snapshot_datetime
-    )
-
-    assert grid_area_df.count() == 2
 
 
 def test__get_metering_point_periods(

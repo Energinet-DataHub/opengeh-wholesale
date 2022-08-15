@@ -72,7 +72,6 @@ def _get_grid_areas(raw_integration_events_df, batch_grid_areas, snapshot_dateti
         [
             StructField("GridAreaCode", StringType(), True),
             StructField("GridAreaLinkId", StringType(), True),
-            StructField("EffectiveDate", TimestampType(), True),
             StructField("MessageType", StringType(), True),
         ]
     )
