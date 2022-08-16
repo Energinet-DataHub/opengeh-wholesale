@@ -83,7 +83,7 @@ public class BatchApplicationService : IBatchApplicationService
             }
             else if (state == JobState.Canceled)
             {
-                batch.Restart();
+                batch.ResetStatus();
             }
         }
 
