@@ -75,6 +75,14 @@ def grid_area_df_factory(spark):
     return factory
 
 
+def test__stored_time_matches_persister():
+    raise Exception
+
+
+def test__prop_names_and_types_matches_integration_event_listener():
+    raise Exception
+
+
 def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_data(
     grid_area_df_factory,
 ):
