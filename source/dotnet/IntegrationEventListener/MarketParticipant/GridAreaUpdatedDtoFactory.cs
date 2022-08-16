@@ -42,7 +42,7 @@ public class GridAreaUpdatedDtoFactory
             gridAreaUpdatedIntegrationEvent.GridAreaLinkId,
             gridAreaUpdatedIntegrationEvent.Code,
             _correlationContext.Id,
-            eventMetadata.MessageType,
+            "GridAreaUpdated",
             eventMetadata.OperationTimestamp);
     }
 }

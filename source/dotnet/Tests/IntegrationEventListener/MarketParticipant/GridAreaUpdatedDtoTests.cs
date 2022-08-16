@@ -25,10 +25,33 @@ public class GridAreaUpdatedDtoTests
     [Fact]
     public void PropertyNamesMatchesContractWithCalculator()
     {
-        var actualProps = typeof(GridAreaUpdatedDto).GetProperties().Select(info => info.Name);
+        // Arrange
+        var actualProps = typeof(GridAreaUpdatedDto).GetProperties().ToDictionary(info => info.Name);
         using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MarketParticipant.grid-area-updated.json");
-        var expectedProps = JsonNode.Parse(stream)!.AsObject().ToList().Select(pair => pair.Key);
+        var expectedProps = JsonNode.Parse(stream)!.AsObject().ToList();
 
-        actualProps.Should().BeEquivalentTo(expectedProps);
+        // Assert: Number of props match
+        actualProps.Count.Should().Be(expectedProps.Count);
+
+        foreach (var expectedProp in expectedProps)
+        {
+            var actualProp = actualProps[expectedProp.Key];
+
+            // Assert: Property names match
+            actualProp.Name.Should().Be(expectedProp.Key);
+
+            // Assert: Property types match
+            var actualPropertyType = MapToContractType(actualProp.PropertyType);
+            var expectedPropertyType = expectedProp.Value!["type"]!.ToString();
+            actualPropertyType.Should().Be(expectedPropertyType);
+        }
     }
+
+    private string MapToContractType(Type propertyType) => propertyType.Name switch
+    {
+        "String" => "string",
+        "Guid" => "guid",
+        "Instant" => "datetime",
+        _ => throw new NotImplementedException($"Property type '{propertyType.Name}' not implemented."),
+    };
 }
