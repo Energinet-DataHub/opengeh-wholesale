@@ -14,13 +14,14 @@
 
 resource "databricks_job" "integration_events_persister_streaming_job" {
   name = "IntegrationEventsPersisterStreamingJob"
-  max_retries = -1
   max_concurrent_runs = 1   
   always_running = true
 
   task {
     # The job must be recreated with each deployment and this is achieved using a unique resource id.
     task_key = "unique_job_${uuid()}"
+
+    max_retries = -1
 
     new_cluster {
       spark_version           = data.databricks_spark_version.latest_lts.id
