@@ -15,11 +15,8 @@
 import os
 import shutil
 import subprocess
-import sys
 import pytest
 from package import calculator_job
-
-sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
 
 
 def _get_process_manager_parameters(filename):
@@ -51,7 +48,7 @@ def test_calculator_job_when_invoked_with_incorrect_parameters_fails(
 
 # TODO BJARKE: Should we provide empty data sources instead of using `--only-validate-args`?
 def test_calculator_job_accepts_parameters_from_process_manager(
-    delta_lake_path, integration_tests_path, databricks_path
+    delta_lake_path, source_path, databricks_path
 ):
     """
     This test works in tandem with a .NET test ensuring that the calculator job accepts
@@ -60,7 +57,7 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
     # Arrange
     process_manager_parameters = _get_process_manager_parameters(
-        f"{integration_tests_path}/calculator/test_files/calculation-job-parameters-reference.txt"
+        f"{source_path}/contracts/calculation-job-parameters-reference.txt"
     )
 
     python_parameters = [

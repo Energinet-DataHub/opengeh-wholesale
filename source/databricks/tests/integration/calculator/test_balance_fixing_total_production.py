@@ -19,13 +19,13 @@ import shutil
 import pytest
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import (
-    _get_grid_areas,
-    _get_enriched_time_series_points,
-    _get_metering_point_periods,
-    _get_result,
+    _get_grid_areas_df,
+    _get_enriched_time_series_points_df,
+    _get_metering_point_periods_df,
+    _get_result_df,
 )
 from pyspark.sql.functions import col
-from pyspark import DataFrame
+from pyspark.sql import DataFrame
 
 
 @pytest.fixture(scope="session")
@@ -99,10 +99,10 @@ def test__get_metering_point_periods(
     period_start_datetime,
     period_end_datetime,
 ):
-    grid_area_df = _get_grid_areas(
+    grid_area_df = _get_grid_areas_df(
         raw_integration_events_df, batch_grid_areas, snapshot_datetime
     )
-    metering_point_periods_df = _get_metering_point_periods(
+    metering_point_periods_df = _get_metering_point_periods_df(
         raw_integration_events_df,
         grid_area_df,
         snapshot_datetime,
@@ -121,10 +121,10 @@ def test__get_enriched_time_series_points(
     period_start_datetime,
     period_end_datetime,
 ):
-    grid_area_df = _get_grid_areas(
+    grid_area_df = _get_grid_areas_df(
         raw_integration_events_df, batch_grid_areas, snapshot_datetime
     )
-    metering_point_period_df = _get_metering_point_periods(
+    metering_point_period_df = _get_metering_point_periods_df(
         raw_integration_events_df,
         grid_area_df,
         snapshot_datetime,
@@ -132,7 +132,7 @@ def test__get_enriched_time_series_points(
         period_end_datetime,
     )
 
-    enriched_time_series_points_df = _get_enriched_time_series_points(
+    enriched_time_series_points_df = _get_enriched_time_series_points_df(
         raw_time_series_points_df,
         metering_point_period_df,
         snapshot_datetime,

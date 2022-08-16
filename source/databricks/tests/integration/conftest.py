@@ -25,45 +25,19 @@ def spark() -> SparkSession:
 
 
 @pytest.fixture(scope="session")
-def file_path_finder():
-    """
-    Returns the path of the file.
-    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
-    The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the integration tests folder.
-    """
-
-    def finder(file):
-        return os.path.dirname(os.path.realpath(file))
-
-    return finder
-
-
-@pytest.fixture(scope="session")
-def integration_tests_path(file_path_finder) -> str:
+def integration_tests_path(databricks_path) -> str:
     """
     Returns the integration tests folder path.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
     file located directly in the integration tests folder.
     """
-    return file_path_finder(__file__)
+    return f"{databricks_path}/tests/integration"
 
 
 @pytest.fixture(scope="session")
 def delta_lake_path(integration_tests_path) -> str:
     return f"{integration_tests_path}/__delta__"
-
-
-@pytest.fixture(scope="session")
-def databricks_path() -> str:
-    """
-    Returns the source/databricks folder path.
-    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
-    The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the integration tests folder.
-    """
-    return os.path.dirname(os.path.realpath(__file__)) + "/../.."
 
 
 @pytest.fixture(scope="session")

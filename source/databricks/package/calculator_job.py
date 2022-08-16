@@ -15,7 +15,7 @@
 from datetime import datetime
 import sys
 
-# Required when executing from pytest without using wheel
+# Required when executing in a subprocess from pytest (without using wheel)
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
 
 from package import calculate_balance_fixing_total_production, initialize_spark

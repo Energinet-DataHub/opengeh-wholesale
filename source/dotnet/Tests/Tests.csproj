@@ -46,7 +46,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\databricks\tests\integration\calculator\test_files\calculation-job-parameters-reference.txt">
+    <EmbeddedResource Include="..\..\contracts\calculation-job-parameters-reference.txt">
       <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
     </EmbeddedResource>
   </ItemGroup>
