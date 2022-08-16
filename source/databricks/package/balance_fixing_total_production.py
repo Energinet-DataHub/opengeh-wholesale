@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     array,
     lit,
@@ -44,30 +45,32 @@ def calculate_balance_fixing_total_production(
     snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
-):
-    grid_area_df = _get_grid_areas(
+) -> DataFrame:
+    grid_area_df = _get_grid_areas_df(
         raw_integration_events_df, batch_grid_areas, snapshot_datetime
     )
-    metering_point_period_df = _get_metering_point_periods(
+    metering_point_period_df = _get_metering_point_periods_df(
         raw_integration_events_df,
         grid_area_df,
         snapshot_datetime,
         period_start_datetime,
         period_end_datetime,
     )
-    enriched_time_series_point_df = _get_enriched_time_series_points(
+    enriched_time_series_point_df = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         snapshot_datetime,
         period_start_datetime,
         period_end_datetime,
     )
-    result_df = _get_result(enriched_time_series_point_df, batch_grid_areas)
+    result_df = _get_result_df(enriched_time_series_point_df, batch_grid_areas)
 
     return result_df
 
 
-def _get_grid_areas(raw_integration_events_df, batch_grid_areas, snapshot_datetime):
+def _get_grid_areas_df(
+    raw_integration_events_df, batch_grid_areas, snapshot_datetime
+) -> DataFrame:
     grid_area_event_schema = StructType(
         [
             StructField("GridAreaCode", StringType(), True),
@@ -86,7 +89,7 @@ def _get_grid_areas(raw_integration_events_df, batch_grid_areas, snapshot_dateti
     # As we only use (currently) immutable data we can just pick any of the update events randomly.
     # This will, however, change when support for merge of grid areas are added.
     w2 = Window.partitionBy("body.GridAreaCode").orderBy(
-        col("storedTime")  # should be operation timestamp
+        col("storedTime")  # TODO: should be operation timestamp
     )
     # only get nevest events
     grid_area_events_df = (
@@ -107,13 +110,13 @@ def _get_grid_areas(raw_integration_events_df, batch_grid_areas, snapshot_dateti
     return grid_area_events_df
 
 
-def _get_metering_point_periods(
+def _get_metering_point_periods_df(
     raw_integration_events_df,
     grid_area_df,
     snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
-):
+) -> DataFrame:
     schema = StructType(
         [
             StructField("GsrnNumber", StringType(), True),
@@ -201,13 +204,13 @@ def _get_metering_point_periods(
     return metering_point_periods_df
 
 
-def _get_enriched_time_series_points(
+def _get_enriched_time_series_points_df(
     raw_time_series_points,
     metering_point_period_df,
     snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
-):
+) -> DataFrame:
     timeseries_df = (
         raw_time_series_points.where(col("storedTime") <= snapshot_datetime)
         .where(col("time") >= period_start_datetime)
@@ -248,7 +251,7 @@ def _get_enriched_time_series_points(
     return enriched_time_series_point_df
 
 
-def _get_result(enriched_time_series_points_df, batch_grid_areas):
+def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFrame:
     # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
     #       To improve performance, consider adding a range join hint.
     #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join

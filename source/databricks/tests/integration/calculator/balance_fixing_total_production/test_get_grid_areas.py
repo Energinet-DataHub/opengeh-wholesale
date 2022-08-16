@@ -18,58 +18,31 @@ import os
 import shutil
 import pytest
 from package import calculate_balance_fixing_total_production
-from package.balance_fixing_total_production import (
-    _get_grid_areas,
-    _get_enriched_time_series_points,
-    _get_metering_point_periods,
-    _get_result,
-)
+from package.balance_fixing_total_production import _get_grid_areas_df
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, struct
+from pyspark.sql.functions import col, struct, to_json
 
 
-@pytest.fixture(scope="session")
-def batch_grid_areas() -> list:
-    return ["805", "806"]
+# Factory defaults
+grid_area_code = "805"
+grid_area_link_id = "the-grid-area-link-id"
+message_type = (
+    "GridAreaUpdatedIntegrationEvent"  # The exact name of the event of interest
+)
+
+# Beginning of the danish date (CEST)
+first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
+second_of_june = datetime.strptime("1/06/2022 22:00", "%d/%m/%Y %H:%M")
 
 
-@pytest.fixture(scope="session")
-def snapshot_datetime() -> datetime:
-    return datetime.now()
-
-
-@pytest.fixture(scope="session")
-def raw_integration_events_df(spark, delta_lake_path) -> DataFrame:
-    return spark.read.json(
-        f"{delta_lake_path}/../calculator/test_files/integration_events.json"
-    ).withColumn("body", col("body").cast("binary"))
-
-
-@pytest.fixture(scope="session")
-def raw_time_series_points_df(spark, delta_lake_path) -> DataFrame:
-    return spark.read.json(
-        f"{delta_lake_path}/../calculator/test_files/time_series_points.json"
-    )
-
-
-@pytest.fixture(scope="session")
-def period_start_datetime() -> datetime:
-    return datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
-
-
-@pytest.fixture(scope="session")
-def period_end_datetime() -> datetime:
-    return datetime.strptime("1/06/2022 22:00", "%d/%m/%Y %H:%M")
-
-
-# TODO BJARKE: How do we ensure that the generated dataframe has the exact structure expected by the sut?
+# TODO: How do we ensure that the generated dataframe has the exact schema expected by the sut?
 @pytest.fixture
 def grid_area_df_factory(spark):
     def factory(
-        stored_time=datetime.now(),
-        body_grid_area_code="805",
-        body_grid_area_link_id="the-grid-area-link-id",
-        body_message_type="GridAreaUpdatedIntegrationEvent",
+        stored_time=first_of_june,
+        body_grid_area_code=grid_area_code,
+        body_grid_area_link_id=grid_area_link_id,
+        body_message_type=message_type,
     ):
         row = [
             {
@@ -84,11 +57,13 @@ def grid_area_df_factory(spark):
             spark.createDataFrame(row)
             .withColumn(
                 "body",
-                struct(
-                    col("GridAreaCode"),
-                    col("GridAreaLinkId"),
-                    col("MessageType").cast("binary"),
-                ),
+                to_json(
+                    struct(
+                        col("GridAreaCode"),
+                        col("GridAreaLinkId"),
+                        col("MessageType"),
+                    )
+                ).cast("binary"),
             )
             .select("storedTime", "body")
         )
@@ -96,54 +71,83 @@ def grid_area_df_factory(spark):
     return factory
 
 
-"""
-def test__get_grid_areas(
-    spark,
-    delta_lake_path,
-    batch_grid_areas,
-    snapshot_datetime,
-    raw_integration_events_df,
-):
-    grid_area_df = _get_grid_areas(
-        raw_integration_events_df, batch_grid_areas, snapshot_datetime
-    )
-
-    assert grid_area_df.count() == 2
-"""
-
-
-def test_when_matching_selected_code_returns_grid_area(grid_area_df_factory):
+def test_returns_correct_grid_area_data(grid_area_df_factory):
     # Arrange
-    snapshot_datetime = datetime.now()  # Must be later than the grid area event
-    matching_grid_area_code = "805"
-
-    raw_integration_events_df = grid_area_df_factory(
-        body_grid_area_code=matching_grid_area_code
-    )
+    raw_integration_events_df = grid_area_df_factory()
 
     # Act
-    grid_area_df = _get_grid_areas(
-        raw_integration_events_df, [matching_grid_area_code], snapshot_datetime
+    grid_area_df = _get_grid_areas_df(
+        raw_integration_events_df, [grid_area_code], snapshot_datetime=second_of_june
     )
 
     # Assert
     assert grid_area_df.count() == 1
     actual = grid_area_df.first()
-    assert actual.GridAreaCode == matching_grid_area_code
+    assert actual.GridAreaCode == grid_area_code
+    assert actual.GridAreaLinkId == grid_area_link_id
 
 
-def test_when_not_matching_selected_code_returns_no_grid_area(grid_area_df_factory):
+def test_when_stored_time_equals_snapshot_datetime_returns_grid_area(
+    grid_area_df_factory,
+):
     # Arrange
-    snapshot_datetime = datetime.now()  # Must be later than the grid area event
-    non_matching_grid_area_code = "999"
-    raw_integration_events_df = grid_area_df_factory(
-        body_grid_area_code=non_matching_grid_area_code
-    )
+    raw_integration_events_df = grid_area_df_factory(stored_time=first_of_june)
 
     # Act
-    grid_area_df = _get_grid_areas(
-        raw_integration_events_df, [non_matching_grid_area_code], snapshot_datetime
+    grid_area_df = _get_grid_areas_df(
+        raw_integration_events_df, [grid_area_code], snapshot_datetime=first_of_june
     )
 
     # Assert
-    assert grid_area_df.count() == 0
+    assert grid_area_df.count() == 1
+
+
+# TODO: How do we know that this test is green for the right reason
+def test_when_stored_after_snapshot_time_throws_because_grid_area_not_found(
+    grid_area_df_factory,
+):
+    # Arrange
+    raw_integration_events_df = grid_area_df_factory(stored_time=second_of_june)
+
+    # Act and assert exception
+    with pytest.raises(Exception, match=r".* grid areas .*"):
+        _get_grid_areas_df(
+            raw_integration_events_df, [grid_area_code], snapshot_datetime=first_of_june
+        )
+
+
+# TODO: How do we know that this test is green for the right reason
+def test_when_grid_area_code_does_not_match_throws_because_grid_area_not_found(
+    grid_area_df_factory,
+):
+    # Arrange
+    non_matching_grid_area_code = "999"
+    raw_integration_events_df = grid_area_df_factory(
+        stored_time=first_of_june, body_grid_area_code=grid_area_code
+    )
+
+    # Act and assert exception
+    with pytest.raises(Exception, match=r".* grid areas .*"):
+        _get_grid_areas_df(
+            raw_integration_events_df,
+            [non_matching_grid_area_code],
+            snapshot_datetime=second_of_june,
+        )
+
+
+# TODO: How do we know that this test is green for the right reason
+def test_when_message_type_is_not_grid_area_updated_throws_because_grid_area_not_found(
+    grid_area_df_factory,
+):
+    # Arrange
+    raw_integration_events_df = grid_area_df_factory(
+        body_message_type="some-other-message-type"
+    )
+
+    # Act and assert exception
+    with pytest.raises(Exception, match=r".* grid areas .*"):
+        _get_grid_areas_df(
+            raw_integration_events_df,
+            [grid_area_code],
+            snapshot_datetime=second_of_june,
+        )
