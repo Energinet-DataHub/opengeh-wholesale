@@ -50,46 +50,71 @@ public class BatchTests
     }
 
     [Fact]
-    public void Complete_WhenPending_ThrowsInvalidOperationException()
+    public void MarkAsCompleted_WhenPending_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
-        Assert.Throws<InvalidOperationException>(() => sut.Complete());
+        Assert.Throws<InvalidOperationException>(() => sut.MarkAsCompleted());
     }
 
     [Fact]
-    public void Complete_WhenComplete_ThrowsInvalidOperationException()
+    public void MarkAsCompleted_WhenComplete_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
-        Assert.Throws<InvalidOperationException>(() => sut.Complete());
+        Assert.Throws<InvalidOperationException>(() => sut.MarkAsCompleted());
     }
 
     [Fact]
-    public void Complete_WhenExecuting_CompletesBatch()
+    public void MarkAsCompleted_WhenExecuting_CompletesBatch()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
-        sut.Complete();
+        sut.MarkAsCompleted();
         sut.ExecutionState.Should().Be(BatchExecutionState.Completed);
     }
 
     [Fact]
-    public void SetExecuting_WhenExecuting_ThrowsInvalidOperationException()
+    public void MarkAsExecuting_WhenExecuting_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
-        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting(_fakeJobRunId));
+        Assert.Throws<InvalidOperationException>(() => sut.MarkAsExecuting(_fakeJobRunId));
     }
 
     [Fact]
-    public void SetExecuting_WhenComplete_ThrowsInvalidOperationException()
+    public void MarkAsExecuting_WhenComplete_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
-        Assert.Throws<InvalidOperationException>(() => sut.SetExecuting(_fakeJobRunId));
+        Assert.Throws<InvalidOperationException>(() => sut.MarkAsExecuting(_fakeJobRunId));
     }
 
     [Fact]
-    public void SetExecuting_WhenPending_ExecutesBatch()
+    public void MarkAsExecuting_WhenPending_ExecutesBatch()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
-        sut.SetExecuting(_fakeJobRunId);
+        sut.MarkAsExecuting(_fakeJobRunId);
         sut.ExecutionState.Should().Be(BatchExecutionState.Executing);
+    }
+
+    [Fact]
+    public void ResetStatusToPending_WhenPending_KeepsPendingState()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        sut.ResetStatusToPending();
+        sut.ExecutionState.Should().Be(BatchExecutionState.Pending);
+    }
+
+    [Fact]
+    public void ResetStatusToPending_WhenExecuting_ShouldRevertToPending()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        sut.MarkAsExecuting(_fakeJobRunId);
+        sut.ResetStatusToPending();
+        sut.ExecutionState.Should().Be(BatchExecutionState.Pending);
+        sut.RunId.Should().BeNull();
+    }
+
+    [Fact]
+    public void ResetStatusToPending_WhenComplete_ThrowsInvalidOperationException()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
+        Assert.Throws<InvalidOperationException>(() => sut.ResetStatusToPending());
     }
 }
