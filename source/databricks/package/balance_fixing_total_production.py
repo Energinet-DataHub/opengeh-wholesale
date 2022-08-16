@@ -71,7 +71,7 @@ def calculate_balance_fixing_total_production(
 def _get_grid_areas_df(
     raw_integration_events_df, batch_grid_areas, snapshot_datetime
 ) -> DataFrame:
-    message_type = "GridAreaUpdated"  # Must correspond to the value stored by the integration event listener
+    message_type = "GridAreaUpdatedIntegrationEvent"  # Must correspond to the value stored by the integration event listener
 
     grid_area_event_schema = StructType(
         [
