@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
 using Moq;
 using NodaTime;
@@ -37,7 +38,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(Instant.FromUtc(2022, 6, 2, 22, 00));
         var batch = new Batch(ProcessType.BalanceFixing, new List<GridAreaCode> { new("805"), new("806") });
 
-        using var stream = GetDocumentStream("calculation-job-parameters-reference.txt");
+        using var stream = EmbeddedResources.GetStream("Infrastructure.JobRunner.calculation-job-parameters-reference.txt");
         using var reader = new StreamReader(stream);
 
         var expected = reader
@@ -51,12 +52,5 @@ public class DatabricksCalculatorJobParametersFactoryTests
 
         // Assert
         actual.Should().Equal(expected);
-    }
-
-    private Stream GetDocumentStream(string documentName)
-    {
-        var rootNamespace = GetType().Namespace;
-        var assembly = GetType().Assembly;
-        return assembly.GetManifestResourceStream($"{rootNamespace}.{documentName}")!;
     }
 }

@@ -51,4 +51,10 @@ limitations under the License.
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\contracts\events\grid-area-updated.json">
+      <Link>IntegrationEventListener\MarketParticipant\grid-area-updated.json</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
