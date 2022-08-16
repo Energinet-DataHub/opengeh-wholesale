@@ -52,16 +52,16 @@ public class Batch
 
     public JobRunId? RunId { get; private set; }
 
-    public void Restart()
+    public void ResetStatus()
     {
         if (ExecutionState == BatchExecutionState.Completed)
-            throw new InvalidOperationException("Batch cannot be restarted because it has completed.");
+            throw new InvalidOperationException("Cannot reset status of a completed batch.");
 
         ExecutionState = BatchExecutionState.Pending;
         RunId = null;
     }
 
-    public void Complete()
+    public void MarkAsCompleted()
     {
         if (ExecutionState != BatchExecutionState.Executing)
             throw new InvalidOperationException("Batch cannot be completed because it is not in state executing.");
@@ -69,7 +69,7 @@ public class Batch
         ExecutionState = BatchExecutionState.Completed;
     }
 
-    public void SetExecuting(JobRunId jobRunId)
+    public void MarkAsExecuting(JobRunId jobRunId)
     {
         ArgumentNullException.ThrowIfNull(jobRunId);
 

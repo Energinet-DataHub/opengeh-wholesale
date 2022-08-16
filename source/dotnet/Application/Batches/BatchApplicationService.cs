@@ -54,7 +54,7 @@ public class BatchApplicationService : IBatchApplicationService
         foreach (var batch in batches)
         {
             var jobRunId = await _jobRunner.SubmitJobAsync(batch).ConfigureAwait(false);
-            batch.SetExecuting(jobRunId);
+            batch.MarkAsExecuting(jobRunId);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
@@ -78,7 +78,7 @@ public class BatchApplicationService : IBatchApplicationService
 
             if (state == JobState.Completed)
             {
-                batch.Complete();
+                batch.MarkAsCompleted();
                 completedBatches.Add(batch);
             }
             else if (state == JobState.Canceled)
