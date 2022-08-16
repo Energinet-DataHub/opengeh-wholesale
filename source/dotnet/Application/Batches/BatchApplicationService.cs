@@ -81,6 +81,10 @@ public class BatchApplicationService : IBatchApplicationService
                 batch.Complete();
                 completedBatches.Add(batch);
             }
+            else if (state == JobState.Canceled)
+            {
+                batch.Restart();
+            }
         }
 
         var completedProcesses = CreateProcessCompletedEvents(completedBatches);

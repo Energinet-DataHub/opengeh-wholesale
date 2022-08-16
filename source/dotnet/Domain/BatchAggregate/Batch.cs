@@ -52,6 +52,15 @@ public class Batch
 
     public JobRunId? RunId { get; private set; }
 
+    public void Restart()
+    {
+        if (ExecutionState == BatchExecutionState.Completed)
+            throw new InvalidOperationException("Batch cannot be restarted because it has completed.");
+
+        ExecutionState = BatchExecutionState.Pending;
+        RunId = null;
+    }
+
     public void Complete()
     {
         if (ExecutionState != BatchExecutionState.Executing)
