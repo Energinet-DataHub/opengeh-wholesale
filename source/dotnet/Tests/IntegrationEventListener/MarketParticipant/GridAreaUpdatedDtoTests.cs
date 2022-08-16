@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MarketParti
 public class GridAreaUpdatedDtoTests
 {
     [Fact]
-    public void PropertyNamesMatchesContractWithCalculator()
+    public void PropertyNamesAndTypesMatchContractWithCalculator()
     {
         // Arrange
         var actualProps = typeof(GridAreaUpdatedDto).GetProperties().ToDictionary(info => info.Name);
