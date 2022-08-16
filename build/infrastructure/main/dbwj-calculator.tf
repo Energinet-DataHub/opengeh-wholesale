@@ -14,12 +14,12 @@
 
 resource "databricks_job" "calculator_job" {
   name = "CalculatorJob"
-  max_retries = -1
   max_concurrent_runs = 100
   always_running = false
 
   task {
     task_key = "unique_job_${uuid()}"
+    max_retries = 0
 
     new_cluster {
       spark_version           = data.databricks_spark_version.latest_lts.id

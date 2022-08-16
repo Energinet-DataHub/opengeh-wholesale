@@ -58,7 +58,7 @@ public class BatchApplicationService : IBatchApplicationService
         {
             var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);
             var jobRunId = await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
-            batch.SetExecuting(jobRunId);
+            batch.MarkAsExecuting(jobRunId);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
@@ -82,8 +82,13 @@ public class BatchApplicationService : IBatchApplicationService
 
             if (state == JobState.Completed)
             {
-                batch.Complete();
+                batch.MarkAsCompleted();
                 completedBatches.Add(batch);
+            }
+            else if (state == JobState.Canceled)
+            {
+                // The process manager will automatically pick up the batch and (re)try execution when the status is reset to pending
+                batch.ResetStatusToPending();
             }
         }
 

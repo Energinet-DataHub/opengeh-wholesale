@@ -91,7 +91,6 @@ def test_calculator_job_creates_file(
 ):
     batchId = 1234
     process_results_path = f"{delta_lake_path}/results"
-    integration_events_path = f"{delta_lake_path}/../calculator/test_files"
 
     raw_integration_events_df = spark.read.format("json").load(integration_events_path)
 
