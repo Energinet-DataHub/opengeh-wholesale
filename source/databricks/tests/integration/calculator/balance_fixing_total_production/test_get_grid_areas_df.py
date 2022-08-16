@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 import os
 import shutil
 import pytest
+import json
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_grid_areas_df
 from pyspark.sql import DataFrame
@@ -26,14 +27,17 @@ from pyspark.sql.functions import col, struct, to_json
 # Factory defaults
 grid_area_code = "805"
 grid_area_link_id = "the-grid-area-link-id"
-message_type = (
-    "GridAreaUpdatedIntegrationEvent"  # The exact name of the event of interest
-)
+message_type = "GridAreaUpdated"  # The exact name of the event of interest
 
 # Beginning of the danish date (CEST)
 first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
 second_of_june = first_of_june + timedelta(days=1)
 third_of_june = first_of_june + timedelta(days=2)
+
+
+def get_from_file(path):
+    jsonFile = open(path)
+    return json.load(jsonFile)
 
 
 # TODO: How do we ensure that the generated dataframe has the exact schema expected by the sut?
@@ -84,10 +88,13 @@ def test__prop_names_and_types_matches_integration_event_listener():
 
 
 def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_data(
-    grid_area_df_factory,
+    grid_area_df_factory, source_path
 ):
     # Arrange
-    message_type = get_from_file("grid-area-updated-message-type.txt")
+    message_types = get_from_file(
+        f"{source_path}/contracts/events/grid-area-updated.json"
+    )
+    message_type = message_types["MessageType"]["value"]
     raw_integration_events_df = grid_area_df_factory(message_type=message_type)
 
     # Act
