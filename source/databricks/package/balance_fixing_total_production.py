@@ -76,6 +76,7 @@ def _get_grid_areas_df(
             StructField("GridAreaCode", StringType(), True),
             StructField("GridAreaLinkId", StringType(), True),
             StructField("MessageType", StringType(), True),
+            StructField("OperationTime", TimestampType(), True),
         ]
     )
     grid_area_events_df = (
@@ -86,17 +87,13 @@ def _get_grid_areas_df(
         .where(col("body.GridAreaCode").isin(batch_grid_areas))
     )
 
-    # As we only use (currently) immutable data we can just pick any of the update events randomly.
-    # This will, however, change when support for merge of grid areas are added.
-    w2 = Window.partitionBy("body.GridAreaCode").orderBy(
-        col("storedTime")  # TODO: should be operation timestamp
+    # Use latest update for the grid area
+    window = Window.partitionBy("body.GridAreaCode").orderBy(
+        col("body.OperationTime").desc()
     )
-    # only get nevest events
     grid_area_events_df = (
-        grid_area_events_df.withColumn(
-            "row", row_number().over(w2)
-        )  # orderby storedTime and add row number
-        .filter(col("row") == 1)  # only take newest event
+        grid_area_events_df.withColumn("row", row_number().over(window))
+        .filter(col("row") == 1)
         .drop("row")
         .select("body.GridAreaLinkId", "body.GridAreaCode")
     )

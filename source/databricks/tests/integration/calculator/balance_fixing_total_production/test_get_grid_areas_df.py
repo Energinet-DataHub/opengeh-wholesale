@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import shutil
 import pytest
@@ -32,7 +32,8 @@ message_type = (
 
 # Beginning of the danish date (CEST)
 first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
-second_of_june = datetime.strptime("1/06/2022 22:00", "%d/%m/%Y %H:%M")
+second_of_june = first_of_june + timedelta(days=1)
+third_of_june = first_of_june + timedelta(days=2)
 
 
 # TODO: How do we ensure that the generated dataframe has the exact schema expected by the sut?
@@ -40,16 +41,18 @@ second_of_june = datetime.strptime("1/06/2022 22:00", "%d/%m/%Y %H:%M")
 def grid_area_df_factory(spark):
     def factory(
         stored_time=first_of_june,
-        body_grid_area_code=grid_area_code,
-        body_grid_area_link_id=grid_area_link_id,
-        body_message_type=message_type,
+        grid_area_code=grid_area_code,
+        grid_area_link_id=grid_area_link_id,
+        message_type=message_type,
+        operation_time=first_of_june,
     ):
         row = [
             {
                 "storedTime": stored_time,
-                "GridAreaCode": body_grid_area_code,
-                "GridAreaLinkId": body_grid_area_link_id,
-                "MessageType": body_message_type,
+                "OperationTime": operation_time,
+                "GridAreaCode": grid_area_code,
+                "GridAreaLinkId": grid_area_link_id,
+                "MessageType": message_type,
             }
         ]
 
@@ -62,6 +65,7 @@ def grid_area_df_factory(spark):
                         col("GridAreaCode"),
                         col("GridAreaLinkId"),
                         col("MessageType"),
+                        col("OperationTime"),
                     )
                 ).cast("binary"),
             )
@@ -71,39 +75,37 @@ def grid_area_df_factory(spark):
     return factory
 
 
-def test_returns_correct_grid_area_data(grid_area_df_factory):
+def test__returns_correct_grid_area_data(grid_area_df_factory):
     # Arrange
     raw_integration_events_df = grid_area_df_factory()
 
     # Act
-    grid_area_df = _get_grid_areas_df(
+    actual_df = _get_grid_areas_df(
         raw_integration_events_df, [grid_area_code], snapshot_datetime=second_of_june
     )
 
     # Assert
-    assert grid_area_df.count() == 1
-    actual = grid_area_df.first()
+    actual = actual_df.first()
     assert actual.GridAreaCode == grid_area_code
     assert actual.GridAreaLinkId == grid_area_link_id
 
 
-def test_when_stored_time_equals_snapshot_datetime_returns_grid_area(
+def test__when_stored_time_equals_snapshot_datetime__returns_grid_area(
     grid_area_df_factory,
 ):
     # Arrange
     raw_integration_events_df = grid_area_df_factory(stored_time=first_of_june)
 
     # Act
-    grid_area_df = _get_grid_areas_df(
+    actual_df = _get_grid_areas_df(
         raw_integration_events_df, [grid_area_code], snapshot_datetime=first_of_june
     )
 
     # Assert
-    assert grid_area_df.count() == 1
+    assert actual_df.count() == 1
 
 
-# TODO: How do we know that this test is green for the right reason
-def test_when_stored_after_snapshot_time_throws_because_grid_area_not_found(
+def test__when_stored_after_snapshot_time__throws_because_grid_area_not_found(
     grid_area_df_factory,
 ):
     # Arrange
@@ -116,14 +118,13 @@ def test_when_stored_after_snapshot_time_throws_because_grid_area_not_found(
         )
 
 
-# TODO: How do we know that this test is green for the right reason
-def test_when_grid_area_code_does_not_match_throws_because_grid_area_not_found(
+def test__when_grid_area_code_does_not_match__throws_because_grid_area_not_found(
     grid_area_df_factory,
 ):
     # Arrange
     non_matching_grid_area_code = "999"
     raw_integration_events_df = grid_area_df_factory(
-        stored_time=first_of_june, body_grid_area_code=grid_area_code
+        stored_time=first_of_june, grid_area_code=grid_area_code
     )
 
     # Act and assert exception
@@ -135,13 +136,12 @@ def test_when_grid_area_code_does_not_match_throws_because_grid_area_not_found(
         )
 
 
-# TODO: How do we know that this test is green for the right reason
-def test_when_message_type_is_not_grid_area_updated_throws_because_grid_area_not_found(
+def test__when_message_type_is_not_grid_area_updated__throws_because_grid_area_not_found(
     grid_area_df_factory,
 ):
     # Arrange
     raw_integration_events_df = grid_area_df_factory(
-        body_message_type="some-other-message-type"
+        message_type="some-other-message-type"
     )
 
     # Act and assert exception
@@ -151,3 +151,44 @@ def test_when_message_type_is_not_grid_area_updated_throws_because_grid_area_not
             [grid_area_code],
             snapshot_datetime=second_of_june,
         )
+
+
+def test__returns_newest_grid_area_state(
+    grid_area_df_factory,
+):
+    # Arrange
+    expected_grid_area_link_id = "foo"
+    unexpected_grid_area_link_id = "bar"
+
+    # Make the row of interest the middle to increase the likeliness of the succes
+    # to not depend on the row being selected by incident by being e.g. the first or last row.
+    raw_integration_events_df = (
+        grid_area_df_factory(
+            operation_time=first_of_june,
+            grid_area_link_id=unexpected_grid_area_link_id,
+        )
+        .union(
+            grid_area_df_factory(
+                operation_time=second_of_june,
+                grid_area_link_id=expected_grid_area_link_id,
+            )
+        )
+        .union(
+            grid_area_df_factory(
+                operation_time=third_of_june,
+                grid_area_link_id=expected_grid_area_link_id,
+            )
+        )
+    )
+
+    # Act
+    actual_df = _get_grid_areas_df(
+        raw_integration_events_df,
+        [grid_area_code],
+        snapshot_datetime=second_of_june,
+    )
+
+    # Assert
+    assert actual_df.count() == 1
+    actual = actual_df.first()
+    assert actual.GridAreaLinkId == expected_grid_area_link_id
