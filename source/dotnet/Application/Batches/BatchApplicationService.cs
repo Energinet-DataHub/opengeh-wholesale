@@ -83,6 +83,7 @@ public class BatchApplicationService : IBatchApplicationService
             }
             else if (state == JobState.Canceled)
             {
+                // The process manager will automatically pick up the batch and (re)try execution when the status is reset to pending
                 batch.ResetStatus();
             }
         }
