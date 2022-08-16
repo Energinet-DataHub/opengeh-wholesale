@@ -52,6 +52,7 @@ public class Batch
 
     public JobRunId? RunId { get; private set; }
 
+    /// <summary>Reset the status to <see cref="BatchExecutionState.Pending" />.</summary>
     public void ResetStatus()
     {
         if (ExecutionState == BatchExecutionState.Completed)
