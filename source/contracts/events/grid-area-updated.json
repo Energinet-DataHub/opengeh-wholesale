@@ -1,0 +1,21 @@
+{
+    "GridAreaId": {
+        "type": "guid"
+    },
+    "GridAreaLinkId": {
+        "type": "guid"
+    },
+    "GridAreaCode": {
+        "type": "string"
+    },
+    "CorrelationId": {
+        "type": "string"
+    },
+    "MessageType": {
+        "type": "string",
+        "value": "GridAreaUpdated"
+    },
+    "OperationTime": {
+        "type": "datetime"
+    }
+}
