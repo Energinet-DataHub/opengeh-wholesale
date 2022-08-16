@@ -75,6 +75,22 @@ def grid_area_df_factory(spark):
     return factory
 
 
+def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_data(
+    grid_area_df_factory,
+):
+    # Arrange
+    message_type = get_from_file("grid-area-updated-message-type.txt")
+    raw_integration_events_df = grid_area_df_factory(message_type=message_type)
+
+    # Act
+    actual_df = _get_grid_areas_df(
+        raw_integration_events_df, [grid_area_code], snapshot_datetime=second_of_june
+    )
+
+    # Assert
+    assert actual_df.count() == 1
+
+
 def test__returns_correct_grid_area_data(grid_area_df_factory):
     # Arrange
     raw_integration_events_df = grid_area_df_factory()
