@@ -88,7 +88,6 @@ def test_balance_fixing_total_production_generates_non_empty_result(
         period_start_datetime,
         period_end_datetime,
     )
-    print(result.count())
     assert result.count() > 0, "Could not verify created json file."
 
 
@@ -109,7 +108,6 @@ def test__get_metering_point_periods(
         period_start_datetime,
         period_end_datetime,
     )
-    print(metering_point_periods_df.count())
     assert metering_point_periods_df.count() == 4
 
 

@@ -1,21 +1,36 @@
 {
-    "GridAreaId": {
-        "type": "guid"
-    },
-    "GridAreaLinkId": {
-        "type": "guid"
-    },
-    "GridAreaCode": {
-        "type": "string"
-    },
-    "CorrelationId": {
-        "type": "string"
-    },
-    "MessageType": {
-        "type": "string",
-        "value": "GridAreaUpdated"
-    },
-    "OperationTime": {
-        "type": "datetime"
-    }
+    "storedTimeName": "storedTime",
+    "bodyFields": [
+        {
+            "name": "GridAreaCode",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "name": "GridAreaLinkId",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "name": "MessageType",
+            "nullable": true,
+            "type": "string",
+            "value": "GridAreaUpdated"
+        },
+        {
+            "name": "OperationTime",
+            "nullable": true,
+            "type": "timestamp"
+        },
+        {
+            "name": "CorrelationId",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "name": "GridAreaId",
+            "nullable": true,
+            "type": "string"
+        }
+    ]
 }

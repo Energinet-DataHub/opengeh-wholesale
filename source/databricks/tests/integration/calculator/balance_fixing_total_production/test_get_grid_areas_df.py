@@ -20,6 +20,7 @@ import pytest
 import json
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_grid_areas_df
+from package.schemas import grid_area_updated_event_schema
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, struct, to_json
 
@@ -79,22 +80,51 @@ def grid_area_df_factory(spark):
     return factory
 
 
-def test__stored_time_matches_persister():
-    raise Exception
+def test__stored_time_matches_persister(grid_area_df_factory, source_path):
+    raw_integration_events_df = grid_area_df_factory()
+
+    expected_stored_time_name = get_from_file(
+        f"{source_path}/contracts/events/grid-area-updated.json"
+    )["storedTimeName"]
+
+    storedTimeColName = next(
+        x for x in raw_integration_events_df.columns if x == expected_stored_time_name
+    )
+
+    # Act
+    actual_df = _get_grid_areas_df(
+        raw_integration_events_df, [grid_area_code], snapshot_datetime=second_of_june
+    )
+
+    # Assert
+    assert actual_df.count() == 1
+    assert storedTimeColName
 
 
-def test__prop_names_and_types_matches_integration_event_listener():
-    raise Exception
+def test__prop_names_and_types_matches_integration_event_listener(source_path):
+    # Arrange
+    grid_area_updated_expected_schema = get_from_file(
+        f"{source_path}/contracts/events/grid-area-updated.json"
+    )
+    actual_fields = json.loads(grid_area_updated_event_schema.json())["fields"]
+    print(grid_area_updated_expected_schema)
+    for i in grid_area_updated_expected_schema["bodyFields"]:
+        actual_field = next(x for x in actual_fields if i["name"] == x["name"])
+    assert i["name"] == actual_field["name"]
+    assert i["type"] == actual_field["type"]
+    assert i["nullable"] == actual_field["nullable"]
 
 
 def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_data(
     grid_area_df_factory, source_path
 ):
     # Arrange
-    message_types = get_from_file(
+    grid_area_updated_schema = get_from_file(
         f"{source_path}/contracts/events/grid-area-updated.json"
     )
-    message_type = message_types["MessageType"]["value"]
+    message_type = next(
+        x for x in grid_area_updated_schema["bodyFields"] if x["name"] == "MessageType"
+    )["value"]
     raw_integration_events_df = grid_area_df_factory(message_type=message_type)
 
     # Act

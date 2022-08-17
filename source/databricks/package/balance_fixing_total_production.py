@@ -35,6 +35,7 @@ from pyspark.sql.types import (
 )
 from pyspark.sql.window import Window
 from package.codelists import ConnectionState, MeteringPointType, Resolution
+from package.schemas import grid_area_updated_event_schema
 
 
 def calculate_balance_fixing_total_production(
@@ -73,18 +74,10 @@ def _get_grid_areas_df(
 ) -> DataFrame:
     message_type = "GridAreaUpdated"  # Must correspond to the value stored by the integration event listener
 
-    grid_area_event_schema = StructType(
-        [
-            StructField("GridAreaCode", StringType(), True),
-            StructField("GridAreaLinkId", StringType(), True),
-            StructField("MessageType", StringType(), True),
-            StructField("OperationTime", TimestampType(), True),
-        ]
-    )
     grid_area_events_df = (
         raw_integration_events_df.where(col("storedTime") <= snapshot_datetime)
         .withColumn("body", col("body").cast("string"))
-        .withColumn("body", from_json(col("body"), grid_area_event_schema))
+        .withColumn("body", from_json(col("body"), grid_area_updated_event_schema))
         .where(col("body.MessageType") == message_type)
         .where(col("body.GridAreaCode").isin(batch_grid_areas))
     )
