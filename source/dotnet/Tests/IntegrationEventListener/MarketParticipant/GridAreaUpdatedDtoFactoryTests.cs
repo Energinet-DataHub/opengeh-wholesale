@@ -14,6 +14,7 @@
 
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
@@ -38,17 +39,14 @@ public class GridAreaUpdatedDtoFactoryTests
     {
         // Arrange
         using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MarketParticipant.grid-area-updated.json");
-        var jsonObject = JsonNode.Parse(stream)!.AsObject();
-        var bodyFields = jsonObject.First(x => x.Key == "bodyFields");
-        var jsonNodeMessageType = bodyFields.Value![2];
-        var expectedMessageType = jsonNodeMessageType!["value"]!.ToString();
-
+        var jsonObject = JsonNode.Parse(stream)!.AsObject()["bodyFields"]!;
+        var expectedMessageType = ((JsonArray)jsonObject).First(x => x!["name"]!
+            .GetValue<string?>() == "MessageType")!["value"]!
+            .GetValue<string?>();
         integrationEventContext.Setup(context => context.ReadMetadata()).Returns(anyMetadata);
 
-        // Act
-        var actual = sut.Create(anyGridAreaUpdatedIntegrationEvent);
-
         // Assert
+        var actual = sut.Create(anyGridAreaUpdatedIntegrationEvent);
         actual.MessageType.Should().Be(expectedMessageType);
     }
 }
