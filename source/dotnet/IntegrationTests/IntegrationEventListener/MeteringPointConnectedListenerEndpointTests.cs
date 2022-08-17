@@ -53,7 +53,7 @@ public class MeteringPointConnectedListenerEndpointTests
         }
 
         [Fact]
-        public async Task When_ReceivingMeteringPointConnectedMessage_MeteringPointConnectedDtoIsSentToEventHub()
+        public async Task When_ReceivingMeteringPointConnectedMessage_Then_MeteringPointConnectedDtoIsSentToEventHub()
         {
             // Arrange
             using var whenAllEvent = await Fixture.EventHubListener
@@ -92,6 +92,36 @@ public class MeteringPointConnectedListenerEndpointTests
 
             actual.CorrelationId.Should().Be(correlationId);
             actual.EffectiveDate.Should().Be(effectiveDate.ToInstant());
+        }
+
+        [Fact]
+        public async Task When_ReceivingMessageWithoutIntegrationEventProperties_Then_MessageIsDeadLettered()
+        {
+            // Arrange
+            using var whenAnyEvent = await Fixture.EventHubListener
+                .WhenAny()
+                .VerifyCountAsync(1)
+                .ConfigureAwait(false);
+
+            var effectiveDate = Timestamp.FromDateTime(DateTime.UtcNow);
+            var meteringPointConnectedEvent = CreateMeteringPointConnectedEvent(effectiveDate);
+
+            var message = ServiceBusTestMessage.CreateWithoutIntegrationEventProperties(meteringPointConnectedEvent.ToByteArray());
+
+            // Act
+            await Fixture.MeteringPointConnectedTopic.SenderClient.SendMessageAsync(message);
+
+            // Assert
+            await FunctionAsserts
+                .AssertHasExecutedAsync(Fixture.HostManager, nameof(MeteringPointConnectedListenerEndpoint))
+                .ConfigureAwait(false);
+
+            var anyReceived = whenAnyEvent.Wait(TimeSpan.FromSeconds(5));
+            anyReceived.Should().BeFalse();
+
+            var deadLetteredMessage = await Fixture.MeteringPointConnectedDeadLetter.ReceiveMessageAsync();
+            deadLetteredMessage.Should().NotBeNull();
+            deadLetteredMessage.CorrelationId.Should().Be(message.CorrelationId);
         }
 
         private static MeteringPointConnected CreateMeteringPointConnectedEvent(Timestamp effectiveDate)

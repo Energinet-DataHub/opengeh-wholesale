@@ -52,7 +52,7 @@ public class MarketParticipantChangedListenerEndpointTests
         }
 
         [Fact]
-        public async Task When_ReceivingGridAreaUpdatedMessage_GridAreaUpdatedDtoIsSentToEventHub()
+        public async Task When_ReceivingGridAreaUpdatedMessage_Then_GridAreaUpdatedDtoIsSentToEventHub()
         {
             // Arrange
             using var whenAllEvent = await Fixture.EventHubListener
@@ -91,7 +91,7 @@ public class MarketParticipantChangedListenerEndpointTests
         }
 
         [Fact]
-        public async Task When_ReceivingUnusedMessage_NothingIsSentToEventHub()
+        public async Task When_ReceivingUnusedMessage_Then_NothingIsSentToEventHub()
         {
             // Arrange
             using var whenAllEvent = await Fixture.EventHubListener
@@ -117,6 +117,34 @@ public class MarketParticipantChangedListenerEndpointTests
 
             var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
             allReceived.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task When_ReceivingMessageWithoutIntegrationEventProperties_Then_MessageIsDeadLettered()
+        {
+            // Arrange
+            using var whenAnyEvent = await Fixture.EventHubListener
+                .WhenAny()
+                .VerifyCountAsync(1)
+                .ConfigureAwait(false);
+
+            var gridAreaUpdatedEvent = CreateGridAreaUpdatedEvent(Guid.NewGuid());
+            var message = ServiceBusTestMessage.CreateWithoutIntegrationEventProperties(gridAreaUpdatedEvent);
+
+            // Act
+            await Fixture.MarketParticipantChangedTopic.SenderClient.SendMessageAsync(message);
+
+            // Assert
+            await FunctionAsserts
+                .AssertHasExecutedAsync(Fixture.HostManager, nameof(MarketParticipantChangedListenerEndpoint))
+                .ConfigureAwait(false);
+
+            var anyReceived = whenAnyEvent.Wait(TimeSpan.FromSeconds(5));
+            anyReceived.Should().BeFalse();
+
+            var deadLetteredMessage = await Fixture.MarketParticipantChangedDeadLetter.ReceiveMessageAsync();
+            deadLetteredMessage.Should().NotBeNull();
+            deadLetteredMessage.CorrelationId.Should().Be(message.CorrelationId);
         }
 
         private static byte[] CreateGridAreaUpdatedEvent(Guid gridAreaLinkId)

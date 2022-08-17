@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -20,6 +21,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ResourceProvider;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Authorization;
 using Microsoft.Extensions.Configuration;
@@ -56,6 +58,12 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
         public TopicResource MeteringPointConnectedTopic { get; private set; } = null!;
 
         public TopicResource MarketParticipantChangedTopic { get; private set; } = null!;
+
+        public ServiceBusReceiver MeteringPointCreatedDeadLetter { get; private set; } = null!;
+
+        public ServiceBusReceiver MeteringPointConnectedDeadLetter { get; private set; } = null!;
+
+        public ServiceBusReceiver MarketParticipantChangedDeadLetter { get; private set; } = null!;
 
         public EventHubResourceProvider EventHubResourceProvider { get; }
 
@@ -123,6 +131,24 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
                 .AddSubscription("market-participant-changed-to-wholesale")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
                 .CreateAsync();
+
+            MeteringPointCreatedDeadLetter = new ServiceBusClient(ServiceBusResourceProvider.ConnectionString)
+                .CreateReceiver(
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedTopicName),
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName),
+                    new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
+
+            MeteringPointConnectedDeadLetter = new ServiceBusClient(ServiceBusResourceProvider.ConnectionString)
+                .CreateReceiver(
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedTopicName),
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName),
+                    new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
+
+            MarketParticipantChangedDeadLetter = new ServiceBusClient(ServiceBusResourceProvider.ConnectionString)
+                .CreateReceiver(
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedTopicName),
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName),
+                    new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
         }
 
         /// <inheritdoc/>

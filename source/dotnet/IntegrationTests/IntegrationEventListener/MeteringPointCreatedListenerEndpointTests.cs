@@ -53,7 +53,7 @@ public class MeteringPointCreatedListenerEndpointTests
         }
 
         [Fact]
-        public async Task When_ReceivingMeteringPointCreatedMessage_MeteringPointCreatedDtoIsSentToEventHub()
+        public async Task When_ReceivingMeteringPointCreatedMessage_Then_MeteringPointCreatedDtoIsSentToEventHub()
         {
             // Arrange
             using var whenAllEvent = await Fixture.EventHubListener
@@ -92,6 +92,36 @@ public class MeteringPointCreatedListenerEndpointTests
 
             actual.CorrelationId.Should().Be(correlationId);
             actual.EffectiveDate.Should().Be(effectiveDate.ToInstant());
+        }
+
+        [Fact]
+        public async Task When_ReceivingMessageWithoutIntegrationEventProperties_Then_MessageIsDeadLettered()
+        {
+            // Arrange
+            using var whenAnyEvent = await Fixture.EventHubListener
+                .WhenAny()
+                .VerifyCountAsync(1)
+                .ConfigureAwait(false);
+
+            var effectiveDate = Timestamp.FromDateTime(DateTime.UtcNow);
+            var meteringPointCreatedEvent = CreateMeteringPointCreatedEvent(effectiveDate);
+
+            var message = ServiceBusTestMessage.CreateWithoutIntegrationEventProperties(meteringPointCreatedEvent.ToByteArray());
+
+            // Act
+            await Fixture.MeteringPointCreatedTopic.SenderClient.SendMessageAsync(message);
+
+            // Assert
+            await FunctionAsserts
+                .AssertHasExecutedAsync(Fixture.HostManager, nameof(MeteringPointCreatedListenerEndpoint))
+                .ConfigureAwait(false);
+
+            var anyReceived = whenAnyEvent.Wait(TimeSpan.FromSeconds(5));
+            anyReceived.Should().BeFalse();
+
+            var deadLetteredMessage = await Fixture.MeteringPointCreatedDeadLetter.ReceiveMessageAsync();
+            deadLetteredMessage.Should().NotBeNull();
+            deadLetteredMessage.CorrelationId.Should().Be(message.CorrelationId);
         }
 
         private static MeteringPointCreated CreateMeteringPointCreatedEvent(Timestamp effectiveDate)

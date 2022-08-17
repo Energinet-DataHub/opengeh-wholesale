@@ -34,6 +34,14 @@ public static class ServiceBusTestMessage
         return serviceBusMessage;
     }
 
+    public static ServiceBusMessage CreateWithoutIntegrationEventProperties(byte[] data)
+    {
+        return new ServiceBusMessage(data)
+        {
+            CorrelationId = Guid.NewGuid().ToString().Replace("-", string.Empty),
+        };
+    }
+
     private static void Configure(ServiceBusMessage serviceBusMessage, DateTime operationTimestamp, string operationCorrelationId)
     {
         serviceBusMessage.CorrelationId = Guid.NewGuid().ToString().Replace("-", string.Empty);
