@@ -43,6 +43,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
                 IntegrationTestConfiguration.ServiceBusConnectionString,
                 TestLogger);
 
+            ServiceBusClient = new ServiceBusClient(
+                IntegrationTestConfiguration.ServiceBusConnectionString);
+
             EventHubResourceProvider = new EventHubResourceProvider(
                 IntegrationTestConfiguration.EventHubConnectionString,
                 IntegrationTestConfiguration.ResourceManagementSettings,
@@ -72,6 +75,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
         private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
         private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
+
+        private ServiceBusClient ServiceBusClient { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureHostSettings(FunctionAppHostSettings hostSettings)
@@ -132,20 +137,17 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
                 .CreateAsync();
 
-            MeteringPointCreatedDeadLetter = new ServiceBusClient(ServiceBusResourceProvider.ConnectionString)
-                .CreateReceiver(
+            MeteringPointCreatedDeadLetter = ServiceBusClient.CreateReceiver(
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
 
-            MeteringPointConnectedDeadLetter = new ServiceBusClient(ServiceBusResourceProvider.ConnectionString)
-                .CreateReceiver(
+            MeteringPointConnectedDeadLetter = ServiceBusClient.CreateReceiver(
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
 
-            MarketParticipantChangedDeadLetter = new ServiceBusClient(ServiceBusResourceProvider.ConnectionString)
-                .CreateReceiver(
+            MarketParticipantChangedDeadLetter = ServiceBusClient.CreateReceiver(
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
@@ -165,6 +167,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
         {
             AzuriteManager.Dispose();
 
+            await ServiceBusClient.DisposeAsync();
             await ServiceBusResourceProvider.DisposeAsync();
             await EventHubResourceProvider.DisposeAsync();
         }
