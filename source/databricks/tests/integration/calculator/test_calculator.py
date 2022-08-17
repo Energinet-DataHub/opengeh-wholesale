@@ -16,7 +16,6 @@ import os
 import shutil
 import subprocess
 import pytest
-from package import calculator_job
 
 
 def _get_process_manager_parameters(filename):
@@ -36,7 +35,7 @@ def test_calculator_job_when_invoked_with_incorrect_parameters_fails(
     exit_code = subprocess.call(
         [
             "python",
-            f"{databricks_path}/package/calculator_job.py",
+            f"{databricks_path}/package/calculator_job_v2_draft.py",
             "--unexpected-arg",
         ]
     )
@@ -62,7 +61,7 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
     python_parameters = [
         "python",
-        f"{databricks_path}/package/calculator_job.py",
+        f"{databricks_path}/package/calculator_job_v2_draft.py",
         "--data-storage-account-name",
         "foo",
         "--data-storage-account-key",
