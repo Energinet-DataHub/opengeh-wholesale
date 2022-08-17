@@ -41,7 +41,6 @@ def get_from_file(path):
     return json.load(jsonFile)
 
 
-# TODO: How do we ensure that the generated dataframe has the exact schema expected by the sut?
 @pytest.fixture
 def grid_area_df_factory(spark):
     def factory(
