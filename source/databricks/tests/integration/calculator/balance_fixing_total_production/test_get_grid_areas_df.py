@@ -87,29 +87,38 @@ def test__stored_time_matches_persister(grid_area_df_factory, source_path):
         f"{source_path}/contracts/events/grid-area-updated.json"
     )["storedTimeName"]
 
-    storedTimeColName = next(
-        x for x in raw_integration_events_df.columns if x == expected_stored_time_name
-    )
-
-    # Act
-    actual_df = _get_grid_areas_df(
-        raw_integration_events_df, [grid_area_code], snapshot_datetime=second_of_june
-    )
-
-    # Assert
-    assert actual_df.count() == 1
-    assert storedTimeColName
+    assert expected_stored_time_name in raw_integration_events_df.columns
 
 
-def test__prop_names_and_types_matches_integration_event_listener(source_path):
-    # Arrange
+def test__prop_names_and_types_matches_integration_event_listener(
+    grid_area_df_factory, source_path
+):
+    raw_integration_events_df = grid_area_df_factory()
     grid_area_updated_expected_schema = get_from_file(
         f"{source_path}/contracts/events/grid-area-updated.json"
     )
-    actual_fields = json.loads(grid_area_updated_event_schema.json())["fields"]
+    actual_schema_fields = json.loads(grid_area_updated_event_schema.json())["fields"]
 
     for i in grid_area_updated_expected_schema["bodyFields"]:
-        actual_field = next(x for x in actual_fields if i["name"] == x["name"])
+        actual_field = next(x for x in actual_schema_fields if i["name"] == x["name"])
+    assert i["name"] == actual_field["name"]
+    assert i["type"] == actual_field["type"]
+    assert i["nullable"] == actual_field["nullable"]
+
+    actual_df_fields = json.loads(
+        _get_grid_areas_df(
+            raw_integration_events_df,
+            [grid_area_code],
+            snapshot_datetime=second_of_june,
+        ).schema.json()
+    )["fields"]
+
+    for i in actual_df_fields:
+        actual_field = next(
+            x
+            for x in grid_area_updated_expected_schema["bodyFields"]
+            if i["name"] == x["name"]
+        )
     assert i["name"] == actual_field["name"]
     assert i["type"] == actual_field["type"]
     assert i["nullable"] == actual_field["nullable"]
