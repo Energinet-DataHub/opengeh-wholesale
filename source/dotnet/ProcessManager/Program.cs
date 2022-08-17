@@ -44,7 +44,13 @@ public class Program
 {
     public static async Task Main()
     {
-        using var host = new HostBuilder()
+        using var host = BuildAppHost(_ => { });
+        await host.RunAsync().ConfigureAwait(false);
+    }
+
+    public static IHost BuildAppHost(Action<IServiceCollection> serviceConfiguration)
+    {
+        return new HostBuilder()
             .ConfigureFunctionsWorkerDefaults(builder =>
             {
                 builder.UseMiddleware<CorrelationIdMiddleware>();
@@ -56,9 +62,8 @@ public class Program
             .ConfigureServices(Domains)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(HealthCheck)
+            .ConfigureServices(serviceConfiguration)
             .Build();
-
-        await host.RunAsync().ConfigureAwait(false);
     }
 
     private static void Middlewares(IServiceCollection serviceCollection)
