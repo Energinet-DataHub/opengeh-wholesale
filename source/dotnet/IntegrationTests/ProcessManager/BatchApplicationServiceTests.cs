@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 public sealed class BatchApplicationServiceTests
 {
     [Fact]
-    public async Task When_BatchIsCancelled_Then_BatchIsRetried()
+    public async Task When_BatchIsCanceled_Then_BatchIsRetried()
     {
         // Arrange
         using var host = await ProcessManagerIntegrationTestHost.InitializeAsync();
@@ -70,12 +70,12 @@ public sealed class BatchApplicationServiceTests
 
     private static void ConfigureDatabricksClientToCancel(IServiceCollection serviceCollection)
     {
-        var cancelledRun = new Run { State = new RunState { ResultState = RunResultState.CANCELED } };
+        var canceledRun = new Run { State = new RunState { ResultState = RunResultState.CANCELED } };
 
         var mockedJobsApi = new Mock<IJobsWheelApi>();
         mockedJobsApi
             .Setup(x => x.RunsGet(It.IsAny<long>(), default))
-            .ReturnsAsync(cancelledRun);
+            .ReturnsAsync(canceledRun);
 
         var mockedDatabricksClient = new Mock<DatabricksWheelClient>();
         mockedDatabricksClient

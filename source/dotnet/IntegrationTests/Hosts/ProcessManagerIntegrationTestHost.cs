@@ -47,11 +47,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
 
     public AsyncServiceScope BeginScope()
     {
-        var host = _processManagerHost;
-        if (host == null)
-            throw new InvalidOperationException("Cannot create scope on uninitialized host.");
-
-        return host.Services.CreateAsyncScope();
+        return _processManagerHost.Services.CreateAsyncScope();
     }
 
     public void Dispose()

@@ -20,25 +20,8 @@ internal sealed class MockedCorrelationContext : ICorrelationContext
 {
     public string Id { get; private set; } = Guid.NewGuid().ToString();
 
-    public string? ParentId { get; private set; } = Guid.NewGuid().ToString();
-
     public void SetId(string id)
     {
         Id = id;
-    }
-
-    public void SetParentId(string parentId)
-    {
-        ParentId = parentId;
-    }
-
-    public string AsTraceContext()
-    {
-        if (string.IsNullOrEmpty(Id) || string.IsNullOrEmpty(ParentId))
-        {
-            return string.Empty;
-        }
-
-        return $"00-{Id}-{ParentId}-00";
     }
 }
