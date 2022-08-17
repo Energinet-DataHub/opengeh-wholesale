@@ -107,7 +107,7 @@ def test__prop_names_and_types_matches_integration_event_listener(source_path):
         f"{source_path}/contracts/events/grid-area-updated.json"
     )
     actual_fields = json.loads(grid_area_updated_event_schema.json())["fields"]
-    print(grid_area_updated_expected_schema)
+
     for i in grid_area_updated_expected_schema["bodyFields"]:
         actual_field = next(x for x in actual_fields if i["name"] == x["name"])
     assert i["name"] == actual_field["name"]
