@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
@@ -29,7 +30,7 @@ public class GridAreaUpdatedDtoFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public void MessageTypeValueMatchesContractWithCalculator(
+    public void MessageTypeValue_MatchesContract_WithCalculator(
         GridAreaUpdatedIntegrationEvent anyGridAreaUpdatedIntegrationEvent,
         IntegrationEventMetadata anyMetadata,
         [Frozen] Mock<IIntegrationEventContext> integrationEventContext,
@@ -37,11 +38,17 @@ public class GridAreaUpdatedDtoFactoryTests
     {
         // Arrange
         using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MarketParticipant.grid-area-updated.json");
-        var expectedMessageType = JsonNode.Parse(stream)!.AsObject()["MessageType"]!["value"]!.ToString();
+        var jsonObject = JsonNode.Parse(stream)!.AsObject();
+        var bodyFields = jsonObject.First(x => x.Key == "bodyFields");
+        var jsonNodeMessageType = bodyFields.Value![2];
+        var expectedMessageType = jsonNodeMessageType!["value"]!.ToString();
+
         integrationEventContext.Setup(context => context.ReadMetadata()).Returns(anyMetadata);
 
-        // Assert
+        // Act
         var actual = sut.Create(anyGridAreaUpdatedIntegrationEvent);
+
+        // Assert
         actual.MessageType.Should().Be(expectedMessageType);
     }
 }
