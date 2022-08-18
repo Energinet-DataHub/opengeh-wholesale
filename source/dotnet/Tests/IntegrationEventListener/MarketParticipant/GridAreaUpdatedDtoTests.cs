@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Nodes;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MarketParticipant;
@@ -23,35 +23,39 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MarketParti
 public class GridAreaUpdatedDtoTests
 {
     [Fact]
-    public void PropertyNamesAndTypesMatchContractWithCalculator()
+    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
     {
         // Arrange
+        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MarketParticipant.grid-area-updated.json");
+        using var streamReader = new StreamReader(stream);
+        var inputGridAreaUpdated = await streamReader.ReadToEndAsync();
+        var gridAreaUpdatedDescription = JsonConvert.DeserializeObject<dynamic>(inputGridAreaUpdated)!;
+
         var actualProps = typeof(GridAreaUpdatedDto).GetProperties().ToDictionary(info => info.Name);
-        using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MarketParticipant.grid-area-updated.json");
-        var expectedProps = JsonNode.Parse(stream)!.AsObject().ToList();
+        var expectedProps = gridAreaUpdatedDescription.bodyFields;
 
         // Assert: Number of props match
         actualProps.Count.Should().Be(expectedProps.Count);
 
         foreach (var expectedProp in expectedProps)
         {
-            var actualProp = actualProps[expectedProp.Key];
+            string expectedPropName = expectedProp.name;
+            string expectedPropType = expectedProp.type;
 
-            // Assert: Property names match
-            actualProp.Name.Should().Be(expectedProp.Key);
+            // Assert: Lookup property by name
+            var actualProp = actualProps[expectedPropName];
 
             // Assert: Property types match
             var actualPropertyType = MapToContractType(actualProp.PropertyType);
-            var expectedPropertyType = expectedProp.Value!["type"]!.ToString();
-            actualPropertyType.Should().Be(expectedPropertyType);
+            actualPropertyType.Should().Be(expectedPropType);
         }
     }
 
-    private string MapToContractType(Type propertyType) => propertyType.Name switch
+    private static string MapToContractType(Type propertyType) => propertyType.Name switch
     {
         "String" => "string",
         "Guid" => "guid",
-        "Instant" => "datetime",
+        "Instant" => "timestamp",
         _ => throw new NotImplementedException($"Property type '{propertyType.Name}' not implemented."),
     };
 }

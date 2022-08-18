@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
@@ -23,6 +20,7 @@ using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
 using Moq;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MarketParticipant;
@@ -31,22 +29,35 @@ public class GridAreaUpdatedDtoFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public void MessageTypeValue_MatchesContract_WithCalculator(
+    public async Task MessageTypeValue_MatchesContract_WithCalculator(
         GridAreaUpdatedIntegrationEvent anyGridAreaUpdatedIntegrationEvent,
         IntegrationEventMetadata anyMetadata,
         [Frozen] Mock<IIntegrationEventContext> integrationEventContext,
         GridAreaUpdatedDtoFactory sut)
     {
         // Arrange
-        using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MarketParticipant.grid-area-updated.json");
-        var jsonObject = JsonNode.Parse(stream)!.AsObject()["bodyFields"]!;
-        var expectedMessageType = ((JsonArray)jsonObject).First(x => x!["name"]!
-            .GetValue<string?>() == "MessageType")!["value"]!
-            .GetValue<string?>();
+        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MarketParticipant.grid-area-updated.json");
+        using var streamReader = new StreamReader(stream);
+        var inputGridAreaUpdated = await streamReader.ReadToEndAsync();
+        var gridAreaUpdatedDescription = JsonConvert.DeserializeObject<dynamic>(inputGridAreaUpdated)!;
+
+        string? expectedMessageType = null;
+
+        foreach (var fieldDescriptor in gridAreaUpdatedDescription.bodyFields)
+        {
+            if (fieldDescriptor.name == "MessageType")
+            {
+                expectedMessageType = fieldDescriptor.value;
+                break;
+            }
+        }
+
         integrationEventContext.Setup(context => context.ReadMetadata()).Returns(anyMetadata);
 
-        // Assert
+        // Act
         var actual = sut.Create(anyGridAreaUpdatedIntegrationEvent);
+
+        // Assert
         actual.MessageType.Should().Be(expectedMessageType);
     }
 }
