@@ -9,7 +9,7 @@
     {
       "name": "GridAreaLinkId",
       "nullable": true,
-      "type": "guid"
+      "type": "string"
     },
     {
       "name": "MessageType",
@@ -30,7 +30,7 @@
     {
       "name": "GridAreaId",
       "nullable": true,
-      "type": "guid"
+      "type": "string"
     }
   ]
 }

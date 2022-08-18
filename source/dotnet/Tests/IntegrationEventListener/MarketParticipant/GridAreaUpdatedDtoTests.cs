@@ -54,7 +54,7 @@ public class GridAreaUpdatedDtoTests
     private static string MapToContractType(Type propertyType) => propertyType.Name switch
     {
         "String" => "string",
-        "Guid" => "guid",
+        "Guid" => "string",
         "Instant" => "timestamp",
         _ => throw new NotImplementedException($"Property type '{propertyType.Name}' not implemented."),
     };
