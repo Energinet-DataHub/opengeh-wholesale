@@ -44,11 +44,11 @@ public class Program
 {
     public static async Task Main()
     {
-        using var host = BuildAppHost(_ => { });
+        using var host = BuildAppHost().Build();
         await host.RunAsync().ConfigureAwait(false);
     }
 
-    public static IHost BuildAppHost(Action<IServiceCollection> serviceConfiguration)
+    public static IHostBuilder BuildAppHost()
     {
         return new HostBuilder()
             .ConfigureFunctionsWorkerDefaults(builder =>
@@ -61,9 +61,7 @@ public class Program
             .ConfigureServices(Applications)
             .ConfigureServices(Domains)
             .ConfigureServices(Infrastructure)
-            .ConfigureServices(HealthCheck)
-            .ConfigureServices(serviceConfiguration)
-            .Build();
+            .ConfigureServices(HealthCheck);
     }
 
     private static void Middlewares(IServiceCollection serviceCollection)

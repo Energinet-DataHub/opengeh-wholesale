@@ -36,13 +36,16 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
     {
         ConfigureEnvironmentVars();
 
-        var host = Program.BuildAppHost(serviceCollection =>
-        {
-            ConfigureServices(serviceCollection);
-            serviceConfiguration?.Invoke(serviceCollection);
-        });
+        var hostBuilder = Program
+            .BuildAppHost()
+            .ConfigureServices(ConfigureServices);
 
-        return Task.FromResult(new ProcessManagerIntegrationTestHost(host));
+        if (serviceConfiguration != null)
+        {
+            hostBuilder = hostBuilder.ConfigureServices(serviceConfiguration);
+        }
+
+        return Task.FromResult(new ProcessManagerIntegrationTestHost(hostBuilder.Build()));
     }
 
     public AsyncServiceScope BeginScope()
