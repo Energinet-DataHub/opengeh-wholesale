@@ -98,6 +98,9 @@ def start():
         args.batch_period_end_datetime,
     )
 
+    # First repartition to co-locate all rows for a grid area on a single executor.
+    # This ensures that only one file is being written/created for each grid area
+    # when writing/creating the files. The partition by creates a folder for each grid area.
     (
         output_df.repartition("grid-area")
         .write.mode("overwrite")
