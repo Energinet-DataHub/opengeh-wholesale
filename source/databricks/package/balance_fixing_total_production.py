@@ -47,11 +47,12 @@ def calculate_balance_fixing_total_production(
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
+    cached_raw_integration_events_df = raw_integration_events_df.cache()
     grid_area_df = _get_grid_areas_df(
-        raw_integration_events_df, batch_grid_areas, snapshot_datetime
+        cached_raw_integration_events_df, batch_grid_areas, snapshot_datetime
     )
     metering_point_period_df = _get_metering_point_periods_df(
-        raw_integration_events_df,
+        cached_raw_integration_events_df,
         grid_area_df,
         snapshot_datetime,
         period_start_datetime,
@@ -65,7 +66,8 @@ def calculate_balance_fixing_total_production(
         period_end_datetime,
     )
     result_df = _get_result_df(enriched_time_series_point_df, batch_grid_areas)
-
+    cached_raw_integration_events_df.unpesist()
+    
     return result_df
 
 
