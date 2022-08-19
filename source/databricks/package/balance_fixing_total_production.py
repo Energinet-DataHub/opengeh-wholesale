@@ -250,7 +250,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
                     col("time") + expr("INTERVAL 30 minutes"),
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
-            ).when(col("resolution") == Resolution.quarter, array(col("time"))),
+            ).when(col("Resolution") == Resolution.quarter, array(col("time"))),
         )
         .select(
             enriched_time_series_points_df["*"],
