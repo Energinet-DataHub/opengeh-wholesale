@@ -110,11 +110,7 @@ def test__body_prop_names_and_types_matches_integration_event_listener(
     assert i["nullable"] == actual_field["nullable"]
 
     actual_df_fields = json.loads(
-        _get_grid_areas_df(
-            raw_integration_events_df,
-            [grid_area_code],
-            snapshot_datetime=second_of_june,
-        ).schema.json()
+        _get_grid_areas_df(raw_integration_events_df, [grid_area_code]).schema.json()
     )["fields"]
 
     for i in actual_df_fields:
@@ -141,9 +137,7 @@ def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_da
     raw_integration_events_df = grid_area_df_factory(message_type=message_type)
 
     # Act
-    actual_df = _get_grid_areas_df(
-        raw_integration_events_df, [grid_area_code], snapshot_datetime=second_of_june
-    )
+    actual_df = _get_grid_areas_df(raw_integration_events_df, [grid_area_code])
 
     # Assert
     assert actual_df.count() == 1
@@ -154,42 +148,12 @@ def test__returns_correct_grid_area_data(grid_area_df_factory):
     raw_integration_events_df = grid_area_df_factory()
 
     # Act
-    actual_df = _get_grid_areas_df(
-        raw_integration_events_df, [grid_area_code], snapshot_datetime=second_of_june
-    )
+    actual_df = _get_grid_areas_df(raw_integration_events_df, [grid_area_code])
 
     # Assert
     actual = actual_df.first()
     assert actual.GridAreaCode == grid_area_code
     assert actual.GridAreaLinkId == grid_area_link_id
-
-
-def test__when_stored_time_equals_snapshot_datetime__returns_grid_area(
-    grid_area_df_factory,
-):
-    # Arrange
-    raw_integration_events_df = grid_area_df_factory(stored_time=first_of_june)
-
-    # Act
-    actual_df = _get_grid_areas_df(
-        raw_integration_events_df, [grid_area_code], snapshot_datetime=first_of_june
-    )
-
-    # Assert
-    assert actual_df.count() == 1
-
-
-def test__when_stored_after_snapshot_time__throws_because_grid_area_not_found(
-    grid_area_df_factory,
-):
-    # Arrange
-    raw_integration_events_df = grid_area_df_factory(stored_time=second_of_june)
-
-    # Act and assert exception
-    with pytest.raises(Exception, match=r".* grid areas .*"):
-        _get_grid_areas_df(
-            raw_integration_events_df, [grid_area_code], snapshot_datetime=first_of_june
-        )
 
 
 def test__when_grid_area_code_does_not_match__throws_because_grid_area_not_found(
@@ -203,11 +167,7 @@ def test__when_grid_area_code_does_not_match__throws_because_grid_area_not_found
 
     # Act and assert exception
     with pytest.raises(Exception, match=r".* grid areas .*"):
-        _get_grid_areas_df(
-            raw_integration_events_df,
-            [non_matching_grid_area_code],
-            snapshot_datetime=second_of_june,
-        )
+        _get_grid_areas_df(raw_integration_events_df, [non_matching_grid_area_code])
 
 
 def test__when_message_type_is_not_grid_area_updated__throws_because_grid_area_not_found(
@@ -220,11 +180,7 @@ def test__when_message_type_is_not_grid_area_updated__throws_because_grid_area_n
 
     # Act and assert exception
     with pytest.raises(Exception, match=r".* grid areas .*"):
-        _get_grid_areas_df(
-            raw_integration_events_df,
-            [grid_area_code],
-            snapshot_datetime=second_of_june,
-        )
+        _get_grid_areas_df(raw_integration_events_df, [grid_area_code])
 
 
 def test__returns_newest_grid_area_state(
@@ -256,11 +212,7 @@ def test__returns_newest_grid_area_state(
     )
 
     # Act
-    actual_df = _get_grid_areas_df(
-        raw_integration_events_df,
-        [grid_area_code],
-        snapshot_datetime=second_of_june,
-    )
+    actual_df = _get_grid_areas_df(raw_integration_events_df, [grid_area_code])
 
     # Assert
     assert actual_df.count() == 1

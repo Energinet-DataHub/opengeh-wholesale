@@ -14,6 +14,7 @@
 
 from datetime import datetime
 import sys
+from pyspark.sql.functions import col
 
 # Required when executing in a subprocess from pytest (without using wheel)
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
@@ -81,11 +82,18 @@ def start():
 
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
-    raw_integration_events_df = spark.read.option("mergeSchema", "true").parquet(
-        args.integration_events_path
+    # Only events stored before the snapshot_datetime are needed.
+    raw_integration_events_df = (
+        spark.read.option("mergeSchema", "true")
+        .parquet(args.integration_events_path)
+        .where(col("storedTime") <= args.batch_snapshot_datetime)
     )
-    raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
-        args.time_series_points_path
+
+    # Only points stored before the snapshot_datetime are needed.
+    raw_time_series_points_df = (
+        spark.read.option("mergeSchema", "true")
+        .parquet(args.time_series_points_path)
+        .where(col("storedTime") <= args.batch_snapshot_datetime)
     )
 
     output_df = calculate_balance_fixing_total_production(
@@ -93,7 +101,6 @@ def start():
         raw_time_series_points_df,
         args.batch_id,
         args.batch_grid_areas,
-        args.batch_snapshot_datetime,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
     )
