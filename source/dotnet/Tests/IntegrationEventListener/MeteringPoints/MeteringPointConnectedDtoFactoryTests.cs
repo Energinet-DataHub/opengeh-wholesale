@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
@@ -19,13 +20,14 @@ using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
 using Energinet.DataHub.MeteringPoints.IntegrationEvents.Connect;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using Moq;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
+namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoints
 {
     [UnitTest]
     public class MeteringPointConnectedDtoFactoryTests
@@ -89,6 +91,27 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
             actual.GsrnNumber.Should().Be(meteringPointConnectedEvent.GsrnNumber);
             actual.MeteringPointId.Should().Be(meteringPointConnectedEvent.MeteringpointId);
             actual.EffectiveDate.Should().Be(meteringPointConnectedEvent.EffectiveDate.ToInstant());
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task MessageTypeValue_MatchesContract_WithCalculator(
+            [Frozen] Mock<IIntegrationEventContext> integrationEventContext,
+            MeteringPointConnected meteringPointConnectedEvent,
+            IntegrationEventMetadata integrationEventMetadata,
+            MeteringPointConnectedDtoFactory sut)
+        {
+            // Arrange
+            await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.metering-point-connected.json");
+            var expectedMessageType = await ContractComplianceTestHelper.GetRequiredMessageTypeAsync(stream);
+
+            integrationEventContext.Setup(context => context.ReadMetadata()).Returns(integrationEventMetadata);
+
+            // Act
+            var actual = sut.Create(meteringPointConnectedEvent);
+
+            // Assert
+            actual.MessageType.Should().Be(expectedMessageType);
         }
     }
 }

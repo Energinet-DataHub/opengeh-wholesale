@@ -20,11 +20,12 @@ using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
 using Moq;
-using Newtonsoft.Json;
 using Xunit;
+using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MarketParticipant;
 
+[UnitTest]
 public class GridAreaUpdatedDtoFactoryTests
 {
     [Theory]
@@ -37,20 +38,7 @@ public class GridAreaUpdatedDtoFactoryTests
     {
         // Arrange
         await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MarketParticipant.grid-area-updated.json");
-        using var streamReader = new StreamReader(stream);
-        var inputGridAreaUpdated = await streamReader.ReadToEndAsync();
-        var gridAreaUpdatedDescription = JsonConvert.DeserializeObject<dynamic>(inputGridAreaUpdated)!;
-
-        string? expectedMessageType = null;
-
-        foreach (var fieldDescriptor in gridAreaUpdatedDescription.bodyFields)
-        {
-            if (fieldDescriptor.name == "MessageType")
-            {
-                expectedMessageType = fieldDescriptor.value;
-                break;
-            }
-        }
+        var expectedMessageType = await ContractComplianceTestHelper.GetRequiredMessageTypeAsync(stream);
 
         integrationEventContext.Setup(context => context.ReadMetadata()).Returns(anyMetadata);
 

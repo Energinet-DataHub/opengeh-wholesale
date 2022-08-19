@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
+using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MarketParticipant;
+namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoints;
 
 [UnitTest]
-public class GridAreaUpdatedDtoTests
+public class MeteringPointCreatedDtoTests
 {
     [Fact]
     public async Task PropertyNamesAndTypesMatchContractWithCalculator()
     {
-        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MarketParticipant.grid-area-updated.json");
-        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<GridAreaUpdatedDto>(stream);
+        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.metering-point-created.json");
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<MeteringPointCreatedDto>(stream);
     }
 }
