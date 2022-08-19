@@ -15,7 +15,7 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener;
+namespace Energinet.DataHub.Wholesale.Tests.TestHelpers;
 
 internal static class ContractComplianceTestHelper
 {
@@ -28,9 +28,7 @@ internal static class ContractComplianceTestHelper
         foreach (var fieldDescriptor in contractDescription.bodyFields)
         {
             if (fieldDescriptor.name == "MessageType")
-            {
                 return fieldDescriptor.value;
-            }
         }
 
         throw new InvalidOperationException("Could not find required MessageType in contract.");
