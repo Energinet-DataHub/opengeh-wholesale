@@ -32,7 +32,7 @@ public class Batch
         if (!_gridAreaCodes.Any())
             throw new ArgumentException("Batch must contain at least one grid area code.");
 
-        // Period is currently hardcoded to the 1st of June 2022
+        // Period is currently hardcoded to the 1st of June 2022 Danish time (CEST)
         Period = new Interval(
             Instant.FromUtc(2022, 5, 31, 22, 00),
             Instant.FromUtc(2022, 6, 1, 22, 00));
