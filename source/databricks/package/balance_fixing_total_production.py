@@ -35,7 +35,10 @@ from pyspark.sql.types import (
 )
 from pyspark.sql.window import Window
 from package.codelists import ConnectionState, MeteringPointType, Resolution
-from package.schemas import grid_area_updated_event_schema, metering_point_generic_event_schema
+from package.schemas import (
+    grid_area_updated_event_schema,
+    metering_point_generic_event_schema,
+)
 
 
 def calculate_balance_fixing_total_production(
@@ -67,7 +70,7 @@ def calculate_balance_fixing_total_production(
     )
     result_df = _get_result_df(enriched_time_series_point_df, batch_grid_areas)
     cached_raw_integration_events_df.unpesist()
-    
+
     return result_df
 
 
@@ -208,9 +211,7 @@ def _get_enriched_time_series_points_df(
         "row_number", row_number().over(window)
     ).where(col("row_number") == 1)
 
-    timeseries_df = timeseries_df.select(
-        col("GsrnNumber"), "time", "Quantity"
-    )
+    timeseries_df = timeseries_df.select(col("GsrnNumber"), "time", "Quantity")
 
     # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
     #       To improve performance, consider adding a range join hint.
@@ -258,8 +259,8 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         )
         .withColumn(
             "quarter_quantity",
-            when(col("Resolution") == Resolution.hour, col("quantity") / 4).when(
-                col("Resolution") == Resolution.quarter, col("quantity")
+            when(col("Resolution") == Resolution.hour, col("Quantity") / 4).when(
+                col("Resolution") == Resolution.quarter, col("Quantity")
             ),
         )
         .groupBy("GridAreaCode", "quarter_time")
