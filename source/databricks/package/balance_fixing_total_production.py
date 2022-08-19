@@ -250,7 +250,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
                     col("time") + expr("INTERVAL 30 minutes"),
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
-            ).when(col("resolution") == Resolution.quarter, array(col("time"))),
+            ).when(col("Resolution") == Resolution.quarter, array(col("time"))),
         )
         .select(
             enriched_time_series_points_df["*"],
@@ -258,7 +258,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         )
         .withColumn(
             "quarter_quantity",
-            when(col("resolution") == Resolution.hour, col("quantity") / 4).when(
+            when(col("Resolution") == Resolution.hour, col("quantity") / 4).when(
                 col("Resolution") == Resolution.quarter, col("quantity")
             ),
         )
@@ -277,7 +277,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
     result_df = (
         result_df.withColumn("position", row_number().over(window))
         .drop("quarter_time")
-        .withColumnRenamed("sum(quarter_quantity)", "quantity")
+        .withColumnRenamed("sum(quarter_quantity)", "Quantity")
     )
 
     return result_df
