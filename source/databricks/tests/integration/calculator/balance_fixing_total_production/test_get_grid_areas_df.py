@@ -107,7 +107,6 @@ def test__body_prop_names_and_types_matches_integration_event_listener(
         actual_field = next(x for x in actual_schema_fields if i["name"] == x["name"])
     assert i["name"] == actual_field["name"]
     assert i["type"] == actual_field["type"]
-    assert i["nullable"] == actual_field["nullable"]
 
     actual_df_fields = json.loads(
         _get_grid_areas_df(raw_integration_events_df, [grid_area_code]).schema.json()
@@ -121,7 +120,6 @@ def test__body_prop_names_and_types_matches_integration_event_listener(
         )
     assert i["name"] == actual_field["name"]
     assert i["type"] == actual_field["type"]
-    assert i["nullable"] == actual_field["nullable"]
 
 
 def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_data(
