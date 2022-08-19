@@ -118,7 +118,11 @@ def _get_metering_point_periods_df(
         raw_integration_events_df.where(col("storedTime") <= snapshot_datetime)
         .withColumn("body", col("body").cast("string"))
         .withColumn("body", from_json(col("body"), metering_point_generic_event_schema))
-        .where(col("body.MessageType").startswith("MeteringPoint"))
+        .where(
+            col("body.MessageType").isin(
+                "MeteringPointCreated", "MeteringPointConnected"
+            )
+        )
         .select(
             "storedTime",
             "body.MessageType",
@@ -277,8 +281,8 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
     # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
     result_df = (
         result_df.withColumn("position", row_number().over(window))
-        .drop("quarter_time")
         .withColumnRenamed("sum(quarter_quantity)", "Quantity")
+        .select("GridAreaCode", "Quantity", "Quality")
     )
 
     return result_df
