@@ -241,7 +241,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         .withColumn(
             "quarter_times",
             when(
-                col("resolution") == Resolution.hour,
+                col("Resolution") == Resolution.hour,
                 array(
                     col("time"),
                     col("time") + expr("INTERVAL 15 minutes"),
