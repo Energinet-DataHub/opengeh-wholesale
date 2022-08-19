@@ -278,7 +278,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         result_df.withColumnRenamed("GridAreaCode", "grid-area")
         .withColumn("position", row_number().over(window))
         .drop("quarter_time")
-        .withColumnRenamed("sum(quarter_quantity)", "quantity")
+        .withColumnRenamed("sum(quarter_quantity)", "Quantity")
     )
 
     return result_df
