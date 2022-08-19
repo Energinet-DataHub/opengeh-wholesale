@@ -35,7 +35,7 @@ from pyspark.sql.types import (
 )
 from pyspark.sql.window import Window
 from package.codelists import ConnectionState, MeteringPointType, Resolution
-from package.schemas import grid_area_updated_event_schema
+from package.schemas import grid_area_updated_event_schema, metering_point_generic_event_schema
 
 
 def calculate_balance_fixing_total_production(
@@ -109,23 +109,10 @@ def _get_metering_point_periods_df(
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-    schema = StructType(
-        [
-            StructField("GsrnNumber", StringType(), True),
-            StructField("GridAreaLinkId", StringType(), True),
-            StructField("ConnectionState", StringType(), True),
-            StructField("EffectiveDate", TimestampType(), True),
-            StructField("MeteringPointType", StringType(), True),
-            StructField("MeteringPointId", StringType(), True),
-            StructField("Resolution", StringType(), True),
-            StructField("MessageType", StringType(), True),
-        ]
-    )
-
     metering_point_events_df = (
         raw_integration_events_df.where(col("storedTime") <= snapshot_datetime)
         .withColumn("body", col("body").cast("string"))
-        .withColumn("body", from_json(col("body"), schema))
+        .withColumn("body", from_json(col("body"), metering_point_generic_event_schema))
         .where(col("body.MessageType").startswith("MeteringPoint"))
         .select(
             "storedTime",

@@ -12,3 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from .grid_area_updated_event_schema import grid_area_updated_event_schema
+from .metering_point_generic_event_schema import metering_point_generic_event_schema
