@@ -207,7 +207,7 @@ def _get_enriched_time_series_points_df(
     ).where(col("row_number") == 1)
 
     timeseries_df = timeseries_df.select(
-        col("metering_point_id").alias("GsrnNumber"), "time", "quantity"
+        col("GsrnNumber"), "time", "Quantity"
     )
 
     # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
