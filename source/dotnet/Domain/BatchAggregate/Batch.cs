@@ -23,6 +23,7 @@ public class Batch
     private readonly List<GridAreaCode> _gridAreaCodes;
 
     public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes)
+        : this()
     {
         Id = new BatchId();
         ExecutionState = BatchExecutionState.Pending;
@@ -31,11 +32,6 @@ public class Batch
         _gridAreaCodes = gridAreaCodes.ToList();
         if (!_gridAreaCodes.Any())
             throw new ArgumentException("Batch must contain at least one grid area code.");
-
-        // Period is currently hardcoded to the 1st of June 2022 Danish time (CEST)
-        Period = new Interval(
-            Instant.FromUtc(2022, 5, 31, 22, 00),
-            Instant.FromUtc(2022, 6, 1, 22, 00));
     }
 
     /// <summary>
@@ -46,6 +42,11 @@ public class Batch
     {
         Id = null!;
         _gridAreaCodes = new List<GridAreaCode>();
+
+        // Period is currently hardcoded to the 1st of June 2022 Danish time (CEST)
+        Period = new Interval(
+            Instant.FromUtc(2022, 5, 31, 22, 00),
+            Instant.FromUtc(2022, 6, 1, 22, 00));
     }
 
     public BatchId Id { get; }
