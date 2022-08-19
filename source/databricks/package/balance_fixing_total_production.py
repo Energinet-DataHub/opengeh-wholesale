@@ -212,7 +212,7 @@ def _get_enriched_time_series_points_df(
     )
 
     # Only use latest registered points
-    window = Window.partitionBy("metering_point_id", "time").orderBy(
+    window = Window.partitionBy("GsrnNumber", "time").orderBy(
         col("registration_date_time").desc(), col("storedTime").desc()
     )
     timeseries_df = timeseries_df.withColumn(
