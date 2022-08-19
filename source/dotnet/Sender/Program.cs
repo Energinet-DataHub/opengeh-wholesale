@@ -16,6 +16,7 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
@@ -72,15 +73,13 @@ public static class Program
         services.AddScoped<IProcessRepository, ProcessRepository>();
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<CorrelationIdMiddleware>();
-        services.AddScoped<FunctionTelemetryScopeMiddleware>();
         services.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
         services.AddScoped<IntegrationEventMetadataMiddleware>();
     }
 
     private static void Infrastructure(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddApplicationInsightsTelemetryWorkerService(
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+        serviceCollection.AddApplicationInsights();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
         var calculatorResultConnection = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsConnectionString);

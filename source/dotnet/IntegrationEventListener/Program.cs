@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
@@ -54,15 +55,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
         {
             serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
             serviceCollection.AddScoped<CorrelationIdMiddleware>();
-            serviceCollection.AddScoped<FunctionTelemetryScopeMiddleware>();
             serviceCollection.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
             serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
         }
 
         private static void Infrastructure(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddApplicationInsightsTelemetryWorkerService(
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+            serviceCollection.AddApplicationInsights();
             serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
             serviceCollection.AddSingleton<ISharedIntegrationEventParser, SharedIntegrationEventParser>();
         }
