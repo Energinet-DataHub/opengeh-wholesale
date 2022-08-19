@@ -102,7 +102,8 @@ def start():
     # This ensures that only one file is being written/created for each grid area
     # when writing/creating the files. The partition by creates a folder for each grid area.
     (
-        output_df.repartition("grid-area")
+        output_df.withColumnRenamed("GridAreaCode", "grid-area")
+        .repartition("grid-area")
         .write.mode("overwrite")
         .partitionBy("grid-area")
         .json(f"{args.process_results_path}/batch-id={args.batch_id}")

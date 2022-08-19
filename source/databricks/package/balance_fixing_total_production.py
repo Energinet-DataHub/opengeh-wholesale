@@ -275,8 +275,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
     # Points may be missing in result time series if all metering points are missing a point at a certain moment.
     # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
     result_df = (
-        result_df.withColumnRenamed("GridAreaCode", "grid-area")
-        .withColumn("position", row_number().over(window))
+        result_df.withColumn("position", row_number().over(window))
         .drop("quarter_time")
         .withColumnRenamed("sum(quarter_quantity)", "quantity")
     )
