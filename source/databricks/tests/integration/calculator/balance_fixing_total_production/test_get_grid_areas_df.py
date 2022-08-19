@@ -80,6 +80,8 @@ def grid_area_df_factory(spark):
 
 
 def test__stored_time_matches_persister(grid_area_df_factory, source_path):
+    """Test that the anticipated stored time column name matches the column that was created
+    by the integration events persister. This test uses the shared contract."""
     raw_integration_events_df = grid_area_df_factory()
 
     expected_stored_time_name = get_from_file(
