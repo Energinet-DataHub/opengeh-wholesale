@@ -1,4 +1,4 @@
-# This file is kinda contract between the parameters used by .NET invocation of the calculator job
+# This file is kind of a contract between the parameters used by .NET invocation of the calculator job
 # and the parameters expected by the calculator job.
 # There is a test on either side verifying that both conforms to the same parameters format
 # and that the calculator job is able to consume the parameters.
