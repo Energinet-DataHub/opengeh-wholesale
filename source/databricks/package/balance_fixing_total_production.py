@@ -208,7 +208,7 @@ def _get_enriched_time_series_points_df(
         .where(col("time") >= period_start_datetime)
         .where(col("time") < period_end_datetime)
         # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
-        .withColumn("quantity", col("quantity").cast("decimal(18,6)"))
+        .withColumn("Quantity", col("Quantity").cast("decimal(18,6)"))
     )
 
     # Only use latest registered points
