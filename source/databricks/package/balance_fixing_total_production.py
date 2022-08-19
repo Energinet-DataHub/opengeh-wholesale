@@ -266,7 +266,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         .sum("quarter_quantity")
     )
 
-    window = Window.partitionBy("grid-area").orderBy(col("quarter_time"))
+    window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
 
     # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
     #       To improve performance, consider adding a range join hint.
