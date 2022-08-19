@@ -44,6 +44,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
         var expected = reader
             .ReadToEnd()
             .Replace("{batch-id}", batch.Id.Value.ToString())
+            .Replace("\r", string.Empty)
             .Split("\n") // Split lines
             .Where(l => !l.StartsWith("#") && l.Length > 0); // Remove empty and comment lines
 
