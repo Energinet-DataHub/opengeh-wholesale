@@ -20,16 +20,17 @@ from pyspark.sql.types import (
     StructType,
 )
 
-# Generic schema for all metering point events. Requires all metering point schemas to be a subset of this schema.
-metering_point_generic_event_schema = StructType(
+metering_point_created_event_schema = StructType(
     [
         StructField("GsrnNumber", StringType(), True),
         StructField("GridAreaLinkId", StringType(), True),
+        StructField("MessageType", StringType(), True),
+        StructField("SettlementMethod", IntegerType(), True),
         StructField("ConnectionState", IntegerType(), True),
         StructField("EffectiveDate", TimestampType(), True),
         StructField("MeteringPointType", IntegerType(), True),
         StructField("MeteringPointId", StringType(), True),
         StructField("Resolution", IntegerType(), True),
-        StructField("MessageType", StringType(), True),
+        StructField("CorrelationId", StringType(), True),
     ]
 )
