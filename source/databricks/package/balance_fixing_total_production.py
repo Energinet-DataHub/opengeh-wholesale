@@ -248,7 +248,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
     #       To improve performance, consider adding a range join hint.
     #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
 
-    # Total production in batch grid areas with quarterly resolution as json file per grid area
+    # Total production in batch grid areas with quarterly resolution per grid area
     result_df = (
         enriched_time_series_points_df.where(col("GridAreaCode").isin(batch_grid_areas))
         .withColumn(
