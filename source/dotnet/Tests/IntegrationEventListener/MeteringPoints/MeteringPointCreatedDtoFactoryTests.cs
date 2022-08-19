@@ -40,14 +40,22 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
         public async Task MessageTypeValue_MatchesContract_WithCalculator(
             [Frozen] Mock<IIntegrationEventContext> integrationEventContext,
             MeteringPointCreated meteringPointCreatedEvent,
-            IntegrationEventMetadata integrationEventMetadata,
             MeteringPointCreatedDtoFactory sut)
         {
             // Arrange
             await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.metering-point-created.json");
             var expectedMessageType = await ContractComplianceTestHelper.GetRequiredMessageTypeAsync(stream);
 
-            integrationEventContext.Setup(context => context.ReadMetadata()).Returns(integrationEventMetadata);
+            meteringPointCreatedEvent.GridAreaCode = Guid.NewGuid().ToString();
+
+            var integrationEventMetadata = new IntegrationEventMetadata(
+                expectedMessageType,
+                Instant.MinValue,
+                "D72AEBD6-068F-46A7-A5AA-EE9DF675A163");
+
+            integrationEventContext
+                .Setup(context => context.ReadMetadata())
+                .Returns(integrationEventMetadata);
 
             // Act
             var actual = sut.Create(meteringPointCreatedEvent);
