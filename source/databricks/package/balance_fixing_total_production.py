@@ -258,7 +258,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         )
         .withColumn(
             "quarter_quantity",
-            when(col("resolution") == Resolution.hour, col("quantity") / 4).when(
+            when(col("Resolution") == Resolution.hour, col("quantity") / 4).when(
                 col("Resolution") == Resolution.quarter, col("quantity")
             ),
         )
