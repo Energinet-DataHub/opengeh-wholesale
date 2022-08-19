@@ -11,4 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .jsonTransformer import transform_unprocessed_time_series_to_points
+
+from pyspark.sql.types import (
+    IntegerType,
+    StructField,
+    StringType,
+    TimestampType,
+    StructType,
+)
+
+metering_point_connected_event_schema = StructType(
+    [
+        StructField("GsrnNumber", StringType(), True),
+        StructField("EffectiveDate", TimestampType(), True),
+        StructField("MeteringPointId", StringType(), True),
+        StructField("MessageType", StringType(), True),
+        StructField("CorrelationId", StringType(), True),
+    ]
+)

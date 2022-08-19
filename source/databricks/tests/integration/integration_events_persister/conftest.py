@@ -44,7 +44,6 @@ def parquet_reader(spark: SparkSession, delta_lake_path: str):
         try:
             data = spark.read.format("parquet").load(f"{delta_lake_path}/{path}")
             data.show(truncate=False)
-            data.printSchema()
         except Exception:
             pass
         return data
