@@ -202,6 +202,8 @@ def _get_enriched_time_series_points_df(
     window = Window.partitionBy("GsrnNumber", "time").orderBy(
         col("RegistrationDateTime").desc(), col("storedTime").desc()
     )
+    # If we end up with more than one point for the same Meteringpoint and "time".
+    # We only need the latest point, this is essential to handle updates of points.
     timeseries_df = timeseries_df.withColumn(
         "row_number", row_number().over(window)
     ).where(col("row_number") == 1)
