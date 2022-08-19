@@ -1,6 +1,6 @@
 # This file is kind of a contract between the parameters used by .NET invocation of the calculator job
 # and the parameters expected by the calculator job.
-# There is a test on either side verifying that both conforms to the same parameters format
+# There is a test on both sides verifying that both conform to the same parameters format
 # and that the calculator job is able to consume the parameters.
 #
 # Empty lines and lines starting with '#' are ignores in the tests.
