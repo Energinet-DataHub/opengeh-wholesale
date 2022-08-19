@@ -224,7 +224,7 @@ def _get_enriched_time_series_points_df(
         metering_point_period_df["GsrnNumber"],
         "Resolution",
         "time",
-        "quantity",
+        "Quantity",
     )
 
     return enriched_time_series_point_df
