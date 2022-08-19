@@ -12,6 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .spark_initializor import initialize_spark
-from .integration_events_persister import integration_events_persister
-from .balance_fixing_total_production import calculate_balance_fixing_total_production
+from pyspark.sql.types import (
+    IntegerType,
+    StructField,
+    StringType,
+    TimestampType,
+    StructType,
+)
+
+grid_area_updated_event_schema = StructType(
+    [
+        StructField("GridAreaCode", StringType(), True),
+        StructField("GridAreaLinkId", StringType(), True),
+        StructField("MessageType", StringType(), True),
+        StructField("OperationTime", TimestampType(), True),
+        StructField("CorrelationId", StringType(), True),
+        StructField("GridAreaId", StringType(), True),
+    ]
+)

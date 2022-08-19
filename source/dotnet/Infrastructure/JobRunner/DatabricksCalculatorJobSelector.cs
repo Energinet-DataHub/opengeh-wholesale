@@ -16,11 +16,11 @@ using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
-public sealed class DatabricksJobSelector
+public sealed class DatabricksCalculatorJobSelector
 {
     private readonly DatabricksWheelClient _wheelClient;
 
-    public DatabricksJobSelector(DatabricksWheelClient wheelClient)
+    public DatabricksCalculatorJobSelector(DatabricksWheelClient wheelClient)
     {
         _wheelClient = wheelClient;
     }
