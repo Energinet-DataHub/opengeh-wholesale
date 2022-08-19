@@ -118,7 +118,11 @@ def _get_metering_point_periods_df(
         raw_integration_events_df.where(col("storedTime") <= snapshot_datetime)
         .withColumn("body", col("body").cast("string"))
         .withColumn("body", from_json(col("body"), metering_point_generic_event_schema))
-        .where(col("body.MessageType").startswith("MeteringPoint"))
+        .where(
+            col("body.MessageType").isin(
+                "MeteringPointCreated", "MeteringPointConnected"
+            )
+        )
         .select(
             "storedTime",
             "body.MessageType",
