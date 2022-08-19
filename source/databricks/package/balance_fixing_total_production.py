@@ -46,25 +46,22 @@ def calculate_balance_fixing_total_production(
     raw_time_series_points,
     batch_id,
     batch_grid_areas,
-    snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
     cached_raw_integration_events_df = raw_integration_events_df.cache()
     grid_area_df = _get_grid_areas_df(
-        cached_raw_integration_events_df, batch_grid_areas, snapshot_datetime
+        cached_raw_integration_events_df, batch_grid_areas
     )
     metering_point_period_df = _get_metering_point_periods_df(
         cached_raw_integration_events_df,
         grid_area_df,
-        snapshot_datetime,
         period_start_datetime,
         period_end_datetime,
     )
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
-        snapshot_datetime,
         period_start_datetime,
         period_end_datetime,
     )
@@ -74,14 +71,11 @@ def calculate_balance_fixing_total_production(
     return result_df
 
 
-def _get_grid_areas_df(
-    raw_integration_events_df, batch_grid_areas, snapshot_datetime
-) -> DataFrame:
+def _get_grid_areas_df(raw_integration_events_df, batch_grid_areas) -> DataFrame:
     message_type = "GridAreaUpdated"  # Must correspond to the value stored by the integration event listener
 
     grid_area_events_df = (
-        raw_integration_events_df.where(col("storedTime") <= snapshot_datetime)
-        .withColumn("body", col("body").cast("string"))
+        raw_integration_events_df.withColumn("body", col("body").cast("string"))
         .withColumn("body", from_json(col("body"), grid_area_updated_event_schema))
         .where(col("body.MessageType") == message_type)
         .where(col("body.GridAreaCode").isin(batch_grid_areas))
@@ -110,13 +104,11 @@ def _get_grid_areas_df(
 def _get_metering_point_periods_df(
     raw_integration_events_df,
     grid_area_df,
-    snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
     metering_point_events_df = (
-        raw_integration_events_df.where(col("storedTime") <= snapshot_datetime)
-        .withColumn("body", col("body").cast("string"))
+        raw_integration_events_df.withColumn("body", col("body").cast("string"))
         .withColumn("body", from_json(col("body"), metering_point_generic_event_schema))
         .where(
             col("body.MessageType").isin(
@@ -195,14 +187,13 @@ def _get_metering_point_periods_df(
 def _get_enriched_time_series_points_df(
     raw_time_series_points,
     metering_point_period_df,
-    snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
     timeseries_df = (
-        raw_time_series_points.where(col("storedTime") <= snapshot_datetime)
-        .where(col("time") >= period_start_datetime)
-        .where(col("time") < period_end_datetime)
+        raw_time_series_points.where(col("time") >= period_start_datetime).where(
+            col("time") < period_end_datetime
+        )
         # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
         .withColumn("Quantity", col("Quantity").cast("decimal(18,6)"))
     )

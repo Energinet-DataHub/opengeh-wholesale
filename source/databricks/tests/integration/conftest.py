@@ -36,6 +36,11 @@ def integration_tests_path(databricks_path) -> str:
 
 
 @pytest.fixture(scope="session")
+def json_test_files(integration_tests_path) -> str:
+    return f"{integration_tests_path}/calculator/test_files"
+
+
+@pytest.fixture(scope="session")
 def delta_lake_path(integration_tests_path) -> str:
     return f"{integration_tests_path}/__delta__"
 
