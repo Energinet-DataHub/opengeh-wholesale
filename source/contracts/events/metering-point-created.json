@@ -1,0 +1,51 @@
+{
+  "storedTimeName": "storedTime",
+  "bodyFields": [
+    {
+      "name": "GsrnNumber",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "name": "GridAreaLinkId",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "name": "MessageType",
+      "nullable": true,
+      "type": "string",
+      "value": "MeteringPointCreated"
+    },
+    {
+      "name": "ConnectionState",
+      "nullable": true,
+      "type": "integer"
+    },
+    {
+      "name": "EffectiveDate",
+      "nullable": true,
+      "type": "timestamp"
+    },
+    {
+      "name": "MeteringPointType",
+      "nullable": true,
+      "type": "integer"
+    },
+    {
+      "name": "MeteringPointId",
+      "nullable": true,
+      "type": "string"
+    },
+    {
+      "name": "Resolution",
+      "nullable": true,
+      "type": "integer"
+    },
+    {
+      "name": "CorrelationId",
+      "nullable": true,
+      "type": "string"
+    }
+  ]
+}
