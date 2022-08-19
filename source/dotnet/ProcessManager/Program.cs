@@ -37,6 +37,7 @@ using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
 
@@ -63,6 +64,7 @@ public static class Program
 
     private static void Middlewares(IServiceCollection serviceCollection)
     {
+        serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<CorrelationIdMiddleware>();
         serviceCollection.AddScoped<FunctionTelemetryScopeMiddleware>();
