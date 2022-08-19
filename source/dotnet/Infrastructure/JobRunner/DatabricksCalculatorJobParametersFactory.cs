@@ -35,7 +35,7 @@ public class DatabricksCalculatorJobParametersFactory : ICalculatorJobParameters
         {
             $"--batch-id={batch.Id.Value}",
             $"--batch-grid-areas=[{gridAreas}]",
-            // Subtract 1 minute to prevent race condition and thus problems with deriving basis data correctly later
+            // Subtract 1 minute to prevent race condition and thus problems with fetching basis data correctly later
             $"--batch-snapshot-datetime={_clock.GetCurrentInstant().Minus(Duration.FromMinutes(1))}",
             $"--batch-period-start-datetime={batch.Period.Start}",
             $"--batch-period-end-datetime={batch.Period.End}",
