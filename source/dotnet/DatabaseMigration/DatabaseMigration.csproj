@@ -32,4 +32,11 @@ limitations under the License.
       <EmbeddedResource Include="Scripts\202208111100_Add_Batch_RunId.sql" />
       <EmbeddedResource Include="Scripts\202207141500_Add_Process_BatchId.sql" />
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
 </Project>
