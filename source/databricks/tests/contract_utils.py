@@ -34,3 +34,10 @@ def assert_contract_matches_schema(contract_path, schema):
         )
         assert expected_field["name"] == actual_field["name"]
         assert expected_field["type"] == actual_field["type"]
+
+
+def get_message_type(contract_path):
+    grid_area_updated_schema = read_contract(contract_path)
+    return next(
+        x for x in grid_area_updated_schema["fields"] if x["name"] == "MessageType"
+    )["value"]

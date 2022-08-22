@@ -23,7 +23,11 @@ from package.balance_fixing_total_production import _get_grid_areas_df
 from package.schemas import grid_area_updated_event_schema
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, struct, to_json, from_json
-from tests.contract_utils import assert_contract_matches_schema, read_contract
+from tests.contract_utils import (
+    assert_contract_matches_schema,
+    read_contract,
+    get_message_type,
+)
 
 
 # Factory defaults
@@ -118,12 +122,9 @@ def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_da
     grid_area_df_factory, source_path
 ):
     # Arrange
-    grid_area_updated_schema = read_contract(
+    message_type = get_message_type(
         f"{source_path}/contracts/events/grid-area-updated.json"
     )
-    message_type = next(
-        x for x in grid_area_updated_schema["fields"] if x["name"] == "MessageType"
-    )["value"]
     raw_integration_events_df = grid_area_df_factory(message_type=message_type)
 
     # Act
