@@ -22,7 +22,7 @@ from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_grid_areas_df
 from package.schemas import grid_area_updated_event_schema
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, struct, to_json
+from pyspark.sql.functions import col, struct, to_json, from_json
 
 
 # Factory defaults
@@ -91,35 +91,32 @@ def test__stored_time_matches_persister(grid_area_df_factory, source_path):
     assert expected_stored_time_name in raw_integration_events_df.columns
 
 
-def test__body_prop_names_and_types_matches_integration_event_listener(
+def test__when_input_data_matches_contract__returns_expected_row(
     grid_area_df_factory, source_path
 ):
-    """Test that the property names and types of the body data matches
-    the event data originating from the integration event listener.
-    The test uses a shared contract."""
     raw_integration_events_df = grid_area_df_factory()
     grid_area_updated_expected_schema = get_from_file(
         f"{source_path}/contracts/events/grid-area-updated.json"
     )
     actual_schema_fields = json.loads(grid_area_updated_event_schema.json())["fields"]
 
+    # Assert: Schema matches contract
     for i in grid_area_updated_expected_schema["bodyFields"]:
         actual_field = next(x for x in actual_schema_fields if i["name"] == x["name"])
-    assert i["name"] == actual_field["name"]
-    assert i["type"] == actual_field["type"]
+        assert i["name"] == actual_field["name"]
+        assert i["type"] == actual_field["type"]
 
-    actual_df_fields = json.loads(
-        _get_grid_areas_df(raw_integration_events_df, [grid_area_code]).schema.json()
-    )["fields"]
+    # Assert: Test data schema matches schema
+    assert (
+        raw_integration_events_df.select(col("body").cast("string"))
+        .withColumn("body", from_json(col("body"), grid_area_updated_event_schema))
+        .schema()
+    ) == grid_area_updated_event_schema
 
-    for i in actual_df_fields:
-        actual_field = next(
-            x
-            for x in grid_area_updated_expected_schema["bodyFields"]
-            if i["name"] == x["name"]
-        )
-    assert i["name"] == actual_field["name"]
-    assert i["type"] == actual_field["type"]
+    # Assert: From previous asserts:
+    # If schema matches contract and test data matches schema and test data results in
+    # the expected row we know that the production code works correct with data that complies with the contract
+    assert _get_grid_areas_df(raw_integration_events_df, [grid_area_code]).count() == 1
 
 
 def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_data(
