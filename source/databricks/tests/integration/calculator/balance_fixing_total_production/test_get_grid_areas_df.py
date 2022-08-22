@@ -23,7 +23,7 @@ from package.balance_fixing_total_production import _get_grid_areas_df
 from package.schemas import grid_area_updated_event_schema
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, struct, to_json, from_json
-from tests.assert_extension import assert_contract_matches_schema
+from tests.contract_utils import assert_contract_matches_schema, read_contract
 
 
 # Factory defaults
@@ -35,11 +35,6 @@ message_type = "GridAreaUpdated"  # The exact name of the event of interest
 first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
 second_of_june = first_of_june + timedelta(days=1)
 third_of_june = first_of_june + timedelta(days=2)
-
-
-def read_contract(path):
-    jsonFile = open(path)
-    return json.load(jsonFile)
 
 
 @pytest.fixture
@@ -102,14 +97,15 @@ def test__when_input_data_matches_contract__returns_expected_row(
         f"{source_path}/contracts/events/grid-area-updated.json",
         grid_area_updated_event_schema,
     )
-
-    # Assert: Test data schema matches schema
-    assert (
+    test_data_schema = (
         raw_integration_events_df.select(col("body").cast("string"))
         .withColumn("body", from_json(col("body"), grid_area_updated_event_schema))
         .select(col("body.*"))
         .schema
-    ) == grid_area_updated_event_schema
+    )
+
+    # Assert: Test data schema matches schema
+    assert test_data_schema == grid_area_updated_event_schema
 
     # Assert: From previous asserts:
     # If schema matches contract and test data matches schema and test data results in

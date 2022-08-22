@@ -15,11 +15,18 @@
 import json
 
 
+def read_contract(path):
+    jsonFile = open(path)
+    return json.load(jsonFile)
+
+
 def assert_contract_matches_schema(contract_path, schema):
-    expected_schema = json.load(open(contract_path))["fields"]
+    expected_schema = read_contract(contract_path)["fields"]
     actual_schema = json.loads(schema.json())["fields"]
+
     # Assert: Schema and contract has the same number of fields
     assert len(actual_schema) == len(expected_schema)
+
     # Assert: Schema matches contract
     for expected_field in expected_schema:
         actual_field = next(
