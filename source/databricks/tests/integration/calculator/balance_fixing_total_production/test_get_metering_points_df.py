@@ -25,6 +25,12 @@ from package.schemas import (
     metering_point_created_event_schema,
     metering_point_connected_event_schema,
 )
+from package.codelists import (
+    ConnectionState,
+    MeteringPointType,
+    Resolution,
+    SettlementMethod,
+)
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, struct, to_json, from_json
 from tests.contract_utils import (
@@ -37,6 +43,8 @@ from tests.contract_utils import (
 # Factory defaults
 grid_area_code = "805"
 grid_area_link_id = "the-grid-area-link-id"
+gsrn_number = "some-gsrn-number"
+metering_point_id = "some-metering-point-id"
 # message_type = "GridAreaUpdated"  # The exact name of the event of interest
 metering_point_created_message_type = "MeteringPointCreated"
 metering_point_connected_message_type = "MeteringPointConnected"
@@ -72,21 +80,23 @@ def metering_point_created_df_factory(spark):
         message_type=metering_point_created_message_type,
         operation_time=first_of_june,
         grid_area_link_id=grid_area_link_id,
+        gsrn_number=gsrn_number,
+        resolution=Resolution.hour,
     ):
         row = [
             {
                 "storedTime": stored_time,
                 "OperationTime": operation_time,
                 "MessageType": message_type,
-                "GsrnNumber": "x",
+                "GsrnNumber": gsrn_number,
                 "GridAreaLinkId": grid_area_link_id,
-                "SettlementMethod": "x",
-                "ConnectionState": "x",
-                "EffectiveDate": "x",
-                "MeteringPointType": "x",
-                "MeteringPointId": "x",
-                "Resolution": "x",
-                "CorrelationId": "x",
+                "SettlementMethod": SettlementMethod.non_profiled,
+                "ConnectionState": ConnectionState.connected,
+                "EffectiveDate": first_of_june,
+                "MeteringPointType": MeteringPointType.production,
+                "MeteringPointId": metering_point_id,
+                "Resolution": resolution,
+                "CorrelationId": "some-correlation-id",
             }
         ]
 
@@ -126,16 +136,18 @@ def metering_point_connected_df_factory(spark):
         message_type=metering_point_connected_message_type,
         operation_time=first_of_june,
         grid_area_link_id=grid_area_link_id,
+        gsrn_number=gsrn_number,
+        metering_point_id=metering_point_id,
     ):
         row = [
             {
                 "storedTime": stored_time,
                 "OperationTime": operation_time,
                 "MessageType": message_type,
-                "GsrnNumber": "x",
-                "EffectiveDate": "x",
-                "MeteringPointId": "x",
-                "CorrelationId": "x",
+                "GsrnNumber": gsrn_number,
+                "EffectiveDate": second_of_june,
+                "MeteringPointId": metering_point_id,
+                "CorrelationId": "some-other-correlation-id",
             }
         ]
 
@@ -223,42 +235,6 @@ def test__when_input_data_matches_metering_point_created_contract__returns_expec
     assert actual_df.count() == 1
 
 
-def test__when_input_data_matches_metering_point_connected_contract__returns_expected_row(
-    metering_point_connected_df_factory, source_path, grid_area_df_factory
-):
-    raw_integration_events_df = metering_point_connected_df_factory()
-    grid_area_df = grid_area_df_factory()
-
-    # Assert: Contract matches schema
-    assert_contract_matches_schema(
-        f"{source_path}/contracts/events/metering-point-connected.json",
-        metering_point_connected_event_schema,
-    )
-
-    # Assert: Test data schema matches schema
-    test_data_schema = (
-        raw_integration_events_df.select(col("body").cast("string"))
-        # TODO BJARKE: from_json with schema makes the assertion to really do nothing
-        .withColumn(
-            "body", from_json(col("body"), metering_point_connected_event_schema)
-        )
-        .select(col("body.*"))
-        .schema
-    )
-    assert test_data_schema == metering_point_connected_event_schema
-
-    # Assert: From previous asserts:
-    # If schema matches contract and test data matches schema and test data results in
-    # the expected row we know that the production code works correct with data that complies with the contract
-    actual_df = _get_metering_point_periods_df(
-        raw_integration_events_df,
-        grid_area_df,
-        first_of_june,
-        second_of_june,
-    )
-    assert actual_df.count() == 1
-
-
 def test__when_using_same_message_type_as_ingestor_for_created_event__returns_row(
     metering_point_created_df_factory, grid_area_df_factory, source_path
 ):
@@ -323,13 +299,14 @@ def test__when_created_event__returns_correct_period(
     )
 
     # Assert
+    assert actual_df.count() == 1
     actual = actual_df.first()
-    assert actual.MessageType == x
-    assert actual.GsrnNumber == x
-    assert actual.GridAreaCode == x
-    assert actual.EffectiveDate == x
-    assert actual.toEffectiveDate == x
-    assert actual.Resolution == x
+    assert actual.MessageType == 42
+    assert actual.GsrnNumber == 42
+    assert actual.GridAreaCode == 42
+    assert actual.EffectiveDate == 42
+    assert actual.toEffectiveDate == 42
+    assert actual.Resolution == 42
 
 
 def test__when_connected_event__returns_correct_period(
@@ -348,10 +325,11 @@ def test__when_connected_event__returns_correct_period(
     )
 
     # Assert
+    assert actual_df.count() == 1
     actual = actual_df.first()
-    assert actual.MessageType == x
-    assert actual.GsrnNumber == x
-    assert actual.GridAreaCode == x
-    assert actual.EffectiveDate == x
-    assert actual.toEffectiveDate == x
-    assert actual.Resolution == x
+    assert actual.MessageType == 42
+    assert actual.GsrnNumber == 42
+    assert actual.GridAreaCode == 42
+    assert actual.EffectiveDate == 42
+    assert actual.toEffectiveDate == 42
+    assert actual.Resolution == 42
