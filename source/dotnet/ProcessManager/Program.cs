@@ -37,10 +37,11 @@ using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
 
-public class Program
+public static class Program
 {
     public static async Task Main()
     {
@@ -63,6 +64,7 @@ public class Program
 
     private static void Middlewares(IServiceCollection serviceCollection)
     {
+        serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<CorrelationIdMiddleware>();
         serviceCollection.AddScoped<FunctionTelemetryScopeMiddleware>();
@@ -73,7 +75,7 @@ public class Program
     private static void Applications(IServiceCollection services)
     {
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
-        services.AddScoped<IJobRunner, DatabricksJobRunner>();
+        services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
         services.AddScoped<IProcessCompletedPublisher>(provider =>
         {
             var sender = provider
@@ -119,7 +121,9 @@ public class Program
                 client.CreateSender(processCompletedTopicName));
         });
 
-        serviceCollection.AddScoped<DatabricksJobSelector>();
+        serviceCollection.AddScoped<DatabricksCalculatorJobSelector>();
+        serviceCollection
+            .AddScoped<ICalculatorJobParametersFactory, DatabricksCalculatorJobParametersFactory>();
 
         serviceCollection.AddSingleton(_ =>
         {
