@@ -27,6 +27,7 @@ RSM
 SonarCloud
 tox
 TSO
+VSCode
 Whitespace
 WSL
 yml
