@@ -23,6 +23,7 @@ from package.balance_fixing_total_production import _get_grid_areas_df
 from package.schemas import grid_area_updated_event_schema
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, struct, to_json, from_json
+from tests.assert_extension import assert_contract_matches_schema
 
 
 # Factory defaults
@@ -36,7 +37,7 @@ second_of_june = first_of_june + timedelta(days=1)
 third_of_june = first_of_june + timedelta(days=2)
 
 
-def get_from_file(path):
+def read_contract(path):
     jsonFile = open(path)
     return json.load(jsonFile)
 
@@ -84,7 +85,7 @@ def test__stored_time_matches_persister(grid_area_df_factory, source_path):
     by the integration events persister. This test uses the shared contract."""
     raw_integration_events_df = grid_area_df_factory()
 
-    expected_stored_time_name = get_from_file(
+    expected_stored_time_name = read_contract(
         f"{source_path}/contracts/events/grid-area-updated.json"
     )["storedTimeName"]
 
@@ -95,22 +96,19 @@ def test__when_input_data_matches_contract__returns_expected_row(
     grid_area_df_factory, source_path
 ):
     raw_integration_events_df = grid_area_df_factory()
-    grid_area_updated_expected_schema = get_from_file(
-        f"{source_path}/contracts/events/grid-area-updated.json"
-    )
-    actual_schema_fields = json.loads(grid_area_updated_event_schema.json())["fields"]
 
-    # Assert: Schema matches contract
-    for i in grid_area_updated_expected_schema["bodyFields"]:
-        actual_field = next(x for x in actual_schema_fields if i["name"] == x["name"])
-        assert i["name"] == actual_field["name"]
-        assert i["type"] == actual_field["type"]
+    # Assert: Contract matches schema
+    assert_contract_matches_schema(
+        f"{source_path}/contracts/events/grid-area-updated.json",
+        grid_area_updated_event_schema,
+    )
 
     # Assert: Test data schema matches schema
     assert (
         raw_integration_events_df.select(col("body").cast("string"))
         .withColumn("body", from_json(col("body"), grid_area_updated_event_schema))
-        .schema()
+        .select(col("body.*"))
+        .schema
     ) == grid_area_updated_event_schema
 
     # Assert: From previous asserts:
@@ -123,11 +121,11 @@ def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_da
     grid_area_df_factory, source_path
 ):
     # Arrange
-    grid_area_updated_schema = get_from_file(
+    grid_area_updated_schema = read_contract(
         f"{source_path}/contracts/events/grid-area-updated.json"
     )
     message_type = next(
-        x for x in grid_area_updated_schema["bodyFields"] if x["name"] == "MessageType"
+        x for x in grid_area_updated_schema["fields"] if x["name"] == "MessageType"
     )["value"]
     raw_integration_events_df = grid_area_df_factory(message_type=message_type)
 
