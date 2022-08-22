@@ -14,7 +14,7 @@
 
 
 class Resolution:
-    quarter = "1"
-    hour = "2"
-    day = "3"
-    month = "4"
+    quarter = 1
+    hour = 2
+    day = 3
+    month = 4

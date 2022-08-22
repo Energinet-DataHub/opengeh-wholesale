@@ -1,0 +1,12 @@
+# This file is kind of a contract between the parameters used by .NET invocation of the calculator job
+# and the parameters expected by the calculator job.
+# There is a test on both sides verifying that both conform to the same parameters format
+# and that the calculator job is able to consume the parameters.
+#
+# Empty lines and lines starting with '#' are ignores in the tests.
+
+--batch-id={batch-id}
+--batch-grid-areas=[805, 806]
+--batch-snapshot-datetime=2022-06-02T21:59:00Z
+--batch-period-start-datetime=2022-05-31T22:00:00Z
+--batch-period-end-datetime=2022-06-01T22:00:00Z

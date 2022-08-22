@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-public sealed record BatchId(Guid Value)
+namespace Energinet.DataHub.Wholesale.Application.JobRunner;
+
+public interface ICalculatorJobParametersFactory
 {
-    public BatchId()
-        : this(Guid.NewGuid())
-    {
-    }
+    IEnumerable<string> CreateParameters(Batch batch);
 }

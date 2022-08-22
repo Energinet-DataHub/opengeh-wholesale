@@ -98,6 +98,7 @@ The following Flake8 codes are ignored:
 * Module level import not at top of file ([E402](https://www.flake8rules.com/rules/E402.html))
 * Whitespace before ':' ([E203](https://www.flake8rules.com/rules/E203.html)) (*Needed for black you work well with Flake8, see documentation [here](https://github.com/psf/black/blob/main/docs/guides/using_black_with_other_tools.md#flake8)*)
 * Line too long (82 &gt; 79 characters) ([E501](https://www.flake8rules.com/rules/E501.html)) (*Only ignored in CI step*)
+* Line break occurred before a binary operator ([W503](https://www.flake8rules.com/rules/W503.html)) (*Black formatting does not follow this rule*)
 
 Links to files containing  Flake8 ignore [tox.ini](../../tox.ini) and [ci.yml](../../.github/workflows/ci.yml)
 

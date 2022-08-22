@@ -1,0 +1,30 @@
+{
+  "storedTimeName": "storedTime",
+  "bodyFields": [
+    {
+      "name": "GridAreaCode",
+      "type": "string"
+    },
+    {
+      "name": "GridAreaLinkId",
+      "type": "string"
+    },
+    {
+      "name": "MessageType",
+      "type": "string",
+      "value": "GridAreaUpdated"
+    },
+    {
+      "name": "OperationTime",
+      "type": "timestamp"
+    },
+    {
+      "name": "CorrelationId",
+      "type": "string"
+    },
+    {
+      "name": "GridAreaId",
+      "type": "string"
+    }
+  ]
+}

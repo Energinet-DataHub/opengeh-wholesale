@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.ComponentModel;
+using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
@@ -20,6 +21,7 @@ using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
 using Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using Moq;
@@ -28,11 +30,40 @@ using Xunit;
 using Xunit.Categories;
 using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated.Types;
 
-namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener
+namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoints
 {
     [UnitTest]
     public class MeteringPointCreatedDtoFactoryTests
     {
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task MessageTypeValue_MatchesContract_WithCalculator(
+            [Frozen] Mock<IIntegrationEventContext> integrationEventContext,
+            MeteringPointCreated meteringPointCreatedEvent,
+            MeteringPointCreatedDtoFactory sut)
+        {
+            // Arrange
+            await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.metering-point-created.json");
+            var expectedMessageType = await ContractComplianceTestHelper.GetRequiredMessageTypeAsync(stream);
+
+            meteringPointCreatedEvent.GridAreaCode = Guid.NewGuid().ToString();
+
+            var integrationEventMetadata = new IntegrationEventMetadata(
+                expectedMessageType,
+                Instant.MinValue,
+                "D72AEBD6-068F-46A7-A5AA-EE9DF675A163");
+
+            integrationEventContext
+                .Setup(context => context.ReadMetadata())
+                .Returns(integrationEventMetadata);
+
+            // Act
+            var actual = sut.Create(meteringPointCreatedEvent);
+
+            // Assert
+            actual.MessageType.Should().Be(expectedMessageType);
+        }
+
         [Theory]
         [InlineAutoMoqData]
         public void Create_HasEventMetadata_ReturnsValidDto(

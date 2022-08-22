@@ -12,13 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 import os
 import shutil
-
-sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
-
-
 import pytest
 from package import integration_events_persister
 from tests.integration.utils import streaming_job_asserter
