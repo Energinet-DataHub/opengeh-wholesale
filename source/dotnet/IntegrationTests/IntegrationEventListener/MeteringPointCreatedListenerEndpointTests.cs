@@ -33,6 +33,8 @@ public sealed class MeteringPointCreatedListenerEndpointTests
     {
     }
 
+    protected override string EventHubMessageType => "MeteringPointCreated";
+
     protected override ServiceBusSender IntegrationEventTopicSender
         => Fixture.MeteringPointCreatedTopic.SenderClient;
 

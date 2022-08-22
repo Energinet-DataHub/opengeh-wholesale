@@ -69,6 +69,8 @@ public sealed class MarketParticipantChangedListenerEndpointTests
         allReceived.Should().BeFalse();
     }
 
+    protected override string EventHubMessageType => "GridAreaUpdated";
+
     protected override ServiceBusSender IntegrationEventTopicSender =>
         Fixture.MarketParticipantChangedTopic.SenderClient;
 

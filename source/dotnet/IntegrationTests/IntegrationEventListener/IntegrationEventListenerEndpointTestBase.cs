@@ -40,6 +40,8 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
     {
     }
 
+    protected abstract string EventHubMessageType { get; }
+
     protected abstract ServiceBusSender IntegrationEventTopicSender { get; }
 
     protected abstract ServiceBusReceiver IntegrationEventDeadLetterReceiver { get; }
@@ -66,13 +68,12 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
 
         var operationTimestamp = DateTime.UtcNow;
         var correlationId = Guid.NewGuid().ToString();
-        var messageType = typeof(TEventHubEventDto).Name;
 
         var message = ServiceBusTestMessage.Create(
             CreateIntegrationEventData(),
             operationTimestamp,
             correlationId,
-            messageType);
+            EventHubMessageType);
 
         // Act
         await IntegrationEventTopicSender.SendMessageAsync(message);
@@ -109,12 +110,11 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
             .VerifyCountAsync(1)
             .ConfigureAwait(false);
 
-        var messageType = typeof(TEventHubEventDto).Name;
         var message = ServiceBusTestMessage.Create(
             CreateIntegrationEventData(),
             DateTime.UtcNow,
             Guid.NewGuid().ToString(),
-            messageType);
+            EventHubMessageType);
 
         // Act
         message.ApplicationProperties.Remove(missingIntegrationEventProperty);
@@ -142,15 +142,14 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
             .VerifyCountAsync(1)
             .ConfigureAwait(false);
 
-        var timestamp = DateTime.UtcNow;
+        var timestamp = new DateTime(2022, 2, 1, 13, 37, 00, DateTimeKind.Utc);
         var correlationId = Guid.NewGuid().ToString();
-        var messageType = typeof(TEventHubEventDto).Name;
 
         var message = ServiceBusTestMessage.Create(
             CreateIntegrationEventData(),
             timestamp,
             correlationId,
-            messageType);
+            EventHubMessageType);
 
         // Act
         await IntegrationEventTopicSender.SendMessageAsync(message);
@@ -172,7 +171,7 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
 
         var actual = new JsonSerializer().Deserialize<TEventHubEventDto>(receivedEvent);
         actual.CorrelationId.Should().Be(correlationId);
-        actual.MessageType.Should().Be(messageType);
+        actual.MessageType.Should().Be(EventHubMessageType);
         actual.OperationTime.Should().Be(Instant.FromDateTimeUtc(timestamp));
     }
 
