@@ -20,4 +20,11 @@ limitations under the License.
       <RootNamespace>Energinet.DataHub.Wholesale.Contracts</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
 </Project>
