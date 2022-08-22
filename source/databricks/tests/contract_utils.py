@@ -21,7 +21,7 @@ def read_contract(path):
 
 
 def assert_contract_matches_schema(contract_path, schema):
-    expected_schema = read_contract(contract_path)["fields"]
+    expected_schema = read_contract(contract_path)["bodyFields"]
     actual_schema = json.loads(schema.json())["fields"]
 
     # Assert: Schema and contract has the same number of fields
@@ -39,5 +39,5 @@ def assert_contract_matches_schema(contract_path, schema):
 def get_message_type(contract_path):
     grid_area_updated_schema = read_contract(contract_path)
     return next(
-        x for x in grid_area_updated_schema["fields"] if x["name"] == "MessageType"
+        x for x in grid_area_updated_schema["bodyFields"] if x["name"] == "MessageType"
     )["value"]
