@@ -41,7 +41,9 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
             return new DatabricksWheelClient(baseUrl, token, timeoutSeconds);
         }
 
-        // Empty ctor for mocking.
+        /// <summary>
+        /// An empty ctor used for mocking this client.
+        /// </summary>
         protected DatabricksWheelClient()
         {
         }
