@@ -16,9 +16,16 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.JobRunner;
 
-public interface IJobRunner
+public interface ICalculatorJobRunner
 {
     Task<JobState> GetJobStateAsync(JobRunId jobRunId);
 
-    Task<JobRunId> SubmitJobAsync(Batch batch);
+    /// <summary>
+    /// Start job.
+    /// </summary>
+    /// <param name="jobParameters">
+    /// Parameters must be on the form "--param-name=param-value".
+    /// Further details about the format depends on the actual job runner implementation.
+    /// </param>
+    Task<JobRunId> SubmitJobAsync(IEnumerable<string> jobParameters);
 }

@@ -63,7 +63,7 @@ public static class Program
 
     private static void MiddlewareServices(IServiceCollection services)
     {
-        services.AddScoped(typeof(IClock), _ => SystemClock.Instance);
+        services.AddScoped<IClock>(_ => SystemClock.Instance);
         services.AddScoped<IDataAvailableNotifier, DataAvailableNotifier>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDocumentFactory, DocumentFactory>();

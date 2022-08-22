@@ -12,4 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from .resolution import Resolution
-from .colname import Colname
+from .metering_point_type import MeteringPointType
+from .connection_state import ConnectionState

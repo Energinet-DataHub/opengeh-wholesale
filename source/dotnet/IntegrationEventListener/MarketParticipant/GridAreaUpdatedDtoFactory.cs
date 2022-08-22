@@ -20,6 +20,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant
 
 public class GridAreaUpdatedDtoFactory
 {
+    private const string MessageType = "GridAreaUpdated";
+
     private readonly ICorrelationContext _correlationContext;
     private readonly IIntegrationEventContext _integrationEventContext;
 
@@ -42,7 +44,7 @@ public class GridAreaUpdatedDtoFactory
             gridAreaUpdatedIntegrationEvent.GridAreaLinkId,
             gridAreaUpdatedIntegrationEvent.Code,
             _correlationContext.Id,
-            eventMetadata.MessageType,
+            MessageType,
             eventMetadata.OperationTimestamp);
     }
 }

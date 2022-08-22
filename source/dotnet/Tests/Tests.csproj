@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -50,6 +50,30 @@ limitations under the License.
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+    
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\contracts\calculation-job-parameters-reference.txt">
+      <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\contracts\events\grid-area-updated.json">
+      <Link>IntegrationEventListener\MarketParticipant\grid-area-updated.json</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\contracts\events\metering-point-connected.json">
+      <Link>IntegrationEventListener\MeteringPoints\metering-point-connected.json</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\contracts\events\metering-point-created.json">
+      <Link>IntegrationEventListener\MeteringPoints\metering-point-created.json</Link>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
