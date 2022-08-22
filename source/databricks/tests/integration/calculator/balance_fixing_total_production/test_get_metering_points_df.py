@@ -37,7 +37,9 @@ from tests.contract_utils import (
 # Factory defaults
 grid_area_code = "805"
 grid_area_link_id = "the-grid-area-link-id"
-message_type = "GridAreaUpdated"  # The exact name of the event of interest
+# message_type = "GridAreaUpdated"  # The exact name of the event of interest
+metering_point_created_message_type = "MeteringPointCreated"
+metering_point_connected_message_type = "MeteringPointConnected"
 
 # Beginning of the danish date (CEST)
 first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
@@ -46,21 +48,45 @@ third_of_june = first_of_june + timedelta(days=2)
 
 
 @pytest.fixture
+def grid_area_df_factory(spark):
+    def factory(
+        grid_area_code=grid_area_code,
+        grid_area_link_id=grid_area_link_id,
+    ):
+        row = [
+            {
+                "GridAreaCode": grid_area_code,
+                "GridAreaLinkId": grid_area_link_id,
+            }
+        ]
+
+        return spark.createDataFrame(row).select("GridAreaCode", "GridAreaLinkId")
+
+    return factory
+
+
+@pytest.fixture
 def metering_point_created_df_factory(spark):
     def factory(
         stored_time=first_of_june,
-        grid_area_code=grid_area_code,
-        grid_area_link_id=grid_area_link_id,
-        message_type=message_type,
+        message_type=metering_point_created_message_type,
         operation_time=first_of_june,
+        grid_area_link_id=grid_area_link_id,
     ):
         row = [
             {
                 "storedTime": stored_time,
                 "OperationTime": operation_time,
-                "GridAreaCode": grid_area_code,
-                "GridAreaLinkId": grid_area_link_id,
                 "MessageType": message_type,
+                "GsrnNumber": "x",
+                "GridAreaLinkId": grid_area_link_id,
+                "SettlementMethod": "x",
+                "ConnectionState": "x",
+                "EffectiveDate": "x",
+                "MeteringPointType": "x",
+                "MeteringPointId": "x",
+                "Resolution": "x",
+                "CorrelationId": "x",
             }
         ]
 
@@ -70,10 +96,20 @@ def metering_point_created_df_factory(spark):
                 "body",
                 to_json(
                     struct(
-                        col("GridAreaCode"),
-                        col("GridAreaLinkId"),
                         col("MessageType"),
                         col("OperationTime"),
+                        col("GridAreaLinkId"),
+                        col("GsrnNumber"),
+                        col("GridAreaLinkId"),
+                        col("MessageType"),
+                        col("SettlementMethod"),
+                        col("ConnectionState"),
+                        col("EffectiveDate"),
+                        col("MeteringPointType"),
+                        col("MeteringPointId"),
+                        col("Resolution"),
+                        col("OperationTime"),
+                        col("CorrelationId"),
                     )
                 ).cast("binary"),
             )
@@ -87,18 +123,19 @@ def metering_point_created_df_factory(spark):
 def metering_point_connected_df_factory(spark):
     def factory(
         stored_time=first_of_june,
-        grid_area_code=grid_area_code,
-        grid_area_link_id=grid_area_link_id,
-        message_type=message_type,
+        message_type=metering_point_connected_message_type,
         operation_time=first_of_june,
+        grid_area_link_id=grid_area_link_id,
     ):
         row = [
             {
                 "storedTime": stored_time,
                 "OperationTime": operation_time,
-                "GridAreaCode": grid_area_code,
-                "GridAreaLinkId": grid_area_link_id,
                 "MessageType": message_type,
+                "GsrnNumber": "x",
+                "EffectiveDate": "x",
+                "MeteringPointId": "x",
+                "CorrelationId": "x",
             }
         ]
 
@@ -108,10 +145,14 @@ def metering_point_connected_df_factory(spark):
                 "body",
                 to_json(
                     struct(
-                        col("GridAreaCode"),
-                        col("GridAreaLinkId"),
                         col("MessageType"),
                         col("OperationTime"),
+                        col("GsrnNumber"),
+                        col("MessageType"),
+                        col("EffectiveDate"),
+                        col("MeteringPointId"),
+                        col("OperationTime"),
+                        col("CorrelationId"),
                     )
                 ).cast("binary"),
             )
@@ -150,9 +191,10 @@ def test__stored_time_of_metering_point_connected_matches_persister(
 
 
 def test__when_input_data_matches_metering_point_created_contract__returns_expected_row(
-    grid_area_df_factory, source_path
+    metering_point_created_df_factory, source_path, grid_area_df_factory
 ):
-    raw_integration_events_df = grid_area_df_factory()
+    grid_area_df = grid_area_df_factory()
+    raw_integration_events_df = metering_point_created_df_factory()
 
     # Assert: Contract matches schema
     assert_contract_matches_schema(
@@ -173,15 +215,19 @@ def test__when_input_data_matches_metering_point_created_contract__returns_expec
     # If schema matches contract and test data matches schema and test data results in
     # the expected row we know that the production code works correct with data that complies with the contract
     actual_df = _get_metering_point_periods_df(
-        raw_integration_events_df, [grid_area_code]
+        raw_integration_events_df,
+        grid_area_df,
+        first_of_june,
+        second_of_june,
     )
     assert actual_df.count() == 1
 
 
 def test__when_input_data_matches_metering_point_connected_contract__returns_expected_row(
-    grid_area_df_factory, source_path
+    metering_point_connected_df_factory, source_path, grid_area_df_factory
 ):
-    raw_integration_events_df = grid_area_df_factory()
+    raw_integration_events_df = metering_point_connected_df_factory()
+    grid_area_df = grid_area_df_factory()
 
     # Assert: Contract matches schema
     assert_contract_matches_schema(
@@ -192,6 +238,7 @@ def test__when_input_data_matches_metering_point_connected_contract__returns_exp
     # Assert: Test data schema matches schema
     test_data_schema = (
         raw_integration_events_df.select(col("body").cast("string"))
+        # TODO BJARKE: from_json with schema makes the assertion to really do nothing
         .withColumn(
             "body", from_json(col("body"), metering_point_connected_event_schema)
         )
@@ -204,39 +251,100 @@ def test__when_input_data_matches_metering_point_connected_contract__returns_exp
     # If schema matches contract and test data matches schema and test data results in
     # the expected row we know that the production code works correct with data that complies with the contract
     actual_df = _get_metering_point_periods_df(
-        raw_integration_events_df, [grid_area_code]
+        raw_integration_events_df,
+        grid_area_df,
+        first_of_june,
+        second_of_june,
     )
     assert actual_df.count() == 1
 
 
-def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_data(
-    grid_area_df_factory, source_path
+def test__when_using_same_message_type_as_ingestor_for_created_event__returns_row(
+    metering_point_created_df_factory, grid_area_df_factory, source_path
 ):
     # Arrange
     message_type = get_message_type(
-        f"{source_path}/contracts/events/grid-area-updated.json"
+        f"{source_path}/contracts/events/metering-point-created.json"
     )
-    raw_integration_events_df = grid_area_df_factory(message_type=message_type)
+    raw_integration_events_df = metering_point_created_df_factory(
+        message_type=message_type
+    )
+    grid_area_df = grid_area_df_factory()
 
     # Act
     actual_df = _get_metering_point_periods_df(
-        raw_integration_events_df, [grid_area_code]
+        raw_integration_events_df,
+        grid_area_df,
+        first_of_june,
+        second_of_june,
     )
 
     # Assert
     assert actual_df.count() == 1
 
 
-def test__returns_correct_period(grid_area_df_factory):
+def test__when_using_same_message_type_as_ingestor_for_connected_event__returns_row(
+    metering_point_connected_df_factory, grid_area_df_factory, source_path
+):
     # Arrange
-    raw_integration_events_df = grid_area_df_factory()
+    message_type = get_message_type(
+        f"{source_path}/contracts/events/metering-point-connected.json"
+    )
+    raw_integration_events_df = metering_point_connected_df_factory(
+        message_type=message_type
+    )
+    grid_area_df = grid_area_df_factory()
 
     # Act
     actual_df = _get_metering_point_periods_df(
         raw_integration_events_df,
         grid_area_df,
-        period_start_datetime,
-        period_end_datetime,
+        first_of_june,
+        second_of_june,
+    )
+
+    # Assert
+    assert actual_df.count() == 1
+
+
+def test__when_created_event__returns_correct_period(
+    metering_point_created_df_factory, grid_area_df_factory
+):
+    # Arrange
+    raw_integration_events_df = metering_point_created_df_factory()
+    grid_area_df = grid_area_df_factory()
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        raw_integration_events_df,
+        grid_area_df,
+        first_of_june,
+        second_of_june,
+    )
+
+    # Assert
+    actual = actual_df.first()
+    assert actual.MessageType == x
+    assert actual.GsrnNumber == x
+    assert actual.GridAreaCode == x
+    assert actual.EffectiveDate == x
+    assert actual.toEffectiveDate == x
+    assert actual.Resolution == x
+
+
+def test__when_connected_event__returns_correct_period(
+    metering_point_connected_df_factory, grid_area_df_factory
+):
+    # Arrange
+    raw_integration_events_df = metering_point_connected_df_factory()
+    grid_area_df = grid_area_df_factory()
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        raw_integration_events_df,
+        grid_area_df,
+        first_of_june,
+        second_of_june,
     )
 
     # Assert
