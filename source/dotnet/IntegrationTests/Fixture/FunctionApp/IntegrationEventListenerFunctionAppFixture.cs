@@ -62,11 +62,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
         public TopicResource MarketParticipantChangedTopic { get; private set; } = null!;
 
-        public ServiceBusReceiver MeteringPointCreatedDeadLetter { get; private set; } = null!;
+        public ServiceBusReceiver MeteringPointCreatedDeadLetterReceiver { get; private set; } = null!;
 
-        public ServiceBusReceiver MeteringPointConnectedDeadLetter { get; private set; } = null!;
+        public ServiceBusReceiver MeteringPointConnectedDeadLetterReceiver { get; private set; } = null!;
 
-        public ServiceBusReceiver MarketParticipantChangedDeadLetter { get; private set; } = null!;
+        public ServiceBusReceiver MarketParticipantChangedDeadLetterReceiver { get; private set; } = null!;
 
         public EventHubResourceProvider EventHubResourceProvider { get; }
 
@@ -137,17 +137,17 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
                 .CreateAsync();
 
-            MeteringPointCreatedDeadLetter = ServiceBusClient.CreateReceiver(
+            MeteringPointCreatedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
 
-            MeteringPointConnectedDeadLetter = ServiceBusClient.CreateReceiver(
+            MeteringPointConnectedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
 
-            MarketParticipantChangedDeadLetter = ServiceBusClient.CreateReceiver(
+            MarketParticipantChangedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });

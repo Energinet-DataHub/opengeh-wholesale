@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MarketParticipant.Integration.Model.Dtos;
 using Energinet.DataHub.MarketParticipant.Integration.Model.Parsers.GridArea;
 using Energinet.DataHub.MarketParticipant.Integration.Model.Parsers.Organization;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
@@ -30,143 +28,72 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationEventListener;
 
-public class MarketParticipantChangedListenerEndpointTests
+public sealed class MarketParticipantChangedListenerEndpointTests
+    : IntegrationEventListenerEndpointTestBase<MarketParticipantChangedListenerEndpoint, GridAreaUpdatedDto>
 {
-    [Collection(nameof(IntegrationEventListenerFunctionAppCollectionFixture))]
-    public class RunAsync : FunctionAppTestBase<IntegrationEventListenerFunctionAppFixture>, IAsyncLifetime
+    public MarketParticipantChangedListenerEndpointTests(
+        IntegrationEventListenerFunctionAppFixture fixture,
+        ITestOutputHelper testOutputHelper)
+        : base(fixture, testOutputHelper)
     {
-        public RunAsync(IntegrationEventListenerFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
-            : base(fixture, testOutputHelper)
-        {
-        }
+    }
 
-        public Task InitializeAsync()
-        {
-            Fixture.EventHubListener.Reset();
-            return Task.CompletedTask;
-        }
+    [Fact]
+    public async Task When_ReceivingUnusedMessage_Then_NothingIsSentToEventHub()
+    {
+        // Arrange
+        using var whenAllEvent = await Fixture.EventHubListener
+            .WhenAny()
+            .VerifyCountAsync(1)
+            .ConfigureAwait(false);
 
-        public Task DisposeAsync()
-        {
-            return Task.CompletedTask;
-        }
+        var operationTimestamp = DateTime.UtcNow;
+        var correlationId = Guid.NewGuid().ToString();
+        var messageType = nameof(GridAreaUpdatedDto);
 
-        [Fact]
-        public async Task When_ReceivingGridAreaUpdatedMessage_Then_GridAreaUpdatedDtoIsSentToEventHub()
-        {
-            // Arrange
-            using var whenAllEvent = await Fixture.EventHubListener
-                .WhenAny()
-                .VerifyCountAsync(1)
-                .ConfigureAwait(false);
+        var message = ServiceBusTestMessage.Create(
+            CreateUnusedEvent(),
+            operationTimestamp,
+            correlationId,
+            messageType);
 
-            var operationTimestamp = DateTime.UtcNow;
-            var correlationId = Guid.NewGuid().ToString();
-            var gridAreaLinkId = Guid.NewGuid();
+        // Act
+        await Fixture.MarketParticipantChangedTopic.SenderClient.SendMessageAsync(message);
 
-            var message = ServiceBusTestMessage.Create(
-                CreateGridAreaUpdatedEvent(gridAreaLinkId),
-                operationTimestamp,
-                correlationId);
+        // Assert
+        await FunctionAsserts
+            .AssertHasExecutedAsync(Fixture.HostManager, nameof(MarketParticipantChangedListenerEndpoint))
+            .ConfigureAwait(false);
 
-            // Act
-            await Fixture.MarketParticipantChangedTopic.SenderClient.SendMessageAsync(message);
+        var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
+        allReceived.Should().BeFalse();
+    }
 
-            // Assert
-            await FunctionAsserts
-                .AssertHasExecutedAsync(Fixture.HostManager, nameof(MarketParticipantChangedListenerEndpoint))
-                .ConfigureAwait(false);
+    protected override ServiceBusSender IntegrationEventTopicSender =>
+        Fixture.MarketParticipantChangedTopic.SenderClient;
 
-            var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
-            allReceived.Should().BeTrue();
+    protected override ServiceBusReceiver IntegrationEventDeadLetterReceiver =>
+        Fixture.MarketParticipantChangedDeadLetterReceiver;
 
-            // Only one event is expected
-            var actual = new JsonSerializer().Deserialize<GridAreaUpdatedDto>(
-                Fixture.EventHubListener
-                    .ReceivedEvents.Single()
-                    .Data.ToString());
+    protected override byte[] CreateIntegrationEventData()
+    {
+        var eventParser = new GridAreaUpdatedIntegrationEventParser();
+        return eventParser.Parse(new GridAreaUpdatedIntegrationEvent(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "fake_value",
+            "001",
+            PriceAreaCode.DK1,
+            Guid.NewGuid()));
+    }
 
-            actual.GridAreaLinkId.Should().Be(gridAreaLinkId);
-            actual.CorrelationId.Should().Be(correlationId);
-        }
-
-        [Fact]
-        public async Task When_ReceivingUnusedMessage_Then_NothingIsSentToEventHub()
-        {
-            // Arrange
-            using var whenAllEvent = await Fixture.EventHubListener
-                .WhenAny()
-                .VerifyCountAsync(1)
-                .ConfigureAwait(false);
-
-            var operationTimestamp = DateTime.UtcNow;
-            var correlationId = Guid.NewGuid().ToString();
-
-            var message = ServiceBusTestMessage.Create(
-                CreateUnusedEvent(),
-                operationTimestamp,
-                correlationId);
-
-            // Act
-            await Fixture.MarketParticipantChangedTopic.SenderClient.SendMessageAsync(message);
-
-            // Assert
-            await FunctionAsserts
-                .AssertHasExecutedAsync(Fixture.HostManager, nameof(MarketParticipantChangedListenerEndpoint))
-                .ConfigureAwait(false);
-
-            var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
-            allReceived.Should().BeFalse();
-        }
-
-        [Fact]
-        public async Task When_ReceivingMessageWithoutIntegrationEventProperties_Then_MessageIsDeadLettered()
-        {
-            // Arrange
-            using var whenAnyEvent = await Fixture.EventHubListener
-                .WhenAny()
-                .VerifyCountAsync(1)
-                .ConfigureAwait(false);
-
-            var gridAreaUpdatedEvent = CreateGridAreaUpdatedEvent(Guid.NewGuid());
-            var message = ServiceBusTestMessage.CreateWithoutIntegrationEventProperties(gridAreaUpdatedEvent);
-
-            // Act
-            await Fixture.MarketParticipantChangedTopic.SenderClient.SendMessageAsync(message);
-
-            // Assert
-            await FunctionAsserts
-                .AssertHasExecutedAsync(Fixture.HostManager, nameof(MarketParticipantChangedListenerEndpoint))
-                .ConfigureAwait(false);
-
-            var anyReceived = whenAnyEvent.Wait(TimeSpan.FromSeconds(5));
-            anyReceived.Should().BeFalse();
-
-            var deadLetteredMessage = await Fixture.MarketParticipantChangedDeadLetter.ReceiveMessageAsync();
-            deadLetteredMessage.Should().NotBeNull();
-            deadLetteredMessage.CorrelationId.Should().Be(message.CorrelationId);
-        }
-
-        private static byte[] CreateGridAreaUpdatedEvent(Guid gridAreaLinkId)
-        {
-            var eventParser = new GridAreaUpdatedIntegrationEventParser();
-            return eventParser.Parse(new GridAreaUpdatedIntegrationEvent(
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                "fake_value",
-                "001",
-                PriceAreaCode.DK1,
-                gridAreaLinkId));
-        }
-
-        private static byte[] CreateUnusedEvent()
-        {
-            var eventParser = new OrganizationNameChangedIntegrationEventParser();
-            return eventParser.Parse(new OrganizationNameChangedIntegrationEvent(
-                Guid.NewGuid(),
-                DateTime.UtcNow,
-                Guid.NewGuid(),
-                "fake_value"));
-        }
+    private static byte[] CreateUnusedEvent()
+    {
+        var eventParser = new OrganizationNameChangedIntegrationEventParser();
+        return eventParser.Parse(new OrganizationNameChangedIntegrationEvent(
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            Guid.NewGuid(),
+            "fake_value"));
     }
 }

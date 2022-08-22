@@ -19,36 +19,40 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon;
 
 public static class ServiceBusTestMessage
 {
-    public static ServiceBusMessage Create(byte[] data, DateTime operationTimestamp, string operationCorrelationId)
+    public static ServiceBusMessage Create(
+        byte[] data,
+        DateTime operationTimestamp,
+        string operationCorrelationId,
+        string messageType)
     {
         var serviceBusMessage = new ServiceBusMessage(data);
-        Configure(serviceBusMessage, operationTimestamp, operationCorrelationId);
+        Configure(serviceBusMessage, operationTimestamp, operationCorrelationId, messageType);
         return serviceBusMessage;
     }
 
-    public static ServiceBusMessage Create<TData>(TData data, DateTime operationTimestamp, string operationCorrelationId)
+    public static ServiceBusMessage Create<TData>(
+        TData data,
+        DateTime operationTimestamp,
+        string operationCorrelationId,
+        string messageType)
     {
         var body = JsonSerializer.Serialize(data);
         var serviceBusMessage = new ServiceBusMessage(body);
-        Configure(serviceBusMessage, operationTimestamp, operationCorrelationId);
+        Configure(serviceBusMessage, operationTimestamp, operationCorrelationId, messageType);
         return serviceBusMessage;
     }
 
-    public static ServiceBusMessage CreateWithoutIntegrationEventProperties(byte[] data)
-    {
-        return new ServiceBusMessage(data)
-        {
-            CorrelationId = Guid.NewGuid().ToString().Replace("-", string.Empty),
-        };
-    }
-
-    private static void Configure(ServiceBusMessage serviceBusMessage, DateTime operationTimestamp, string operationCorrelationId)
+    private static void Configure(
+        ServiceBusMessage serviceBusMessage,
+        DateTime operationTimestamp,
+        string operationCorrelationId,
+        string messageType)
     {
         serviceBusMessage.CorrelationId = Guid.NewGuid().ToString().Replace("-", string.Empty);
         serviceBusMessage.ApplicationProperties.Add("OperationTimestamp", operationTimestamp.ToUniversalTime());
         serviceBusMessage.ApplicationProperties.Add("OperationCorrelationId", operationCorrelationId);
         serviceBusMessage.ApplicationProperties.Add("MessageVersion", 1);
-        serviceBusMessage.ApplicationProperties.Add("MessageType", "MeteringPointCreated");
+        serviceBusMessage.ApplicationProperties.Add("MessageType", messageType);
         serviceBusMessage.ApplicationProperties.Add("EventIdentification", "2542ed0d242e46b68b8b803e93ffbf7b");
     }
 }

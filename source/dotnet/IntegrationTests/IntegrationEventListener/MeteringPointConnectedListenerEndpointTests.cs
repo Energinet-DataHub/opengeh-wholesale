@@ -12,128 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
-using Energinet.DataHub.Core.JsonSerialization;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.MeteringPoints.IntegrationEvents.Connect;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
-using FluentAssertions;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationEventListener;
 
-public class MeteringPointConnectedListenerEndpointTests
+public sealed class MeteringPointConnectedListenerEndpointTests
+    : IntegrationEventListenerEndpointTestBase<MeteringPointConnectedListenerEndpoint, MeteringPointConnectedDto>
 {
-    [Collection(nameof(IntegrationEventListenerFunctionAppCollectionFixture))]
-    public class RunAsync : FunctionAppTestBase<IntegrationEventListenerFunctionAppFixture>, IAsyncLifetime
+    public MeteringPointConnectedListenerEndpointTests(
+        IntegrationEventListenerFunctionAppFixture fixture,
+        ITestOutputHelper testOutputHelper)
+        : base(fixture, testOutputHelper)
     {
-        public RunAsync(IntegrationEventListenerFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
-            : base(fixture, testOutputHelper)
+    }
+
+    protected override ServiceBusSender IntegrationEventTopicSender
+        => Fixture.MeteringPointConnectedTopic.SenderClient;
+
+    protected override ServiceBusReceiver IntegrationEventDeadLetterReceiver =>
+        Fixture.MeteringPointConnectedDeadLetterReceiver;
+
+    protected override byte[] CreateIntegrationEventData()
+    {
+        var meteringPointId = Random.Shared.Next(1, 100000);
+        var meteringPointConnected = new MeteringPointConnected
         {
-        }
-
-        public Task InitializeAsync()
-        {
-            Fixture.EventHubListener.Reset();
-            return Task.CompletedTask;
-        }
-
-        public Task DisposeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        [Fact]
-        public async Task When_ReceivingMeteringPointConnectedMessage_Then_MeteringPointConnectedDtoIsSentToEventHub()
-        {
-            // Arrange
-            using var whenAllEvent = await Fixture.EventHubListener
-                .WhenAny()
-                .VerifyCountAsync(1)
-                .ConfigureAwait(false);
-
-            var effectiveDate = Timestamp.FromDateTime(
-                DateTime.SpecifyKind(
-                    new DateTime(2020, 01, 01, 0, 0, 0),
-                    DateTimeKind.Utc));
-
-            var meteringPointConnectedEvent = CreateMeteringPointConnectedEvent(effectiveDate);
-            var operationTimestamp = new DateTime(2021, 1, 2, 3, 4, 5, DateTimeKind.Utc);
-            var correlationId = Guid.NewGuid().ToString();
-            var message = ServiceBusTestMessage.Create(
-                meteringPointConnectedEvent.ToByteArray(),
-                operationTimestamp,
-                correlationId);
-            var jsonSerializer = new JsonSerializer();
-
-            // Act
-            await Fixture.MeteringPointConnectedTopic.SenderClient.SendMessageAsync(message);
-
-            // Assert
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(MeteringPointConnectedListenerEndpoint)).ConfigureAwait(false);
-
-            var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
-            allReceived.Should().BeTrue();
-
-            // Only one event is expected
-            var actual = jsonSerializer.Deserialize<MeteringPointConnectedDto>(
-                Fixture.EventHubListener
-                    .ReceivedEvents.Single()
-                    .Data.ToString());
-
-            actual.CorrelationId.Should().Be(correlationId);
-            actual.EffectiveDate.Should().Be(effectiveDate.ToInstant());
-        }
-
-        [Fact]
-        public async Task When_ReceivingMessageWithoutIntegrationEventProperties_Then_MessageIsDeadLettered()
-        {
-            // Arrange
-            using var whenAnyEvent = await Fixture.EventHubListener
-                .WhenAny()
-                .VerifyCountAsync(1)
-                .ConfigureAwait(false);
-
-            var effectiveDate = Timestamp.FromDateTime(DateTime.UtcNow);
-            var meteringPointConnectedEvent = CreateMeteringPointConnectedEvent(effectiveDate);
-
-            var message = ServiceBusTestMessage.CreateWithoutIntegrationEventProperties(meteringPointConnectedEvent.ToByteArray());
-
-            // Act
-            await Fixture.MeteringPointConnectedTopic.SenderClient.SendMessageAsync(message);
-
-            // Assert
-            await FunctionAsserts
-                .AssertHasExecutedAsync(Fixture.HostManager, nameof(MeteringPointConnectedListenerEndpoint))
-                .ConfigureAwait(false);
-
-            var anyReceived = whenAnyEvent.Wait(TimeSpan.FromSeconds(5));
-            anyReceived.Should().BeFalse();
-
-            var deadLetteredMessage = await Fixture.MeteringPointConnectedDeadLetter.ReceiveMessageAsync();
-            deadLetteredMessage.Should().NotBeNull();
-            deadLetteredMessage.CorrelationId.Should().Be(message.CorrelationId);
-        }
-
-        private static MeteringPointConnected CreateMeteringPointConnectedEvent(Timestamp effectiveDate)
-        {
-            var r = new Random();
-            var meteringPointId = r.Next(1, 100000);
-            return new MeteringPointConnected
-            {
-                MeteringpointId = Guid.NewGuid().ToString(),
-                EffectiveDate = effectiveDate,
-                GsrnNumber = meteringPointId.ToString(),
-            };
-        }
+            MeteringpointId = Guid.NewGuid().ToString(),
+            EffectiveDate = Timestamp.FromDateTime(DateTime.UtcNow),
+            GsrnNumber = meteringPointId.ToString(),
+        };
+        return meteringPointConnected.ToByteArray();
     }
 }
