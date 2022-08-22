@@ -236,6 +236,8 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
     #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
 
     # Total production in batch grid areas with quarterly resolution per grid area
+    print("enriched_time_series_points_df")
+    enriched_time_series_points_df.show()
     result_df = (
         enriched_time_series_points_df.where(col("GridAreaCode").isin(batch_grid_areas))
         .withColumn(
@@ -275,6 +277,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
     result_df = (
         result_df.withColumn("position", row_number().over(window))
         .withColumnRenamed("sum(quarter_quantity)", "Quantity")
+        .withColumn("Quality", lit(None))
         .select("GridAreaCode", "Quantity", "Quality")
     )
 

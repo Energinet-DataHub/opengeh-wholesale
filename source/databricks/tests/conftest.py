@@ -20,6 +20,7 @@ import os
 import pytest
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
+from datetime import datetime
 
 
 # Create Spark Conf/Session.
@@ -73,3 +74,21 @@ def databricks_path(source_path) -> str:
     file located directly in the integration tests folder.
     """
     return f"{source_path}/databricks"
+
+
+@pytest.fixture(scope="session")
+def timestamp_factory():
+
+    "Creates timestamp from utc string in correct format yyyy-mm-ddThh:mm:ss.nnnZ"
+
+    def factory(date_time_string: str) -> datetime:
+
+        date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+        if date_time_string is None:
+
+            return None
+
+        return datetime.strptime(date_time_string, date_time_formatting_string)
+
+    return factory
