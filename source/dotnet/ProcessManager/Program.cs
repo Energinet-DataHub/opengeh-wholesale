@@ -16,6 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
@@ -67,7 +68,6 @@ public static class Program
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<CorrelationIdMiddleware>();
-        serviceCollection.AddScoped<FunctionTelemetryScopeMiddleware>();
         serviceCollection.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
         serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
     }
@@ -94,8 +94,7 @@ public static class Program
 
     private static void Infrastructure(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddApplicationInsightsTelemetryWorkerService(
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey));
+        serviceCollection.AddApplicationInsights();
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
