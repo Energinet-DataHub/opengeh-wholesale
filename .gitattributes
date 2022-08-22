@@ -1,0 +1,5 @@
+# Always use Windows line endings.
+# Otherwise lots of files will often show up as changes as we
+# work with the same files on both Windows (.NET development) 
+# and Linux (in Docker container).
+text eol=crlf
