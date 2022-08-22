@@ -33,7 +33,8 @@ internal sealed class MockedServiceBusClient : ServiceBusClient
         }
         catch (NullReferenceException)
         {
-            // Dispose error during integration test.
+            // ServiceBusClient allows mocking, but DisposeAsync will still try to run on a mocked instance.
+            // Since there is nothing to dispose, it crashes internally. The try...catch ignores this error.
         }
     }
 
@@ -61,7 +62,8 @@ internal sealed class MockedServiceBusClient : ServiceBusClient
             }
             catch (NullReferenceException)
             {
-                // Dispose error during integration test.
+                // ServiceBusClient allows mocking, but DisposeAsync will still try to run on a mocked instance.
+                // Since there is nothing to dispose, it crashes internally. The try...catch ignores this error.
             }
         }
     }

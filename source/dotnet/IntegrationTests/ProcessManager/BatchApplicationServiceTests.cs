@@ -87,8 +87,8 @@ public sealed class BatchApplicationServiceTests
         await target.UpdateExecutionStateAsync();
 
         // Assert 2: Verify that batch is completed.
-        var pending = await repository.GetCompletedAsync();
-        var updatedBatch = pending.Single(x => x.Id == createdBatch.Id);
+        var completed = await repository.GetCompletedAsync();
+        var updatedBatch = completed.Single(x => x.Id == createdBatch.Id);
         updatedBatch.GridAreaCodes.Should().ContainSingle(code => code.Code == gridAreaCode);
     }
 

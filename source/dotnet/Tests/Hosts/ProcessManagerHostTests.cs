@@ -30,13 +30,15 @@ public sealed class ProcessManagerHostTests
             .BuildAppHost()
             .UseDefaultServiceProvider(config => config.ValidateOnBuild = true);
 
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, "fake_value");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, "fake_value");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, "fake_value");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, "fake_value");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedTopicName, "fake_value");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, "fake_value");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, "fake_value");
+        const string placeholderValue = "placeholder_value";
+
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedTopicName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, placeholderValue);
 
         // Act + Assert
         target.Build();
