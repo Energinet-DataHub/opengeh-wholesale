@@ -31,7 +31,7 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
         builder.HasKey(b => b.Id);
         builder
             .Property(b => b.Id)
-            .HasConversion(b => b.Id, id => new BatchId(id))
+            .HasConversion(b => b.Value, id => new BatchId(id))
             .ValueGeneratedNever();
 
         builder.Property(b => b.ExecutionState);

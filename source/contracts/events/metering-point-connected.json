@@ -1,0 +1,30 @@
+{
+  "storedTimeName": "storedTime",
+  "bodyFields": [
+    {
+      "name": "GsrnNumber",
+      "type": "string"
+    },
+    {
+      "name": "MessageType",
+      "type": "string",
+      "value": "MeteringPointConnected"
+    },
+    {
+      "name": "EffectiveDate",
+      "type": "timestamp"
+    },
+    {
+      "name": "MeteringPointId",
+      "type": "string"
+    },
+    {
+      "name": "OperationTime",
+      "type": "timestamp"
+    },
+    {
+      "name": "CorrelationId",
+      "type": "string"
+    }
+  ]
+}
