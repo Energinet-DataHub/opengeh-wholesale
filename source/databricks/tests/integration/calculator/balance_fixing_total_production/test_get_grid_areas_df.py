@@ -110,7 +110,8 @@ def test__when_input_data_matches_contract__returns_expected_row(
     # Assert: From previous asserts:
     # If schema matches contract and test data matches schema and test data results in
     # the expected row we know that the production code works correct with data that complies with the contract
-    assert _get_grid_areas_df(raw_integration_events_df, [grid_area_code]).count() == 1
+    actual = _get_grid_areas_df(raw_integration_events_df, [grid_area_code]).count()
+    assert actual == 1
 
 
 def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_data(
