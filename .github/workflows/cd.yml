@@ -20,13 +20,13 @@ on:
 
 jobs:
   publish_release:
-    uses: Energinet-DataHub/.github/.github/workflows/publish-release.yml@7.7.0
+    uses: Energinet-DataHub/.github/.github/workflows/publish-release.yml@8.0.0
     secrets:
       PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
 
   dispatch_deployment_request:
     needs: publish_release
-    uses: Energinet-DataHub/.github/.github/workflows/dispatch-deployment-request.yml@7.7.0
+    uses: Energinet-DataHub/.github/.github/workflows/dispatch-deployment-request.yml@8.0.0
     with:
       CALLER_REPOSITORY_NAME: opengeh-wholesale
       CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
@@ -35,7 +35,7 @@ jobs:
       ENVIRONMENT_REPOSITORY_PATH: ${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}
 
   update_coverage_report:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@7.7.0
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@8.0.0
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
       USE_AZURE_FUNCTIONS_TOOLS: true
@@ -47,7 +47,7 @@ jobs:
       AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
   update_python_coverage_report:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@7.7.0
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@8.0.0
     with:
       PATH_STATIC_CHECKS: './source/databricks'
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,W503,E122,E123,E126,F811'
