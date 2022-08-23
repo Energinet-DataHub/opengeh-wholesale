@@ -307,8 +307,166 @@ public class ContractComplianceTestHelperTests
         }
     }
 
+    [Fact]
+    public async Task VerifyEnumCompliesWithContractAsync_GivenMatchingContract_VerifiesEnum()
+    {
+        // Arrange
+        const string contract = @"
+{
+    ""literals"":
+    [
+        {
+          ""name"": ""LitA"",
+          ""value"": 2
+        },
+        {
+          ""name"": ""LitB"",
+          ""value"": 5
+        }
+    ]
+}";
+        using var contractStream = new MemoryStream(Encoding.UTF8.GetBytes(contract));
+
+        // Act + Assert
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TestEnum>(contractStream);
+    }
+
+    [Fact]
+    public async Task VerifyEnumCompliesWithContractAsync_TooFewLiterals_ThrowsException()
+    {
+        // Arrange
+        const string contract = @"
+{
+    ""literals"":
+    [
+        {
+          ""name"": ""LitA"",
+          ""value"": 2
+        }
+    ]
+}";
+        using var contractStream = new MemoryStream(Encoding.UTF8.GetBytes(contract));
+
+        // Act + Assert
+        try
+        {
+            await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TestEnum>(contractStream);
+            Assert.True(false);
+        }
+        catch
+        {
+            // Non-compliant object fails.
+        }
+    }
+
+    [Fact]
+    public async Task VerifyEnumCompliesWithContractAsync_TooManyLiterals_ThrowsException()
+    {
+        // Arrange
+        const string contract = @"
+{
+    ""literals"":
+    [
+        {
+          ""name"": ""LitA"",
+          ""value"": 2
+        },
+        {
+          ""name"": ""LitB"",
+          ""value"": 5
+        },
+        {
+          ""name"": ""LitC"",
+          ""value"": 10
+        }
+    ]
+}";
+        using var contractStream = new MemoryStream(Encoding.UTF8.GetBytes(contract));
+
+        // Act + Assert
+        try
+        {
+            await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TestEnum>(contractStream);
+            Assert.True(false);
+        }
+        catch
+        {
+            // Non-compliant object fails.
+        }
+    }
+
+    [Fact]
+    public async Task VerifyEnumCompliesWithContractAsync_LiteralsIncorrectName_ThrowsException()
+    {
+        // Arrange
+        const string contract = @"
+{
+    ""literals"":
+    [
+        {
+          ""name"": ""LitA"",
+          ""value"": 2
+        },
+        {
+          ""name"": ""LitD"",
+          ""value"": 5
+        }
+    ]
+}";
+        using var contractStream = new MemoryStream(Encoding.UTF8.GetBytes(contract));
+
+        // Act + Assert
+        try
+        {
+            await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TestEnum>(contractStream);
+            Assert.True(false);
+        }
+        catch
+        {
+            // Non-compliant object fails.
+        }
+    }
+
+    [Fact]
+    public async Task VerifyEnumCompliesWithContractAsync_LiteralsIncorrectValue_ThrowsException()
+    {
+        // Arrange
+        const string contract = @"
+{
+    ""literals"":
+    [
+        {
+          ""name"": ""LitA"",
+          ""value"": 7
+        },
+        {
+          ""name"": ""LitB"",
+          ""value"": 5
+        }
+    ]
+}";
+        using var contractStream = new MemoryStream(Encoding.UTF8.GetBytes(contract));
+
+        // Act + Assert
+        try
+        {
+            await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TestEnum>(contractStream);
+            Assert.True(false);
+        }
+        catch
+        {
+            // Non-compliant object fails.
+        }
+    }
+
     private static Task VerifyObjectCompliesWithContractAsync<T>(T inferType, Stream contractStream)
     {
         return ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<T>(contractStream);
+    }
+
+    private enum TestEnum
+    {
+        LitA = 2,
+        LitB = 5,
     }
 }

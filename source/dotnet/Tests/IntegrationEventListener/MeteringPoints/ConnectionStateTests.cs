@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints
+using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Xunit;
+using Xunit.Categories;
+
+namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoints;
+
+[UnitTest]
+public sealed class ConnectionStateTests
 {
-    /// <summary>
-    /// WARNING !
-    /// Do not change the numeric values since they are used further downstream for aggregation purposes.
-    /// </summary>
-    public enum Resolution
+    [Fact]
+    public async Task EnumNamesAndValuesMatchContractWithCalculator()
     {
-        Unknown = 0,
-        Hourly = 1,
-        Quarterly = 2,
+        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.connection-state.json");
+
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<ConnectionState>(stream);
     }
 }
