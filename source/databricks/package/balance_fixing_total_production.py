@@ -32,6 +32,7 @@ from pyspark.sql.types import (
     StringType,
     TimestampType,
     StructType,
+    DecimalType,
 )
 from pyspark.sql.window import Window
 from package.codelists import ConnectionState, MeteringPointType, Resolution
@@ -190,13 +191,9 @@ def _get_enriched_time_series_points_df(
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-    timeseries_df = (
-        raw_time_series_points.where(col("time") >= period_start_datetime).where(
-            col("time") < period_end_datetime
-        )
-        # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
-        .withColumn("Quantity", col("Quantity").cast("decimal(18,6)"))
-    )
+    timeseries_df = raw_time_series_points.where(
+        col("time") >= period_start_datetime
+    ).where(col("time") < period_end_datetime)
 
     # Only use latest registered points
     window = Window.partitionBy("GsrnNumber", "time").orderBy(
@@ -236,8 +233,6 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
     #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
 
     # Total production in batch grid areas with quarterly resolution per grid area
-    print("enriched_time_series_points_df")
-    enriched_time_series_points_df.show()
     result_df = (
         enriched_time_series_points_df.where(col("GridAreaCode").isin(batch_grid_areas))
         .withColumn(
@@ -258,9 +253,11 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         )
         .withColumn(
             "quarter_quantity",
-            when(col("Resolution") == Resolution.hour, col("Quantity") / 4).when(
-                col("Resolution") == Resolution.quarter, col("Quantity")
-            ),
+            when(
+                col("Resolution") == Resolution.hour,
+                # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce
+                col("Quantity").cast(DecimalType(18, 6)) / 4,
+            ).when(col("Resolution") == Resolution.quarter, col("Quantity")),
         )
         .groupBy("GridAreaCode", "quarter_time")
         .sum("quarter_quantity")
@@ -278,7 +275,8 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         result_df.withColumn("position", row_number().over(window))
         .withColumnRenamed("sum(quarter_quantity)", "Quantity")
         .withColumn("Quality", lit(None))
-        .select("GridAreaCode", "Quantity", "Quality")
+        .withColumn("Quantity", col("Quantity").cast("decimal(18,3)"))
+        .select("GridAreaCode", "Quantity", "Quality", "position")
     )
 
     return result_df
