@@ -73,6 +73,7 @@ def metering_point_created_df_factory(spark):
         operation_time=first_of_june,
         grid_area_link_id=grid_area_link_id,
         gsrn_number=gsrn_number,
+        metering_point_type=MeteringPointType.production,
         resolution=Resolution.hour,
     ):
         row = {
@@ -84,7 +85,7 @@ def metering_point_created_df_factory(spark):
             "SettlementMethod": SettlementMethod.non_profiled,
             "ConnectionState": ConnectionState.new,
             "EffectiveDate": first_of_june,
-            "MeteringPointType": MeteringPointType.production,
+            "MeteringPointType": metering_point_type,
             "MeteringPointId": metering_point_id,
             "Resolution": resolution,
             "CorrelationId": "some-correlation-id",
@@ -94,7 +95,6 @@ def metering_point_created_df_factory(spark):
             spark.createDataFrame([row])
             .withColumn(
                 "body",
-                # TODO BJARKE: Can we do `to_json(struct(col("body.*")))`?
                 to_json(
                     struct(
                         col("MessageType"),
@@ -231,28 +231,6 @@ def test__metering_point_connected_message_type__matches_contract(
     assert metering_point_connected_message_type == contract_message_type
 
 
-def test__when_connected__returns_correct_period_data(
-    metering_point_created_df_factory, metering_point_connected_df_factory, grid_area_df
-):
-    # Arrange
-    integration_events_df = metering_point_created_df_factory().union(
-        metering_point_connected_df_factory()
-    )
-
-    # Act
-    actual_df = _get_metering_point_periods_df(
-        integration_events_df, grid_area_df, second_of_june, third_of_june
-    )
-
-    # Assert
-    actual = actual_df.first()
-    assert actual.GsrnNumber == gsrn_number
-    assert actual.GridAreaCode == grid_area_code
-    assert actual.EffectiveDate == second_of_june
-    assert actual.toEffectiveDate > the_far_future
-    assert actual.Resolution == Resolution.hour
-
-
 @pytest.mark.parametrize(
     "created_message_type,connected_message_type,expected",
     [
@@ -286,3 +264,164 @@ def test__when_correct_message_types__returns_row(
 
     # Assert
     assert (actual_df.count() == 1) == expected
+
+
+@pytest.mark.parametrize(
+    "metering_point_type,expected_is_included",
+    [
+        (MeteringPointType.production, True),
+        (MeteringPointType.production - 1, False),
+        (MeteringPointType.production + 1, False),
+    ],
+)
+def test__when_metering_point_type_is_production__metering_point_is_included(
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    grid_area_df,
+    metering_point_type,
+    expected_is_included,
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory(
+        metering_point_type=metering_point_type
+    )
+    connected_events_df = metering_point_connected_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df)
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
+
+    # Assert
+    actual_is_included = actual_df.count() == 1
+    assert actual_is_included == expected_is_included
+
+
+def test__gsrn_code_value(
+    metering_point_created_df_factory, metering_point_connected_df_factory, grid_area_df
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory()
+    connected_events_df = metering_point_connected_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df)
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
+
+    # Assert
+    assert actual_df.first().GsrnNumber == gsrn_number
+
+
+def test__grid_area_code(
+    metering_point_created_df_factory, metering_point_connected_df_factory, grid_area_df
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory()
+    connected_events_df = metering_point_connected_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df)
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
+
+    # Assert
+    assert actual_df.first().GridAreaCode == grid_area_code
+
+
+@pytest.mark.parametrize("resolution", [(Resolution.hour), (Resolution.quarter)])
+def test__resolution(
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    grid_area_df,
+    resolution,
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory(resolution=resolution)
+    connected_events_df = metering_point_connected_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df)
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
+
+    # Assert
+    assert actual_df.first().Resolution == resolution
+
+
+def test__effective_date__matches_effective_date_of_connected_event(
+    metering_point_created_df_factory, metering_point_connected_df_factory, grid_area_df
+):
+    # Arrange
+    effective_date_of_connected_event = second_of_june + timedelta(seconds=1)
+
+    created_events_df = metering_point_created_df_factory()
+    connected_events_df = metering_point_connected_df_factory(
+        effective_date=effective_date_of_connected_event
+    )
+    integration_events_df = created_events_df.union(connected_events_df)
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
+
+    # Assert
+    assert actual_df.first().EffectiveDate == effective_date_of_connected_event
+
+
+def test__to_effective_date__is_in_the_far_future(
+    metering_point_created_df_factory, metering_point_connected_df_factory, grid_area_df
+):
+    """toEffectiveDate can only be "far future" as only connected metering points
+    are included and no further events are currently supported."""
+
+    # Arrange
+    created_events_df = metering_point_created_df_factory()
+    connected_events_df = metering_point_connected_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df)
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
+
+    # Assert
+    assert actual_df.first().toEffectiveDate > the_far_future
+
+
+@pytest.mark.parametrize(
+    "effective_date,period_end_date,expected_is_included",
+    [
+        (third_of_june, third_of_june, True),
+        (third_of_june + timedelta(seconds=1), third_of_june, False),
+        (third_of_june - timedelta(seconds=1), third_of_june, True),
+    ],
+)
+def test__when_effective_date_less_than_or_equal_to_period_end__row_is_included(
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    grid_area_df,
+    effective_date,
+    period_end_date,
+    expected_is_included,
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory()
+    connected_events_df = metering_point_connected_df_factory(
+        effective_date=effective_date
+    )
+    integration_events_df = created_events_df.union(connected_events_df)
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, period_end_date
+    )
+
+    # Assert
+    actual_is_included = actual_df.count() == 1
+    assert actual_is_included == expected_is_included
