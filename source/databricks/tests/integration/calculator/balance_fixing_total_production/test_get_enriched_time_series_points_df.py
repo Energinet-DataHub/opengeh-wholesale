@@ -95,7 +95,9 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
     period_start, period_end"""
 
     # Arrange
-    raw_time_series_points = raw_time_series_points_factory()
+    raw_time_series_points = raw_time_series_points_factory(
+        time=timestamp_factory("2022-06-08T12:09:15.000Z")
+    )
     metering_point_period_df = metering_point_period_df_factory()
 
     # Act
@@ -107,7 +109,7 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
     )
 
     # Assert
-    assert expected_rows == df.count()
+    assert df.count() == expected_rows
 
 
 @pytest.mark.parametrize(
