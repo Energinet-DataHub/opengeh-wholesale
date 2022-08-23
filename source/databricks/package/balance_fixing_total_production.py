@@ -130,15 +130,17 @@ def _get_metering_point_periods_df(
             "body.ConnectionState",
             "body.EffectiveDate",
             "body.Resolution",
+            "body.OperationTime",
         )
     )
+    metering_point_events_df.show()
 
-    window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
+    window = Window.partitionBy("MeteringPointId").orderBy("OperationTime")
 
     metering_point_periods_df = (
         metering_point_events_df.withColumn(
             "toEffectiveDate",
-            lead("EffectiveDate", 1, "2099-01-01T23:00:00.000+0000").over(window),
+            lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
         )
         .withColumn(
             "GridAreaLinkId",
@@ -164,7 +166,12 @@ def _get_metering_point_periods_df(
             "Resolution",
             coalesce(col("Resolution"), last("Resolution", True).over(window)),
         )
-        .where(col("EffectiveDate") <= period_end_datetime)
+    )
+
+    metering_point_periods_df.show()
+
+    metering_point_periods_df = (
+        metering_point_periods_df.where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
             col("ConnectionState") == ConnectionState.connected
@@ -172,19 +179,21 @@ def _get_metering_point_periods_df(
         .where(col("MeteringPointType") == MeteringPointType.production)
     )
 
+    metering_point_periods_df.show()
+
     # Only include metering points in the selected grid areas
     metering_point_periods_df = metering_point_periods_df.join(
         grid_area_df,
         metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
         "inner",
     ).select(
-        metering_point_periods_df["MessageType"],
         "GsrnNumber",
         "GridAreaCode",
         "EffectiveDate",
         "toEffectiveDate",
         "Resolution",
     )
+    metering_point_periods_df.show()
 
     return metering_point_periods_df
 
