@@ -94,9 +94,12 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
     """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
     expected_rows is the number of rows in the output dataframe when given different parameters,
     period_start, period_end"""
+
+    # Arrange
     raw_time_series_points = raw_time_series_points_factory()
     metering_point_period_df = metering_point_period_df_factory()
 
+    # Act
     df = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
@@ -104,6 +107,7 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
         timestamp_factory(period_end),
     )
 
+    # Assert
     assert expected_rows == df.count()
 
 
@@ -131,6 +135,8 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
     expected_rows is the number of rows in the output dataframe when given different parameters,
     effective_date and to_effective_date"""
+
+    # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory("2022-06-08T12:09:15.000Z")
     )
@@ -138,6 +144,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
         effective_date=effective_date, to_effective_date=to_effective_date
     )
 
+    # Act
     df = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
@@ -145,6 +152,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
         timestamp_factory("2022-06-08T13:09:15.000Z"),
     )
 
+    # Assert
     assert expected_rows == df.count()
 
 
@@ -167,6 +175,8 @@ def test__given_raw_time_series_points_with_different_time__return_dataframe_wit
 ):
     """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
     expected_rows is the number of rows in the output dataframe when given different time on time series point"""
+
+    # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(time)
     )
@@ -175,6 +185,7 @@ def test__given_raw_time_series_points_with_different_time__return_dataframe_wit
         to_effective_date=timestamp_factory("2022-06-08T13:09:15.000Z"),
     )
 
+    # Act
     actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
@@ -182,4 +193,5 @@ def test__given_raw_time_series_points_with_different_time__return_dataframe_wit
         timestamp_factory("2022-06-08T13:09:15.000Z"),
     )
 
+    # Assert
     assert expected_rows == actual.count()
