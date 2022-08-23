@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from enum import Enum
 
-class Resolution:
-    quarter = 1
-    hour = 2
-    day = 3
-    month = 4
+
+class Resolution(Enum):
+    hourly = 1
+    quarterly = 2

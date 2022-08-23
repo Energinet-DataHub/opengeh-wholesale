@@ -17,7 +17,7 @@
       "value": 3
     },
     {
-      "name": "veproduction",
+      "name": "veProduction",
       "value": 4
     },
     {
@@ -25,67 +25,67 @@
       "value": 5
     },
     {
-      "name": "surplusproductiongroup",
+      "name": "surplusProductionGroup",
       "value": 6
     },
     {
-      "name": "netproduction",
+      "name": "netProduction",
       "value": 7
     },
     {
-      "name": "supplytogrid",
+      "name": "supplyToGrid",
       "value": 8
     },
     {
-      "name": "consumptionfromgrid",
+      "name": "consumptionFromGrid",
       "value": 9
     },
     {
-      "name": "wholesaleservice",
+      "name": "wholesaleService",
       "value": 10
     },
     {
-      "name": "ownproduction",
+      "name": "ownProduction",
       "value": 11
     },
     {
-      "name": "netfromgrid",
+      "name": "netFromGrid",
       "value": 12
     },
     {
-      "name": "nettogrid",
+      "name": "netToGrid",
       "value": 13
     },
     {
-      "name": "totalconsumption",
+      "name": "totalConsumption",
       "value": 14
     },
     {
-      "name": "gridlosscorrection",
+      "name": "gridLossCorrection",
       "value": 15
     },
     {
-      "name": "electricalheating",
+      "name": "electricalHeating",
       "value": 16
     },
     {
-      "name": "netconsumption",
+      "name": "netConsumption",
       "value": 17
     },
     {
-      "name": "otherconsumption",
+      "name": "otherConsumption",
       "value": 18
     },
     {
-      "name": "otherproduction",
+      "name": "otherProduction",
       "value": 19
     },
     {
-      "name": "exchangereactiveenergy",
+      "name": "exchangeReactiveEnergy",
       "value": 20
     },
     {
-      "name": "internaluse",
+      "name": "internalUse",
       "value": 21
     }
   ]

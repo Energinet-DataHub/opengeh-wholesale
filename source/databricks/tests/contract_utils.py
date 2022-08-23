@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import get_args
 import json
 
 
@@ -34,6 +35,21 @@ def assert_contract_matches_schema(contract_path, schema):
         )
         assert expected_field["name"] == actual_field["name"]
         assert expected_field["type"] == actual_field["type"]
+
+
+def assert_contract_matches_literal(contract_path, literal):
+    supported_literals = read_contract(contract_path)["literals"]
+    literal_args = [member for member in literal]
+
+    # Assert: Python literal is a subset of contract
+    assert len(literal_args) <= len(supported_literals)
+
+    # Assert: Literal matches contract
+    for literal_arg in literal_args:
+        supported_arg = next(
+            x for x in supported_literals if literal_arg.name == x["name"]
+        )
+        assert literal_arg.value == supported_arg["value"]
 
 
 def get_message_type(contract_path):
