@@ -1,0 +1,92 @@
+{
+  "literals": [
+    {
+      "name": "unknown",
+      "value": 0
+    },
+    {
+      "name": "consumption",
+      "value": 1
+    },
+    {
+      "name": "production",
+      "value": 2
+    },
+    {
+      "name": "exchange",
+      "value": 3
+    },
+    {
+      "name": "veProduction",
+      "value": 4
+    },
+    {
+      "name": "analysis",
+      "value": 5
+    },
+    {
+      "name": "surplusProductionGroup",
+      "value": 6
+    },
+    {
+      "name": "netProduction",
+      "value": 7
+    },
+    {
+      "name": "supplyToGrid",
+      "value": 8
+    },
+    {
+      "name": "consumptionFromGrid",
+      "value": 9
+    },
+    {
+      "name": "wholesaleService",
+      "value": 10
+    },
+    {
+      "name": "ownProduction",
+      "value": 11
+    },
+    {
+      "name": "netFromGrid",
+      "value": 12
+    },
+    {
+      "name": "netToGrid",
+      "value": 13
+    },
+    {
+      "name": "totalConsumption",
+      "value": 14
+    },
+    {
+      "name": "gridLossCorrection",
+      "value": 15
+    },
+    {
+      "name": "electricalHeating",
+      "value": 16
+    },
+    {
+      "name": "netConsumption",
+      "value": 17
+    },
+    {
+      "name": "otherConsumption",
+      "value": 18
+    },
+    {
+      "name": "otherProduction",
+      "value": 19
+    },
+    {
+      "name": "exchangeReactiveEnergy",
+      "value": 20
+    },
+    {
+      "name": "internalUse",
+      "value": 21
+    }
+  ]
+}

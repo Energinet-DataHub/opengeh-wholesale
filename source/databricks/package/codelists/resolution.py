@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from enum import Enum
 
-class Resolution:
+
+class Resolution(Enum):
     quarter = 1
     hour = 2
     day = 3
