@@ -86,8 +86,8 @@ limitations under the License.
     <EmbeddedResource Include="..\..\contracts\literals\settlement-method.json">
       <Link>IntegrationEventListener\MeteringPoints\settlement-method.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\contracts\literals\resolution.json">
-      <Link>IntegrationEventListener\MeteringPoints\resolution.json</Link>
+    <EmbeddedResource Include="..\..\contracts\literals\metering-point-resolution.json">
+      <Link>IntegrationEventListener\MeteringPoints\metering-point-resolution.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 

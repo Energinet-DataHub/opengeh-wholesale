@@ -16,5 +16,7 @@ from enum import Enum
 
 
 class Resolution(Enum):
-    hourly = 1
-    quarterly = 2
+    quarter = 1
+    hour = 2
+    day = 3
+    month = 4

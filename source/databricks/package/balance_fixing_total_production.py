@@ -241,14 +241,14 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         .withColumn(
             "quarter_times",
             when(
-                col("Resolution") == Resolution.hourly,
+                col("Resolution") == Resolution.hour,
                 array(
                     col("time"),
                     col("time") + expr("INTERVAL 15 minutes"),
                     col("time") + expr("INTERVAL 30 minutes"),
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
-            ).when(col("Resolution") == Resolution.quarterly, array(col("time"))),
+            ).when(col("Resolution") == Resolution.quarter, array(col("time"))),
         )
         .select(
             enriched_time_series_points_df["*"],
@@ -256,8 +256,8 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         )
         .withColumn(
             "quarter_quantity",
-            when(col("Resolution") == Resolution.hourly, col("Quantity") / 4).when(
-                col("Resolution") == Resolution.quarterly, col("Quantity")
+            when(col("Resolution") == Resolution.hour, col("Quantity") / 4).when(
+                col("Resolution") == Resolution.quarter, col("Quantity")
             ),
         )
         .groupBy("GridAreaCode", "quarter_time")

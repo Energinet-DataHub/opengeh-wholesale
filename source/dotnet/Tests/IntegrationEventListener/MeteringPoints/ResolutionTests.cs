@@ -25,7 +25,7 @@ public sealed class ResolutionTests
     [Fact]
     public async Task EnumNamesAndValuesMatchContractWithCalculator()
     {
-        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.resolution.json");
+        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.metering-point-resolution.json");
 
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<Resolution>(stream);
     }

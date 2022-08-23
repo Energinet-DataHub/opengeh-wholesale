@@ -31,5 +31,5 @@ def test_metering_point_type(source_path):
 
 def test_resolution(source_path):
     assert_contract_matches_literal(
-        f"{source_path}/contracts/literals/resolution.json", Resolution
+        f"{source_path}/contracts/literals/time-series-resolution.json", Resolution
     )
