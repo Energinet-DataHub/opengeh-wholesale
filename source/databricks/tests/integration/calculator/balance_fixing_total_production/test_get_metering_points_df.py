@@ -251,3 +251,38 @@ def test__when_connected__returns_correct_period_data(
     assert actual.EffectiveDate == second_of_june
     assert actual.toEffectiveDate > the_far_future
     assert actual.Resolution == Resolution.hour
+
+
+@pytest.mark.parametrize(
+    "created_message_type,connected_message_type,expected",
+    [
+        ("MeteringPointCreated", "MeteringPointConnected", True),
+        ("BadCreatedMessageType", "MeteringPointConnected", False),
+        ("MeteringPointCreated", "BadConnectedMessageType", False),
+        ("BadCreatedMessageType", "BadConnectedMessageType", False),
+    ],
+)
+def test__when_correct_message_types__returns_row(
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    grid_area_df,
+    created_message_type,
+    connected_message_type,
+    expected,
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory(
+        message_type=created_message_type
+    )
+    connected_events_df = metering_point_connected_df_factory(
+        message_type=connected_message_type
+    )
+    integration_events_df = created_events_df.union(connected_events_df)
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
+
+    # Assert
+    assert (actual_df.count() == 1) == expected
