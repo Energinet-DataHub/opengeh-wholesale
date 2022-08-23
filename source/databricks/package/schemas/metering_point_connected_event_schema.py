@@ -27,5 +27,6 @@ metering_point_connected_event_schema = StructType(
         StructField("MeteringPointId", StringType(), True),
         StructField("MessageType", StringType(), True),
         StructField("CorrelationId", StringType(), True),
+        StructField("OperationTime", TimestampType(), True),
     ]
 )

@@ -202,37 +202,18 @@ def test__stored_time_of_metering_point_connected_matches_persister(
     assert expected_stored_time_name in raw_integration_events_df.columns
 
 
-def test__when_input_data_matches_metering_point_created_contract__returns_expected_row(
-    metering_point_created_df_factory, source_path, grid_area_df_factory
-):
-    grid_area_df = grid_area_df_factory()
-    raw_integration_events_df = metering_point_created_df_factory()
-
-    # Assert: Contract matches schema
+def test__metering_point_created_schema_matches_contract(source_path):
     assert_contract_matches_schema(
         f"{source_path}/contracts/events/metering-point-created.json",
         metering_point_created_event_schema,
     )
 
-    # Assert: Test data schema matches schema
-    test_data_schema = (
-        raw_integration_events_df.select(col("body").cast("string"))
-        .withColumn("body", from_json(col("body"), metering_point_created_event_schema))
-        .select(col("body.*"))
-        .schema
-    )
-    assert test_data_schema == metering_point_created_event_schema
 
-    # Assert: From previous asserts:
-    # If schema matches contract and test data matches schema and test data results in
-    # the expected row we know that the production code works correct with data that complies with the contract
-    actual_df = _get_metering_point_periods_df(
-        raw_integration_events_df,
-        grid_area_df,
-        first_of_june,
-        second_of_june,
+def test__metering_point_connected_schema_matches_contract(source_path):
+    assert_contract_matches_schema(
+        f"{source_path}/contracts/events/metering-point-connected.json",
+        metering_point_connected_event_schema,
     )
-    assert actual_df.count() == 1
 
 
 def test__when_using_same_message_type_as_ingestor_for_created_event__returns_row(
