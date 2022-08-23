@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from enum import Enum
 
-class ConnectionState:
+
+class ConnectionState(Enum):
     new = 1
     connected = 2
     disconnected = 3
