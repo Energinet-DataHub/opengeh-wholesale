@@ -31,7 +31,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
     ):
         df = [
             {
-                "GsrnNumber": "1",
+                "GsrnNumber": "the-gsrn-number",
                 "TransactionId": "1",
                 "Quantity": Decimal("1.1"),
                 "Quality": 3,
@@ -57,9 +57,8 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     ):
         df = [
             {
-                "MessageType": "1",
-                "GsrnNumber": "1",
-                "GridAreaCode": "1",
+                "GsrnNumber": "the-gsrn-number",
+                "GridAreaCode": "805",
                 "EffectiveDate": effective_date,
                 "toEffectiveDate": to_effective_date,
                 "Resolution": 2,
