@@ -22,7 +22,38 @@ from decimal import Decimal
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_result_df
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, sum
+
+
+@pytest.fixture
+def enriched_time_series_quaterly_and_hourly_factory(spark, timestamp_factory):
+    def factory():
+        time = timestamp_factory("2022-06-08T12:09:15.000Z")
+
+        df = [
+            {
+                "GridAreaCode": "805",
+                "GsrnNumber": "2045555014",
+                "Resolution": Resolution.hour,
+                "GridAreaLinkId": "GridAreaLinkId",
+                "time": time,
+                "Quantity": 2,
+                "Quality": 4,
+            },
+            {
+                "GridAreaCode": "805",
+                "GsrnNumber": "2045555014",
+                "Resolution": Resolution.quarter,
+                "GridAreaLinkId": "GridAreaLinkId",
+                "time": time,
+                "Quantity": 2,
+                "Quality": 4,
+            },
+        ]
+
+        return spark.createDataFrame(df)
+
+    return factory
 
 
 @pytest.fixture
@@ -57,7 +88,7 @@ def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
 
 
 @pytest.fixture
-def enriched_time_series_with_same_time_factory(spark, timestamp_factory):
+def enriched_time_serie_factory(spark, timestamp_factory):
     def factory(resolution=Resolution.quarter, quantity=1):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
@@ -89,12 +120,11 @@ def test__quaterly_sums_correctly(
 
 
 def test__hourly_sums_are_rounded_correctly(
-    enriched_time_series_with_same_time_factory,
+    enriched_time_serie_factory,
 ):
     """Test that checks accetable rounding erros for hourly quantitys summed on a quaterly basis"""
-    df = enriched_time_series_with_same_time_factory(Resolution.hour, 0.003)
+    df = enriched_time_serie_factory(Resolution.hour, 0.003)
     result_df = _get_result_df(df, [805])
-    result_df.show()
     points = result_df.collect()
 
     assert len(points) == 4  # one hourly quantity should yield 4 points
@@ -104,6 +134,31 @@ def test__hourly_sums_are_rounded_correctly(
 
 
 # Test sums with both hourly and quarterly can be calculated
+def test__quaterly_and_hourly_sums_correctly(
+    enriched_time_series_quaterly_and_hourly_factory,
+):
+    """Test that checks quantity is summed correctly with quaterly and hourly times"""
+    df = enriched_time_series_quaterly_and_hourly_factory()
+    result_df = _get_result_df(df, [805])
+    sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
+    assert sum_quant.collect()[0]["sum_quant"] == 4  # total Quantity is 4
+
+
+# Test that points with the same 'time' have added their 'Quantity's together on the same position
+def test__points_with_same_time_quantitys_are_on_same_poistion(
+    enriched_time_series_quaterly_and_hourly_factory,
+):
+    """Test that checks quantity is summed correctly with quaterly and hourly times"""
+    df = enriched_time_series_quaterly_and_hourly_factory()
+    result_df = _get_result_df(df, [805])
+    result_df.show()
+    assert (
+        # total 'Quantity' on first position
+        result_df.collect()[0]["Quantity"]
+        == 2.5  # first point with quater resolution 'quantity' is 2, second is 2 but is hourly so 0.5 shoul be added to first position
+    )
+
+
 # Test that position works correctly
 # Test that Quality is set and is None
 # Test smallest Quantity supports that rounding up and
