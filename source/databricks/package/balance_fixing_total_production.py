@@ -41,6 +41,10 @@ from package.schemas import (
 )
 
 
+metering_point_created_message_type = "MeteringPointCreated"
+metering_point_connected_message_type = "MeteringPointConnected"
+
+
 def calculate_balance_fixing_total_production(
     raw_integration_events_df,
     raw_time_series_points,
@@ -112,7 +116,8 @@ def _get_metering_point_periods_df(
         .withColumn("body", from_json(col("body"), metering_point_generic_event_schema))
         .where(
             col("body.MessageType").isin(
-                "MeteringPointCreated", "MeteringPointConnected"
+                metering_point_created_message_type,
+                metering_point_connected_message_type,
             )
         )
         .select(
@@ -142,10 +147,10 @@ def _get_metering_point_periods_df(
         .withColumn(
             "ConnectionState",
             when(
-                col("MessageType") == "MeteringPointCreated",
+                col("MessageType") == metering_point_created_message_type,
                 lit(ConnectionState.new),
             ).when(
-                col("MessageType") == "MeteringPointConnected",
+                col("MessageType") == metering_point_connected_message_type,
                 lit(ConnectionState.connected),
             ),
         )
