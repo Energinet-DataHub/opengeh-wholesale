@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
+from enum import IntEnum
 
 
-class ConnectionState(Enum):
+class ConnectionState(IntEnum):
     new = 1
     connected = 2
     disconnected = 3
