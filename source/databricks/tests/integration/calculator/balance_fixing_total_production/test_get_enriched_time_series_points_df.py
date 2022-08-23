@@ -16,7 +16,9 @@
 import pytest
 from decimal import Decimal
 from datetime import datetime
-from package.balance_fixing_total_production import _get_enriched_time_series_points_df
+from package.balance_fixing_total_production import (
+    _get_enriched_time_series_points_df,
+)
 from tests.contract_utils import (
     assert_contract_matches_schema,
     read_contract,
@@ -196,3 +198,79 @@ def test__given_raw_time_series_points_with_different_time__return_dataframe_wit
 
     # Assert
     assert actual.count() == expected_rows
+
+
+@pytest.fixture(scope="module")
+def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_factory):
+    def factory(
+        stored_time_1: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
+        stored_time_2: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
+    ):
+        df = [
+            {
+                "GsrnNumber": "the-gsrn-number",
+                "TransactionId": "1",
+                "Quantity": Decimal("1.1"),
+                "Quality": 3,
+                "Resolution": 2,
+                "RegistrationDateTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
+                "storedTime": stored_time_1,
+                "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
+                "year": 2022,
+                "month": 6,
+                "day": 8,
+            },
+            {
+                "GsrnNumber": "the-gsrn-number",
+                "TransactionId": "1",
+                "Quantity": Decimal("2.2"),
+                "Quality": 3,
+                "Resolution": 2,
+                "RegistrationDateTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
+                "storedTime": stored_time_2,
+                "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
+                "year": 2022,
+                "month": 6,
+                "day": 8,
+            },
+        ]
+        return spark.createDataFrame(df)
+
+    return factory
+
+
+@pytest.mark.parametrize(
+    "stored_time_1, stored_time_2, expected_quantity",
+    [
+        ("2022-06-10T12:09:15.000Z", "2022-06-10T13:09:15.000Z", Decimal("2.2")),
+        ("2022-06-10T13:09:15.000Z", "2022-06-10T12:09:15.000Z", Decimal("1.1")),
+    ],
+)
+def test__this(
+    raw_time_series_points_with_same_gsrn_and_time_factory,
+    metering_point_period_df_factory,
+    timestamp_factory,
+    stored_time_1,
+    stored_time_2,
+    expected_quantity,
+):
+    """Test that _get_enriched_time_series_points_df gets a two time_series_points,
+    with the same gsrn and time that only the lateset stored will be used"""
+
+    # Arrange
+    raw_time_series_points = raw_time_series_points_with_same_gsrn_and_time_factory(
+        stored_time_1=stored_time_1, stored_time_2=stored_time_2
+    )
+    metering_point_period_df = metering_point_period_df_factory()
+
+    # Act
+    actual = _get_enriched_time_series_points_df(
+        raw_time_series_points,
+        metering_point_period_df,
+        timestamp_factory("2022-06-08T12:09:15.000Z"),
+        timestamp_factory("2022-06-08T13:09:15.000Z"),
+    )
+
+    # Assert
+    assert actual.count() == 1
+    assert actual.collect()[0]["Quantity"] == expected_quantity
