@@ -15,5 +15,8 @@
 from enum import IntEnum
 
 
-class MeteringPointType(IntEnum):
-    production = 2
+class SettlementMethod(IntEnum):
+    unknown = 0
+    profiled = 1
+    nonprofiled = 2
+    flex = 3
