@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
+from enum import IntEnum
 
 
-class MeteringPointType(Enum):
+class MeteringPointType(IntEnum):
     production = 2

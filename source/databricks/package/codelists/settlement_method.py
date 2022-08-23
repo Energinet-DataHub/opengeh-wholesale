@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
+from enum import IntEnum
 
 
-class SettlementMethod(Enum):
+class SettlementMethod(IntEnum):
     unknown = 0
     profiled = 1
     nonprofiled = 2
