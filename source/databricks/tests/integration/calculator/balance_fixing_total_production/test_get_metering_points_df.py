@@ -167,9 +167,6 @@ def metering_point_connected_df_factory(spark):
     return factory
 
 
-# TODO BJARKE: Test that windows has proper ordering (also secondary) of OperationTime
-
-
 def test__schema_for_created__is_subsets_of_generic_schema():
     for created_field in metering_point_created_event_schema:
         generic_field = next(
@@ -448,3 +445,36 @@ def test__when_effective_date_less_than_or_equal_to_period_end__row_is_included(
     # Assert
     actual_is_included = actual_df.count() == 1
     assert actual_is_included == expected_is_included
+
+
+@pytest.mark.parametrize(
+    "created_operation_time,connected_operation_time,expected",
+    [
+        (first_of_june, second_of_june, True),
+        (second_of_june, first_of_june, False),
+    ],
+)
+def test__operation_time_xxx(
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    grid_area_df,
+    created_operation_time,
+    connected_operation_time,
+    expected,
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory(
+        operation_time=created_operation_time
+    )
+    connected_events_df = metering_point_connected_df_factory(
+        operation_time=connected_operation_time
+    )
+    integration_events_df = created_events_df.union(connected_events_df)
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
+
+    # Assert
+    assert (actual_df.count() == 1) == expected
