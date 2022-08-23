@@ -34,6 +34,32 @@ internal static class ContractComplianceTestHelper
         throw new InvalidOperationException("Could not find required MessageType in contract.");
     }
 
+    public static async Task VerifyEnumCompliesWithContractAsync<T>(Stream contractStream)
+        where T : struct, Enum
+    {
+        using var streamReader = new StreamReader(contractStream);
+        var contractJson = await streamReader.ReadToEndAsync();
+        var contractDescription = JsonConvert.DeserializeObject<dynamic>(contractJson)!;
+
+        var expectedLiterals = contractDescription.literals;
+        var actualNames = Enum.GetNames<T>();
+
+        // Assert: Number of literals must match.
+        actualNames.Length.Should().Be(expectedLiterals.Count);
+
+        foreach (var expectedLiteral in expectedLiterals)
+        {
+            string expectedName = expectedLiteral.name;
+            T expectedValue = expectedLiteral.value;
+
+            // Assert: Lookup literal by name
+            var actualLiteral = Enum.Parse<T>(expectedName, true);
+
+            // Assert: Value of literal match
+            actualLiteral.Should().Be(expectedValue);
+        }
+    }
+
     public static async Task VerifyTypeCompliesWithContractAsync<T>(Stream contractStream)
     {
         using var streamReader = new StreamReader(contractStream);

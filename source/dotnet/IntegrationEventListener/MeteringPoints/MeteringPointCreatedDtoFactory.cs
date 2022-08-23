@@ -84,7 +84,7 @@ public class MeteringPointCreatedDtoFactory
         return readingPeriodicity switch
         {
             mpTypes.MeterReadingPeriodicity.MrpHourly => Resolution.Hourly,
-            mpTypes.MeterReadingPeriodicity.MrpQuarterly => Resolution.Quaterly,
+            mpTypes.MeterReadingPeriodicity.MrpQuarterly => Resolution.Quarterly,
             _ => throw new InvalidEnumArgumentException($"Provided ConnectionState value '{readingPeriodicity}' is invalid and cannot be mapped."),
         };
     }
