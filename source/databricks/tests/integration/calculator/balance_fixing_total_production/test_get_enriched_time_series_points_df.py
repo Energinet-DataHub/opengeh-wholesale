@@ -73,9 +73,13 @@ def metering_point_period_df_factory(spark, timestamp_factory):
 @pytest.mark.parametrize(
     "period_start, period_end, expected_rows",
     [
+        # period_start = time and period_end > time should have 1
         ("2022-06-08T12:09:15.000Z", "2022-06-08T12:09:16.000Z", 1),
+        # period_start < time and period_end > time should have 1
         ("2022-06-08T12:09:14.000Z", "2022-06-08T12:09:16.000Z", 1),
+        # period_start > time and period_end > time should have 0
         ("2022-06-08T12:09:16.000Z", "2022-06-08T12:09:16.000Z", 0),
+        # period_start = time and period_end = time should have 0
         ("2022-06-08T12:09:15.000Z", "2022-06-08T12:09:15.000Z", 0),
     ],
 )
@@ -106,9 +110,13 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
 @pytest.mark.parametrize(
     "effective_date, to_effective_date, expected_rows",
     [
+        # effective_date = time and to_effective_date > time should have 1
         ("2022-06-08T12:09:15.000Z", "2022-06-08T12:09:16.000Z", 1),
+        # effective_date < time and to_effective_date > time should have 1
         ("2022-06-08T12:09:14.000Z", "2022-06-08T12:09:16.000Z", 1),
+        # effective_date > time and to_effective_date > time should have 0
         ("2022-06-08T12:09:16.000Z", "2022-06-08T12:09:16.000Z", 0),
+        # effective_date = time and to_effective_date = time should have 0
         ("2022-06-08T12:09:15.000Z", "2022-06-08T12:09:15.000Z", 0),
     ],
 )
