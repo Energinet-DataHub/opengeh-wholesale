@@ -152,7 +152,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     )
 
     # Assert
-    assert expected_rows == df.count()
+    assert df.count() == expected_rows
 
 
 @pytest.mark.parametrize(
@@ -193,4 +193,4 @@ def test__given_raw_time_series_points_with_different_time__return_dataframe_wit
     )
 
     # Assert
-    assert expected_rows == actual.count()
+    assert actual.count() == expected_rows
