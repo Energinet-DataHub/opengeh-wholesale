@@ -1,0 +1,92 @@
+{
+  "literals": [
+    {
+      "name": "unknown",
+      "value": 0
+    },
+    {
+      "name": "consumption",
+      "value": 1
+    },
+    {
+      "name": "production",
+      "value": 2
+    },
+    {
+      "name": "exchange",
+      "value": 3
+    },
+    {
+      "name": "veproduction",
+      "value": 4
+    },
+    {
+      "name": "analysis",
+      "value": 5
+    },
+    {
+      "name": "surplusproductiongroup",
+      "value": 6
+    },
+    {
+      "name": "netproduction",
+      "value": 7
+    },
+    {
+      "name": "supplytogrid",
+      "value": 8
+    },
+    {
+      "name": "consumptionfromgrid",
+      "value": 9
+    },
+    {
+      "name": "wholesaleservice",
+      "value": 10
+    },
+    {
+      "name": "ownproduction",
+      "value": 11
+    },
+    {
+      "name": "netfromgrid",
+      "value": 12
+    },
+    {
+      "name": "nettogrid",
+      "value": 13
+    },
+    {
+      "name": "totalconsumption",
+      "value": 14
+    },
+    {
+      "name": "gridlosscorrection",
+      "value": 15
+    },
+    {
+      "name": "electricalheating",
+      "value": 16
+    },
+    {
+      "name": "netconsumption",
+      "value": 17
+    },
+    {
+      "name": "otherconsumption",
+      "value": 18
+    },
+    {
+      "name": "otherproduction",
+      "value": 19
+    },
+    {
+      "name": "exchangereactiveenergy",
+      "value": 20
+    },
+    {
+      "name": "internaluse",
+      "value": 21
+    }
+  ]
+}

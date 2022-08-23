@@ -13,26 +13,20 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
-using FluentAssertions;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.MeteringPoints;
+namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoints;
 
 [UnitTest]
-public class SettlementMethodTests
+public sealed class ResolutionTests
 {
-    [Theory]
-    [InlineData(0, nameof(SettlementMethod.Unknown))]
-    [InlineData(1, nameof(SettlementMethod.Profiled))]
-    [InlineData(2, nameof(SettlementMethod.NonProfiled))]
-    [InlineData(3, nameof(SettlementMethod.Flex))]
-    public void Value_IsDefinedCorrectly(int expected, string name)
+    [Fact]
+    public async Task EnumNamesAndValuesMatchContractWithCalculator()
     {
-        // Arrange
-        var actual = Enum.Parse<SettlementMethod>(name);
+        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.resolution.json");
 
-        // Assert
-        actual.Should().Be((SettlementMethod)expected);
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<Resolution>(stream);
     }
 }
