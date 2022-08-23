@@ -73,8 +73,8 @@ def metering_point_created_df_factory(spark):
         operation_time=first_of_june,
         grid_area_link_id=grid_area_link_id,
         gsrn_number=gsrn_number,
-        metering_point_type=MeteringPointType.production,
-        resolution=Resolution.hour,
+        metering_point_type=MeteringPointType.production.value,
+        resolution=Resolution.hour.value,
     ):
         row = {
             "storedTime": stored_time,
@@ -82,8 +82,8 @@ def metering_point_created_df_factory(spark):
             "MessageType": message_type,
             "GsrnNumber": gsrn_number,
             "GridAreaLinkId": grid_area_link_id,
-            "SettlementMethod": SettlementMethod.non_profiled,
-            "ConnectionState": ConnectionState.new,
+            "SettlementMethod": SettlementMethod.nonprofiled.value,
+            "ConnectionState": ConnectionState.new.value,
             "EffectiveDate": first_of_june,
             "MeteringPointType": metering_point_type,
             "MeteringPointId": metering_point_id,
@@ -167,6 +167,7 @@ def metering_point_connected_df_factory(spark):
 
 
 # TODO BJARKE: Test that the generic schema is the union of the created and connected events
+#              Test that windows has proper ordering (also secondary) of OperationTime
 
 
 def test__stored_time_of_metering_point_created_matches_persister(
@@ -269,9 +270,9 @@ def test__when_correct_message_types__returns_row(
 @pytest.mark.parametrize(
     "metering_point_type,expected_is_included",
     [
-        (MeteringPointType.production, True),
-        (MeteringPointType.production - 1, False),
-        (MeteringPointType.production + 1, False),
+        (MeteringPointType.production.value, True),
+        (MeteringPointType.production.value - 1, False),
+        (MeteringPointType.production.value + 1, False),
     ],
 )
 def test__when_metering_point_type_is_production__metering_point_is_included(
@@ -332,7 +333,9 @@ def test__grid_area_code(
     assert actual_df.first().GridAreaCode == grid_area_code
 
 
-@pytest.mark.parametrize("resolution", [(Resolution.hour), (Resolution.quarter)])
+@pytest.mark.parametrize(
+    "resolution", [(Resolution.hour.value), (Resolution.quarter.value)]
+)
 def test__resolution(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,

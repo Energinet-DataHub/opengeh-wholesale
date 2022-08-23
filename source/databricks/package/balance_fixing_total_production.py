@@ -149,10 +149,10 @@ def _get_metering_point_periods_df(
             "ConnectionState",
             when(
                 col("MessageType") == metering_point_created_message_type,
-                lit(ConnectionState.new),
+                lit(ConnectionState.new.value),
             ).when(
                 col("MessageType") == metering_point_connected_message_type,
-                lit(ConnectionState.connected),
+                lit(ConnectionState.connected.value),
             ),
         )
         .withColumn(
@@ -168,9 +168,9 @@ def _get_metering_point_periods_df(
         .where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
-            col("ConnectionState") == ConnectionState.connected
+            col("ConnectionState") == ConnectionState.connected.value
         )  # Only aggregate when metering points is connected
-        .where(col("MeteringPointType") == MeteringPointType.production)
+        .where(col("MeteringPointType") == MeteringPointType.production.value)
     )
 
     # Only include metering points in the selected grid areas

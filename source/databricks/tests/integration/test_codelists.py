@@ -13,7 +13,12 @@
 # limitations under the License.
 
 import pytest
-from package.codelists import ConnectionState, MeteringPointType, Resolution
+from package.codelists import (
+    ConnectionState,
+    MeteringPointType,
+    Resolution,
+    SettlementMethod,
+)
 from tests.contract_utils import assert_codelist_matches_contract
 
 
@@ -31,7 +36,7 @@ def test_metering_point_type_is_subset_of_contract(source_path):
 
 def test_settlement_method_is_subset_of_contract(source_path):
     assert_codelist_matches_contract(
-        Resolution, f"{source_path}/contracts/enums/settlement-method.json"
+        SettlementMethod, f"{source_path}/contracts/enums/settlement-method.json"
     )
 
 
