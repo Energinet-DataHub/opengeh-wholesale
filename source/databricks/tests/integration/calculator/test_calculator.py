@@ -91,14 +91,14 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 def test_calculator_job_creates_file(
     json_test_files, databricks_path, delta_lake_path, source_path
 ):
-    """spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
+    spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
         "body", col("body").cast("binary")
     ).write.mode("overwrite").parquet(
         f"{delta_lake_path}/parquet_test_files/integration_events"
     )
     spark.read.json(f"{json_test_files}/time_series_points.json").write.mode(
         "overwrite"
-    ).parquet(f"{delta_lake_path}/parquet_test_files/time_series_points")"""
+    ).parquet(f"{delta_lake_path}/parquet_test_files/time_series_points")
     # Arrange
     python_parameters = [
         "python",
@@ -145,6 +145,7 @@ def test__when_stored_after_snapshot_time__throws_because_grid_area_not_found(
     spark.read.json(f"{json_test_files}/time_series_points.json").write.mode(
         "overwrite"
     ).parquet(f"{delta_lake_path}/parquet_test_files/time_series_points")
+
     # Arrange
     python_parameters = [
         "python",
