@@ -29,6 +29,12 @@ def test_metering_point_type_is_subset_of_contract(source_path):
     )
 
 
+def test_settlement_method_is_subset_of_contract(source_path):
+    assert_codelist_matches_contract(
+        Resolution, f"{source_path}/contracts/enums/settlement-method.json"
+    )
+
+
 def test_resolution_is_subset_of_contract(source_path):
     assert_codelist_matches_contract(
         Resolution, f"{source_path}/contracts/enums/time-series-resolution.json"

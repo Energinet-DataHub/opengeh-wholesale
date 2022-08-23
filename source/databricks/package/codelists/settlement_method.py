@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from enum import Enum
 
-class SettlementMethod:
+
+class SettlementMethod(Enum):
     unknown = 0
     profiled = 1
-    non_profiled = 2
+    nonprofiled = 2
     flex = 3
