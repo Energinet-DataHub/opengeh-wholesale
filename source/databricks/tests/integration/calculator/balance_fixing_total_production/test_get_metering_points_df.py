@@ -28,6 +28,7 @@ from package.balance_fixing_total_production import (
 from package.schemas import (
     metering_point_created_event_schema,
     metering_point_connected_event_schema,
+    metering_point_generic_event_schema,
 )
 from package.codelists import (
     ConnectionState,
@@ -166,8 +167,27 @@ def metering_point_connected_df_factory(spark):
     return factory
 
 
-# TODO BJARKE: Test that the generic schema is the union of the created and connected events
-#              Test that windows has proper ordering (also secondary) of OperationTime
+# TODO BJARKE: Test that windows has proper ordering (also secondary) of OperationTime
+
+
+def test__schema_for_created__is_subsets_of_generic_schema():
+    for created_field in metering_point_created_event_schema:
+        generic_field = next(
+            f
+            for f in metering_point_generic_event_schema
+            if f.name == created_field.name
+        )
+        assert created_field.dataType == generic_field.dataType
+
+
+def test__schema_for_connected__is_subsets_of_generic_schema():
+    for connected_field in metering_point_connected_event_schema:
+        generic_field = next(
+            f
+            for f in metering_point_generic_event_schema
+            if f.name == connected_field.name
+        )
+        assert connected_field.dataType == generic_field.dataType
 
 
 def test__stored_time_of_metering_point_created_matches_persister(
