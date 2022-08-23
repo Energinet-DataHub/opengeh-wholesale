@@ -19,17 +19,17 @@ from tests.contract_utils import assert_contract_matches_literal
 
 def test_connection_state(source_path):
     assert_contract_matches_literal(
-        f"{source_path}/contracts/literals/connection-state.json", ConnectionState
+        f"{source_path}/contracts/enums/connection-state.json", ConnectionState
     )
 
 
 def test_metering_point_type(source_path):
     assert_contract_matches_literal(
-        f"{source_path}/contracts/literals/metering-point-type.json", MeteringPointType
+        f"{source_path}/contracts/enums/metering-point-type.json", MeteringPointType
     )
 
 
 def test_resolution(source_path):
     assert_contract_matches_literal(
-        f"{source_path}/contracts/literals/time-series-resolution.json", Resolution
+        f"{source_path}/contracts/enums/time-series-resolution.json", Resolution
     )

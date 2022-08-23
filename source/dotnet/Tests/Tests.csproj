@@ -77,16 +77,16 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\contracts\literals\connection-state.json">
+    <EmbeddedResource Include="..\..\contracts\enums\connection-state.json">
       <Link>IntegrationEventListener\MeteringPoints\connection-state.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\contracts\literals\metering-point-type.json">
+    <EmbeddedResource Include="..\..\contracts\enums\metering-point-type.json">
       <Link>IntegrationEventListener\MeteringPoints\metering-point-type.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\contracts\literals\settlement-method.json">
+    <EmbeddedResource Include="..\..\contracts\enums\settlement-method.json">
       <Link>IntegrationEventListener\MeteringPoints\settlement-method.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\contracts\literals\metering-point-resolution.json">
+    <EmbeddedResource Include="..\..\contracts\enums\metering-point-resolution.json">
       <Link>IntegrationEventListener\MeteringPoints\metering-point-resolution.json</Link>
     </EmbeddedResource>
   </ItemGroup>
