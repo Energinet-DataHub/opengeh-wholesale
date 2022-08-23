@@ -26,34 +26,23 @@ from tests.contract_utils import (
 
 @pytest.fixture(scope="module")
 def raw_time_series_points_factory(spark, timestamp_factory):
-    def factory():
+    def factory(
+        time: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
+    ):
         df = [
             {
                 "GsrnNumber": "1",
                 "TransactionId": "1",
-                "Quantity": Decimal(1.1),
+                "Quantity": Decimal("1.1"),
                 "Quality": 3,
                 "Resolution": 2,
                 "RegistrationDateTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
                 "storedTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
-                "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
+                "time": time,
                 "year": 2022,
                 "month": 6,
                 "day": 8,
-            },
-            {
-                "GsrnNumber": "1",
-                "TransactionId": "1",
-                "Quantity": Decimal(1.1),
-                "Quality": 3,
-                "Resolution": 2,
-                "RegistrationDateTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
-                "storedTime": timestamp_factory("2022-06-08T12:09:15.000Z"),
-                "time": timestamp_factory("2022-06-08T13:09:15.000Z"),
-                "year": 2022,
-                "month": 6,
-                "day": 8,
-            },
+            }
         ]
         return spark.createDataFrame(df)
 
@@ -64,7 +53,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
 def metering_point_period_df_factory(spark, timestamp_factory):
     def factory(
         effective_date: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
-        to_effective_date: datetime = timestamp_factory("2022-06-08T13:09:16.000Z"),
+        to_effective_date: datetime = timestamp_factory("2022-06-08T13:09:15.000Z"),
     ):
         df = [
             {
@@ -82,59 +71,28 @@ def metering_point_period_df_factory(spark, timestamp_factory):
 
 
 @pytest.mark.parametrize(
-    "period_start, period_end, effective_date, to_effective_date, expected_rows",
+    "period_start, period_end, expected_rows",
     [
-        (
-            "2022-06-08T12:09:15.000Z",
-            "2022-06-08T13:09:16.000Z",
-            "2022-06-08T12:09:15.000Z",
-            "2022-06-08T13:09:16.000Z",
-            2,
-        ),
-        (
-            "2022-06-08T12:09:15.000Z",
-            "2022-06-08T13:09:15.000Z",
-            "2022-06-08T12:09:15.000Z",
-            "2022-06-08T13:09:15.000Z",
-            1,
-        ),
-        (
-            "2022-06-08T12:09:15.000Z",
-            "2022-06-08T13:09:16.000Z",
-            "2022-06-08T12:09:15.000Z",
-            "2022-06-08T13:09:15.000Z",
-            1,
-        ),
-        (
-            "2022-06-08T12:09:15.000Z",
-            "2022-06-08T13:09:15.000Z",
-            "2022-06-08T12:09:15.000Z",
-            "2022-06-08T13:09:16.000Z",
-            1,
-        ),
-        (
-            "2022-06-08T12:09:16.000Z",
-            "2022-06-08T13:09:16.000Z",
-            "2022-06-08T12:09:16.000Z",
-            "2022-06-08T13:09:16.000Z",
-            1,
-        ),
+        ("2022-06-08T12:09:15.000Z", "2022-06-08T12:09:16.000Z", 1),
+        ("2022-06-08T12:09:14.000Z", "2022-06-08T12:09:16.000Z", 1),
+        ("2022-06-08T12:09:16.000Z", "2022-06-08T12:09:16.000Z", 0),
+        ("2022-06-08T12:09:15.000Z", "2022-06-08T12:09:15.000Z", 0),
     ],
 )
-def test__when(
+def test__given_different_period_start_and_period_end__return_dataframe_with_correct_number_of_rows(
     raw_time_series_points_factory,
     metering_point_period_df_factory,
     timestamp_factory,
     period_start,
     period_end,
-    effective_date,
-    to_effective_date,
     expected_rows,
 ):
+    """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
+    expected_rows is the number of rows in the output dataframe when given different parameters,
+    period_start, period_end"""
     raw_time_series_points = raw_time_series_points_factory()
-    metering_point_period_df = metering_point_period_df_factory(
-        effective_date=effective_date, to_effective_date=to_effective_date
-    )
+    metering_point_period_df = metering_point_period_df_factory()
+
     df = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
@@ -143,3 +101,77 @@ def test__when(
     )
 
     assert expected_rows == df.count()
+
+
+@pytest.mark.parametrize(
+    "effective_date, to_effective_date, expected_rows",
+    [
+        ("2022-06-08T12:09:15.000Z", "2022-06-08T12:09:16.000Z", 1),
+        ("2022-06-08T12:09:14.000Z", "2022-06-08T12:09:16.000Z", 1),
+        ("2022-06-08T12:09:16.000Z", "2022-06-08T12:09:16.000Z", 0),
+        ("2022-06-08T12:09:15.000Z", "2022-06-08T12:09:15.000Z", 0),
+    ],
+)
+def test__given_different_effective_date_and_to_effective_date__return_dataframe_with_correct_number_of_rows(
+    raw_time_series_points_factory,
+    metering_point_period_df_factory,
+    timestamp_factory,
+    effective_date,
+    to_effective_date,
+    expected_rows,
+):
+    """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
+    expected_rows is the number of rows in the output dataframe when given different parameters,
+    effective_date and to_effective_date"""
+    raw_time_series_points = raw_time_series_points_factory(
+        time=timestamp_factory("2022-06-08T12:09:15.000Z")
+    )
+    metering_point_period_df = metering_point_period_df_factory(
+        effective_date=effective_date, to_effective_date=to_effective_date
+    )
+
+    df = _get_enriched_time_series_points_df(
+        raw_time_series_points,
+        metering_point_period_df,
+        timestamp_factory("2022-06-08T12:09:15.000Z"),
+        timestamp_factory("2022-06-08T13:09:15.000Z"),
+    )
+
+    assert expected_rows == df.count()
+
+
+@pytest.mark.parametrize(
+    "time, expected_rows",
+    [
+        ("2022-06-08T12:09:16.000Z", 1),
+        ("2022-06-08T12:09:15.000Z", 1),
+        ("2022-06-08T12:09:14.000Z", 0),
+        ("2022-06-08T13:09:15.000Z", 0),
+        ("2022-06-08T13:09:16.000Z", 0),
+    ],
+)
+def test__given_raw_time_series_points_with_different_time__return_dataframe_with_correct_number_of_rows(
+    raw_time_series_points_factory,
+    metering_point_period_df_factory,
+    timestamp_factory,
+    time,
+    expected_rows,
+):
+    """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
+    expected_rows is the number of rows in the output dataframe when given different time on time series point"""
+    raw_time_series_points = raw_time_series_points_factory(
+        time=timestamp_factory(time)
+    )
+    metering_point_period_df = metering_point_period_df_factory(
+        effective_date=timestamp_factory("2022-06-08T12:09:15.000Z"),
+        to_effective_date=timestamp_factory("2022-06-08T13:09:15.000Z"),
+    )
+
+    actual = _get_enriched_time_series_points_df(
+        raw_time_series_points,
+        metering_point_period_df,
+        timestamp_factory("2022-06-08T12:09:15.000Z"),
+        timestamp_factory("2022-06-08T13:09:15.000Z"),
+    )
+
+    assert expected_rows == actual.count()
