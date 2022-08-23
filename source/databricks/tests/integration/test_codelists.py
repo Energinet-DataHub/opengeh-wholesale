@@ -14,22 +14,22 @@
 
 import pytest
 from package.codelists import ConnectionState, MeteringPointType, Resolution
-from tests.contract_utils import assert_contract_matches_literal
+from tests.contract_utils import assert_codelist_matches_contract
 
 
-def test_connection_state(source_path):
-    assert_contract_matches_literal(
-        f"{source_path}/contracts/enums/connection-state.json", ConnectionState
+def test_connection_state_is_subset_of_contract(source_path):
+    assert_codelist_matches_contract(
+        ConnectionState, f"{source_path}/contracts/enums/connection-state.json"
     )
 
 
-def test_metering_point_type(source_path):
-    assert_contract_matches_literal(
-        f"{source_path}/contracts/enums/metering-point-type.json", MeteringPointType
+def test_metering_point_type_is_subset_of_contract(source_path):
+    assert_codelist_matches_contract(
+        MeteringPointType, f"{source_path}/contracts/enums/metering-point-type.json"
     )
 
 
-def test_resolution(source_path):
-    assert_contract_matches_literal(
-        f"{source_path}/contracts/enums/time-series-resolution.json", Resolution
+def test_resolution_is_subset_of_contract(source_path):
+    assert_codelist_matches_contract(
+        Resolution, f"{source_path}/contracts/enums/time-series-resolution.json"
     )
