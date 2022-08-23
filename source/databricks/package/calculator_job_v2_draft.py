@@ -15,6 +15,7 @@
 from datetime import datetime
 import sys
 from pyspark.sql.functions import col
+import ast
 
 # Required when executing in a subprocess from pytest (without using wheel)
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
@@ -29,6 +30,15 @@ def _valid_date(s):
         return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
     except ValueError:
         msg = "not a valid date: {0!r}".format(s)
+        raise configargparse.ArgumentTypeError(msg)
+
+
+def _valid_grid_areas(s):
+    """See https://stackoverflow.com/questions/25470844/specify-date-format-for-python-argparse-input-arguments"""
+    try:
+        return ast.literal_eval(s)
+    except ValueError:
+        msg = "not a valid grid area list"
         raise configargparse.ArgumentTypeError(msg)
 
 
@@ -48,7 +58,7 @@ def _get_valid_args_or_throw():
     # Run parameters
     p.add("--batch-id", type=str, required=True)
     p.add("--batch-snapshot-datetime", type=_valid_date, required=True)
-    p.add("--batch-grid-areas", type=list, required=True)
+    p.add("--batch-grid-areas", type=_valid_grid_areas, required=True)
     p.add("--batch-period-start-datetime", type=_valid_date, required=True)
     p.add("--batch-period-end-datetime", type=_valid_date, required=True)
 
@@ -95,7 +105,6 @@ def start():
         .parquet(args.time_series_points_path)
         .where(col("storedTime") <= args.batch_snapshot_datetime)
     )
-
     output_df = calculate_balance_fixing_total_production(
         raw_integration_events_df,
         raw_time_series_points_df,

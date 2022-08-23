@@ -66,7 +66,7 @@ def calculate_balance_fixing_total_production(
         period_end_datetime,
     )
     result_df = _get_result_df(enriched_time_series_point_df, batch_grid_areas)
-    cached_raw_integration_events_df.unpesist()
+    cached_raw_integration_events_df.unpersist()
 
     return result_df
 
@@ -275,7 +275,7 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
     result_df = (
         result_df.withColumn("position", row_number().over(window))
         .withColumnRenamed("sum(quarter_quantity)", "Quantity")
-        .select("GridAreaCode", "Quantity", "Quality")
+        .select("GridAreaCode", "Quantity")
     )
 
     return result_df

@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import pytest
 from package import initialize_spark
+from pyspark.sql.functions import col
 
 spark = initialize_spark("foo", "bar")
 
@@ -85,3 +86,99 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
     # Assert
     assert exit_code == 0, "Calculator job failed to accept provided input arguments"
+
+
+def test_calculator_job_creates_file(
+    json_test_files, databricks_path, delta_lake_path, source_path
+):
+    """spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
+        "body", col("body").cast("binary")
+    ).write.mode("overwrite").parquet(
+        f"{delta_lake_path}/parquet_test_files/integration_events"
+    )
+    spark.read.json(f"{json_test_files}/time_series_points.json").write.mode(
+        "overwrite"
+    ).parquet(f"{delta_lake_path}/parquet_test_files/time_series_points")"""
+    # Arrange
+    process_manager_parameters = _get_process_manager_parameters(
+        f"{source_path}/contracts/calculation-job-parameters-reference.txt"
+    )
+    python_parameters = [
+        "python",
+        f"{databricks_path}/package/calculator_job_v2_draft.py",
+        "--data-storage-account-name",
+        "foo",
+        "--data-storage-account-key",
+        "foo",
+        "--integration-events-path",
+        f"{delta_lake_path}/parquet_test_files/integration_events",
+        "--time-series-points-path",
+        f"{delta_lake_path}/parquet_test_files/time_series_points",
+        "--process-results-path",
+        f"{delta_lake_path}/result",
+        "--batch-id",
+        "{batch-id}",
+        "--batch-grid-areas",
+        "[805, 806]",
+        "--batch-snapshot-datetime",
+        "2022-09-02T21:59:00Z",
+        "--batch-period-start-datetime",
+        "2022-05-31T22:00:00Z",
+        "--batch-period-end-datetime",
+        "2022-09-01T22:00:00Z",
+    ]
+
+    # Act
+    # exit_code = subprocess.call(python_parameters)
+
+    result = spark.read.json(f"{delta_lake_path}/result")
+
+    # Assert
+    assert result.count() >= 100, "Calculator job failed to write files"
+
+
+def test__when_stored_after_snapshot_time__throws_because_grid_area_not_found(
+    json_test_files, databricks_path, delta_lake_path, source_path
+):
+    spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
+        "body", col("body").cast("binary")
+    ).write.mode("overwrite").parquet(
+        f"{delta_lake_path}/parquet_test_files/integration_events"
+    )
+    spark.read.json(f"{json_test_files}/time_series_points.json").write.mode(
+        "overwrite"
+    ).parquet(f"{delta_lake_path}/parquet_test_files/time_series_points")
+    # Arrange
+    process_manager_parameters = _get_process_manager_parameters(
+        f"{source_path}/contracts/calculation-job-parameters-reference.txt"
+    )
+    python_parameters = [
+        "python",
+        f"{databricks_path}/package/calculator_job_v2_draft.py",
+        "--data-storage-account-name",
+        "foo",
+        "--data-storage-account-key",
+        "foo",
+        "--integration-events-path",
+        f"{delta_lake_path}/parquet_test_files/integration_events",
+        "--time-series-points-path",
+        f"{delta_lake_path}/parquet_test_files/time_series_points",
+        "--process-results-path",
+        f"{delta_lake_path}/result",
+        "--batch-id",
+        "{batch-id}",
+        "--batch-grid-areas",
+        "[805, 806]",
+        "--batch-snapshot-datetime",
+        "2022-08-15T21:59:00Z",
+        "--batch-period-start-datetime",
+        "2022-05-31T22:00:00Z",
+        "--batch-period-end-datetime",
+        "2022-09-01T22:00:00Z",
+    ]
+
+    # Act
+    completed_process = subprocess.run(python_parameters, capture_output=True)
+
+    # Assert
+    assert "grid area" in completed_process.stderr.decode()
