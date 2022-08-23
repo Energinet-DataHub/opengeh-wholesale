@@ -100,9 +100,6 @@ def test_calculator_job_creates_file(
         "overwrite"
     ).parquet(f"{delta_lake_path}/parquet_test_files/time_series_points")"""
     # Arrange
-    process_manager_parameters = _get_process_manager_parameters(
-        f"{source_path}/contracts/calculation-job-parameters-reference.txt"
-    )
     python_parameters = [
         "python",
         f"{databricks_path}/package/calculator_job_v2_draft.py",
@@ -129,7 +126,7 @@ def test_calculator_job_creates_file(
     ]
 
     # Act
-    # exit_code = subprocess.call(python_parameters)
+    exit_code = subprocess.call(python_parameters)
 
     result = spark.read.json(f"{delta_lake_path}/result")
 
@@ -149,9 +146,6 @@ def test__when_stored_after_snapshot_time__throws_because_grid_area_not_found(
         "overwrite"
     ).parquet(f"{delta_lake_path}/parquet_test_files/time_series_points")
     # Arrange
-    process_manager_parameters = _get_process_manager_parameters(
-        f"{source_path}/contracts/calculation-job-parameters-reference.txt"
-    )
     python_parameters = [
         "python",
         f"{databricks_path}/package/calculator_job_v2_draft.py",
