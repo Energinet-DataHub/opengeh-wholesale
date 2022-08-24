@@ -145,7 +145,7 @@ def test__points_with_same_time_quantitys_are_on_same_poistion(
     )
 
 
-# Test with 0.001 which should be 0.000 in result for hourly resolution
+# Test with 0.001 which should be 0.000 in result for hourly resolution LRN
 # Test that position works correctly
 # Test that Quality is set and is None
 # Test smallest Quantity supports that rounding up and
