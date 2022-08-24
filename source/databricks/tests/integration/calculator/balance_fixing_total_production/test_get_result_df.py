@@ -162,6 +162,55 @@ def test__hourly_sums_are_rounded_correctly_to_zero(
         assert x["Quantity"] == Decimal("0.000")
 
 
+def test__final_sum_below_midpoint_is_rounded_down(
+    enriched_time_serie_factory,
+):
+    """Test that ensures rounding is done correctly for sums below midpoint"""
+    df = enriched_time_serie_factory(Resolution.hour.value, 0.001)
+    result_df = _get_result_df(df, [805])
+    points = result_df.collect()
+
+    assert len(points) == 4  # one hourly quantity should yield 4 points
+
+    for x in points:
+        assert x["Quantity"] == Decimal("0.000")
+
+
+# TODO: Do we want up or down here?
+def test__final_sum_at_midpoint_is_rounded_up(
+    enriched_time_serie_factory,
+):
+    """Test that ensures rounding is done correctly for sums at midpoint"""
+    df = enriched_time_serie_factory(Resolution.hour.value, 0.001).union(
+        enriched_time_serie_factory(Resolution.hour.value, 0.001)
+    )
+    result_df = _get_result_df(df, [805])
+    points = result_df.collect()
+
+    assert len(points) == 4  # one hourly quantity should yield 4 points
+
+    for x in points:
+        assert x["Quantity"] == Decimal("0.001")
+
+
+def test__final_sum_past_midpoint_is_rounded_up(
+    enriched_time_serie_factory,
+):
+    """Test that ensures rounding is done correctly for sums past midpoint"""
+    df = (
+        enriched_time_serie_factory(Resolution.hour.value, 0.001)
+        .union(enriched_time_serie_factory(Resolution.hour.value, 0.001))
+        .union(enriched_time_serie_factory(Resolution.hour.value, 0.001))
+    )
+    result_df = _get_result_df(df, [805])
+    points = result_df.collect()
+
+    assert len(points) == 4  # one hourly quantity should yield 4 points
+
+    for x in points:
+        assert x["Quantity"] == Decimal("0.001")
+
+
 # Test that position works correctly LRN
 def test__position_is_based_on_time_correctly(
     enriched_time_series_quaterly_same_time_factory,
@@ -186,9 +235,5 @@ def test__position_is_based_on_time_correctly(
 # Test that GridAreaCode is in input is in output
 # Test that only series from the GridArea is used to sum with
 # Test that multiple GridAreas receive each their calculation for a period
-# Test that limits work all the way: sum 1 mill rows of 0.000001 quarterly
-# Test that limits work all the way: sum 1 mill rows of 0.001 hourly
+# Test that limits work all the way: sum 1 mill rows of 0.001 hourly [AMI]
 # Should we crash/stop if resolution is neither hour nor quarter?
-# Test that we round the way we want: is sum 0.0005 truncated or rounded [AMI]
-# Test that we round the way we want: is sum 0.0008 truncated or rounded [AMI]
-# Test that we round the way we want: is sum 0.0002 truncated or rounded [AMI]
