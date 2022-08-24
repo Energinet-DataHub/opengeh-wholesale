@@ -235,6 +235,7 @@ def test__position_is_based_on_time_correctly(
     )  # the expected quantity first point based on _firs_time
 
 
+# Test that hourly Quantity is summed as quarterly?
 def test__that_hourly_quantity_is_summed_as_quarterly(
     enriched_time_series_quaterly_same_time_factory,
 ):
@@ -284,7 +285,6 @@ def test__Quality_is_present_and_None(
 
 
 # Test smallest Quantity supports that rounding up and
-# Test that hourly Quantity is summed as quarterly? [johevemi]
 # Test that GridAreaCode is in input is in output
 # Test that only series from the GridArea is used to sum with
 # Test that multiple GridAreas receive each their calculation for a period
