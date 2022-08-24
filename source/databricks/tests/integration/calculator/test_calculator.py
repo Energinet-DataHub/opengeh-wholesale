@@ -87,7 +87,7 @@ def test_calculator_job_accepts_parameters_from_process_manager(
     assert exit_code == 0, "Calculator job failed to accept provided input arguments"
 
 
-def test_calculator_job_creates_file(
+def test_calculator_job_creates_files_for_each_gridarea(
     json_test_files, databricks_path, delta_lake_path, source_path
 ):
     spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
