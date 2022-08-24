@@ -43,21 +43,17 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
         df = [
             {
                 "GridAreaCode": first_gridAreaCode,
-                "GsrnNumber": "2045555014",
                 "Resolution": first_resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
                 "time": time,
                 "Quantity": first_quantity,
-                "Quality": 4,
             },
             {
                 "GridAreaCode": second_gridAreaCode,
-                "GsrnNumber": "2045555014",
                 "Resolution": second_resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
                 "time": time2,
                 "Quantity": second_quantity,
-                "Quality": 4,
             },
         ]
 
@@ -76,12 +72,10 @@ def enriched_time_series_factory(spark, timestamp_factory):
         df = [
             {
                 "GridAreaCode": gridArea,
-                "GsrnNumber": "2045555014",
                 "Resolution": resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
                 "time": time,
                 "Quantity": quantity,
-                "Quality": 4,
             }
         ] * amount
 
@@ -232,11 +226,11 @@ def test__position_is_based_on_time_correctly(
     assert points[0]["position"] == 1
     assert (
         points[0]["Quantity"] == 1
-    )  # the expected quantity first point based on _firs_time
+    )
     assert points[1]["position"] == 2
     assert (
         points[1]["Quantity"] == 2
-    )  # the expected quantity first point based on _firs_time
+    )
 
 
 # Test that hourly Quantity is summed as quarterly
