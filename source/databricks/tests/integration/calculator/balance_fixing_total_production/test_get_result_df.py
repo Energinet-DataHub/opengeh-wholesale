@@ -137,7 +137,6 @@ def test__points_with_same_time_quantitys_are_on_same_poistion(
         second_quantity=2,
     )
     result_df = _get_result_df(df, [805])
-    result_df.show()
     assert (
         # total 'Quantity' on first position
         result_df.first().Quantity
@@ -152,7 +151,6 @@ def test__hourly_sums_are_rounded_correctly_to_zero(
     """Test that checks accetable rounding erros for hourly quantitys summed on a quaterly basis"""
     df = enriched_time_serie_factory(Resolution.hour.value, 0.001)
     result_df = _get_result_df(df, [805])
-    result_df.show()
     points = result_df.collect()
 
     assert len(points) == 4  # one hourly quantity should yield 4 points
@@ -162,6 +160,8 @@ def test__hourly_sums_are_rounded_correctly_to_zero(
 
 
 # Test that position works correctly LRN
+
+
 # Test that Quality is set and is None
 # Test smallest Quantity supports that rounding up and
 # Test that hourly Quantity is summed as quarterly?
