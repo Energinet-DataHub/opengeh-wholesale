@@ -113,7 +113,7 @@ def metering_point_created_df_factory(spark):
                         col("OperationTime"),
                         col("CorrelationId"),
                     )
-                ).cast("binary"),
+                ),
             )
             .select("storedTime", "body")
         )
@@ -159,7 +159,7 @@ def metering_point_connected_df_factory(spark):
                         col("OperationTime"),
                         col("CorrelationId"),
                     )
-                ).cast("binary"),
+                ),
             )
             .select("storedTime", "body")
         )
@@ -190,25 +190,25 @@ def test__schema_for_connected__is_subsets_of_generic_schema():
 def test__stored_time_of_metering_point_created_matches_persister(
     metering_point_created_df_factory, source_path
 ):
-    raw_integration_events_df = metering_point_created_df_factory()
+    cached_integration_events_df = metering_point_created_df_factory()
 
     expected_stored_time_name = read_contract(
         f"{source_path}/contracts/events/metering-point-created.json"
     )["storedTimeName"]
 
-    assert expected_stored_time_name in raw_integration_events_df.columns
+    assert expected_stored_time_name in cached_integration_events_df.columns
 
 
 def test__stored_time_of_metering_point_connected_matches_persister(
     metering_point_connected_df_factory, source_path
 ):
-    raw_integration_events_df = metering_point_connected_df_factory()
+    cached_integration_events_df = metering_point_connected_df_factory()
 
     expected_stored_time_name = read_contract(
         f"{source_path}/contracts/events/metering-point-connected.json"
     )["storedTimeName"]
 
-    assert expected_stored_time_name in raw_integration_events_df.columns
+    assert expected_stored_time_name in cached_integration_events_df.columns
 
 
 def test__metering_point_created_schema_matches_contract(source_path):
