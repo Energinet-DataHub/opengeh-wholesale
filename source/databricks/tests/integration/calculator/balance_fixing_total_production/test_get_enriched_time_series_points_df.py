@@ -200,9 +200,19 @@ def test__given_raw_time_series_points_with_different_time__return_dataframe_wit
     assert actual.count() == expected_rows
 
 
+point_1_quantity = Decimal("1.1")
+point_2_quantity = Decimal("2.2")
+
+
 @pytest.fixture(scope="module")
 def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_factory):
     def factory(
+        registration_date_time_1: datetime = timestamp_factory(
+            "2022-06-10T12:09:15.000Z"
+        ),
+        registration_date_time_2: datetime = timestamp_factory(
+            "2022-06-10T12:09:15.000Z"
+        ),
         stored_time_1: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
         stored_time_2: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
     ):
@@ -210,10 +220,10 @@ def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_fact
             {
                 "GsrnNumber": "the-gsrn-number",
                 "TransactionId": "1",
-                "Quantity": Decimal("1.1"),
+                "Quantity": point_1_quantity,
                 "Quality": 3,
                 "Resolution": 2,
-                "RegistrationDateTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
+                "RegistrationDateTime": registration_date_time_1,
                 "storedTime": stored_time_1,
                 "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
                 "year": 2022,
@@ -223,10 +233,10 @@ def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_fact
             {
                 "GsrnNumber": "the-gsrn-number",
                 "TransactionId": "1",
-                "Quantity": Decimal("2.2"),
+                "Quantity": point_2_quantity,
                 "Quality": 3,
                 "Resolution": 2,
-                "RegistrationDateTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
+                "RegistrationDateTime": registration_date_time_2,
                 "storedTime": stored_time_2,
                 "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
                 "year": 2022,
@@ -239,17 +249,26 @@ def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_fact
     return factory
 
 
+time_1 = "2022-06-10T12:09:15.000Z"
+time_2 = "2022-06-10T13:09:15.000Z"
+
+
 @pytest.mark.parametrize(
-    "stored_time_1, stored_time_2, expected_quantity",
+    "registration_date_time_1, registration_date_time_2, stored_time_1, stored_time_2, expected_quantity",
     [
-        ("2022-06-10T12:09:15.000Z", "2022-06-10T13:09:15.000Z", Decimal("2.2")),
-        ("2022-06-10T13:09:15.000Z", "2022-06-10T12:09:15.000Z", Decimal("1.1")),
+        (time_1, time_2, time_1, time_1, point_2_quantity),
+        (time_2, time_1, time_1, time_1, point_1_quantity),
+        (time_1, time_1, time_1, time_2, point_2_quantity),
+        (time_1, time_1, time_2, time_1, point_1_quantity),
+        (time_1, time_2, time_2, time_1, point_2_quantity),
     ],
 )
 def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_latest_stored_time(
     raw_time_series_points_with_same_gsrn_and_time_factory,
     metering_point_period_df_factory,
     timestamp_factory,
+    registration_date_time_1,
+    registration_date_time_2,
     stored_time_1,
     stored_time_2,
     expected_quantity,
@@ -259,7 +278,10 @@ def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_l
 
     # Arrange
     raw_time_series_points = raw_time_series_points_with_same_gsrn_and_time_factory(
-        stored_time_1=stored_time_1, stored_time_2=stored_time_2
+        registration_date_time_1=registration_date_time_1,
+        registration_date_time_2=registration_date_time_2,
+        stored_time_1=stored_time_1,
+        stored_time_2=stored_time_2,
     )
     metering_point_period_df = metering_point_period_df_factory()
 
