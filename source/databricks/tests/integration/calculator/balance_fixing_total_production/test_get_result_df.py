@@ -235,7 +235,9 @@ def test__position_is_based_on_time_correctly(
     )  # the expected quantity first point based on _firs_time
 
 
-# Test that Quality is set and is None
+# Test that Quality is set and is None [LRN]
+
+
 # Test smallest Quantity supports that rounding up and
 # Test that hourly Quantity is summed as quarterly? [johevemi]
 # Test that GridAreaCode is in input is in output
