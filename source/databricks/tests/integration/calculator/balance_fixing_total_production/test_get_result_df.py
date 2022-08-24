@@ -284,7 +284,9 @@ def test__Quality_is_present_and_None(
 #         assert x["Quantity"] == Decimal("308.642")
 
 
-# Test smallest Quantity supports that rounding up and
+# Test smallest Quantity supports that rounding up and [LRN]
+
+
 # Test that GridAreaCode is in input is in output [johevemi]
 # Test that only series from the GridArea is used to sum with
 # Test that multiple GridAreas receive each their calculation for a period
