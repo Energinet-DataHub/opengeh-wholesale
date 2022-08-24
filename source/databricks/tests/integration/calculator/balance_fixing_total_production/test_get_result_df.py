@@ -237,7 +237,7 @@ def test__position_is_based_on_time_correctly(
 
 # Test that Quality is set and is None
 # Test smallest Quantity supports that rounding up and
-# Test that hourly Quantity is summed as quarterly?
+# Test that hourly Quantity is summed as quarterly? [johevemi]
 # Test that GridAreaCode is in input is in output
 # Test that only series from the GridArea is used to sum with
 # Test that multiple GridAreas receive each their calculation for a period
