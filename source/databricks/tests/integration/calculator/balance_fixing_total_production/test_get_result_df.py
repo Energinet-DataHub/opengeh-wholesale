@@ -124,7 +124,6 @@ def test__quarterly_sums_correctly(
     assert result_df.first().Quantity == 3
 
 
-
 def test__hourly_sums_are_rounded_correctly(
     enriched_time_series_factory,
 ):
@@ -139,20 +138,23 @@ def test__hourly_sums_are_rounded_correctly(
         assert point.Quantity == Decimal("0.001")
 
 
-
 def test__quarterly_and_hourly_sums_correctly(
     enriched_time_series_quarterly_same_time_factory,
 ):
     """Test that checks quantity is summed correctly with quarterly and hourly times"""
+    first_quantity = 2
+    second_quantity = 2
     df = enriched_time_series_quarterly_same_time_factory(
         first_resolution=Resolution.quarter.value,
-        first_quantity=2,
+        first_quantity=first_quantity,
         second_resolution=Resolution.hour.value,
-        second_quantity=2,
+        second_quantity=second_quantity,
     )
     result_df = _get_result_df(df, [805])
     sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
-    assert sum_quant.first().sum_quant == 4  # total Quantity is 4
+    assert (
+        sum_quant.first()["sum_quant"] == first_quantity + second_quantity
+    )  # total Quantity is 4
 
 
 def test__points_with_same_time_quantities_are_on_same_position(
