@@ -15,7 +15,7 @@ ________________
 ________________
 **Task List**
 _________________
- **Tasks in Development**
+**Tasks in Development**
 _________________
 **Tasks Completed**
 _________________
