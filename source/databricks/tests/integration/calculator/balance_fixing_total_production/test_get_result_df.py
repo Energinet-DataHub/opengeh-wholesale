@@ -235,7 +235,17 @@ def test__position_is_based_on_time_correctly(
     )  # the expected quantity first point based on _firs_time
 
 
-# Test that Quality is set and is None [LRN]
+# Test that Quality is set and is None
+def test__Quality_is_present_and_None(
+    enriched_time_serie_factory,
+):
+    """Test that ensures 'Quality' is set, and the value is None"""
+    df = enriched_time_serie_factory()
+    result_df = _get_result_df(df, [805])
+    points = result_df.collect()
+
+    for x in points:
+        assert x["Quality"] == None
 
 
 # Test smallest Quantity supports that rounding up and
