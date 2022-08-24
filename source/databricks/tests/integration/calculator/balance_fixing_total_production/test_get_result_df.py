@@ -66,7 +66,7 @@ def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
 
 @pytest.fixture
 def enriched_time_serie_factory(spark, timestamp_factory):
-    def factory(resolution=Resolution.quarter.value, quantity=1):
+    def factory(resolution=Resolution.quarter.value, quantity=1, amount=1):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
         df = [
@@ -79,7 +79,7 @@ def enriched_time_serie_factory(spark, timestamp_factory):
                 "Quantity": quantity,
                 "Quality": 4,
             }
-        ]
+        ] * amount
 
         return spark.createDataFrame(df)
 
@@ -176,7 +176,6 @@ def test__final_sum_below_midpoint_is_rounded_down(
         assert x["Quantity"] == Decimal("0.000")
 
 
-# TODO: Do we want up or down here?
 def test__final_sum_at_midpoint_is_rounded_up(
     enriched_time_serie_factory,
 ):
@@ -211,11 +210,11 @@ def test__final_sum_past_midpoint_is_rounded_up(
         assert x["Quantity"] == Decimal("0.001")
 
 
-# Test that position works correctly LRN
+# Test that position works correctly
 def test__position_is_based_on_time_correctly(
     enriched_time_series_quaterly_same_time_factory,
 ):
-    """Test that checks quantity is summed correctly with quaterly and hourly times"""
+    """'position' is correctly placed based on 'time'"""
     df = enriched_time_series_quaterly_same_time_factory(
         first_resolution=Resolution.quarter.value,
         first_quantity=1,
@@ -227,7 +226,13 @@ def test__position_is_based_on_time_correctly(
     result_df = _get_result_df(df, [805])
     points = result_df.collect()
     assert points[0]["position"] == 1
+    assert (
+        points[0]["Quantity"] == 1
+    )  # the expected quantity first point based on _firs_time
     assert points[1]["position"] == 2
+    assert (
+        points[1]["Quantity"] == 2
+    )  # the expected quantity first point based on _firs_time
 
 
 def test__that_hourly_quantity_is_summed_as_quarterly(
@@ -251,10 +256,36 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
 
 
 # Test that Quality is set and is None
+def test__Quality_is_present_and_None(
+    enriched_time_serie_factory,
+):
+    """Test that ensures 'Quality' is set, and the value is None"""
+    df = enriched_time_serie_factory()
+    result_df = _get_result_df(df, [805])
+    points = result_df.collect()
+
+    for x in points:
+        assert x["Quality"] == None
+
+
+# TODO: should we keep this test? Then we need to look at how we can create the dataframe faster!
+# def test__final_sum_of_small_values_should_not_lose_precision(
+#     enriched_time_serie_factory,
+# ):
+#     """Test that checks many small values accumulated does not lose precision"""
+#     df = enriched_time_serie_factory(Resolution.hour.value, 0.001, 1234567)
+#     result_df = _get_result_df(df, [805])
+#     points = result_df.collect()
+
+#     assert len(points) == 4  # one hourly quantity should yield 4 points
+
+#     for x in points:
+#         assert x["Quantity"] == Decimal("308.642")
+
+
 # Test smallest Quantity supports that rounding up and
 # Test that hourly Quantity is summed as quarterly? [johevemi]
 # Test that GridAreaCode is in input is in output
 # Test that only series from the GridArea is used to sum with
 # Test that multiple GridAreas receive each their calculation for a period
-# Test that limits work all the way: sum 1 mill rows of 0.001 hourly [AMI]
 # Should we crash/stop if resolution is neither hour nor quarter?
