@@ -103,7 +103,7 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
     metering_point_period_df = metering_point_period_df_factory()
 
     # Act
-    df = _get_enriched_time_series_points_df(
+    actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(period_start),
@@ -111,7 +111,7 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
     )
 
     # Assert
-    assert df.count() == expected_rows
+    assert actual.count() == expected_rows
 
 
 @pytest.mark.parametrize(
@@ -148,7 +148,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     )
 
     # Act
-    df = _get_enriched_time_series_points_df(
+    actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory("2022-06-08T12:09:15.000Z"),
@@ -156,7 +156,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     )
 
     # Assert
-    assert df.count() == expected_rows
+    assert actual.count() == expected_rows
 
 
 @pytest.mark.parametrize(
@@ -246,7 +246,7 @@ def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_fact
         ("2022-06-10T13:09:15.000Z", "2022-06-10T12:09:15.000Z", Decimal("1.1")),
     ],
 )
-def test__this(
+def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_latest_stored_time(
     raw_time_series_points_with_same_gsrn_and_time_factory,
     metering_point_period_df_factory,
     timestamp_factory,
@@ -273,4 +273,4 @@ def test__this(
 
     # Assert
     assert actual.count() == 1
-    assert actual.collect()[0]["Quantity"] == expected_quantity
+    assert actual.first().Quantity == expected_quantity
