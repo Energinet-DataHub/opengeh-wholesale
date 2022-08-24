@@ -32,8 +32,11 @@ def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
         second_resolution=Resolution.quarter.value,
         first_quantity=1,
         second_quantity=2,
+        first_time="2022-06-08T12:09:15.000Z",
+        second_time="2022-06-08T12:09:15.000Z",
     ):
-        time = timestamp_factory("2022-06-08T12:09:15.000Z")
+        time = timestamp_factory(first_time)
+        time2 = timestamp_factory(second_time)
 
         df = [
             {
@@ -50,7 +53,7 @@ def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
                 "GsrnNumber": "2045555014",
                 "Resolution": second_resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
-                "time": time,
+                "time": time2,
                 "Quantity": second_quantity,
                 "Quality": 4,
             },
@@ -160,6 +163,19 @@ def test__hourly_sums_are_rounded_correctly_to_zero(
 
 
 # Test that position works correctly LRN
+def test__position_is_based_on_time_correctly(
+    enriched_time_series_quaterly_same_time_factory,
+):
+    """Test that checks quantity is summed correctly with quaterly and hourly times"""
+    df = enriched_time_series_quaterly_same_time_factory(
+        first_resolution=Resolution.quarter.value,
+        first_quantity=2,
+        second_resolution=Resolution.hour.value,
+        second_quantity=2,
+    )
+    result_df = _get_result_df(df, [805])
+    sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
+    assert sum_quant.collect()[0]["sum_quant"] == 4  # total Quantity is 4
 
 
 # Test that Quality is set and is None
