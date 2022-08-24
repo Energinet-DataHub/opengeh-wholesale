@@ -66,7 +66,7 @@ def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
 
 @pytest.fixture
 def enriched_time_serie_factory(spark, timestamp_factory):
-    def factory(resolution=Resolution.quarter.value, quantity=1):
+    def factory(resolution=Resolution.quarter.value, quantity=1, amount=1):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
         df = [
@@ -79,7 +79,7 @@ def enriched_time_serie_factory(spark, timestamp_factory):
                 "Quantity": quantity,
                 "Quality": 4,
             }
-        ]
+        ] * amount
 
         return spark.createDataFrame(df)
 
@@ -248,10 +248,23 @@ def test__Quality_is_present_and_None(
         assert x["Quality"] == None
 
 
+def test__final_sum_of_small_values_should_not_lose_precision(
+    enriched_time_serie_factory,
+):
+    """Test that checks many small values accumulated does not lose precision"""
+    df = enriched_time_serie_factory(Resolution.hour.value, 0.001, 1234567)
+    result_df = _get_result_df(df, [805])
+    points = result_df.collect()
+
+    assert len(points) == 4  # one hourly quantity should yield 4 points
+
+    for x in points:
+        assert x["Quantity"] == Decimal("308.642")
+
+
 # Test smallest Quantity supports that rounding up and
 # Test that hourly Quantity is summed as quarterly? [johevemi]
 # Test that GridAreaCode is in input is in output
 # Test that only series from the GridArea is used to sum with
 # Test that multiple GridAreas receive each their calculation for a period
-# Test that limits work all the way: sum 1 mill rows of 0.001 hourly [AMI]
 # Should we crash/stop if resolution is neither hour nor quarter?
