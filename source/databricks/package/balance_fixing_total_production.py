@@ -235,9 +235,6 @@ def _get_enriched_time_series_points_df(
 
     timeseries_df = timeseries_df.select(col("GsrnNumber"), "time", "Quantity")
 
-    # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
-    #       To improve performance, consider adding a range join hint.
-    #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
     enriched_time_series_point_df = timeseries_df.join(
         metering_point_period_df,
         (metering_point_period_df["GsrnNumber"] == timeseries_df["GsrnNumber"])
@@ -257,10 +254,6 @@ def _get_enriched_time_series_points_df(
 
 
 def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFrame:
-    # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
-    #       To improve performance, consider adding a range join hint.
-    #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
-
     # Total production in batch grid areas with quarterly resolution per grid area
     result_df = (
         enriched_time_series_points_df.where(col("GridAreaCode").isin(batch_grid_areas))
@@ -291,10 +284,6 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
     )
 
     window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
-
-    # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
-    #       To improve performance, consider adding a range join hint.
-    #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
 
     # Points may be missing in result time series if all metering points are missing a point at a certain moment.
     # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
