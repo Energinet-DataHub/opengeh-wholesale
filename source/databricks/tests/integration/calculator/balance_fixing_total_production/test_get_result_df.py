@@ -210,11 +210,11 @@ def test__final_sum_past_midpoint_is_rounded_up(
         assert x["Quantity"] == Decimal("0.001")
 
 
-# Test that position works correctly LRN
+# Test that position works correctly
 def test__position_is_based_on_time_correctly(
     enriched_time_series_quaterly_same_time_factory,
 ):
-    """Test that checks quantity is summed correctly with quaterly and hourly times"""
+    """'position' is correctly placed based on 'time'"""
     df = enriched_time_series_quaterly_same_time_factory(
         first_resolution=Resolution.quarter.value,
         first_quantity=1,
@@ -226,7 +226,13 @@ def test__position_is_based_on_time_correctly(
     result_df = _get_result_df(df, [805])
     points = result_df.collect()
     assert points[0]["position"] == 1
+    assert (
+        points[0]["Quantity"] == 1
+    )  # the expected quantity first point based on _firs_time
     assert points[1]["position"] == 2
+    assert (
+        points[1]["Quantity"] == 2
+    )  # the expected quantity first point based on _firs_time
 
 
 # Test that Quality is set and is None
