@@ -145,7 +145,22 @@ def test__points_with_same_time_quantitys_are_on_same_poistion(
     )
 
 
-# Test with 0.001 which should be 0.000 in result for hourly resolution LRN
+# Test with 0.001 which should be 0.000 in result for hourly resolution
+def test__hourly_sums_are_rounded_correctly_to_zero(
+    enriched_time_serie_factory,
+):
+    """Test that checks accetable rounding erros for hourly quantitys summed on a quaterly basis"""
+    df = enriched_time_serie_factory(Resolution.hour.value, 0.001)
+    result_df = _get_result_df(df, [805])
+    result_df.show()
+    points = result_df.collect()
+
+    assert len(points) == 4  # one hourly quantity should yield 4 points
+
+    for x in points:
+        assert x["Quantity"] == Decimal("0.000")
+
+
 # Test that position works correctly
 # Test that Quality is set and is None
 # Test smallest Quantity supports that rounding up and
