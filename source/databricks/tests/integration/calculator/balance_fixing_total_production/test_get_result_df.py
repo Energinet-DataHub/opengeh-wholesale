@@ -152,7 +152,8 @@ def test__quarterly_and_hourly_sums_correctly(
     )
     result_df = _get_result_df(df, [805])
     sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
-    assert sum_quant.first()["sum_quant"] == 4  # total Quantity is 4
+    assert sum_quant.first().sum_quant == 4  # total Quantity is 4
+
 
 
 def test__points_with_same_time_quantities_are_on_same_position(
