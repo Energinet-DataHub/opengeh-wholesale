@@ -34,22 +34,22 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
         second_quantity=2,
         first_time="2022-06-08T12:09:15.000Z",
         second_time="2022-06-08T12:09:15.000Z",
-        first_gridAreaCode="805",
-        second_gridAreaCode="805",
+        first_grid_area_code="805",
+        second_grid_area_code="805",
     ):
         time = timestamp_factory(first_time)
         time2 = timestamp_factory(second_time)
 
         df = [
             {
-                "GridAreaCode": first_gridAreaCode,
+                "GridAreaCode": first_grid_area_code,
                 "Resolution": first_resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
                 "time": time,
                 "Quantity": first_quantity,
             },
             {
-                "GridAreaCode": second_gridAreaCode,
+                "GridAreaCode": second_grid_area_code,
                 "Resolution": second_resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
                 "time": time2,
@@ -322,8 +322,8 @@ def test__that_grid_area_code_in_input_is_in_output(
 def test__each_grid_area_has_a_sum(
     enriched_time_series_quarterly_same_time_factory,
 ):
-    """Test that multiple GridAreas receive each their calculation for a period """
-    df = enriched_time_series_quarterly_same_time_factory(second_gridAreaCode="806")
+    """Test that multiple GridAreas receive each their calculation for a period"""
+    df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
     result_df = _get_result_df(df, [805, 806])
     assert result_df.count() == 2
     assert result_df.where("GridAreaCode == 805").count() == 1
