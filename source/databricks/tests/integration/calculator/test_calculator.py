@@ -113,13 +113,13 @@ def test_calculator_job_creates_file(
         "--process-results-path",
         f"{delta_lake_path}/result",
         "--batch-id",
-        "{batch-id}",
+        "1",
         "--batch-grid-areas",
         "[805, 806]",
         "--batch-snapshot-datetime",
         "2022-09-02T21:59:00Z",
         "--batch-period-start-datetime",
-        "2022-05-01T22:00:00Z",
+        "2022-04-01T22:00:00Z",
         "--batch-period-end-datetime",
         "2022-09-01T22:00:00Z",
     ]
@@ -128,7 +128,7 @@ def test_calculator_job_creates_file(
     subprocess.call(python_parameters)
 
     # Assert
-    result_805 = spark.read.json(f"{delta_lake_path}/result/grid-area=805")
-    result_806 = spark.read.json(f"{delta_lake_path}/result/grid-area=806")
+    result_805 = spark.read.json(f"{delta_lake_path}/result/batch-id=1/grid-area=805")
+    result_806 = spark.read.json(f"{delta_lake_path}/result/batch-id=1/grid-area=806")
     assert result_805 >= 100, "Calculator job failed to write files"
     assert result_806 >= 100, "Calculator job failed to write files"
