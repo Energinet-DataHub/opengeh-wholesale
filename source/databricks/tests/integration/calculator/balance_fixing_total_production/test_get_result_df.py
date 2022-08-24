@@ -84,6 +84,36 @@ def enriched_time_series_factory(spark, timestamp_factory):
     return factory
 
 
+@pytest.fixture
+def large_time_series_data_frame_factory(spark, timestamp_factory):
+    def factory(
+        resolution=Resolution.quarter.value, gridArea="805", quantity=1, amount=1
+    ):
+        time = timestamp_factory("2022-06-08T12:09:15.000Z")
+
+        df = [
+            {
+                "GridAreaCode": gridArea,
+                "GsrnNumber": "2045555014",
+                "Resolution": resolution,
+                "GridAreaLinkId": "GridAreaLinkId",
+                "time": time,
+                "Quantity": quantity,
+                "Quality": 4,
+            }
+        ] * amount
+
+        base_df = spark.createDataFrame(df)
+        large_df = base_df
+
+        for x in range(14):
+            large_df = large_df.union(base_df)
+
+        return large_df
+
+    return factory
+
+
 # Test sums with only quarterly can be calculated
 def test__quarterly_sums_correctly(
     enriched_time_series_quarterly_same_time_factory,
@@ -224,13 +254,9 @@ def test__position_is_based_on_time_correctly(
     result_df = _get_result_df(df, [805])
     points = result_df.collect()
     assert points[0]["position"] == 1
-    assert (
-        points[0]["Quantity"] == 1
-    )
+    assert points[0]["Quantity"] == 1
     assert points[1]["position"] == 2
-    assert (
-        points[1]["Quantity"] == 2
-    )
+    assert points[1]["Quantity"] == 2
 
 
 # Test that hourly Quantity is summed as quarterly
@@ -300,21 +326,6 @@ def test__that_grid_area_code_in_input_is_in_output(
     assert result_df.first().GridAreaCode == str(grid_area_code)
 
 
-# TODO: should we keep this test? Then we need to look at how we can create the dataframe faster!
-# def test__final_sum_of_small_values_should_not_lose_precision(
-#     enriched_time_series_factory,
-# ):
-#     """Test that checks many small values accumulated does not lose precision"""
-#     df = enriched_time_series_factory(Resolution.hour.value, 0.001, amount=1234567)
-#     result_df = _get_result_df(df, [805])
-#     points = result_df.collect()
-
-#     assert len(points) == 4  # one hourly quantity should yield 4 points
-
-#     for x in points:
-#         assert x["Quantity"] == Decimal("308.642")
-
-
 # Test that multiple GridAreas receive each their calculation for a period [LRN]
 def test__each_grid_area_has_a_sum(
     enriched_time_series_quarterly_same_time_factory,
@@ -325,3 +336,19 @@ def test__each_grid_area_has_a_sum(
     assert result_df.count() == 2
     assert result_df.where("GridAreaCode == 805").count() == 1
     assert result_df.where("GridAreaCode == 806").count() == 1
+
+
+def test__final_sum_of_small_values_should_not_lose_precision(
+    large_time_series_data_frame_factory,
+):
+    """Test that checks many small values accumulated does not lose precision"""
+    df = large_time_series_data_frame_factory(
+        Resolution.hour.value, quantity=0.001, amount=80000
+    )
+    result_df = _get_result_df(df, [805])
+    points = result_df.collect()
+
+    assert len(points) == 4  # one hourly quantity should yield 4 points
+
+    for x in points:
+        assert x["Quantity"] == Decimal("300")
