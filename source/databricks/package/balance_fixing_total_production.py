@@ -82,11 +82,11 @@ def calculate_balance_fixing_total_production(
     return result_df
 
 
-def _get_grid_areas_df(raw_integration_events_df, batch_grid_areas) -> DataFrame:
+def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFrame:
     message_type = "GridAreaUpdated"  # Must correspond to the value stored by the integration event listener
 
     grid_area_events_df = (
-        raw_integration_events_df.withColumn(
+        cached_integration_events_df.withColumn(
             "body", from_json(col("body"), grid_area_updated_event_schema)
         )
         .where(col("body.MessageType") == message_type)
@@ -114,13 +114,13 @@ def _get_grid_areas_df(raw_integration_events_df, batch_grid_areas) -> DataFrame
 
 
 def _get_metering_point_periods_df(
-    raw_integration_events_df,
+    cached_integration_events_df,
     grid_area_df,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
     metering_point_events_df = (
-        raw_integration_events_df.withColumn(
+        cached_integration_events_df.withColumn(
             "body", from_json(col("body"), metering_point_generic_event_schema)
         )
         .where(
@@ -232,9 +232,8 @@ def _get_enriched_time_series_points_df(
     enriched_time_series_point_df = timeseries_df.join(
         metering_point_period_df,
         (metering_point_period_df["GsrnNumber"] == timeseries_df["GsrnNumber"])
-        # & (timeseries_df["time"] >= metering_point_period_df["EffectiveDate"])
-        # & (timeseries_df["time"] < metering_point_period_df["toEffectiveDate"])
-        ,
+        & (timeseries_df["time"] >= metering_point_period_df["EffectiveDate"])
+        & (timeseries_df["time"] < metering_point_period_df["toEffectiveDate"]),
         "inner",
     ).select(
         "GridAreaCode",
