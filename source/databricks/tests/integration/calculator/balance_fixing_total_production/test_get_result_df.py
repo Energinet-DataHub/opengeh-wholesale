@@ -124,20 +124,43 @@ def test__quarterly_sums_correctly(
     assert result_df.first().Quantity == 3
 
 
-
+@pytest.mark.parametrize(
+    "quantity, expected_point_quantity",
+    [
+        # 0.001 / 4 = 0.000250 ≈ 0.000
+        (0.001, Decimal("0.000")),
+        # 0.002 / 4 = 0.000500 ≈ 0.001
+        (0.002, Decimal("0.001")),
+        # 0.003 / 4 = 0.000750 ≈ 0.001
+        (0.003, Decimal("0.001")),
+        # 0.004 / 4 = 0.001000 ≈ 0.001
+        (0.004, Decimal("0.001")),
+        # 0.005 / 4 = 0.001250 ≈ 0.001
+        (0.005, Decimal("0.001")),
+        # 0.006 / 4 = 0.001500 ≈ 0.002
+        (0.006, Decimal("0.002")),
+        # 0.007 / 4 = 0.001750 ≈ 0.002
+        (0.007, Decimal("0.002")),
+        # 0.008 / 4 = 0.002000 ≈ 0.002
+        (0.008, Decimal("0.002")),
+    ],
+)
 def test__hourly_sums_are_rounded_correctly(
-    enriched_time_series_factory,
+    enriched_time_series_factory, quantity, expected_point_quantity
 ):
     """Test that checks acceptable rounding erros for hourly quantities summed on a quarterly basis"""
-    df = enriched_time_series_factory(Resolution.hour.value, 0.003)
+    df = enriched_time_series_factory(
+        resolution=Resolution.hour.value, quantity=quantity
+    )
+
     result_df = _get_result_df(df, [805])
+
     points = result_df.collect()
 
-    assert len(points) == 4  # one hourly quantity should yield 4 points
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
 
     for point in points:
-        assert point.Quantity == Decimal("0.001")
-
+        assert point.Quantity == expected_point_quantity
 
 
 def test__quarterly_and_hourly_sums_correctly(
