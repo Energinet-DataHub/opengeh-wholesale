@@ -271,6 +271,17 @@ def test__Quality_is_present_and_None(
         assert x["Quality"] is None
 
 
+# Test that GridAreaCode is in input is in output
+def test__that_grid_area_code_is_in_input_is_in_output(
+    enriched_time_series_quaterly_same_time_factory,
+):
+    "Test that the grid area code in input is in output"
+    grid_area_code = 805
+    df = enriched_time_series_quaterly_same_time_factory()
+    result_df = _get_result_df(df, [grid_area_code])
+    assert result_df.first().GridAreaCode == str(grid_area_code)
+
+
 # TODO: should we keep this test? Then we need to look at how we can create the dataframe faster!
 # def test__final_sum_of_small_values_should_not_lose_precision(
 #     enriched_time_serie_factory,
@@ -285,7 +296,6 @@ def test__Quality_is_present_and_None(
 #     for x in points:
 #         assert x["Quantity"] == Decimal("308.642")
 
-# Test that GridAreaCode is in input is in output [johevemi]
 # Test that only series from the GridArea is used to sum with [AMI]
 # Test that multiple GridAreas receive each their calculation for a period [LRN]
 # def test__Quality_is_present_and_None(
