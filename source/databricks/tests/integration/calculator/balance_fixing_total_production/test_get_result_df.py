@@ -139,7 +139,7 @@ def test__hourly_sums_are_rounded_correctly(
     result_df = _get_result_df(df, ["805"])
 
     assert result_df.count() == 4  # one hourly quantity should yield 4 points
-    assert result_df.where(col("Quantity" == "0.001")).count() == 4
+    assert result_df.where(col("Quantity") == "0.001").count() == 4
 
 
 def test__quarterly_and_hourly_sums_correctly(
@@ -182,13 +182,10 @@ def test__hourly_sums_are_rounded_correctly_to_zero(
 ):
     """Test with 0.001 which should be 0.000 in result for hourly resolution"""
     df = enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
-    result_df = _get_result_df(df, ["805"])
-    points = result_df.collect()
+    result_df = _get_result_df(df, [805])
 
-    assert len(points) == 4  # one hourly quantity should yield 4 points
-
-    for point in points:
-        assert point.Quantity == Decimal("0.000")
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
+    assert result_df.where(col("Quantity") == "0.000").count() == 4
 
 
 def test__final_sum_below_midpoint_is_rounded_down(
@@ -196,13 +193,10 @@ def test__final_sum_below_midpoint_is_rounded_down(
 ):
     """Test that ensures rounding is done correctly for sums below midpoint"""
     df = enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
-    result_df = _get_result_df(df, ["805"])
-    points = result_df.collect()
+    result_df = _get_result_df(df, [805])
 
-    assert len(points) == 4  # one hourly quantity should yield 4 points
-
-    for point in points:
-        assert point.Quantity == Decimal("0.000")
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
+    assert result_df.where(col("Quantity") == "0.000").count() == 4
 
 
 def test__final_sum_at_midpoint_is_rounded_up(
