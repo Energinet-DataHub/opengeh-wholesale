@@ -50,27 +50,32 @@ def calculate_balance_fixing_total_production(
     raw_time_series_points,
     batch_id,
     batch_grid_areas,
+    batch_snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-    cached_raw_integration_events_df = raw_integration_events_df.cache()
-    grid_area_df = _get_grid_areas_df(
-        cached_raw_integration_events_df, batch_grid_areas
+    cached_integration_events_df = raw_integration_events_df.where(
+        col("storedTime") <= batch_snapshot_datetime
+    ).cache()
+    cached_time_series_points = raw_time_series_points.where(
+        col("storedTime") <= batch_snapshot_datetime
     )
+
+    grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas)
     metering_point_period_df = _get_metering_point_periods_df(
-        cached_raw_integration_events_df,
+        cached_integration_events_df,
         grid_area_df,
         period_start_datetime,
         period_end_datetime,
     )
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
-        raw_time_series_points,
+        cached_time_series_points,
         metering_point_period_df,
         period_start_datetime,
         period_end_datetime,
     )
     result_df = _get_result_df(enriched_time_series_point_df, batch_grid_areas)
-    cached_raw_integration_events_df.unpersist()
+    cached_integration_events_df.unpersist()
 
     return result_df
 
@@ -190,13 +195,13 @@ def _get_metering_point_periods_df(
 
 
 def _get_enriched_time_series_points_df(
-    raw_time_series_points,
+    cached_time_series_points,
     metering_point_period_df,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
     timeseries_df = (
-        raw_time_series_points.where(col("time") >= period_start_datetime).where(
+        cached_time_series_points.where(col("time") >= period_start_datetime).where(
             col("time") < period_end_datetime
         )
         # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
@@ -246,14 +251,14 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         .withColumn(
             "quarter_times",
             when(
-                col("Resolution") == Resolution.hour,
+                col("Resolution") == repr(Resolution.hour),
                 array(
                     col("time"),
                     col("time") + expr("INTERVAL 15 minutes"),
                     col("time") + expr("INTERVAL 30 minutes"),
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
-            ).when(col("Resolution") == Resolution.quarter, array(col("time"))),
+            ).when(col("Resolution") == repr(Resolution.quarter), array(col("time"))),
         )
         .select(
             enriched_time_series_points_df["*"],
@@ -261,8 +266,8 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         )
         .withColumn(
             "quarter_quantity",
-            when(col("Resolution") == Resolution.hour, col("Quantity") / 4).when(
-                col("Resolution") == Resolution.quarter, col("Quantity")
+            when(col("Resolution") == repr(Resolution.hour), col("Quantity") / 4).when(
+                col("Resolution") == repr(Resolution.quarter), col("Quantity")
             ),
         )
         .groupBy("GridAreaCode", "quarter_time")

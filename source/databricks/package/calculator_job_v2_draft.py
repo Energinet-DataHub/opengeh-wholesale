@@ -93,23 +93,20 @@ def start():
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.
-    raw_integration_events_df = (
-        spark.read.option("mergeSchema", "true")
-        .parquet(args.integration_events_path)
-        .where(col("storedTime") <= args.batch_snapshot_datetime)
+    raw_integration_events_df = spark.read.option("mergeSchema", "true").parquet(
+        args.integration_events_path
     )
 
     # Only points stored before the snapshot_datetime are needed.
-    raw_time_series_points_df = (
-        spark.read.option("mergeSchema", "true")
-        .parquet(args.time_series_points_path)
-        .where(col("storedTime") <= args.batch_snapshot_datetime)
+    raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
+        args.time_series_points_path
     )
     output_df = calculate_balance_fixing_total_production(
         raw_integration_events_df,
         raw_time_series_points_df,
         args.batch_id,
         args.batch_grid_areas,
+        args.batch_snapshot_datetime,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
     )
