@@ -1,0 +1,16 @@
+{
+  "literals": [
+    {
+      "name": "unknown",
+      "value": 0
+    },
+    {
+      "name": "hourly",
+      "value": 1
+    },
+    {
+      "name": "quarterly",
+      "value": 2
+    }
+  ]
+}

@@ -14,3 +14,4 @@
 from .resolution import Resolution
 from .metering_point_type import MeteringPointType
 from .connection_state import ConnectionState
+from .settlement_method import SettlementMethod

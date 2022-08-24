@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Mock;
+
+internal sealed class MockedCorrelationContext : ICorrelationContext
 {
-    /// <summary>
-    /// WARNING !
-    /// Do not change the numeric values since they are used further downstream for aggregation purposes.
-    /// </summary>
-    public enum Resolution
+    public string Id { get; private set; } = Guid.NewGuid().ToString();
+
+    public void SetId(string id)
     {
-        Unknown = 0,
-        Hourly = 1,
-        Quarterly = 2,
+        Id = id;
     }
 }

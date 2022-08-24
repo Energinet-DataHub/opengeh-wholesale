@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.Database;
+using Xunit;
+
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
+
+/// <summary>
+/// Fixture configuration used for integration tests running without TestCommon function app.
+/// </summary>
+[CollectionDefinition("ProcessManagerIntegrationTest")]
+public sealed class ProcessManagerFixtureConfiguration :
+    ICollectionFixture<ProcessManagerDatabaseFixture>,
+    ICollectionFixture<ProcessManagerDatabricksFixture>
 {
-    /// <summary>
-    /// WARNING !
-    /// Do not change the numeric values since they are used further downstream for aggregation purposes.
-    /// </summary>
-    public enum Resolution
-    {
-        Unknown = 0,
-        Hourly = 1,
-        Quarterly = 2,
-    }
 }

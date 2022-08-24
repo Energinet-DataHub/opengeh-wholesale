@@ -52,13 +52,18 @@ public class DataAvailableSenderEndpointTests
         public async Task Given_ProcessCompleted_When_MeteredDataResponsiblePeeks_Then_MessageHubReceivesReply(
             Guid batchId,
             Guid correlationId,
-            DateTime operationTimestamp)
+            DateTime operationTimestamp,
+            string messageType)
         {
             // Arrange
             var gridAreaCode = "805";
 
             var completedProcess = new ProcessCompletedEventDto(gridAreaCode, batchId);
-            var message = ServiceBusTestMessage.Create(completedProcess, operationTimestamp.AsUtc(), correlationId.ToString());
+            var message = ServiceBusTestMessage.Create(
+                completedProcess,
+                operationTimestamp.AsUtc(),
+                correlationId.ToString(),
+                messageType);
 
             // Act -> Publish process completed event, which will transitively invoke
             await Fixture.CompletedProcessTopic.SenderClient.SendMessageAsync(message);
