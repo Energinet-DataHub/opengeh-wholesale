@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import pytest
 from package import initialize_spark
+from pyspark.sql.functions import col
 
 spark = initialize_spark("foo", "bar")
 
@@ -84,3 +85,50 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
     # Assert
     assert exit_code == 0, "Calculator job failed to accept provided input arguments"
+
+
+def test_calculator_job_creates_files_for_each_gridarea(
+    json_test_files, databricks_path, delta_lake_path, source_path
+):
+    spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
+        "body", col("body").cast("binary")
+    ).write.mode("overwrite").parquet(
+        f"{delta_lake_path}/parquet_test_files/integration_events"
+    )
+    spark.read.json(f"{json_test_files}/time_series_points.json").write.mode(
+        "overwrite"
+    ).parquet(f"{delta_lake_path}/parquet_test_files/time_series_points")
+    # Arrange
+    python_parameters = [
+        "python",
+        f"{databricks_path}/package/calculator_job_v2_draft.py",
+        "--data-storage-account-name",
+        "foo",
+        "--data-storage-account-key",
+        "foo",
+        "--integration-events-path",
+        f"{delta_lake_path}/parquet_test_files/integration_events",
+        "--time-series-points-path",
+        f"{delta_lake_path}/parquet_test_files/time_series_points",
+        "--process-results-path",
+        f"{delta_lake_path}/result",
+        "--batch-id",
+        "1",
+        "--batch-grid-areas",
+        "[805, 806]",
+        "--batch-snapshot-datetime",
+        "2022-09-02T21:59:00Z",
+        "--batch-period-start-datetime",
+        "2022-04-01T22:00:00Z",
+        "--batch-period-end-datetime",
+        "2022-09-01T22:00:00Z",
+    ]
+
+    # Act
+    subprocess.call(python_parameters)
+
+    # Assert
+    result_805 = spark.read.json(f"{delta_lake_path}/result/batch-id=1/grid-area=805")
+    result_806 = spark.read.json(f"{delta_lake_path}/result/batch-id=1/grid-area=806")
+    assert result_805.count() >= 1, "Calculator job failed to write files"
+    assert result_806.count() >= 1, "Calculator job failed to write files"
