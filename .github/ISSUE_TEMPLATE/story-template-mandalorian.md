@@ -7,15 +7,15 @@ assignees: ''
 
 ---
 
-**Synopsis**
+### Synopsis
 _____________
-**Acceptance Criteria**
+### Acceptance Criteria
 ________________
-**Tech. Notes**
+### Tech. Notes
 ________________
-**Task List**
+### Task List
 _________________
-**Tasks in Development**
+#### Tasks in Development
 _________________
-**Tasks Completed**
+#### Tasks Completed
 _________________
