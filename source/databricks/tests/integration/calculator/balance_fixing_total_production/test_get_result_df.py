@@ -230,6 +230,26 @@ def test__position_is_based_on_time_correctly(
     assert points[1]["position"] == 2
 
 
+def test__that_hourly_quantity_is_summed_as_quarterly(
+    enriched_time_series_quaterly_same_time_factory,
+):
+    "Test that checks if hourly quantities are summed as quarterly"
+    df = enriched_time_series_quaterly_same_time_factory(
+        first_resolution=Resolution.hour.value,
+        first_quantity=4,
+        second_resolution=Resolution.hour.value,
+        second_quantity=8,
+        first_time="2022-06-08T12:09:15.000Z",
+        second_time="2022-06-08T13:09:15.000Z",
+    )
+    result_df = _get_result_df(df, [805])
+    result_df.show()
+    assert result_df.count() == 8
+    actual = result_df.collect()
+    assert actual[0].Quantity == 1
+    assert actual[4].Quantity == 2
+
+
 # Test that Quality is set and is None
 # Test smallest Quantity supports that rounding up and
 # Test that hourly Quantity is summed as quarterly? [johevemi]
