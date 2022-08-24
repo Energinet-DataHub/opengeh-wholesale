@@ -17,6 +17,9 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
 
+/// <summary>
+/// Fixture configuration used for integration tests running without TestCommon function app.
+/// </summary>
 [CollectionDefinition("ProcessManagerIntegrationTest")]
 public sealed class ProcessManagerFixtureConfiguration :
     ICollectionFixture<ProcessManagerDatabaseFixture>,

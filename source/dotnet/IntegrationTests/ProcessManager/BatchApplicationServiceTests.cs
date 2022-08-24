@@ -34,7 +34,7 @@ public sealed class BatchApplicationServiceTests
     public async Task When_RunIsCanceled_Then_BatchIsRetried()
     {
         // Arrange
-        using var host = await ProcessManagerIntegrationTestHost.InitializeAsync();
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync();
 
         await using var scope = host.BeginScope();
         var appService = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
@@ -51,7 +51,7 @@ public sealed class BatchApplicationServiceTests
         var createdBatch = executing.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
 
         // Act
-        using var cancelHost = await ProcessManagerIntegrationTestHost.InitializeAsync(ConfigureDatabricksClientToCancel);
+        using var cancelHost = await ProcessManagerIntegrationTestHost.CreateAsync(ConfigureDatabricksClientToCancel);
         await using var cancelScope = cancelHost.BeginScope();
         var target = cancelScope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
         await target.UpdateExecutionStateAsync();
@@ -67,7 +67,7 @@ public sealed class BatchApplicationServiceTests
     public async Task When_RunIsCompleted_Then_BatchIsCompleted()
     {
         // Arrange
-        using var host = await ProcessManagerIntegrationTestHost.InitializeAsync();
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync();
 
         await using var scope = host.BeginScope();
         var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();

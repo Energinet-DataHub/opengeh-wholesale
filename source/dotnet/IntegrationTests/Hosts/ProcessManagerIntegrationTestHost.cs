@@ -31,7 +31,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         _processManagerHost = processManagerHost;
     }
 
-    public static Task<ProcessManagerIntegrationTestHost> InitializeAsync(
+    public static Task<ProcessManagerIntegrationTestHost> CreateAsync(
         Action<IServiceCollection>? serviceConfiguration = default)
     {
         ConfigureEnvironmentVars();
