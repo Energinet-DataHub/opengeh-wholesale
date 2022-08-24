@@ -186,3 +186,9 @@ def test__position_is_based_on_time_correctly(
 # Test that GridAreaCode is in input is in output
 # Test that only series from the GridArea is used to sum with
 # Test that multiple GridAreas receive each their calculation for a period
+# Test that limits work all the way: sum 1 mill rows of 0.000001 quarterly
+# Test that limits work all the way: sum 1 mill rows of 0.001 hourly
+# Should we crash/stop if resolution is neither hour nor quarter?
+# Test that we round the way we want: is sum 0.0005 truncated or rounded [AMI]
+# Test that we round the way we want: is sum 0.0008 truncated or rounded [AMI]
+# Test that we round the way we want: is sum 0.0002 truncated or rounded [AMI]
