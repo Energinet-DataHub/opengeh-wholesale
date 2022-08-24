@@ -57,7 +57,7 @@ def calculate_balance_fixing_total_production(
     cached_integration_events_df = raw_integration_events_df.where(
         col("storedTime") <= batch_snapshot_datetime
     ).cache()
-    cached_time_series_points = raw_time_series_points.where(
+    time_series_points = raw_time_series_points.where(
         col("storedTime") <= batch_snapshot_datetime
     )
 
@@ -69,13 +69,19 @@ def calculate_balance_fixing_total_production(
         period_end_datetime,
     )
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
-        cached_time_series_points,
+        time_series_points,
         metering_point_period_df,
         period_start_datetime,
         period_end_datetime,
     )
     result_df = _get_result_df(enriched_time_series_point_df, batch_grid_areas)
     cached_integration_events_df.unpersist()
+    print("metering_point_period_df")
+    metering_point_period_df.show()
+    print("enriched_time_series_point_df")
+    enriched_time_series_point_df.show()
+    print("result_df")
+    result_df.show()
 
     return result_df
 
@@ -195,18 +201,24 @@ def _get_metering_point_periods_df(
 
 
 def _get_enriched_time_series_points_df(
-    cached_time_series_points,
+    time_series_points,
     metering_point_period_df,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
+
+    print("time_series_points_0,1")
+    time_series_points.show()
+
     timeseries_df = (
-        cached_time_series_points.where(col("time") >= period_start_datetime).where(
+        time_series_points.where(col("time") >= period_start_datetime).where(
             col("time") < period_end_datetime
         )
         # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
         .withColumn("Quantity", col("Quantity").cast("decimal(18,6)"))
     )
+    print("time_series_1")
+    timeseries_df.show()
 
     # Only use latest registered points
     window = Window.partitionBy("GsrnNumber", "time").orderBy(
@@ -218,6 +230,9 @@ def _get_enriched_time_series_points_df(
         "row_number", row_number().over(window)
     ).where(col("row_number") == 1)
 
+    print("time_series_2")
+    timeseries_df.show()
+
     timeseries_df = timeseries_df.select(col("GsrnNumber"), "time", "Quantity")
 
     # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
@@ -226,8 +241,9 @@ def _get_enriched_time_series_points_df(
     enriched_time_series_point_df = timeseries_df.join(
         metering_point_period_df,
         (metering_point_period_df["GsrnNumber"] == timeseries_df["GsrnNumber"])
-        & (timeseries_df["time"] >= metering_point_period_df["EffectiveDate"])
-        & (timeseries_df["time"] < metering_point_period_df["toEffectiveDate"]),
+        # & (timeseries_df["time"] >= metering_point_period_df["EffectiveDate"])
+        # & (timeseries_df["time"] < metering_point_period_df["toEffectiveDate"])
+        ,
         "inner",
     ).select(
         "GridAreaCode",

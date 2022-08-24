@@ -119,7 +119,7 @@ def test_calculator_job_creates_file(
         "--batch-snapshot-datetime",
         "2022-09-02T21:59:00Z",
         "--batch-period-start-datetime",
-        "2022-05-31T22:00:00Z",
+        "2022-05-01T22:00:00Z",
         "--batch-period-end-datetime",
         "2022-09-01T22:00:00Z",
     ]
