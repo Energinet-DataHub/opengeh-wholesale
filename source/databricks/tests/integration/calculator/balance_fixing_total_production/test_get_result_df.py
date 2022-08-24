@@ -123,7 +123,8 @@ def test__quarterly_sums_correctly(
         first_quantity=1, second_quantity=2
     )
     result_df = _get_result_df(df, [805])
-    assert result_df.first()["Quantity"] == 3
+    assert result_df.first().Quantity == 3
+
 
 
 def test__hourly_sums_are_rounded_correctly(
