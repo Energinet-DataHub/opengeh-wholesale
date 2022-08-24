@@ -225,8 +225,9 @@ def test__position_is_based_on_time_correctly(
         second_time="2022-06-08T12:09:30.000Z",
     )
     result_df = _get_result_df(df, [805])
-    position = result_df.first().position
-    assert position == 1
+    points = result_df.collect()
+    assert points[0]["position"] == 1
+    assert points[1]["position"] == 2
 
 
 # Test that Quality is set and is None
