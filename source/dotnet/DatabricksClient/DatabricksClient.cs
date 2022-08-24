@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
     /// The code is based on https://github.com/Azure/azure-databricks-client and can be replaced by the official
     /// package when support for Job API 2.1 is added.
     /// </summary>
-    public sealed class DatabricksWheelClient : IDisposable
+    public class DatabricksWheelClient : IDisposable
     {
         private const string Version = "2.1";
         private readonly HttpClient _httpClient;
@@ -39,6 +39,13 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
         public static DatabricksWheelClient CreateClient(string baseUrl, string token, long timeoutSeconds = 30)
         {
             return new DatabricksWheelClient(baseUrl, token, timeoutSeconds);
+        }
+
+        /// <summary>
+        /// An empty ctor used for mocking this client.
+        /// </summary>
+        protected DatabricksWheelClient()
+        {
         }
 
         private DatabricksWheelClient(string baseUrl, string token, long timeoutSeconds = 30)
@@ -69,12 +76,21 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
             return httpClient;
         }
 
-        public IJobsWheelApi Jobs { get; }
+        public virtual IJobsWheelApi Jobs { get; }
 
         public void Dispose()
         {
-            _httpClient.Dispose();
-            Jobs.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _httpClient.Dispose();
+                Jobs.Dispose();
+            }
         }
     }
 }
