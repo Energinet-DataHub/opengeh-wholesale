@@ -34,13 +34,15 @@ def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
         second_quantity=2,
         first_time="2022-06-08T12:09:15.000Z",
         second_time="2022-06-08T12:09:15.000Z",
+        first_gridAreaCode="805",
+        second_gridAreaCode="805",
     ):
         time = timestamp_factory(first_time)
         time2 = timestamp_factory(second_time)
 
         df = [
             {
-                "GridAreaCode": "805",
+                "GridAreaCode": first_gridAreaCode,
                 "GsrnNumber": "2045555014",
                 "Resolution": first_resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
@@ -49,7 +51,7 @@ def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
                 "Quality": 4,
             },
             {
-                "GridAreaCode": "805",
+                "GridAreaCode": second_gridAreaCode,
                 "GsrnNumber": "2045555014",
                 "Resolution": second_resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
@@ -286,5 +288,16 @@ def test__Quality_is_present_and_None(
 # Test that GridAreaCode is in input is in output [johevemi]
 # Test that only series from the GridArea is used to sum with
 # Test that multiple GridAreas receive each their calculation for a period [LRN]
+# def test__Quality_is_present_and_None(
+#     enriched_time_serie_factory,
+# ):
+#     """Test that ensures 'Quality' is set, and the value is None"""
+#     df = enriched_time_serie_factory()
+#     result_df = _get_result_df(df, [805, 806])
+#     points = result_df.collect()
+
+#     for x in points:
+#         assert x["Quality"] is None
+
 
 # Should we crash/stop if resolution is neither hour nor quarter?
