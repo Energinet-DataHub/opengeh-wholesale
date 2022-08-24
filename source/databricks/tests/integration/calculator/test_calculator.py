@@ -130,5 +130,5 @@ def test_calculator_job_creates_file(
     # Assert
     result_805 = spark.read.json(f"{delta_lake_path}/result/batch-id=1/grid-area=805")
     result_806 = spark.read.json(f"{delta_lake_path}/result/batch-id=1/grid-area=806")
-    assert result_805 >= 100, "Calculator job failed to write files"
-    assert result_806 >= 100, "Calculator job failed to write files"
+    assert result_805.count() >= 1, "Calculator job failed to write files"
+    assert result_806.count() >= 1, "Calculator job failed to write files"
