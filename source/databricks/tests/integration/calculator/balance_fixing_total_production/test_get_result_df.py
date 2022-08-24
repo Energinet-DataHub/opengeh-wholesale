@@ -161,7 +161,7 @@ def test__hourly_sums_are_rounded_correctly_to_zero(
         assert x["Quantity"] == Decimal("0.000")
 
 
-# Test that position works correctly
+# Test that position works correctly LRN
 # Test that Quality is set and is None
 # Test smallest Quantity supports that rounding up and
 # Test that hourly Quantity is summed as quarterly?
