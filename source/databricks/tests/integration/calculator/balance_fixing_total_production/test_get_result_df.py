@@ -121,7 +121,8 @@ def test__quarterly_sums_correctly(
         first_quantity=1, second_quantity=2
     )
     result_df = _get_result_df(df, [805])
-    assert result_df.first()["Quantity"] == 3
+    assert result_df.first().Quantity == 3
+
 
 
 def test__hourly_sums_are_rounded_correctly(
@@ -134,8 +135,9 @@ def test__hourly_sums_are_rounded_correctly(
 
     assert len(points) == 4  # one hourly quantity should yield 4 points
 
-    for x in points:
-        assert x["Quantity"] == Decimal("0.001")
+    for point in points:
+        assert point.Quantity == Decimal("0.001")
+
 
 
 def test__quarterly_and_hourly_sums_correctly(
@@ -164,11 +166,9 @@ def test__points_with_same_time_quantities_are_on_same_position(
         second_quantity=2,
     )
     result_df = _get_result_df(df, [805])
-    assert (
-        # total 'Quantity' on first position
-        result_df.first().Quantity
-        == 2.5  # first point with quarter resolution 'quantity' is 2, second is 2 but is hourly so 0.5 should be added to first position
-    )
+    # total 'Quantity' on first position
+    assert result_df.first().Quantity == 2.5
+    # first point with quarter resolution 'quantity' is 2, second is 2 but is hourly so 0.5 should be added to first position
 
 
 def test__hourly_sums_are_rounded_correctly_to_zero(
