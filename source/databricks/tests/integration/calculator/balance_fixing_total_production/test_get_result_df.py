@@ -284,7 +284,7 @@ def test__Quality_is_present_and_None(
 #         assert x["Quantity"] == Decimal("308.642")
 
 # Test that GridAreaCode is in input is in output [johevemi]
-# Test that only series from the GridArea is used to sum with
+# Test that only series from the GridArea is used to sum with [AMI]
 # Test that multiple GridAreas receive each their calculation for a period [LRN]
 
 # Should we crash/stop if resolution is neither hour nor quarter?
