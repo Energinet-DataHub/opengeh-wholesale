@@ -66,12 +66,14 @@ def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
 
 @pytest.fixture
 def enriched_time_serie_factory(spark, timestamp_factory):
-    def factory(resolution=Resolution.quarter.value, quantity=1, amount=1):
+    def factory(
+        resolution=Resolution.quarter.value, quantity=1, gridArea="805", amount=1
+    ):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
         df = [
             {
-                "GridAreaCode": "805",
+                "GridAreaCode": gridArea,
                 "GsrnNumber": "2045555014",
                 "Resolution": resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
@@ -269,12 +271,34 @@ def test__Quality_is_present_and_None(
         assert x["Quality"] is None
 
 
+def test__filter_time_series_by_given_grid_area(
+    enriched_time_serie_factory,
+):
+    """Test that time series are correctly filtered using grid area code"""
+    df = (
+        enriched_time_serie_factory(Resolution.hour.value, quantity=3)
+        .union(
+            enriched_time_serie_factory(
+                Resolution.hour.value, quantity=4, gridArea="100"
+            )
+        )
+        .union(enriched_time_serie_factory(Resolution.hour.value, quantity=3))
+    )
+    result_df = _get_result_df(df, [805])
+    points = result_df.collect()
+
+    assert len(points) == 4  # one hourly quantity should yield 4 points
+
+    for x in points:
+        assert x["Quantity"] == Decimal("1.5")
+
+
 # TODO: should we keep this test? Then we need to look at how we can create the dataframe faster!
 # def test__final_sum_of_small_values_should_not_lose_precision(
 #     enriched_time_serie_factory,
 # ):
 #     """Test that checks many small values accumulated does not lose precision"""
-#     df = enriched_time_serie_factory(Resolution.hour.value, 0.001, 1234567)
+#     df = enriched_time_serie_factory(Resolution.hour.value, 0.001, amount=1234567)
 #     result_df = _get_result_df(df, [805])
 #     points = result_df.collect()
 
@@ -284,7 +308,6 @@ def test__Quality_is_present_and_None(
 #         assert x["Quantity"] == Decimal("308.642")
 
 # Test that GridAreaCode is in input is in output [johevemi]
-# Test that only series from the GridArea is used to sum with [AMI]
 # Test that multiple GridAreas receive each their calculation for a period [LRN]
 
 # Should we crash/stop if resolution is neither hour nor quarter?
