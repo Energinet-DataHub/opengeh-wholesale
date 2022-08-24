@@ -137,12 +137,9 @@ def test__hourly_sums_are_rounded_correctly(
     """Test that checks acceptable rounding erros for hourly quantities summed on a quarterly basis"""
     df = enriched_time_series_factory(Resolution.hour.value, Decimal("0.003"))
     result_df = _get_result_df(df, ["805"])
-    points = result_df.collect()
 
-    assert len(points) == 4  # one hourly quantity should yield 4 points
-
-    for point in points:
-        assert point.Quantity == Decimal("0.001")
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
+    assert result_df.where(col("Quantity" == "0.001")).count() == 4
 
 
 def test__quarterly_and_hourly_sums_correctly(
