@@ -248,18 +248,19 @@ def test__Quality_is_present_and_None(
         assert x["Quality"] == None
 
 
-def test__final_sum_of_small_values_should_not_lose_precision(
-    enriched_time_serie_factory,
-):
-    """Test that checks many small values accumulated does not lose precision"""
-    df = enriched_time_serie_factory(Resolution.hour.value, 0.001, 1234567)
-    result_df = _get_result_df(df, [805])
-    points = result_df.collect()
+# TODO: should we keep this test? Then we need to look at how we can create the dataframe faster!
+# def test__final_sum_of_small_values_should_not_lose_precision(
+#     enriched_time_serie_factory,
+# ):
+#     """Test that checks many small values accumulated does not lose precision"""
+#     df = enriched_time_serie_factory(Resolution.hour.value, 0.001, 1234567)
+#     result_df = _get_result_df(df, [805])
+#     points = result_df.collect()
 
-    assert len(points) == 4  # one hourly quantity should yield 4 points
+#     assert len(points) == 4  # one hourly quantity should yield 4 points
 
-    for x in points:
-        assert x["Quantity"] == Decimal("308.642")
+#     for x in points:
+#         assert x["Quantity"] == Decimal("308.642")
 
 
 # Test smallest Quantity supports that rounding up and
