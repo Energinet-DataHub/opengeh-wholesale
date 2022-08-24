@@ -101,14 +101,14 @@ def test__when_input_data_matches_contract__returns_expected_row(
         f"{source_path}/contracts/events/grid-area-updated.json",
         grid_area_updated_event_schema,
     )
+
+    # Assert: Test data schema matches schema
     test_data_schema = (
         raw_integration_events_df.select(col("body").cast("string"))
         .withColumn("body", from_json(col("body"), grid_area_updated_event_schema))
         .select(col("body.*"))
         .schema
     )
-
-    # Assert: Test data schema matches schema
     assert test_data_schema == grid_area_updated_event_schema
 
     # Assert: From previous asserts:

@@ -49,7 +49,6 @@ def test_calculator_job_when_invoked_with_incorrect_parameters_fails(
     ), "Calculator job should return non-zero exit when invoked with bad arguments"
 
 
-# TODO BJARKE: Should we provide empty data sources instead of using `--only-validate-args`?
 def test_calculator_job_accepts_parameters_from_process_manager(
     delta_lake_path, source_path, databricks_path
 ):
