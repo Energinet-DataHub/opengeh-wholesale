@@ -28,8 +28,8 @@ from pyspark.sql.functions import col, sum
 @pytest.fixture
 def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
     def factory(
-        first_resolution=Resolution.quarter,
-        second_resolution=Resolution.quarter,
+        first_resolution=Resolution.quarter.value,
+        second_resolution=Resolution.quarter.value,
         first_quantity=1,
         second_quantity=2,
     ):
@@ -63,7 +63,7 @@ def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
 
 @pytest.fixture
 def enriched_time_serie_factory(spark, timestamp_factory):
-    def factory(resolution=Resolution.quarter, quantity=1):
+    def factory(resolution=Resolution.quarter.value, quantity=1):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
         df = [
@@ -99,7 +99,7 @@ def test__hourly_sums_are_rounded_correctly(
     enriched_time_serie_factory,
 ):
     """Test that checks accetable rounding erros for hourly quantitys summed on a quaterly basis"""
-    df = enriched_time_serie_factory(Resolution.hour, 0.003)
+    df = enriched_time_serie_factory(Resolution.hour.value, 0.003)
     result_df = _get_result_df(df, [805])
     points = result_df.collect()
 
@@ -115,9 +115,9 @@ def test__quaterly_and_hourly_sums_correctly(
 ):
     """Test that checks quantity is summed correctly with quaterly and hourly times"""
     df = enriched_time_series_quaterly_same_time_factory(
-        first_resolution=Resolution.quarter,
+        first_resolution=Resolution.quarter.value,
         first_quantity=2,
-        second_resolution=Resolution.hour,
+        second_resolution=Resolution.hour.value,
         second_quantity=2,
     )
     result_df = _get_result_df(df, [805])
@@ -131,9 +131,9 @@ def test__points_with_same_time_quantitys_are_on_same_poistion(
 ):
     """Test that checks quantity is summed correctly with quaterly and hourly times"""
     df = enriched_time_series_quaterly_same_time_factory(
-        first_resolution=Resolution.quarter,
+        first_resolution=Resolution.quarter.value,
         first_quantity=2,
-        second_resolution=Resolution.hour,
+        second_resolution=Resolution.hour.value,
         second_quantity=2,
     )
     result_df = _get_result_df(df, [805])
