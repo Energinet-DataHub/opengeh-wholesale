@@ -1,0 +1,20 @@
+{
+  "literals": [
+    {
+      "name": "unknown",
+      "value": 0
+    },
+    {
+      "name": "profiled",
+      "value": 1
+    },
+    {
+      "name": "nonprofiled",
+      "value": 2
+    },
+    {
+      "name": "flex",
+      "value": 3
+    }
+  ]
+}

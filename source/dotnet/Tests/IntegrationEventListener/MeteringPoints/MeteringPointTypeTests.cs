@@ -13,27 +13,20 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
-using FluentAssertions;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.MeteringPoints;
+namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoints;
 
 [UnitTest]
-public class ConnectionStateTests
+public sealed class MeteringPointTypeTests
 {
-    [Theory]
-    [InlineData(0, nameof(ConnectionState.Unknown))]
-    [InlineData(1, nameof(ConnectionState.New))]
-    [InlineData(2, nameof(ConnectionState.Connected))]
-    [InlineData(3, nameof(ConnectionState.Disconnected))]
-    [InlineData(4, nameof(ConnectionState.ClosedDown))]
-    public void Value_IsDefinedCorrectly(int expected, string name)
+    [Fact]
+    public async Task EnumNamesAndValuesMatchContractWithCalculator()
     {
-        // Arrange
-        var actual = Enum.Parse<ConnectionState>(name);
+        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.metering-point-type.json");
 
-        // Assert
-        actual.Should().Be((ConnectionState)expected);
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<MeteringPointType>(stream);
     }
 }
