@@ -64,9 +64,7 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
 
 @pytest.fixture
 def enriched_time_series_factory(spark, timestamp_factory):
-    def factory(
-        resolution=Resolution.quarter.value, quantity=1, gridArea="805", amount=1
-    ):
+    def factory(resolution=Resolution.quarter.value, quantity=1, gridArea="805"):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
         df = [
@@ -77,7 +75,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 "time": time,
                 "Quantity": quantity,
             }
-        ] * amount
+        ]
 
         return spark.createDataFrame(df)
 
@@ -155,7 +153,6 @@ def test__quarterly_and_hourly_sums_correctly(
     assert sum_quant.first().sum_quant == 4  # total Quantity is 4
 
 
-
 def test__points_with_same_time_quantities_are_on_same_position(
     enriched_time_series_quarterly_same_time_factory,
 ):
@@ -188,7 +185,6 @@ def test__hourly_sums_are_rounded_correctly_to_zero(
         assert point.Quantity == Decimal("0.000")
 
 
-
 def test__final_sum_below_midpoint_is_rounded_down(
     enriched_time_series_factory,
 ):
@@ -201,7 +197,6 @@ def test__final_sum_below_midpoint_is_rounded_down(
 
     for point in points:
         assert point.Quantity == Decimal("0.000")
-
 
 
 def test__final_sum_at_midpoint_is_rounded_up(
@@ -220,7 +215,6 @@ def test__final_sum_at_midpoint_is_rounded_up(
         assert point.Quantity == Decimal("0.001")
 
 
-
 def test__final_sum_past_midpoint_is_rounded_up(
     enriched_time_series_factory,
 ):
@@ -237,7 +231,6 @@ def test__final_sum_past_midpoint_is_rounded_up(
 
     for point in points:
         assert point.Quantity == Decimal("0.001")
-
 
 
 def test__position_is_based_on_time_correctly(
