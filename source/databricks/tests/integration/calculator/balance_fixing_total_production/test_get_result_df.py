@@ -266,7 +266,7 @@ def test__Quality_is_present_and_None(
     points = result_df.collect()
 
     for x in points:
-        assert x["Quality"] == None
+        assert x["Quality"] is None
 
 
 # TODO: should we keep this test? Then we need to look at how we can create the dataframe faster!
