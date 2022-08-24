@@ -322,13 +322,12 @@ def test__that_grid_area_code_in_input_is_in_output(
 
 
 # Test that multiple GridAreas receive each their calculation for a period [LRN]
-# def test__Quality_is_present_and_None(
-#     enriched_time_series_factory,
-# ):
-#     """Test that ensures 'Quality' is set, and the value is None"""
-#     df = enriched_time_series_factory()
-#     result_df = _get_result_df(df, [805, 806])
-#     points = result_df.collect()
-
-#     for x in points:
-#         assert x["Quality"] is None
+def test__each_grid_area_has_a_sum(
+    enriched_time_series_quarterly_same_time_factory,
+):
+    """Test that ensures 'Quality' is set, and the value is None"""
+    df = enriched_time_series_quarterly_same_time_factory(second_gridAreaCode="806")
+    result_df = _get_result_df(df, [805, 806])
+    assert result_df.count() == 2
+    assert result_df.where("GridAreaCode == 805").count() == 1
+    assert result_df.where("GridAreaCode == 806").count() == 1
