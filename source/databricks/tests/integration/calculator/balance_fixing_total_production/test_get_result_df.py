@@ -176,7 +176,6 @@ def test__final_sum_below_midpoint_is_rounded_down(
         assert x["Quantity"] == Decimal("0.000")
 
 
-# TODO: Do we want up or down here?
 def test__final_sum_at_midpoint_is_rounded_up(
     enriched_time_serie_factory,
 ):
