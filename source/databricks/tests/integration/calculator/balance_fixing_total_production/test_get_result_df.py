@@ -285,7 +285,7 @@ def test__Quality_is_present_and_None(
 
 
 # Test smallest Quantity supports that rounding up and
-# Test that GridAreaCode is in input is in output
+# Test that GridAreaCode is in input is in output [johevemi]
 # Test that only series from the GridArea is used to sum with
 # Test that multiple GridAreas receive each their calculation for a period
 # Should we crash/stop if resolution is neither hour nor quarter?
