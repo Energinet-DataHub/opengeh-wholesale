@@ -24,14 +24,16 @@ from package.balance_fixing_total_production import _get_result_df
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, sum
 
+minimum_quantity = Decimal("0.001")
+
 
 @pytest.fixture
 def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
     def factory(
         first_resolution=Resolution.quarter.value,
         second_resolution=Resolution.quarter.value,
-        first_quantity=1,
-        second_quantity=2,
+        first_quantity=Decimal("1"),
+        second_quantity=Decimal("2"),
         first_time="2022-06-08T12:09:15.000Z",
         second_time="2022-06-08T12:09:15.000Z",
         first_grid_area_code="805",
@@ -64,7 +66,9 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
 
 @pytest.fixture
 def enriched_time_series_factory(spark, timestamp_factory):
-    def factory(resolution=Resolution.quarter.value, quantity=1, gridArea="805"):
+    def factory(
+        resolution=Resolution.quarter.value, quantity=Decimal("1"), gridArea="805"
+    ):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
         df = [
@@ -85,7 +89,10 @@ def enriched_time_series_factory(spark, timestamp_factory):
 @pytest.fixture
 def large_time_series_data_frame_factory(spark, timestamp_factory):
     def factory(
-        resolution=Resolution.quarter.value, gridArea="805", quantity=1, amount=1
+        resolution=Resolution.quarter.value,
+        gridArea="805",
+        quantity=Decimal("1"),
+        amount=1,
     ):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
@@ -118,9 +125,9 @@ def test__quarterly_sums_correctly(
 ):
     """Test that checks quantity is summed correctly with only quarterly times"""
     df = enriched_time_series_quarterly_same_time_factory(
-        first_quantity=1, second_quantity=2
+        first_quantity=Decimal("1"), second_quantity=Decimal("2")
     )
-    result_df = _get_result_df(df, [805])
+    result_df = _get_result_df(df, ["805"])
     assert result_df.first().Quantity == 3
 
 
@@ -167,15 +174,19 @@ def test__quarterly_and_hourly_sums_correctly(
     enriched_time_series_quarterly_same_time_factory,
 ):
     """Test that checks quantity is summed correctly with quarterly and hourly times"""
+    first_quantity = Decimal("2")
+    second_quantity = Decimal("2")
     df = enriched_time_series_quarterly_same_time_factory(
         first_resolution=Resolution.quarter.value,
-        first_quantity=2,
+        first_quantity=first_quantity,
         second_resolution=Resolution.hour.value,
-        second_quantity=2,
+        second_quantity=second_quantity,
     )
-    result_df = _get_result_df(df, [805])
+    result_df = _get_result_df(df, ["805"])
     sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
-    assert sum_quant.first().sum_quant == 4  # total Quantity is 4
+    assert (
+        sum_quant.first()["sum_quant"] == first_quantity + second_quantity
+    )  # total Quantity is 4
 
 
 def test__points_with_same_time_quantities_are_on_same_position(
@@ -184,13 +195,13 @@ def test__points_with_same_time_quantities_are_on_same_position(
     """Test that points with the same 'time' have added their 'Quantity's together on the same position"""
     df = enriched_time_series_quarterly_same_time_factory(
         first_resolution=Resolution.quarter.value,
-        first_quantity=2,
+        first_quantity=Decimal("2"),
         second_resolution=Resolution.hour.value,
-        second_quantity=2,
+        second_quantity=Decimal("2"),
     )
-    result_df = _get_result_df(df, [805])
+    result_df = _get_result_df(df, ["805"])
     # total 'Quantity' on first position
-    assert result_df.first().Quantity == 2.5
+    assert result_df.first().Quantity == Decimal("2.5")
     # first point with quarter resolution 'quantity' is 2, second is 2 but is hourly so 0.5 should be added to first position
 
 
@@ -198,38 +209,33 @@ def test__hourly_sums_are_rounded_correctly_to_zero(
     enriched_time_series_factory,
 ):
     """Test with 0.001 which should be 0.000 in result for hourly resolution"""
-    df = enriched_time_series_factory(Resolution.hour.value, 0.001)
+    df = enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
     result_df = _get_result_df(df, [805])
     points = result_df.collect()
 
-    assert len(points) == 4  # one hourly quantity should yield 4 points
-
-    for point in points:
-        assert point.Quantity == Decimal("0.000")
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
+    assert result_df.where(col("Quantity") == "0.000").count() == 4
 
 
 def test__final_sum_below_midpoint_is_rounded_down(
     enriched_time_series_factory,
 ):
     """Test that ensures rounding is done correctly for sums below midpoint"""
-    df = enriched_time_series_factory(Resolution.hour.value, 0.001)
+    df = enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
     result_df = _get_result_df(df, [805])
-    points = result_df.collect()
 
-    assert len(points) == 4  # one hourly quantity should yield 4 points
-
-    for point in points:
-        assert point.Quantity == Decimal("0.000")
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
+    assert result_df.where(col("Quantity") == "0.000").count() == 4
 
 
 def test__final_sum_at_midpoint_is_rounded_up(
     enriched_time_series_factory,
 ):
     """Test that ensures rounding is done correctly for sums at midpoint"""
-    df = enriched_time_series_factory(Resolution.hour.value, 0.001).union(
-        enriched_time_series_factory(Resolution.hour.value, 0.001)
+    df = enriched_time_series_factory(Resolution.hour.value, minimum_quantity).union(
+        enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
     )
-    result_df = _get_result_df(df, [805])
+    result_df = _get_result_df(df, ["805"])
     points = result_df.collect()
 
     assert len(points) == 4  # one hourly quantity should yield 4 points
@@ -243,11 +249,11 @@ def test__final_sum_past_midpoint_is_rounded_up(
 ):
     """Test that ensures rounding is done correctly for sums past midpoint"""
     df = (
-        enriched_time_series_factory(Resolution.hour.value, 0.001)
-        .union(enriched_time_series_factory(Resolution.hour.value, 0.001))
-        .union(enriched_time_series_factory(Resolution.hour.value, 0.001))
+        enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
+        .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
+        .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
     )
-    result_df = _get_result_df(df, [805])
+    result_df = _get_result_df(df, ["805"])
     points = result_df.collect()
 
     assert len(points) == 4  # one hourly quantity should yield 4 points
@@ -262,18 +268,18 @@ def test__position_is_based_on_time_correctly(
     """'position' is correctly placed based on 'time'"""
     df = enriched_time_series_quarterly_same_time_factory(
         first_resolution=Resolution.quarter.value,
-        first_quantity=1,
+        first_quantity=Decimal("1"),
         second_resolution=Resolution.quarter.value,
-        second_quantity=2,
+        second_quantity=Decimal("2"),
         first_time="2022-06-08T12:09:15.000Z",
         second_time="2022-06-08T12:09:30.000Z",
     )
-    result_df = _get_result_df(df, [805])
+    result_df = _get_result_df(df, ["805"])
     points = result_df.collect()
     assert points[0]["position"] == 1
-    assert points[0]["Quantity"] == 1
+    assert points[0]["Quantity"] == Decimal("1")
     assert points[1]["position"] == 2
-    assert points[1]["Quantity"] == 2
+    assert points[1]["Quantity"] == Decimal("2")
 
 
 def test__that_hourly_quantity_is_summed_as_quarterly(
@@ -282,18 +288,18 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
     "Test that checks if hourly quantities are summed as quarterly"
     df = enriched_time_series_quarterly_same_time_factory(
         first_resolution=Resolution.hour.value,
-        first_quantity=4,
+        first_quantity=Decimal("4"),
         second_resolution=Resolution.hour.value,
-        second_quantity=8,
+        second_quantity=Decimal("8"),
         first_time="2022-06-08T12:09:15.000Z",
         second_time="2022-06-08T13:09:15.000Z",
     )
-    result_df = _get_result_df(df, [805])
+    result_df = _get_result_df(df, ["805"])
     result_df.show()
     assert result_df.count() == 8
     actual = result_df.collect()
-    assert actual[0].Quantity == 1
-    assert actual[4].Quantity == 2
+    assert actual[0].Quantity == Decimal("1")
+    assert actual[4].Quantity == Decimal("2")
 
 
 def test__Quality_is_present_and_None(
@@ -301,7 +307,7 @@ def test__Quality_is_present_and_None(
 ):
     """Test that ensures 'Quality' is set, and the value is None"""
     df = enriched_time_series_factory()
-    result_df = _get_result_df(df, [805])
+    result_df = _get_result_df(df, ["805"])
     points = result_df.collect()
 
     for x in points:
@@ -313,15 +319,17 @@ def test__filter_time_series_by_given_grid_area(
 ):
     """Test that time series are correctly filtered using grid area code"""
     df = (
-        enriched_time_series_factory(Resolution.hour.value, quantity=3)
+        enriched_time_series_factory(Resolution.hour.value, quantity=Decimal("3"))
         .union(
             enriched_time_series_factory(
-                Resolution.hour.value, quantity=4, gridArea="100"
+                Resolution.hour.value, quantity=Decimal("4"), gridArea="100"
             )
         )
-        .union(enriched_time_series_factory(Resolution.hour.value, quantity=3))
+        .union(
+            enriched_time_series_factory(Resolution.hour.value, quantity=Decimal("3"))
+        )
     )
-    result_df = _get_result_df(df, [805])
+    result_df = _get_result_df(df, ["805"])
     points = result_df.collect()
 
     assert len(points) == 4  # one hourly quantity should yield 4 points
@@ -334,7 +342,7 @@ def test__that_grid_area_code_in_input_is_in_output(
     enriched_time_series_quarterly_same_time_factory,
 ):
     "Test that the grid area codes in input are in result"
-    grid_area_code = 805
+    grid_area_code = "805"
     df = enriched_time_series_quarterly_same_time_factory()
     result_df = _get_result_df(df, [grid_area_code])
     assert result_df.first().GridAreaCode == str(grid_area_code)
@@ -345,7 +353,7 @@ def test__each_grid_area_has_a_sum(
 ):
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
-    result_df = _get_result_df(df, [805, 806])
+    result_df = _get_result_df(df, ["805", "806"])
     assert result_df.count() == 2
     assert result_df.where("GridAreaCode == 805").count() == 1
     assert result_df.where("GridAreaCode == 806").count() == 1
@@ -356,9 +364,9 @@ def test__final_sum_of_small_values_should_not_lose_precision(
 ):
     """Test that checks many small values accumulated does not lose precision"""
     df = large_time_series_data_frame_factory(
-        Resolution.hour.value, quantity=0.001, amount=80000
+        Resolution.hour.value, quantity=minimum_quantity, amount=80000
     )
-    result_df = _get_result_df(df, [805])
+    result_df = _get_result_df(df, ["805"])
     points = result_df.collect()
 
     assert len(points) == 4  # one hourly quantity should yield 4 points
