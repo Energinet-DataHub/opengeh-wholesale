@@ -42,6 +42,10 @@ from package.schemas import (
 )
 
 
+metering_point_created_message_type = "MeteringPointCreated"
+metering_point_connected_message_type = "MeteringPointConnected"
+
+
 def calculate_balance_fixing_total_production(
     raw_integration_events_df,
     raw_time_series_points,
@@ -113,7 +117,8 @@ def _get_metering_point_periods_df(
         .withColumn("body", from_json(col("body"), metering_point_generic_event_schema))
         .where(
             col("body.MessageType").isin(
-                "MeteringPointCreated", "MeteringPointConnected"
+                metering_point_created_message_type,
+                metering_point_connected_message_type,
             )
         )
         .select(
@@ -126,15 +131,16 @@ def _get_metering_point_periods_df(
             "body.ConnectionState",
             "body.EffectiveDate",
             "body.Resolution",
+            "body.OperationTime",
         )
     )
 
-    window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
+    window = Window.partitionBy("MeteringPointId").orderBy("OperationTime")
 
     metering_point_periods_df = (
         metering_point_events_df.withColumn(
             "toEffectiveDate",
-            lead("EffectiveDate", 1, "2099-01-01T23:00:00.000+0000").over(window),
+            lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
         )
         .withColumn(
             "GridAreaLinkId",
@@ -143,11 +149,11 @@ def _get_metering_point_periods_df(
         .withColumn(
             "ConnectionState",
             when(
-                col("MessageType") == "MeteringPointCreated",
-                lit(ConnectionState.new),
+                col("MessageType") == metering_point_created_message_type,
+                lit(ConnectionState.new.value),
             ).when(
-                col("MessageType") == "MeteringPointConnected",
-                lit(ConnectionState.connected),
+                col("MessageType") == metering_point_connected_message_type,
+                lit(ConnectionState.connected.value),
             ),
         )
         .withColumn(
@@ -163,9 +169,9 @@ def _get_metering_point_periods_df(
         .where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
-            col("ConnectionState") == ConnectionState.connected
+            col("ConnectionState") == ConnectionState.connected.value
         )  # Only aggregate when metering points is connected
-        .where(col("MeteringPointType") == MeteringPointType.production)
+        .where(col("MeteringPointType") == MeteringPointType.production.value)
     )
 
     # Only include metering points in the selected grid areas
@@ -174,7 +180,6 @@ def _get_metering_point_periods_df(
         metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
         "inner",
     ).select(
-        metering_point_periods_df["MessageType"],
         "GsrnNumber",
         "GridAreaCode",
         "EffectiveDate",

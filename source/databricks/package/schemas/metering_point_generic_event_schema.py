@@ -31,5 +31,8 @@ metering_point_generic_event_schema = StructType(
         StructField("MeteringPointId", StringType(), True),
         StructField("Resolution", IntegerType(), True),
         StructField("MessageType", StringType(), True),
+        StructField("SettlementMethod", IntegerType(), True),
+        StructField("CorrelationId", StringType(), True),
+        StructField("OperationTime", TimestampType(), True),
     ]
 )

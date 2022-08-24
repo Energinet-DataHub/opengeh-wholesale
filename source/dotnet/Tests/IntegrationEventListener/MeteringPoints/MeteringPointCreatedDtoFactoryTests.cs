@@ -261,7 +261,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
 
         [Theory]
         [InlineData(mpTypes.MeterReadingPeriodicity.MrpHourly, Resolution.Hourly)]
-        [InlineData(mpTypes.MeterReadingPeriodicity.MrpQuarterly, Resolution.Quaterly)]
+        [InlineData(mpTypes.MeterReadingPeriodicity.MrpQuarterly, Resolution.Quarterly)]
         public void MapResolutionType_WhenCalled_ShouldMapCorrectly(
             mpTypes.MeterReadingPeriodicity protoPeriodicity,
             Resolution expectedResolution)
