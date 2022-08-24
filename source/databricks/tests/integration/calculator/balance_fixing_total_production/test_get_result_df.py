@@ -169,13 +169,15 @@ def test__position_is_based_on_time_correctly(
     """Test that checks quantity is summed correctly with quaterly and hourly times"""
     df = enriched_time_series_quaterly_same_time_factory(
         first_resolution=Resolution.quarter.value,
-        first_quantity=2,
-        second_resolution=Resolution.hour.value,
+        first_quantity=1,
+        second_resolution=Resolution.quarter.value,
         second_quantity=2,
+        first_time="2022-06-08T12:09:15.000Z",
+        second_time="2022-06-08T12:09:30.000Z",
     )
     result_df = _get_result_df(df, [805])
-    sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
-    assert sum_quant.collect()[0]["sum_quant"] == 4  # total Quantity is 4
+    position = result_df.first().position
+    assert position == 1
 
 
 # Test that Quality is set and is None
