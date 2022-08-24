@@ -251,12 +251,9 @@ def test__final_sum_past_midpoint_is_rounded_up(
         .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
     )
     result_df = _get_result_df(df, ["805"])
-    points = result_df.collect()
 
-    assert len(points) == 4  # one hourly quantity should yield 4 points
-
-    for point in points:
-        assert point.Quantity == Decimal("0.001")
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
+    assert result_df.where(col("Quantity") == "0.001").count() == 4
 
 
 def test__position_is_based_on_time_correctly(
