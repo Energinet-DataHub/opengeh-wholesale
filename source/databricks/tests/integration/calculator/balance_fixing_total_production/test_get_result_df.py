@@ -26,58 +26,32 @@ from pyspark.sql.functions import col, sum
 
 
 @pytest.fixture
-def enriched_time_series_quaterly_and_hourly_factory(spark, timestamp_factory):
-    def factory():
-        time = timestamp_factory("2022-06-08T12:09:15.000Z")
-
-        df = [
-            {
-                "GridAreaCode": "805",
-                "GsrnNumber": "2045555014",
-                "Resolution": Resolution.hour,
-                "GridAreaLinkId": "GridAreaLinkId",
-                "time": time,
-                "Quantity": 2,
-                "Quality": 4,
-            },
-            {
-                "GridAreaCode": "805",
-                "GsrnNumber": "2045555014",
-                "Resolution": Resolution.quarter,
-                "GridAreaLinkId": "GridAreaLinkId",
-                "time": time,
-                "Quantity": 2,
-                "Quality": 4,
-            },
-        ]
-
-        return spark.createDataFrame(df)
-
-    return factory
-
-
-@pytest.fixture
 def enriched_time_series_quaterly_same_time_factory(spark, timestamp_factory):
-    def factory():
+    def factory(
+        first_resolution=Resolution.quarter,
+        second_resolution=Resolution.quarter,
+        first_quantity=1,
+        second_quantity=2,
+    ):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
         df = [
             {
                 "GridAreaCode": "805",
                 "GsrnNumber": "2045555014",
-                "Resolution": Resolution.quarter,
+                "Resolution": first_resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
                 "time": time,
-                "Quantity": 1,
+                "Quantity": first_quantity,
                 "Quality": 4,
             },
             {
                 "GridAreaCode": "805",
                 "GsrnNumber": "2045555014",
-                "Resolution": Resolution.quarter,
+                "Resolution": second_resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
                 "time": time,
-                "Quantity": 2,
+                "Quantity": second_quantity,
                 "Quality": 4,
             },
         ]
@@ -114,7 +88,9 @@ def test__quaterly_sums_correctly(
     enriched_time_series_quaterly_same_time_factory,
 ):
     """Test that checks quantity is summed correctly with only quaterly times"""
-    df = enriched_time_series_quaterly_same_time_factory()
+    df = enriched_time_series_quaterly_same_time_factory(
+        first_quantity=1, second_quantity=2
+    )
     result_df = _get_result_df(df, [805])
     assert result_df.first()["Quantity"] == 3
 
@@ -135,10 +111,15 @@ def test__hourly_sums_are_rounded_correctly(
 
 # Test sums with both hourly and quarterly can be calculated
 def test__quaterly_and_hourly_sums_correctly(
-    enriched_time_series_quaterly_and_hourly_factory,
+    enriched_time_series_quaterly_same_time_factory,
 ):
     """Test that checks quantity is summed correctly with quaterly and hourly times"""
-    df = enriched_time_series_quaterly_and_hourly_factory()
+    df = enriched_time_series_quaterly_same_time_factory(
+        first_resolution=Resolution.quarter,
+        first_quantity=2,
+        second_resolution=Resolution.hour,
+        second_quantity=2,
+    )
     result_df = _get_result_df(df, [805])
     sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
     assert sum_quant.collect()[0]["sum_quant"] == 4  # total Quantity is 4
@@ -146,15 +127,20 @@ def test__quaterly_and_hourly_sums_correctly(
 
 # Test that points with the same 'time' have added their 'Quantity's together on the same position
 def test__points_with_same_time_quantitys_are_on_same_poistion(
-    enriched_time_series_quaterly_and_hourly_factory,
+    enriched_time_series_quaterly_same_time_factory,
 ):
     """Test that checks quantity is summed correctly with quaterly and hourly times"""
-    df = enriched_time_series_quaterly_and_hourly_factory()
+    df = enriched_time_series_quaterly_same_time_factory(
+        first_resolution=Resolution.quarter,
+        first_quantity=2,
+        second_resolution=Resolution.hour,
+        second_quantity=2,
+    )
     result_df = _get_result_df(df, [805])
     result_df.show()
     assert (
         # total 'Quantity' on first position
-        result_df.collect()[0]["Quantity"]
+        result_df.first().Quantity
         == 2.5  # first point with quater resolution 'quantity' is 2, second is 2 but is hourly so 0.5 shoul be added to first position
     )
 
@@ -165,5 +151,4 @@ def test__points_with_same_time_quantitys_are_on_same_poistion(
 # Test that hourly Quantity is summed as quarterly?
 # Test that GridAreaCode is in input is in output
 # Test that only series from the GridArea is used to sum with
-# Test rounding method? Ask Khatozen and Mads for type to use
 # Test that multiple GridAreas receive each their calculation for a period
