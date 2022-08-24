@@ -136,8 +136,9 @@ def test__hourly_sums_are_rounded_correctly(
 
     assert len(points) == 4  # one hourly quantity should yield 4 points
 
-    for x in points:
-        assert x["Quantity"] == Decimal("0.001")
+    for point in points:
+        assert point.Quantity == Decimal("0.001")
+
 
 
 def test__quarterly_and_hourly_sums_correctly(
