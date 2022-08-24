@@ -199,8 +199,9 @@ def test__final_sum_below_midpoint_is_rounded_down(
 
     assert len(points) == 4  # one hourly quantity should yield 4 points
 
-    for x in points:
-        assert x["Quantity"] == Decimal("0.000")
+    for point in points:
+        assert point.Quantity == Decimal("0.000")
+
 
 
 def test__final_sum_at_midpoint_is_rounded_up(
