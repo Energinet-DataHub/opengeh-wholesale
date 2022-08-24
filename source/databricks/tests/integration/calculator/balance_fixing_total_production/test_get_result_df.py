@@ -320,7 +320,6 @@ def test__that_grid_area_code_in_input_is_in_output(
 #     for x in points:
 #         assert x["Quantity"] == Decimal("308.642")
 
-# Test that GridAreaCode is in input is in output [johevemi]
 
 # Test that multiple GridAreas receive each their calculation for a period [LRN]
 # def test__Quality_is_present_and_None(
