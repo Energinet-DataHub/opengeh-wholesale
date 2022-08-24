@@ -162,12 +162,8 @@ def test__hourly_sums_are_rounded_correctly(
 
     result_df = _get_result_df(df, [805])
 
-    points = result_df.collect()
-
     assert result_df.count() == 4  # one hourly quantity should yield 4 points
-
-    for point in points:
-        assert point.Quantity == expected_point_quantity
+    assert result_df.where(col("Quantity") == expected_point_quantity).count() == 4
 
 
 def test__quarterly_and_hourly_sums_correctly(
@@ -211,7 +207,6 @@ def test__hourly_sums_are_rounded_correctly_to_zero(
     """Test with 0.001 which should be 0.000 in result for hourly resolution"""
     df = enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
     result_df = _get_result_df(df, [805])
-    points = result_df.collect()
 
     assert result_df.count() == 4  # one hourly quantity should yield 4 points
     assert result_df.where(col("Quantity") == "0.000").count() == 4
@@ -299,13 +294,11 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
 def test__Quality_is_present_and_None(
     enriched_time_series_factory,
 ):
-    """Test that ensures 'Quality' is set, and the value is None"""
+    """Test that ensures 'Quality' is set, and the value is Null"""
     df = enriched_time_series_factory()
     result_df = _get_result_df(df, ["805"])
-    points = result_df.collect()
-
-    for x in points:
-        assert x["Quality"] is None
+    result_df.show()
+    assert result_df.where(col("Quality").isNull()).count() == 1
 
 
 def test__filter_time_series_by_given_grid_area(
@@ -324,12 +317,9 @@ def test__filter_time_series_by_given_grid_area(
         )
     )
     result_df = _get_result_df(df, ["805"])
-    points = result_df.collect()
 
-    assert len(points) == 4  # one hourly quantity should yield 4 points
-
-    for x in points:
-        assert x["Quantity"] == Decimal("1.5")
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
+    assert result_df.where(col("Quantity") == "1.5").count() == 4
 
 
 def test__that_grid_area_code_in_input_is_in_output(
@@ -361,9 +351,6 @@ def test__final_sum_of_small_values_should_not_lose_precision(
         Resolution.hour.value, quantity=minimum_quantity, amount=80000
     )
     result_df = _get_result_df(df, ["805"])
-    points = result_df.collect()
 
-    assert len(points) == 4  # one hourly quantity should yield 4 points
-
-    for x in points:
-        assert x["Quantity"] == Decimal("300")
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
+    assert result_df.where(col("Quantity") == "300").count() == 4
