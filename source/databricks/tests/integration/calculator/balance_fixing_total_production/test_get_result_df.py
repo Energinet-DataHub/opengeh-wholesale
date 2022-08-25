@@ -84,39 +84,6 @@ def enriched_time_series_factory(spark, timestamp_factory):
     return factory
 
 
-@pytest.fixture
-def large_time_series_data_frame_factory(spark, timestamp_factory):
-    def factory(
-        resolution=Resolution.quarter.value,
-        gridArea="805",
-        quantity=Decimal("1"),
-        amount=1,
-    ):
-        time = timestamp_factory("2022-06-08T12:09:15.000Z")
-
-        df = [
-            {
-                "GridAreaCode": gridArea,
-                "GsrnNumber": "2045555014",
-                "Resolution": resolution,
-                "GridAreaLinkId": "GridAreaLinkId",
-                "time": time,
-                "Quantity": quantity,
-                "Quality": 4,
-            }
-        ] * amount
-
-        base_df = spark.createDataFrame(df)
-        large_df = base_df
-
-        for x in range(14):
-            large_df = large_df.union(base_df)
-
-        return large_df
-
-    return factory
-
-
 # Test sums with only quarterly can be calculated
 def test__quarterly_sums_correctly(
     enriched_time_series_quarterly_same_time_factory,
@@ -292,14 +259,17 @@ def test__each_grid_area_has_a_sum(
     assert result_df.where("GridAreaCode == 806").count() == 1
 
 
-def test__final_sum_of_small_values_should_not_lose_precision(
-    large_time_series_data_frame_factory,
+def test__final_sum_of_different_magnitudes_should_not_lose_precision(
+    enriched_time_series_factory,
 ):
-    """Test that checks many small values accumulated does not lose precision"""
-    df = large_time_series_data_frame_factory(
-        Resolution.hour.value, quantity=minimum_quantity, amount=80000
+    """Test that values with different magnitudes do not lose precision when accumulated"""
+    df = (
+        enriched_time_series_factory(Resolution.hour.value, Decimal("400000000000"))
+        .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
+        .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
+        .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
     )
     result_df = _get_result_df(df, ["805"])
 
-    assert result_df.count() == 4  # one hourly quantity should yield 4 points
-    assert result_df.where(col("Quantity") == "300").count() == 4
+    assert result_df.count() == 4
+    assert result_df.where(col("Quantity") == "100000000000.001").count() == 4
