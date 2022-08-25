@@ -24,6 +24,7 @@ limitations under the License.
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
+    <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
     <ProjectReference Include="..\Sender\Sender.csproj" />
   </ItemGroup>
 
@@ -51,7 +52,7 @@ limitations under the License.
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-    
+
   <ItemGroup>
     <EmbeddedResource Include="..\..\contracts\calculation-job-parameters-reference.txt">
       <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
@@ -73,6 +74,21 @@ limitations under the License.
   <ItemGroup>
     <EmbeddedResource Include="..\..\contracts\events\metering-point-created.json">
       <Link>IntegrationEventListener\MeteringPoints\metering-point-created.json</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\contracts\enums\connection-state.json">
+      <Link>IntegrationEventListener\MeteringPoints\connection-state.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\contracts\enums\metering-point-type.json">
+      <Link>IntegrationEventListener\MeteringPoints\metering-point-type.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\contracts\enums\settlement-method.json">
+      <Link>IntegrationEventListener\MeteringPoints\settlement-method.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\contracts\enums\metering-point-resolution.json">
+      <Link>IntegrationEventListener\MeteringPoints\metering-point-resolution.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 

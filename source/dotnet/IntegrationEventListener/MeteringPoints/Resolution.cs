@@ -22,6 +22,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints
     {
         Unknown = 0,
         Hourly = 1,
-        Quaterly = 2,
+        Quarterly = 2,
     }
 }

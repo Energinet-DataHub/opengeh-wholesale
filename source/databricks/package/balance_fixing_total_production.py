@@ -41,42 +41,54 @@ from package.schemas import (
 )
 
 
+metering_point_created_message_type = "MeteringPointCreated"
+metering_point_connected_message_type = "MeteringPointConnected"
+
+
 def calculate_balance_fixing_total_production(
     raw_integration_events_df,
     raw_time_series_points,
     batch_id,
     batch_grid_areas,
+    batch_snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-    cached_raw_integration_events_df = raw_integration_events_df.cache()
-    grid_area_df = _get_grid_areas_df(
-        cached_raw_integration_events_df, batch_grid_areas
+    cached_integration_events_df = (
+        raw_integration_events_df.where(col("storedTime") <= batch_snapshot_datetime)
+        .withColumn("body", col("body").cast("string"))
+        .cache()
     )
+    time_series_points = raw_time_series_points.where(
+        col("storedTime") <= batch_snapshot_datetime
+    )
+
+    grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas)
     metering_point_period_df = _get_metering_point_periods_df(
-        cached_raw_integration_events_df,
+        cached_integration_events_df,
         grid_area_df,
         period_start_datetime,
         period_end_datetime,
     )
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
-        raw_time_series_points,
+        time_series_points,
         metering_point_period_df,
         period_start_datetime,
         period_end_datetime,
     )
     result_df = _get_result_df(enriched_time_series_point_df, batch_grid_areas)
-    cached_raw_integration_events_df.unpesist()
+    cached_integration_events_df.unpersist()
 
     return result_df
 
 
-def _get_grid_areas_df(raw_integration_events_df, batch_grid_areas) -> DataFrame:
+def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFrame:
     message_type = "GridAreaUpdated"  # Must correspond to the value stored by the integration event listener
 
     grid_area_events_df = (
-        raw_integration_events_df.withColumn("body", col("body").cast("string"))
-        .withColumn("body", from_json(col("body"), grid_area_updated_event_schema))
+        cached_integration_events_df.withColumn(
+            "body", from_json(col("body"), grid_area_updated_event_schema)
+        )
         .where(col("body.MessageType") == message_type)
         .where(col("body.GridAreaCode").isin(batch_grid_areas))
     )
@@ -93,7 +105,7 @@ def _get_grid_areas_df(raw_integration_events_df, batch_grid_areas) -> DataFrame
     )
 
     if grid_area_events_df.count() != len(batch_grid_areas):
-        grid_area_events_df.show()
+
         raise Exception(
             "Grid areas for processes in batch does not match the known grid areas in wholesale"
         )
@@ -102,17 +114,19 @@ def _get_grid_areas_df(raw_integration_events_df, batch_grid_areas) -> DataFrame
 
 
 def _get_metering_point_periods_df(
-    raw_integration_events_df,
+    cached_integration_events_df,
     grid_area_df,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
     metering_point_events_df = (
-        raw_integration_events_df.withColumn("body", col("body").cast("string"))
-        .withColumn("body", from_json(col("body"), metering_point_generic_event_schema))
+        cached_integration_events_df.withColumn(
+            "body", from_json(col("body"), metering_point_generic_event_schema)
+        )
         .where(
             col("body.MessageType").isin(
-                "MeteringPointCreated", "MeteringPointConnected"
+                metering_point_created_message_type,
+                metering_point_connected_message_type,
             )
         )
         .select(
@@ -125,46 +139,52 @@ def _get_metering_point_periods_df(
             "body.ConnectionState",
             "body.EffectiveDate",
             "body.Resolution",
+            "body.OperationTime",
         )
     )
 
-    window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
+    window = Window.partitionBy("MeteringPointId").orderBy("OperationTime")
 
-    metering_point_periods_df = (
-        metering_point_events_df.withColumn(
-            "toEffectiveDate",
-            lead("EffectiveDate", 1, "2099-01-01T23:00:00.000+0000").over(window),
-        )
-        .withColumn(
-            "GridAreaLinkId",
-            coalesce(col("GridAreaLinkId"), last("GridAreaLinkId", True).over(window)),
-        )
-        .withColumn(
-            "ConnectionState",
-            when(
-                col("MessageType") == "MeteringPointCreated",
-                lit(ConnectionState.new),
-            ).when(
-                col("MessageType") == "MeteringPointConnected",
-                lit(ConnectionState.connected),
-            ),
-        )
-        .withColumn(
-            "MeteringPointType",
-            coalesce(
-                col("MeteringPointType"), last("MeteringPointType", True).over(window)
-            ),
-        )
-        .withColumn(
-            "Resolution",
-            coalesce(col("Resolution"), last("Resolution", True).over(window)),
-        )
-        .where(col("EffectiveDate") <= period_end_datetime)
-        .where(col("toEffectiveDate") >= period_start_datetime)
-        .where(
-            col("ConnectionState") == ConnectionState.connected
-        )  # Only aggregate when metering points is connected
-        .where(col("MeteringPointType") == MeteringPointType.production)
+    metering_point_periods_df = metering_point_events_df.withColumn(
+        "toEffectiveDate",
+        lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
+    )
+    metering_point_periods_df = metering_point_periods_df.withColumn(
+        "GridAreaLinkId",
+        coalesce(col("GridAreaLinkId"), last("GridAreaLinkId", True).over(window)),
+    )
+    metering_point_periods_df = metering_point_periods_df.withColumn(
+        "ConnectionState",
+        when(
+            col("MessageType") == metering_point_created_message_type,
+            lit(ConnectionState.new.value),
+        ).when(
+            col("MessageType") == metering_point_connected_message_type,
+            lit(ConnectionState.connected.value),
+        ),
+    )
+    metering_point_periods_df = metering_point_periods_df.withColumn(
+        "MeteringPointType",
+        coalesce(
+            col("MeteringPointType"), last("MeteringPointType", True).over(window)
+        ),
+    )
+    metering_point_periods_df = metering_point_periods_df.withColumn(
+        "Resolution",
+        coalesce(col("Resolution"), last("Resolution", True).over(window)),
+    )
+    metering_point_periods_df = metering_point_periods_df
+    metering_point_periods_df = metering_point_periods_df.where(
+        col("EffectiveDate") <= period_end_datetime
+    )
+    metering_point_periods_df = metering_point_periods_df.where(
+        col("toEffectiveDate") >= period_start_datetime
+    )
+    metering_point_periods_df = metering_point_periods_df.where(
+        col("ConnectionState") == ConnectionState.connected.value
+    )  # Only aggregate when metering points is connected
+    metering_point_periods_df = metering_point_periods_df.where(
+        col("MeteringPointType") == MeteringPointType.production.value
     )
 
     # Only include metering points in the selected grid areas
@@ -173,25 +193,24 @@ def _get_metering_point_periods_df(
         metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
         "inner",
     ).select(
-        metering_point_periods_df["MessageType"],
         "GsrnNumber",
         "GridAreaCode",
         "EffectiveDate",
         "toEffectiveDate",
         "Resolution",
     )
-
     return metering_point_periods_df
 
 
 def _get_enriched_time_series_points_df(
-    raw_time_series_points,
+    time_series_points,
     metering_point_period_df,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
+
     timeseries_df = (
-        raw_time_series_points.where(col("time") >= period_start_datetime).where(
+        time_series_points.where(col("time") >= period_start_datetime).where(
             col("time") < period_end_datetime
         )
         # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
@@ -210,9 +229,6 @@ def _get_enriched_time_series_points_df(
 
     timeseries_df = timeseries_df.select(col("GsrnNumber"), "time", "Quantity")
 
-    # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
-    #       To improve performance, consider adding a range join hint.
-    #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
     enriched_time_series_point_df = timeseries_df.join(
         metering_point_period_df,
         (metering_point_period_df["GsrnNumber"] == timeseries_df["GsrnNumber"])
@@ -231,24 +247,19 @@ def _get_enriched_time_series_points_df(
 
 
 def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFrame:
-    # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
-    #       To improve performance, consider adding a range join hint.
-    #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
-
     # Total production in batch grid areas with quarterly resolution per grid area
     result_df = (
-        enriched_time_series_points_df.where(col("GridAreaCode").isin(batch_grid_areas))
-        .withColumn(
+        enriched_time_series_points_df.withColumn(  # .where(col("GridAreaCode").isin(batch_grid_areas))
             "quarter_times",
             when(
-                col("Resolution") == Resolution.hour,
+                col("Resolution") == Resolution.hour.value,
                 array(
                     col("time"),
                     col("time") + expr("INTERVAL 15 minutes"),
                     col("time") + expr("INTERVAL 30 minutes"),
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
-            ).when(col("Resolution") == Resolution.quarter, array(col("time"))),
+            ).when(col("Resolution") == Resolution.quarter.value, array(col("time"))),
         )
         .select(
             enriched_time_series_points_df["*"],
@@ -256,8 +267,8 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
         )
         .withColumn(
             "quarter_quantity",
-            when(col("Resolution") == Resolution.hour, col("Quantity") / 4).when(
-                col("Resolution") == Resolution.quarter, col("Quantity")
+            when(col("Resolution") == Resolution.hour.value, col("Quantity") / 4).when(
+                col("Resolution") == Resolution.quarter.value, col("Quantity")
             ),
         )
         .groupBy("GridAreaCode", "quarter_time")
@@ -266,16 +277,12 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
 
     window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
 
-    # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization.
-    #       To improve performance, consider adding a range join hint.
-    #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
-
     # Points may be missing in result time series if all metering points are missing a point at a certain moment.
     # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
     result_df = (
         result_df.withColumn("position", row_number().over(window))
         .withColumnRenamed("sum(quarter_quantity)", "Quantity")
-        .select("GridAreaCode", "Quantity", "Quality")
+        .select("GridAreaCode", "Quantity")
     )
 
     return result_df
