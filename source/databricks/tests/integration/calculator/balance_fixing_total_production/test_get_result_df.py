@@ -201,56 +201,6 @@ def test__points_with_same_time_quantities_are_on_same_position(
     # first point with quarter resolution 'quantity' is 2, second is 2 but is hourly so 0.5 should be added to first position
 
 
-def test__hourly_sums_are_rounded_correctly_to_zero(
-    enriched_time_series_factory,
-):
-    """Test with 0.001 which should be 0.000 in result for hourly resolution"""
-    df = enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
-    result_df = _get_result_df(df, [805])
-
-    assert result_df.count() == 4  # one hourly quantity should yield 4 points
-    assert result_df.where(col("Quantity") == "0.000").count() == 4
-
-
-def test__final_sum_below_midpoint_is_rounded_down(
-    enriched_time_series_factory,
-):
-    """Test that ensures rounding is done correctly for sums below midpoint"""
-    df = enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
-    result_df = _get_result_df(df, [805])
-
-    assert result_df.count() == 4  # one hourly quantity should yield 4 points
-    assert result_df.where(col("Quantity") == "0.000").count() == 4
-
-
-def test__final_sum_at_midpoint_is_rounded_up(
-    enriched_time_series_factory,
-):
-    """Test that ensures rounding is done correctly for sums at midpoint"""
-    df = enriched_time_series_factory(Resolution.hour.value, minimum_quantity).union(
-        enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
-    )
-    result_df = _get_result_df(df, ["805"])
-
-    assert result_df.count() == 4  # one hourly quantity should yield 4 points
-    assert result_df.where(col("Quantity") == "0.001").count() == 4
-
-
-def test__final_sum_past_midpoint_is_rounded_up(
-    enriched_time_series_factory,
-):
-    """Test that ensures rounding is done correctly for sums past midpoint"""
-    df = (
-        enriched_time_series_factory(Resolution.hour.value, minimum_quantity)
-        .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
-        .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
-    )
-    result_df = _get_result_df(df, ["805"])
-
-    assert result_df.count() == 4  # one hourly quantity should yield 4 points
-    assert result_df.where(col("Quantity") == "0.001").count() == 4
-
-
 def test__position_is_based_on_time_correctly(
     enriched_time_series_quarterly_same_time_factory,
 ):
