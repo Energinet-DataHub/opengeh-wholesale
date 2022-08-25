@@ -9,6 +9,6 @@ assignees: ''
 
 ## Description
 
-## Acceptance criteria
+## Acceptance Criteria
 
 ## Tasks
