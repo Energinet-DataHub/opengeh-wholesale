@@ -181,7 +181,7 @@ def test__position_is_based_on_time_correctly(
         second_grid_area_code=grid_area_code_805,
     )
     result_df = _get_result_df(df).collect()
-    print(result_df)
+
     assert result_df[0]["position"] == 1
     assert result_df[0]["Quantity"] == Decimal("1")
     assert result_df[1]["position"] == 2
