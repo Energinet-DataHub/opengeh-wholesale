@@ -48,3 +48,9 @@ variable enable_health_check_alerts {
   type          = bool
   description   = "Specify if health check alerts for Azure Functions and App Services should be enabled."
 }
+
+variable developer_ad_group_name {
+  type          = string
+  description   = "(Optional) Name of the AD group containing developers to have read access to SQL database."
+  default       = ""
+}
