@@ -18,7 +18,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_wholesale" {
-  source                      = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=7.0.0"
+  source                      = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=7.1.0"
 
   name                        = "data"
   project_name                = var.domain_name_short
@@ -26,6 +26,7 @@ module "mssqldb_wholesale" {
   environment_instance        = var.environment_instance
   server_id                   = data.azurerm_mssql_server.mssqlsrv.id
   log_analytics_workspace_id  = data.azurerm_key_vault_secret.log_shared_id.value
+  sql_server_name             = data.azurerm_mssql_server.mssqlsrv.name
   
   tags                        = azurerm_resource_group.this.tags
 }
