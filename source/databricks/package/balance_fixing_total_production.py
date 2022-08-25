@@ -212,13 +212,9 @@ def _get_enriched_time_series_points_df(
     period_end_datetime,
 ) -> DataFrame:
 
-    timeseries_df = (
-        time_series_points.where(col("time") >= period_start_datetime).where(
-            col("time") < period_end_datetime
-        )
-        # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
-        .withColumn("Quantity", col("Quantity").cast("decimal(18,6)"))
-    )
+    timeseries_df = time_series_points.where(
+        col("time") >= period_start_datetime
+    ).where(col("time") < period_end_datetime)
 
     # Only use latest registered points
     window = Window.partitionBy("GsrnNumber", "time").orderBy(
