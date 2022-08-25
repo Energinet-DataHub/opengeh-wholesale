@@ -267,12 +267,10 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
             enriched_time_series_points_df["*"],
             explode("quarter_times").alias("quarter_time"),
         )
-        .withColumn("Quantity", col("Quantity").cast(DecimalType(18, 6)))
         .withColumn(
             "quarter_quantity",
             when(
                 col("Resolution") == Resolution.hour.value,
-                # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision.
                 col("Quantity") / 4,
             ).when(col("Resolution") == Resolution.quarter.value, col("Quantity")),
         )
