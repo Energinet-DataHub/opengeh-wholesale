@@ -226,7 +226,9 @@ def _get_enriched_time_series_points_df(
         "row_number", row_number().over(window)
     ).where(col("row_number") == 1)
 
-    timeseries_df = timeseries_df.select(col("GsrnNumber"), "time", "Quantity")
+    timeseries_df = timeseries_df.select(
+        col("GsrnNumber"), "time", "Quantity", "Resolution"
+    )
 
     enriched_time_series_point_df = timeseries_df.join(
         metering_point_period_df,
@@ -236,6 +238,7 @@ def _get_enriched_time_series_points_df(
         "inner",
     ).select(
         "GridAreaCode",
+        metering_point_period_df["GsrnNumber"],
         "Resolution",
         "time",
         "Quantity",
@@ -263,6 +266,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
             enriched_time_series_points_df["*"],
             explode("quarter_times").alias("quarter_time"),
         )
+        .withColumn("Quantity", col("Quantity").cast(DecimalType(18, 6)))
         .withColumn(
             "quarter_quantity",
             when(
