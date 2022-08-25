@@ -46,14 +46,12 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
             {
                 "GridAreaCode": first_grid_area_code,
                 "Resolution": first_resolution,
-                "GridAreaLinkId": "GridAreaLinkId",
                 "time": time,
                 "Quantity": first_quantity,
             },
             {
                 "GridAreaCode": second_grid_area_code,
                 "Resolution": second_resolution,
-                "GridAreaLinkId": "GridAreaLinkId",
                 "time": time2,
                 "Quantity": second_quantity,
             },
@@ -135,21 +133,21 @@ def test__quarterly_sums_correctly(
     "quantity, expected_point_quantity",
     [
         # 0.001 / 4 = 0.000250 ≈ 0.000
-        (0.001, Decimal("0.000")),
+        (Decimal("0.001"), Decimal("0.000")),
         # 0.002 / 4 = 0.000500 ≈ 0.001
-        (0.002, Decimal("0.001")),
+        (Decimal("0.002"), Decimal("0.001")),
         # 0.003 / 4 = 0.000750 ≈ 0.001
-        (0.003, Decimal("0.001")),
+        (Decimal("0.003"), Decimal("0.001")),
         # 0.004 / 4 = 0.001000 ≈ 0.001
-        (0.004, Decimal("0.001")),
+        (Decimal("0.004"), Decimal("0.001")),
         # 0.005 / 4 = 0.001250 ≈ 0.001
-        (0.005, Decimal("0.001")),
+        (Decimal("0.005"), Decimal("0.001")),
         # 0.006 / 4 = 0.001500 ≈ 0.002
-        (0.006, Decimal("0.002")),
+        (Decimal("0.006"), Decimal("0.002")),
         # 0.007 / 4 = 0.001750 ≈ 0.002
-        (0.007, Decimal("0.002")),
+        (Decimal("0.007"), Decimal("0.002")),
         # 0.008 / 4 = 0.002000 ≈ 0.002
-        (0.008, Decimal("0.002")),
+        (Decimal("0.008"), Decimal("0.002")),
     ],
 )
 def test__hourly_sums_are_rounded_correctly(
@@ -172,17 +170,18 @@ def test__quarterly_and_hourly_sums_correctly(
     """Test that checks quantity is summed correctly with quarterly and hourly times"""
     first_quantity = Decimal("2")
     second_quantity = Decimal("2")
+    gird_area_code_805 = (
+        "805"  # reference this a "global" variable in the getresult and in the factory
+    )
     df = enriched_time_series_quarterly_same_time_factory(
         first_resolution=Resolution.quarter.value,
         first_quantity=first_quantity,
         second_resolution=Resolution.hour.value,
         second_quantity=second_quantity,
     )
-    result_df = _get_result_df(df, ["805"])
+    result_df = _get_result_df(df, [gird_area_code_805])
     sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
-    assert (
-        sum_quant.first()["sum_quant"] == first_quantity + second_quantity
-    )  # total Quantity is 4
+    assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity
 
 
 def test__points_with_same_time_quantities_are_on_same_position(
