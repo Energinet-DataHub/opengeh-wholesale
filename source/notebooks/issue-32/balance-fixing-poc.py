@@ -28,11 +28,11 @@
 # Job parameters
 from datetime import datetime
 
-batch_id = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+batch_id = datetime.now().strftime("%Y-%m-%d_%H_%M_%S")
 batch_grid_areas = ["805", "806"]
 snapshot_datetime = datetime.now()
-period_start_datetime = datetime.strptime('31/07/2022 22:00', '%d/%m/%Y %H:%M')
-period_end_datetime = datetime.strptime('1/08/2022 22:00', '%d/%m/%Y %H:%M')
+period_start_datetime = datetime.strptime('31/05/2022 22:00', '%d/%m/%Y %H:%M')
+period_end_datetime = datetime.strptime('1/06/2022 22:00', '%d/%m/%Y %H:%M')
 
 # COMMAND ----------
 
@@ -63,6 +63,18 @@ path = "abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/
 
 # COMMAND ----------
 
+#spark.read.option("mergeSchema", "true").parquet(path).withColumn("body", col("body").cast("string")).coalesce(1).write.mode("overwrite").json("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/testdata/integration_events")
+
+# COMMAND ----------
+
+#spark.read.option("mergeSchema", "true").parquet("abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/time-series-points/").coalesce(1).write.mode("overwrite").json("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/testdata/time_series_events")
+
+# COMMAND ----------
+
+#display(dbutils.fs.ls("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/testdata/integration_events"))
+
+# COMMAND ----------
+
 grid_area_event_schema = StructType(
     [
         StructField("GridAreaCode", StringType(), True),
@@ -80,24 +92,24 @@ grid_area_event_schema = StructType(
 #)
 
 grid_area_events_df = (spark.read.option("mergeSchema", "true").parquet(path)
+  .where(col("storedTime") <= snapshot_datetime)
   .withColumn("body", col("body").cast("string"))
   .withColumn("body", from_json(col("body"), grid_area_event_schema))
-  .where(col("enqueuedTime") <= snapshot_datetime)
   .where(col("body.MessageType") == "GridAreaUpdatedIntegrationEvent")
-  .where(col("storedTime") <= snapshot_datetime)
   .where(col("body.GridAreaCode").isin(batch_grid_areas))
 )
 
+display(grid_area_events_df)
+
 # As we only use (currently) immutable data we can just pick any of the update events randomly.
 # This will, however, change when support for merge of grid areas are added.
-w2 = Window.partitionBy("body.GridAreaCode").orderBy(col("enqueuedTime"))
+w2 = Window.partitionBy("body.GridAreaCode").orderBy(col("enqueuedTime")) #skal det ikke være stored time?
 grid_area_events_df = (
     grid_area_events_df
     .withColumn("row",row_number().over(w2))
     .filter(col("row") == 1).drop("row") 
     .select("body.GridAreaLinkId", "body.GridAreaCode")
 )
-
 display(grid_area_events_df)
 
 if(grid_area_events_df.count() != len(batch_grid_areas)):
@@ -118,7 +130,6 @@ schema = StructType(
     ]
 )
 
-"""
 # Debug
 display(
   spark.read.option("mergeSchema", "true").parquet("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/events")
@@ -126,12 +137,11 @@ display(
   .withColumn("body", from_json(col("body"), schema))
   .where(col("body.MessageType").startswith("Meter"))
 )
-"""
 
 metering_point_events_df = (spark.read.option("mergeSchema", "true").parquet(path)
+  .where(col("storedTime") <= snapshot_datetime)
   .withColumn("body", col("body").cast("string"))
   .withColumn("body", from_json(col("body"), schema))
-  .where(col("storedTime") <= snapshot_datetime)
   .where(col("body.MessageType").startswith("MeteringPoint"))
   .select("storedTime", "body.MessageType", "body.MeteringPointId", "body.GsrnNumber", "body.MeteringPointType", "body.GridAreaLinkId", "body.ConnectionState", "body.EffectiveDate", "body.Resolution"))
 
@@ -142,22 +152,24 @@ display(metering_point_events_df)
 window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
 
 metering_point_periods_df  = (metering_point_events_df
-  .withColumn("toEffectiveDate", lead("EffectiveDate", 1, "2099-01-01T23:00:00.000+0000").over(window))
+  .withColumn("toEffectiveDate", lead("EffectiveDate", 1, "2099-01-01T23:00:00.000+0000").over(window))                         
   .withColumn("GridAreaLinkId", coalesce(col("GridAreaLinkId"), last("GridAreaLinkId", True).over(window)))
   .withColumn("ConnectionState", when(col("MessageType") == "MeteringPointCreated", lit(connection_state_created))
                                 .when(col("MessageType") == "MeteringPointConnected", lit(connection_state_connected)))
   .withColumn("MeteringPointType", coalesce(col("MeteringPointType"), last("MeteringPointType", True).over(window)))
   .withColumn("Resolution", coalesce(col("Resolution"), last("Resolution", True).over(window)))
- )
+  .where(col("EffectiveDate") <= period_end_datetime )
+  .where(col("toEffectiveDate") >= period_start_datetime ) 
+  .where(col("ConnectionState") == connection_state_connected) # Only aggregate when metering points is connected
+)
 
-#display(metering_point_periods_df)
+display(metering_point_periods_df)
 
 # Only include metering points in the selected grid areas
 metering_point_periods_df = (
     metering_point_periods_df
     .join(grid_area_events_df, metering_point_periods_df["GridAreaLinkId"] == grid_area_events_df["GridAreaLinkId"], "inner")
-    .select(metering_point_periods_df["MessageType"], "MeteringPointId", "GsrnNumber", "MeteringPointType", "GridAreaCode", "ConnectionState", "EffectiveDate", "toEffectiveDate", "Resolution")
-    .where(col("ConnectionState") == connection_state_connected)
+    .select(metering_point_periods_df["MessageType"], "GsrnNumber", "GridAreaCode", "EffectiveDate", "toEffectiveDate", "Resolution")
 )
 
 display(metering_point_periods_df)
@@ -165,40 +177,38 @@ display(metering_point_periods_df)
 # COMMAND ----------
 
 timeseries_df = (spark.read.option("mergeSchema", "true").parquet("abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/time-series-points/")
-                 # TODO: Fix missing storedTime on time series points
-                 #.where(col("storedTime") <= snapshot_datetime)
+                 .where(col("storedTime") <= snapshot_datetime)
                  .where(col("time") >= period_start_datetime)
                  .where(col("time") < period_end_datetime)
                  # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
                  .withColumn("quantity", col("quantity").cast("decimal(18,6)"))
                 )
 
-#display(timeseries_df)
+display(timeseries_df)
 
 # Only use latest registered points
-window = Window.partitionBy("metering_point_id", "time").orderBy(col("registration_date_time").desc())
+window = Window.partitionBy("metering_point_id", "time").orderBy(col("registration_date_time").desc(), col("storedTime").desc())
 timeseries_df = (timeseries_df
                  .withColumn("row_number", row_number().over(window))
                  .where(col("row_number") == 1)
-                 .drop("row_number")
                 )
 
-timeseries_df = timeseries_df.select("metering_point_id", "time", "quantity", "quality")
+timeseries_df = timeseries_df.select(col("metering_point_id").alias("GsrnNumber"), "time", "quantity")
 
-display(timeseries_df)
+display(timeseries_df.groupBy("GsrnNumber").count())
+display(timeseries_df.where(col("GsrnNumber") == "577996546429822830" ))
 
 # COMMAND ----------
 
 # TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization. To improve performance, consider adding a range join hint.
 #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
-timeseriesWithMeteringPoint = (
+enriched_time_series_point_df = (
     timeseries_df
-    .join(metering_point_periods_df, (metering_point_periods_df["MeteringPointId"] == timeseries_df["metering_point_id"]) &
+    .join(metering_point_periods_df, (metering_point_periods_df["GsrnNumber"] == timeseries_df["GsrnNumber"]) &
                (timeseries_df["time"] >= metering_point_periods_df["EffectiveDate"]) &
                (timeseries_df["time"] < metering_point_periods_df["toEffectiveDate"]),
                                                  "inner")
-    # TODO: Select used cols
-    .select("*")
+    .select("GridAreaCode", metering_point_periods_df["GsrnNumber"], "Resolution", "time", "quantity")
 )
 
 display(timeseriesWithMeteringPoint)
@@ -209,13 +219,10 @@ display(timeseriesWithMeteringPoint)
 #       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
 
 # Total production in batch grid areas with quarterly resolution as json file per grid area
-result_df = (timeseriesWithMeteringPoint
-      .where(col("MeteringPointType") == metering_point_type_production)
+result_df = (enriched_time_series_point_df
       .where(col("GridAreaCode").isin(batch_grid_areas))
-      # TODO: Does this work correctly when daylight saving changes?
-      .withColumn("quarter_times", when(col("resolution") == resolution_hour, array(col("time"), col("time") + expr('INTERVAL 15 minutes'), col("time") + expr('INTERVAL 30 minutes'), col("time") + expr('INTERVAL 45 minutes')))
-                               .when(col("resolution") == resolution_quarter, array(col("time"))))
-      #.select(timeseriesWithMeteringPoint["*"], explode("quantities").alias("quarter_quantity"))
+      .withColumn("quarter_times", when(col("resolution") == resolution_hour, F.array(col("time"), col("time") + expr('INTERVAL 15 minutes'), col("time") + expr('INTERVAL 30 minutes'), col("time") + expr('INTERVAL 45 minutes')))
+                               .when(col("resolution") == resolution_quarter, F.array(col("time"))))
       .select(timeseriesWithMeteringPoint["*"], explode("quarter_times").alias("quarter_time"))
       .withColumn("quarter_quantity", when(col("resolution") == resolution_hour, col("quantity") / 4)
                                .when(col("resolution") == resolution_quarter, col("quantity")))
@@ -233,16 +240,26 @@ window = Window.partitionBy("grid-area").orderBy(col("quarter_time"))
 
 # Points may be missing in result time series if all metering points are missing a point at a certain moment.
 # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
-output_df = (result_df
+result_df = (result_df
  .withColumnRenamed("GridAreaCode", "grid-area")
  .withColumn("position", row_number().over(window))
  .drop("quarter_time")
  .withColumnRenamed("sum(quarter_quantity)", "quantity")
 )
 
-(output_df
+(result_df
  .repartition("grid-area")
  .write
+ .mode("overwrite")
  .partitionBy("grid-area")
  .json(f"abfss://processes@stdatalakesharedresu001.dfs.core.windows.net/results/batch-id={batch_id}")
 )
+
+# COMMAND ----------
+
+# See the results as DataFrames
+for area in batch_grid_areas:
+    display(spark.read.option("mergeSchema", "true").json(f"abfss://processes@stdatalakesharedresu001.dfs.core.windows.net/results")
+            .where(col("batch-id") == batch_id)
+            .where(col("grid-area") == area)
+           )
