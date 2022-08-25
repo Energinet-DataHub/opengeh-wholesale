@@ -196,12 +196,7 @@ def _get_metering_point_periods_df(
         grid_area_df,
         metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
         "inner",
-    ).select(
-        "GsrnNumber",
-        "GridAreaCode",
-        "EffectiveDate",
-        "toEffectiveDate",
-    )
+    ).select("GsrnNumber", "GridAreaCode", "EffectiveDate", "toEffectiveDate")
     return metering_point_periods_df
 
 

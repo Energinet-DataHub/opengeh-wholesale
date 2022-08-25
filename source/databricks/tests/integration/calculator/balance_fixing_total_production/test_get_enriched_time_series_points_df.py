@@ -63,7 +63,6 @@ def metering_point_period_df_factory(spark, timestamp_factory):
                 "GridAreaCode": "805",
                 "EffectiveDate": effective_date,
                 "toEffectiveDate": to_effective_date,
-                "Resolution": 2,
             }
         ]
         return spark.createDataFrame(df)
