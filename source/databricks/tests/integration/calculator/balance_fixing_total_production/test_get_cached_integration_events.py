@@ -15,13 +15,22 @@
 
 from datetime import datetime, timedelta
 import pytest
+from types import SimpleNamespace
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import (
     _get_cached_integration_events,
     metering_point_created_message_type,
     metering_point_connected_message_type,
 )
+from package.codelists import (
+    ConnectionState,
+    MeteringPointType,
+    Resolution,
+    SettlementMethod,
+)
 from pyspark.sql import DataFrame
+from pyspark.sql.functions import col, struct, to_json, from_json
+
 
 # Factory defaults
 grid_area_code = "805"
