@@ -63,7 +63,6 @@ def metering_point_period_df_factory(spark, timestamp_factory):
                 "GridAreaCode": "805",
                 "EffectiveDate": effective_date,
                 "toEffectiveDate": to_effective_date,
-                "Resolution": 2,
             }
         ]
         return spark.createDataFrame(df)
@@ -254,13 +253,10 @@ time_2 = "2022-06-10T13:09:15.000Z"
 
 
 @pytest.mark.parametrize(
-    "registration_date_time_1, registration_date_time_2, stored_time_1, stored_time_2, expected_quantity",
+    "registration_date_time_1, registration_date_time_2, expected_quantity",
     [
-        (time_1, time_2, time_1, time_1, point_2_quantity),
-        (time_2, time_1, time_1, time_1, point_1_quantity),
-        (time_1, time_1, time_1, time_2, point_2_quantity),
-        (time_1, time_1, time_2, time_1, point_1_quantity),
-        (time_1, time_2, time_2, time_1, point_2_quantity),
+        (time_1, time_2, point_2_quantity),
+        (time_2, time_1, point_1_quantity),
     ],
 )
 def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_latest_stored_time(
@@ -269,8 +265,6 @@ def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_l
     timestamp_factory,
     registration_date_time_1,
     registration_date_time_2,
-    stored_time_1,
-    stored_time_2,
     expected_quantity,
 ):
     """Test that _get_enriched_time_series_points_df gets a two time_series_points,
@@ -280,8 +274,6 @@ def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_l
     raw_time_series_points = raw_time_series_points_with_same_gsrn_and_time_factory(
         registration_date_time_1=registration_date_time_1,
         registration_date_time_2=registration_date_time_2,
-        stored_time_1=stored_time_1,
-        stored_time_2=stored_time_2,
     )
     metering_point_period_df = metering_point_period_df_factory()
 

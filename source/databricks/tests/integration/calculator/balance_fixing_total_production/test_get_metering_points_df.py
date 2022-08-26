@@ -350,29 +350,6 @@ def test__grid_area_code(
     assert actual_df.first().GridAreaCode == grid_area_code
 
 
-@pytest.mark.parametrize(
-    "resolution", [(Resolution.hour.value), (Resolution.quarter.value)]
-)
-def test__resolution(
-    metering_point_created_df_factory,
-    metering_point_connected_df_factory,
-    grid_area_df,
-    resolution,
-):
-    # Arrange
-    created_events_df = metering_point_created_df_factory(resolution=resolution)
-    connected_events_df = metering_point_connected_df_factory()
-    integration_events_df = created_events_df.union(connected_events_df)
-
-    # Act
-    actual_df = _get_metering_point_periods_df(
-        integration_events_df, grid_area_df, second_of_june, third_of_june
-    )
-
-    # Assert
-    assert actual_df.first().Resolution == resolution
-
-
 def test__effective_date__matches_effective_date_of_connected_event(
     metering_point_created_df_factory, metering_point_connected_df_factory, grid_area_df
 ):
