@@ -41,19 +41,5 @@ def json_test_files(integration_tests_path) -> str:
 
 
 @pytest.fixture(scope="session")
-def delta_lake_path(integration_tests_path) -> str:
-    return f"{integration_tests_path}/__delta__"
-
-
-@pytest.fixture(scope="session")
-def delta_reader(spark: SparkSession, delta_lake_path: str):
-    def f(path: str):
-        data = spark.sparkContext.emptyRDD()
-        try:
-            data = spark.read.format("delta").load(f"{delta_lake_path}/{path}")
-            data.show()
-        except Exception:
-            pass
-        return data
-
-    return f
+def data_lake_path(integration_tests_path) -> str:
+    return f"{integration_tests_path}/__data_lake__"

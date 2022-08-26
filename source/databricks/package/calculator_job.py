@@ -33,6 +33,4 @@ def start():
         args.data_storage_account_name, args.data_storage_account_key
     )
 
-    calculator(
-        spark, args.process_results_path, args.batch_id
-    )
+    calculator(spark, args.process_results_path, args.batch_id)
