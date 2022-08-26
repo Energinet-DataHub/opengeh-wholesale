@@ -41,6 +41,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                     builder.UseMiddleware<CorrelationIdMiddleware>();
                     builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
                     builder.UseMiddleware<IntegrationEventMetadataMiddleware>();
+                    builder.UseMiddleware<IntegrationEventReceiveLogger>();
                 })
                 .ConfigureServices(Middlewares)
                 .ConfigureServices(Infrastructure)
@@ -57,6 +58,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             serviceCollection.AddScoped<CorrelationIdMiddleware>();
             serviceCollection.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
             serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
+            serviceCollection.AddScoped<IntegrationEventReceiveLogger>();
         }
 
         private static void Infrastructure(IServiceCollection serviceCollection)

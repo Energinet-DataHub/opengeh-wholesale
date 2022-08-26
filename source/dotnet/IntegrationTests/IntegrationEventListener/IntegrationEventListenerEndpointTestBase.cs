@@ -58,6 +58,35 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
     }
 
     [Fact]
+    public async Task When_ReceivingCorrectIntegrationEvent_Then_FunctionNameAndMessageTypeAreLogged()
+    {
+        // Arrange
+        var operationTimestamp = DateTime.UtcNow;
+        var correlationId = Guid.NewGuid().ToString();
+        var expectedMessageType = "the-expected-message-type";
+
+        var message = ServiceBusTestMessage.Create(
+            CreateIntegrationEventData(),
+            operationTimestamp,
+            correlationId,
+            expectedMessageType);
+
+        // Act
+        await IntegrationEventTopicSender.SendMessageAsync(message);
+
+        // Assert: Await function has executed
+        await FunctionAsserts
+            .AssertHasExecutedAsync(Fixture.HostManager, typeof(TTargetFunction).Name)
+            .ConfigureAwait(false);
+
+        // Assert: Log contains line with function name and message type
+        var log = Fixture.HostManager.GetHostLogSnapshot();
+        var functionName = typeof(TTargetFunction).Name;
+
+        log.Any(s => s.Contains(functionName) && s.Contains(expectedMessageType)).Should().BeTrue();
+    }
+
+    [Fact]
     public async Task When_ReceivingCorrectIntegrationEvent_Then_CorrectDtoIsSentToEventHub()
     {
         // Arrange
