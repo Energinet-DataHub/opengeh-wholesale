@@ -216,27 +216,6 @@ def test__Quality_is_present_and_None(
     assert result_df.where(col("Quality").isNull()).count() == 1
 
 
-def test__filter_time_series_by_given_grid_area(
-    enriched_time_series_factory,
-):
-    """Test that time series are correctly filtered using grid area code"""
-    df = (
-        enriched_time_series_factory(Resolution.hour.value, quantity=Decimal("3"))
-        .union(
-            enriched_time_series_factory(
-                Resolution.hour.value, quantity=Decimal("4"), gridArea="100"
-            )
-        )
-        .union(
-            enriched_time_series_factory(Resolution.hour.value, quantity=Decimal("3"))
-        )
-    )
-    result_df = _get_result_df(df)
-
-    assert result_df.count() == 8  # one hourly quantity should yield 4 points
-    assert result_df.where(col("Quantity") == "1.5").count() == 4
-
-
 def test__that_grid_area_code_in_input_is_in_output(
     enriched_time_series_quarterly_same_time_factory,
 ):
