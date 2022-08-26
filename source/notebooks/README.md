@@ -2,7 +2,7 @@
 
 Secrets are stored as environment variables in the Databricks cluster, and read out in code.
 
-**How to setup environment variables:**
+## How to setup environment variables:
 
 In the Databricks menu select "Compute"
 
@@ -18,7 +18,7 @@ Example:
 STORAGE_ACCOUNT_KEY="SOME-SECRET-KEY"
 ```
 
-**How to read environment variables in code**
+## How to read environment variables in code
 
 Python example:
 
