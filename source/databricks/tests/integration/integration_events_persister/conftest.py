@@ -38,11 +38,11 @@ time_series_received_schema = StructType(
 
 
 @pytest.fixture(scope="session")
-def parquet_reader(spark: SparkSession, delta_lake_path: str):
+def parquet_reader(spark: SparkSession, data_lake_path: str):
     def f(path: str):
         data = spark.sparkContext.emptyRDD()
         try:
-            data = spark.read.format("parquet").load(f"{delta_lake_path}/{path}")
+            data = spark.read.format("parquet").load(f"{data_lake_path}/{path}")
             data.show(truncate=False)
         except Exception:
             pass
