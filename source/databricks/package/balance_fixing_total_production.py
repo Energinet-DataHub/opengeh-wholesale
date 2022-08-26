@@ -32,6 +32,7 @@ from pyspark.sql.types import (
     StringType,
     TimestampType,
     StructType,
+    DecimalType,
 )
 from pyspark.sql.window import Window
 from package.codelists import ConnectionState, MeteringPointType, Resolution
@@ -64,19 +65,22 @@ def calculate_balance_fixing_total_production(
     )
 
     grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas)
+
     metering_point_period_df = _get_metering_point_periods_df(
         cached_integration_events_df,
         grid_area_df,
         period_start_datetime,
         period_end_datetime,
     )
+
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         time_series_points,
         metering_point_period_df,
         period_start_datetime,
         period_end_datetime,
     )
-    result_df = _get_result_df(enriched_time_series_point_df, batch_grid_areas)
+
+    result_df = _get_result_df(enriched_time_series_point_df)
     cached_integration_events_df.unpersist()
 
     return result_df
@@ -192,13 +196,7 @@ def _get_metering_point_periods_df(
         grid_area_df,
         metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
         "inner",
-    ).select(
-        "GsrnNumber",
-        "GridAreaCode",
-        "EffectiveDate",
-        "toEffectiveDate",
-        "Resolution",
-    )
+    ).select("GsrnNumber", "GridAreaCode", "EffectiveDate", "toEffectiveDate")
     return metering_point_periods_df
 
 
@@ -209,13 +207,9 @@ def _get_enriched_time_series_points_df(
     period_end_datetime,
 ) -> DataFrame:
 
-    timeseries_df = (
-        time_series_points.where(col("time") >= period_start_datetime).where(
-            col("time") < period_end_datetime
-        )
-        # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
-        .withColumn("Quantity", col("Quantity").cast("decimal(18,6)"))
-    )
+    timeseries_df = time_series_points.where(
+        col("time") >= period_start_datetime
+    ).where(col("time") < period_end_datetime)
 
     # Only use latest registered points
     window = Window.partitionBy("GsrnNumber", "time").orderBy(
@@ -227,7 +221,9 @@ def _get_enriched_time_series_points_df(
         "row_number", row_number().over(window)
     ).where(col("row_number") == 1)
 
-    timeseries_df = timeseries_df.select(col("GsrnNumber"), "time", "Quantity")
+    timeseries_df = timeseries_df.select(
+        col("GsrnNumber"), "time", "Quantity", "Resolution"
+    )
 
     enriched_time_series_point_df = timeseries_df.join(
         metering_point_period_df,
@@ -246,10 +242,10 @@ def _get_enriched_time_series_points_df(
     return enriched_time_series_point_df
 
 
-def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFrame:
+def _get_result_df(enriched_time_series_points_df) -> DataFrame:
     # Total production in batch grid areas with quarterly resolution per grid area
     result_df = (
-        enriched_time_series_points_df.withColumn(  # .where(col("GridAreaCode").isin(batch_grid_areas))
+        enriched_time_series_points_df.withColumn(
             "quarter_times",
             when(
                 col("Resolution") == Resolution.hour.value,
@@ -265,11 +261,13 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
             enriched_time_series_points_df["*"],
             explode("quarter_times").alias("quarter_time"),
         )
+        .withColumn("Quantity", col("Quantity").cast(DecimalType(18, 6)))
         .withColumn(
             "quarter_quantity",
-            when(col("Resolution") == Resolution.hour.value, col("Quantity") / 4).when(
-                col("Resolution") == Resolution.quarter.value, col("Quantity")
-            ),
+            when(
+                col("Resolution") == Resolution.hour.value,
+                col("Quantity") / 4,
+            ).when(col("Resolution") == Resolution.quarter.value, col("Quantity")),
         )
         .groupBy("GridAreaCode", "quarter_time")
         .sum("quarter_quantity")
@@ -282,7 +280,13 @@ def _get_result_df(enriched_time_series_points_df, batch_grid_areas) -> DataFram
     result_df = (
         result_df.withColumn("position", row_number().over(window))
         .withColumnRenamed("sum(quarter_quantity)", "Quantity")
-        .select("GridAreaCode", "Quantity")
+        .withColumn("Quality", lit(None))
+        .select(
+            "GridAreaCode",
+            col("Quantity").cast(DecimalType(18, 3)),
+            "Quality",
+            "position",
+        )
     )
 
     return result_df
