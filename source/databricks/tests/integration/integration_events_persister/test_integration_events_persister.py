@@ -20,14 +20,14 @@ from tests.integration.utils import streaming_job_asserter
 
 
 @pytest.fixture(scope="session")
-def integration_events_persister_tester(spark, databricks_path, delta_lake_path):
+def integration_events_persister_tester(spark, databricks_path, data_lake_path):
     event_hub_streaming_simulation_path = (
-        f"{delta_lake_path}/../integration_events_persister/test_files"
+        f"{data_lake_path}/../integration_events_persister/test_files"
     )
 
-    integration_events_path = f"{delta_lake_path}/integration_events"
+    integration_events_path = f"{data_lake_path}/integration_events"
     integration_events_checkpoint_path = (
-        f"{delta_lake_path}/integration_events_checkpoint"
+        f"{data_lake_path}/integration_events_checkpoint"
     )
 
     # Remove test folders in order to avoid side effects from previous/other test runs

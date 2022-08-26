@@ -50,7 +50,7 @@ def test_calculator_job_when_invoked_with_incorrect_parameters_fails(
 
 
 def test_calculator_job_accepts_parameters_from_process_manager(
-    delta_lake_path, source_path, databricks_path
+    data_lake_path, source_path, databricks_path
 ):
     """
     This test works in tandem with a .NET test ensuring that the calculator job accepts
@@ -88,16 +88,16 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
 
 def test_calculator_job_creates_files_for_each_gridarea(
-    json_test_files, databricks_path, delta_lake_path, source_path
+    json_test_files, databricks_path, data_lake_path, source_path
 ):
     spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
         "body", col("body").cast("binary")
     ).write.mode("overwrite").parquet(
-        f"{delta_lake_path}/parquet_test_files/integration_events"
+        f"{data_lake_path}/parquet_test_files/integration_events"
     )
     spark.read.json(f"{json_test_files}/time_series_points.json").write.mode(
         "overwrite"
-    ).parquet(f"{delta_lake_path}/parquet_test_files/time_series_points")
+    ).parquet(f"{data_lake_path}/parquet_test_files/time_series_points")
     # Arrange
     python_parameters = [
         "python",
@@ -107,11 +107,11 @@ def test_calculator_job_creates_files_for_each_gridarea(
         "--data-storage-account-key",
         "foo",
         "--integration-events-path",
-        f"{delta_lake_path}/parquet_test_files/integration_events",
+        f"{data_lake_path}/parquet_test_files/integration_events",
         "--time-series-points-path",
-        f"{delta_lake_path}/parquet_test_files/time_series_points",
+        f"{data_lake_path}/parquet_test_files/time_series_points",
         "--process-results-path",
-        f"{delta_lake_path}/result",
+        f"{data_lake_path}/result",
         "--batch-id",
         "1",
         "--batch-grid-areas",
@@ -128,22 +128,22 @@ def test_calculator_job_creates_files_for_each_gridarea(
     subprocess.call(python_parameters)
 
     # Assert
-    result_805 = spark.read.json(f"{delta_lake_path}/result/batch-id=1/grid-area=805")
-    result_806 = spark.read.json(f"{delta_lake_path}/result/batch-id=1/grid-area=806")
+    result_805 = spark.read.json(f"{data_lake_path}/result/batch-id=1/grid-area=805")
+    result_806 = spark.read.json(f"{data_lake_path}/result/batch-id=1/grid-area=806")
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
 
 
 def test_calculator_creates_file(
-    spark, delta_lake_path, find_first_file, json_lines_reader
+    spark, data_lake_path, find_first_file, json_lines_reader
 ):
     batchId = 1234
-    process_results_path = f"{delta_lake_path}/results"
+    process_results_path = f"{data_lake_path}/results"
 
     calculator(spark, process_results_path, batchId)
 
     jsonFile = find_first_file(
-        f"{delta_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
+        f"{data_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
     )
 
     result = json_lines_reader(jsonFile)

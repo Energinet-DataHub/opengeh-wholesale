@@ -29,11 +29,8 @@ def spark():
     spark_conf = (
         SparkConf(loadDefaults=True)
         .set("spark.sql.session.timeZone", "UTC")
-        .set("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .set(
-            "spark.sql.catalog.spark_catalog",
-            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
-        )
+        .set("spark.sql.extensions")
+        .set("spark.sql.catalog.spark_catalog")
     )
 
     return SparkSession.builder.config(conf=spark_conf).getOrCreate()
