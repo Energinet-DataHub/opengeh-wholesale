@@ -17,8 +17,6 @@ import shutil
 import pytest
 from package import integration_events_persister
 from tests.integration.utils import streaming_job_asserter
-from package.schemas import published_time_series_points_schema
-from tests.contract_utils import assert_contract_matches_schema
 
 
 @pytest.fixture(scope="session")
