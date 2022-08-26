@@ -213,7 +213,7 @@ def _get_enriched_time_series_points_df(
 
     # Only use latest registered points
     window = Window.partitionBy("GsrnNumber", "time").orderBy(
-        col("RegistrationDateTime").desc(), col("storedTime").desc()
+        col("RegistrationDateTime").desc()
     )
     # If we end up with more than one point for the same Meteringpoint and "time".
     # We only need the latest point, this is essential to handle updates of points.
