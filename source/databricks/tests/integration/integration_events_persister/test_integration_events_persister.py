@@ -61,24 +61,3 @@ async def test_process_json(parquet_reader, integration_events_persister_tester)
         integration_events_persister_tester, verification_function
     )
     assert succeeded, "No data was stored in Delta table"
-
-
-@pytest.mark.asyncio
-async def test__publishes_points_that_comply_with_public_contract(
-    source_path, parquet_reader, integration_events_persister_tester
-):
-    def verification_function():
-        data = parquet_reader("/integration_events")
-        assert_contract_matches_schema(
-            f"{source_path}/contracts/events/published-time-series-points.json",
-            data.schema,
-        )
-
-    streaming_job_asserter(integration_events_persister_tester, verification_function)
-
-
-def test__defined_schema_complies_with_public_contract(source_path):
-    assert_contract_matches_schema(
-        f"{source_path}/contracts/events/published-time-series-points.json",
-        published_time_series_points_schema,
-    )
