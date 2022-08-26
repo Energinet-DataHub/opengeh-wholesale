@@ -58,10 +58,14 @@ def test__raw_time_series_points_with_stored_time_of_after_snapshot_time_is_not_
     time_series_points_second_of_june = raw_time_series_points_factory(second_of_june)
     time_series_points_third_of_june = raw_time_series_points_factory(third_of_june)
 
+    # poits from first second and third of June
     time_series_points = time_series_points_first_of_june.union(
         time_series_points_second_of_june
     ).union(time_series_points_third_of_june)
 
+    # assert only timeseriespoints from first of june and before is returned when snapshot time is first of june
     assert _get_time_series_points(time_series_points, first_of_june).count() == 1
+    # assert only timeseriespoints from second of june and before is returned when snapshot time is second of june
     assert _get_time_series_points(time_series_points, second_of_june).count() == 2
+    # assert only timeseriespoints from third of june and before is returned when snapshot time is third of june
     assert _get_time_series_points(time_series_points, third_of_june).count() == 3

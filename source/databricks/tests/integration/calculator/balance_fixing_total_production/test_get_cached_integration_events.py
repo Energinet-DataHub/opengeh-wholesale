@@ -94,14 +94,17 @@ def test__raw_events_with_stored_time_of_after_snapshot_time_is_not_included_in_
     integration_events_df_factory, source_path
 ):
     events_df_first_of_june = integration_events_df_factory(stored_time=first_of_june)
-
     events_df_second_of_june = integration_events_df_factory(stored_time=second_of_june)
-
     events_df_third_of_june = integration_events_df_factory(stored_time=third_of_june)
+
+    # events from first second and third of June
     events_df = events_df_first_of_june.union(events_df_second_of_june).union(
         events_df_third_of_june
     )
 
+    # assert that only events from first of june and before is returned when snapshot time is first of june
     assert _get_cached_integration_events(events_df, first_of_june).count() == 1
+    # assert that only events from second of june and before is returned when snapshot time is second of june
     assert _get_cached_integration_events(events_df, second_of_june).count() == 2
+    # assert that only events from third of june and before is returned when snapshot time is third of june
     assert _get_cached_integration_events(events_df, third_of_june).count() == 3
