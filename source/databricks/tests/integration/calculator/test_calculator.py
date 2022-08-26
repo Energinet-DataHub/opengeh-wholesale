@@ -16,7 +16,7 @@ import os
 import shutil
 import subprocess
 import pytest
-from package import initialize_spark
+from package import initialize_spark, calculator
 from pyspark.sql.functions import col
 
 spark = initialize_spark("foo", "bar")
@@ -132,3 +132,19 @@ def test_calculator_job_creates_files_for_each_gridarea(
     result_806 = spark.read.json(f"{data_lake_path}/result/batch-id=1/grid-area=806")
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
+
+
+def test_calculator_creates_file(
+    spark, delta_lake_path, find_first_file, json_lines_reader
+):
+    batchId = 1234
+    process_results_path = f"{delta_lake_path}/results"
+
+    calculator(spark, process_results_path, batchId)
+
+    jsonFile = find_first_file(
+        f"{delta_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
+    )
+
+    result = json_lines_reader(jsonFile)
+    assert len(result) > 0, "Could not verify created json file."

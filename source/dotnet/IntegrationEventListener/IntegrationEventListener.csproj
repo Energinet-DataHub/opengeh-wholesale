@@ -34,8 +34,8 @@ limitations under the License.
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="6.0.4" />
-    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="5.0.1" />
-    <PackageReference Include="Energinet.DataHub.MarketParticipant.Integration.Model" Version="2.4.1" />
+    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="6.0.0" />
+    <PackageReference Include="Energinet.DataHub.MarketParticipant.Integration.Model" Version="2.5.0" />
     <PackageReference Include="Energinet.DataHub.MeteringPoints.IntegrationEvents" Version="1.0.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
