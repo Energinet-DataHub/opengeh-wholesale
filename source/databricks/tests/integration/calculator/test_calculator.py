@@ -135,15 +135,15 @@ def test_calculator_job_creates_files_for_each_gridarea(
 
 
 def test_calculator_creates_file(
-    spark, delta_lake_path, find_first_file, json_lines_reader
+    spark, data_lake_path, find_first_file, json_lines_reader
 ):
     batchId = 1234
-    process_results_path = f"{delta_lake_path}/results"
+    process_results_path = f"{data_lake_path}/results"
 
     calculator(spark, process_results_path, batchId)
 
     jsonFile = find_first_file(
-        f"{delta_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
+        f"{data_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
     )
 
     result = json_lines_reader(jsonFile)
