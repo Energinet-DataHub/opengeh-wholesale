@@ -26,7 +26,7 @@ resource "databricks_job" "calculator_job" {
       node_type_id            = "Standard_DS3_v2"
       autoscale {
         min_workers = 1
-        max_workers = 4
+        max_workers = 5
       }
     }
 
