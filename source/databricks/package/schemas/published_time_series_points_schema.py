@@ -11,40 +11,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import os
-import shutil
-import pytest
-from pyspark.sql import SparkSession
-
 from pyspark.sql.types import (
+    DecimalType,
     StructType,
     StructField,
     StringType,
-    DecimalType,
-    IntegerType,
     TimestampType,
-    BooleanType,
-    BinaryType,
+    IntegerType,
     LongType,
 )
 
-time_series_received_schema = StructType(
+published_time_series_points_schema = StructType(
     [
-        StructField("enqueuedTime", TimestampType(), True),
-        StructField("body", StringType(), True),
+        StructField("GsrnNumber", StringType(), True),
+        StructField("TransactionId", StringType(), True),
+        StructField("Quantity", DecimalType(18, 3), True),
+        StructField("Quality", LongType(), True),
+        StructField("Resolution", LongType(), True),
+        StructField("RegistrationDateTime", TimestampType(), True),
+        StructField("storedTime", TimestampType(), False),
+        StructField("time", TimestampType(), True),
+        StructField("year", IntegerType(), True),
+        StructField("month", IntegerType(), True),
+        StructField("day", IntegerType(), True),
     ]
 )
-
-
-@pytest.fixture(scope="session")
-def parquet_reader(spark: SparkSession, data_lake_path: str):
-    def f(path: str):
-        data = spark.sparkContext.emptyRDD()
-        try:
-            data = spark.read.format("parquet").load(f"{data_lake_path}/{path}")
-        except Exception:
-            pass
-        return data
-
-    return f

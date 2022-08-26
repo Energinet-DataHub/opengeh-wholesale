@@ -29,7 +29,7 @@ public class ContractComplianceTestHelperTests
         // Arrange
         const string contract = @"
 {
-    ""bodyFields"":
+    ""fields"":
     [
         {
           ""name"": ""MessageType"",
@@ -54,7 +54,7 @@ public class ContractComplianceTestHelperTests
         // Arrange
         const string contract = @"
 {
-    ""bodyFields"":
+    ""fields"":
     [
         {
           ""name"": ""ExpectedProperty"",
@@ -80,7 +80,7 @@ public class ContractComplianceTestHelperTests
         // Arrange
         const string contract = @"
 {
-    ""bodyFields"":
+    ""fields"":
     [
         {
           ""name"": ""UnrelatedProperty"",
@@ -114,7 +114,7 @@ public class ContractComplianceTestHelperTests
         // Arrange
         const string contract = @"
 {
-    ""bodyFields"":
+    ""fields"":
     [
         {
           ""name"": ""ExpectedProperty"",
@@ -148,7 +148,7 @@ public class ContractComplianceTestHelperTests
         // Arrange
         const string contract = @"
 {
-    ""bodyFields"":
+    ""fields"":
     [
         {
           ""name"": ""ExpectedProperty"",
@@ -174,7 +174,7 @@ public class ContractComplianceTestHelperTests
         // Arrange
         const string contract = @"
 {
-    ""bodyFields"":
+    ""fields"":
     [
         {
           ""name"": ""ExpectedProperty"",
@@ -200,7 +200,7 @@ public class ContractComplianceTestHelperTests
         // Arrange
         const string contract = @"
 {
-    ""bodyFields"":
+    ""fields"":
     [
         {
           ""name"": ""ExpectedProperty"",
@@ -226,7 +226,7 @@ public class ContractComplianceTestHelperTests
         // Arrange
         const string contract = @"
 {
-    ""bodyFields"":
+    ""fields"":
     [
         {
           ""name"": ""ExpectedProperty"",
@@ -252,7 +252,7 @@ public class ContractComplianceTestHelperTests
         // Arrange
         const string contract = @"
 {
-    ""bodyFields"":
+    ""fields"":
     [
         {
           ""name"": ""ExpectedProperty"",
@@ -278,7 +278,7 @@ public class ContractComplianceTestHelperTests
         // Arrange
         const string contract = @"
 {
-    ""bodyFields"":
+    ""fields"":
     [
         {
           ""name"": ""ExpectedProperty"",
