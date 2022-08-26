@@ -13,7 +13,8 @@ In the "Configuration" tab, find "Advanced option"
 Under the "Spark" tab you find the field "Environment variables" here you set the variables you need.
 
 Example:
-```
+
+```bash
 STORAGE_ACCOUNT_KEY="SOME-SECRET-KEY"
 ```
 
