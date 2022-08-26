@@ -19,11 +19,6 @@ from datetime import datetime, timedelta
 from package.balance_fixing_total_production import (
     _get_time_series_points,
 )
-from tests.contract_utils import (
-    assert_contract_matches_schema,
-    read_contract,
-    get_message_type,
-)
 
 first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
 second_of_june = first_of_june + timedelta(days=1)
