@@ -80,7 +80,7 @@ public sealed class MarketParticipantChangedListenerEndpointTests
     protected override byte[] CreateIntegrationEventData()
     {
         var eventParser = new GridAreaUpdatedIntegrationEventParser();
-        return eventParser.Parse(new GridAreaUpdatedIntegrationEvent(
+        return eventParser.ParseToSharedIntegrationEvent(new GridAreaUpdatedIntegrationEvent(
             Guid.NewGuid(),
             Guid.NewGuid(),
             "fake_value",
@@ -92,7 +92,7 @@ public sealed class MarketParticipantChangedListenerEndpointTests
     private static byte[] CreateUnusedEvent()
     {
         var eventParser = new OrganizationNameChangedIntegrationEventParser();
-        return eventParser.Parse(new OrganizationNameChangedIntegrationEvent(
+        return eventParser.ParseToSharedIntegrationEvent(new OrganizationNameChangedIntegrationEvent(
             Guid.NewGuid(),
             DateTime.UtcNow,
             Guid.NewGuid(),
