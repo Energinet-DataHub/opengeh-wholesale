@@ -28,7 +28,7 @@ third_of_june = first_of_june + timedelta(days=2)
 @pytest.fixture(scope="module")
 def raw_time_series_points_factory(spark, timestamp_factory):
     def factory(
-        storedTime: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
+        storedTime: datetime = timestamp_factory("2022-05-31T12:09:15.000Z"),
     ):
         df = [
             {
@@ -51,6 +51,27 @@ def raw_time_series_points_factory(spark, timestamp_factory):
 
 
 def test__raw_time_series_points_with_stored_time_of_after_snapshot_time_is_not_included_in_time_series_points_df(
+    raw_time_series_points_factory,
+):
+    # Arrange
+    time_series_points_first_of_june = raw_time_series_points_factory(first_of_june)
+    time_series_points_second_of_june = raw_time_series_points_factory(second_of_june)
+    time_series_points_third_of_june = raw_time_series_points_factory(third_of_june)
+
+    # poits from first second and third of June
+    time_series_points = time_series_points_first_of_june.union(
+        time_series_points_second_of_june
+    ).union(time_series_points_third_of_june)
+
+    # assert only timeseriespoints from first of june and before is returned when snapshot time is first of june
+    assert _get_time_series_points(time_series_points, first_of_june).count() == 1
+    # assert only timeseriespoints from second of june and before is returned when snapshot time is second of june
+    assert _get_time_series_points(time_series_points, second_of_june).count() == 2
+    # assert only timeseriespoints from third of june and before is returned when snapshot time is third of june
+    assert _get_time_series_points(time_series_points, third_of_june).count() == 3
+
+
+def test__raw_time_series_points_only_return_point_with_newest_registraiondate_for_same_time_and_gsrn_nuber(
     raw_time_series_points_factory,
 ):
     # Arrange
