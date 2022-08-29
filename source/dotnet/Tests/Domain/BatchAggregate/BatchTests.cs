@@ -92,29 +92,4 @@ public class BatchTests
         sut.MarkAsExecuting(_fakeJobRunId);
         sut.ExecutionState.Should().Be(BatchExecutionState.Executing);
     }
-
-    [Fact]
-    public void ResetStatusToPending_WhenPending_KeepsPendingState()
-    {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
-        sut.ResetStatusToPending();
-        sut.ExecutionState.Should().Be(BatchExecutionState.Pending);
-    }
-
-    [Fact]
-    public void ResetStatusToPending_WhenExecuting_ShouldRevertToPending()
-    {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
-        sut.MarkAsExecuting(_fakeJobRunId);
-        sut.ResetStatusToPending();
-        sut.ExecutionState.Should().Be(BatchExecutionState.Pending);
-        sut.RunId.Should().BeNull();
-    }
-
-    [Fact]
-    public void ResetStatusToPending_WhenComplete_ThrowsInvalidOperationException()
-    {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
-        Assert.Throws<InvalidOperationException>(() => sut.ResetStatusToPending());
-    }
 }
