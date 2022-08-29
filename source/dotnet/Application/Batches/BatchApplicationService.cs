@@ -85,11 +85,6 @@ public class BatchApplicationService : IBatchApplicationService
                 batch.MarkAsCompleted();
                 completedBatches.Add(batch);
             }
-            else if (state == JobState.Canceled)
-            {
-                // The process manager will automatically pick up the batch and (re)try execution when the status is reset to pending
-                batch.ResetStatusToPending();
-            }
         }
 
         var completedProcesses = CreateProcessCompletedEvents(completedBatches);

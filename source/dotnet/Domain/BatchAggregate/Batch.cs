@@ -61,15 +61,6 @@ public class Batch
 
     public Interval Period { get; }
 
-    public void ResetStatusToPending()
-    {
-        if (ExecutionState == BatchExecutionState.Completed)
-            throw new InvalidOperationException("Cannot reset status of a completed batch.");
-
-        ExecutionState = BatchExecutionState.Pending;
-        RunId = null;
-    }
-
     public void MarkAsCompleted()
     {
         if (ExecutionState != BatchExecutionState.Executing)

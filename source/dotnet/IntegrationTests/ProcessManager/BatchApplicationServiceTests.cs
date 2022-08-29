@@ -31,39 +31,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 public sealed class BatchApplicationServiceTests
 {
     [Fact]
-    public async Task When_RunIsCanceled_Then_BatchIsRetried()
-    {
-        // Arrange
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync();
-
-        await using var scope = host.BeginScope();
-        var appService = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-        var repository = scope.ServiceProvider.GetRequiredService<IBatchRepository>();
-
-        var gridAreaCode = CreateRandomGridAreaCode();
-        var batchRequest = new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { gridAreaCode });
-
-        await appService.CreateAsync(batchRequest);
-        await appService.StartPendingAsync();
-
-        // Assert 1: Verify that batch is now executing.
-        var executing = await repository.GetExecutingAsync();
-        var createdBatch = executing.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
-
-        // Act
-        using var cancelHost = await ProcessManagerIntegrationTestHost.CreateAsync(ConfigureDatabricksClientToCancel);
-        await using var cancelScope = cancelHost.BeginScope();
-        var target = cancelScope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-        await target.UpdateExecutionStateAsync();
-
-        // Assert 2: Verify that batch is back to pending.
-        var pending = await repository.GetPendingAsync();
-        var updatedBatch = pending.Single();
-        updatedBatch.Id.Should().BeEquivalentTo(createdBatch.Id);
-        updatedBatch.GridAreaCodes.Should().ContainSingle(code => code.Code == gridAreaCode);
-    }
-
-    [Fact]
     public async Task When_RunIsCompleted_Then_BatchIsCompleted()
     {
         // Arrange
