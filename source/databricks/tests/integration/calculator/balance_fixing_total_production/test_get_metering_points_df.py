@@ -14,12 +14,7 @@
 
 
 from datetime import datetime, timedelta
-import os
-import shutil
 import pytest
-import json
-from types import SimpleNamespace
-from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import (
     _get_metering_point_periods_df,
     metering_point_created_message_type,
@@ -36,8 +31,7 @@ from package.codelists import (
     Resolution,
     SettlementMethod,
 )
-from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, struct, to_json, from_json
+from pyspark.sql.functions import col, struct, to_json
 from tests.contract_utils import (
     assert_contract_matches_schema,
     read_contract,
@@ -74,6 +68,7 @@ def metering_point_created_df_factory(spark):
         operation_time=first_of_june,
         grid_area_link_id=grid_area_link_id,
         gsrn_number=gsrn_number,
+        effective_date=first_of_june,
         metering_point_type=MeteringPointType.production.value,
         resolution=Resolution.hour.value,
     ):
@@ -85,7 +80,7 @@ def metering_point_created_df_factory(spark):
             "GridAreaLinkId": grid_area_link_id,
             "SettlementMethod": SettlementMethod.nonprofiled.value,
             "ConnectionState": ConnectionState.new.value,
-            "EffectiveDate": first_of_june,
+            "EffectiveDate": effective_date,
             "MeteringPointType": metering_point_type,
             "MeteringPointId": metering_point_id,
             "Resolution": resolution,
@@ -425,28 +420,28 @@ def test__when_effective_date_less_than_or_equal_to_period_end__row_is_included(
 
 
 @pytest.mark.parametrize(
-    "created_operation_time,connected_operation_time,expected",
+    "created_effective_date,connected_effective_date,expected",
     [
         (first_of_june, second_of_june, True),
         (second_of_june, first_of_june, False),
     ],
 )
-def test__operation_time_xxx(
+def test__metering_points_are_periodized_by_effective_date(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
     grid_area_df,
-    created_operation_time,
-    connected_operation_time,
+    created_effective_date,
+    connected_effective_date,
     expected,
 ):
     # Arrange
     created_events_df = metering_point_created_df_factory(
-        operation_time=created_operation_time
+        effective_date=created_effective_date
     )
     connected_events_df = metering_point_connected_df_factory(
-        operation_time=connected_operation_time
+        effective_date=connected_effective_date
     )
-    integration_events_df = created_events_df.union(connected_events_df)
+    integration_events_df = connected_events_df.union(created_events_df)
 
     # Act
     actual_df = _get_metering_point_periods_df(
