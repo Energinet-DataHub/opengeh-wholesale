@@ -177,7 +177,6 @@ def _get_metering_point_periods_df(
         "Resolution",
         coalesce(col("Resolution"), last("Resolution", True).over(window)),
     )
-    metering_point_periods_df = metering_point_periods_df
     metering_point_periods_df = metering_point_periods_df.where(
         col("EffectiveDate") <= period_end_datetime
     )
@@ -189,7 +188,7 @@ def _get_metering_point_periods_df(
     )  # Only aggregate when metering points is connected
     metering_point_periods_df = metering_point_periods_df.where(
         col("MeteringPointType") == MeteringPointType.production.value
-    )
+    ).distinct()
 
     # Only include metering points in the selected grid areas
     metering_point_periods_df = metering_point_periods_df.join(

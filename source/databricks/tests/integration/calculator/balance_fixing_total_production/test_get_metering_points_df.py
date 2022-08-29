@@ -455,3 +455,31 @@ def test__operation_time_xxx(
 
     # Assert
     assert (actual_df.count() == 1) == expected
+
+
+def test__duplicate_events_does_not_affect_amount_of_periods(
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    grid_area_df,
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory(operation_time=second_of_june)
+    connected_events_df = metering_point_connected_df_factory(
+        operation_time=second_of_june
+    )
+    # multiple duplicate 'connected' events are added to the dataframe
+    integration_events_df = (
+        created_events_df.union(connected_events_df)
+        .union(connected_events_df)
+        .union(connected_events_df)
+        .union(connected_events_df)
+    )
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, first_of_june, third_of_june
+    )
+
+    # Assert
+    # two periods one for created one for connected.
+    assert actual_df.count() == 2
