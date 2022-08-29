@@ -19,7 +19,6 @@ import pytest
 from package import initialize_spark, calculator
 from pyspark.sql.functions import col
 from tests.contract_utils import assert_contract_matches_schema
-from package.schemas import published_time_series_points_schema
 
 spark = initialize_spark("foo", "bar")
 
@@ -134,6 +133,13 @@ def test_calculator_job_creates_files_for_each_gridarea(
     result_806 = spark.read.json(f"{data_lake_path}/result/batch-id=1/grid-area=806")
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
+    actual = spark.read.parquet(
+        f"{data_lake_path}/parquet_test_files/time_series_points"
+    )
+    assert_contract_matches_schema(
+        f"{source_path}/contracts/events/published-time-series-points.json",
+        actual.schema,
+    )
 
 
 def test_calculator_creates_file(
@@ -150,15 +156,3 @@ def test_calculator_creates_file(
 
     result = json_lines_reader(jsonFile)
     assert len(result) > 0, "Could not verify created json file."
-
-
-def test__schema_matches_schema(source_path):
-    # make test that test if schema from json/parquet matches schema/contract
-    assert 1 == 1
-
-
-def test__defined_schema_complies_with_public_contract(source_path):
-    assert_contract_matches_schema(
-        f"{source_path}/contracts/events/published-time-series-points.json",
-        published_time_series_points_schema,
-    )

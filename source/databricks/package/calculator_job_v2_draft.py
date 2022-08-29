@@ -21,7 +21,6 @@ import ast
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
 
 from package import calculate_balance_fixing_total_production, initialize_spark
-from package.schemas import published_time_series_points_schema
 import configargparse
 
 
@@ -102,7 +101,7 @@ def start():
     raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
         args.time_series_points_path
     )
-    raw_time_series_points_df.printSchema()
+
     output_df = calculate_balance_fixing_total_production(
         raw_integration_events_df,
         raw_time_series_points_df,
