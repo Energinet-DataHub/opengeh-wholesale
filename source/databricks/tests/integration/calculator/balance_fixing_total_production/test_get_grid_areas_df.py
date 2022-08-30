@@ -209,3 +209,23 @@ def test__returns_newest_grid_area_state(
     assert actual_df.count() == 1
     actual = actual_df.first()
     assert actual.GridAreaLinkId == expected_grid_area_link_id
+
+
+def test__duplicate_grid_area_events_does_not_affect_amount_of_grid_areas(
+    grid_area_df_factory,
+):
+    # Arrange
+    cached_integration_events_df = grid_area_df_factory()
+
+    # Duplicate 'gridAreaUpdated' events
+    integration_events_df_with_dublicates = cached_integration_events_df.union(
+        cached_integration_events_df
+    )
+
+    # Act
+    actual_df = _get_grid_areas_df(
+        integration_events_df_with_dublicates, [grid_area_code]
+    )
+
+    # Assert
+    assert actual_df.count() == 1
