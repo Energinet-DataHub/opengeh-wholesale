@@ -16,7 +16,6 @@ import os
 import shutil
 import subprocess
 import pytest
-from package import initialize_spark, calculator
 from pyspark.sql.functions import col
 from tests.contract_utils import assert_contract_matches_schema
 from pyspark.sql.types import (
@@ -28,8 +27,6 @@ from pyspark.sql.types import (
     IntegerType,
     LongType,
 )
-
-spark = initialize_spark("foo", "bar")
 
 
 def _get_process_manager_parameters(filename):
@@ -49,7 +46,7 @@ def test_calculator_job_when_invoked_with_incorrect_parameters_fails(
     exit_code = subprocess.call(
         [
             "python",
-            f"{databricks_path}/package/calculator_job_v2_draft.py",
+            f"{databricks_path}/package/calculator_job.py",
             "--unexpected-arg",
         ]
     )
@@ -74,7 +71,7 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
     python_parameters = [
         "python",
-        f"{databricks_path}/package/calculator_job_v2_draft.py",
+        f"{databricks_path}/package/calculator_job.py",
         "--data-storage-account-name",
         "foo",
         "--data-storage-account-key",
@@ -98,7 +95,7 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
 
 def test_calculator_job_creates_files_for_each_gridarea(
-    json_test_files, databricks_path, data_lake_path, source_path
+    spark, json_test_files, databricks_path, data_lake_path, source_path
 ):
     # Reads integration_events json file into dataframe and writes it to parquet
     spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
@@ -134,7 +131,7 @@ def test_calculator_job_creates_files_for_each_gridarea(
     # Arrange
     python_parameters = [
         "python",
-        f"{databricks_path}/package/calculator_job_v2_draft.py",
+        f"{databricks_path}/package/calculator_job.py",
         "--data-storage-account-name",
         "foo",
         "--data-storage-account-key",
@@ -179,19 +176,3 @@ def test_calculator_job_creates_files_for_each_gridarea(
         f"{source_path}/contracts/events/published-time-series-points.json",
         input_time_series_points.schema,
     )
-
-
-def test_calculator_creates_file(
-    spark, data_lake_path, find_first_file, json_lines_reader
-):
-    batchId = 1234
-    process_results_path = f"{data_lake_path}/results"
-
-    calculator(spark, process_results_path, batchId)
-
-    jsonFile = find_first_file(
-        f"{data_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
-    )
-
-    result = json_lines_reader(jsonFile)
-    assert len(result) > 0, "Could not verify created json file."
