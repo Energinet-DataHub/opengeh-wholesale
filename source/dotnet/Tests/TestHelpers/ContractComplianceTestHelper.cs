@@ -25,7 +25,7 @@ internal static class ContractComplianceTestHelper
         var contractJson = await streamReader.ReadToEndAsync();
         var contractDescription = JsonConvert.DeserializeObject<dynamic>(contractJson)!;
 
-        foreach (var fieldDescriptor in contractDescription.bodyFields)
+        foreach (var fieldDescriptor in contractDescription.fields)
         {
             if (fieldDescriptor.name == "MessageType")
                 return fieldDescriptor.value;
@@ -66,7 +66,7 @@ internal static class ContractComplianceTestHelper
         var contractJson = await streamReader.ReadToEndAsync();
         var contractDescription = JsonConvert.DeserializeObject<dynamic>(contractJson)!;
 
-        var expectedProps = contractDescription.bodyFields;
+        var expectedProps = contractDescription.fields;
         var actualProps = typeof(T)
             .GetProperties()
             .ToDictionary(info => info.Name);

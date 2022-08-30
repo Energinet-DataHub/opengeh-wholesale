@@ -101,6 +101,7 @@ def start():
     raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
         args.time_series_points_path
     )
+
     output_df = calculate_balance_fixing_total_production(
         raw_integration_events_df,
         raw_time_series_points_df,

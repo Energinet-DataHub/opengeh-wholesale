@@ -21,7 +21,7 @@ def read_contract(path):
 
 
 def assert_contract_matches_schema(contract_path, schema):
-    expected_schema = read_contract(contract_path)["bodyFields"]
+    expected_schema = read_contract(contract_path)["fields"]
     actual_schema = json.loads(schema.json())["fields"]
 
     # Assert: Schema and contract has the same number of fields
@@ -30,10 +30,15 @@ def assert_contract_matches_schema(contract_path, schema):
     # Assert: Schema matches contract
     for expected_field in expected_schema:
         actual_field = next(
-            x for x in actual_schema if expected_field["name"] == x["name"]
+            (x for x in actual_schema if expected_field["name"] == x["name"]), None
         )
-        assert expected_field["name"] == actual_field["name"]
-        assert expected_field["type"] == actual_field["type"]
+        assert (
+            actual_field is not None
+        ), f"""Actual schema is missing field '{expected_field["name"]}' from contract."""
+        assert (
+            actual_field["type"] == expected_field["type"]
+        ), f"""Actual type ({actual_field["type"]}) of field {expected_field["name"]}
+        does not match the expected type ({expected_field["type"]})."""
 
 
 def assert_codelist_matches_contract(codelist, contract_path):
@@ -52,5 +57,5 @@ def assert_codelist_matches_contract(codelist, contract_path):
 def get_message_type(contract_path):
     grid_area_updated_schema = read_contract(contract_path)
     return next(
-        x for x in grid_area_updated_schema["bodyFields"] if x["name"] == "MessageType"
+        x for x in grid_area_updated_schema["fields"] if x["name"] == "MessageType"
     )["value"]
