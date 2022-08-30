@@ -75,6 +75,37 @@ public class ContractComplianceTestHelperTests
     }
 
     [Fact]
+    public async Task VerifyTypeCompliesWithContractAsync_GivenIntAlias_VerifiesPropertyType()
+    {
+        // Arrange
+        const string contract = @"
+{
+    ""fields"":
+    [
+        {
+          ""name"": ""ExpectedPropertyA"",
+          ""type"": ""integer""
+        },
+        {
+          ""name"": ""ExpectedPropertyB"",
+          ""type"": ""long""
+        }
+    ]
+}";
+
+        var targetObject = new
+        {
+            ExpectedPropertyA = 1,
+            ExpectedPropertyB = 2,
+        };
+
+        using var contractStream = new MemoryStream(Encoding.UTF8.GetBytes(contract));
+
+        // Act + Assert
+        await VerifyObjectCompliesWithContractAsync(targetObject, contractStream);
+    }
+
+    [Fact]
     public async Task VerifyTypeCompliesWithContractAsync_WrongProperty_ThrowsException()
     {
         // Arrange
