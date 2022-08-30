@@ -43,7 +43,6 @@ def parquet_reader(spark: SparkSession, data_lake_path: str):
         data = spark.sparkContext.emptyRDD()
         try:
             data = spark.read.format("parquet").load(f"{data_lake_path}/{path}")
-            data.show(truncate=False)
         except Exception:
             pass
         return data
