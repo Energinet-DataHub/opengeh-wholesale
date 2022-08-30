@@ -149,7 +149,7 @@ def _get_metering_point_periods_df(
         )
         # If new properties to the Meteringpoints are added
         # Consider if they should be included in the 'dropDuplicates'
-        # To remove events which could have been recieved multiple times
+        # To remove events that could have been received multiple times
         .select(
             "storedTime",
             "body.MessageType",

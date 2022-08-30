@@ -452,13 +452,12 @@ def test__metering_points_are_periodized_by_effective_date(
     assert (actual_df.count() == 1) == expected
 
 
-def test__duplicate_connectedevents_does_not_affect_amount_of_periods(
+def test__duplicate_connected_events_do_not_affect_amount_of_periods(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
     grid_area_df,
 ):
     # Arrange
-    # to created og to connected
     created_events_df = metering_point_created_df_factory(operation_time=first_of_june)
     connected_events_df = metering_point_connected_df_factory(
         operation_time=second_of_june
@@ -477,7 +476,7 @@ def test__duplicate_connectedevents_does_not_affect_amount_of_periods(
     assert actual_df.count() == 1
 
 
-def test__duplicate_createdevents_does_not_affect_amount_of_periods(
+def test__duplicate_created_events_do_not_affect_amount_of_periods(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
     grid_area_df,
