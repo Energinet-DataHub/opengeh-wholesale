@@ -176,8 +176,8 @@ def test_calculator_job_input_and_output_integration_test(
     subprocess.call(python_parameters)
 
     # Assert
-    result_805 = spark.read.json(f"{data_lake_path}/results/batch-id=1/grid-area=805")
-    result_806 = spark.read.json(f"{data_lake_path}/results/batch-id=1/grid-area=806")
+    result_805 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=805")
+    result_806 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=806")
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
 
@@ -198,7 +198,7 @@ def test_calculator_job_input_and_output_integration_test(
 
     # Assert: Relative path of result file must match expectation of .NET
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
-    expected_result_path = f"{data_lake_path}/results/batch-id=1/grid-area=805"
+    expected_result_path = f"{data_lake_path}/results/batch_id=1/grid_area=805"
     actual_result_file = find_first_file(expected_result_path, "part-*.json")
     assert actual_result_file is not None
 
