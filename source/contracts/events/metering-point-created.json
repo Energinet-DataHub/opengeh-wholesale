@@ -1,6 +1,6 @@
 {
   "storedTimeName": "storedTime",
-  "bodyFields": [
+  "fields": [
     {
       "name": "GsrnNumber",
       "type": "string"

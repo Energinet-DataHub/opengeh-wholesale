@@ -1,6 +1,6 @@
 {
   "storedTimeName": "storedTime",
-  "bodyFields": [
+  "fields": [
     {
       "name": "GridAreaCode",
       "type": "string"
