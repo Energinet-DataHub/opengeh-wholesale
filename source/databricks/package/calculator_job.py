@@ -33,7 +33,7 @@ def _valid_date(s):
         raise configargparse.ArgumentTypeError(msg)
 
 
-def _valid_grid_areas(s):
+def _valid_list(s):
     """See https://stackoverflow.com/questions/25470844/specify-date-format-for-python-argparse-input-arguments"""
     try:
         return ast.literal_eval(s)
@@ -58,7 +58,7 @@ def _get_valid_args_or_throw():
     # Run parameters
     p.add("--batch-id", type=str, required=True)
     p.add("--batch-snapshot-datetime", type=_valid_date, required=True)
-    p.add("--batch-grid-areas", type=_valid_grid_areas, required=True)
+    p.add("--batch-grid-areas", type=_valid_list, required=True)
     p.add("--batch-period-start-datetime", type=_valid_date, required=True)
     p.add("--batch-period-end-datetime", type=_valid_date, required=True)
 
@@ -76,7 +76,7 @@ def _get_valid_args_or_throw():
         raise Exception(f"Unknown args: {unknown_args_text}")
 
     if type(args.batch_grid_areas) is not list:
-        raise Exception("Grid areas must be an array")
+        raise Exception("Grid areas must be a list")
 
     return args
 
