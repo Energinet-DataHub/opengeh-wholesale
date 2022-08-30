@@ -145,6 +145,18 @@ def _get_metering_point_periods_df(
             "body.Resolution",
             "body.OperationTime",
         )
+    ).dropDuplicates(
+        [
+            "MessageType",
+            "MeteringPointId",
+            "MeteringPointType",
+            "GsrnNumber",
+            "GridAreaLinkId",
+            "ConnectionState",
+            "EffectiveDate",
+            "Resolution",
+            "OperationTime",
+        ]
     )
 
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
@@ -188,7 +200,7 @@ def _get_metering_point_periods_df(
     )  # Only aggregate when metering points is connected
     metering_point_periods_df = metering_point_periods_df.where(
         col("MeteringPointType") == MeteringPointType.production.value
-    ).distinct()
+    )
 
     # Only include metering points in the selected grid areas
     metering_point_periods_df = metering_point_periods_df.join(

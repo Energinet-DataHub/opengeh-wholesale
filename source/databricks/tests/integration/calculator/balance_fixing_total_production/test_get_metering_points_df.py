@@ -452,23 +452,21 @@ def test__metering_points_are_periodized_by_effective_date(
     assert (actual_df.count() == 1) == expected
 
 
-def test__duplicate_events_does_not_affect_amount_of_periods(
+def test__duplicate_connectedevents_does_not_affect_amount_of_periods(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
     grid_area_df,
 ):
     # Arrange
-    created_events_df = metering_point_created_df_factory(operation_time=second_of_june)
+    # to created og to connected
+    created_events_df = metering_point_created_df_factory(operation_time=first_of_june)
     connected_events_df = metering_point_connected_df_factory(
         operation_time=second_of_june
     )
     # multiple duplicate 'connected' events are added to the dataframe
-    integration_events_df = (
-        created_events_df.union(connected_events_df)
-        .union(connected_events_df)
-        .union(connected_events_df)
-        .union(connected_events_df)
-    )
+    integration_events_df = created_events_df.union.created_events_df.union(
+        created_events_df
+    )(connected_events_df).union(connected_events_df)
 
     # Act
     actual_df = _get_metering_point_periods_df(
@@ -476,5 +474,5 @@ def test__duplicate_events_does_not_affect_amount_of_periods(
     )
 
     # Assert
-    # two periods one for created one for connected.
-    assert actual_df.count() == 2
+    # The meteringpoint ha one period from when it is connected.
+    assert actual_df.count() == 1
