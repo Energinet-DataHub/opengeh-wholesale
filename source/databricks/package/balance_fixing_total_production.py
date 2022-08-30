@@ -126,13 +126,15 @@ def _get_metering_point_periods_df(
     metering_point_events_df = (
         cached_integration_events_df.withColumn(
             "body", from_json(col("body"), metering_point_generic_event_schema)
-        )
-        .where(
+        ).where(
             col("body.MessageType").isin(
                 metering_point_created_message_type,
                 metering_point_connected_message_type,
             )
         )
+        # If new properties to the Meteringpoints are added
+        # Consider if they should be included in the 'dropDuplicates'
+        # To remove events which could have been recieved multiple times
         .select(
             "storedTime",
             "body.MessageType",
