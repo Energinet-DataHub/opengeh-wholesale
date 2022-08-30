@@ -450,3 +450,71 @@ def test__metering_points_are_periodized_by_effective_date(
 
     # Assert
     assert (actual_df.count() == 1) == expected
+
+
+def test__duplicate_connected_events_do_not_affect_amount_of_periods(
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    grid_area_df,
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory(operation_time=first_of_june)
+    connected_events_df = metering_point_connected_df_factory(
+        operation_time=second_of_june
+    )
+    # Duplicate 'connected' events are added to the dataframe
+    integration_events_df = created_events_df.union(connected_events_df).union(
+        connected_events_df
+    )
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, first_of_june, third_of_june
+    )
+
+    # Assert
+    assert actual_df.count() == 1
+
+
+def test__duplicate_created_events_do_not_affect_amount_of_periods(
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    grid_area_df,
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory(operation_time=first_of_june)
+    connected_events_df = metering_point_connected_df_factory(
+        operation_time=second_of_june
+    )
+    # duplicate 'created' events are added to the dataframe
+    integration_events_df = created_events_df.union(created_events_df).union(
+        connected_events_df
+    )
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, first_of_june, third_of_june
+    )
+
+    # Assert
+    assert actual_df.count() == 1
+
+
+def test__only_created_events_results_in_no_periods(
+    metering_point_created_df_factory,
+    grid_area_df,
+):
+    # Arrange
+    created_events_df = metering_point_created_df_factory(operation_time=first_of_june)
+
+    # duplicate 'created' events are added to the dataframe
+    integration_events_df = created_events_df.union(created_events_df)
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, first_of_june, third_of_june
+    )
+
+    # Assert
+    # Periods are only established after they are connected
+    assert actual_df.count() == 0
