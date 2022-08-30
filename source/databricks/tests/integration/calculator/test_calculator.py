@@ -158,7 +158,7 @@ def test_calculator_job_creates_files_for_each_gridarea(
     ]
 
     # Reads time_series_points from parquet into dataframe
-    actual_time_series_points = spark.read.parquet(
+    input_time_series_points = spark.read.parquet(
         f"{data_lake_path}/parquet_test_files/time_series_points"
     )
 
@@ -171,13 +171,13 @@ def test_calculator_job_creates_files_for_each_gridarea(
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
 
-    # Asserts that the published-time-series-points contract matches the schema from actual_time_series_points.
+    # Asserts that the published-time-series-points contract matches the schema from input_time_series_points.
     # When asserting both that the calculator creates output and it does it with input data that matches
     # the time series points contract from the time-series domain (in the same test), then we can infer that the
     # calculator works with the format of the data published from the time-series domain.
     assert_contract_matches_schema(
         f"{source_path}/contracts/events/published-time-series-points.json",
-        actual_time_series_points.schema,
+        input_time_series_points.schema,
     )
 
 
