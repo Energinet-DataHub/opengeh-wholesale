@@ -48,20 +48,19 @@ metering_point_connected_message_type = "MeteringPointConnected"
 
 def calculate_balance_fixing_total_production(
     raw_integration_events_df,
-    raw_time_series_points,
+    raw_time_series_points_df,
     batch_id,
     batch_grid_areas,
     batch_snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-    cached_integration_events_df = (
-        raw_integration_events_df.where(col("storedTime") <= batch_snapshot_datetime)
-        .withColumn("body", col("body").cast("string"))
-        .cache()
+
+    cached_integration_events_df = _get_cached_integration_events(
+        raw_integration_events_df, batch_snapshot_datetime
     )
-    time_series_points = raw_time_series_points.where(
-        col("storedTime") <= batch_snapshot_datetime
+    time_series_points = _get_time_series_points(
+        raw_time_series_points_df, batch_snapshot_datetime
     )
 
     grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas)
@@ -84,6 +83,22 @@ def calculate_balance_fixing_total_production(
     cached_integration_events_df.unpersist()
 
     return result_df
+
+
+def _get_cached_integration_events(
+    raw_integration_events_df, batch_snapshot_datetime
+) -> DataFrame:
+    return (
+        raw_integration_events_df.where(col("storedTime") <= batch_snapshot_datetime)
+        .withColumn("body", col("body").cast("string"))
+        .cache()
+    )
+
+
+def _get_time_series_points(
+    raw_time_series_points_df, batch_snapshot_datetime
+) -> DataFrame:
+    return raw_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
 
 
 def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFrame:
