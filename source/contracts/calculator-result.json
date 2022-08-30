@@ -1,0 +1,13 @@
+{
+    "fields": [
+      {
+        "name": "position",
+        "type": "long"
+      },
+      {
+        "name": "quantity",
+        "type": "string"
+      }
+    ]
+  }
+  

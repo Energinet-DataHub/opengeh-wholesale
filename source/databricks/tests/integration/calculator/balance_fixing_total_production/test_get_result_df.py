@@ -207,15 +207,6 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
     assert actual[4].Quantity == Decimal("2")
 
 
-def test__Quality_is_present_and_None(
-    enriched_time_series_factory,
-):
-    """Test that ensures 'Quality' is set, and the value is Null"""
-    df = enriched_time_series_factory()
-    result_df = _get_result_df(df)
-    assert result_df.where(col("Quality").isNull()).count() == 1
-
-
 def test__that_grid_area_code_in_input_is_in_output(
     enriched_time_series_quarterly_same_time_factory,
 ):
