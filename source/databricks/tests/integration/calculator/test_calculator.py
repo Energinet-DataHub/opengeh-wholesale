@@ -16,7 +16,6 @@ import os
 import shutil
 import subprocess
 import pytest
-from package import initialize_spark, calculator
 from pyspark.sql.functions import col
 from tests.contract_utils import assert_contract_matches_schema
 from pyspark.sql.types import (
@@ -28,8 +27,6 @@ from pyspark.sql.types import (
     IntegerType,
     LongType,
 )
-
-spark = initialize_spark("foo", "bar")
 
 
 def _get_process_manager_parameters(filename):
@@ -49,7 +46,7 @@ def test_calculator_job_when_invoked_with_incorrect_parameters_fails(
     exit_code = subprocess.call(
         [
             "python",
-            f"{databricks_path}/package/calculator_job_v2_draft.py",
+            f"{databricks_path}/package/calculator_job.py",
             "--unexpected-arg",
         ]
     )
@@ -74,7 +71,7 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
     python_parameters = [
         "python",
-        f"{databricks_path}/package/calculator_job_v2_draft.py",
+        f"{databricks_path}/package/calculator_job.py",
         "--data-storage-account-name",
         "foo",
         "--data-storage-account-key",
@@ -98,7 +95,7 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
 
 def test_calculator_job_input_and_output_integration_test(
-    json_test_files, databricks_path, data_lake_path, source_path, find_first_file
+    spark, json_test_files, databricks_path, data_lake_path, source_path, find_first_file
 ):
     """This a massive test that tests multiple aspects of the job.
     It ain't pretty but most of the aspects need to be tested in conjunction
@@ -144,7 +141,7 @@ def test_calculator_job_input_and_output_integration_test(
     # Arrange
     python_parameters = [
         "python",
-        f"{databricks_path}/package/calculator_job_v2_draft.py",
+        f"{databricks_path}/package/calculator_job.py",
         "--data-storage-account-name",
         "foo",
         "--data-storage-account-key",
@@ -201,19 +198,3 @@ def test_calculator_job_input_and_output_integration_test(
     expected_result_path = f"{data_lake_path}/results/batch_id=1/grid_area=805"
     actual_result_file = find_first_file(expected_result_path, "part-*.json")
     assert actual_result_file is not None
-
-
-def test_calculator_creates_file(
-    spark, data_lake_path, find_first_file, json_lines_reader
-):
-    batchId = 1234
-    process_results_path = f"{data_lake_path}/results"
-
-    calculator(spark, process_results_path, batchId)
-
-    jsonFile = find_first_file(
-        f"{data_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
-    )
-
-    result = json_lines_reader(jsonFile)
-    assert len(result) > 0, "Could not verify created json file."
