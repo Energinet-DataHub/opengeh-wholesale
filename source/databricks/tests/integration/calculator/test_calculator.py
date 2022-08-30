@@ -171,6 +171,9 @@ def test_calculator_job_creates_files_for_each_gridarea(
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
 
+    result_805.printSchema()
+    result_805.show()
+
     # Asserts that the published-time-series-points contract matches the schema from input_time_series_points.
     # When asserting both that the calculator creates output and it does it with input data that matches
     # the time series points contract from the time-series domain (in the same test), then we can infer that the
@@ -189,9 +192,9 @@ def test_calculator_creates_file(
 
     calculator(spark, process_results_path, batchId)
 
-    jsonFile = find_first_file(
-        f"{data_lake_path}/results/batch_id={batchId}/grid_area=805", "part-*.json"
-    )
+    # This
+    result_path = f"{data_lake_path}/results/batch_id={batchId}/grid_area=805"
+    jsonFile = find_first_file(result_path, "part-*.json")
 
     result = json_lines_reader(jsonFile)
     assert len(result) > 0, "Could not verify created json file."

@@ -1,0 +1,13 @@
+{
+    "fields": [
+      {
+        "name": "position",
+        "type": "integer"
+      },
+      {
+        "name": "quantity",
+        "type": "string"
+      }
+    ]
+  }
+  
