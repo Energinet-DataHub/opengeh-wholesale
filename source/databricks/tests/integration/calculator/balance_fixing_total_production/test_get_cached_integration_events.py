@@ -19,25 +19,12 @@ from types import SimpleNamespace
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import (
     _get_cached_integration_events,
-    metering_point_created_message_type,
-    metering_point_connected_message_type,
-)
-from package.codelists import (
-    ConnectionState,
-    MeteringPointType,
-    Resolution,
-    SettlementMethod,
 )
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, struct, to_json, from_json
+from pyspark.sql.functions import col
 
 
 # Factory defaults
-grid_area_code = "805"
-grid_area_link_id = "the-grid-area-link-id"
-gsrn_number = "the-gsrn-number"
-metering_point_id = "the-metering-point-id"
-
 first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
 second_of_june = first_of_june + timedelta(days=1)
 third_of_june = first_of_june + timedelta(days=2)
@@ -46,52 +33,16 @@ third_of_june = first_of_june + timedelta(days=2)
 @pytest.fixture
 def integration_events_df_factory(spark):
     def factory(stored_time=first_of_june):
-        row = {
-            "storedTime": stored_time,
-            "OperationTime": first_of_june,
-            "MessageType": metering_point_created_message_type,
-            "GsrnNumber": gsrn_number,
-            "GridAreaLinkId": grid_area_link_id,
-            "SettlementMethod": SettlementMethod.nonprofiled.value,
-            "ConnectionState": ConnectionState.new.value,
-            "EffectiveDate": first_of_june,
-            "MeteringPointType": MeteringPointType.production.value,
-            "MeteringPointId": metering_point_id,
-            "Resolution": Resolution.hour.value,
-            "CorrelationId": "some-correlation-id",
-        }
+        row = {"storedTime": stored_time, "body": ""}
 
-        return (
-            spark.createDataFrame([row])
-            .withColumn(
-                "body",
-                to_json(
-                    struct(
-                        col("MessageType"),
-                        col("OperationTime"),
-                        col("GridAreaLinkId"),
-                        col("GsrnNumber"),
-                        col("GridAreaLinkId"),
-                        col("MessageType"),
-                        col("SettlementMethod"),
-                        col("ConnectionState"),
-                        col("EffectiveDate"),
-                        col("MeteringPointType"),
-                        col("MeteringPointId"),
-                        col("Resolution"),
-                        col("OperationTime"),
-                        col("CorrelationId"),
-                    )
-                ),
-            )
-            .select("storedTime", "body")
-        )
+        return spark.createDataFrame([row])
 
     return factory
 
 
 def test__raw_events_with_stored_time_of_after_snapshot_time_is_not_included_in_cacheched_integration_events(
-    integration_events_df_factory, source_path
+    integration_events_df_factory,
+    source_path,
 ):
     events_df_first_of_june = integration_events_df_factory(stored_time=first_of_june)
     events_df_second_of_june = integration_events_df_factory(stored_time=second_of_june)
