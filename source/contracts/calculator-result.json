@@ -2,7 +2,7 @@
     "fields": [
       {
         "name": "position",
-        "type": "integer"
+        "type": "long"
       },
       {
         "name": "quantity",
