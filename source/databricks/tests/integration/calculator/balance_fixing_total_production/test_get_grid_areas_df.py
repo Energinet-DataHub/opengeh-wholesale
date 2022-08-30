@@ -219,14 +219,13 @@ def test__duplicate_grid_area_events_does_not_affect_amount_of_grid_areas(
     cached_integration_events_df = grid_area_df_factory()
 
     # Duplicate 'gridAreaUpdated' events
-    integration_events_df_with_dublicates = cached_integration_events_df
-    # .union(
-    #    cached_integration_events_df
-    # )
+    integration_events_df_with_dublicates = cached_integration_events_df.union(
+        cached_integration_events_df
+    )
 
     # Act
     actual_df = _get_grid_areas_df(
-        integration_events_df_with_dublicates, grid_area_code
+        integration_events_df_with_dublicates, [grid_area_code]
     )
 
     # Assert

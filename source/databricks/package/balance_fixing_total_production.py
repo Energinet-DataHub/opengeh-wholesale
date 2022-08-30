@@ -124,7 +124,9 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFr
     )
 
     if grid_area_events_df.count() != len(batch_grid_areas):
-
+        print("grid_area_events_df:")
+        grid_area_events_df.show()
+        print(f"batch_grid_areas: {batch_grid_areas}")
         raise Exception(
             "Grid areas for processes in batch does not match the known grid areas in wholesale"
         )
