@@ -55,11 +55,8 @@ public class DocumentFactory : IDocumentFactory
     private const string PointTemplate = @"
                  <cim:Point>
                      <cim:position>{position}</cim:position>
-                     <cim:quantity>{quantity}</cim:quantity>{quality}
+                     <cim:quantity>{quantity}</cim:quantity>
                  </cim:Point>";
-
-    private const string QualityTemplate = @"
-                     <cim:quality>{quality}</cim:quality>";
 
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;
@@ -118,19 +115,10 @@ public class DocumentFactory : IDocumentFactory
         {
             sb.Append(PointTemplate
                 .Replace("{position}", point.position.ToString())
-                .Replace("{quantity}", point.quantity)
-                .Replace("{quality}", CreateQuality(point)));
+                .Replace("{quantity}", point.quantity));
         }
 
         return sb.ToString();
-    }
-
-    private static string CreateQuality(PointDto point)
-    {
-        if (string.IsNullOrWhiteSpace(point.quality))
-            return string.Empty;
-
-        return QualityTemplate.Replace("{quality}", point.quality);
     }
 
     private static string GetMdrGlnForGridArea(string gridAreaCode)

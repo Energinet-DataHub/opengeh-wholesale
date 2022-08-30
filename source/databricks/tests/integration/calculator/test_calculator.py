@@ -97,9 +97,19 @@ def test_calculator_job_accepts_parameters_from_process_manager(
     assert exit_code == 0, "Calculator job failed to accept provided input arguments"
 
 
-def test_calculator_job_creates_files_for_each_gridarea(
-    json_test_files, databricks_path, data_lake_path, source_path
+def test_calculator_job_input_and_output_integration_test(
+    json_test_files, databricks_path, data_lake_path, source_path, find_first_file
 ):
+    """This a massive test that tests multiple aspects of the job.
+    It ain't pretty but most of the aspects need to be tested in conjunction
+    with a successful execution in order to be (relatively) sure
+    that they provide the desired guarantees.
+
+    We haven't split this test into multiple tests, which would have to all
+    run the very slow process of starting spark instance over again
+    each time the external process is executed.
+    """
+
     # Reads integration_events json file into dataframe and writes it to parquet
     spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
         "body", col("body").cast("binary")
@@ -144,7 +154,7 @@ def test_calculator_job_creates_files_for_each_gridarea(
         "--time-series-points-path",
         f"{data_lake_path}/parquet_test_files/time_series_points",
         "--process-results-path",
-        f"{data_lake_path}/result",
+        f"{data_lake_path}/results",
         "--batch-id",
         "1",
         "--batch-grid-areas",
@@ -166,8 +176,8 @@ def test_calculator_job_creates_files_for_each_gridarea(
     subprocess.call(python_parameters)
 
     # Assert
-    result_805 = spark.read.json(f"{data_lake_path}/result/batch-id=1/grid-area=805")
-    result_806 = spark.read.json(f"{data_lake_path}/result/batch-id=1/grid-area=806")
+    result_805 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=805")
+    result_806 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=806")
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
 
@@ -179,6 +189,18 @@ def test_calculator_job_creates_files_for_each_gridarea(
         f"{source_path}/contracts/events/published-time-series-points.json",
         input_time_series_points.schema,
     )
+
+    # Assert: Calculator result schema must match contract with .NET
+    assert_contract_matches_schema(
+        f"{source_path}/contracts/calculator-result.json",
+        result_805.schema,
+    )
+
+    # Assert: Relative path of result file must match expectation of .NET
+    # IMPORTANT: If the expected result path changes it probably requires .NET changes too
+    expected_result_path = f"{data_lake_path}/results/batch_id=1/grid_area=805"
+    actual_result_file = find_first_file(expected_result_path, "part-*.json")
+    assert actual_result_file is not None
 
 
 def test_calculator_creates_file(

@@ -93,7 +93,7 @@ public class DocumentFactoryTests
             .Setup(repository => repository.GetAsync(It.IsAny<MessageHubReference>()))
             .ReturnsAsync((MessageHubReference messageHubRef) => new Process(messageHubRef, anyGridAreaCode, Guid.NewGuid()));
 
-        var point = new PointDto(1, "2", string.Empty);
+        var point = new PointDto(1, "2");
 
         calculatedResultReaderMock
             .Setup(x => x.ReadResultAsync(It.IsAny<Process>()))

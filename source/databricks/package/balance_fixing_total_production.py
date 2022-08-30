@@ -307,11 +307,9 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
     result_df = (
         result_df.withColumn("position", row_number().over(window))
         .withColumnRenamed("sum(quarter_quantity)", "Quantity")
-        .withColumn("Quality", lit(None))
         .select(
             "GridAreaCode",
             col("Quantity").cast(DecimalType(18, 3)),
-            "Quality",
             "position",
         )
     )
