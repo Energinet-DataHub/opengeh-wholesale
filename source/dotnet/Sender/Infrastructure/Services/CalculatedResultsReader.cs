@@ -44,7 +44,7 @@ public class CalculatedResultsReader : ICalculatedResultReader
 
             while (await reader.ReadLineAsync().ConfigureAwait(false) is { } nextLine)
             {
-                var point = (PointDto)_jsonSerializer.Deserialize(nextLine, typeof(PointDto));
+                var point = _jsonSerializer.Deserialize<PointDto>(nextLine);
                 points.Add(point);
             }
 
@@ -54,6 +54,7 @@ public class CalculatedResultsReader : ICalculatedResultReader
 
     private async Task<DataLakeFileClient> GetResultsFileAsync(Process process)
     {
+        // This directory path must match the directory used by Databricks (see calculator.py).
         var directory = $"results/batch_id={process.BatchId}/grid_area={process.GridAreaCode}/";
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
 

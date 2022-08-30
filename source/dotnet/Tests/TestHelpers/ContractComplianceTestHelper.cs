@@ -84,11 +84,11 @@ internal static class ContractComplianceTestHelper
 
             // Assert: Property types match
             var actualPropertyType = MapToContractType(actualProp.PropertyType);
-            actualPropertyType.Should().Be(expectedPropType);
+            actualPropertyType.Should().Contain(expectedPropType);
         }
     }
 
-    private static string MapToContractType(Type propertyType)
+    private static string[] MapToContractType(Type propertyType)
     {
         if (propertyType.IsEnum)
             return MapToContractType(Enum.GetUnderlyingType(propertyType));
@@ -98,10 +98,10 @@ internal static class ContractComplianceTestHelper
 
         return propertyType.Name switch
         {
-            "Int32" => "integer",
-            "String" => "string",
-            "Guid" => "string",
-            "Instant" => "timestamp",
+            "Int32" => new[] { "integer", "long" },
+            "String" => new[] { "string" },
+            "Guid" => new[] { "string" },
+            "Instant" => new[] { "timestamp" },
             _ => throw new NotImplementedException($"Property type '{propertyType.Name}' not implemented."),
         };
     }
