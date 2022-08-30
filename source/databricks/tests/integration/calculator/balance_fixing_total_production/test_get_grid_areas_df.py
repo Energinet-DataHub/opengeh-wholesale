@@ -214,7 +214,6 @@ def test__returns_newest_grid_area_state(
 def test__duplicate_grid_area_events_does_not_affect_amount_of_grid_areas(
     grid_area_df_factory,
 ):
-
     # Arrange
     cached_integration_events_df = grid_area_df_factory()
 
