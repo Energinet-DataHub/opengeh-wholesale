@@ -12,6 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# COMMAND ----------
+
 # MAGIC %md # Notebook Configuration
 
 # COMMAND ----------
@@ -41,6 +44,7 @@ integration_events = (
     .orderBy(col("storedTime").desc())
 )
 display(integration_events)
+#integration_events.printSchema()
 
 # COMMAND ----------
 
