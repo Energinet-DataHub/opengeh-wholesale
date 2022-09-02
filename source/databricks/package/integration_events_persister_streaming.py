@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package import integration_events_persister, initialize_spark
+from package import integration_events_persister, initialize_spark, log, debug
 import configargparse
 
 
@@ -28,6 +28,8 @@ def start():
     p.add("--integration-events-checkpoint-path", type=str, required=True)
 
     args, unknown_args = p.parse_known_args()
+    log(f"Job arguments: {str(args)}")
+
     spark = initialize_spark(
         args.data_storage_account_name, args.data_storage_account_key
     )
