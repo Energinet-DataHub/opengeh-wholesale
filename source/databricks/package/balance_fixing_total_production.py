@@ -40,6 +40,7 @@ from package.schemas import (
     grid_area_updated_event_schema,
     metering_point_generic_event_schema,
 )
+from package.logging import log, debug
 
 
 metering_point_created_message_type = "MeteringPointCreated"
@@ -55,9 +56,8 @@ def calculate_balance_fixing_total_production(
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-    print("################################################################# LETS CALCULATE #############################################################")
-    print(f"Periodstarttime: {period_start_datetime}")
-    print(f"Periodendtime: {period_end_datetime}")
+    log(f"Periodstarttime: {period_start_datetime}")
+    log(f"Periodendtime: {period_end_datetime}")
 
     cached_integration_events_df = _get_cached_integration_events(
         raw_integration_events_df, batch_snapshot_datetime
@@ -119,19 +119,20 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFr
     window = Window.partitionBy("body.GridAreaCode").orderBy(
         col("body.OperationTime").desc()
     )
-    grid_area_events_df = (
+    grid_area_df = (
         grid_area_events_df.withColumn("row", row_number().over(window))
         .filter(col("row") == 1)
         .drop("row")
         .select("body.GridAreaLinkId", "body.GridAreaCode")
     )
 
-    if grid_area_events_df.count() != len(batch_grid_areas):
+    if grid_area_df.count() != len(batch_grid_areas):
         raise Exception(
             "Grid areas for processes in batch does not match the known grid areas in wholesale"
         )
 
-    return grid_area_events_df
+    log("Grid areas", grid_area_df)
+    return grid_area_df
 
 
 def _get_metering_point_periods_df(
@@ -177,6 +178,10 @@ def _get_metering_point_periods_df(
             "OperationTime",
         ]
     )
+    debug(
+        "Metering point created and connected events without duplicates",
+        metering_point_events_df,
+    )
 
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
 
@@ -221,12 +226,18 @@ def _get_metering_point_periods_df(
         col("MeteringPointType") == MeteringPointType.production.value
     )
 
+    debug(
+        "Metering point events before join with grid areas", metering_point_periods_df
+    )
+
     # Only include metering points in the selected grid areas
     metering_point_periods_df = metering_point_periods_df.join(
         grid_area_df,
         metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
         "inner",
     ).select("GsrnNumber", "GridAreaCode", "EffectiveDate", "toEffectiveDate")
+
+    log("Metering point periods", metering_point_periods_df)
     return metering_point_periods_df
 
 
@@ -241,6 +252,8 @@ def _get_enriched_time_series_points_df(
         col("time") >= period_start_datetime
     ).where(col("time") < period_end_datetime)
 
+    debug("Time series points where time is within period", timeseries_df)
+
     # Only use latest registered points
     window = Window.partitionBy("GsrnNumber", "time").orderBy(
         col("RegistrationDateTime").desc()
@@ -250,6 +263,11 @@ def _get_enriched_time_series_points_df(
     timeseries_df = timeseries_df.withColumn(
         "row_number", row_number().over(window)
     ).where(col("row_number") == 1)
+
+    debug(
+        "Time series points with only latest points by registration date time",
+        timeseries_df,
+    )
 
     timeseries_df = timeseries_df.select(
         col("GsrnNumber"), "time", "Quantity", "Resolution"
@@ -268,6 +286,8 @@ def _get_enriched_time_series_points_df(
         "time",
         "Quantity",
     )
+
+    debug("Enriched time series points", timeseries_df)
 
     return enriched_time_series_point_df
 
@@ -303,6 +323,8 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         .sum("quarter_quantity")
     )
 
+    debug("Pre-result split into quarter times", result_df)
+
     window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
 
     # Points may be missing in result time series if all metering points are missing a point at a certain moment.
@@ -317,4 +339,5 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         )
     )
 
+    log("Balance fixing total production result", result_df)
     return result_df

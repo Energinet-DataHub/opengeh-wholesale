@@ -12,7 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .spark_initializor import initialize_spark
-from .integration_events_persister import integration_events_persister
-from .balance_fixing_total_production import calculate_balance_fixing_total_production
-from .logging import log, debug
+from inspect import stack
+from pyspark.sql import DataFrame
+
+
+def _log(level: str, message: str, df: DataFrame):
+    print(f"============ {level} ============")
+    print(f"In function {stack()[1].function}:")
+    print(message)
+    if df is not None:
+        df.printSchema()
+        df.show()
+    print("==============================")
+
+
+def log(message: str, df: DataFrame = None):
+    _log("LOG", message, df)
+
+
+def debug(message: str, df: DataFrame = None):
+    _log("DEBUG", message, df)
