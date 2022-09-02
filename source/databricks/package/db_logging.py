@@ -23,7 +23,7 @@ def _log(level: str, message: str, df: DataFrame):
     print(f"{frame.filename}:{frame.lineno} - {frame.function}(): {message}")
     if df is not None:
         df.printSchema()
-        df.show()
+        df.show(5000)
         print(f"Number of rows in data frame: {df.count()}")
     print("==============================")
 
