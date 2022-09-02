@@ -23,6 +23,21 @@ from pyspark.sql.functions import (
     from_json,
     current_timestamp,
 )
+from package import log, debug
+
+
+def _persist(
+    events_df, batch_id, integration_events_checkpoint_path, integration_events_path
+):
+    (
+        events_df.partitionBy("year", "month", "day")
+        # .format("parquet")
+        .option("checkpointLocation", integration_events_checkpoint_path)
+        # .start(integration_events_path)
+        .parquet(integration_events_path)
+    )
+
+    log("Events received", events_df)
 
 
 # integration_events_persister
@@ -31,7 +46,6 @@ def integration_events_persister(
     integration_events_path: str,
     integration_events_checkpoint_path: str,
 ):
-
     events = (
         streamingDf.withColumn("storedTime", current_timestamp())
         .withColumn("year", year(col("storedTime")))
@@ -39,9 +53,11 @@ def integration_events_persister(
         .withColumn("day", dayofmonth(col("storedTime")))
     )
 
-    (
-        events.writeStream.partitionBy("year", "month", "day")
-        .format("parquet")
-        .option("checkpointLocation", integration_events_checkpoint_path)
-        .start(integration_events_path)
+    events.writeStream.foreachBatch(
+        lambda events_df, batch_id: _persist(
+            events_df,
+            batch_id,
+            integration_events_checkpoint_path,
+            integration_events_path,
+        )
     )
