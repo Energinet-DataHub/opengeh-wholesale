@@ -55,7 +55,11 @@ def calculate_balance_fixing_total_production(
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-
+    print(
+        "############################################## STARTED CALCULATION ####################################################"
+    )
+    print(f"start{period_start_datetime}")
+    print(f"end{period_end_datetime}")
     cached_integration_events_df = _get_cached_integration_events(
         raw_integration_events_df, batch_snapshot_datetime
     )
@@ -64,6 +68,10 @@ def calculate_balance_fixing_total_production(
     )
 
     grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas)
+    print(
+        "############################################## GRID AREAS ####################################################"
+    )
+    grid_area_df.show()
 
     metering_point_period_df = _get_metering_point_periods_df(
         cached_integration_events_df,
@@ -71,15 +79,22 @@ def calculate_balance_fixing_total_production(
         period_start_datetime,
         period_end_datetime,
     )
-
+    print(
+        "############################################## TIME SERIES ####################################################"
+    )
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         time_series_points,
         metering_point_period_df,
         period_start_datetime,
         period_end_datetime,
     )
+    enriched_time_series_point_df.show()
 
     result_df = _get_result_df(enriched_time_series_point_df)
+    print(
+        "############################################## RESULT ####################################################"
+    )
+    result_df.show()
     cached_integration_events_df.unpersist()
 
     return result_df
