@@ -40,7 +40,7 @@ from package.schemas import (
     grid_area_updated_event_schema,
     metering_point_generic_event_schema,
 )
-from package.logging import log, debug
+from package.db_logging import log, debug
 
 
 metering_point_created_message_type = "MeteringPointCreated"

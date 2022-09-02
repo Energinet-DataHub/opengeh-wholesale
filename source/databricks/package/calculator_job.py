@@ -20,8 +20,12 @@ import ast
 # Required when executing in a subprocess from pytest (without using wheel)
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
 
-from package import calculate_balance_fixing_total_production, initialize_spark
-from package.logging import log, debug
+from package import (
+    calculate_balance_fixing_total_production,
+    initialize_spark,
+    log,
+    debug,
+)
 import configargparse
 
 
