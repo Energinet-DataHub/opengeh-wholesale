@@ -32,7 +32,6 @@ def _persist(events_df, batch_id, integration_events_path):
             integration_events_path
         )
     )
-
     log("Events received", events_df)
 
 
