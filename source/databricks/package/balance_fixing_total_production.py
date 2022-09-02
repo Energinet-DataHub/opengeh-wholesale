@@ -55,6 +55,9 @@ def calculate_balance_fixing_total_production(
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
+    print("################################################################# LETS CALCULATE #############################################################")
+    print(f"Periodstarttime: {period_start_datetime}")
+    print(f"Periodendtime: {period_end_datetime}")
 
     cached_integration_events_df = _get_cached_integration_events(
         raw_integration_events_df, batch_snapshot_datetime
