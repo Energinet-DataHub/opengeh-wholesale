@@ -18,11 +18,13 @@ from pyspark.sql import DataFrame
 
 def _log(level: str, message: str, df: DataFrame):
     print(f"============ {level} ============")
-    print(f"In function {stack()[1].function}:")
-    print(message)
+    # Frame 2 because: 1 is the calling function in this module, 2 is the caller of the functions in the module
+    frame = stack()[2]
+    print(f"{frame.filename}:{frame.lineno} - {frame.function}(): {message}")
     if df is not None:
         df.printSchema()
         df.show()
+        print(f"Number of rows in data frame: {df.count()}")
     print("==============================")
 
 

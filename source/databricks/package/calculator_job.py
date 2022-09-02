@@ -88,6 +88,7 @@ def _get_valid_args_or_throw():
 
 def start():
     args = _get_valid_args_or_throw()
+    log(f"Job arguments: {str(args)}")
     if args.only_validate_args:
         return
 
@@ -107,7 +108,6 @@ def start():
         args.time_series_points_path
     )
 
-    debug("before balance fixing")
     output_df = calculate_balance_fixing_total_production(
         raw_integration_events_df,
         raw_time_series_points_df,
@@ -117,7 +117,6 @@ def start():
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
     )
-    debug("after balance fixing")
 
     # First repartition to co-locate all rows for a grid area on a single executor.
     # This ensures that only one file is being written/created for each grid area
