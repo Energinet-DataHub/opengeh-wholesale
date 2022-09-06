@@ -15,8 +15,10 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     array,
+    array_contains,
     lit,
     col,
+    collect_set,
     from_json,
     row_number,
     expr,
@@ -35,7 +37,13 @@ from pyspark.sql.types import (
     DecimalType,
 )
 from pyspark.sql.window import Window
-from package.codelists import ConnectionState, MeteringPointType, Resolution
+from package.codelists import (
+    ConnectionState,
+    MeteringPointType,
+    Quality,
+    Resolution,
+    TimeSeriesQuality,
+)
 from package.schemas import (
     grid_area_updated_event_schema,
     metering_point_generic_event_schema,
@@ -270,7 +278,7 @@ def _get_enriched_time_series_points_df(
     )
 
     timeseries_df = timeseries_df.select(
-        col("GsrnNumber"), "time", "Quantity", "Resolution"
+        col("GsrnNumber"), "time", "Quantity", "Quality", "Resolution"
     )
 
     enriched_time_series_point_df = timeseries_df.join(
@@ -285,6 +293,7 @@ def _get_enriched_time_series_points_df(
         "Resolution",
         "time",
         "Quantity",
+        "Quality",
     )
 
     debug("Enriched time series points", timeseries_df)
@@ -319,8 +328,35 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
                 col("Quantity") / 4,
             ).when(col("Resolution") == Resolution.quarter.value, col("Quantity")),
         )
+        # .withColumn(
+        #     "quality_number",
+        #     when(col("Quality") == TimeSeriesQuality.Measured, 0)
+        #     .when(col("Quality") == TimeSeriesQuality.Estimated, 1)
+        #     .when(col("Quality") == TimeSeriesQuality.Incomplete, 2),
+        # )
         .groupBy("GridAreaCode", "quarter_time")
-        .sum("quarter_quantity")
+        .agg(sum("quarter_quantity"), max("quality_number"), collect_set("Quality"))
+        .withColumn(
+            "Quality",
+            when(
+                array_contains(col("Quality"), TimeSeriesQuality.Measured),
+                Quality.Measured,
+            )
+            .when(
+                array_contains(col("Quality"), TimeSeriesQuality.Estimated),
+                Quality.Estimated,
+            )
+            .when(
+                array_contains(col("Quality"), TimeSeriesQuality.Incomplete),
+                Quality.Incomplete,
+            ),
+        )
+        # .withColumn(
+        #     "Quality",
+        #     when(col("quality_number") == 0, Quality.Measured)
+        #     .when(col("quality_number") == 1, Quality.Estimated)
+        #     .when(col("Quaquality_numberlity") == 2, Quality.Incomplete),
+        # )
     )
 
     debug("Pre-result split into quarter times", result_df)
@@ -335,6 +371,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         .select(
             "GridAreaCode",
             col("Quantity").cast(DecimalType(18, 3)),
+            "Quality",
             "position",
         )
     )

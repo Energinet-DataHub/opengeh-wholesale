@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .resolution import Resolution
-from .metering_point_type import MeteringPointType
-from .connection_state import ConnectionState
-from .quality import Quality
-from .settlement_method import SettlementMethod
-from .time_series_quality import TimeSeriesQuality
+
+from enum import IntEnum
+
+
+class Quality(IntEnum):
+    Measured = 0
+    Estimated = 1
+    Incomplete = 2
