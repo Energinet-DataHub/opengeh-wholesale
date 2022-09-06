@@ -15,16 +15,6 @@
 from enum import IntEnum
 
 
-# class TimeSeriesQuality(IntEnum):
-#     Unknown = 0
-#     Adjusted = 1
-#     NotAvailable = 2
-#     Estimated = 3  # Estimated
-#     AsProvided = 4  # Measured
-#     Incomplete = 5  # Incomplete
-#     Calculated = 6
-
-
 class TimeSeriesQuality(IntEnum):
     Estimated = 3
     Measured = 4

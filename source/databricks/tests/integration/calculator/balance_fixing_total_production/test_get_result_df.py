@@ -50,14 +50,14 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
                 "Resolution": first_resolution,
                 "time": time,
                 "Quantity": first_quantity,
-                "Quality": TimeSeriesQuality.Measured,
+                "Quality": TimeSeriesQuality.Measured.value,
             },
             {
                 "GridAreaCode": second_grid_area_code,
                 "Resolution": second_resolution,
                 "time": time2,
                 "Quantity": second_quantity,
-                "Quality": TimeSeriesQuality.Measured,
+                "Quality": TimeSeriesQuality.Measured.value,
             },
         ]
 
@@ -71,7 +71,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
     def factory(
         resolution=Resolution.quarter.value,
         quantity=Decimal("1"),
-        quality=TimeSeriesQuality.Measured,
+        quality=TimeSeriesQuality.Measured.value,
         gridArea="805",
     ):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
