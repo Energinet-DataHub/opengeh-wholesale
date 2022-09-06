@@ -20,7 +20,12 @@ import ast
 # Required when executing in a subprocess from pytest (without using wheel)
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
 
-from package import calculate_balance_fixing_total_production, initialize_spark
+from package import (
+    calculate_balance_fixing_total_production,
+    initialize_spark,
+    log,
+    debug,
+)
 import configargparse
 
 
@@ -83,6 +88,7 @@ def _get_valid_args_or_throw():
 
 def start():
     args = _get_valid_args_or_throw()
+    log(f"Job arguments: {str(args)}")
     if args.only_validate_args:
         return
 
