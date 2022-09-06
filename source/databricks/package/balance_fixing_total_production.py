@@ -238,7 +238,7 @@ def _get_metering_point_periods_df(
     log(
         "Metering point periods",
         metering_point_periods_df.orderBy(
-            col("GridAreaCode"), col("GsrnNumber", col("EffectiveDate"))
+            col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
         ),
     )
     return metering_point_periods_df
@@ -258,7 +258,6 @@ def _get_enriched_time_series_points_df(
     debug(
         "Time series points where time is within period",
         timeseries_df.orderBy(
-            col("GridAreaCode"),
             col("GsrnNumber"),
             col("time"),
             col("storedTime").desc(),
@@ -278,7 +277,6 @@ def _get_enriched_time_series_points_df(
     debug(
         "Time series points with only latest points by registration date time",
         timeseries_df.orderBy(
-            col("GridAreaCode"),
             col("GsrnNumber"),
             col("time"),
             col("storedTime").desc(),
@@ -305,7 +303,7 @@ def _get_enriched_time_series_points_df(
 
     debug(
         "Enriched time series points",
-        timeseries_df.orderBy(col("GridAreaCode"), col("GsrnNumber"), col("time")),
+        timeseries_df.orderBy(col("GsrnNumber"), col("time")),
     )
 
     return enriched_time_series_point_df
@@ -344,7 +342,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
 
     debug(
         "Pre-result split into quarter times",
-        result_df.orderBy(col("GridAreaCode"), col("time")),
+        result_df.orderBy(col("GridAreaCode"), col("quarter_time")),
     )
 
     window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
