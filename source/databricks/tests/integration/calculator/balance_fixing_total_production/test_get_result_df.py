@@ -17,7 +17,7 @@ import os
 import shutil
 import pytest
 import json
-from package.codelists import Resolution, TimeSeriesQuality
+from package.codelists import Resolution, TimeSeriesQuality, Quality
 from decimal import Decimal
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_result_df
@@ -50,14 +50,14 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
                 "Resolution": first_resolution,
                 "time": time,
                 "Quantity": first_quantity,
-                "Quality": TimeSeriesQuality.Measured.value,
+                "Quality": TimeSeriesQuality.AsProvided.value,
             },
             {
                 "GridAreaCode": second_grid_area_code,
                 "Resolution": second_resolution,
                 "time": time2,
                 "Quantity": second_quantity,
-                "Quality": TimeSeriesQuality.Measured.value,
+                "Quality": TimeSeriesQuality.AsProvided.value,
             },
         ]
 
@@ -71,7 +71,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
     def factory(
         resolution=Resolution.quarter.value,
         quantity=Decimal("1"),
-        quality=TimeSeriesQuality.Measured.value,
+        quality=TimeSeriesQuality.AsProvided.value,
         gridArea="805",
     ):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
@@ -86,7 +86,6 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 "Quality": quality,
             }
         ]
-
         return spark.createDataFrame(df)
 
     return factory
@@ -247,3 +246,33 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
 
     assert result_df.count() == 4
     assert result_df.where(col("Quantity") == "100000000000.001").count() == 4
+
+
+# class TimeSeriesQuality(IntEnum):
+# class Quality(IntEnum):
+#    Measured = 0
+#    Estimated = 1
+#    Incomplete = 2
+#
+# class TimeSeriesQuality(IntEnum):
+#    Estimated = 3
+#    AsProvided = 4
+#    Incomplete = 5
+
+
+def test__quality_is_incompleate_when_at_least_one_grid_area_has_quality_incompleate(
+    enriched_time_series_factory,
+):
+    """Test that values with different magnitudes do not lose precision when accumulated"""
+    asProvided = TimeSeriesQuality.AsProvided.value
+    incomplete = TimeSeriesQuality.Incomplete.value
+
+    df = (
+        enriched_time_series_factory(quality=asProvided, gridArea="805")
+        .union(enriched_time_series_factory(quality=incomplete, gridArea="805"))
+        .union(enriched_time_series_factory(quality=asProvided, gridArea="805"))
+    )
+    df.show()
+    result_df = _get_result_df(df)
+    result_df.show()
+    assert result_df.where(col("Quality") == Quality.Incomplete.value).count() == 1

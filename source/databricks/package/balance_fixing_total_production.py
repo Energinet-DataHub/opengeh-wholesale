@@ -329,35 +329,29 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
                 col("Quantity") / 4,
             ).when(col("Resolution") == Resolution.quarter.value, col("Quantity")),
         )
-        # .withColumn(
-        #     "quality_number",
-        #     when(col("Quality") == TimeSeriesQuality.Measured, 0)
-        #     .when(col("Quality") == TimeSeriesQuality.Estimated, 1)
-        #     .when(col("Quality") == TimeSeriesQuality.Incomplete, 2),
-        # )
         .groupBy("GridAreaCode", "quarter_time")
         .agg(sum("quarter_quantity"), collect_set("Quality"))
         .withColumn(
             "Quality",
             when(
-                array_contains(col("Quality"), TimeSeriesQuality.Measured.value),
-                Quality.Measured,
+                array_contains(
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.Incomplete.value)
+                ),
+                lit(Quality.Incomplete.value),
             )
             .when(
-                array_contains(col("Quality"), TimeSeriesQuality.Estimated.value),
-                Quality.Estimated,
+                array_contains(
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.Estimated.value)
+                ),
+                lit(Quality.Estimated.value),
             )
             .when(
-                array_contains(col("Quality"), TimeSeriesQuality.Incomplete.value),
-                Quality.Incomplete,
+                array_contains(
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.AsProvided.value)
+                ),
+                lit(Quality.Measured.value),
             ),
         )
-        # .withColumn(
-        #     "Quality",
-        #     when(col("quality_number") == 0, Quality.Measured)
-        #     .when(col("quality_number") == 1, Quality.Estimated)
-        #     .when(col("Quaquality_numberlity") == 2, Quality.Incomplete),
-        # )
     )
 
     debug("Pre-result split into quarter times", result_df)
