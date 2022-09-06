@@ -56,9 +56,6 @@ def calculate_balance_fixing_total_production(
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-    log(f"Periodstarttime: {period_start_datetime}")
-    log(f"Periodendtime: {period_end_datetime}")
-
     cached_integration_events_df = _get_cached_integration_events(
         raw_integration_events_df, batch_snapshot_datetime
     )
@@ -131,7 +128,7 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFr
             "Grid areas for processes in batch does not match the known grid areas in wholesale"
         )
 
-    log("Grid areas", grid_area_df)
+    log("Grid areas", grid_area_df.orderBy(col("GridAreaCode")))
     return grid_area_df
 
 
@@ -180,7 +177,7 @@ def _get_metering_point_periods_df(
     )
     debug(
         "Metering point created and connected events without duplicates",
-        metering_point_events_df,
+        metering_point_events_df.orderBy(col("storedTime").desc()),
     )
 
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
@@ -227,7 +224,8 @@ def _get_metering_point_periods_df(
     )
 
     debug(
-        "Metering point events before join with grid areas", metering_point_periods_df
+        "Metering point events before join with grid areas",
+        metering_point_periods_df.orderBy(col("storedTime").desc()),
     )
 
     # Only include metering points in the selected grid areas
@@ -237,7 +235,12 @@ def _get_metering_point_periods_df(
         "inner",
     ).select("GsrnNumber", "GridAreaCode", "EffectiveDate", "toEffectiveDate")
 
-    log("Metering point periods", metering_point_periods_df)
+    log(
+        "Metering point periods",
+        metering_point_periods_df.orderBy(
+            col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
+        ),
+    )
     return metering_point_periods_df
 
 
@@ -252,7 +255,14 @@ def _get_enriched_time_series_points_df(
         col("time") >= period_start_datetime
     ).where(col("time") < period_end_datetime)
 
-    debug("Time series points where time is within period", timeseries_df)
+    debug(
+        "Time series points where time is within period",
+        timeseries_df.orderBy(
+            col("GsrnNumber"),
+            col("time"),
+            col("storedTime").desc(),
+        ),
+    )
 
     # Only use latest registered points
     window = Window.partitionBy("GsrnNumber", "time").orderBy(
@@ -266,7 +276,11 @@ def _get_enriched_time_series_points_df(
 
     debug(
         "Time series points with only latest points by registration date time",
-        timeseries_df,
+        timeseries_df.orderBy(
+            col("GsrnNumber"),
+            col("time"),
+            col("storedTime").desc(),
+        ),
     )
 
     timeseries_df = timeseries_df.select(
@@ -287,7 +301,10 @@ def _get_enriched_time_series_points_df(
         "Quantity",
     )
 
-    debug("Enriched time series points", timeseries_df)
+    debug(
+        "Enriched time series points",
+        timeseries_df.orderBy(col("GsrnNumber"), col("time")),
+    )
 
     return enriched_time_series_point_df
 
@@ -323,7 +340,10 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         .sum("quarter_quantity")
     )
 
-    debug("Pre-result split into quarter times", result_df)
+    debug(
+        "Pre-result split into quarter times",
+        result_df.orderBy(col("GridAreaCode"), col("quarter_time")),
+    )
 
     window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
 
@@ -339,5 +359,8 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         )
     )
 
-    log("Balance fixing total production result", result_df)
+    log(
+        "Balance fixing total production result",
+        result_df.orderBy(col("GridAreaCode"), col("position")),
+    )
     return result_df
