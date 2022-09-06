@@ -27,6 +27,7 @@ from pyspark.sql.functions import (
     last,
     coalesce,
     explode,
+    sum,
 )
 from pyspark.sql.types import (
     IntegerType,
@@ -335,19 +336,19 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         #     .when(col("Quality") == TimeSeriesQuality.Incomplete, 2),
         # )
         .groupBy("GridAreaCode", "quarter_time")
-        .agg(sum("quarter_quantity"), max("quality_number"), collect_set("Quality"))
+        .agg(sum("quarter_quantity"), collect_set("Quality"))
         .withColumn(
             "Quality",
             when(
-                array_contains(col("Quality"), TimeSeriesQuality.Measured),
+                array_contains(col("Quality"), TimeSeriesQuality.Measured.value),
                 Quality.Measured,
             )
             .when(
-                array_contains(col("Quality"), TimeSeriesQuality.Estimated),
+                array_contains(col("Quality"), TimeSeriesQuality.Estimated.value),
                 Quality.Estimated,
             )
             .when(
-                array_contains(col("Quality"), TimeSeriesQuality.Incomplete),
+                array_contains(col("Quality"), TimeSeriesQuality.Incomplete.value),
                 Quality.Incomplete,
             ),
         )
