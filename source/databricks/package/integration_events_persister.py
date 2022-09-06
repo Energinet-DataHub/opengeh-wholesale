@@ -26,9 +26,9 @@ from pyspark.sql.functions import (
 from package.db_logging import log, debug
 
 
-def _persist(events_df, batch_id, integration_events_path):
+def _persist(events_df, integration_events_path):
     (
-        events_df.write.partitionBy("year", "month", "day").parquet(
+        events_df.write.partitionBy("year", "month", "day").mode("append").parquet(
             integration_events_path
         )
     )
@@ -55,7 +55,6 @@ def integration_events_persister(
         .foreachBatch(
             lambda events_df, batch_id: _persist(
                 events_df,
-                batch_id,
                 integration_events_path,
             )
         )
