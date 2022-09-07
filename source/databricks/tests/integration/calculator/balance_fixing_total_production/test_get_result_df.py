@@ -248,31 +248,44 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
     assert result_df.where(col("Quantity") == "100000000000.001").count() == 4
 
 
-# class TimeSeriesQuality(IntEnum):
-# class Quality(IntEnum):
-#    Measured = 0
-#    Estimated = 1
-#    Incomplete = 2
-#
-# class TimeSeriesQuality(IntEnum):
-#    Estimated = 3
-#    AsProvided = 4
-#    Incomplete = 5
-
-
-def test__quality_is_incompleate_when_at_least_one_grid_area_has_quality_incompleate(
-    enriched_time_series_factory,
+@pytest.mark.parametrize(
+    "quality_1, quality_2, quality_3, expected_quality",
+    [
+        (
+            TimeSeriesQuality.AsProvided.value,
+            TimeSeriesQuality.Estimated.value,
+            TimeSeriesQuality.Incomplete.value,
+            Quality.Incomplete.value,
+        ),
+        (
+            TimeSeriesQuality.AsProvided.value,
+            TimeSeriesQuality.Estimated.value,
+            TimeSeriesQuality.AsProvided.value,
+            Quality.Estimated.value,
+        ),
+        (
+            TimeSeriesQuality.AsProvided.value,
+            TimeSeriesQuality.AsProvided.value,
+            TimeSeriesQuality.AsProvided.value,
+            Quality.Measured.value,
+        ),
+    ],
+)
+def test__quality_is_lowest_common_denominator_among_Measured_estimated_and_incomplete(
+    enriched_time_series_factory, quality_1, quality_2, quality_3, expected_quality
 ):
-    """Test that values with different magnitudes do not lose precision when accumulated"""
-    asProvided = TimeSeriesQuality.AsProvided.value
-    incomplete = TimeSeriesQuality.Incomplete.value
+
+    # quality in timeseries are maped as folow in the wholsale domain
+    # AsProvided (value 4) -> Measured (value 0)
+    # Estimated (value 3) -> Estimated (value 1)
+    # Incomplete (value 5) -> Incomplete (value 2)
 
     df = (
-        enriched_time_series_factory(quality=asProvided, gridArea="805")
-        .union(enriched_time_series_factory(quality=incomplete, gridArea="805"))
-        .union(enriched_time_series_factory(quality=asProvided, gridArea="805"))
+        enriched_time_series_factory(quality=quality_1, gridArea="805")
+        .union(enriched_time_series_factory(quality=quality_2, gridArea="805"))
+        .union(enriched_time_series_factory(quality=quality_3, gridArea="805"))
     )
     df.show()
     result_df = _get_result_df(df)
     result_df.show()
-    assert result_df.where(col("Quality") == Quality.Incomplete.value).count() == 1
+    assert result_df.first().Quality == expected_quality
