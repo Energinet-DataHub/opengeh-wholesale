@@ -24,9 +24,6 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 public class DocumentFactory : IDocumentFactory
 {
-    // <product> is fixed to 8716867000030 (Active Energy) for current document type.
-    // <quantity_Measure_Unit> is fixed to kWh for current document type.
-
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;
     private readonly IClock _clock;
@@ -77,9 +74,12 @@ public class DocumentFactory : IDocumentFactory
                     new TimeIntervalDto(CalculateTimeInterval().Start, CalculateTimeInterval().End),
                     points)));
 
-        using var xmlWriter = XmlWriter.Create(outputStream, new XmlWriterSettings() { Indent = true, Async = true, IndentChars = "    " });
-        var serializer = new XmlSerializer(typeof(NotifyAggregatedMeasureDataMarketDocumentDto));
-        serializer.Serialize(xmlWriter, document);
+        // TODO: Unit test that generated XML complies with the schema
+        using var xmlWriter = XmlWriter.Create(outputStream, new XmlWriterSettings { Indent = true, Async = true, IndentChars = "    " });
+        var namespaces = new XmlSerializerNamespaces();
+        namespaces.Add(string.Empty, string.Empty); // Reset to avoid xsi and xsd
+        var serializer = new XmlSerializer(typeof(NotifyAggregatedMeasureDataMarketDocumentDto), "urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1");
+        serializer.Serialize(xmlWriter, document, namespaces);
         await xmlWriter.FlushAsync().ConfigureAwait(false);
     }
 
