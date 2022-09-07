@@ -8,14 +8,14 @@
 
 ## Table of content
 
-* [Introduction](#introduction)
-* [Getting started](#getting-started)
-* [Road Map](#road-map)
-* [Context Map](#context-map)
-* [Understanding the Domain](#understanding-the-domain)
-* [Databricks](#databricks)
-* [Test](#test)
-* [Where can I get more help?](#where-can-i-get-more-help)
+* [Wholesale](#wholesale)
+    * [Table of content](#table-of-content)
+    * [Introduction](#introduction)
+    * [Getting started](#getting-started)
+    * [Understanding the Domain](#understanding-the-domain)
+    * [Databricks](#databricks)
+    * [Test](#test)
+    * [Where can I get more help?](#where-can-i-get-more-help)
 
 ## Introduction
 
@@ -49,14 +49,6 @@ These are the business processes maintained by this domain:
 ## Getting started
 
 This section will be updated as we go when adding code and functionality to the domain.
-
-## Road Map
-
-The current primary goal is to be able to send an RSM-014 CIM XML document to grid access providers of the grid areas calculated in a preliminary aggregation.
-
-A FAS user must be able to initiate the aggregation process and to verify the basis data.
-
-![Road Map!](docs/images/rsm-014-roadmap.drawio.png)
 
 ## Understanding the Domain
 
