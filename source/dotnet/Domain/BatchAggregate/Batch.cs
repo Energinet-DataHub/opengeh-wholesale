@@ -21,7 +21,6 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 public class Batch
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
-    private readonly Interval _period;
 
     public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes, Interval period)
         : this()
@@ -34,7 +33,7 @@ public class Batch
         if (!_gridAreaCodes.Any())
             throw new ArgumentException("Batch must contain at least one grid area code.");
 
-        _period = period;
+        Period = period;
     }
 
     /// <summary>
@@ -45,9 +44,6 @@ public class Batch
     {
         Id = null!;
         _gridAreaCodes = new List<GridAreaCode>();
-
-        // Period is currently hardcoded to the 1st of June 2022 Danish time (CEST)
-        Period = _period;
     }
 
     public BatchId Id { get; }
