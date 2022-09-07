@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
 using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -109,7 +110,8 @@ public class StartPendingBatchesEndpointTests
 
             var pendingBatch = new Batch(
                 ProcessType.BalanceFixing,
-                new[] { new GridAreaCode(gridAreaCode) });
+                new[] { new GridAreaCode(gridAreaCode) },
+                new Interval(Instant.FromDateTimeOffset(DateTimeOffset.Now), Instant.FromDateTimeOffset(DateTimeOffset.Now)));
 
             await dbContext.Batches.AddAsync(pendingBatch);
             await dbContext.SaveChangesAsync();

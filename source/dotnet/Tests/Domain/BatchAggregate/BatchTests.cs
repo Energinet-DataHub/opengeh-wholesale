@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
+using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
@@ -46,7 +47,9 @@ public class BatchTests
     {
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
-        Assert.Throws<ArgumentException>(() => new Batch(ProcessType.BalanceFixing, emptyGridAreaCodes));
+        Assert.Throws<ArgumentException>(() => new Batch(ProcessType.BalanceFixing, emptyGridAreaCodes, new Interval(
+            Instant.FromDateTimeOffset(DateTimeOffset.Now),
+            Instant.FromDateTimeOffset(DateTimeOffset.Now))));
     }
 
     [Fact]

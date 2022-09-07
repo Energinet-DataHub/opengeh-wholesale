@@ -63,7 +63,9 @@ public class BatchControllerTests :
         // Arrange
         var batchRequest = new BatchRequestDto(
             WholesaleProcessType.BalanceFixing,
-            new List<string> { "805" });
+            new List<string> { "805" },
+            DateTimeOffset.Now,
+            DateTimeOffset.Now);
 
         // Act
         var response = await _client.PostAsJsonAsync(BaseUrl, batchRequest, CancellationToken.None);
