@@ -47,9 +47,11 @@ public class BatchTests
     {
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
-        Assert.Throws<ArgumentException>(() => new Batch(ProcessType.BalanceFixing, emptyGridAreaCodes, new Interval(
+        Assert.Throws<ArgumentException>(() => new Batch(
+            ProcessType.BalanceFixing,
+            emptyGridAreaCodes,
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
-            Instant.FromDateTimeOffset(DateTimeOffset.Now))));
+            Instant.FromDateTimeOffset(DateTimeOffset.Now)));
     }
 
     [Fact]

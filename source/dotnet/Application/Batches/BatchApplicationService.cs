@@ -102,8 +102,9 @@ public class BatchApplicationService : IBatchApplicationService
             WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
             _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
         };
-        var period = new Interval(Instant.FromDateTimeOffset(batchRequestDto.StartDate), Instant.FromDateTimeOffset(batchRequestDto.EndDate));
-        var batch = new Batch(processType, gridAreaCodes, period);
+        var periodStart = Instant.FromDateTimeOffset(batchRequestDto.StartDate);
+        var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
+        var batch = new Batch(processType, gridAreaCodes, periodStart, periodEnd);
         return batch;
     }
 

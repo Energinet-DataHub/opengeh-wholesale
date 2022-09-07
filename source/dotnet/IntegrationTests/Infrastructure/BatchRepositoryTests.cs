@@ -39,10 +39,10 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var period = new Interval(
-            Instant.FromUtc(2022, 5, 31, 22, 00),
-            Instant.FromUtc(2022, 6, 1, 22, 00));
-        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, period);
+        var periodStart = Instant.FromUtc(2022, 5, 31, 22, 00);
+        var periodEnd = Instant.FromUtc(2022, 6, 1, 22, 00);
+
+        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, periodStart, periodEnd);
         var sut = new BatchRepository(writeContext);
 
         // Act
