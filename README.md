@@ -9,13 +9,13 @@
 ## Table of content
 
 * [Wholesale](#wholesale)
-  * [Table of content](#table-of-content)
-  * [Introduction](#introduction)
-  * [Getting started](#getting-started)
-  * [Understanding the Domain](#understanding-the-domain)
-  * [Databricks](#databricks)
-  * [Test](#test)
-  * [Where can I get more help?](#where-can-i-get-more-help)
+    * [Table of content](#table-of-content)
+    * [Introduction](#introduction)
+    * [Getting started](#getting-started)
+    * [Understanding the Domain](#understanding-the-domain)
+    * [Databricks](#databricks)
+    * [Test](#test)
+    * [Where can I get more help?](#where-can-i-get-more-help)
 
 ## Introduction
 
