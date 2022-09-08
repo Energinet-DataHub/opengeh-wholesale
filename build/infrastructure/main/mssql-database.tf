@@ -27,7 +27,7 @@ module "mssqldb_wholesale" {
   server_id                   = data.azurerm_mssql_server.mssqlsrv.id
   log_analytics_workspace_id  = data.azurerm_key_vault_secret.log_shared_id.value
   sql_server_name             = data.azurerm_mssql_server.mssqlsrv.name
-  elastic_pool_id             = data.azurerm_key_vault_secret.mssql_data_elastic_pooling_id.value
+  elastic_pool_id             = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
   
   tags                        = azurerm_resource_group.this.tags
 }
