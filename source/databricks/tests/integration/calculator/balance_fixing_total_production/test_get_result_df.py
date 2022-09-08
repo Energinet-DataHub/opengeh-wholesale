@@ -50,14 +50,14 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
                 "Resolution": first_resolution,
                 "time": time,
                 "Quantity": first_quantity,
-                "Quality": TimeSeriesQuality.AsProvided.value,
+                "Quality": TimeSeriesQuality.asProvided.value,
             },
             {
                 "GridAreaCode": second_grid_area_code,
                 "Resolution": second_resolution,
                 "time": time2,
                 "Quantity": second_quantity,
-                "Quality": TimeSeriesQuality.AsProvided.value,
+                "Quality": TimeSeriesQuality.asProvided.value,
             },
         ]
 
@@ -71,7 +71,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
     def factory(
         resolution=Resolution.quarter.value,
         quantity=Decimal("1"),
-        quality=TimeSeriesQuality.AsProvided.value,
+        quality=TimeSeriesQuality.asProvided.value,
         gridArea="805",
     ):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
@@ -252,22 +252,22 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
     "quality_1, quality_2, quality_3, expected_quality",
     [
         (
-            TimeSeriesQuality.AsProvided.value,
-            TimeSeriesQuality.Estimated.value,
-            TimeSeriesQuality.Incomplete.value,
-            Quality.Incomplete.value,
+            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.incomplete.value,
+            Quality.incomplete.value,
         ),
         (
-            TimeSeriesQuality.AsProvided.value,
-            TimeSeriesQuality.Estimated.value,
-            TimeSeriesQuality.AsProvided.value,
-            Quality.Estimated.value,
+            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.asProvided.value,
+            Quality.estimated.value,
         ),
         (
-            TimeSeriesQuality.AsProvided.value,
-            TimeSeriesQuality.AsProvided.value,
-            TimeSeriesQuality.AsProvided.value,
-            Quality.Measured.value,
+            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.asProvided.value,
+            Quality.measured.value,
         ),
     ],
 )

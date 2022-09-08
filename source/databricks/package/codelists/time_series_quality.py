@@ -16,6 +16,6 @@ from enum import IntEnum
 
 
 class TimeSeriesQuality(IntEnum):
-    Estimated = 3
-    AsProvided = 4  # mapped to Measured in wholesale.
-    Incomplete = 5
+    estimated = 3
+    asProvided = 4  # mapped to Measured in wholesale.
+    incomplete = 5

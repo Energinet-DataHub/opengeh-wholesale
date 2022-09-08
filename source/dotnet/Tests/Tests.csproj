@@ -98,4 +98,10 @@ limitations under the License.
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\contracts\enums\quality.json">
+      <Link>Sender\Infrastructure\quality.json</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

@@ -16,6 +16,6 @@ from enum import IntEnum
 
 
 class Quality(IntEnum):
-    Measured = 0
-    Estimated = 1
-    Incomplete = 2
+    measured = 0
+    estimated = 1
+    incomplete = 2
