@@ -55,11 +55,11 @@ public class DocumentFactoryTests
                 <start>2022-06-30T22:00:00Z</start>
                 <end>2022-07-01T22:00:00Z</end>
             </timeInterval>
-             <Point>
-                 <position>1</position>
-                 <quantity>2.000</quantity>
-                 <quality>A04</quality>
-             </Point>
+            <Point>
+                <position>1</position>
+                <quantity>2.000</quantity>
+                <quality>A04</quality>
+            </Point>
         </Period>
     </Series>
 </NotifyAggregatedMeasureData_MarketDocument>";
@@ -97,7 +97,7 @@ public class DocumentFactoryTests
         // TODO: This doesn't correspond with the integer quality from Spark and we're missing a Quality enum
         // TODO: Unit test all combinations of quality
         // TODO: How do we make sure that quantity will have 3 decimals in result and in RSM-014 too?
-        var point = new PointDto(1, "2.000", "A04");
+        var point = new PointDto(1, "2.000", Quality.Measured);
 
         calculatedResultReaderMock
             .Setup(x => x.ReadResultAsync(It.IsAny<Process>()))

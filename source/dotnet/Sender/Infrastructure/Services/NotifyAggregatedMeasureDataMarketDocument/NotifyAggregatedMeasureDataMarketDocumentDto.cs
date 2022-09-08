@@ -59,6 +59,9 @@ public sealed record NotifyAggregatedMeasureDataMarketDocumentDto(
 
     [XmlElement("createdDateTime", Order = 8)]
     public string CreateDateTimeString { get; init; } = CreatedDateTime.ToString();
+
+    [XmlIgnore]
+    public static string Namespace => "urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1";
 }
 
 public sealed record ActorMRidDto([property: XmlText] string MRid)
@@ -72,7 +75,7 @@ public sealed record ActorMRidDto([property: XmlText] string MRid)
     }
 
     [XmlAttribute("codingScheme")]
-    public string CodingSchema { get; init; } = "A10";
+    public string CodingScheme { get; init; } = "A10";
 }
 
 public sealed record SeriesDto(
@@ -118,8 +121,8 @@ public sealed record MeteringGridAreaDomainMRid([property: XmlText] string GridA
     public MeteringGridAreaDomainMRid()
         : this(string.Empty) { }
 
-    [XmlAttribute("codingSchema")]
-    public string CodingSchema { get; init; } = "NDK";
+    [XmlAttribute("codingScheme")]
+    public string CodingScheme { get; init; } = "NDK";
 }
 
 public sealed record PeriodDto(

@@ -49,39 +49,84 @@ public class DocumentFactory : IDocumentFactory
 
     public async Task CreateAsync(DataBundleRequestDto request, Stream outputStream)
     {
+        var messageHubReference = await GetMessageHubReferenceAsync(request).ConfigureAwait(false);
+
+        var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
+        var balanceFixingResult = await _resultReader.ReadResultAsync(process).ConfigureAwait(false);
+
+        var document = CreateDocument(balanceFixingResult, process);
+        await SerializeDocumentAsXmlAsync(outputStream, document).ConfigureAwait(false);
+    }
+
+    private async Task<MessageHubReference> GetMessageHubReferenceAsync(DataBundleRequestDto request)
+    {
         var notificationIds = await _storageHandler
             .GetDataAvailableNotificationIdsAsync(request)
             .ConfigureAwait(false);
 
         // Currently bundling is not supported
         var notificationId = notificationIds.Single();
-
         var messageHubReference = new MessageHubReference(notificationId);
-        var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
+        return messageHubReference;
+    }
 
-        var result = await _resultReader.ReadResultAsync(process).ConfigureAwait(false);
+    private static async Task SerializeDocumentAsXmlAsync(
+        Stream outputStream,
+        NotifyAggregatedMeasureDataMarketDocumentDto document)
+    {
+        using var xmlWriter = XmlWriter.Create(
+            outputStream,
+            new XmlWriterSettings { Indent = true, Async = true, IndentChars = "    " });
 
-        var points = result.Points.Select(p => new NotifyAggregatedMeasureDataMarketDocument.PointDto(p.position, p.quantity, p.quality)).ToList();
+        var namespaces = new XmlSerializerNamespaces();
+        namespaces.Add(string.Empty, string.Empty); // Reset to avoid xsi and xsd
+
+        var serializer = new XmlSerializer(
+            typeof(NotifyAggregatedMeasureDataMarketDocumentDto),
+            NotifyAggregatedMeasureDataMarketDocumentDto.Namespace);
+        serializer.Serialize(xmlWriter, document, namespaces);
+
+        await xmlWriter.FlushAsync().ConfigureAwait(false);
+    }
+
+    private NotifyAggregatedMeasureDataMarketDocumentDto CreateDocument(BalanceFixingResultDto result, Process process)
+    {
+        var points = CreatePoints(result);
 
         var document = new NotifyAggregatedMeasureDataMarketDocumentDto(
             _documentIdGenerator.Create(),
             GetMdrGlnForGridArea(process.GridAreaCode),
             _clock.GetCurrentInstant(),
-            new SeriesDto(
-                _seriesIdGenerator.Create(),
-                process.GridAreaCode,
-                new PeriodDto(
-                    new TimeIntervalDto(CalculateTimeInterval().Start, CalculateTimeInterval().End),
-                    points)));
+            CreateSeries(process, points));
 
-        // TODO: Unit test that generated XML complies with the schema
-        using var xmlWriter = XmlWriter.Create(outputStream, new XmlWriterSettings { Indent = true, Async = true, IndentChars = "    " });
-        var namespaces = new XmlSerializerNamespaces();
-        namespaces.Add(string.Empty, string.Empty); // Reset to avoid xsi and xsd
-        var serializer = new XmlSerializer(typeof(NotifyAggregatedMeasureDataMarketDocumentDto), "urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1");
-        serializer.Serialize(xmlWriter, document, namespaces);
-        await xmlWriter.FlushAsync().ConfigureAwait(false);
+        return document;
     }
+
+    private SeriesDto CreateSeries(Process process, List<NotifyAggregatedMeasureDataMarketDocument.PointDto> points)
+    {
+        return new SeriesDto(
+            _seriesIdGenerator.Create(),
+            process.GridAreaCode,
+            new PeriodDto(
+                new TimeIntervalDto(CalculateTimeInterval().Start, CalculateTimeInterval().End),
+                points));
+    }
+
+    private static List<NotifyAggregatedMeasureDataMarketDocument.PointDto> CreatePoints(BalanceFixingResultDto result)
+    {
+        var points = result.Points
+            .Select(p => new NotifyAggregatedMeasureDataMarketDocument.PointDto(p.position, p.quantity, MapQuality(p.quality)))
+            .ToList();
+        return points;
+    }
+
+    private static string MapQuality(Quality quality) => quality switch
+    {
+        Quality.Estimated => "A03",
+        Quality.Measured => "A04",
+        Quality.Incomplete => "A05",
+        _ => throw new ArgumentException($"Invalid quality {quality}", nameof(quality)),
+    };
 
     private static string GetMdrGlnForGridArea(string gridAreaCode)
     {
