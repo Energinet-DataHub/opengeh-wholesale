@@ -159,7 +159,7 @@ public sealed record TimeIntervalDto([property: XmlIgnore] Instant Start, [prope
 public sealed record PointDto(
     [property: XmlElement("position", Order = 0)] int Position,
     [property: XmlElement("quantity", Order = 1)] string Quantity,
-    [property: XmlElement("quality", Order = 2)] string Quality)
+    [property: XmlElement("quality", Order = 2)] string? Quality)
 {
     /// <summary>
     /// Parameterless ctor is required to support serialization.

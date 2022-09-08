@@ -93,13 +93,11 @@ public class DocumentFactory : IDocumentFactory
     {
         var points = CreatePoints(result);
 
-        var document = new NotifyAggregatedMeasureDataMarketDocumentDto(
+        return new NotifyAggregatedMeasureDataMarketDocumentDto(
             _documentIdGenerator.Create(),
             GetMdrGlnForGridArea(process.GridAreaCode),
             _clock.GetCurrentInstant(),
             CreateSeries(process, points));
-
-        return document;
     }
 
     private SeriesDto CreateSeries(Process process, List<NotifyAggregatedMeasureDataMarketDocument.PointDto> points)
@@ -114,29 +112,23 @@ public class DocumentFactory : IDocumentFactory
 
     private static List<NotifyAggregatedMeasureDataMarketDocument.PointDto> CreatePoints(BalanceFixingResultDto result)
     {
-        var points = result.Points
-            .Select(p => new NotifyAggregatedMeasureDataMarketDocument.PointDto(p.position, p.quantity, MapQuality(p.quality)))
+        return result.Points
+            .Select(
+                p => new NotifyAggregatedMeasureDataMarketDocument.PointDto(
+                    p.position,
+                    p.quantity,
+                    p.quality == Quality.Measured ? null : QualityMapper.MapToCim(p.quality)))
             .ToList();
-        return points;
     }
-
-    private static string MapQuality(Quality quality) => quality switch
-    {
-        Quality.Estimated => "A03",
-        Quality.Measured => "A04",
-        Quality.Incomplete => "A05",
-        _ => throw new ArgumentException($"Invalid quality {quality}", nameof(quality)),
-    };
 
     private static string GetMdrGlnForGridArea(string gridAreaCode)
     {
-        var gln = gridAreaCode switch
+        return gridAreaCode switch
         {
             "805" => "8200000007739",
             "806" => "8200000007746",
             _ => throw new NotImplementedException("Only test grid areas 805 and 806 are supported."),
         };
-        return gln;
     }
 
     private static Interval CalculateTimeInterval()

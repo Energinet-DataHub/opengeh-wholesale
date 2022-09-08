@@ -31,7 +31,7 @@ namespace Energinet.DataHub.Wholesale.Tests.Sender.Infrastructure.Services;
 [UnitTest]
 public class DocumentFactoryTests
 {
-    private const string Expected = @"<?xml version=""1.0"" encoding=""utf-8""?>
+    private const string ExpectedWhenQualityMeasured = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <NotifyAggregatedMeasureData_MarketDocument xmlns=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"">
     <mRID>f0de3417-71ce-426e-9001-12600da9102a</mRID>
     <type>E31</type>
@@ -58,18 +58,53 @@ public class DocumentFactoryTests
             <Point>
                 <position>1</position>
                 <quantity>2.000</quantity>
-                <quality>A04</quality>
+            </Point>
+        </Period>
+    </Series>
+</NotifyAggregatedMeasureData_MarketDocument>";
+
+    private const string ExpectedWhenQualityNotMeasured = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<NotifyAggregatedMeasureData_MarketDocument xmlns=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"">
+    <mRID>f0de3417-71ce-426e-9001-12600da9102a</mRID>
+    <type>E31</type>
+    <process.processType>D04</process.processType>
+    <businessSector.type>23</businessSector.type>
+    <sender_MarketParticipant.mRID codingScheme=""A10"">5790001330552</sender_MarketParticipant.mRID>
+    <sender_MarketParticipant.marketRole.type>DGL</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme=""A10"">8200000007739</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.marketRole.type>MDR</receiver_MarketParticipant.marketRole.type>
+    <createdDateTime>2022-07-04T08:05:30Z</createdDateTime>
+    <Series>
+        <mRID>1B8E673E-DBBD-4611-87A9-C7154937786A</mRID>
+        <version>1</version>
+        <marketEvaluationPoint.type>E18</marketEvaluationPoint.type>
+        <meteringGridArea_Domain.mRID codingScheme=""NDK"">805</meteringGridArea_Domain.mRID>
+        <product>8716867000030</product>
+        <quantity_Measure_Unit.name>KWH</quantity_Measure_Unit.name>
+        <Period>
+            <resolution>PT15M</resolution>
+            <timeInterval>
+                <start>2022-06-30T22:00:00Z</start>
+                <end>2022-07-01T22:00:00Z</end>
+            </timeInterval>
+            <Point>
+                <position>1</position>
+                <quantity>2.000</quantity>
+                <quality>A05</quality>
             </Point>
         </Period>
     </Series>
 </NotifyAggregatedMeasureData_MarketDocument>";
 
     /// <summary>
-    /// Verifies the current completeness state of the document creation.
+    /// Point quality element must be omitted when quality is measured.
     /// </summary>
     [Theory]
-    [InlineAutoMoqData]
+    [InlineAutoMoqData(Quality.Incomplete, ExpectedWhenQualityNotMeasured)]
+    [InlineAutoMoqData(Quality.Measured, ExpectedWhenQualityMeasured)]
     public async Task CreateAsync_ReturnsRsm014(
+        Quality quality,
+        string expected,
         DataBundleRequestDto request,
         Guid anyNotificationId,
         [Frozen] Mock<ICalculatedResultReader> calculatedResultReaderMock,
@@ -94,10 +129,7 @@ public class DocumentFactoryTests
             .Setup(repository => repository.GetAsync(It.IsAny<MessageHubReference>()))
             .ReturnsAsync((MessageHubReference messageHubRef) => new Process(messageHubRef, anyGridAreaCode, Guid.NewGuid()));
 
-        // TODO: This doesn't correspond with the integer quality from Spark and we're missing a Quality enum
-        // TODO: Unit test all combinations of quality
-        // TODO: How do we make sure that quantity will have 3 decimals in result and in RSM-014 too?
-        var point = new PointDto(1, "2.000", Quality.Measured);
+        var point = new PointDto(1, "2.000", quality);
 
         calculatedResultReaderMock
             .Setup(x => x.ReadResultAsync(It.IsAny<Process>()))
@@ -123,6 +155,6 @@ public class DocumentFactoryTests
         using var stringReader = new StreamReader(outStream);
         var actual = await stringReader.ReadToEndAsync();
 
-        actual.Replace("\r\n", "\n").Should().Be(Expected);
+        actual.Replace("\r", string.Empty).Should().Be(expected);
     }
 }
