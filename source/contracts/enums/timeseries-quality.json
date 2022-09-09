@@ -1,0 +1,16 @@
+{
+  "literals": [
+    {
+      "name": "asProvided",
+      "value": 4
+    },
+    {
+      "name": "estimated",
+      "value": 3
+    },
+    {
+      "name": "incomplete",
+      "value": 5
+    }
+  ]
+}
