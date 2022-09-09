@@ -108,7 +108,7 @@ def start():
         args.time_series_points_path
     )
 
-    output_df = calculate_balance_fixing_total_production(
+    (result_df, timeseries_basis_data) = calculate_balance_fixing_total_production(
         raw_integration_events_df,
         raw_time_series_points_df,
         args.batch_id,
@@ -117,12 +117,13 @@ def start():
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
     )
-
+    debug("timeseries basis data df", timeseries_basis_data)
+    debug("raw_timeseries", raw_time_series_points_df)
     # First repartition to co-locate all rows for a grid area on a single executor.
     # This ensures that only one file is being written/created for each grid area
     # when writing/creating the files. The partition by creates a folder for each grid area.
     (
-        output_df.withColumnRenamed("GridAreaCode", "grid_area")
+        result_df.withColumnRenamed("GridAreaCode", "grid_area")
         .withColumnRenamed("Quantity", "quantity")
         .withColumn("quantity", col("quantity").cast("string"))
         .repartition("grid_area")

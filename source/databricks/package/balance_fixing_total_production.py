@@ -25,6 +25,7 @@ from pyspark.sql.functions import (
     last,
     coalesce,
     explode,
+    collect_list,
 )
 from pyspark.sql.types import (
     IntegerType,
@@ -78,11 +79,25 @@ def calculate_balance_fixing_total_production(
         period_start_datetime,
         period_end_datetime,
     )
-
+    time_series_basis_data = _get_time_series_basis_data(enriched_time_series_point_df)
     result_df = _get_result_df(enriched_time_series_point_df)
     cached_integration_events_df.unpersist()
 
-    return result_df
+    return (result_df, time_series_basis_data)
+
+
+def _get_time_series_basis_data(enriched_time_series_point_df):
+    timeseries_basis_data = (
+        enriched_time_series_point_df.groupBy("gsrnNumber")
+        .pivot("time")
+        .sum("Quantity")
+    )
+    # .groupBy("gsrnNumber").agg(
+    #    collect_list("time")
+    # )
+
+    debug("enriched_time_series_point_df", timeseries_basis_data)
+    return timeseries_basis_data
 
 
 def _get_cached_integration_events(
@@ -233,7 +248,13 @@ def _get_metering_point_periods_df(
         grid_area_df,
         metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
         "inner",
-    ).select("GsrnNumber", "GridAreaCode", "EffectiveDate", "toEffectiveDate")
+    ).select(
+        "GsrnNumber",
+        "GridAreaCode",
+        "EffectiveDate",
+        "toEffectiveDate",
+        "MeteringPointType",
+    )
 
     log(
         "Metering point periods",
@@ -283,9 +304,7 @@ def _get_enriched_time_series_points_df(
         ),
     )
 
-    timeseries_df = timeseries_df.select(
-        col("GsrnNumber"), "time", "Quantity", "Resolution"
-    )
+    timeseries_df = timeseries_df.select("GsrnNumber", "time", "Quantity", "Resolution")
 
     enriched_time_series_point_df = timeseries_df.join(
         metering_point_period_df,
@@ -296,6 +315,7 @@ def _get_enriched_time_series_points_df(
     ).select(
         "GridAreaCode",
         metering_point_period_df["GsrnNumber"],
+        metering_point_period_df["MeteringPointType"],
         "Resolution",
         "time",
         "Quantity",
