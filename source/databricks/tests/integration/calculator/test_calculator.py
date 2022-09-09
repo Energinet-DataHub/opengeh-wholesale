@@ -198,6 +198,12 @@ def test_calculator_job_input_and_output_integration_test(
         result_805.schema,
     )
 
+    # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
+    # Note that any change or violation may impact consumers that expects exactly this precision from the result
+    import re
+
+    assert re.search(r"^\d+\.\d{3}$", result_805.first().quantity)
+
     # Assert: Relative path of result file must match expectation of .NET
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
     expected_result_path = f"{data_lake_path}/results/batch_id=1/grid_area=805"
