@@ -121,6 +121,7 @@ public class DocumentFactoryTests
         MockServices(
             request,
             anyNotificationId,
+            quality,
             calculatedResultReaderMock,
             documentIdGeneratorMock,
             seriesIdGeneratorMock,
@@ -146,10 +147,14 @@ public class DocumentFactoryTests
 
     /// <summary>
     /// Verifies the document parses schema validation.
+    /// Tested with both measured and a non-measured quality as it changes whether the point quality
+    /// element is included in the message.
     /// </summary>
     [Theory]
-    [InlineAutoMoqData]
+    [InlineAutoMoqData(Quality.Measured)]
+    [InlineAutoMoqData(Quality.Estimated)]
     public async Task CreateAsync_ReturnsSchemaCompliantRsm014(
+        Quality quality,
         DataBundleRequestDto request,
         Guid anyNotificationId,
         [Frozen] Mock<ICalculatedResultReader> calculatedResultReaderMock,
@@ -164,6 +169,7 @@ public class DocumentFactoryTests
         MockServices(
             request,
             anyNotificationId,
+            quality,
             calculatedResultReaderMock,
             documentIdGeneratorMock,
             seriesIdGeneratorMock,
@@ -185,6 +191,7 @@ public class DocumentFactoryTests
     private static void MockServices(
         DataBundleRequestDto request,
         Guid anyNotificationId,
+        Quality quality,
         Mock<ICalculatedResultReader> calculatedResultReaderMock,
         Mock<IDocumentIdGenerator> documentIdGeneratorMock,
         Mock<ISeriesIdGenerator> seriesIdGeneratorMock,
