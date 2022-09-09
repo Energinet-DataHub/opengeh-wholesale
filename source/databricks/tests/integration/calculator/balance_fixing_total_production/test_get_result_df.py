@@ -17,7 +17,7 @@ import os
 import shutil
 import pytest
 import json
-from package.codelists import Resolution
+from package.codelists import Resolution, TimeSeriesQuality, Quality
 from decimal import Decimal
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_result_df
@@ -50,12 +50,14 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
                 "Resolution": first_resolution,
                 "time": time,
                 "Quantity": first_quantity,
+                "Quality": TimeSeriesQuality.asProvided.value,
             },
             {
                 "GridAreaCode": second_grid_area_code,
                 "Resolution": second_resolution,
                 "time": time2,
                 "Quantity": second_quantity,
+                "Quality": TimeSeriesQuality.asProvided.value,
             },
         ]
 
@@ -67,7 +69,10 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
 @pytest.fixture
 def enriched_time_series_factory(spark, timestamp_factory):
     def factory(
-        resolution=Resolution.quarter.value, quantity=Decimal("1"), gridArea="805"
+        resolution=Resolution.quarter.value,
+        quantity=Decimal("1"),
+        quality=TimeSeriesQuality.asProvided.value,
+        gridArea="805",
     ):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
@@ -78,9 +83,9 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 "GridAreaLinkId": "GridAreaLinkId",
                 "time": time,
                 "Quantity": quantity,
+                "Quality": quality,
             }
         ]
-
         return spark.createDataFrame(df)
 
     return factory
@@ -241,3 +246,38 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
 
     assert result_df.count() == 4
     assert result_df.where(col("Quantity") == "100000000000.001").count() == 4
+
+
+@pytest.mark.parametrize(
+    "quality_1, quality_2, quality_3, expected_quality",
+    [
+        (
+            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.incomplete.value,
+            Quality.incomplete.value,
+        ),
+        (
+            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.asProvided.value,
+            Quality.estimated.value,
+        ),
+        (
+            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.asProvided.value,
+            Quality.measured.value,
+        ),
+    ],
+)
+def test__quality_is_lowest_common_denominator_among_Measured_estimated_and_incomplete(
+    enriched_time_series_factory, quality_1, quality_2, quality_3, expected_quality
+):
+    df = (
+        enriched_time_series_factory(quality=quality_1)
+        .union(enriched_time_series_factory(quality=quality_2))
+        .union(enriched_time_series_factory(quality=quality_3))
+    )
+    result_df = _get_result_df(df)
+    assert result_df.first().quality == expected_quality
