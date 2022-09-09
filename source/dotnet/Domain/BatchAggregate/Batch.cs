@@ -22,7 +22,7 @@ public class Batch
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
 
-    public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes, Instant periodStart, Instant periodEnd)
+    public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes, Interval period)
         : this()
     {
         Id = new BatchId();
@@ -33,8 +33,7 @@ public class Batch
         if (!_gridAreaCodes.Any())
             throw new ArgumentException("Batch must contain at least one grid area code.");
 
-        PeriodStart = periodStart;
-        PeriodEnd = periodEnd;
+        Period = period;
     }
 
     /// <summary>
@@ -56,6 +55,8 @@ public class Batch
     public BatchExecutionState ExecutionState { get; private set; }
 
     public JobRunId? RunId { get; private set; }
+
+    public Interval Period { get; private set; }
 
     public Instant PeriodStart { get; }
 

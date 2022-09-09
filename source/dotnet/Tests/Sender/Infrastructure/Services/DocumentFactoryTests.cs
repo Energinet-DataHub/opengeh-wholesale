@@ -241,8 +241,7 @@ public class DocumentFactoryTests
         var batch = new Batch(
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("805") },
-            periodStart,
-            periodEnd);
+            new Interval(periodStart, periodEnd));
         batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
     }
 }
