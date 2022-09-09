@@ -17,7 +17,6 @@ from pyspark.sql import DataFrame
 
 
 def _log(level: str, message: str, df: DataFrame):
-    return
     print(f"============ {level} ============")
     # Frame 2 because: 1 is the calling function in this module, 2 is the caller of the functions in the module
     frame = stack()[2]
