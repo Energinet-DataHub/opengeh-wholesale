@@ -61,11 +61,13 @@ public class BatchControllerTests :
     public async Task CreateAsync_WhenCalled_AlwaysReturnsOk()
     {
         // Arrange
+        var periodStart = DateTimeOffset.Now;
+        var periodEnd = periodStart.AddHours(1);
         var batchRequest = new BatchRequestDto(
             WholesaleProcessType.BalanceFixing,
             new List<string> { "805" },
-            DateTimeOffset.Now,
-            DateTimeOffset.Now);
+            periodStart,
+            periodEnd);
 
         // Act
         var response = await _client.PostAsJsonAsync(BaseUrl, batchRequest, CancellationToken.None);
