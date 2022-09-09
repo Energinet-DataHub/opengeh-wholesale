@@ -58,7 +58,7 @@ public class DocumentFactory : IDocumentFactory
         var balanceFixingResult = await _resultReader.ReadResultAsync(process).ConfigureAwait(false);
         var batch = await _batchRepository.GetAsync(process.BatchId).ConfigureAwait(false);
 
-        var document = CreateDocument(balanceFixingResult, process, new Interval(batch.PeriodStart, batch.PeriodEnd));
+        var document = CreateDocument(balanceFixingResult, process, batch.Period);
         await SerializeDocumentAsXmlAsync(outputStream, document).ConfigureAwait(false);
     }
 
