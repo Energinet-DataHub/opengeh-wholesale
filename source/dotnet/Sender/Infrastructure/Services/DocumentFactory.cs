@@ -16,6 +16,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using NodaTime;
 
@@ -28,6 +29,7 @@ public class DocumentFactory : IDocumentFactory
     private readonly IClock _clock;
     private readonly IDocumentIdGenerator _documentIdGenerator;
     private readonly ISeriesIdGenerator _seriesIdGenerator;
+    private readonly IBatchRepository _batchRepository;
     private readonly ICalculatedResultReader _resultReader;
 
     public DocumentFactory(
@@ -36,7 +38,8 @@ public class DocumentFactory : IDocumentFactory
         IStorageHandler storageHandler,
         IClock clock,
         IDocumentIdGenerator documentIdGenerator,
-        ISeriesIdGenerator seriesIdGenerator)
+        ISeriesIdGenerator seriesIdGenerator,
+        IBatchRepository batchRepository)
     {
         _resultReader = resultReader;
         _processRepository = processRepository;
@@ -44,6 +47,7 @@ public class DocumentFactory : IDocumentFactory
         _clock = clock;
         _documentIdGenerator = documentIdGenerator;
         _seriesIdGenerator = seriesIdGenerator;
+        _batchRepository = batchRepository;
     }
 
     public async Task CreateAsync(DataBundleRequestDto request, Stream outputStream)
@@ -52,8 +56,10 @@ public class DocumentFactory : IDocumentFactory
 
         var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
         var balanceFixingResult = await _resultReader.ReadResultAsync(process).ConfigureAwait(false);
+        var batch = await _batchRepository.GetAsync(process.BatchId).ConfigureAwait(false);
+        var interval = new Interval(batch.PeriodStart, batch.PeriodEnd);
 
-        var document = CreateDocument(balanceFixingResult, process);
+        var document = CreateDocument(balanceFixingResult, process, interval);
         await SerializeDocumentAsXmlAsync(outputStream, document).ConfigureAwait(false);
     }
 
@@ -88,7 +94,7 @@ public class DocumentFactory : IDocumentFactory
         await xmlWriter.FlushAsync().ConfigureAwait(false);
     }
 
-    private Rsm014Dto CreateDocument(BalanceFixingResultDto result, Process process)
+    private Rsm014Dto CreateDocument(BalanceFixingResultDto result, Process process, Interval interval)
     {
         var points = CreatePoints(result);
 
@@ -96,16 +102,16 @@ public class DocumentFactory : IDocumentFactory
             _documentIdGenerator.Create(),
             GetMdrGlnForGridArea(process.GridAreaCode),
             _clock.GetCurrentInstant(),
-            CreateSeries(process, points));
+            CreateSeries(process, points, interval));
     }
 
-    private Rsm014Dto.SeriesDto CreateSeries(Process process, List<Rsm014Dto.Point> points)
+    private Rsm014Dto.SeriesDto CreateSeries(Process process, List<Rsm014Dto.Point> points, Interval interval)
     {
         return new Rsm014Dto.SeriesDto(
             _seriesIdGenerator.Create(),
             process.GridAreaCode,
             new Rsm014Dto.Period(
-                new Rsm014Dto.TimeInterval(CalculateTimeInterval().Start, CalculateTimeInterval().End),
+                new Rsm014Dto.TimeInterval(interval.Start, interval.End),
                 points));
     }
 
@@ -128,21 +134,5 @@ public class DocumentFactory : IDocumentFactory
             "806" => "8200000007746",
             _ => throw new NotImplementedException("Only test grid areas 805 and 806 are supported."),
         };
-    }
-
-    private static Interval CalculateTimeInterval()
-    {
-        var localDate = new LocalDate(2022, 06, 01);
-
-        // These values should be provided by the calculator once they have been computed.
-        var from = localDate;
-        var to = localDate.PlusDays(1);
-
-        var targetTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
-
-        var fromInstant = from.AtMidnight().InZoneStrictly(targetTimeZone).ToInstant();
-        var toInstant = to.AtMidnight().InZoneStrictly(targetTimeZone).ToInstant();
-
-        return new Interval(fromInstant, toInstant);
     }
 }
