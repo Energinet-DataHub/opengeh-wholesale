@@ -89,13 +89,8 @@ public class DocumentFactoryTests
             documentIdGeneratorMock,
             seriesIdGeneratorMock,
             processRepositoryMock,
-            storageHandlerMock);
-
-        const string expectedIsoString = "2022-07-04T08:05:30Z";
-        var instant = InstantPattern.General.Parse(expectedIsoString).Value;
-        clockMock
-            .Setup(clock => clock.GetCurrentInstant())
-            .Returns(instant);
+            storageHandlerMock,
+            clockMock);
 
         await using var outStream = new MemoryStream();
 
@@ -137,13 +132,8 @@ public class DocumentFactoryTests
             documentIdGeneratorMock,
             seriesIdGeneratorMock,
             processRepositoryMock,
-            storageHandlerMock);
-
-        const string expectedIsoString = "2022-07-04T08:05:30Z";
-        var instant = InstantPattern.General.Parse(expectedIsoString).Value;
-        clockMock
-            .Setup(clock => clock.GetCurrentInstant())
-            .Returns(instant);
+            storageHandlerMock,
+            clockMock);
 
         await using var outStream = new MemoryStream();
 
@@ -163,7 +153,8 @@ public class DocumentFactoryTests
         Mock<IDocumentIdGenerator> documentIdGeneratorMock,
         Mock<ISeriesIdGenerator> seriesIdGeneratorMock,
         Mock<IProcessRepository> processRepositoryMock,
-        Mock<IStorageHandler> storageHandlerMock)
+        Mock<IStorageHandler> storageHandlerMock,
+        Mock<IClock> clockMock)
     {
         documentIdGeneratorMock
             .Setup(generator => generator.Create())
@@ -188,5 +179,11 @@ public class DocumentFactoryTests
         storageHandlerMock
             .Setup(handler => handler.GetDataAvailableNotificationIdsAsync(request))
             .ReturnsAsync(new[] { anyNotificationId });
+
+        const string expectedIsoString = "2022-07-04T08:05:30Z";
+        var instant = InstantPattern.General.Parse(expectedIsoString).Value;
+        clockMock
+            .Setup(clock => clock.GetCurrentInstant())
+            .Returns(instant);
     }
 }
