@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.Schemas;
+using Energinet.DataHub.Core.SchemaValidation;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
@@ -80,6 +82,89 @@ public class DocumentFactoryTests
         DocumentFactory sut)
     {
         // Arrange
+        MockServices(
+            request,
+            anyNotificationId,
+            calculatedResultReaderMock,
+            documentIdGeneratorMock,
+            seriesIdGeneratorMock,
+            processRepositoryMock,
+            storageHandlerMock);
+
+        const string expectedIsoString = "2022-07-04T08:05:30Z";
+        var instant = InstantPattern.General.Parse(expectedIsoString).Value;
+        clockMock
+            .Setup(clock => clock.GetCurrentInstant())
+            .Returns(instant);
+
+        await using var outStream = new MemoryStream();
+
+        // Act
+        await sut.CreateAsync(request, outStream);
+        outStream.Position = 0;
+
+        // Assert
+        using var stringReader = new StreamReader(outStream);
+
+        var actual = await stringReader.ReadToEndAsync();
+
+        actual.Should().Be(Expected);
+        var reader = new SchemaValidatingReader(outStream, Schemas.CimXml.MeasureNotifyAggregatedMeasureData);
+        Assert.False(reader.HasErrors);
+    }
+
+    /// <summary>
+    /// Verifies the document parses schema validation.
+    /// </summary>
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task CreateAsync_ReturnsSchemaCompliantRsm014(
+        DataBundleRequestDto request,
+        Guid anyNotificationId,
+        [Frozen] Mock<ICalculatedResultReader> calculatedResultReaderMock,
+        [Frozen] Mock<IDocumentIdGenerator> documentIdGeneratorMock,
+        [Frozen] Mock<ISeriesIdGenerator> seriesIdGeneratorMock,
+        [Frozen] Mock<IProcessRepository> processRepositoryMock,
+        [Frozen] Mock<IStorageHandler> storageHandlerMock,
+        [Frozen] Mock<IClock> clockMock,
+        DocumentFactory sut)
+    {
+        // Arrange
+        MockServices(
+            request,
+            anyNotificationId,
+            calculatedResultReaderMock,
+            documentIdGeneratorMock,
+            seriesIdGeneratorMock,
+            processRepositoryMock,
+            storageHandlerMock);
+
+        const string expectedIsoString = "2022-07-04T08:05:30Z";
+        var instant = InstantPattern.General.Parse(expectedIsoString).Value;
+        clockMock
+            .Setup(clock => clock.GetCurrentInstant())
+            .Returns(instant);
+
+        await using var outStream = new MemoryStream();
+
+        // Act
+        await sut.CreateAsync(request, outStream);
+        outStream.Position = 0;
+
+        // Assert
+        var reader = new SchemaValidatingReader(outStream, Schemas.CimXml.MeasureNotifyAggregatedMeasureData);
+        Assert.False(reader.HasErrors);
+    }
+
+    private static void MockServices(
+        DataBundleRequestDto request,
+        Guid anyNotificationId,
+        Mock<ICalculatedResultReader> calculatedResultReaderMock,
+        Mock<IDocumentIdGenerator> documentIdGeneratorMock,
+        Mock<ISeriesIdGenerator> seriesIdGeneratorMock,
+        Mock<IProcessRepository> processRepositoryMock,
+        Mock<IStorageHandler> storageHandlerMock)
+    {
         documentIdGeneratorMock
             .Setup(generator => generator.Create())
             .Returns("f0de3417-71ce-426e-9001-12600da9102a");
@@ -91,7 +176,8 @@ public class DocumentFactoryTests
         var anyGridAreaCode = "805";
         processRepositoryMock
             .Setup(repository => repository.GetAsync(It.IsAny<MessageHubReference>()))
-            .ReturnsAsync((MessageHubReference messageHubRef) => new Process(messageHubRef, anyGridAreaCode, Guid.NewGuid()));
+            .ReturnsAsync(
+                (MessageHubReference messageHubRef) => new Process(messageHubRef, anyGridAreaCode, Guid.NewGuid()));
 
         var point = new PointDto(1, "2");
 
@@ -102,23 +188,5 @@ public class DocumentFactoryTests
         storageHandlerMock
             .Setup(handler => handler.GetDataAvailableNotificationIdsAsync(request))
             .ReturnsAsync(new[] { anyNotificationId });
-
-        const string expectedIsoString = "2022-07-04T08:05:30Z";
-        var instant = InstantPattern.General.Parse(expectedIsoString).Value;
-        clockMock
-            .Setup(clock => clock.GetCurrentInstant())
-            .Returns(instant);
-
-        using var outStream = new MemoryStream();
-
-        // Act
-        await sut.CreateAsync(request, outStream);
-        outStream.Position = 0;
-
-        // Assert
-        using var stringReader = new StreamReader(outStream);
-        var actual = await stringReader.ReadToEndAsync();
-
-        actual.Should().Be(Expected);
     }
 }
