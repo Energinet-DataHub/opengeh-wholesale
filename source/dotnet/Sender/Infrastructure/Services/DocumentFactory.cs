@@ -15,6 +15,7 @@
 using System.Text;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using NodaTime;
 
@@ -53,16 +54,17 @@ public class DocumentFactory : IDocumentFactory
 </cim:NotifyAggregatedMeasureData_MarketDocument>";
 
     private const string PointTemplate = @"
-                 <cim:Point>
-                     <cim:position>{position}</cim:position>
-                     <cim:quantity>{quantity}</cim:quantity>
-                 </cim:Point>";
+<cim:Point>
+    <cim:position>{position}</cim:position>
+    <cim:quantity>{quantity}</cim:quantity>
+</cim:Point>";
 
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;
     private readonly IClock _clock;
     private readonly IDocumentIdGenerator _documentIdGenerator;
     private readonly ISeriesIdGenerator _seriesIdGenerator;
+    private readonly IBatchRepository _batchRepository;
     private readonly ICalculatedResultReader _resultReader;
 
     public DocumentFactory(
@@ -71,7 +73,8 @@ public class DocumentFactory : IDocumentFactory
         IStorageHandler storageHandler,
         IClock clock,
         IDocumentIdGenerator documentIdGenerator,
-        ISeriesIdGenerator seriesIdGenerator)
+        ISeriesIdGenerator seriesIdGenerator,
+        IBatchRepository batchRepository)
     {
         _resultReader = resultReader;
         _processRepository = processRepository;
@@ -79,6 +82,7 @@ public class DocumentFactory : IDocumentFactory
         _clock = clock;
         _documentIdGenerator = documentIdGenerator;
         _seriesIdGenerator = seriesIdGenerator;
+        _batchRepository = batchRepository;
     }
 
     public async Task CreateAsync(DataBundleRequestDto request, Stream outputStream)
@@ -92,6 +96,8 @@ public class DocumentFactory : IDocumentFactory
 
         var messageHubReference = new MessageHubReference(notificationId);
         var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
+        var batchId = process.BatchId;
+        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
 
         var result = await _resultReader.ReadResultAsync(process).ConfigureAwait(false);
 
@@ -100,8 +106,8 @@ public class DocumentFactory : IDocumentFactory
             .Replace("{seriesId}", _seriesIdGenerator.Create())
             .Replace("{recipientGln}", GetMdrGlnForGridArea(process.GridAreaCode))
             .Replace("{createdDateTime}", _clock.GetCurrentInstant().ToString())
-            .Replace("{timeIntervalFrom}", CalculateTimeInterval().Start.ToString())
-            .Replace("{timeIntervalTo}", CalculateTimeInterval().End.ToString())
+            .Replace("{timeIntervalFrom}", batch.PeriodStart.ToString())
+            .Replace("{timeIntervalTo}", batch.PeriodEnd.ToString())
             .Replace("{points}", CreatePoints(result))
             .Replace("{gridArea}", process.GridAreaCode);
 
@@ -130,22 +136,6 @@ public class DocumentFactory : IDocumentFactory
             _ => throw new NotImplementedException("Only test grid areas 805 and 806 are supported."),
         };
         return gln;
-    }
-
-    private static Interval CalculateTimeInterval()
-    {
-        var localDate = new LocalDate(2022, 07, 01);
-
-        // These values should be provided by the calculator once they have been computed.
-        var from = localDate;
-        var to = localDate.PlusDays(1);
-
-        var targetTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
-
-        var fromInstant = from.AtMidnight().InZoneStrictly(targetTimeZone).ToInstant();
-        var toInstant = to.AtMidnight().InZoneStrictly(targetTimeZone).ToInstant();
-
-        return new Interval(fromInstant, toInstant);
     }
 
     private static async Task WriteToStreamAsync(string s, Stream outputStream)
