@@ -123,7 +123,6 @@ def start():
     # when writing/creating the files. The partition by creates a folder for each grid area.
     (
         output_df.withColumnRenamed("GridAreaCode", "grid_area")
-        .withColumnRenamed("Quantity", "quantity")
         .withColumn("quantity", col("quantity").cast("string"))
         .repartition("grid_area")
         .write.mode("overwrite")

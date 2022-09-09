@@ -7,6 +7,10 @@
       {
         "name": "quantity",
         "type": "string"
+      },
+      {
+        "name": "quality",
+        "type": "long"
       }
     ]
   }

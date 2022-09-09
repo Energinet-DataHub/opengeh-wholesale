@@ -33,44 +33,80 @@ namespace Energinet.DataHub.Wholesale.Tests.Sender.Infrastructure.Services;
 [UnitTest]
 public class DocumentFactoryTests
 {
-    private const string Expected = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<cim:NotifyAggregatedMeasureData_MarketDocument xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:cim=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"" xsi:schemaLocation=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1 urn-ediel-org-measure-notifyaggregatedmeasuredata-0-1.xsd"">
-    <cim:mRID>f0de3417-71ce-426e-9001-12600da9102a</cim:mRID>
-    <cim:type>E31</cim:type>
-    <cim:process.processType>D04</cim:process.processType>
-    <cim:businessSector.type>23</cim:businessSector.type>
-    <cim:sender_MarketParticipant.mRID codingScheme=""A10"">5790001330552</cim:sender_MarketParticipant.mRID>
-    <cim:sender_MarketParticipant.marketRole.type>DGL</cim:sender_MarketParticipant.marketRole.type>
-    <cim:receiver_MarketParticipant.mRID codingScheme=""A10"">8200000007739</cim:receiver_MarketParticipant.mRID>
-    <cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
-    <cim:createdDateTime>2022-07-04T08:05:30Z</cim:createdDateTime>
-    <cim:Series>
-        <cim:mRID>1B8E673E-DBBD-4611-87A9-C7154937786A</cim:mRID>
-        <cim:version>1</cim:version>
-        <cim:marketEvaluationPoint.type>E18</cim:marketEvaluationPoint.type>
-        <cim:meteringGridArea_Domain.mRID codingScheme=""NDK"">805</cim:meteringGridArea_Domain.mRID>
-        <cim:product>8716867000030</cim:product>
-        <cim:quantity_Measure_Unit.name>KWH</cim:quantity_Measure_Unit.name>
-            <cim:Period>
-                <cim:resolution>PT15M</cim:resolution>
-                <cim:timeInterval>
-                    <cim:start>2022-06-30T22:00:00Z</cim:start>
-                    <cim:end>2022-07-01T22:00:00Z</cim:end>
-                </cim:timeInterval>
-                 <cim:Point>
-                     <cim:position>1</cim:position>
-                     <cim:quantity>2</cim:quantity>
-                 </cim:Point>
-            </cim:Period>
-    </cim:Series>
-</cim:NotifyAggregatedMeasureData_MarketDocument>";
+    private const string ExpectedWhenQualityMeasured = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<NotifyAggregatedMeasureData_MarketDocument xmlns=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"">
+    <mRID>f0de3417-71ce-426e-9001-12600da9102a</mRID>
+    <type>E31</type>
+    <process.processType>D04</process.processType>
+    <businessSector.type>23</businessSector.type>
+    <sender_MarketParticipant.mRID codingScheme=""A10"">5790001330552</sender_MarketParticipant.mRID>
+    <sender_MarketParticipant.marketRole.type>DGL</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme=""A10"">8200000007739</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.marketRole.type>MDR</receiver_MarketParticipant.marketRole.type>
+    <createdDateTime>2022-07-04T08:05:30Z</createdDateTime>
+    <Series>
+        <mRID>1B8E673E-DBBD-4611-87A9-C7154937786A</mRID>
+        <version>1</version>
+        <marketEvaluationPoint.type>E18</marketEvaluationPoint.type>
+        <meteringGridArea_Domain.mRID codingScheme=""NDK"">805</meteringGridArea_Domain.mRID>
+        <product>8716867000030</product>
+        <quantity_Measure_Unit.name>KWH</quantity_Measure_Unit.name>
+        <Period>
+            <resolution>PT15M</resolution>
+            <timeInterval>
+                <start>2022-05-31T22:00:00Z</start>
+                <end>2022-06-01T22:00:00Z</end>
+            </timeInterval>
+            <Point>
+                <position>1</position>
+                <quantity>2.000</quantity>
+            </Point>
+        </Period>
+    </Series>
+</NotifyAggregatedMeasureData_MarketDocument>";
+
+    private const string ExpectedWhenQualityNotMeasured = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<NotifyAggregatedMeasureData_MarketDocument xmlns=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"">
+    <mRID>f0de3417-71ce-426e-9001-12600da9102a</mRID>
+    <type>E31</type>
+    <process.processType>D04</process.processType>
+    <businessSector.type>23</businessSector.type>
+    <sender_MarketParticipant.mRID codingScheme=""A10"">5790001330552</sender_MarketParticipant.mRID>
+    <sender_MarketParticipant.marketRole.type>DGL</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme=""A10"">8200000007739</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.marketRole.type>MDR</receiver_MarketParticipant.marketRole.type>
+    <createdDateTime>2022-07-04T08:05:30Z</createdDateTime>
+    <Series>
+        <mRID>1B8E673E-DBBD-4611-87A9-C7154937786A</mRID>
+        <version>1</version>
+        <marketEvaluationPoint.type>E18</marketEvaluationPoint.type>
+        <meteringGridArea_Domain.mRID codingScheme=""NDK"">805</meteringGridArea_Domain.mRID>
+        <product>8716867000030</product>
+        <quantity_Measure_Unit.name>KWH</quantity_Measure_Unit.name>
+        <Period>
+            <resolution>PT15M</resolution>
+            <timeInterval>
+                <start>2022-05-31T22:00:00Z</start>
+                <end>2022-06-01T22:00:00Z</end>
+            </timeInterval>
+            <Point>
+                <position>1</position>
+                <quantity>2.000</quantity>
+                <quality>A05</quality>
+            </Point>
+        </Period>
+    </Series>
+</NotifyAggregatedMeasureData_MarketDocument>";
 
     /// <summary>
-    /// Verifies the current completeness state of the document creation.
+    /// Point quality element must be omitted when quality is measured.
     /// </summary>
     [Theory]
-    [InlineAutoMoqData]
+    [InlineAutoMoqData(Quality.Incomplete, ExpectedWhenQualityNotMeasured)]
+    [InlineAutoMoqData(Quality.Measured, ExpectedWhenQualityMeasured)]
     public async Task CreateAsync_ReturnsRsm014(
+        Quality quality,
+        string expected,
         DataBundleRequestDto request,
         Guid anyNotificationId,
         [Frozen] Mock<ICalculatedResultReader> calculatedResultReaderMock,
@@ -85,6 +121,7 @@ public class DocumentFactoryTests
         MockServices(
             request,
             anyNotificationId,
+            quality,
             calculatedResultReaderMock,
             documentIdGeneratorMock,
             seriesIdGeneratorMock,
@@ -100,20 +137,24 @@ public class DocumentFactoryTests
 
         // Assert
         using var stringReader = new StreamReader(outStream);
-
         var actual = await stringReader.ReadToEndAsync();
 
-        actual.Should().Be(Expected);
-        var reader = new SchemaValidatingReader(outStream, Schemas.CimXml.MeasureNotifyAggregatedMeasureData);
-        Assert.False(reader.HasErrors);
+        actual = actual.Replace("\r", string.Empty); // Fix x-platform/line-ending problems
+        expected = expected.Replace("\r", string.Empty); // Fix x-platform/line-ending problems
+
+        actual.Should().Be(expected);
     }
 
     /// <summary>
     /// Verifies the document parses schema validation.
+    /// Tested with both measured and a non-measured quality as it changes whether the point quality
+    /// element is included in the message.
     /// </summary>
     [Theory]
-    [InlineAutoMoqData]
+    [InlineAutoMoqData(Quality.Measured)]
+    [InlineAutoMoqData(Quality.Estimated)]
     public async Task CreateAsync_ReturnsSchemaCompliantRsm014(
+        Quality quality,
         DataBundleRequestDto request,
         Guid anyNotificationId,
         [Frozen] Mock<ICalculatedResultReader> calculatedResultReaderMock,
@@ -128,6 +169,7 @@ public class DocumentFactoryTests
         MockServices(
             request,
             anyNotificationId,
+            quality,
             calculatedResultReaderMock,
             documentIdGeneratorMock,
             seriesIdGeneratorMock,
@@ -149,6 +191,7 @@ public class DocumentFactoryTests
     private static void MockServices(
         DataBundleRequestDto request,
         Guid anyNotificationId,
+        Quality quality,
         Mock<ICalculatedResultReader> calculatedResultReaderMock,
         Mock<IDocumentIdGenerator> documentIdGeneratorMock,
         Mock<ISeriesIdGenerator> seriesIdGeneratorMock,
@@ -170,7 +213,7 @@ public class DocumentFactoryTests
             .ReturnsAsync(
                 (MessageHubReference messageHubRef) => new Process(messageHubRef, anyGridAreaCode, Guid.NewGuid()));
 
-        var point = new PointDto(1, "2");
+        var point = new PointDto(1, "2.000", quality);
 
         calculatedResultReaderMock
             .Setup(x => x.ReadResultAsync(It.IsAny<Process>()))
