@@ -95,7 +95,12 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
 
 def test_calculator_job_input_and_output_integration_test(
-    spark, json_test_files, databricks_path, data_lake_path, source_path, find_first_file
+    spark,
+    json_test_files,
+    databricks_path,
+    data_lake_path,
+    source_path,
+    find_first_file,
 ):
     """This a massive test that tests multiple aspects of the job.
     It ain't pretty but most of the aspects need to be tested in conjunction
