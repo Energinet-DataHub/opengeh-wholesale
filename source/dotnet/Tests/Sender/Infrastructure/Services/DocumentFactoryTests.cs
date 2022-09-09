@@ -18,6 +18,9 @@ using Energinet.DataHub.Core.SchemaValidation;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -57,10 +60,10 @@ public class DocumentFactoryTests
                     <cim:start>2022-06-30T22:00:00Z</cim:start>
                     <cim:end>2022-07-01T22:00:00Z</cim:end>
                 </cim:timeInterval>
-                 <cim:Point>
-                     <cim:position>1</cim:position>
-                     <cim:quantity>2</cim:quantity>
-                 </cim:Point>
+                <cim:Point>
+                    <cim:position>1</cim:position>
+                    <cim:quantity>2</cim:quantity>
+                </cim:Point>
             </cim:Period>
     </cim:Series>
 </cim:NotifyAggregatedMeasureData_MarketDocument>";
@@ -79,6 +82,7 @@ public class DocumentFactoryTests
         [Frozen] Mock<IProcessRepository> processRepositoryMock,
         [Frozen] Mock<IStorageHandler> storageHandlerMock,
         [Frozen] Mock<IClock> clockMock,
+        [Frozen] Mock<IBatchRepository> batch,
         DocumentFactory sut)
     {
         // Arrange
@@ -90,7 +94,8 @@ public class DocumentFactoryTests
             seriesIdGeneratorMock,
             processRepositoryMock,
             storageHandlerMock,
-            clockMock);
+            clockMock,
+            batch);
 
         await using var outStream = new MemoryStream();
 
@@ -122,6 +127,7 @@ public class DocumentFactoryTests
         [Frozen] Mock<IProcessRepository> processRepositoryMock,
         [Frozen] Mock<IStorageHandler> storageHandlerMock,
         [Frozen] Mock<IClock> clockMock,
+        [Frozen] Mock<IBatchRepository> batch,
         DocumentFactory sut)
     {
         // Arrange
@@ -133,7 +139,8 @@ public class DocumentFactoryTests
             seriesIdGeneratorMock,
             processRepositoryMock,
             storageHandlerMock,
-            clockMock);
+            clockMock,
+            batch);
 
         await using var outStream = new MemoryStream();
 
@@ -154,7 +161,8 @@ public class DocumentFactoryTests
         Mock<ISeriesIdGenerator> seriesIdGeneratorMock,
         Mock<IProcessRepository> processRepositoryMock,
         Mock<IStorageHandler> storageHandlerMock,
-        Mock<IClock> clockMock)
+        Mock<IClock> clockMock,
+        Mock<IBatchRepository> batch)
     {
         documentIdGeneratorMock
             .Setup(generator => generator.Create())
@@ -185,5 +193,11 @@ public class DocumentFactoryTests
         clockMock
             .Setup(clock => clock.GetCurrentInstant())
             .Returns(instant);
+
+        var someGridAreasIds = new List<GridAreaCode> { new("805") };
+        var periodStart = Instant.FromUtc(2022, 6, 30, 22, 00);
+        var periodEnd = Instant.FromUtc(2022, 7, 1, 22, 00);
+        var bb = new Batch(ProcessType.BalanceFixing, someGridAreasIds, periodStart, periodEnd);
+        batch.Setup(x => x.GetAsync(Guid.NewGuid())).Returns(Task.FromResult(bb));
     }
 }
