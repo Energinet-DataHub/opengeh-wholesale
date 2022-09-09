@@ -25,7 +25,6 @@ using Energinet.DataHub.Wholesale.Sender.Infrastructure;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using Moq;
 using NodaTime;
 using NodaTime.Text;
