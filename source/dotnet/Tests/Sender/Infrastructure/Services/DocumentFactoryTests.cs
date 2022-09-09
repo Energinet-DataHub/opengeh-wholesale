@@ -54,8 +54,8 @@ public class DocumentFactoryTests
         <Period>
             <resolution>PT15M</resolution>
             <timeInterval>
-                <start>2022-06-30T22:00:00Z</start>
-                <end>2022-07-01T22:00:00Z</end>
+                <start>2022-05-31T22:00:00Z</start>
+                <end>2022-06-01T22:00:00Z</end>
             </timeInterval>
             <Point>
                 <position>1</position>
@@ -86,8 +86,8 @@ public class DocumentFactoryTests
         <Period>
             <resolution>PT15M</resolution>
             <timeInterval>
-                <start>2022-06-30T22:00:00Z</start>
-                <end>2022-07-01T22:00:00Z</end>
+                <start>2022-05-31T22:00:00Z</start>
+                <end>2022-06-01T22:00:00Z</end>
             </timeInterval>
             <Point>
                 <position>1</position>

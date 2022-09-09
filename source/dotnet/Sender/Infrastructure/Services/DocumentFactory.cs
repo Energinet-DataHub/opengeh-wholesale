@@ -132,7 +132,7 @@ public class DocumentFactory : IDocumentFactory
 
     private static Interval CalculateTimeInterval()
     {
-        var localDate = new LocalDate(2022, 07, 01);
+        var localDate = new LocalDate(2022, 06, 01);
 
         // These values should be provided by the calculator once they have been computed.
         var from = localDate;
