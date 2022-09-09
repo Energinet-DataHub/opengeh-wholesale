@@ -48,3 +48,9 @@ runs:
       with:
         name: dotnet
         path: ${{ inputs.RELEASE_FOLDER_PATH }}
+
+    - name: Unzip/delete dotnet-outputs.zip
+      shell: bash
+      run: |
+        unzip ${{ inputs.RELEASE_FOLDER_PATH }}/dotnet-outputs.zip -d ${{ inputs.RELEASE_FOLDER_PATH }}
+        rm ${{ inputs.RELEASE_FOLDER_PATH }}/dotnet-outputs.zip
