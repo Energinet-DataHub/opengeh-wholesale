@@ -12,9 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure;
+namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
-// All values of the PointDto must be in lower casing to conform with the spark json output.
-#pragma warning disable SA1300
-public sealed record PointDto(int position, string quantity, Quality quality);
-#pragma warning restore SA1300
+public static class QualityMapper
+{
+    public static string MapToCim(Quality quality) => quality switch
+    {
+        Quality.Estimated => "A03",
+        Quality.Measured => "A04",
+        Quality.Incomplete => "A05",
+        _ => throw new ArgumentException($"Invalid quality {quality}", nameof(quality)),
+    };
+}

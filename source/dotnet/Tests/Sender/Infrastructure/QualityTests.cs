@@ -12,9 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Xunit;
+using Xunit.Categories;
 
-// All values of the PointDto must be in lower casing to conform with the spark json output.
-#pragma warning disable SA1300
-public sealed record PointDto(int position, string quantity, Quality quality);
-#pragma warning restore SA1300
+namespace Energinet.DataHub.Wholesale.Tests.Sender.Infrastructure;
+
+[UnitTest]
+public sealed class QualityTests
+{
+    [Fact]
+    public async Task EnumNamesAndValuesMatchContractWithCalculator()
+    {
+        await using var stream = EmbeddedResources.GetStream("Sender.Infrastructure.quality.json");
+
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<Quality>(stream);
+    }
+}

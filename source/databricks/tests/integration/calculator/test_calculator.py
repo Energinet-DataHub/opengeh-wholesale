@@ -95,7 +95,12 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
 
 def test_calculator_job_input_and_output_integration_test(
-    spark, json_test_files, databricks_path, data_lake_path, source_path, find_first_file
+    spark,
+    json_test_files,
+    databricks_path,
+    data_lake_path,
+    source_path,
+    find_first_file,
 ):
     """This a massive test that tests multiple aspects of the job.
     It ain't pretty but most of the aspects need to be tested in conjunction
@@ -192,6 +197,12 @@ def test_calculator_job_input_and_output_integration_test(
         f"{source_path}/contracts/calculator-result.json",
         result_805.schema,
     )
+
+    # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
+    # Note that any change or violation may impact consumers that expects exactly this precision from the result
+    import re
+
+    assert re.search(r"^\d+\.\d{3}$", result_805.first().quantity)
 
     # Assert: Relative path of result file must match expectation of .NET
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
