@@ -237,8 +237,8 @@ public class DocumentFactoryTests
         clockMock
             .Setup(clock => clock.GetCurrentInstant())
             .Returns(instant);
-        var periodStart = SystemClock.Instance.GetCurrentInstant();
-        var periodEnd = periodStart.PlusHours(1);
+        var periodStart = Instant.FromUtc(2022, 05, 31, 22, 0);
+        var periodEnd = Instant.FromUtc(2022, 06, 01, 22, 0);
         var batch = new Batch(
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("805") },
