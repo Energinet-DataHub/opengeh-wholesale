@@ -155,6 +155,9 @@ public class DocumentFactoryTests
         using var stringReader = new StreamReader(outStream);
         var actual = await stringReader.ReadToEndAsync();
 
-        actual.Replace("\r", string.Empty).Should().Be(expected);
+        actual = actual.Replace("\r", string.Empty); // Fix x-platform/line-ending problems
+        expected = expected.Replace("\r", string.Empty); // Fix x-platform/line-ending problems
+
+        actual.Should().Be(expected);
     }
 }
