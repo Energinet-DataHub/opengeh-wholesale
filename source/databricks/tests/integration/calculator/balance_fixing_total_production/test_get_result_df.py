@@ -275,11 +275,9 @@ def test__quality_is_lowest_common_denominator_among_Measured_estimated_and_inco
     enriched_time_series_factory, quality_1, quality_2, quality_3, expected_quality
 ):
     df = (
-        enriched_time_series_factory(quality=quality_1, gridArea="805")
-        .union(enriched_time_series_factory(quality=quality_2, gridArea="805"))
-        .union(enriched_time_series_factory(quality=quality_3, gridArea="805"))
+        enriched_time_series_factory(quality=quality_1)
+        .union(enriched_time_series_factory(quality=quality_2))
+        .union(enriched_time_series_factory(quality=quality_3))
     )
-    df.show()
     result_df = _get_result_df(df)
-    result_df.show()
     assert result_df.first().quality == expected_quality
