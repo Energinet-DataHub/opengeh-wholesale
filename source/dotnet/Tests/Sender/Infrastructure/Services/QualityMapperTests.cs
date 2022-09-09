@@ -22,6 +22,13 @@ namespace Energinet.DataHub.Wholesale.Tests.Sender.Infrastructure.Services;
 
 public class QualityMapperTests
 {
+    [Fact]
+    public void MapToCim_WhenInvalidQuality_ThrowsException()
+    {
+        var invalidQuality = (Quality)(-1);
+        Assert.Throws<ArgumentException>(() => QualityMapper.MapToCim(invalidQuality));
+    }
+
     [Theory]
     [InlineAutoMoqData(Quality.Measured, "A04")]
     [InlineAutoMoqData(Quality.Estimated, "A03")]

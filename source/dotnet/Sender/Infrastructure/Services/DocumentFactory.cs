@@ -17,7 +17,6 @@ using System.Xml.Serialization;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services.NotifyAggregatedMeasureDataMarketDocument;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -72,7 +71,7 @@ public class DocumentFactory : IDocumentFactory
 
     private static async Task SerializeDocumentAsXmlAsync(
         Stream outputStream,
-        NotifyAggregatedMeasureDataMarketDocumentDto document)
+        Rsm014Dto document)
     {
         using var xmlWriter = XmlWriter.Create(
             outputStream,
@@ -82,39 +81,39 @@ public class DocumentFactory : IDocumentFactory
         namespaces.Add(string.Empty, string.Empty); // Reset to avoid xsi and xsd
 
         var serializer = new XmlSerializer(
-            typeof(NotifyAggregatedMeasureDataMarketDocumentDto),
-            NotifyAggregatedMeasureDataMarketDocumentDto.Namespace);
+            typeof(Rsm014Dto),
+            Rsm014Dto.Namespace);
         serializer.Serialize(xmlWriter, document, namespaces);
 
         await xmlWriter.FlushAsync().ConfigureAwait(false);
     }
 
-    private NotifyAggregatedMeasureDataMarketDocumentDto CreateDocument(BalanceFixingResultDto result, Process process)
+    private Rsm014Dto CreateDocument(BalanceFixingResultDto result, Process process)
     {
         var points = CreatePoints(result);
 
-        return new NotifyAggregatedMeasureDataMarketDocumentDto(
+        return new Rsm014Dto(
             _documentIdGenerator.Create(),
             GetMdrGlnForGridArea(process.GridAreaCode),
             _clock.GetCurrentInstant(),
             CreateSeries(process, points));
     }
 
-    private SeriesDto CreateSeries(Process process, List<NotifyAggregatedMeasureDataMarketDocument.PointDto> points)
+    private Rsm014Dto.SeriesDto CreateSeries(Process process, List<Rsm014Dto.Point> points)
     {
-        return new SeriesDto(
+        return new Rsm014Dto.SeriesDto(
             _seriesIdGenerator.Create(),
             process.GridAreaCode,
-            new PeriodDto(
-                new TimeIntervalDto(CalculateTimeInterval().Start, CalculateTimeInterval().End),
+            new Rsm014Dto.Period(
+                new Rsm014Dto.TimeInterval(CalculateTimeInterval().Start, CalculateTimeInterval().End),
                 points));
     }
 
-    private static List<NotifyAggregatedMeasureDataMarketDocument.PointDto> CreatePoints(BalanceFixingResultDto result)
+    private static List<Rsm014Dto.Point> CreatePoints(BalanceFixingResultDto result)
     {
         return result.Points
             .Select(
-                p => new NotifyAggregatedMeasureDataMarketDocument.PointDto(
+                p => new Rsm014Dto.Point(
                     p.position,
                     p.quantity,
                     p.quality == Quality.Measured ? null : QualityMapper.MapToCim(p.quality)))
