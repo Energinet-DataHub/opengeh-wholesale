@@ -274,12 +274,6 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
 def test__quality_is_lowest_common_denominator_among_Measured_estimated_and_incomplete(
     enriched_time_series_factory, quality_1, quality_2, quality_3, expected_quality
 ):
-
-    # quality in timeseries are maped as folow in the wholsale domain
-    # AsProvided (value 4) -> Measured (value 0)
-    # Estimated (value 3) -> Estimated (value 1)
-    # Incomplete (value 5) -> Incomplete (value 2)
-
     df = (
         enriched_time_series_factory(quality=quality_1, gridArea="805")
         .union(enriched_time_series_factory(quality=quality_2, gridArea="805"))
@@ -288,4 +282,4 @@ def test__quality_is_lowest_common_denominator_among_Measured_estimated_and_inco
     df.show()
     result_df = _get_result_df(df)
     result_df.show()
-    assert result_df.first().Quality == expected_quality
+    assert result_df.first().quality == expected_quality

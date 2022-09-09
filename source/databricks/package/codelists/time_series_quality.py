@@ -16,6 +16,7 @@ from enum import IntEnum
 
 
 class TimeSeriesQuality(IntEnum):
+    "Quality values used in contracts exposed by the time series domain."
     estimated = 3
-    asProvided = 4  # mapped to Measured in wholesale.
+    asProvided = 4  # Maps to Quality.measured
     incomplete = 5

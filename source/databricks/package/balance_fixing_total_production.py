@@ -332,7 +332,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         .groupBy("GridAreaCode", "quarter_time")
         .agg(sum("quarter_quantity"), collect_set("Quality"))
         .withColumn(
-            "resulting_quality",
+            "Quality",
             when(
                 array_contains(
                     col("collect_set(Quality)"), lit(TimeSeriesQuality.incomplete.value)
@@ -353,8 +353,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
                 lit(Quality.measured.value),
             ),
         )
-        # Work around to change casing from "Quality" to "quality"
-        .withColumnRenamed("resulting_quality", "quality")
+        .withColumnRenamed("Quality", "quality")
     )
 
     debug("Pre-result split into quarter times", result_df)
@@ -369,7 +368,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         .select(
             "GridAreaCode",
             col("Quantity").cast(DecimalType(18, 3)),
-            "Quality",
+            col("quality"),
             "position",
         )
     )
