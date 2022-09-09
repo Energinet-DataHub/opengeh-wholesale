@@ -29,6 +29,8 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Energinet.DataHub.Core.Schemas" Version="2.1.1" />
+    <PackageReference Include="Energinet.DataHub.Core.SchemaValidation" Version="2.1.1" />
     <PackageReference Include="Energinet.DataHub.MeteringPoints.IntegrationEvents" Version="1.0.1" />
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
