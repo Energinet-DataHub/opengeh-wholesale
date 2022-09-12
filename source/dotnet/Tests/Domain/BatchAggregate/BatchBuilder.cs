@@ -15,11 +15,16 @@
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 
 public class BatchBuilder
 {
+    private readonly Instant _periodStart = Instant.FromDateTimeOffset(DateTimeOffset.Now);
+    private readonly Instant _periodEnd = Instant.FromDateTimeOffset(DateTimeOffset.Now).PlusHours(1);
+
     private BatchExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
 
@@ -43,7 +48,7 @@ public class BatchBuilder
 
     public Batch Build()
     {
-        var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes);
+        var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes, _periodStart, _periodEnd);
         if (_state != null)
             batch.SetPrivateProperty(b => b.ExecutionState, _state);
         return batch;

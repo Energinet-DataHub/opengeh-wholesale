@@ -41,7 +41,7 @@ public sealed class BatchApplicationServiceTests
         var repository = scope.ServiceProvider.GetRequiredService<IBatchRepository>();
 
         var gridAreaCode = CreateRandomGridAreaCode();
-        var batchRequest = new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { gridAreaCode });
+        var batchRequest = new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now);
 
         await target.CreateAsync(batchRequest);
         await target.StartPendingAsync();
