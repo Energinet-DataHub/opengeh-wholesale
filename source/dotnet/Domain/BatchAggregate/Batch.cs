@@ -35,6 +35,10 @@ public class Batch
 
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
+        if (periodStart >= periodEnd)
+        {
+            throw new ArgumentException("periodStart is greater or equal to periodEnd");
+        }
     }
 
     /// <summary>
