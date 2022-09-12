@@ -56,7 +56,11 @@ public class Batch
 
     public JobRunId? RunId { get; private set; }
 
-    public Interval Period { get; }
+    public Interval Period { get; private set; }
+
+    public Instant PeriodStart { get; }
+
+    public Instant PeriodEnd { get; }
 
     public void MarkAsCompleted()
     {
