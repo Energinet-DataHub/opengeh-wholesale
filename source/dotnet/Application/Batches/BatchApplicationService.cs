@@ -104,7 +104,7 @@ public class BatchApplicationService : IBatchApplicationService
         };
         var periodStart = Instant.FromDateTimeOffset(batchRequestDto.StartDate);
         var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
-        var batch = new Batch(processType, gridAreaCodes, new Interval(periodStart, periodEnd));
+        var batch = new Batch(processType, gridAreaCodes, periodStart, periodEnd);
         return batch;
     }
 

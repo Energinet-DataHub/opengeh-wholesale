@@ -113,7 +113,8 @@ public class StartPendingBatchesEndpointTests
             var pendingBatch = new Batch(
                 ProcessType.BalanceFixing,
                 new[] { new GridAreaCode(gridAreaCode) },
-                new Interval(periodStart, periodEnd));
+                periodStart,
+                periodEnd);
 
             await dbContext.Batches.AddAsync(pendingBatch);
             await dbContext.SaveChangesAsync();

@@ -42,7 +42,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var periodStart = Instant.FromUtc(2022, 5, 31, 22, 00);
         var periodEnd = Instant.FromUtc(2022, 6, 1, 22, 00);
 
-        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, new Interval(periodStart, periodEnd));
+        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, periodStart, periodEnd);
         var sut = new BatchRepository(writeContext);
 
         // Act

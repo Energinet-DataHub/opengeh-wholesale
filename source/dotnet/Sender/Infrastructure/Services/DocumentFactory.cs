@@ -57,8 +57,9 @@ public class DocumentFactory : IDocumentFactory
         var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
         var balanceFixingResult = await _resultReader.ReadResultAsync(process).ConfigureAwait(false);
         var batch = await _batchRepository.GetAsync(process.BatchId).ConfigureAwait(false);
+        var interval = new Interval(batch.PeriodStart, batch.PeriodEnd);
 
-        var document = CreateDocument(balanceFixingResult, process, batch.Period);
+        var document = CreateDocument(balanceFixingResult, process, interval);
         await SerializeDocumentAsXmlAsync(outputStream, document).ConfigureAwait(false);
     }
 
@@ -93,7 +94,7 @@ public class DocumentFactory : IDocumentFactory
         await xmlWriter.FlushAsync().ConfigureAwait(false);
     }
 
-    private Rsm014Dto CreateDocument(BalanceFixingResultDto result, Process process, Interval batchPeriod)
+    private Rsm014Dto CreateDocument(BalanceFixingResultDto result, Process process, Interval interval)
     {
         var points = CreatePoints(result);
 
@@ -101,16 +102,16 @@ public class DocumentFactory : IDocumentFactory
             _documentIdGenerator.Create(),
             GetMdrGlnForGridArea(process.GridAreaCode),
             _clock.GetCurrentInstant(),
-            CreateSeries(process, points, batchPeriod));
+            CreateSeries(process, points, interval));
     }
 
-    private Rsm014Dto.SeriesDto CreateSeries(Process process, List<Rsm014Dto.Point> points, Interval batchPeriod)
+    private Rsm014Dto.SeriesDto CreateSeries(Process process, List<Rsm014Dto.Point> points, Interval interval)
     {
         return new Rsm014Dto.SeriesDto(
             _seriesIdGenerator.Create(),
             process.GridAreaCode,
             new Rsm014Dto.Period(
-                new Rsm014Dto.TimeInterval(batchPeriod.Start, batchPeriod.End),
+                new Rsm014Dto.TimeInterval(interval.Start, interval.End),
                 points));
     }
 
