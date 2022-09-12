@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using NodaTime;
 
@@ -22,47 +24,12 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 public class DocumentFactory : IDocumentFactory
 {
-    // <product> is fixed to 8716867000030 (Active Energy) for current document type.
-    // <quantity_Measure_Unit> is fixed to kWh for current document type.
-    private const string CimTemplate = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<cim:NotifyAggregatedMeasureData_MarketDocument xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:cim=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1"" xsi:schemaLocation=""urn:ediel.org:measure:notifyaggregatedmeasuredata:0:1 urn-ediel-org-measure-notifyaggregatedmeasuredata-0-1.xsd"">
-    <cim:mRID>{documentId}</cim:mRID>
-    <cim:type>E31</cim:type>
-    <cim:process.processType>D04</cim:process.processType>
-    <cim:businessSector.type>23</cim:businessSector.type>
-    <cim:sender_MarketParticipant.mRID codingScheme=""A10"">5790001330552</cim:sender_MarketParticipant.mRID>
-    <cim:sender_MarketParticipant.marketRole.type>DGL</cim:sender_MarketParticipant.marketRole.type>
-    <cim:receiver_MarketParticipant.mRID codingScheme=""A10"">{recipientGln}</cim:receiver_MarketParticipant.mRID>
-    <cim:receiver_MarketParticipant.marketRole.type>MDR</cim:receiver_MarketParticipant.marketRole.type>
-    <cim:createdDateTime>{createdDateTime}</cim:createdDateTime>
-    <cim:Series>
-        <cim:mRID>{seriesId}</cim:mRID>
-        <cim:version>1</cim:version>
-        <cim:marketEvaluationPoint.type>E18</cim:marketEvaluationPoint.type>
-        <cim:meteringGridArea_Domain.mRID codingScheme=""NDK"">{gridArea}</cim:meteringGridArea_Domain.mRID>
-        <cim:product>8716867000030</cim:product>
-        <cim:quantity_Measure_Unit.name>KWH</cim:quantity_Measure_Unit.name>
-            <cim:Period>
-                <cim:resolution>PT15M</cim:resolution>
-                <cim:timeInterval>
-                    <cim:start>{timeIntervalFrom}</cim:start>
-                    <cim:end>{timeIntervalTo}</cim:end>
-                </cim:timeInterval>{points}
-            </cim:Period>
-    </cim:Series>
-</cim:NotifyAggregatedMeasureData_MarketDocument>";
-
-    private const string PointTemplate = @"
-                 <cim:Point>
-                     <cim:position>{position}</cim:position>
-                     <cim:quantity>{quantity}</cim:quantity>
-                 </cim:Point>";
-
     private readonly IProcessRepository _processRepository;
     private readonly IStorageHandler _storageHandler;
     private readonly IClock _clock;
     private readonly IDocumentIdGenerator _documentIdGenerator;
     private readonly ISeriesIdGenerator _seriesIdGenerator;
+    private readonly IBatchRepository _batchRepository;
     private readonly ICalculatedResultReader _resultReader;
 
     public DocumentFactory(
@@ -71,7 +38,8 @@ public class DocumentFactory : IDocumentFactory
         IStorageHandler storageHandler,
         IClock clock,
         IDocumentIdGenerator documentIdGenerator,
-        ISeriesIdGenerator seriesIdGenerator)
+        ISeriesIdGenerator seriesIdGenerator,
+        IBatchRepository batchRepository)
     {
         _resultReader = resultReader;
         _processRepository = processRepository;
@@ -79,9 +47,23 @@ public class DocumentFactory : IDocumentFactory
         _clock = clock;
         _documentIdGenerator = documentIdGenerator;
         _seriesIdGenerator = seriesIdGenerator;
+        _batchRepository = batchRepository;
     }
 
     public async Task CreateAsync(DataBundleRequestDto request, Stream outputStream)
+    {
+        var messageHubReference = await GetMessageHubReferenceAsync(request).ConfigureAwait(false);
+
+        var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
+        var balanceFixingResult = await _resultReader.ReadResultAsync(process).ConfigureAwait(false);
+        var batch = await _batchRepository.GetAsync(process.BatchId).ConfigureAwait(false);
+        var interval = new Interval(batch.PeriodStart, batch.PeriodEnd);
+
+        var document = CreateDocument(balanceFixingResult, process, interval);
+        await SerializeDocumentAsXmlAsync(outputStream, document).ConfigureAwait(false);
+    }
+
+    private async Task<MessageHubReference> GetMessageHubReferenceAsync(DataBundleRequestDto request)
     {
         var notificationIds = await _storageHandler
             .GetDataAvailableNotificationIdsAsync(request)
@@ -89,72 +71,68 @@ public class DocumentFactory : IDocumentFactory
 
         // Currently bundling is not supported
         var notificationId = notificationIds.Single();
-
         var messageHubReference = new MessageHubReference(notificationId);
-        var process = await _processRepository.GetAsync(messageHubReference).ConfigureAwait(false);
-
-        var result = await _resultReader.ReadResultAsync(process).ConfigureAwait(false);
-
-        var document = CimTemplate
-            .Replace("{documentId}", _documentIdGenerator.Create())
-            .Replace("{seriesId}", _seriesIdGenerator.Create())
-            .Replace("{recipientGln}", GetMdrGlnForGridArea(process.GridAreaCode))
-            .Replace("{createdDateTime}", _clock.GetCurrentInstant().ToString())
-            .Replace("{timeIntervalFrom}", CalculateTimeInterval().Start.ToString())
-            .Replace("{timeIntervalTo}", CalculateTimeInterval().End.ToString())
-            .Replace("{points}", CreatePoints(result))
-            .Replace("{gridArea}", process.GridAreaCode);
-
-        await WriteToStreamAsync(document, outputStream).ConfigureAwait(false);
+        return messageHubReference;
     }
 
-    private static string CreatePoints(BalanceFixingResultDto result)
+    private static async Task SerializeDocumentAsXmlAsync(
+        Stream outputStream,
+        Rsm014Dto document)
     {
-        var sb = new StringBuilder();
-        foreach (var point in result.Points)
-        {
-            sb.Append(PointTemplate
-                .Replace("{position}", point.position.ToString())
-                .Replace("{quantity}", point.quantity));
-        }
+        using var xmlWriter = XmlWriter.Create(
+            outputStream,
+            new XmlWriterSettings { Indent = true, Async = true, IndentChars = "    " });
 
-        return sb.ToString();
+        var namespaces = new XmlSerializerNamespaces();
+        namespaces.Add(string.Empty, string.Empty); // Reset to avoid xsi and xsd
+
+        var serializer = new XmlSerializer(
+            typeof(Rsm014Dto),
+            Rsm014Dto.Namespace);
+        serializer.Serialize(xmlWriter, document, namespaces);
+
+        await xmlWriter.FlushAsync().ConfigureAwait(false);
+    }
+
+    private Rsm014Dto CreateDocument(BalanceFixingResultDto result, Process process, Interval interval)
+    {
+        var points = CreatePoints(result);
+
+        return new Rsm014Dto(
+            _documentIdGenerator.Create(),
+            GetMdrGlnForGridArea(process.GridAreaCode),
+            _clock.GetCurrentInstant(),
+            CreateSeries(process, points, interval));
+    }
+
+    private Rsm014Dto.SeriesDto CreateSeries(Process process, List<Rsm014Dto.Point> points, Interval interval)
+    {
+        return new Rsm014Dto.SeriesDto(
+            _seriesIdGenerator.Create(),
+            process.GridAreaCode,
+            new Rsm014Dto.Period(
+                new Rsm014Dto.TimeInterval(interval.Start, interval.End),
+                points));
+    }
+
+    private static List<Rsm014Dto.Point> CreatePoints(BalanceFixingResultDto result)
+    {
+        return result.Points
+            .Select(
+                p => new Rsm014Dto.Point(
+                    p.position,
+                    p.quantity,
+                    p.quality == Quality.Measured ? null : QualityMapper.MapToCim(p.quality)))
+            .ToList();
     }
 
     private static string GetMdrGlnForGridArea(string gridAreaCode)
     {
-        var gln = gridAreaCode switch
+        return gridAreaCode switch
         {
             "805" => "8200000007739",
             "806" => "8200000007746",
             _ => throw new NotImplementedException("Only test grid areas 805 and 806 are supported."),
         };
-        return gln;
-    }
-
-    private static Interval CalculateTimeInterval()
-    {
-        var localDate = new LocalDate(2022, 07, 01);
-
-        // These values should be provided by the calculator once they have been computed.
-        var from = localDate;
-        var to = localDate.PlusDays(1);
-
-        var targetTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
-
-        var fromInstant = from.AtMidnight().InZoneStrictly(targetTimeZone).ToInstant();
-        var toInstant = to.AtMidnight().InZoneStrictly(targetTimeZone).ToInstant();
-
-        return new Interval(fromInstant, toInstant);
-    }
-
-    private static async Task WriteToStreamAsync(string s, Stream outputStream)
-    {
-        var writer = new StreamWriter(outputStream, leaveOpen: true);
-        await using (writer.ConfigureAwait(false))
-        {
-            await writer.WriteAsync(s).ConfigureAwait(false);
-            await writer.FlushAsync().ConfigureAwait(false);
-        }
     }
 }

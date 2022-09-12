@@ -50,7 +50,11 @@ def assert_codelist_matches_contract(codelist, contract_path):
 
     # Assert: The enum values must match contract
     for literal in literals:
-        supported_arg = next(x for x in supported_literals if literal.name == x["name"])
+        supported_arg = next(
+            (x for x in supported_literals if literal.name == x["name"]), None
+        )
+        if supported_arg is None:
+            raise Exception(f"Literal '{literal.name}' does not exist in contract.")
         assert literal.value == supported_arg["value"]
 
 

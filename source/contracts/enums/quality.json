@@ -1,0 +1,16 @@
+{
+  "literals": [
+    {
+      "name": "measured",
+      "value": 0
+    },
+    {
+      "name": "estimated",
+      "value": 1
+    },
+    {
+      "name": "incomplete",
+      "value": 2
+    }
+  ]
+}

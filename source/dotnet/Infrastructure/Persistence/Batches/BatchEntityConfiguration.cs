@@ -35,6 +35,8 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
             .ValueGeneratedNever();
 
         builder.Property(b => b.ExecutionState);
+        builder.Property(b => b.PeriodStart);
+        builder.Property(b => b.PeriodEnd);
         builder.Property(b => b.RunId).HasConversion(
             jobId => jobId == null ? (long?)null : jobId.Id,
             jobId => jobId == null ? null : new JobRunId(jobId.Value));
