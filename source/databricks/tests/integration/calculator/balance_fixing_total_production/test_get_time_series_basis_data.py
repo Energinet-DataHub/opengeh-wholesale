@@ -55,7 +55,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                     "Resolution": resolution,
                     "GridAreaLinkId": "GridAreaLinkId",
                     "time": time,
-                    "Quantity": quantity,
+                    "Quantity": quantity + i,
                     "GsrnNumber": gsrnNumber,
                     "MeteringPointType": MeteringPointType,
                 }
@@ -88,7 +88,13 @@ def enriched_time_series_factory(spark, timestamp_factory):
 def test__get_timeseries_basis_data(enriched_time_series_factory):
 
     enriched_time_series_points_df = enriched_time_series_factory(
-        time="2022-06-08T22:00:00.000Z"
+        time="2022-06-08T22:00:00.000Z", resolution=Resolution.hour.value
+    ).union(
+        enriched_time_series_factory(
+            numberOfPoints=96,
+            time="2022-06-09T22:00:00.000Z",
+            resolution=Resolution.quarter.value,
+        )
     )
     timeseries_basis_data = _get_time_series_basis_data(enriched_time_series_points_df)
     assert len(timeseries_basis_data.columns) == 28

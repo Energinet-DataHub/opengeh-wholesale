@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
@@ -101,7 +102,9 @@ public class BatchApplicationService : IBatchApplicationService
             WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
             _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
         };
-        var batch = new Batch(processType, gridAreaCodes);
+        var periodStart = Instant.FromDateTimeOffset(batchRequestDto.StartDate);
+        var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
+        var batch = new Batch(processType, gridAreaCodes, periodStart, periodEnd);
         return batch;
     }
 

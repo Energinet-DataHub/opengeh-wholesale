@@ -16,8 +16,10 @@ import pytest
 from package.codelists import (
     ConnectionState,
     MeteringPointType,
+    Quality,
     Resolution,
     SettlementMethod,
+    TimeSeriesQuality,
 )
 from tests.contract_utils import assert_codelist_matches_contract
 
@@ -40,7 +42,19 @@ def test_settlement_method_is_subset_of_contract(source_path):
     )
 
 
+def test_quality_is_subset_of_contract(source_path):
+    assert_codelist_matches_contract(
+        Quality, f"{source_path}/contracts/enums/quality.json"
+    )
+
+
 def test_resolution_is_subset_of_contract(source_path):
     assert_codelist_matches_contract(
         Resolution, f"{source_path}/contracts/enums/time-series-resolution.json"
+    )
+
+
+def test_timeseries_quality_enum_equals_timeseries_contract(source_path):
+    assert_codelist_matches_contract(
+        TimeSeriesQuality, f"{source_path}/contracts/enums/timeseries-quality.json"
     )

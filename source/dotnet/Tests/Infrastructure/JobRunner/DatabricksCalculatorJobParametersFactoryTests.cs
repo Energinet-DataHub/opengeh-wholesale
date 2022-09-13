@@ -36,7 +36,11 @@ public class DatabricksCalculatorJobParametersFactoryTests
     {
         // Arrange
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(Instant.FromUtc(2022, 6, 2, 22, 00));
-        var batch = new Batch(ProcessType.BalanceFixing, new List<GridAreaCode> { new("805"), new("806") });
+        var batch = new Batch(
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { new("805"), new("806") },
+            Instant.FromUtc(2022, 5, 31, 22, 00),
+            Instant.FromUtc(2022, 6, 1, 22, 00));
 
         using var stream = EmbeddedResources.GetStream("Infrastructure.JobRunner.calculation-job-parameters-reference.txt");
         using var reader = new StreamReader(stream);

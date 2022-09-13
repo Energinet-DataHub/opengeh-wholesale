@@ -14,10 +14,16 @@
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
+    struct,
+    first,
     array,
+    array_contains,
     lit,
     col,
+    collect_set,
     from_json,
+    to_date,
+    from_utc_timestamp,
     row_number,
     expr,
     when,
@@ -26,6 +32,7 @@ from pyspark.sql.functions import (
     coalesce,
     explode,
     collect_list,
+    sum,
 )
 from pyspark.sql.types import (
     IntegerType,
@@ -36,7 +43,13 @@ from pyspark.sql.types import (
     DecimalType,
 )
 from pyspark.sql.window import Window
-from package.codelists import ConnectionState, MeteringPointType, Resolution
+from package.codelists import (
+    ConnectionState,
+    MeteringPointType,
+    Quality,
+    Resolution,
+    TimeSeriesQuality,
+)
 from package.schemas import (
     grid_area_updated_event_schema,
     metering_point_generic_event_schema,
@@ -87,16 +100,39 @@ def calculate_balance_fixing_total_production(
 
 
 def _get_time_series_basis_data(enriched_time_series_point_df):
+    w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
+    debug("enriched_time_series_point_df", enriched_time_series_point_df)
     timeseries_basis_data = (
-        enriched_time_series_point_df.groupBy("gsrnNumber")
-        .pivot("time")
-        .sum("Quantity")
+        enriched_time_series_point_df.withColumn(
+            "localDate", to_date(from_utc_timestamp(col("time"), "Europe/Copenhagen"))
+        )
+        .withColumn("position", row_number().over(w))
+        .withColumn("STARTDATETIME", first("time").over(w))
+        # .groupBy("gsrnNumber")
+        #    .pivot("time")
+        #    .agg(first("Quantity"), first("MeteringPointType"))
+        # )
+        .groupBy(
+            "gsrnNumber",
+            "localDate",
+            "STARTDATETIME",
+            "GridAreaCode",
+            "GridAreaLinkId",
+            "MeteringPointType",
+            "Resolution",
+        )
+        .pivot("position")
+        .agg(first("Quantity"))
+        .withColumnRenamed("gsrnNumber", "METERINGPOINTID")
+        .withColumnRenamed("MeteringPointType", "TYPEOFMP")
+        .withColumnRenamed("Resolution", "RESOLUTIONDURATION")
     )
-    # .groupBy("gsrnNumber").agg(
-    #    collect_list("time")
-    # )
+    debug("timeseries basis data", timeseries_basis_data)
 
-    debug("enriched_time_series_point_df", timeseries_basis_data)
+    timeseries_basis_data.repartition("METERINGPOINTID").write.mode("overwrite").option(
+        "header", True
+    ).csv("___test___")
+
     return timeseries_basis_data
 
 
@@ -304,7 +340,9 @@ def _get_enriched_time_series_points_df(
         ),
     )
 
-    timeseries_df = timeseries_df.select("GsrnNumber", "time", "Quantity", "Resolution")
+    timeseries_df = timeseries_df.select(
+        "GsrnNumber", "time", "Quantity", "Quality", "Resolution"
+    )
 
     enriched_time_series_point_df = timeseries_df.join(
         metering_point_period_df,
@@ -319,6 +357,7 @@ def _get_enriched_time_series_points_df(
         "Resolution",
         "time",
         "Quantity",
+        "Quality",
     )
 
     debug(
@@ -357,7 +396,30 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
             ).when(col("Resolution") == Resolution.quarter.value, col("Quantity")),
         )
         .groupBy("GridAreaCode", "quarter_time")
-        .sum("quarter_quantity")
+        .agg(sum("quarter_quantity"), collect_set("Quality"))
+        .withColumn(
+            "Quality",
+            when(
+                array_contains(
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.incomplete.value)
+                ),
+                lit(Quality.incomplete.value),
+            )
+            .when(
+                array_contains(
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.estimated.value)
+                ),
+                lit(Quality.estimated.value),
+            )
+            .when(
+                array_contains(
+                    col("collect_set(Quality)"),
+                    lit(TimeSeriesQuality.asProvided.value),
+                ),
+                lit(Quality.measured.value),
+            ),
+        )
+        .withColumnRenamed("Quality", "quality")
     )
 
     debug(
@@ -375,6 +437,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         .select(
             "GridAreaCode",
             col("Quantity").cast(DecimalType(18, 3)),
+            col("quality"),
             "position",
         )
     )
