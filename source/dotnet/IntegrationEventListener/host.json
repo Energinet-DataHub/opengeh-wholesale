@@ -4,6 +4,9 @@
     "console": {
       "isEnabled": false
     },
+    "logLevel": {
+      "default": "None",
+    },
     "applicationInsights": {
       "samplingSettings": {
         "isEnabled": true,
