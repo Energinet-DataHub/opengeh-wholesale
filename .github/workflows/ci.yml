@@ -29,6 +29,7 @@ jobs:
       PREPARE_OUTPUTS: true
 
   dotnet_solution_ci_test_integrationtests:
+    needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
       TESTS_DLL_FILE_PATH: '\integrationtests\Energinet.DataHub.Wholesale.IntegrationTests.dll'
@@ -41,6 +42,7 @@ jobs:
       AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
   dotnet_solution_ci_test_tests:
+    needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
       TESTS_DLL_FILE_PATH: '\tests\Energinet.DataHub.Wholesale.Tests.dll'
