@@ -81,22 +81,16 @@ runs:
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\databasemigration'
 
-    - name: Publish Integration Tests
+    - name: Copy all output for Integration Tests
       shell: bash
       run: |
-        dotnet publish \
-          '.\source\dotnet\IntegrationTests\IntegrationTests.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '${{ inputs.OUTPUT_PATH }}\integrationtests'
+        cp -r \
+          '.\source\dotnet\IntegrationTests\bin\Release\net6.0' \
+          '${{ inputs.OUTPUT_PATH }}\integrationtests'
 
-    - name: Publish Tests
+    - name: Copy all output for Tests
       shell: bash
       run: |
-        dotnet publish \
-          '.\source\dotnet\Tests\Tests.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '${{ inputs.OUTPUT_PATH }}\tests'
+        cp -r \
+          '.\source\dotnet\Tests\bin\Release\net6.0' \
+          '${{ inputs.OUTPUT_PATH }}\tests'
