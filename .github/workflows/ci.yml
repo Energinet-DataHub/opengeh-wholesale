@@ -22,12 +22,14 @@ jobs:
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@poc
 
+  # Build dotnet
   dotnet_solution_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-build.yml@poc
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
       PREPARE_OUTPUTS: true
 
+  # Test one dotnet project
   dotnet_solution_ci_test_integrationtests:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
@@ -41,6 +43,7 @@ jobs:
       AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
       AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
+  # Test one dotnet project
   dotnet_solution_ci_test_tests:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
