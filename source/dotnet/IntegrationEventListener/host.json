@@ -5,7 +5,7 @@
       "isEnabled": false
     },
     "logLevel": {
-      "default": "None",
+      "default": "Information"
     },
     "applicationInsights": {
       "samplingSettings": {
