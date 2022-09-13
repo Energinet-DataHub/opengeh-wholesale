@@ -25,7 +25,6 @@ jobs:
   dotnet_solution_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-build.yml@poc
     with:
-      OPERATING_SYSTEM: 'ubuntu-latest'
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
       PREPARE_OUTPUTS: true
 
