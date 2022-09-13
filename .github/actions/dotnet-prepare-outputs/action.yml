@@ -50,7 +50,7 @@ runs:
           --no-restore \
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\functions\processmanager'
-    
+
     - name: Publish Sender
       shell: bash
       run: |
@@ -80,3 +80,23 @@ runs:
           --no-restore \
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\databasemigration'
+
+    - name: Publish Integration Tests
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\IntegrationTests\IntegrationTests.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '${{ inputs.OUTPUT_PATH }}\integrationtests'
+
+    - name: Publish Tests
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\Tests\Tests.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '${{ inputs.OUTPUT_PATH }}\tests'

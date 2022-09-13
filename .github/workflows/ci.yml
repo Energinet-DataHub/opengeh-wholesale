@@ -22,12 +22,29 @@ jobs:
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@poc
 
-  dotnet_solution_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@poc
+  dotnet_solution_ci_build:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-build.yml@poc
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
-      USE_AZURE_FUNCTIONS_TOOLS: true
       PREPARE_OUTPUTS: true
+
+  dotnet_solution_ci_test_integrationtests:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
+    with:
+      TESTS_DLL_FILE_PATH: '\integrationtests\Energinet.DataHub.Wholesale.IntegrationTests.dll'
+      USE_AZURE_FUNCTIONS_TOOLS: true
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
+      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+      AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
+
+  dotnet_solution_ci_test_tests:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
+    with:
+      TESTS_FILE_PATH: '\tests\Energinet.DataHub.Wholesale.Tests.dll'
+      USE_AZURE_FUNCTIONS_TOOLS: false
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -59,7 +76,7 @@ jobs:
       TERRAFORM_VERSION: '1.2.2'
 
   create_prerelease:
-    needs: [ci_base, terraform_validate, dotnet_solution_ci, databricks_ci, wheel_ci]
+    needs: [ci_base, terraform_validate, dotnet_solution_ci_build, dotnet_solution_ci_test_integrationtests, dotnet_solution_ci_test_tests, databricks_ci, wheel_ci]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@poc
     with:
       CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
