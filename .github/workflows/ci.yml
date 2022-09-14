@@ -34,7 +34,7 @@ jobs:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
-      TESTS_DLL_FILE_PATH: '\integrationtests\Energinet.DataHub.Wholesale.IntegrationTests.dll'
+      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       USE_AZURE_FUNCTIONS_TOOLS: true
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -48,7 +48,7 @@ jobs:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
-      TESTS_DLL_FILE_PATH: '\tests\Energinet.DataHub.Wholesale.Tests.dll'
+      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       USE_AZURE_FUNCTIONS_TOOLS: false
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
