@@ -28,6 +28,7 @@ jobs:
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
       PREPARE_OUTPUTS: true
+      DOTNET_VERSION: 6.0.400 # TODO: Remove when runners are updated
 
   # Test one dotnet project
   dotnet_solution_ci_test_integrationtests:
@@ -36,6 +37,7 @@ jobs:
     with:
       TESTS_DLL_FILE_PATH: '\tests\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       USE_AZURE_FUNCTIONS_TOOLS: true
+      DOTNET_VERSION: 6.0.400 # TODO: Remove when runners are updated
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -50,6 +52,7 @@ jobs:
     with:
       TESTS_DLL_FILE_PATH: '\tests\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       USE_AZURE_FUNCTIONS_TOOLS: false
+      DOTNET_VERSION: 6.0.400 # TODO: Remove when runners are updated
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
