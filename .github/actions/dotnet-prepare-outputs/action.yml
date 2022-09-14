@@ -81,16 +81,10 @@ runs:
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\databasemigration'
 
-    - name: Copy all output for Integration Tests
+    - name: Copy all bin folders
       shell: bash
       run: |
-        cp -r \
-          '.\source\dotnet\IntegrationTests\bin\Release\net6.0' \
-          '${{ inputs.OUTPUT_PATH }}\integrationtests'
-
-    - name: Copy all output for Tests
-      shell: bash
-      run: |
-        cp -r \
-          '.\source\dotnet\Tests\bin\Release\net6.0' \
-          '${{ inputs.OUTPUT_PATH }}\tests'
+        # Create subfolder hierarchy matching 'bin' folders
+        find source/dotnet -type d -name 'bin' -exec mkdir -p '${{ inputs.OUTPUT_PATH }}/tests/{}' ';'
+        # Copy 'bin/Release' folders into hierarchy (cannot copy obj folders since we did not create those)
+        find source/dotnet -type d -name 'Release' -exec cp -r '{}' '${{ inputs.OUTPUT_PATH }}/tests/{}' ';'
