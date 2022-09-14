@@ -23,7 +23,9 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MessageHub.Client;
 using Energinet.DataHub.MessageHub.Client.SimpleInjector;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -48,6 +50,7 @@ public static class Program
             })
             .ConfigureServices(ApplicationServices)
             .ConfigureServices(MiddlewareServices)
+            .ConfigureServices(Domains)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(MessageHub)
             .ConfigureServices(HealthCheck)
@@ -75,6 +78,11 @@ public static class Program
         services.AddScoped<CorrelationIdMiddleware>();
         services.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
         services.AddScoped<IntegrationEventMetadataMiddleware>();
+    }
+
+    private static void Domains(IServiceCollection services)
+    {
+        services.AddScoped<IBatchRepository, BatchRepository>();
     }
 
     private static void Infrastructure(IServiceCollection serviceCollection)
