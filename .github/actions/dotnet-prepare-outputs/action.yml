@@ -86,4 +86,4 @@ runs:
       run: |
         cp -r \
           '.\source\dotnet' \
-          '${{ inputs.OUTPUT_PATH }}\tests'
+          '${{ inputs.OUTPUT_PATH }}\dotnet'
