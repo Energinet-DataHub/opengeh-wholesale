@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, tzinfo, date
+import time
+from pytz import timezone
+import pytz
 import os
 import shutil
 import pytest
@@ -41,7 +44,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
         gsrnNumber="the_gsrn_number",
         MeteringPointType="the_metering_point_type",
         time="2022-06-08T22:00:00.000Z",
-        numberOfPoints=24,
+        numberOfPoints=500,
     ):
         df_array = []
 
@@ -61,6 +64,11 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 }
             )
             time = time + timedelta(minutes=15)
+            # (
+            #    time + timedelta(minutes=60)
+            #    if resolution == Resolution.hour.value
+            #    else time + timedelta(minutes=15)
+            # )
         return spark.createDataFrame(df_array)
 
     return factory
@@ -88,13 +96,8 @@ def enriched_time_series_factory(spark, timestamp_factory):
 def test__get_timeseries_basis_data(enriched_time_series_factory):
 
     enriched_time_series_points_df = enriched_time_series_factory(
-        time="2022-06-08T22:00:00.000Z", resolution=Resolution.hour.value
-    ).union(
-        enriched_time_series_factory(
-            numberOfPoints=96,
-            time="2022-06-09T22:00:00.000Z",
-            resolution=Resolution.quarter.value,
-        )
+        time="2022-10-28T22:00:00.000Z", resolution=Resolution.quarter.value
     )
+
     timeseries_basis_data = _get_time_series_basis_data(enriched_time_series_points_df)
     assert len(timeseries_basis_data.columns) == 28

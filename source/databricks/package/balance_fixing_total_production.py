@@ -13,7 +13,11 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
+
 from pyspark.sql.functions import (
+    date_format,
+    udf,
+    concat,
     struct,
     first,
     array,
@@ -55,6 +59,11 @@ from package.schemas import (
     metering_point_generic_event_schema,
 )
 from package.db_logging import log, debug
+from datetime import datetime, timedelta, tzinfo, date
+import time
+from zoneinfo import ZoneInfo
+from pytz import timezone
+import pytz
 
 
 metering_point_created_message_type = "MeteringPointCreated"
@@ -101,17 +110,15 @@ def calculate_balance_fixing_total_production(
 
 def _get_time_series_basis_data(enriched_time_series_point_df):
     w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
+
     debug("enriched_time_series_point_df", enriched_time_series_point_df)
+
     timeseries_basis_data = (
         enriched_time_series_point_df.withColumn(
             "localDate", to_date(from_utc_timestamp(col("time"), "Europe/Copenhagen"))
         )
-        .withColumn("position", row_number().over(w))
+        .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
         .withColumn("STARTDATETIME", first("time").over(w))
-        # .groupBy("gsrnNumber")
-        #    .pivot("time")
-        #    .agg(first("Quantity"), first("MeteringPointType"))
-        # )
         .groupBy(
             "gsrnNumber",
             "localDate",
