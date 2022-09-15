@@ -85,5 +85,5 @@ runs:
       shell: bash
       run: |
         cp -r \
-          '.\source\dotnet' \
-          '${{ inputs.OUTPUT_PATH }}\dotnet'
+          './source/dotnet' \
+          '${{ inputs.OUTPUT_PATH }}/dotnet'
