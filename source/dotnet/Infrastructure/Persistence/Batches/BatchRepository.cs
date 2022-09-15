@@ -33,7 +33,7 @@ public class BatchRepository : IBatchRepository
 
     public async Task<Batch> GetAsync(Guid batchId)
     {
-        return await _context.Batches.FirstAsync(x => x.Id.Value == batchId).ConfigureAwait(false);
+        return await _context.Batches.FirstAsync(x => x.Id == batchId).ConfigureAwait(false);
     }
 
     public Task<List<Batch>> GetPendingAsync() => GetByStateAsync(BatchExecutionState.Pending);

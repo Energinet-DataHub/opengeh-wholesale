@@ -18,9 +18,9 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processe
 
 public class ProcessRepository : IProcessRepository
 {
-    private readonly IDatabaseContext _context;
+    private readonly ISenderDatabaseContext _context;
 
-    public ProcessRepository(IDatabaseContext context)
+    public ProcessRepository(ISenderDatabaseContext context)
     {
         _context = context;
     }

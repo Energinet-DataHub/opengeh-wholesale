@@ -12,14 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
-using Microsoft.EntityFrameworkCore;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 
-public interface IDatabaseContext
+public class SenderUnitOfWork : ISenderUnitOfWork
 {
-    DbSet<Process> Processes { get; }
+    private readonly ISenderDatabaseContext _senderDatabaseContext;
 
-    Task<int> SaveChangesAsync();
+    public SenderUnitOfWork(ISenderDatabaseContext senderDatabaseContext)
+    {
+        _senderDatabaseContext = senderDatabaseContext;
+    }
+
+    public async Task CommitAsync()
+    {
+        await _senderDatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+    }
 }
