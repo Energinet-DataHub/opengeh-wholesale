@@ -84,6 +84,7 @@ runs:
     - name: Copy all dotnet (source and bin) for executing tests
       shell: bash
       run: |
+        mkdir '${{ inputs.OUTPUT_PATH }}/dotnet'
         cp -r \
           './source/dotnet' \
           '${{ inputs.OUTPUT_PATH }}/dotnet'
