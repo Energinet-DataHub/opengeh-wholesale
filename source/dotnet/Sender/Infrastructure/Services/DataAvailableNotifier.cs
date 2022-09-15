@@ -23,20 +23,20 @@ public class DataAvailableNotifier : IDataAvailableNotifier
 {
     private readonly IDataAvailableNotificationSender _notificationSender;
     private readonly ICorrelationContext _correlationContext;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ISenderUnitOfWork _senderUnitOfWork;
     private readonly IProcessRepository _processRepository;
     private readonly IDataAvailableNotificationFactory _dataAvailableNotificationFactory;
 
     public DataAvailableNotifier(
         IDataAvailableNotificationSender notificationSender,
         ICorrelationContext correlationContext,
-        IUnitOfWork unitOfWork,
+        ISenderUnitOfWork senderUnitOfWork,
         IProcessRepository processRepository,
         IDataAvailableNotificationFactory dataAvailableNotificationFactory)
     {
         _notificationSender = notificationSender;
         _correlationContext = correlationContext;
-        _unitOfWork = unitOfWork;
+        _senderUnitOfWork = senderUnitOfWork;
         _processRepository = processRepository;
         _dataAvailableNotificationFactory = dataAvailableNotificationFactory;
     }
@@ -46,7 +46,7 @@ public class DataAvailableNotifier : IDataAvailableNotifier
         var notification = _dataAvailableNotificationFactory.Create(completedProcessEvent);
         await CreateAndAddProcessAsync(completedProcessEvent, notification.Uuid).ConfigureAwait(false);
         await _notificationSender.SendAsync(_correlationContext.Id, notification).ConfigureAwait(false);
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        await _senderUnitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     private async Task CreateAndAddProcessAsync(
