@@ -23,8 +23,10 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MessageHub.Client;
 using Energinet.DataHub.MessageHub.Client.SimpleInjector;
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
@@ -68,6 +70,7 @@ public static class Program
     {
         services.AddScoped<IClock>(_ => SystemClock.Instance);
         services.AddScoped<IDataAvailableNotifier, DataAvailableNotifier>();
+        services.AddScoped<ISenderUnitOfWork, SenderUnitOfWork>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IDocumentFactory, DocumentFactory>();
         services.AddScoped<IDocumentIdGenerator, DocumentIdGenerator>();
@@ -95,8 +98,15 @@ public static class Program
         serviceCollection.AddSingleton(new DataLakeFileSystemClient(calculatorResultConnection, calculatorResultFileSystem));
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
+        serviceCollection.AddScoped<ISenderDatabaseContext, SenderDatabaseContext>();
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
+        serviceCollection.AddDbContext<SenderDatabaseContext>(options =>
+            options.UseSqlServer(connectionString, o =>
+            {
+                o.UseNodaTime();
+                o.EnableRetryOnFailure();
+            }));
         serviceCollection.AddDbContext<DatabaseContext>(options =>
             options.UseSqlServer(connectionString, o =>
             {
@@ -130,7 +140,7 @@ public static class Program
         serviceCollection
             .AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>("DatabaseContext")
+            .AddDbContextCheck<SenderDatabaseContext>("DatabaseContext")
             .AddAzureServiceBusTopic(
                 EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
                 EnvironmentSettingNames.ProcessCompletedTopicName.Val(),

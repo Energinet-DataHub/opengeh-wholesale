@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 
-public interface IUnitOfWork
+public interface ISenderUnitOfWork
 {
     Task CommitAsync();
 }
