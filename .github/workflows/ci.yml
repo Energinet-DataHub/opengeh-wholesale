@@ -28,6 +28,7 @@ jobs:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
       PREPARE_OUTPUTS: true
       DOTNET_VERSION: 6.0.400 # TODO: Remove when runners are updated
+      OPERATING_SYSTEM: 'ubuntu-latest'
 
   dotnet_solution_ci_test_integrationtests:
     needs: [dotnet_solution_ci_build]
