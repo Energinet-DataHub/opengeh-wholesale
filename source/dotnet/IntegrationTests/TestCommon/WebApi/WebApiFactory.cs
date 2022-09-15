@@ -20,6 +20,14 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
+// Key should match FullName of assembly containing TStartup
+// https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.testing.webapplicationfactorycontentrootattribute?view=aspnetcore-3.0
+[assembly: WebApplicationFactoryContentRootAttribute(
+    key: "Energinet.DataHub.Wholesale.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    contentRootPath: "./",
+    contentRootTest: "Energinet.DataHub.Wholesale.WebApi.dll",
+    priority: "1")]
+
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
 {
     public class WebApiFactory : WebApplicationFactory<Startup>
