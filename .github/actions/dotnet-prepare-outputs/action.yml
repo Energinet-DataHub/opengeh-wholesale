@@ -87,4 +87,4 @@ runs:
         mkdir -p '${{ inputs.OUTPUT_PATH }}/dotnet'
         cp -r \
           './source/dotnet' \
-          '${{ inputs.OUTPUT_PATH }}/dotnet'
+          '${{ inputs.OUTPUT_PATH }}'
