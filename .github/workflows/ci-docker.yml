@@ -13,12 +13,7 @@
 # limitations under the License.
 name: Create and publish a Docker image
 
-on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.devcontainer/**'
+on: [pull_request]
 
 env:
   REGISTRY: ghcr.io
