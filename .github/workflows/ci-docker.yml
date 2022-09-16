@@ -19,11 +19,6 @@ on:
       - main
     paths:
       - '.devcontainer/**'
-  push:
-    branches:
-      - main
-    paths:
-      - '.devcontainer/**'
 
 env:
   REGISTRY: ghcr.io
