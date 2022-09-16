@@ -43,6 +43,9 @@ public class BearerTokenTests :
         : base(wholesaleWebApiFixture, testOutputHelper)
     {
         _factory = factory;
+
+        // TODO: Remove when done with PoC
+        testOutputHelper.WriteLine($"Current directory: {Environment.CurrentDirectory}");
     }
 
     public Task InitializeAsync() => Task.CompletedTask;
@@ -52,9 +55,6 @@ public class BearerTokenTests :
     [Fact]
     public async Task Request_WhenMissingBearerToken_Returns401Unauthorized()
     {
-        // TODO: Remove when done with PoC
-        testOutputHelper.WriteLine($"Current directory: {Environment.CurrentDirectory}");
-
         // Arrange
         using var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Remove(JwtBearerHttpHeader);
