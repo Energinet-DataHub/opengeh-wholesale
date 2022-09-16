@@ -51,6 +51,7 @@ limitations under the License.
       <ProjectReference Include="..\Contracts\Contracts.csproj" />
       <ProjectReference Include="..\Domain\Domain.csproj" />
       <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
+      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">

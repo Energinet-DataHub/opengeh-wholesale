@@ -12,21 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
+using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
+using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 
-public class UnitOfWork : IUnitOfWork
+public class SenderDatabaseContext : DbContext, ISenderDatabaseContext
 {
-    private readonly IDatabaseContext _databaseContext;
-
-    public UnitOfWork(IDatabaseContext databaseContext)
+    public SenderDatabaseContext(DbContextOptions<SenderDatabaseContext> options)
+        : base(options)
     {
-        _databaseContext = databaseContext;
     }
 
-    public async Task CommitAsync()
+    public DbSet<Process> Processes { get; private set; } = null!;
+
+    public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
+        modelBuilder.HasDefaultSchema("messagehub");
+
+        modelBuilder.ApplyConfiguration(new ProcessEntityConfiguration());
+
+        base.OnModelCreating(modelBuilder);
     }
 }
