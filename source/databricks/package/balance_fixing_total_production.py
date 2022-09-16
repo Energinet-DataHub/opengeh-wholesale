@@ -143,10 +143,6 @@ def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
     )
     debug("timeseries basis data", timeseries_basis_data)
 
-    timeseries_basis_data.repartition("METERINGPOINTID").write.mode("overwrite").option(
-        "header", True
-    ).csv("___test___")
-
     return timeseries_basis_data
 
 

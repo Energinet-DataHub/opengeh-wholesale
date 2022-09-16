@@ -87,16 +87,7 @@ def _get_valid_args_or_throw():
     return args
 
 
-def start():
-    args = _get_valid_args_or_throw()
-    log(f"Job arguments: {str(args)}")
-    if args.only_validate_args:
-        return
-
-    spark = initialize_spark(
-        args.data_storage_account_name, args.data_storage_account_key
-    )
-
+def start(spark, args):
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.
@@ -121,6 +112,11 @@ def start():
     )
     debug("timeseries basis data df", timeseries_basis_data)
     debug("raw_timeseries", raw_time_series_points_df)
+
+    timeseries_basis_data.repartition("METERINGPOINTID").write.mode("overwrite").option(
+        "header", True
+    ).csv(f"{args.process_results_path}/batch_id={args.batch_id}/basis-data")
+
     # First repartition to co-locate all rows for a grid area on a single executor.
     # This ensures that only one file is being written/created for each grid area
     # when writing/creating the files. The partition by creates a folder for each grid area.
@@ -130,9 +126,18 @@ def start():
         .repartition("grid_area")
         .write.mode("overwrite")
         .partitionBy("grid_area")
-        .json(f"{args.process_results_path}/batch_id={args.batch_id}")
+        .json(f"{args.process_results_path}/batch_id={args.batch_id}/result")
     )
 
 
 if __name__ == "__main__":
+    args = _get_valid_args_or_throw()
+    log(f"Job arguments: {str(args)}")
+    if args.only_validate_args:
+        exit(0)
+
+    spark = initialize_spark(
+        args.data_storage_account_name, args.data_storage_account_key
+    )
+
     start()
