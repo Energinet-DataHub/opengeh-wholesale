@@ -13,12 +13,9 @@
 // limitations under the License.
 
 using System.Net;
-using System.Reflection;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
-using Energinet.DataHub.Wholesale.WebApi;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -46,42 +43,17 @@ public class BearerTokenTests :
         : base(wholesaleWebApiFixture, testOutputHelper)
     {
         _factory = factory;
-
-        // TODO: Remove when done with PoC
-        // To see this output use add '--logger "console;verbosity=detailed"' to the execution of dotnet test
-        testOutputHelper.WriteLine($"Base directory: {AppContext.BaseDirectory}");
-        testOutputHelper.WriteLine($"Current directory: {Environment.CurrentDirectory}");
-
-        var path = Environment.GetEnvironmentVariable("ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI");
-        testOutputHelper.WriteLine($"Path in environment variable: {path}");
-
-        var attributes = typeof(BearerTokenTests).Assembly.GetCustomAttributes<WebApplicationFactoryContentRootAttribute>();
-        if (attributes.Any())
-        {
-            var first = attributes.First();
-
-            var contentRootPath = first.ContentRootPath;
-            var contentRootTest = first.ContentRootTest;
-
-            testOutputHelper.WriteLine($"ContentRootPath: {contentRootPath}");
-            testOutputHelper.WriteLine($"ContentRootTest: {contentRootTest}");
-
-            var contentRootCandidate = Path.Combine(
-                AppContext.BaseDirectory,
-                contentRootPath);
-
-            var contentRootMarker = Path.Combine(
-                contentRootCandidate,
-                Path.GetFileName(contentRootTest));
-
-            var exists = File.Exists(contentRootMarker);
-            testOutputHelper.WriteLine($"Exists: {exists}");
-        }
     }
 
-    public Task InitializeAsync() => Task.CompletedTask;
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
 
     [Fact]
     public async Task Request_WhenMissingBearerToken_Returns401Unauthorized()

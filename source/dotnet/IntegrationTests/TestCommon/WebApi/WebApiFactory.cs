@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
 using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Wholesale.WebApi;
@@ -20,14 +19,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-
-// Key should match FullName of assembly containing TStartup
-// https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.testing.webapplicationfactorycontentrootattribute?view=aspnetcore-3.0
-[assembly: WebApplicationFactoryContentRoot(
-    key: "Energinet.DataHub.Wholesale.WebApi",
-    contentRootPath: @"C:\Projects\DataHub\opengeh-wholesale\source\dotnet\X_WebApi\",
-    contentRootTest: "Startup.cs",
-    priority: "1")]
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
 {
@@ -49,13 +40,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
             JwtTokenValidatorMock!
                 .Setup(m => m.ValidateTokenAsync(It.IsAny<string>()))
                 .ReturnsAsync((IsValid: isValid, ClaimsPrincipal: claims));
-        }
-
-        protected override IEnumerable<Assembly> GetTestAssemblies()
-        {
-            var assembly = typeof(WebApiFactory).Assembly;
-            var result = new List<Assembly> { assembly };
-            return result;
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
