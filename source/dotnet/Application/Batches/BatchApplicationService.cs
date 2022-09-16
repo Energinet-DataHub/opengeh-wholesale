@@ -94,6 +94,16 @@ public class BatchApplicationService : IBatchApplicationService
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
+    public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
+    {
+        var minExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MinExecutionTime);
+        var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
+        var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
+            .ConfigureAwait(false);
+        return batches
+            .Select(b => new BatchDto(b.RunId, b.PeriodStart, b.PeriodEnd,  b.ExecutionTimeEnd.HasValue ? b.ExecutionTimeEnd.Value : null, b.ExecutionState));
+    }
+
     private static Batch CreateBatch(BatchRequestDto batchRequestDto)
     {
         var gridAreaCodes = batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c));

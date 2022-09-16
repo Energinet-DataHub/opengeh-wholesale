@@ -38,6 +38,9 @@ public class Batch
         {
             throw new ArgumentException("periodStart is greater or equal to periodEnd");
         }
+
+        ExecutionTimeStart = null;
+        ExecutionTimeEnd = null;
     }
 
     /// <summary>
@@ -58,6 +61,10 @@ public class Batch
 
     public BatchExecutionState ExecutionState { get; private set; }
 
+    public Instant? ExecutionTimeStart { get; private set; }
+
+    public Instant? ExecutionTimeEnd { get; private set; }
+
     public JobRunId? RunId { get; private set; }
 
     public Instant PeriodStart { get; }
@@ -70,6 +77,7 @@ public class Batch
             throw new InvalidOperationException("Batch cannot be completed because it is not in state executing.");
 
         ExecutionState = BatchExecutionState.Completed;
+        ExecutionTimeEnd = SystemClock.Instance.GetCurrentInstant();
     }
 
     public void MarkAsExecuting(JobRunId jobRunId)
@@ -81,5 +89,6 @@ public class Batch
 
         ExecutionState = BatchExecutionState.Executing;
         RunId = jobRunId;
+        ExecutionTimeStart = SystemClock.Instance.GetCurrentInstant();
     }
 }
