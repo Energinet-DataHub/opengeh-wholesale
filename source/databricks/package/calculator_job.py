@@ -59,6 +59,7 @@ def _get_valid_args_or_throw():
     p.add("--integration-events-path", type=str, required=True)
     p.add("--time-series-points-path", type=str, required=True)
     p.add("--process-results-path", type=str, required=True)
+    p.add("--time-zone", type=str, required=True)
 
     # Run parameters
     p.add("--batch-id", type=str, required=True)
@@ -116,6 +117,7 @@ def start():
         args.batch_snapshot_datetime,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
+        args.time_zone,
     )
     debug("timeseries basis data df", timeseries_basis_data)
     debug("raw_timeseries", raw_time_series_points_df)

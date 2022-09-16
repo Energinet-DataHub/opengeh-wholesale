@@ -84,6 +84,8 @@ def test_calculator_job_accepts_parameters_from_process_manager(
         "foo",
         "--only-validate-args",
         "1",
+        "--time-zone",
+        "Europe/Copenhagen",
     ]
     python_parameters.extend(process_manager_parameters)
 
@@ -167,6 +169,8 @@ def test_calculator_job_input_and_output_integration_test(
         "2022-04-01T22:00:00Z",
         "--batch-period-end-datetime",
         "2022-09-01T22:00:00Z",
+        "--time-zone",
+        "Europe/Copenhagen",
     ]
 
     # Reads time_series_points from parquet into dataframe

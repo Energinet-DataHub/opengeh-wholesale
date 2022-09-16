@@ -78,10 +78,12 @@ def calculate_balance_fixing_total_production(
     batch_snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
+    time_zone,
 ) -> DataFrame:
     cached_integration_events_df = _get_cached_integration_events(
         raw_integration_events_df, batch_snapshot_datetime
     )
+
     time_series_points = _get_time_series_points(
         raw_time_series_points_df, batch_snapshot_datetime
     )
@@ -101,21 +103,26 @@ def calculate_balance_fixing_total_production(
         period_start_datetime,
         period_end_datetime,
     )
-    time_series_basis_data = _get_time_series_basis_data(enriched_time_series_point_df)
+
+    time_series_basis_data = _get_time_series_basis_data(
+        enriched_time_series_point_df, time_zone
+    )
+
     result_df = _get_result_df(enriched_time_series_point_df)
+
     cached_integration_events_df.unpersist()
 
     return (result_df, time_series_basis_data)
 
 
-def _get_time_series_basis_data(enriched_time_series_point_df):
+def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
     w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
 
     debug("enriched_time_series_point_df", enriched_time_series_point_df)
 
     timeseries_basis_data = (
         enriched_time_series_point_df.withColumn(
-            "localDate", to_date(from_utc_timestamp(col("time"), "Europe/Copenhagen"))
+            "localDate", to_date(from_utc_timestamp(col("time"), time_zone))
         )
         .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
         .withColumn("STARTDATETIME", first("time").over(w))
