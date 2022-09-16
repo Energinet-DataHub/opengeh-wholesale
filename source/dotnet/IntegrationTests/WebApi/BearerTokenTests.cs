@@ -45,6 +45,7 @@ public class BearerTokenTests :
         _factory = factory;
 
         // TODO: Remove when done with PoC
+        // To see this output use add '--logger "console;verbosity=detailed"' to the execution of dotnet test
         testOutputHelper.WriteLine($"Current directory: {Environment.CurrentDirectory}");
     }
 
