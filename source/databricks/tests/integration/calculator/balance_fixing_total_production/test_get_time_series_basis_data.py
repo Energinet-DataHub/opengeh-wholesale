@@ -20,7 +20,7 @@ import os
 import shutil
 import pytest
 import json
-from package.codelists import Resolution
+from package.codelists import Resolution, MeteringPointType
 from decimal import Decimal
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import (
@@ -42,7 +42,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
         quantity=Decimal("1"),
         gridArea="805",
         gsrnNumber="the_gsrn_number",
-        MeteringPointType="the_metering_point_type",
+        MeteringPointType=MeteringPointType.production.value,
         time="2022-06-08T22:00:00.000Z",
         numberOfPoints=500,
     ):

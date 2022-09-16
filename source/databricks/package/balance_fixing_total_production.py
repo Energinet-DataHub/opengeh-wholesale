@@ -115,60 +115,6 @@ def calculate_balance_fixing_total_production(
     return (result_df, time_series_basis_data)
 
 
-def _get_sorted_quantity_columns(timeseries_basis_data):
-    def num_sort(col_name):
-        "Extracts the nuber in the string"
-        import re
-
-        return list(map(int, re.findall(r"\d+", col_name)))[0]
-
-    quantity_columns = [
-        c for c in timeseries_basis_data.columns if c.startswith("ENERGYQUANTITY")
-    ]
-    quantity_columns.sort(key=num_sort)
-    return quantity_columns
-
-
-def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
-    w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
-
-    debug("enriched_time_series_point_df", enriched_time_series_point_df)
-
-    timeseries_basis_data = (
-        enriched_time_series_point_df.withColumn(
-            "localDate", to_date(from_utc_timestamp(col("time"), time_zone))
-        )
-        .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
-        .withColumn("STARTDATETIME", first("time").over(w))
-        .groupBy(
-            "gsrnNumber",
-            "localDate",
-            "STARTDATETIME",
-            "GridAreaCode",
-            "GridAreaLinkId",
-            "MeteringPointType",
-            "Resolution",
-        )
-        .pivot("position")
-        .agg(first("Quantity"))
-        .withColumnRenamed("gsrnNumber", "METERINGPOINTID")
-        .withColumnRenamed("MeteringPointType", "TYPEOFMP")
-        .withColumnRenamed("Resolution", "RESOLUTIONDURATION")
-    )
-
-    quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data)
-    timeseries_basis_data = timeseries_basis_data.select(
-        "METERINGPOINTID",
-        "TYPEOFMP",
-        "STARTDATETIME",
-        "RESOLUTIONDURATION",
-        *quantity_columns
-    )
-
-    debug("timeseries basis data", timeseries_basis_data)
-    return timeseries_basis_data
-
-
 def _get_cached_integration_events(
     raw_integration_events_df, batch_snapshot_datetime
 ) -> DataFrame:
@@ -399,6 +345,68 @@ def _get_enriched_time_series_points_df(
     )
 
     return enriched_time_series_point_df
+
+
+def _get_sorted_quantity_columns(timeseries_basis_data):
+    def num_sort(col_name):
+        "Extracts the nuber in the string"
+        import re
+
+        return list(map(int, re.findall(r"\d+", col_name)))[0]
+
+    quantity_columns = [
+        c for c in timeseries_basis_data.columns if c.startswith("ENERGYQUANTITY")
+    ]
+    quantity_columns.sort(key=num_sort)
+    return quantity_columns
+
+
+def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
+    w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
+
+    debug("enriched_time_series_point_df", enriched_time_series_point_df)
+
+    timeseries_basis_data = (
+        enriched_time_series_point_df.withColumn(
+            "localDate", to_date(from_utc_timestamp(col("time"), time_zone))
+        )
+        .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
+        .withColumn("STARTDATETIME", first("time").over(w))
+        .groupBy(
+            "gsrnNumber",
+            "localDate",
+            "STARTDATETIME",
+            "GridAreaCode",
+            "GridAreaLinkId",
+            "MeteringPointType",
+            "Resolution",
+        )
+        .pivot("position")
+        .agg(first("Quantity"))
+        .withColumnRenamed("gsrnNumber", "METERINGPOINTID")
+        .withColumn(
+            "TYPEOFMP",
+            when(col("MeteringPointType") == MeteringPointType.production.value, "E18"),
+        )
+        .withColumn(
+            "RESOLUTIONDURATION",
+            when(col("Resolution") == Resolution.quarter.value, "PT15M").when(
+                col("Resolution") == Resolution.quarter.value, "PT1H"
+            ),
+        )
+    )
+
+    quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data)
+    timeseries_basis_data = timeseries_basis_data.select(
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        "RESOLUTIONDURATION",
+        *quantity_columns
+    )
+
+    debug("timeseries basis data", timeseries_basis_data)
+    return timeseries_basis_data
 
 
 def _get_result_df(enriched_time_series_points_df) -> DataFrame:
