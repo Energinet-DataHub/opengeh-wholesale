@@ -99,5 +99,7 @@ def test__get_timeseries_basis_data(enriched_time_series_factory):
         time="2022-10-28T22:00:00.000Z", resolution=Resolution.quarter.value
     )
 
-    timeseries_basis_data = _get_time_series_basis_data(enriched_time_series_points_df)
+    timeseries_basis_data = _get_time_series_basis_data(
+        enriched_time_series_points_df, "Europe/Copenhagen"
+    )
     assert len(timeseries_basis_data.columns) == 28
