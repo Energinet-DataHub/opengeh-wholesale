@@ -113,9 +113,24 @@ def start(spark, args):
     debug("timeseries basis data df", timeseries_basis_data)
     debug("raw_timeseries", raw_time_series_points_df)
 
-    timeseries_basis_data.repartition("METERINGPOINTID").write.mode("overwrite").option(
-        "header", True
-    ).csv(f"{args.process_results_path}/batch_id={args.batch_id}/basis-data")
+    (timeseries_quarter_df, timeseries_hour_df) = timeseries_basis_data
+    (
+        timeseries_quarter_df.repartition("METERINGPOINTID")
+        .write.mode("overwrite")
+        .option("header", True)
+        # TODO: Make "contract" tests in python and .NET to ensure using same path
+        .csv(
+            f"{args.process_results_path}/batch_id={args.batch_id}/basis-data/time-series-quarter"
+        )
+    )
+    (
+        timeseries_hour_df.repartition("METERINGPOINTID")
+        .write.mode("overwrite")
+        .option("header", True)
+        .csv(
+            f"{args.process_results_path}/batch_id={args.batch_id}/basis-data/time-series-hour"
+        )
+    )
 
     # First repartition to co-locate all rows for a grid area on a single executor.
     # This ensures that only one file is being written/created for each grid area
@@ -126,6 +141,7 @@ def start(spark, args):
         .repartition("grid_area")
         .write.mode("overwrite")
         .partitionBy("grid_area")
+        # TODO: Handle data migration to new sub folder /result
         .json(f"{args.process_results_path}/batch_id={args.batch_id}/result")
     )
 

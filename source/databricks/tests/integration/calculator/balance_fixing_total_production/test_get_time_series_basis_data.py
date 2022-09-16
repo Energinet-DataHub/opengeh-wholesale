@@ -40,27 +40,27 @@ def enriched_time_series_factory(spark, timestamp_factory):
     def factory(
         resolution=Resolution.quarter.value,
         quantity=Decimal("1"),
-        gridArea="805",
-        gsrnNumber="the_gsrn_number",
-        MeteringPointType=MeteringPointType.production.value,
+        grid_area="805",
+        gsrn_number="the_gsrn_number",
+        metering_point_type=MeteringPointType.production.value,
         time="2022-06-08T22:00:00.000Z",
-        numberOfPoints=500,
+        number_of_points=500,
     ):
         df_array = []
 
         time = timestamp_factory(time)
 
-        for i in range(numberOfPoints):
+        for i in range(number_of_points):
 
             df_array.append(
                 {
-                    "GridAreaCode": gridArea,
+                    "GridAreaCode": grid_area,
                     "Resolution": resolution,
                     "GridAreaLinkId": "GridAreaLinkId",
                     "time": time,
                     "Quantity": quantity + i,
-                    "GsrnNumber": gsrnNumber,
-                    "MeteringPointType": MeteringPointType,
+                    "GsrnNumber": gsrn_number,
+                    "MeteringPointType": metering_point_type,
                 }
             )
             time = time + timedelta(minutes=15)
@@ -96,10 +96,23 @@ def enriched_time_series_factory(spark, timestamp_factory):
 def test__get_timeseries_basis_data(enriched_time_series_factory):
 
     enriched_time_series_points_df = enriched_time_series_factory(
-        time="2022-10-28T22:00:00.000Z", resolution=Resolution.quarter.value
+        time="2022-10-28T22:00:00.000Z",
+        resolution=Resolution.quarter.value,
+        number_of_points=96,
+    ).union(
+        enriched_time_series_factory(
+            time="2022-10-28T22:00:00.000Z",
+            resolution=Resolution.hour.value,
+            number_of_points=24,
+        )
     )
 
-    timeseries_basis_data = _get_time_series_basis_data(
+    (quarter_df, hour_df) = _get_time_series_basis_data(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
-    assert len(timeseries_basis_data.columns) == 28
+
+    # Assert: Metering point id, type of mp, 96 energi quantities = 99 columns
+    assert len(quarter_df.columns) == 99
+
+    # Assert: Metering point id, type of mp, 24 energi quantities = 27 columns
+    assert len(hour_df.columns) == 27
