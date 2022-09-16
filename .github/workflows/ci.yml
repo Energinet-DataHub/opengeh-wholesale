@@ -30,7 +30,6 @@ jobs:
       DOTNET_VERSION: 6.0.400 # TODO: Remove when runners are updated
       OPERATING_SYSTEM: 'ubuntu-latest'
 
-  # Test variable
   dotnet_solution_ci_test_integrationtests:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
