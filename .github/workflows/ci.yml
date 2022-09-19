@@ -34,10 +34,10 @@ jobs:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
+      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       USE_AZURE_FUNCTIONS_TOOLS: true
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
-      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\source\dotnet\WebApi'
+      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\WebApi'
       DOTNET_VERSION: 6.0.400 # TODO: Remove when runners are updated
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -50,7 +50,7 @@ jobs:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
+      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       USE_AZURE_FUNCTIONS_TOOLS: false
       DOTNET_VERSION: 6.0.400 # TODO: Remove when runners are updated
     secrets:
