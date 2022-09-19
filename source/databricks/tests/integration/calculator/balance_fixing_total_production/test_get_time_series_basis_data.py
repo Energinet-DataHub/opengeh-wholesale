@@ -28,7 +28,9 @@ from package.balance_fixing_total_production import (
     _get_enriched_time_series_points_df,
 )
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, sum
+from pyspark.sql.functions import col, sum, lit
+from functools import reduce
+from operator import add
 
 minimum_quantity = Decimal("0.001")
 grid_area_code_805 = "805"
@@ -63,34 +65,14 @@ def enriched_time_series_factory(spark, timestamp_factory):
                     "MeteringPointType": metering_point_type,
                 }
             )
-            time = time + timedelta(minutes=15)
-            # (
-            #    time + timedelta(minutes=60)
-            #    if resolution == Resolution.hour.value
-            #    else time + timedelta(minutes=15)
-            # )
+            time = (
+                time + timedelta(minutes=60)
+                if resolution == Resolution.hour.value
+                else time + timedelta(minutes=15)
+            )
         return spark.createDataFrame(df_array)
 
     return factory
-
-
-# +------------------+-------------+---------+-------+----------+--------------------+--------------------+-------------------+----+-----+---+
-# |        GsrnNumber|TransactionId| Quantity|Quality|Resolution|RegistrationDateTime|          storedTime|               time|year|month|day|
-# +------------------+-------------+---------+-------+----------+--------------------+--------------------+-------------------+----+-----+---+
-# |576003432716622530|     C1875000|    9.090|      4|         1| 2022-08-04 08:30:00|2022-08-09 13:10:...|2022-06-01 00:00:00|2022|    6|  1|
-# |576003432716622530|     C1875000|   10.100|      4|         1| 2022-08-04 08:30:00|2022-08-09 13:10:...|2022-06-01 00:15:00|2022|    6|  1|
-# |576003432716622530|     C1875000|   11.110|      4|         1| 2022-08-04 08:30:00|2022-08-09 13:10:...|2022-06-01 00:30:00|2022|    6|  1|
-
-# GridAreaCode|            Quantity|Resolution|               time|
-# +------------+--------------------+----------+-------------------+
-# |         805|1.000000000000000000|         1|2022-06-08 12:09:15|
-# |         805|2.000000000000000000|         1|2022-06-08 12:09:15|
-# +------------+--------------------+----------+-------------------+
-# |GridAreaCode|     GsrnNumber|Resolution|               time|            Quantity|
-# +------------+---------------+----------+-------------------+--------------------+
-# |         805|the-gsrn-number|         2|2022-06-08 12:09:15|1.100000000000000000|
-# +------------+---------------+----------+-------------------+--------------------+
-# METERINGPOINTID	TYPEOFMP	STARTDATETIME	RESOLUTIONDURATION
 
 
 def test__get_timeseries_basis_data(enriched_time_series_factory):
@@ -118,25 +100,126 @@ def test__get_timeseries_basis_data(enriched_time_series_factory):
     assert len(hour_df.columns) == 27
 
 
-def test__has_correct_number_of_quantity_columns_according_to_dst():
-    # At least 3 test cases for 23, 24, 25 columns
-    raise Exception("todo")
+@pytest.mark.parametrize(
+    "period_start, resolution, number_of_points, expected_number_of_quarter_quantity_collumns, expected_number_of_hour_quantity_collumns",
+    [
+        # summertime has 24 hours
+        ("2022-06-08T22:00:00.000Z", Resolution.quarter.value, 96, 96, 0),
+        # sommertime has 24 hours
+        ("2022-06-08T22:00:00.000Z", Resolution.hour.value, 24, 0, 24),
+        # vintertime has 24 hours
+        ("2022-06-08T22:00:00.000Z", Resolution.quarter.value, 96, 96, 0),
+        # vintertime has 24 hours
+        ("2022-06-08T22:00:00.000Z", Resolution.hour.value, 24, 0, 24),
+        # going from summer to vintertime there are 25 hours (100 quarters)
+        # creating 292 points from 22:00 the 29 oktober will create points for 3 days
+        # where the 30 oktober is day with 25 hours.and
+        # Therefore there should be 100 columns for quarter resolution and 25 for  hour resolution
+        ("2022-10-29T22:00:00.000Z", Resolution.quarter.value, 292, 100, 0),
+        ("2022-10-29T22:00:00.000Z", Resolution.hour.value, 73, 0, 25),
+        # going from vinter to summertime there are 23 hours (92 quarters)
+        ("2022-03-26T23:00:00.000Z", Resolution.hour.value, 23, 0, 23),
+    ],
+)
+def test__has_correct_number_of_quantity_columns_according_to_dst(
+    enriched_time_series_factory,
+    period_start,
+    resolution,
+    number_of_points,
+    expected_number_of_quarter_quantity_collumns,
+    expected_number_of_hour_quantity_collumns,
+):
+    enriched_time_series_points_df = enriched_time_series_factory(
+        time=period_start,
+        resolution=resolution,
+        number_of_points=number_of_points,
+    )
+    (quarter_df, hour_df) = _get_time_series_basis_data(
+        enriched_time_series_points_df, "Europe/Copenhagen"
+    )
+
+    quantity_columns_quarter = list(
+        filter(lambda column: column.startswith("ENERGYQUANTITY"), quarter_df.columns)
+    )
+    hour_df.show()
+    quantity_columns_hour = list(
+        filter(lambda column: column.startswith("ENERGYQUANTITY"), hour_df.columns)
+    )
+    assert len(quantity_columns_quarter) == expected_number_of_quarter_quantity_collumns
+    assert len(quantity_columns_hour) == expected_number_of_hour_quantity_collumns
 
 
-def test__returns_dataframe_with_quarter_resolution_metering_points():
-    raise Exception("todo")
+def test__returns_dataframe_with_quarter_resolution_metering_points(
+    enriched_time_series_factory,
+):
+    enriched_time_series_points_df = enriched_time_series_factory(
+        time="2022-10-28T22:00:00.000Z",
+        resolution=Resolution.quarter.value,
+        number_of_points=96,
+    )
+    (quarter_df, hour_df) = _get_time_series_basis_data(
+        enriched_time_series_points_df, "Europe/Copenhagen"
+    )
+    assert quarter_df.count() == 1
+    assert hour_df.count() == 0
 
 
-def test__returns_dataframe_with_hour_resolution_metering_points():
-    raise Exception("todo")
+def test__returns_dataframe_with_hour_resolution_metering_points(
+    enriched_time_series_factory,
+):
+    enriched_time_series_points_df = enriched_time_series_factory(
+        time="2022-10-28T22:00:00.000Z",
+        resolution=Resolution.hour.value,
+        number_of_points=24,
+    )
+    (quarter_df, hour_df) = _get_time_series_basis_data(
+        enriched_time_series_points_df, "Europe/Copenhagen"
+    )
+    assert quarter_df.count() == 0
+    assert hour_df.count() == 1
 
 
-def test__splits_single_metering_point_with_different_resolution_on_different_dates():
-    raise Exception("todo")
+def test__splits_single_metering_point_with_different_resolution_on_different_dates(
+    enriched_time_series_factory,
+):
+    enriched_time_series_points_df = enriched_time_series_factory(
+        time="2022-10-28T22:00:00.000Z",
+        resolution=Resolution.quarter.value,
+        number_of_points=96,
+    ).union(
+        enriched_time_series_factory(
+            time="2022-10-28T22:00:00.000Z",
+            resolution=Resolution.hour.value,
+            number_of_points=24,
+        )
+    )
+    (quarter_df, hour_df) = _get_time_series_basis_data(
+        enriched_time_series_points_df, "Europe/Copenhagen"
+    )
+    assert quarter_df.count() == 1
+    assert hour_df.count() == 1
 
 
-def test__returns_expected_data_for_each_column():
+def test__returns_expected_data_for_each_column(enriched_time_series_factory):
     # Test for both hour and quarter dataframes
+    enriched_time_series_points_df = enriched_time_series_factory(
+        time="2022-10-28T22:00:00.000Z",
+        resolution=Resolution.quarter.value,
+        number_of_points=96,
+    ).union(
+        enriched_time_series_factory(
+            time="2022-10-28T22:00:00.000Z",
+            resolution=Resolution.hour.value,
+            number_of_points=24,
+        )
+    )
+    (quarter_df, hour_df) = _get_time_series_basis_data(
+        enriched_time_series_points_df, "Europe/Copenhagen"
+    )
+    quantity_columns_quarter = list(
+        filter(lambda column: column.startswith("ENERGYQUANTITY"), quarter_df.columns)
+    )
+
     raise Exception("todo")
 
 
