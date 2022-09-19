@@ -32,7 +32,7 @@ jobs:
       OPERATING_SYSTEM: 'ubuntu-latest'
 
   # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
-  dotnet_solution_ci_test_integrationtests:
+  dotnet_solution_ci_test_integrationtests_part1:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
@@ -50,7 +50,7 @@ jobs:
       AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
   # Run tests in 'IntegrationTests.dll' NOT within the namespace 'IntegrationEventListener'
-  dotnet_solution_ci_test_integrationtests:
+  dotnet_solution_ci_test_integrationtests_part2:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
@@ -104,7 +104,14 @@ jobs:
       TERRAFORM_VERSION: '1.2.2'
 
   create_prerelease:
-    needs: [ci_base, terraform_validate, dotnet_solution_ci_build, dotnet_solution_ci_test_integrationtests, dotnet_solution_ci_test_tests, databricks_ci, wheel_ci]
+    needs: [
+      ci_base,
+      terraform_validate,
+      dotnet_solution_ci_build,
+      dotnet_solution_ci_test_integrationtests_part1,
+      dotnet_solution_ci_test_integrationtests_part2,
+      dotnet_solution_ci_test_tests, databricks_ci, wheel_ci
+    ]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@poc
     with:
       CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
