@@ -22,6 +22,7 @@ jobs:
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@poc
 
+  # Build
   dotnet_solution_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-build.yml@poc
     with:
@@ -30,6 +31,7 @@ jobs:
       DOTNET_VERSION: 6.0.400 # TODO: Remove when runners are updated
       OPERATING_SYSTEM: 'ubuntu-latest'
 
+  # Test
   dotnet_solution_ci_test_integrationtests:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
@@ -46,6 +48,7 @@ jobs:
       AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
       AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
+  # Test
   dotnet_solution_ci_test_tests:
     needs: [dotnet_solution_ci_build]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
