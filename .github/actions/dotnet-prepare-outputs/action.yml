@@ -81,10 +81,24 @@ runs:
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\databasemigration'
 
-    - name: Copy all dotnet (source and bin) for executing tests
+    - name: Copy output for Integration Tests
       shell: bash
       run: |
-        mkdir -p '${{ inputs.OUTPUT_PATH }}/dotnet'
         cp -r \
-          './source/dotnet' \
-          '${{ inputs.OUTPUT_PATH }}'
+          './source/dotnet/IntegrationTests/bin/Release/net6.0' \
+          '${{ inputs.OUTPUT_PATH }}/integrationtests'
+
+    - name: Copy output for Tests
+      shell: bash
+      run: |
+        cp -r \
+          './source/dotnet/Tests/bin/Release/net6.0' \
+          '${{ inputs.OUTPUT_PATH }}/tests'
+
+    # - name: Copy all dotnet (source and bin) for executing tests
+    #   shell: bash
+    #   run: |
+    #     mkdir -p '${{ inputs.OUTPUT_PATH }}/dotnet'
+    #     cp -r \
+    #       './source/dotnet' \
+    #       '${{ inputs.OUTPUT_PATH }}'
