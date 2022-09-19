@@ -30,7 +30,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/databricks-unit-test
   PUSH_TO_REGISTRY: ${{ github.event_name != 'pull_request' }}
-  # DOCKERFILE_PATH: '.devcontainer/Dockerfile'
+  CONTEXT_PATH: './.devcontainer/'
 
 jobs:
   build-and-push-image:
@@ -53,16 +53,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Extract metadata (tags, labels) for Docker
-      #   id: meta
-      #   uses: docker/metadata-action@v4
-      #   with:
-      #     images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: ./.devcontainer/
-          #file: ${{ env.DOCKERFILE_PATH }}
-          push: ${{ env.PUSH_TO_REGISTRY }}
+          context: ${{ env.CONTEXT_PATH }}
+          push: true
           tags: wholesale/image:latest
