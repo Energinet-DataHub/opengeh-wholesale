@@ -60,11 +60,11 @@ Read about the architecture [here](docs/architecture.md).
 
 ![Architecture!](docs/images/architecture.drawio.png)
 
-Learn about the aggregation processes terms [here](docs/process-terms.md).
+Learn about the wholesale ubiquitous language [here](docs/ubiquitous-language.md).
 
 ## Databricks
 
-[Databricks readme](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#readme)
+[Databricks readme](source/databricks#readme)
 
 ## Test
 

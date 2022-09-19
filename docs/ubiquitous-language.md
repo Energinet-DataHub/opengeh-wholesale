@@ -1,4 +1,6 @@
-# Process Terms
+# Wholesale Ubiquitous Language
+
+## Process Terms
 
 The drawing shows most of the terms and conceptual models relating to aggregation processes in the wholesale domain.
 
@@ -17,3 +19,7 @@ The following expressions exemplify the domain language.
 - Each result is sent as a message to one or more actors
 - The **message content** is an RSM-014 CIM XML document
 - A batch can be **cancelled** in which case any running process will be stopped
+
+## Calculation types
+
+![Calculation types!](images/calculation-types.drawio.png)
