@@ -116,3 +116,30 @@ def test__get_timeseries_basis_data(enriched_time_series_factory):
 
     # Assert: Metering point id, type of mp, 24 energi quantities = 27 columns
     assert len(hour_df.columns) == 27
+
+
+def test__has_correct_number_of_quantity_columns_according_to_dst():
+    # At least 3 test cases for 23, 24, 25 columns
+    raise Exception("todo")
+
+
+def test__returns_dataframe_with_quarter_resolution_metering_points():
+    raise Exception("todo")
+
+
+def test__returns_dataframe_with_hour_resolution_metering_points():
+    raise Exception("todo")
+
+
+def test__splits_single_metering_point_with_different_resolution_on_different_dates():
+    raise Exception("todo")
+
+
+def test__returns_expected_data_for_each_column():
+    # Test for both hour and quarter dataframes
+    raise Exception("todo")
+
+
+def test__multiple_dates_are_split_into_rows():
+    # each date per metering point is a separate row
+    raise Exception("todo")

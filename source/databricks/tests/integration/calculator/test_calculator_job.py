@@ -213,3 +213,25 @@ def test_calculator_job_input_and_output_integration_test(
     expected_result_path = f"{data_lake_path}/results/batch_id=1/grid_area=805"
     actual_result_file = find_first_file(expected_result_path, "part-*.json")
     assert actual_result_file is not None
+
+
+def test__creates_csv_with_expected_columns_names():
+    # Both for hour and quarter
+    raise Exception("todo")
+
+
+def test__creates_csv_with_rows():
+    raise Exception("todo")
+
+
+def test__creates_csv_with_hour_resolution_metering_points():
+    raise Exception("todo")
+
+
+def test__creates_csv_with_quarter_resolution_metering_points():
+    raise Exception("todo")
+
+
+def test__creates_single_csv_file():
+    # todo: can we actually test this if the test env only has one worker node?
+    raise Exception("todo")
