@@ -21,4 +21,4 @@ runs:
       shell: bash
       run: |
         chmod +x ./.github/actions/databricks-unit-test/entrypoint.sh
-        docker pull ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:latest //workspaces/opengeh-wholesale wholesale ./.github/actions/databricks-unit-test/entrypoint.sh
+        docker pull ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:latest ./.github/actions/databricks-unit-test/entrypoint.sh
