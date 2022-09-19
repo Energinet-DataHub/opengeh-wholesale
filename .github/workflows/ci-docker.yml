@@ -62,7 +62,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:.devcontainer"
+          context: .
           file: ${{ env.DOCKERFILE_PATH }}
           push: ${{ env.PUSH_TO_REGISTRY }}
           tags: wholesale/image:latest
