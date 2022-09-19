@@ -64,4 +64,4 @@ jobs:
         with:
           context: ${{ env.CONTEXT_PATH }}
           push: true
-          tags: ${{ steps.meta.outputs.tags.lowercase }}
+          tags: ghcr.io/energinet-datahub/opengeh-wholesale//databricks-unit-test:latest
