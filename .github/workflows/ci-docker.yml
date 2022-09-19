@@ -65,4 +65,4 @@ jobs:
         with:
           context: ${{ env.CONTEXT_PATH }}
           push: true
-          tags: ${{ steps.image-name.outputs.lowercase }}:latest
+          tags: ${{ steps.image-name.outputs.lowercase }}
