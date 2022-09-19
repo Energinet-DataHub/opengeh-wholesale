@@ -81,6 +81,30 @@ runs:
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\databasemigration'
 
+    # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
+    # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
+    - name: Publish IntegrationTests
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\IntegrationTests\IntegrationTests.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '.\source\dotnet\IntegrationTests\bin\Release\net6.0'
+
+    # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
+    # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
+    - name: Publish Tests
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\Tests\Tests.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '.\source\dotnet\Tests\bin\Release\net6.0'
+
     - name: Copy all bin folders
       shell: bash
       run: |
