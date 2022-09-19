@@ -22,7 +22,7 @@ jobs:
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@poc
 
-  # Build all
+  # Build all projects within solution
   dotnet_solution_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-build.yml@poc
     with:
