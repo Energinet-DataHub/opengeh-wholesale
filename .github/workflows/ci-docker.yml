@@ -58,7 +58,7 @@ jobs:
         id: image-name
         uses: ASzc/change-string-case-action@v2
         with:
-          string: ghcr.io/${{ env.IMAGE_NAME }}
+          string: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
