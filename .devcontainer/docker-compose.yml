@@ -3,7 +3,7 @@ services:
   wholesale:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfiletestrunner
     volumes:
       # Forwards the local Docker socket to the container.
       - /var/run/docker.sock:/var/run/docker-host.sock
