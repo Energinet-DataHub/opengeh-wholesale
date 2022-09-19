@@ -110,7 +110,9 @@ jobs:
       dotnet_solution_ci_build,
       dotnet_solution_ci_test_integrationtests_part1,
       dotnet_solution_ci_test_integrationtests_part2,
-      dotnet_solution_ci_test_tests, databricks_ci, wheel_ci
+      dotnet_solution_ci_test_tests,
+      databricks_ci,
+      wheel_ci
     ]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@poc
     with:
