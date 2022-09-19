@@ -40,8 +40,8 @@ jobs:
       packages: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # - name: Checkout repository
+      #   uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -62,7 +62,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: .
+          # context: .
           file: ${{ env.DOCKERFILE_PATH }}
           push: ${{ env.PUSH_TO_REGISTRY }}
           tags: wholesale/image:latest
