@@ -14,18 +14,17 @@
 name: CD - Databricks test Docker image
 
 # The design of this workflow is inspired by: https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions
-on: [pull_request] #make workflow run even if it is not merged to main yet
-# on:
-#   pull_request:
-#     branches:
-#       - main
-#     paths:
-#       - '.devcontainer/**'
-#   push:
-#     branches:
-#       - main
-#     paths:
-#       - '.devcontainer/**'
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.devcontainer/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '.devcontainer/**'
 
 env:
   REGISTRY: ghcr.io

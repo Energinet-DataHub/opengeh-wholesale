@@ -17,6 +17,8 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - '.devcontainer/**'
 
 jobs:
   ci_base:
