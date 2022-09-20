@@ -89,32 +89,32 @@ jobs:
   #     IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
   #     TEST_REPORT_PATH: ./source/databricks/htmlcov/
 
-  # wheel_ci:
-  #   uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@poc
-  #   with:
-  #     PYHTON_VERSION: '3.8.6'
-  #     ARCHITECTURE: 'x64'
-  #     WHEEL_WORKING_DIRECTORY: './source/databricks'
-  #     ARTIFACT_NAME: 'wheel'
-  #     ARTIFACT_PATH: './source/databricks/dist'
+  wheel_ci:
+    uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@poc
+    with:
+      PYHTON_VERSION: '3.8.6'
+      ARCHITECTURE: 'x64'
+      WHEEL_WORKING_DIRECTORY: './source/databricks'
+      ARTIFACT_NAME: 'wheel'
+      ARTIFACT_PATH: './source/databricks/dist'
 
-  # terraform_validate:
-  #   uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@poc
-  #   with:
-  #     TERRAFORM_WORKING_DIR_PATH: "./build/infrastructure/main"
-  #     TERRAFORM_VERSION: '1.2.2'
+  terraform_validate:
+    uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@poc
+    with:
+      TERRAFORM_WORKING_DIR_PATH: "./build/infrastructure/main"
+      TERRAFORM_VERSION: '1.2.2'
 
   # TODO: Enable dependencies if we want to use this PoC branch (disabled so we can test dotnet parts faster)
   create_prerelease:
     needs: [
       ci_base,
-      #terraform_validate,
+      terraform_validate,
       dotnet_solution_ci_build,
       dotnet_solution_ci_test_integrationtests_part1,
       dotnet_solution_ci_test_integrationtests_part2,
       dotnet_solution_ci_test_tests,
       #databricks_ci,
-      #wheel_ci
+      wheel_ci
     ]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@poc
     with:
