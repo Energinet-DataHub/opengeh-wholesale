@@ -20,7 +20,6 @@ USER root
 # This replaces the default spark configuration in the docker image with the ones defined in the sibling file
 COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 
-
 # Install Azurite (support wasb-protocol storage for Delta tables in integration tests)
 RUN apt-get update; \
     apt-get install -y npm && npm install -g n && n lts && hash -r && npm install -g azurite
@@ -34,6 +33,11 @@ RUN mamba install --quiet --yes --satisfied-skip-solve \
 RUN pip --no-cache-dir install pyspelling azure-eventhub coverage-threshold ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json
 # Below will make everything in the directory owned by the group ${NB_GID}
 RUN fix-permissions "${CONDA_DIR}"
+
+# Install pytest-xdist to test across multiple CPUs
+RUN pip install pytest-xdist
+RUN pip install pytest-xdist[psutil]
+
 
 # Set misc environment variables required for properly run spark 
 # note the amount of memory used on the driver is adjusted here
