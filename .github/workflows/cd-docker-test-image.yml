@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-name: Create and publish a Docker image
+name: CD - Databricks test Docker image
 
 # The design of this workflow is inspired by: https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions
 on: [pull_request] #make workflow run even if it is not merged to main yet
@@ -55,7 +55,7 @@ jobs:
           username: ${{ env.CONTAINER_REGISTRY_USER }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Resolve container image name
+      - name: Declare Docker image name
         id: image-name
         uses: ASzc/change-string-case-action@v2
         with:
