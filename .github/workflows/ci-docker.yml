@@ -68,6 +68,8 @@ jobs:
               echo "TAG=/PR${{ github.event.pull_request.number }}:pre-release" >> "$GITHUB_ENV"
           fi
 
+          echo ${{ env.TAG }}
+
       # - name: Build and push Docker image
       #   uses: docker/build-push-action@v3
       #   with:
