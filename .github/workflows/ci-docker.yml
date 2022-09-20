@@ -65,7 +65,7 @@ jobs:
           if [[ ${{ env.PUSH_TO_REGISTRY }} == true ]]; then
               echo "TAG=:latest" >> "$GITHUB_ENV"
           else
-              echo "TAG=/pr${{ github.event.pull_request.number }}:pre-release" >> "$GITHUB_ENV"
+              echo "TAG=-:pre-release-pr${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
           fi
 
       - name: Build and push Docker image
