@@ -21,4 +21,4 @@ runs:
       shell: bash
       run: |
         chmod +x ./.github/actions/databricks-unit-test/entrypoint.sh
-        docker-compose -f ./.github/actions/databricks-unit-test/docker-compose.yml run -u root -w //workspaces/opengeh-wholesale wholesale ./.github/actions/databricks-unit-test/entrypoint.sh
+        docker-compose -f .devcontainer/docker-compose.yml run -u root -w //workspaces/opengeh-wholesale wholesale ./.github/actions/databricks-unit-test/entrypoint.sh
