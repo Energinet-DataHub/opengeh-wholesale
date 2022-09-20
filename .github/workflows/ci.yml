@@ -18,7 +18,8 @@ on:
     branches:
       - main
     paths-ignore:
-      - .devcontainer/**
+      - .devcontainer/Dockerfile
+      - .devcontainer/spark-defaults.conf
       - .github/workflows/cd-docker-test-image.yml
 
 jobs:

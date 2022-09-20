@@ -19,12 +19,14 @@ on:
     branches:
       - main
     paths:
-      - .devcontainer/**
+      - .devcontainer/Dockerfile
+      - .devcontainer/spark-defaults.conf
   push:
     branches:
       - main
     paths:
-      - .devcontainer/**
+      - .devcontainer/Dockerfile
+      - .devcontainer/spark-defaults.conf
 
 env:
   REGISTRY: ghcr.io
