@@ -13,6 +13,7 @@
 # limitations under the License.
 name: Create and publish a Docker image
 
+# The design of this workflow is inspired by: https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions
 on: [pull_request] #make workflow run even if it is not merged to main yet
 # on:
 #   pull_request:
@@ -29,7 +30,7 @@ on: [pull_request] #make workflow run even if it is not merged to main yet
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/databricks-unit-test
-  PUSH_TO_REGISTRY: ${{ github.event_name != 'pull_request' }}
+  IS_PULL_REQUEST_TRIGGERED: ${{ github.event_name == 'pull_request' }}
   CONTEXT_PATH: './.devcontainer/'
   CONTAINER_REGISTRY_USER: dh-system-account
 
@@ -62,10 +63,10 @@ jobs:
       
       - name: Set tag environmental variable
         run: |
-          if [[ ${{ env.PUSH_TO_REGISTRY }} == true ]]; then
-              echo "TAG=:latest" >> "$GITHUB_ENV"
-          else
+          if [[ ${{ env.IS_PULL_REQUEST_TRIGGERED }} == true ]]; then
               echo "TAG=:pre-release-pr${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
+          else
+              echo "TAG=:latest" >> "$GITHUB_ENV"
           fi
 
       - name: Build and push Docker image
