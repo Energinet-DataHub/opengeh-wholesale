@@ -17,6 +17,9 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - .docker/**
+      - .github/workflows/cd-docker-test-image.yml
 
 jobs:
   ci_base:
