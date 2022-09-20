@@ -116,7 +116,7 @@ We are using standard [Black code style](https://github.com/psf/black/blob/main/
 
 ### Building and publishing a Docker image for testing
 
-In the CI pipeline, the tests are executed towards a Docker image, which is described in the a [Dockerfile](../../.devcontainer/Dockerfile).
+In the CI pipeline, the tests are executed towards a Docker image, which is described in the a [Dockerfile](../../.docker/Dockerfile).
 
 A new Docker image is build and published using the [Docker CD-pipeline](../../.github/workflows/cd-docker-test-image.yml), meaning that a new Docker image is only published, when changes are made to the files described in the `paths`-sections of the workflow.
 
@@ -126,4 +126,4 @@ If a pull request triggers a new Docker image to be published, a new version of 
 
 The default Docker image used for testing is the newest version of the "latest"-tagged [databricks-unit-test](https://github.com/Energinet-DataHub/opengeh-wholesale/pkgs/container/opengeh-wholesale%2Fdatabricks-unit-test)-image stored in [GitHub packages](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages), which is a container registry.
 
-In a pull request, it is possible to change the version of the Docker image  used for running the tests. For example, if a pull request changes the Dockerfile, it might be relevant to run the test base towards the new Docker image. To change the version of the Docker image used, change the `image`-reference in the [docker-compose.yml](../../.devcontainer/docker-compose.yml)-file to e.g. `ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:pre-release-pr311`.
+In a pull request, it is possible to change the version of the Docker image  used for running the tests. For example, if a pull request changes the Dockerfile, it might be relevant to run the test base towards the new Docker image. To change the version of the Docker image used, change the `image`-reference in the [docker-compose.yml](../../.github/actions/databricks-unit-test/docker-compose.yml)-file to e.g. `ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:pre-release-pr311`.
