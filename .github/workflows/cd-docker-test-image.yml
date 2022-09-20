@@ -14,19 +14,17 @@
 name: CD - Databricks test Docker image
 
 # The design of this workflow is inspired by: https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions
-on: [pull_request]
-  # pull_request:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - .devcontainer/Dockerfile
-  #     - .devcontainer/spark-defaults.conf
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - .devcontainer/Dockerfile
-  #     - .devcontainer/spark-defaults.conf
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .docker/**
+  push:
+    branches:
+      - main
+    paths:
+      - .docker/**
 
 env:
   REGISTRY: ghcr.io
