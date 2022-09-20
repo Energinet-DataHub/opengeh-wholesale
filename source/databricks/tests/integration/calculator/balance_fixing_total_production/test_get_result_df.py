@@ -50,14 +50,14 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
                 "Resolution": first_resolution,
                 "time": time,
                 "Quantity": first_quantity,
-                "Quality": TimeSeriesQuality.asProvided.value,
+                "Quality": TimeSeriesQuality.measured.value,
             },
             {
                 "GridAreaCode": second_grid_area_code,
                 "Resolution": second_resolution,
                 "time": time2,
                 "Quantity": second_quantity,
-                "Quality": TimeSeriesQuality.asProvided.value,
+                "Quality": TimeSeriesQuality.measured.value,
             },
         ]
 
@@ -71,7 +71,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
     def factory(
         resolution=Resolution.quarter.value,
         quantity=Decimal("1"),
-        quality=TimeSeriesQuality.asProvided.value,
+        quality=TimeSeriesQuality.measured.value,
         gridArea="805",
     ):
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
@@ -252,26 +252,26 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
     "quality_1, quality_2, quality_3, expected_quality",
     [
         (
-            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.measured.value,
             TimeSeriesQuality.estimated.value,
-            TimeSeriesQuality.incomplete.value,
+            TimeSeriesQuality.missing.value,
             Quality.incomplete.value,
         ),
         (
-            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.measured.value,
             TimeSeriesQuality.estimated.value,
-            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.measured.value,
             Quality.estimated.value,
         ),
         (
-            TimeSeriesQuality.asProvided.value,
-            TimeSeriesQuality.asProvided.value,
-            TimeSeriesQuality.asProvided.value,
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.measured.value,
             Quality.measured.value,
         ),
     ],
 )
-def test__quality_is_lowest_common_denominator_among_Measured_estimated_and_incomplete(
+def test__quality_is_lowest_common_denominator_among_measured_estimated_and_missing(
     enriched_time_series_factory, quality_1, quality_2, quality_3, expected_quality
 ):
     df = (
