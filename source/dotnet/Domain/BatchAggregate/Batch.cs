@@ -25,7 +25,6 @@ public class Batch
     public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes, Instant periodStart, Instant periodEnd)
         : this()
     {
-        Id = new BatchId();
         ExecutionState = BatchExecutionState.Pending;
         ProcessType = processType;
 
@@ -47,11 +46,11 @@ public class Batch
     // ReSharper disable once UnusedMember.Local
     private Batch()
     {
-        Id = null!;
+        Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();
     }
 
-    public BatchId Id { get; }
+    public Guid Id { get; }
 
     public ProcessType ProcessType { get; }
 

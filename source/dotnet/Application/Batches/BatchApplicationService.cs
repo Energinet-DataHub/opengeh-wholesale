@@ -112,7 +112,7 @@ public class BatchApplicationService : IBatchApplicationService
     {
         return completedBatches
             .SelectMany(b => b.GridAreaCodes.Select(x => new { b.Id, x.Code }))
-            .Select(c => new ProcessCompletedEventDto(c.Code, c.Id.Value))
+            .Select(c => new ProcessCompletedEventDto(c.Code, c.Id))
             .ToList();
     }
 }

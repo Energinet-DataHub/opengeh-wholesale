@@ -17,23 +17,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence;
 
-public class DatabaseContext : DbContext, IDatabaseContext
+public interface ISenderDatabaseContext
 {
-    public DatabaseContext(DbContextOptions<DatabaseContext> options)
-        : base(options)
-    {
-    }
+    DbSet<Process> Processes { get; }
 
-    public DbSet<Process> Processes { get; private set; } = null!;
-
-    public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.HasDefaultSchema("messagehub");
-
-        modelBuilder.ApplyConfiguration(new ProcessEntityConfiguration());
-
-        base.OnModelCreating(modelBuilder);
-    }
+    Task<int> SaveChangesAsync();
 }

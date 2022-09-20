@@ -105,7 +105,7 @@ public class StartPendingBatchesEndpointTests
         /// </summary>
         private static string CreateGridAreaCode() => _generator.Next(100, 1000).ToString();
 
-        private async Task<BatchId> CreateAndSavePendingBatch(string gridAreaCode)
+        private async Task<Guid> CreateAndSavePendingBatch(string gridAreaCode)
         {
             await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
             var periodStart = Instant.FromDateTimeOffset(DateTimeOffset.Now);
