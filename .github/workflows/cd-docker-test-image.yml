@@ -19,12 +19,12 @@ on:
     branches:
       - main
     paths:
-      - '.devcontainer/**'
+      - .devcontainer/**
   push:
     branches:
       - main
     paths:
-      - '.devcontainer/**'
+      - .devcontainer/**
 
 env:
   REGISTRY: ghcr.io

@@ -18,7 +18,8 @@ on:
     branches:
       - main
     paths-ignore:
-      - '.devcontainer/**'
+      - .devcontainer/**
+      - .github/workflows/cd-docker-test-image.yml
 
 jobs:
   ci_base:
