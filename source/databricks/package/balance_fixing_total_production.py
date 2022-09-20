@@ -382,7 +382,6 @@ def _get_time_series_basis_data_by_resolution(
             "localDate",
             "STARTDATETIME",
             "GridAreaCode",
-            "GridAreaLinkId",
             "MeteringPointType",
             "Resolution",
         )
@@ -397,7 +396,11 @@ def _get_time_series_basis_data_by_resolution(
 
     quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data)
     timeseries_basis_data = timeseries_basis_data.select(
-        "METERINGPOINTID", "TYPEOFMP", "STARTDATETIME", *quantity_columns
+        "GridAreaCode",
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        *quantity_columns
     )
     debug("timeseries basis data", timeseries_basis_data)
     return timeseries_basis_data

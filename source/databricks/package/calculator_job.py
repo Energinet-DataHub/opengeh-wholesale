@@ -14,6 +14,7 @@
 
 from datetime import datetime
 import sys
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 import ast
 
@@ -87,7 +88,7 @@ def _get_valid_args_or_throw():
     return args
 
 
-def start(spark, args):
+def start(spark: SparkSession, args):
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.
@@ -117,6 +118,7 @@ def start(spark, args):
     (
         timeseries_quarter_df.repartition("METERINGPOINTID")
         .write.mode("overwrite")
+        .partitionBy("GridAreaCode")
         .option("header", True)
         # TODO: Make "contract" tests in python and .NET to ensure using same path
         .csv(
@@ -126,6 +128,7 @@ def start(spark, args):
     (
         timeseries_hour_df.repartition("METERINGPOINTID")
         .write.mode("overwrite")
+        .partitionBy("GridAreaCode")
         .option("header", True)
         .csv(
             f"{args.process_results_path}/batch_id={args.batch_id}/basis-data/time-series-hour"
@@ -156,4 +159,4 @@ if __name__ == "__main__":
         args.data_storage_account_name, args.data_storage_account_key
     )
 
-    start()
+    start(spark, args)
