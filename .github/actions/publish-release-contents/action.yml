@@ -52,5 +52,11 @@ runs:
     - name: Unzip/delete dotnet-outputs.zip
       shell: bash
       run: |
-        unzip ${{ inputs.RELEASE_FOLDER_PATH }}/dotnet-outputs.zip -d ${{ inputs.RELEASE_FOLDER_PATH }}
-        rm ${{ inputs.RELEASE_FOLDER_PATH }}/dotnet-outputs.zip
+        zipFile=${{ inputs.RELEASE_FOLDER_PATH }}/dotnet-outputs.zip
+        if [ -f $zipFile ]; then
+          echo "Zip file exists"
+          unzip $zipFile -d ${{ inputs.RELEASE_FOLDER_PATH }}
+          rm $zipFile
+        else
+          echo "Zip file does not exist"
+        if
