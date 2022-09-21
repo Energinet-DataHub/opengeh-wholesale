@@ -287,8 +287,23 @@ def test_data_job_parameters(
     )
 
 
-def test__creates_hour_csv_with_expected_columns_names():
-    raise Exception("todo")
+def test__creates_hour_csv_with_expected_columns_names(
+    spark, test_data, test_data_job_parameters, databricks_path, data_lake_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-hour/grid_area=805"
+    )
+
+    assert actual.columns == [
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        *[f"ENERGYQUANTITY{i+1}" for i in range(24)],
+    ]
 
 
 def test__creates_quarter_csv_with_expected_columns_names(
