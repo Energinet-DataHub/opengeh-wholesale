@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
@@ -20,4 +19,4 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
 /// <summary>
 /// An immutable batch.
 /// </summary>
-public sealed record BatchDto(JobRunId? JobRunId, DateTimeOffset StartDate, DateTimeOffset EndDate, DateTimeOffset? ExecutionTime, BatchExecutionState ExecutionState);
+public sealed record BatchDto(long BatchNumber, DateTimeOffset StartDate, DateTimeOffset EndDate, DateTimeOffset ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchExecutionState ExecutionState);

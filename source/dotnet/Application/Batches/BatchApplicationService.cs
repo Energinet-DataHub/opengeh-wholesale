@@ -101,7 +101,13 @@ public class BatchApplicationService : IBatchApplicationService
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
         return batches
-            .Select(b => new BatchDto(b.RunId, b.PeriodStart, b.PeriodEnd,  b.ExecutionTimeEnd.HasValue ? b.ExecutionTimeEnd.Value : null, b.ExecutionState));
+            .Select(b => new BatchDto(
+                b.RunId,
+                b.PeriodStart,
+                b.PeriodEnd,
+                b.ExecutionTimeStart,
+                b.ExecutionTimeEnd ?? null,
+                b.ExecutionState));
     }
 
     private static Batch CreateBatch(BatchRequestDto batchRequestDto)

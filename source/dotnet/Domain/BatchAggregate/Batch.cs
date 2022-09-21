@@ -39,7 +39,7 @@ public class Batch
             throw new ArgumentException("periodStart is greater or equal to periodEnd");
         }
 
-        ExecutionTimeStart = null;
+        ExecutionTimeStart = SystemClock.Instance.GetCurrentInstant();
         ExecutionTimeEnd = null;
     }
 
@@ -61,7 +61,7 @@ public class Batch
 
     public BatchExecutionState ExecutionState { get; private set; }
 
-    public Instant? ExecutionTimeStart { get; private set; }
+    public Instant ExecutionTimeStart { get; private set; }
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
@@ -89,6 +89,5 @@ public class Batch
 
         ExecutionState = BatchExecutionState.Executing;
         RunId = jobRunId;
-        ExecutionTimeStart = SystemClock.Instance.GetCurrentInstant();
     }
 }

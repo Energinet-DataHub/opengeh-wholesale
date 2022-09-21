@@ -55,11 +55,18 @@ public class BatchTests
     }
 
     [Fact]
-    public void Ctr_SetsExecutionTimeToNull()
+    public void Ctr_SetsExecutionTimeEndToNull()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
         sut.ExecutionTimeStart.Should().BeNull();
         sut.ExecutionTimeEnd.Should().BeNull();
+    }
+
+    [Fact]
+    public void Ctr_ExecutionTimeStartNotNull()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        sut.ExecutionTimeStart.Should().NotBeNull();
     }
 
     [Fact]
@@ -112,14 +119,6 @@ public class BatchTests
         var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
         sut.MarkAsExecuting(_fakeJobRunId);
         sut.ExecutionState.Should().Be(BatchExecutionState.Executing);
-    }
-
-    [Fact]
-    public void MarkAsExecuting_SetsExecutionTimeStart()
-    {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
-        sut.MarkAsExecuting(_fakeJobRunId);
-        sut.ExecutionTimeStart.Should().NotBeNull();
     }
 
     [Fact]

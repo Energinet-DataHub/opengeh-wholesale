@@ -20,4 +20,4 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 /// <summary>
 /// An immutable batch.
 /// </summary>
-public sealed record BatchDto(JobRunId? JobRunId, Instant StartDate, Instant EndDate, Instant? ExecutionTime, BatchExecutionState ExecutionState);
+public sealed record BatchDto(JobRunId? JobRunId, Instant StartDate, Instant EndDate, Instant ExecutionTimeStart, Instant? ExecutionTimeEnd, BatchExecutionState ExecutionState);
