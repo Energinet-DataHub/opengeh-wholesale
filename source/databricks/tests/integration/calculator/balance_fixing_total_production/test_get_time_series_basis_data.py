@@ -141,7 +141,6 @@ def test__has_correct_number_of_quantity_columns_according_to_dst(
     quantity_columns_quarter = list(
         filter(lambda column: column.startswith("ENERGYQUANTITY"), quarter_df.columns)
     )
-    hour_df.show()
     quantity_columns_hour = list(
         filter(lambda column: column.startswith("ENERGYQUANTITY"), hour_df.columns)
     )
@@ -238,11 +237,6 @@ def test__returns_expected_data_for_each_column(enriched_time_series_factory):
         .select("sum")
         .first()[0]
     )
-
-    hour_df.show()
-    hour_df.withColumn(
-        "sum", reduce(add, [col(x) for x in quantity_columns_hour])
-    ).show()
 
     assert sum_quantity_quarter == 4656
     assert sum_quantity_hour == 300
