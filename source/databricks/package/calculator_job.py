@@ -132,6 +132,7 @@ def start(spark: SparkSession, args):
         .write.mode("overwrite")
         .partitionBy("grid_area")
         .option("header", True)
+        # TODO: Make "contract" tests in python and .NET to ensure using same path
         .csv(
             f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-hour"
         )
