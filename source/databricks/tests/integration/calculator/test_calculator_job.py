@@ -298,15 +298,15 @@ def test__creates_quarter_csv_with_expected_columns_names(
     start_calculator(spark, test_data_job_parameters)
 
     # Assert
-    actual = spark.read.csv(
-        f"{data_lake_path}/batch_id=1/basis-data/time-series-quarter/grid_area=805"
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
     )
+
     assert actual.columns == [
         "METERINGPOINTID",
         "TYPEOFMP",
         "STARTDATETIME",
-        "ENERGYQUANTITY1",
-        *[f"ENERGYQUANTITY{i+1}" for i in range(24)],
+        *[f"ENERGYQUANTITY{i+1}" for i in range(96)],
     ]
 
 
