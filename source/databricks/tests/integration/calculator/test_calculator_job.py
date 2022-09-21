@@ -366,8 +366,3 @@ def test__creates_csv_with_rows(
 
     assert basis_data_805.count() >= 1
     assert basis_data_806.count() >= 1
-
-
-def test__creates_single_csv_file():
-    # todo: can we actually test this if the test env only has one worker node?
-    raise Exception("todo")
