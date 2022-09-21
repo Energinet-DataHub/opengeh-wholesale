@@ -91,12 +91,13 @@ def test__get_timeseries_basis_data(enriched_time_series_factory):
     (quarter_df, hour_df) = _get_time_series_basis_data(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
+    print(quarter_df.columns)
 
-    # Assert: Metering point id, type of mp, 96 energi quantities = 99 columns
-    assert len(quarter_df.columns) == 99
+    # Assert: GridAreaCode, Metering point id, type of mp, start date time, 96 energi quantities = 100 columns
+    assert len(quarter_df.columns) == 100
 
-    # Assert: Metering point id, type of mp, 24 energi quantities = 27 columns
-    assert len(hour_df.columns) == 27
+    # Assert: GridAreaCode, Metering point id, type of mp, start date time, 24 energi quantities = 28 columns
+    assert len(hour_df.columns) == 28
 
 
 @pytest.mark.parametrize(
