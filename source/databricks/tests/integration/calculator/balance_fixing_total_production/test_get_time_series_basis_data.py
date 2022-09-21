@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from datetime import datetime, timedelta, tzinfo, date
-import time
 from pytz import timezone
 import pytz
 import os
