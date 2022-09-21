@@ -216,13 +216,58 @@ def test__returns_expected_data_for_each_column(enriched_time_series_factory):
     (quarter_df, hour_df) = _get_time_series_basis_data(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
+
     quantity_columns_quarter = list(
         filter(lambda column: column.startswith("ENERGYQUANTITY"), quarter_df.columns)
     )
+    # get sum of all quantity columns for quarter resolution
+    sum_quantity_quarter = int(
+        quarter_df.withColumn(
+            "sum", reduce(add, [col(x) for x in quantity_columns_quarter])
+        )
+        .select("sum")
+        .first()[0]
+    )
 
-    raise Exception("todo")
+    quantity_columns_hour = list(
+        filter(lambda column: column.startswith("ENERGYQUANTITY"), hour_df.columns)
+    )
+    # get sum of all quantity columns for hour resolutin
+    sum_quantity_hour = int(
+        hour_df.withColumn("sum", reduce(add, [col(x) for x in quantity_columns_hour]))
+        .select("sum")
+        .first()[0]
+    )
+
+    hour_df.show()
+    hour_df.withColumn(
+        "sum", reduce(add, [col(x) for x in quantity_columns_hour])
+    ).show()
+
+    assert sum_quantity_quarter == 4656
+    assert sum_quantity_hour == 300
+    assert quarter_df.select("ENERGYQUANTITY1").first()[0] == 1
+    assert quarter_df.select("ENERGYQUANTITY10").first()[0] == 10
+    assert hour_df.select("ENERGYQUANTITY1").first()[0] == 1
+    assert hour_df.select("ENERGYQUANTITY10").first()[0] == 10
 
 
-def test__multiple_dates_are_split_into_rows():
-    # each date per metering point is a separate row
-    raise Exception("todo")
+def test__multiple_dates_are_split_into_rows(enriched_time_series_factory):
+    enriched_time_series_points_df = enriched_time_series_factory(
+        time="2022-10-18T22:00:00.000Z",
+        resolution=Resolution.quarter.value,
+        number_of_points=288,  # 3 days
+    ).union(
+        enriched_time_series_factory(
+            time="2022-10-28T22:00:00.000Z",
+            resolution=Resolution.hour.value,
+            number_of_points=120,  # five days
+        )
+    )
+
+    (quarter_df, hour_df) = _get_time_series_basis_data(
+        enriched_time_series_points_df, "Europe/Copenhagen"
+    )
+
+    assert quarter_df.count() == 3
+    assert hour_df.count() == 5
