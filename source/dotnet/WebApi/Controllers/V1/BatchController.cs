@@ -55,7 +55,7 @@ public class BatchController : ControllerBase
     public async Task<IActionResult> SearchAsync([FromQuery] BatchSearchDto batchSearchDto)
     {
         var batchesAppDto = await _batchApplicationService.SearchAsync(batchSearchDto).ConfigureAwait(false);
-        var batchesWebDto = batchesAppDto.Select(b => new BatchDto(b.JobRunId, b.StartDate.ToDateTimeOffset(), b.EndDate.ToDateTimeOffset(),  b.ExecutionTime.HasValue ? b.ExecutionTime.Value.ToDateTimeOffset() : null, b.ExecutionState));
+        var batchesWebDto = batchesAppDto.Select(b => new BatchDto(b.JobRunId, b.StartDate.ToDateTimeOffset(), b.EndDate.ToDateTimeOffset(),  b.ExecutionTime?.ToDateTimeOffset() ?? null, b.ExecutionState));
         return Ok(batchesWebDto);
     }
 }
