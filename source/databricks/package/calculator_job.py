@@ -142,14 +142,11 @@ def start(spark: SparkSession, args):
     # This ensures that only one file is being written/created for each grid area
     # when writing/creating the files. The partition by creates a folder for each grid area.
     # result/
-    partitioned_result_df = (
+    (
         result_df.withColumnRenamed("GridAreaCode", "grid_area")
         .withColumn("quantity", col("quantity").cast("string"))
         .repartition("grid_area")
-    )
-    
-    (
-        partitioned_result_df.write.mode("overwrite")
+        .write.mode("overwrite")
         .partitionBy("grid_area")
         .json(f"{args.process_results_path}/batch_id={args.batch_id}")
     )
@@ -166,11 +163,3 @@ if __name__ == "__main__":
     )
 
     start(spark, args)
-
-_get_partitioned_df(df):
-    return (
-        df.withColumnRenamed("GridAreaCode", "grid_area")
-        .withColumn("quantity", col("quantity").cast("string"))
-        .repartition("grid_area")
-    )
-    
