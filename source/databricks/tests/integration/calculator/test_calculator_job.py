@@ -347,22 +347,3 @@ def test__creates_csv_per_resolution_per_grid_area(
     assert (
         basis_data_806.count() >= 1
     ), "Calculator job failed to write basis data files for grid area 806"
-
-
-def test__creates_csv_with_rows(
-    spark, test_data, test_data_job_parameters, databricks_path, data_lake_path
-):
-    # Act
-    start_calculator(spark, test_data_job_parameters)
-
-    # Assert
-    basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
-    )
-
-    basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=806"
-    )
-
-    assert basis_data_805.count() >= 1
-    assert basis_data_806.count() >= 1
