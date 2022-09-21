@@ -3,6 +3,7 @@ ci
 CIM
 codecov
 Databricks
+databricks
 DataHub
 debugz
 dequeue
@@ -31,3 +32,4 @@ VSCode
 Whitespace
 WSL
 yml
+Dockerfile

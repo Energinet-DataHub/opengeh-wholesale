@@ -453,7 +453,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
             "Quality",
             when(
                 array_contains(
-                    col("collect_set(Quality)"), lit(TimeSeriesQuality.incomplete.value)
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
                 ),
                 lit(Quality.incomplete.value),
             )
@@ -466,7 +466,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
             .when(
                 array_contains(
                     col("collect_set(Quality)"),
-                    lit(TimeSeriesQuality.asProvided.value),
+                    lit(TimeSeriesQuality.measured.value),
                 ),
                 lit(Quality.measured.value),
             ),
