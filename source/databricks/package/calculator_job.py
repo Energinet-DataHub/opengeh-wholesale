@@ -111,10 +111,12 @@ def start(spark: SparkSession, args):
         args.batch_period_end_datetime,
         args.time_zone,
     )
-    debug("timeseries basis data df", timeseries_basis_data)
+
     debug("raw_timeseries", raw_time_series_points_df)
 
     (timeseries_quarter_df, timeseries_hour_df) = timeseries_basis_data
+    debug("timeseries basis data df_hour", timeseries_hour_df)
+    debug("timeseries basis data df_quarter", timeseries_quarter_df)
     (
         timeseries_quarter_df.withColumnRenamed("GridAreaCode", "grid_area")
         .repartition("grid_area")
