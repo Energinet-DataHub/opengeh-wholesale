@@ -287,8 +287,23 @@ def test_data_job_parameters(
     )
 
 
-def test__creates_hour_csv_with_expected_columns_names():
-    raise Exception("todo")
+def test__creates_hour_csv_with_expected_columns_names(
+    spark, test_data, test_data_job_parameters, databricks_path, data_lake_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-hour/grid_area=805"
+    )
+
+    assert actual.columns == [
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        *[f"ENERGYQUANTITY{i+1}" for i in range(24)],
+    ]
 
 
 def test__creates_quarter_csv_with_expected_columns_names(
@@ -298,25 +313,59 @@ def test__creates_quarter_csv_with_expected_columns_names(
     start_calculator(spark, test_data_job_parameters)
 
     # Assert
-    actual = spark.read.csv(
-        f"{data_lake_path}/batch_id=1/basis-data/time-series-quarter/grid_area=805"
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
     )
+
     assert actual.columns == [
         "METERINGPOINTID",
         "TYPEOFMP",
         "STARTDATETIME",
-        "ENERGYQUANTITY1",
-        *[f"ENERGYQUANTITY{i+1}" for i in range(24)],
+        *[f"ENERGYQUANTITY{i+1}" for i in range(96)],
     ]
 
 
-def test__creates_csv_per_resolution_per_grid_area():
-    raise Exception("todo")
+def test__creates_csv_per_resolution_per_grid_area(
+    spark, test_data, test_data_job_parameters, databricks_path, data_lake_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    basis_data_805 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+    )
+
+    basis_data_806 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=806"
+    )
+
+    assert (
+        basis_data_805.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 805"
+
+    assert (
+        basis_data_806.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 806"
 
 
-def test__creates_csv_with_rows():
-    # Both for hour and quarter
-    raise Exception("todo")
+def test__creates_csv_with_rows(
+    spark, test_data, test_data_job_parameters, databricks_path, data_lake_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    basis_data_805 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+    )
+
+    basis_data_806 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=806"
+    )
+
+    assert basis_data_805.count() >= 1
+    assert basis_data_806.count() >= 1
 
 
 def test__creates_single_csv_file():
