@@ -100,14 +100,7 @@ public class BatchApplicationService : IBatchApplicationService
         var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
-        return batches
-            .Select(b => new BatchDto(
-                b.RunId?.Id ?? 0,
-                b.PeriodStart.ToDateTimeOffset(),
-                b.PeriodEnd.ToDateTimeOffset(),
-                b.ExecutionTimeStart.ToDateTimeOffset(),
-                b.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
-                b.ExecutionState));
+        return batches.Select(MapToBatchDto);
     }
 
     private static Batch CreateBatch(BatchRequestDto batchRequestDto)
@@ -131,5 +124,16 @@ public class BatchApplicationService : IBatchApplicationService
             .SelectMany(b => b.GridAreaCodes.Select(x => new { b.Id, x.Code }))
             .Select(c => new ProcessCompletedEventDto(c.Code, c.Id))
             .ToList();
+    }
+
+    private BatchDto MapToBatchDto(Batch batch)
+    {
+        return new BatchDto(
+            batch.RunId?.Id ?? 0,
+            batch.PeriodStart.ToDateTimeOffset(),
+            batch.PeriodEnd.ToDateTimeOffset(),
+            batch.ExecutionTimeStart.ToDateTimeOffset(),
+            batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
+            batch.ExecutionState);
     }
 }
