@@ -13,13 +13,21 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
+
 from pyspark.sql.functions import (
+    date_format,
+    udf,
+    concat,
+    struct,
+    first,
     array,
     array_contains,
     lit,
     col,
     collect_set,
     from_json,
+    to_date,
+    from_utc_timestamp,
     row_number,
     expr,
     when,
@@ -27,6 +35,7 @@ from pyspark.sql.functions import (
     last,
     coalesce,
     explode,
+    collect_list,
     sum,
 )
 from pyspark.sql.types import (
@@ -49,7 +58,12 @@ from package.schemas import (
     grid_area_updated_event_schema,
     metering_point_generic_event_schema,
 )
-from package.db_logging import log, debug
+from package.db_logging import debug
+from datetime import datetime, timedelta, tzinfo, date
+import time
+from zoneinfo import ZoneInfo
+from pytz import timezone
+import pytz
 
 
 metering_point_created_message_type = "MeteringPointCreated"
@@ -64,10 +78,14 @@ def calculate_balance_fixing_total_production(
     batch_snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
+    time_zone,
 ) -> DataFrame:
+    "Returns tuple (result_df, (time_series_quarter_basis_data_df, time_series_hour_basis_data_df))"
+
     cached_integration_events_df = _get_cached_integration_events(
         raw_integration_events_df, batch_snapshot_datetime
     )
+
     time_series_points = _get_time_series_points(
         raw_time_series_points_df, batch_snapshot_datetime
     )
@@ -88,10 +106,15 @@ def calculate_balance_fixing_total_production(
         period_end_datetime,
     )
 
+    time_series_basis_data_df = _get_time_series_basis_data(
+        enriched_time_series_point_df, time_zone
+    )
+
     result_df = _get_result_df(enriched_time_series_point_df)
+
     cached_integration_events_df.unpersist()
 
-    return result_df
+    return (result_df, time_series_basis_data_df)
 
 
 def _get_cached_integration_events(
@@ -137,7 +160,7 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFr
             "Grid areas for processes in batch does not match the known grid areas in wholesale"
         )
 
-    log("Grid areas", grid_area_df.orderBy(col("GridAreaCode")))
+    debug("Grid areas", grid_area_df.orderBy(col("GridAreaCode")))
     return grid_area_df
 
 
@@ -242,9 +265,15 @@ def _get_metering_point_periods_df(
         grid_area_df,
         metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
         "inner",
-    ).select("GsrnNumber", "GridAreaCode", "EffectiveDate", "toEffectiveDate")
+    ).select(
+        "GsrnNumber",
+        "GridAreaCode",
+        "EffectiveDate",
+        "toEffectiveDate",
+        "MeteringPointType",
+    )
 
-    log(
+    debug(
         "Metering point periods",
         metering_point_periods_df.orderBy(
             col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
@@ -293,7 +322,7 @@ def _get_enriched_time_series_points_df(
     )
 
     timeseries_df = timeseries_df.select(
-        col("GsrnNumber"), "time", "Quantity", "Quality", "Resolution"
+        "GsrnNumber", "time", "Quantity", "Quality", "Resolution"
     )
 
     enriched_time_series_point_df = timeseries_df.join(
@@ -305,6 +334,7 @@ def _get_enriched_time_series_points_df(
     ).select(
         "GridAreaCode",
         metering_point_period_df["GsrnNumber"],
+        metering_point_period_df["MeteringPointType"],
         "Resolution",
         "time",
         "Quantity",
@@ -317,6 +347,76 @@ def _get_enriched_time_series_points_df(
     )
 
     return enriched_time_series_point_df
+
+
+def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
+    "Returns tuple (time_series_quarter_basis_data, time_series_hour_basis_data)"
+
+    time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
+        enriched_time_series_point_df,
+        Resolution.quarter.value,
+        time_zone,
+    )
+
+    time_series_hour_basis_data_df = _get_time_series_basis_data_by_resolution(
+        enriched_time_series_point_df,
+        Resolution.hour.value,
+        time_zone,
+    )
+
+    return (time_series_quarter_basis_data_df, time_series_hour_basis_data_df)
+
+
+def _get_time_series_basis_data_by_resolution(
+    enriched_time_series_point_df, resolution, time_zone
+):
+    w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
+
+    timeseries_basis_data_df = (
+        enriched_time_series_point_df.where(col("Resolution") == resolution)
+        .withColumn("localDate", to_date(from_utc_timestamp(col("time"), time_zone)))
+        .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
+        .withColumn("STARTDATETIME", first("time").over(w))
+        .groupBy(
+            "gsrnNumber",
+            "localDate",
+            "STARTDATETIME",
+            "GridAreaCode",
+            "MeteringPointType",
+            "Resolution",
+        )
+        .pivot("position")
+        .agg(first("Quantity"))
+        .withColumnRenamed("gsrnNumber", "METERINGPOINTID")
+        .withColumn(
+            "TYPEOFMP",
+            when(col("MeteringPointType") == MeteringPointType.production.value, "E18"),
+        )
+    )
+
+    quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data_df)
+    timeseries_basis_data_df = timeseries_basis_data_df.select(
+        "GridAreaCode",
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        *quantity_columns
+    )
+    return timeseries_basis_data_df
+
+
+def _get_sorted_quantity_columns(timeseries_basis_data):
+    def num_sort(col_name):
+        "Extracts the nuber in the string"
+        import re
+
+        return list(map(int, re.findall(r"\d+", col_name)))[0]
+
+    quantity_columns = [
+        c for c in timeseries_basis_data.columns if c.startswith("ENERGYQUANTITY")
+    ]
+    quantity_columns.sort(key=num_sort)
+    return quantity_columns
 
 
 def _get_result_df(enriched_time_series_points_df) -> DataFrame:
@@ -393,7 +493,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         )
     )
 
-    log(
+    debug(
         "Balance fixing total production result",
         result_df.orderBy(col("GridAreaCode"), col("position")),
     )
