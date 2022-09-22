@@ -50,7 +50,7 @@ runs:
           --no-restore \
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\functions\processmanager'
-    
+
     - name: Publish Sender
       shell: bash
       run: |
@@ -80,3 +80,35 @@ runs:
           --no-restore \
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\databasemigration'
+
+    # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
+    # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
+    - name: Publish IntegrationTests
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\IntegrationTests\IntegrationTests.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '.\source\dotnet\IntegrationTests\bin\Release\net6.0'
+
+    # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
+    # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
+    - name: Publish Tests
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\Tests\Tests.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '.\source\dotnet\Tests\bin\Release\net6.0'
+
+    - name: Copy all bin folders
+      shell: bash
+      run: |
+        # Create subfolder hierarchy matching 'bin' folders
+        find source/dotnet -type d -name 'bin' -exec mkdir -p '${{ inputs.OUTPUT_PATH }}/tests/{}' ';'
+        # Copy 'bin/Release' folders into hierarchy (cannot copy obj folders since we did not create those)
+        find source/dotnet -type d -name 'Release' -exec cp -r '{}' '${{ inputs.OUTPUT_PATH }}/tests/{}' ';'
