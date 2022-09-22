@@ -31,6 +31,31 @@ jobs:
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
 
+  # PoC on waiting for another job
+  poc_wait_on_job:
+    runs-on: ubuntu-22.04
+    env:
+      ARTIFACTS_PATH: ${{ github.workspace }}\artifacts
+    steps:
+      - name: Print OS before
+        shell: bash
+        run: |
+          echo "Runner OS is $RUNNER_OS"
+
+      - name: Wait for job to succeed
+        uses: lewagon/wait-on-check-action@v1.1.2
+        with:
+          ref: ${{ github.ref }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          check-regexp: .*dotnet_ci_build
+          wait-interval: 15
+
+      - name: Download dotnet artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: dotnet
+          path: ${{ env.ARTIFACTS_PATH }}
+
   # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
   dotnet_solution_ci_test_integrationtests_part1:
     needs: [dotnet_solution_ci_build]
@@ -77,13 +102,14 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
 
-  databricks_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@v8
-    with:
-      PATH_STATIC_CHECKS: './source/databricks'
-      # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
-      IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
-      TEST_REPORT_PATH: ./source/databricks/htmlcov/
+  # TODO: Enable again when done testing
+  # databricks_ci:
+  #   uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@v8
+  #   with:
+  #     PATH_STATIC_CHECKS: './source/databricks'
+  #     # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
+  #     IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
+  #     TEST_REPORT_PATH: ./source/databricks/htmlcov/
 
   wheel_ci:
     uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@v8
@@ -100,6 +126,7 @@ jobs:
       TERRAFORM_WORKING_DIR_PATH: "./build/infrastructure/main"
       TERRAFORM_VERSION: '1.2.2'
 
+  # TODO: Enable again when done testing
   create_prerelease:
     needs: [
       ci_base,
@@ -108,7 +135,7 @@ jobs:
       dotnet_solution_ci_test_integrationtests_part1,
       dotnet_solution_ci_test_integrationtests_part2,
       dotnet_solution_ci_test_tests,
-      databricks_ci,
+      #databricks_ci,
       wheel_ci
     ]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@v8
