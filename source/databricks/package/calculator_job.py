@@ -103,7 +103,7 @@ def _get_valid_args_or_throw():
     return args
 
 
-def write_basis_data_to_csv(
+def write_time_series_basis_data_to_csv(
     data_df: DataFrame, process_results_path: str, batch_id: str, resolution_type: str
 ):
     (
@@ -146,14 +146,14 @@ def start(spark: SparkSession, args):
     debug("timeseries basis data df_hour", timeseries_hour_df)
     debug("timeseries basis data df_quarter", timeseries_quarter_df)
 
-    write_basis_data_to_csv(
+    write_time_series_basis_data_to_csv(
         timeseries_quarter_df,
         args.process_results_path,
         args.batch_id,
         "time-series-quarter",
     )
 
-    write_basis_data_to_csv(
+    write_time_series_basis_data_to_csv(
         timeseries_hour_df,
         args.process_results_path,
         args.batch_id,
