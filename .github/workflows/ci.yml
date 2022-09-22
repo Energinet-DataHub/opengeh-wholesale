@@ -30,7 +30,6 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-build.yml@poc
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
-      PREPARE_OUTPUTS: true
 
   # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
   dotnet_solution_ci_test_integrationtests_part1:
