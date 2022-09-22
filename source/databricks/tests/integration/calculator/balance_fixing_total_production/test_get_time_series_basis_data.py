@@ -45,7 +45,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
         gsrn_number="the_gsrn_number",
         metering_point_type=MeteringPointType.production.value,
         time="2022-06-08T22:00:00.000Z",
-        number_of_points=500,
+        number_of_points=1,
     ):
         df_array = []
 
@@ -74,44 +74,18 @@ def enriched_time_series_factory(spark, timestamp_factory):
     return factory
 
 
-def test__get_timeseries_basis_data(enriched_time_series_factory):
-
-    enriched_time_series_points_df = enriched_time_series_factory(
-        time="2022-10-28T22:00:00.000Z",
-        resolution=Resolution.quarter.value,
-        number_of_points=96,
-    ).union(
-        enriched_time_series_factory(
-            time="2022-10-28T22:00:00.000Z",
-            resolution=Resolution.hour.value,
-            number_of_points=24,
-        )
-    )
-
-    (quarter_df, hour_df) = _get_time_series_basis_data(
-        enriched_time_series_points_df, "Europe/Copenhagen"
-    )
-    print(quarter_df.columns)
-
-    # Assert: GridAreaCode, Metering point id, type of mp, start date time, 96 energi quantities = 100 columns
-    assert len(quarter_df.columns) == 100
-
-    # Assert: GridAreaCode, Metering point id, type of mp, start date time, 24 energi quantities = 28 columns
-    assert len(hour_df.columns) == 28
-
-
 @pytest.mark.parametrize(
     "period_start, resolution, number_of_points, expected_number_of_quarter_quantity_collumns, expected_number_of_hour_quantity_collumns",
     [
-        # summertime has 24 hours
+        # DST has 24 hours
         ("2022-06-08T22:00:00.000Z", Resolution.quarter.value, 96, 96, 0),
-        # sommertime has 24 hours
+        # DST has 24 hours
         ("2022-06-08T22:00:00.000Z", Resolution.hour.value, 24, 0, 24),
-        # vintertime has 24 hours
+        # standard time has 24 hours
         ("2022-06-08T22:00:00.000Z", Resolution.quarter.value, 96, 96, 0),
-        # vintertime has 24 hours
+        # standard time has 24 hours
         ("2022-06-08T22:00:00.000Z", Resolution.hour.value, 24, 0, 24),
-        # going from summer to vintertime there are 25 hours (100 quarters)
+        # going from DST to standard time there are 25 hours (100 quarters)
         # creating 292 points from 22:00 the 29 oktober will create points for 3 days
         # where the 30 oktober is day with 25 hours.and
         # Therefore there should be 100 columns for quarter resolution and 25 for  hour resolution
@@ -126,8 +100,8 @@ def test__has_correct_number_of_quantity_columns_according_to_dst(
     period_start,
     resolution,
     number_of_points,
-    expected_number_of_quarter_quantity_collumns,
-    expected_number_of_hour_quantity_collumns,
+    expected_number_of_quarter_quantity_columns,
+    expected_number_of_hour_quantity_columns,
 ):
     enriched_time_series_points_df = enriched_time_series_factory(
         time=period_start,
@@ -144,8 +118,8 @@ def test__has_correct_number_of_quantity_columns_according_to_dst(
     quantity_columns_hour = list(
         filter(lambda column: column.startswith("ENERGYQUANTITY"), hour_df.columns)
     )
-    assert len(quantity_columns_quarter) == expected_number_of_quarter_quantity_collumns
-    assert len(quantity_columns_hour) == expected_number_of_hour_quantity_collumns
+    assert len(quantity_columns_quarter) == expected_number_of_quarter_quantity_columns
+    assert len(quantity_columns_hour) == expected_number_of_hour_quantity_columns
 
 
 def test__returns_dataframe_with_quarter_resolution_metering_points(
@@ -182,12 +156,14 @@ def test__splits_single_metering_point_with_different_resolution_on_different_da
     enriched_time_series_factory,
 ):
     enriched_time_series_points_df = enriched_time_series_factory(
+        gsrn_number="the_gsrn_number",
         time="2022-10-28T22:00:00.000Z",
         resolution=Resolution.quarter.value,
         number_of_points=96,
     ).union(
         enriched_time_series_factory(
-            time="2022-10-28T22:00:00.000Z",
+            gsrn_number="the_gsrn_number",
+            time="2022-10-29T22:00:00.000Z",
             resolution=Resolution.hour.value,
             number_of_points=24,
         )
