@@ -82,7 +82,7 @@ jobs:
       AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
 
   databricks_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.ymlv8
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@v8
     with:
       #OPERATING_SYSTEM: 'dh3-ubuntu-22.04-4core'
       PATH_STATIC_CHECKS: './source/databricks'
