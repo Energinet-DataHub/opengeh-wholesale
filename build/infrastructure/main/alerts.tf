@@ -31,7 +31,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "wholesales_databricks_jo
   action {
     action_group            = [azurerm_monitor_action_group.wholesales.id]
   }
-  data_source_id            = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+  data_source_id            = data.azurerm_key_vault_secret.appi_shared_id.value
   description               = "One or more databricks jobs has failed"
   enabled                   = true
   query                     = <<-QUERY
