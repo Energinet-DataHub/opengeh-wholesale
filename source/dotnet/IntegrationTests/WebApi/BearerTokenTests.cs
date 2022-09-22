@@ -45,15 +45,9 @@ public class BearerTokenTests :
         _factory = factory;
     }
 
-    public Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
+    public Task InitializeAsync() => Task.CompletedTask;
 
-    public Task DisposeAsync()
-    {
-        return Task.CompletedTask;
-    }
+    public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
     public async Task Request_WhenMissingBearerToken_Returns401Unauthorized()
