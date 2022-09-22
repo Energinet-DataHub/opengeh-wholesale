@@ -123,7 +123,7 @@ public class BatchTests
     }
 
     [Fact]
-    public void MarkAsExecuting_ExecutionTimeEndIsNull()
+    public void MarkAsExecuting_ExecutionTimeIsSetToNull()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
         sut.MarkAsExecuting(_fakeJobRunId);

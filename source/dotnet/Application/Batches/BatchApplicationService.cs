@@ -102,11 +102,11 @@ public class BatchApplicationService : IBatchApplicationService
             .ConfigureAwait(false);
         return batches
             .Select(b => new BatchDto(
-                b.RunId,
-                b.PeriodStart,
-                b.PeriodEnd,
-                b.ExecutionTimeStart,
-                b.ExecutionTimeEnd ?? null,
+                b.RunId?.Id ?? 0,
+                b.PeriodStart.ToDateTimeOffset(),
+                b.PeriodEnd.ToDateTimeOffset(),
+                b.ExecutionTimeStart.ToDateTimeOffset(),
+                b.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
                 b.ExecutionState));
     }
 
