@@ -21,12 +21,14 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 public class Batch
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
+    private readonly IClock _clock;
 
-    public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes, Instant periodStart, Instant periodEnd)
+    public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes, Instant periodStart, Instant periodEnd, IClock clock)
         : this()
     {
         ExecutionState = BatchExecutionState.Pending;
         ProcessType = processType;
+        _clock = clock;
 
         _gridAreaCodes = gridAreaCodes.ToList();
         if (!_gridAreaCodes.Any())
@@ -39,7 +41,7 @@ public class Batch
             throw new ArgumentException("periodStart is greater or equal to periodEnd");
         }
 
-        ExecutionTimeStart = SystemClock.Instance.GetCurrentInstant();
+        ExecutionTimeStart = _clock.GetCurrentInstant();
         ExecutionTimeEnd = null;
     }
 
@@ -51,6 +53,7 @@ public class Batch
     {
         Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();
+        _clock = SystemClock.Instance;
     }
 
     public Guid Id { get; }
@@ -77,7 +80,7 @@ public class Batch
             throw new InvalidOperationException("Batch cannot be completed because it is not in state executing.");
 
         ExecutionState = BatchExecutionState.Completed;
-        ExecutionTimeEnd = SystemClock.Instance.GetCurrentInstant();
+        ExecutionTimeEnd = _clock.GetCurrentInstant();
     }
 
     public void MarkAsExecuting(JobRunId jobRunId)

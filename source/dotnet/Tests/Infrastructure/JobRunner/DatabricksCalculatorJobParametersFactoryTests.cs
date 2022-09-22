@@ -40,7 +40,8 @@ public class DatabricksCalculatorJobParametersFactoryTests
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("805"), new("806") },
             Instant.FromUtc(2022, 5, 31, 22, 00),
-            Instant.FromUtc(2022, 6, 1, 22, 00));
+            Instant.FromUtc(2022, 6, 1, 22, 00),
+            clockMock.Object);
 
         using var stream = EmbeddedResources.GetStream("Infrastructure.JobRunner.calculation-job-parameters-reference.txt");
         using var reader = new StreamReader(stream);
