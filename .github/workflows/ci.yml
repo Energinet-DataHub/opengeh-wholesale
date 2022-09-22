@@ -47,7 +47,8 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          check-regexp: .*dotnet_ci_build
+          check-name: 'dotnet_solution_ci_build / dotnet_ci_build'
+          #check-regexp: .*dotnet_ci_build
           wait-interval: 15
 
       - name: Download dotnet artifact
