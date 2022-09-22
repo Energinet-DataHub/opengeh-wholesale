@@ -15,6 +15,8 @@
 from inspect import stack
 from pyspark.sql import DataFrame
 
+loglevel = "information"
+
 
 def _log(level: str, message: str, df: DataFrame):
     print(f"============ {level} ============")
@@ -33,4 +35,6 @@ def log(message: str, df: DataFrame = None):
 
 
 def debug(message: str, df: DataFrame = None):
+    if loglevel != "debug":
+        return
     _log("DEBUG", message, df)

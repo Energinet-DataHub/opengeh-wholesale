@@ -26,7 +26,9 @@ from package import (
     initialize_spark,
     log,
     debug,
+    db_logging,
 )
+
 import configargparse
 
 
@@ -45,6 +47,14 @@ def _valid_list(s):
         return ast.literal_eval(s)
     except ValueError:
         msg = "not a valid grid area list"
+        raise configargparse.ArgumentTypeError(msg)
+
+
+def _valid_log_level(s):
+    if s in ["information", "debug"]:
+        return str(s)
+    else:
+        msg = "loglevel is not valid"
         raise configargparse.ArgumentTypeError(msg)
 
 
@@ -68,6 +78,11 @@ def _get_valid_args_or_throw():
     p.add("--batch-grid-areas", type=_valid_list, required=True)
     p.add("--batch-period-start-datetime", type=_valid_date, required=True)
     p.add("--batch-period-end-datetime", type=_valid_date, required=True)
+    p.add(
+        "--log-level",
+        type=_valid_log_level,
+        help="debug|information",
+    )
 
     p.add(
         "--only-validate-args",
@@ -123,7 +138,6 @@ def start(spark: SparkSession, args):
         .write.mode("overwrite")
         .partitionBy("grid_area")
         .option("header", True)
-        # TODO: Make "contract" tests in python and .NET to ensure using same path
         .csv(
             f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-quarter"
         )
@@ -134,7 +148,6 @@ def start(spark: SparkSession, args):
         .write.mode("overwrite")
         .partitionBy("grid_area")
         .option("header", True)
-        # TODO: Make "contract" tests in python and .NET to ensure using same path
         .csv(
             f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-hour"
         )
@@ -157,6 +170,7 @@ def start(spark: SparkSession, args):
 if __name__ == "__main__":
     args = _get_valid_args_or_throw()
     log(f"Job arguments: {str(args)}")
+    db_logging.loglevel = args.log_level
     if args.only_validate_args:
         exit(0)
 

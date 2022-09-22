@@ -180,9 +180,10 @@ def test_calculator_job_input_and_output_integration_test(
     )
 
     # Act
-    subprocess.call(python_parameters)
+    exitcode = subprocess.call(python_parameters)
 
     # Assert
+    assert exitcode == 0
     result_805 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=805")
     result_806 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=806")
     assert result_805.count() >= 1, "Calculator job failed to write files"

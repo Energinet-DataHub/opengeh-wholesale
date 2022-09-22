@@ -58,7 +58,7 @@ from package.schemas import (
     grid_area_updated_event_schema,
     metering_point_generic_event_schema,
 )
-from package.db_logging import log, debug
+from package.db_logging import debug
 from datetime import datetime, timedelta, tzinfo, date
 import time
 from zoneinfo import ZoneInfo
@@ -160,7 +160,7 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFr
             "Grid areas for processes in batch does not match the known grid areas in wholesale"
         )
 
-    log("Grid areas", grid_area_df.orderBy(col("GridAreaCode")))
+    debug("Grid areas", grid_area_df.orderBy(col("GridAreaCode")))
     return grid_area_df
 
 
@@ -273,7 +273,7 @@ def _get_metering_point_periods_df(
         "MeteringPointType",
     )
 
-    log(
+    debug(
         "Metering point periods",
         metering_point_periods_df.orderBy(
             col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
@@ -352,19 +352,19 @@ def _get_enriched_time_series_points_df(
 def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
     "Returns tuple (time_series_quarter_basis_data, time_series_hour_basis_data)"
 
-    time_series_quarter_basis_data = _get_time_series_basis_data_by_resolution(
+    time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
         Resolution.quarter.value,
         time_zone,
     )
 
-    time_series_hour_basis_data = _get_time_series_basis_data_by_resolution(
+    time_series_hour_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
         Resolution.hour.value,
         time_zone,
     )
 
-    return (time_series_quarter_basis_data, time_series_hour_basis_data)
+    return (time_series_quarter_basis_data_df, time_series_hour_basis_data_df)
 
 
 def _get_time_series_basis_data_by_resolution(
@@ -372,7 +372,7 @@ def _get_time_series_basis_data_by_resolution(
 ):
     w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
 
-    timeseries_basis_data = (
+    timeseries_basis_data_df = (
         enriched_time_series_point_df.where(col("Resolution") == resolution)
         .withColumn("localDate", to_date(from_utc_timestamp(col("time"), time_zone)))
         .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
@@ -394,16 +394,15 @@ def _get_time_series_basis_data_by_resolution(
         )
     )
 
-    quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data)
-    timeseries_basis_data = timeseries_basis_data.select(
+    quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data_df)
+    timeseries_basis_data_df = timeseries_basis_data_df.select(
         "GridAreaCode",
         "METERINGPOINTID",
         "TYPEOFMP",
         "STARTDATETIME",
         *quantity_columns
     )
-    debug("timeseries basis data", timeseries_basis_data)
-    return timeseries_basis_data
+    return timeseries_basis_data_df
 
 
 def _get_sorted_quantity_columns(timeseries_basis_data):
@@ -494,7 +493,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         )
     )
 
-    log(
+    debug(
         "Balance fixing total production result",
         result_df.orderBy(col("GridAreaCode"), col("position")),
     )
