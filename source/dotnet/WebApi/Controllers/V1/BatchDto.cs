@@ -19,4 +19,4 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
 /// <summary>
 /// An immutable batch.
 /// </summary>
-public sealed record BatchDto(long BatchNumber, DateTimeOffset StartDate, DateTimeOffset EndDate, DateTimeOffset ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchExecutionState ExecutionState);
+public sealed record BatchDto(long BatchNumber, DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeOffset ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchExecutionState ExecutionState);
