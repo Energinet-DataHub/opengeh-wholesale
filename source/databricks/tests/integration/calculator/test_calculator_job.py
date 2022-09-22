@@ -218,7 +218,7 @@ def test_calculator_job_input_and_output_integration_test(
 
 
 def test__creates_hour_csv_with_expected_columns_names(
-    spark, test_data, test_data_job_parameters, databricks_path, data_lake_path
+    spark, test_data_job_parameters, data_lake_path
 ):
     # Act
     start_calculator(spark, test_data_job_parameters)
@@ -237,7 +237,7 @@ def test__creates_hour_csv_with_expected_columns_names(
 
 
 def test__creates_quarter_csv_with_expected_columns_names(
-    spark, test_data, test_data_job_parameters, databricks_path, data_lake_path
+    spark, test_data_job_parameters, data_lake_path
 ):
     # Act
     start_calculator(spark, test_data_job_parameters)
@@ -255,9 +255,7 @@ def test__creates_quarter_csv_with_expected_columns_names(
     ]
 
 
-def test__creates_csv_per_resolution_per_grid_area(
-    spark, test_data, test_data_job_parameters, databricks_path, data_lake_path
-):
+def test__creates_csv_per_grid_area(spark, test_data_job_parameters, data_lake_path):
     # Act
     start_calculator(spark, test_data_job_parameters)
 
