@@ -15,6 +15,8 @@
 from inspect import stack
 from pyspark.sql import DataFrame
 
+loglevel = "information"
+
 
 def _log(level: str, message: str, df: DataFrame):
     print(f"============ {level} ============")
@@ -23,7 +25,7 @@ def _log(level: str, message: str, df: DataFrame):
     print(f"{frame.filename}:{frame.lineno} - {frame.function}(): {message}")
     if df is not None:
         df.printSchema()
-        df.show(5000)
+        df.show(5000, False)
         print(f"Number of rows in data frame: {df.count()}")
     print("==============================")
 
@@ -33,4 +35,6 @@ def log(message: str, df: DataFrame = None):
 
 
 def debug(message: str, df: DataFrame = None):
+    if loglevel != "debug":
+        return
     _log("DEBUG", message, df)

@@ -17,7 +17,6 @@ import shutil
 import subprocess
 import pytest
 from pyspark.sql.functions import col
-from tests.contract_utils import assert_contract_matches_schema
 from pyspark.sql.types import (
     DecimalType,
     StructType,
@@ -27,6 +26,8 @@ from pyspark.sql.types import (
     IntegerType,
     LongType,
 )
+from tests.contract_utils import assert_contract_matches_schema
+from package.calculator_job import start as start_calculator
 
 
 def _get_process_manager_parameters(filename):
@@ -84,6 +85,8 @@ def test_calculator_job_accepts_parameters_from_process_manager(
         "foo",
         "--only-validate-args",
         "1",
+        "--time-zone",
+        "Europe/Copenhagen",
     ]
     python_parameters.extend(process_manager_parameters)
 
@@ -167,6 +170,8 @@ def test_calculator_job_input_and_output_integration_test(
         "2022-04-01T22:00:00Z",
         "--batch-period-end-datetime",
         "2022-09-01T22:00:00Z",
+        "--time-zone",
+        "Europe/Copenhagen",
     ]
 
     # Reads time_series_points from parquet into dataframe
@@ -175,9 +180,10 @@ def test_calculator_job_input_and_output_integration_test(
     )
 
     # Act
-    subprocess.call(python_parameters)
+    exitcode = subprocess.call(python_parameters)
 
     # Assert
+    assert exitcode == 0
     result_805 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=805")
     result_806 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=806")
     assert result_805.count() >= 1, "Calculator job failed to write files"
@@ -209,3 +215,63 @@ def test_calculator_job_input_and_output_integration_test(
     expected_result_path = f"{data_lake_path}/results/batch_id=1/grid_area=805"
     actual_result_file = find_first_file(expected_result_path, "part-*.json")
     assert actual_result_file is not None
+
+
+def test__creates_hour_csv_with_expected_columns_names(
+    spark, test_data_job_parameters, data_lake_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-hour/grid_area=805"
+    )
+
+    assert actual.columns == [
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        *[f"ENERGYQUANTITY{i+1}" for i in range(24)],
+    ]
+
+
+def test__creates_quarter_csv_with_expected_columns_names(
+    spark, test_data_job_parameters, data_lake_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+    )
+
+    assert actual.columns == [
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        *[f"ENERGYQUANTITY{i+1}" for i in range(96)],
+    ]
+
+
+def test__creates_csv_per_grid_area(spark, test_data_job_parameters, data_lake_path):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    basis_data_805 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+    )
+
+    basis_data_806 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=806"
+    )
+
+    assert (
+        basis_data_805.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 805"
+
+    assert (
+        basis_data_806.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 806"
