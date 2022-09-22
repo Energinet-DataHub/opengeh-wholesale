@@ -45,10 +45,11 @@ jobs:
       - name: Wait for job to succeed
         uses: Energinet-DataHub/.github/.github/actions/job-wait-completion@poc
         with:
-          ref: ${{ github.ref }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          check-name: 'dotnet_solution_ci_build / dotnet_ci_build'
-          wait-interval: 15
+          who-to-greet: 'Mona the Octocat'
+          # ref: ${{ github.ref }}
+          # repo-token: ${{ secrets.GITHUB_TOKEN }}
+          # check-name: 'dotnet_solution_ci_build / dotnet_ci_build'
+          # wait-interval: 15
 
       - name: Download dotnet artifact
         uses: actions/download-artifact@v3
