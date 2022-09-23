@@ -133,13 +133,13 @@ public class BatchApplicationServiceTests
         }
     }
 
-    private bool IsEqual(Batch batch, BatchDto batchDto)
+    private static bool IsEqual(Batch batch, BatchDto batchDto)
     {
         return (batch.RunId?.Id ?? 0) == batchDto.BatchNumber
                && batch.ExecutionState == batchDto.ExecutionState
                && batch.PeriodStart.ToDateTimeOffset() == batchDto.PeriodStart
                && batch.PeriodEnd.ToDateTimeOffset() == batchDto.PeriodEnd
-               && batch.ExecutionTimeStart.ToDateTimeOffset() == batchDto.ExecutionTimeStart
+               && batch.ExecutionTimeStart?.ToDateTimeOffset() == batchDto.ExecutionTimeStart
                && batch.ExecutionTimeEnd?.ToDateTimeOffset() == batchDto.ExecutionTimeEnd;
     }
 }

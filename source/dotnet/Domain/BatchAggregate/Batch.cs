@@ -64,7 +64,7 @@ public class Batch
 
     public BatchExecutionState ExecutionState { get; private set; }
 
-    public Instant ExecutionTimeStart { get; private set; }
+    public Instant? ExecutionTimeStart { get; private set; }
 
     public Instant? ExecutionTimeEnd { get; private set; }
 

@@ -132,7 +132,7 @@ public class BatchApplicationService : IBatchApplicationService
             batch.RunId?.Id ?? 0,
             batch.PeriodStart.ToDateTimeOffset(),
             batch.PeriodEnd.ToDateTimeOffset(),
-            batch.ExecutionTimeStart.ToDateTimeOffset(),
+            batch.ExecutionTimeStart?.ToDateTimeOffset() ?? null,
             batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
             batch.ExecutionState);
     }
