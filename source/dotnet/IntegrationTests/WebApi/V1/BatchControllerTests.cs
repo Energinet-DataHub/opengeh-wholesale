@@ -75,4 +75,28 @@ public class BatchControllerTests :
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
+
+    [Fact]
+    public async Task SearchAsync_WhenCalled_AlwaysReturnsOk()
+    {
+        // Arrange
+        var minExecutionTime = new DateTimeOffset(
+            2022,
+            01,
+            02,
+            1,
+            2,
+            3,
+            50,
+            TimeSpan.Zero);
+        var maxExecutionTime = minExecutionTime + TimeSpan.FromMinutes(33);
+        var batchSearchDto = new BatchSearchDto(minExecutionTime, maxExecutionTime);
+
+        // Act
+        const string searchUrl = BaseUrl + "/Search";
+        var response = await _client.PostAsJsonAsync(searchUrl, batchSearchDto, CancellationToken.None);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 }

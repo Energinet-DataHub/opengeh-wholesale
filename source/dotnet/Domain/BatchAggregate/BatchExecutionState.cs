@@ -33,4 +33,9 @@ public enum BatchExecutionState
     /// The batch has (successfully) completed.
     /// </summary>
     Completed = 2,
+
+    /// <summary>
+    /// The batch has (Failed) failed.
+    /// </summary>
+    Failed = 3,
 }
