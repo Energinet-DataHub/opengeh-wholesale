@@ -47,12 +47,6 @@ public class BatchBuilder
         return this;
     }
 
-    public BatchBuilder WithIClock(IClock clock)
-    {
-        _clock = clock;
-        return this;
-    }
-
     public Batch Build()
     {
         var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes, _periodStart, _periodEnd, _clock);

@@ -60,10 +60,10 @@ public class BatchApplicationServiceTests
 
         // Act
         var batchSearchDto = new BatchSearchDto(DateTimeOffset.Now, DateTimeOffset.Now);
-        var exception = await Record.ExceptionAsync(() => sut.SearchAsync(batchSearchDto));
+        await sut.SearchAsync(batchSearchDto);
 
         // Assert
-        Assert.Null(exception);
+        // --- If we had an exception the test will fail - so no need for more assert
     }
 
     [Theory]
@@ -94,11 +94,10 @@ public class BatchApplicationServiceTests
     [InlineAutoMoqData]
     public async Task SearchAsync_BatchesAreMappedCorrectly(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<IClock> clockMock,
         BatchApplicationService sut)
     {
         // Arrange
-        var clockMock = new Mock<IClock>();
-
         var batch1 = new Batch(
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("805"), new("806") },
@@ -110,8 +109,8 @@ public class BatchApplicationServiceTests
         var batch2 = new Batch(
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("105"), new("106") },
-            Instant.FromUtc(2019, 2, 31, 22, 00),
-            Instant.FromUtc(2018, 7, 1, 22, 00),
+            Instant.FromUtc(2019, 2, 22, 22, 00),
+            Instant.FromUtc(2019, 7, 1, 22, 00),
             clockMock.Object);
 
         var batches = new List<Batch>()
