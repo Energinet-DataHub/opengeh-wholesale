@@ -70,10 +70,12 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
         var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, somePeriodStart, somePeriodEnd, clock);
         var sut = new BatchRepository(writeContext);
-
-        // Act
         batch.MarkAsExecuting(new JobRunId(1)); // This call will ensure ExecutionTimeStart is set
         batch.MarkAsCompleted();  // This call will ensure ExecutionTimeEnd is set
+        batch.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
+        batch.ExecutionTimeStart.Should().NotBeNull(); // Additional check
+
+        // Act
         await sut.AddAsync(batch);
         await writeContext.SaveChangesAsync();
 
@@ -81,10 +83,8 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         await using var readContext = _databaseManager.CreateDbContext();
         var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
 
-        actual.Should().BeEquivalentTo(batch);
-        actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
-        actual.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
-        actual.ExecutionTimeStart.Should().NotBeNull(); // Additional check
+        Assert.Equal(actual.ExecutionTimeStart, batch.ExecutionTimeStart);
+        Assert.Equal(actual.ExecutionTimeEnd, batch.ExecutionTimeEnd);
     }
 
     [Fact]

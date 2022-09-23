@@ -39,9 +39,9 @@ public class BatchApplicationServiceTests
         // Arrange
         var noBatches = new List<Batch>();
         batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
+        var batchSearchDto = new BatchSearchDto(DateTimeOffset.Now, DateTimeOffset.Now);
 
         // Act
-        var batchSearchDto = new BatchSearchDto(DateTimeOffset.Now, DateTimeOffset.Now);
         var searchResult = await sut.SearchAsync(batchSearchDto);
 
         // Assert
@@ -50,7 +50,7 @@ public class BatchApplicationServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task SearchAsync_NoMatchingBatches_DoesThrowException(
+    public async Task SearchAsync_NoMatchingBatches_DoesNotThrowException(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         BatchApplicationService sut)
     {
@@ -110,8 +110,8 @@ public class BatchApplicationServiceTests
         var batch2 = new Batch(
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("105"), new("106") },
-            Instant.FromUtc(2020, 5, 31, 22, 00),
-            Instant.FromUtc(2021, 6, 1, 22, 00),
+            Instant.FromUtc(2019, 2, 31, 22, 00),
+            Instant.FromUtc(2018, 7, 1, 22, 00),
             clockMock.Object);
 
         var batches = new List<Batch>()
