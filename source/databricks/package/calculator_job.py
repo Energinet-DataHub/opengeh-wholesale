@@ -116,17 +116,7 @@ def write_time_series_basis_data_to_csv(
     )
 
 
-def start():
-    args = _get_valid_args_or_throw()
-    log(f"Job arguments: {str(args)}")
-    db_logging.loglevel = args.log_level
-    if args.only_validate_args:
-        exit(0)
-
-    spark = initialize_spark(
-        args.data_storage_account_name, args.data_storage_account_key
-    )
-
+def start(spark: SparkSession, args):
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.
@@ -185,4 +175,14 @@ def start():
 
 
 if __name__ == "__main__":
-    start()
+    args = _get_valid_args_or_throw()
+    log(f"Job arguments: {str(args)}")
+    db_logging.loglevel = args.log_level
+    if args.only_validate_args:
+        exit(0)
+
+    spark = initialize_spark(
+        args.data_storage_account_name, args.data_storage_account_key
+    )
+
+    start(spark, args)
