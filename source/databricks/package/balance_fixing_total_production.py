@@ -61,7 +61,7 @@ from package.schemas import (
 from package.db_logging import debug
 from datetime import datetime, timedelta, tzinfo, date
 import time
-from zoneinfo import ZoneInfo
+from backports.zoneinfo import ZoneInfo
 from pytz import timezone
 import pytz
 
