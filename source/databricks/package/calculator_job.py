@@ -174,6 +174,8 @@ def internal_start(spark: SparkSession, args):
     )
 
 
+# The start() method should only have its name updated in correspondence with the wheels entry point for it.
+# Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start():
     args = _get_valid_args_or_throw()
     log(f"Job arguments: {str(args)}")
