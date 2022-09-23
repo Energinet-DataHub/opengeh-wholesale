@@ -12,23 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public interface IBatchApplicationService
-{
-    /// <summary>
-    /// Create a new batch with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task CreateAsync(BatchRequestDto batchRequestDto);
-
-    /// <summary>
-    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task StartPendingAsync();
-
-    Task UpdateExecutionStateAsync();
-
-    Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto);
-}
+/// <summary>
+/// An immutable criteria for batch search.
+/// </summary>
+public sealed record BatchSearchDto(DateTimeOffset MinExecutionTime, DateTimeOffset MaxExecutionTime);
