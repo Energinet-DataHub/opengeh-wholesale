@@ -27,7 +27,7 @@ from pyspark.sql.types import (
     LongType,
 )
 from tests.contract_utils import assert_contract_matches_schema
-from package.calculator_job import start as start_calculator
+from package.calculator_job import internal_start as start_calculator
 
 
 def _get_process_manager_parameters(filename):
