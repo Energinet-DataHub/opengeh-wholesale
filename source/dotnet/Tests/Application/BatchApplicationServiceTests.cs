@@ -45,7 +45,7 @@ public class BatchApplicationServiceTests
         var searchResult = await sut.SearchAsync(batchSearchDto);
 
         // Assert
-        searchResult.Count().Should().Be(1);
+        searchResult.Count().Should().Be(0);
     }
 
     [Theory]
