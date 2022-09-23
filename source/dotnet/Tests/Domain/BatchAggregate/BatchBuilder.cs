@@ -27,6 +27,7 @@ public class BatchBuilder
 
     private BatchExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
+    private IClock _clock = SystemClock.Instance;
 
     public BatchBuilder WithState(BatchExecutionState state)
     {
@@ -48,7 +49,7 @@ public class BatchBuilder
 
     public Batch Build()
     {
-        var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes, _periodStart, _periodEnd);
+        var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes, _periodStart, _periodEnd, _clock);
         if (_state != null)
             batch.SetPrivateProperty(b => b.ExecutionState, _state);
         return batch;

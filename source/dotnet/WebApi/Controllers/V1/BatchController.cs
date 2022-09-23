@@ -44,4 +44,17 @@ public class BatchController : ControllerBase
         await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
         return Ok();
     }
+
+    /// <summary>
+    /// Get batches that matches the criteria specified in <paramref name="batchSearchDto"/>
+    /// </summary>
+    /// <param name="batchSearchDto">Search criteria</param>
+    /// <returns>Batches that matches the search criteria. Always 200 OK</returns>
+    [HttpPost("Search")]
+    [MapToApiVersion(Version)]
+    public async Task<IActionResult> SearchAsync([FromBody] BatchSearchDto batchSearchDto)
+    {
+        var batchesDto = await _batchApplicationService.SearchAsync(batchSearchDto).ConfigureAwait(false);
+        return Ok(batchesDto);
+    }
 }
