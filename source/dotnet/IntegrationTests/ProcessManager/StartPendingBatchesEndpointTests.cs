@@ -110,11 +110,13 @@ public class StartPendingBatchesEndpointTests
             await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
             var periodStart = Instant.FromDateTimeOffset(DateTimeOffset.Now);
             var periodEnd = periodStart.PlusHours(1);
+            var clock = SystemClock.Instance;
             var pendingBatch = new Batch(
                 ProcessType.BalanceFixing,
                 new[] { new GridAreaCode(gridAreaCode) },
                 periodStart,
-                periodEnd);
+                periodEnd,
+                clock);
 
             await dbContext.Batches.AddAsync(pendingBatch);
             await dbContext.SaveChangesAsync();

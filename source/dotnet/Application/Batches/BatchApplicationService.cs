@@ -94,6 +94,15 @@ public class BatchApplicationService : IBatchApplicationService
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
+    public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
+    {
+        var minExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MinExecutionTime);
+        var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
+        var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
+            .ConfigureAwait(false);
+        return batches.Select(MapToBatchDto);
+    }
+
     private static Batch CreateBatch(BatchRequestDto batchRequestDto)
     {
         var gridAreaCodes = batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c));
@@ -104,7 +113,8 @@ public class BatchApplicationService : IBatchApplicationService
         };
         var periodStart = Instant.FromDateTimeOffset(batchRequestDto.StartDate);
         var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
-        var batch = new Batch(processType, gridAreaCodes, periodStart, periodEnd);
+        var clock = SystemClock.Instance;
+        var batch = new Batch(processType, gridAreaCodes, periodStart, periodEnd, clock);
         return batch;
     }
 
@@ -114,5 +124,16 @@ public class BatchApplicationService : IBatchApplicationService
             .SelectMany(b => b.GridAreaCodes.Select(x => new { b.Id, x.Code }))
             .Select(c => new ProcessCompletedEventDto(c.Code, c.Id))
             .ToList();
+    }
+
+    private BatchDto MapToBatchDto(Batch batch)
+    {
+        return new BatchDto(
+            batch.RunId?.Id ?? 0,
+            batch.PeriodStart.ToDateTimeOffset(),
+            batch.PeriodEnd.ToDateTimeOffset(),
+            batch.ExecutionTimeStart.ToDateTimeOffset(),
+            batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
+            batch.ExecutionState);
     }
 }

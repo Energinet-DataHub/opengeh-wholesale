@@ -13,22 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public interface IBatchApplicationService
-{
-    /// <summary>
-    /// Create a new batch with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task CreateAsync(BatchRequestDto batchRequestDto);
-
-    /// <summary>
-    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Pending"/>.
-    /// </summary>
-    Task StartPendingAsync();
-
-    Task UpdateExecutionStateAsync();
-
-    Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto);
-}
+/// <summary>
+/// An immutable batch.
+/// </summary>
+public sealed record BatchDto(long BatchNumber, DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeOffset ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchExecutionState ExecutionState);

@@ -41,8 +41,9 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var periodStart = Instant.FromUtc(2022, 5, 31, 22, 00);
         var periodEnd = Instant.FromUtc(2022, 6, 1, 22, 00);
+        var clock = SystemClock.Instance;
 
-        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, periodStart, periodEnd);
+        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, periodStart, periodEnd, clock);
         var sut = new BatchRepository(writeContext);
 
         // Act
@@ -55,5 +56,61 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
         actual.Should().BeEquivalentTo(batch);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
+    }
+
+    [Fact]
+    public async Task AddAsync_BatchContainsExecutionTime()
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
+        var somePeriodStart = Instant.FromUtc(2022, 5, 31, 22, 00);
+        var somePeriodEnd = Instant.FromUtc(2022, 6, 1, 22, 00);
+        var clock = SystemClock.Instance;
+
+        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, somePeriodStart, somePeriodEnd, clock);
+        var sut = new BatchRepository(writeContext);
+
+        // Act
+        batch.MarkAsExecuting(new JobRunId(1)); // This call will ensure ExecutionTimeStart is set
+        batch.MarkAsCompleted();  // This call will ensure ExecutionTimeEnd is set
+        await sut.AddAsync(batch);
+        await writeContext.SaveChangesAsync();
+
+        // Assert
+        await using var readContext = _databaseManager.CreateDbContext();
+        var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
+
+        actual.Should().BeEquivalentTo(batch);
+        actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
+        actual.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
+        actual.ExecutionTimeStart.Should().NotBeNull(); // Additional check
+    }
+
+    [Fact]
+    public async Task AddAsync_WhenExecutionTimeEndIsNull_BatchExecutionTimeIsNull()
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
+        var somePeriodStart = Instant.FromUtc(2022, 5, 31, 22, 00);
+        var somePeriodEnd = Instant.FromUtc(2022, 6, 1, 22, 00);
+        var clock = SystemClock.Instance;
+
+        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, somePeriodStart, somePeriodEnd, clock);
+        var sut = new BatchRepository(writeContext);
+
+        // Act
+        await sut.AddAsync(batch);
+        await writeContext.SaveChangesAsync();
+
+        // Assert
+        await using var readContext = _databaseManager.CreateDbContext();
+        var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
+
+        actual.Should().BeEquivalentTo(batch);
+        actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
+        actual.ExecutionTimeEnd.Should().BeNull();
+        actual.ExecutionTimeStart.Should().NotBeNull();
     }
 }

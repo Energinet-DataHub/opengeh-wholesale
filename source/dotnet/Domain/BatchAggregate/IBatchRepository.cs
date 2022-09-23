@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using NodaTime;
+
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public interface IBatchRepository
@@ -25,4 +27,6 @@ public interface IBatchRepository
     Task<List<Batch>> GetExecutingAsync();
 
     Task<List<Batch>> GetCompletedAsync();
+
+    Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart);
 }
