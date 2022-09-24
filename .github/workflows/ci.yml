@@ -70,7 +70,7 @@ jobs:
   # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
   dotnet_solution_ci_test_integrationtests_part1:
     needs: [dotnet_solution_ci_build]
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
       TESTS_DLL_FILE_PATH: '\tests\source\dotnet\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       TESTS_FILTER_EXPRESSION: 'FullyQualifiedName~IntegrationEventListener'
@@ -88,7 +88,7 @@ jobs:
   # Run tests in 'IntegrationTests.dll' NOT within the namespace 'IntegrationEventListener'
   dotnet_solution_ci_test_integrationtests_part2:
     needs: [dotnet_solution_ci_build]
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
       TESTS_DLL_FILE_PATH: '\tests\source\dotnet\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       TESTS_FILTER_EXPRESSION: 'FullyQualifiedName!~IntegrationEventListener'
@@ -106,7 +106,7 @@ jobs:
   # Run all tests in 'Tests.dll'
   dotnet_solution_ci_test_tests:
     needs: [dotnet_solution_ci_build]
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
       TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 8
