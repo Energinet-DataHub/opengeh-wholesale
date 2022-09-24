@@ -23,19 +23,26 @@ namespace Energinet.DataHub.Wholesale.WebApi;
 
 public class Startup
 {
-    public Startup(IConfiguration configuration)
+    public Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
         Configuration = configuration;
+        Environment = environment;
     }
 
     public IConfiguration Configuration { get; }
+
+    public IWebHostEnvironment Environment { get; }
 
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-        services.AddJwtTokenSecurity();
+        if (!Environment.IsDevelopment())
+        {
+            services.AddJwtTokenSecurity();
+        }
+
         services.AddApiVersioning(config =>
         {
             config.DefaultApiVersion = new ApiVersion(1, 0);
@@ -49,11 +56,11 @@ public class Startup
         ConfigureHealthChecks(services);
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
         // Configure the HTTP request pipeline.
-        if (env.IsDevelopment())
+        if (Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
