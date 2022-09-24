@@ -42,20 +42,30 @@ jobs:
         run: |
           echo "Runner OS is $RUNNER_OS"
 
-      - name: Wait for job to succeed
-        uses: Energinet-DataHub/.github/.github/actions/job-wait-completion@poc
-        with:
-          who-to-greet: 'Mona the Octocat'
-          # ref: ${{ github.ref }}
-          # repo-token: ${{ secrets.GITHUB_TOKEN }}
-          # check-name: 'dotnet_solution_ci_build / dotnet_ci_build'
-          # wait-interval: 15
+      # - name: Wait for job to succeed
+      #   uses: Energinet-DataHub/.github/.github/actions/job-wait-completion@poc
+      #   with:
+      #     who-to-greet: 'Mona the Octocat'
+      #     # ref: ${{ github.ref }}
+      #     # repo-token: ${{ secrets.GITHUB_TOKEN }}
+      #     # check-name: 'dotnet_solution_ci_build / dotnet_ci_build'
+      #     # wait-interval: 15
 
-      - name: Download dotnet artifact
-        uses: actions/download-artifact@v3
+      # - name: Download dotnet artifact
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: dotnet
+      #     path: ${{ env.ARTIFACTS_PATH }}
+
+      - name: Wait for download to be possible
+        uses: Wandalen/wretry.action@v1.0.27
         with:
-          name: dotnet
-          path: ${{ env.ARTIFACTS_PATH }}
+          action: actions/download-artifact@v3
+          with: |
+            name: dotnet
+            path: ${{ env.ARTIFACTS_PATH }}
+          attempt_limit: 12
+          attempt_delay: 15000
 
   # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
   dotnet_solution_ci_test_integrationtests_part1:
