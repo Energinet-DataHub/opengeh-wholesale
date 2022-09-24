@@ -42,14 +42,14 @@ jobs:
         run: |
           echo "Runner OS is $RUNNER_OS"
 
-      # - name: Wait for job to succeed
-      #   uses: Energinet-DataHub/.github/.github/actions/job-wait-completion@poc
-      #   with:
-      #     who-to-greet: 'Mona the Octocat'
-      #     # ref: ${{ github.ref }}
-      #     # repo-token: ${{ secrets.GITHUB_TOKEN }}
-      #     # check-name: 'dotnet_solution_ci_build / dotnet_ci_build'
-      #     # wait-interval: 15
+      - name: Wait for job to succeed
+        uses: Energinet-DataHub/.github/.github/actions/job-wait-completion@poc
+        with:
+          who-to-greet: 'Mona the Octocat'
+          # ref: ${{ github.ref }}
+          # repo-token: ${{ secrets.GITHUB_TOKEN }}
+          # check-name: 'dotnet_solution_ci_build / dotnet_ci_build'
+          # wait-interval: 15
 
       # - name: Download dotnet artifact
       #   uses: actions/download-artifact@v3
@@ -57,15 +57,15 @@ jobs:
       #     name: dotnet
       #     path: ${{ env.ARTIFACTS_PATH }}
 
-      - name: Wait for download to be possible
-        uses: Wandalen/wretry.action@v1.0.27
-        with:
-          action: actions/download-artifact@v3
-          with: |
-            name: dotnet
-            path: ${{ env.ARTIFACTS_PATH }}
-          attempt_limit: 12
-          attempt_delay: 15000
+      # - name: Wait for download to be possible
+      #   uses: Wandalen/wretry.action@v1.0.27
+      #   with:
+      #     action: actions/download-artifact@v3
+      #     with: |
+      #       name: dotnet
+      #       path: ${{ env.ARTIFACTS_PATH }}
+      #     attempt_limit: 12
+      #     attempt_delay: 15000
 
   # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
   dotnet_solution_ci_test_integrationtests_part1:
@@ -76,6 +76,7 @@ jobs:
       TESTS_FILTER_EXPRESSION: 'FullyQualifiedName~IntegrationEventListener'
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\WebApi'
+      DOWNLOAD_ATTEMPT_LIMIT: 8
       USE_AZURE_FUNCTIONS_TOOLS: true
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -93,6 +94,7 @@ jobs:
       TESTS_FILTER_EXPRESSION: 'FullyQualifiedName!~IntegrationEventListener'
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\WebApi'
+      DOWNLOAD_ATTEMPT_LIMIT: 8
       USE_AZURE_FUNCTIONS_TOOLS: true
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -107,6 +109,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
     with:
       TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
+      DOWNLOAD_ATTEMPT_LIMIT: 8
       USE_AZURE_FUNCTIONS_TOOLS: false
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
