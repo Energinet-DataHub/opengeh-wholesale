@@ -31,52 +31,34 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Publish IntegrationEventListener
+    # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
+    # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
+    - name: Publish IntegrationTests
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\IntegrationEventListener\IntegrationEventListener.csproj' \
+          '.\source\dotnet\IntegrationTests\IntegrationTests.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
-          --output '${{ inputs.OUTPUT_PATH }}\functions\integrationeventlistener'
+          --output '.\source\dotnet\IntegrationTests\bin\Release\net6.0'
 
-    - name: Publish ProcessManager
+    # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
+    # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
+    - name: Publish Tests
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\ProcessManager\ProcessManager.csproj' \
+          '.\source\dotnet\Tests\Tests.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
-          --output '${{ inputs.OUTPUT_PATH }}\functions\processmanager'
+          --output '.\source\dotnet\Tests\bin\Release\net6.0'
 
-    - name: Publish Sender
+    - name: Copy all bin folders
       shell: bash
       run: |
-        dotnet publish \
-          '.\source\dotnet\Sender\Sender.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '${{ inputs.OUTPUT_PATH }}\functions\sender'
-
-    - name: Publish Web API
-      shell: bash
-      run: |
-        dotnet publish \
-          '.\source\dotnet\WebApi\WebApi.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '${{ inputs.OUTPUT_PATH }}\functions\webapi'
-
-    - name: Publish Database Migration
-      shell: bash
-      run: |
-        dotnet publish \
-          '.\source\dotnet\DatabaseMigration\DatabaseMigration.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '${{ inputs.OUTPUT_PATH }}\databasemigration'
+        # Create subfolder hierarchy matching 'bin' folders
+        find source/dotnet -type d -name 'bin' -exec mkdir -p '${{ inputs.OUTPUT_PATH }}/tests/{}' ';'
+        # Copy 'bin/Release' folders into hierarchy (cannot copy obj folders since we did not create those)
+        find source/dotnet -type d -name 'Release' -exec cp -r '{}' '${{ inputs.OUTPUT_PATH }}/tests/{}' ';'
