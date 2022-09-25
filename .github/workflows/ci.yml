@@ -27,7 +27,7 @@ jobs:
 
   # Build all projects within solution
   dotnet_solution_ci_build:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-build.yml@v8
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-build.yml@poc
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
 
