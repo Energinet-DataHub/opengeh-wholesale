@@ -15,10 +15,11 @@
 name: Prepare dotnet outputs
 
 #
-# This action is called from the 'dotnet-solution-ci.yml' file if the
-# workflow parameter PREPARE_OUTPUTS is set to 'true'.
+# This action is called from:
+#  - the 'dotnet-solution-ci.yml' file IF the workflow parameter PREPARE_OUTPUTS is set to 'true'.
+#  - the 'dotnet-solution-ci-build.yml' file.
 #
-# Prepared outputs will be uploaded as the 'dotnet' artifact.
+# Prepared outputs will be zipped and uploaded as the 'dotnet' artifact.
 #
 # All 'apps' must be output into the '\functions\' subfolder, to match
 # how they are later retrieved in the '<domain>-stage-deployment.yml' file.
