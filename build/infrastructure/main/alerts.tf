@@ -26,6 +26,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "wholesales_databricks_jo
   query                     = <<-QUERY
   DatabricksJobs 
 | where OperationName == "Microsoft.Databricks/jobs/runFailed"
+| where parse_json(RequestParams).jobTriggerType != "retry"
   QUERY
   severity                  = 1
   frequency                 = 5
