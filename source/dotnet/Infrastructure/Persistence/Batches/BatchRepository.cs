@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 
@@ -41,6 +42,15 @@ public class BatchRepository : IBatchRepository
     public Task<List<Batch>> GetExecutingAsync() => GetByStateAsync(BatchExecutionState.Executing);
 
     public Task<List<Batch>> GetCompletedAsync() => GetByStateAsync(BatchExecutionState.Completed);
+
+    public async Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart)
+    {
+        return await _context
+            .Batches
+            .Where(b => b.ExecutionTimeStart >= minExecutionTimeStart && b.ExecutionTimeStart <= maxExecutionTimeStart)
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
 
     private async Task<List<Batch>> GetByStateAsync(BatchExecutionState state)
     {

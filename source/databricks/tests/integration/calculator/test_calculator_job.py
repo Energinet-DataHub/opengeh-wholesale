@@ -17,7 +17,6 @@ import shutil
 import subprocess
 import pytest
 from pyspark.sql.functions import col
-from tests.contract_utils import assert_contract_matches_schema
 from pyspark.sql.types import (
     DecimalType,
     StructType,
@@ -27,6 +26,8 @@ from pyspark.sql.types import (
     IntegerType,
     LongType,
 )
+from tests.contract_utils import assert_contract_matches_schema
+from package.calculator_job import internal_start as start_calculator
 
 
 def _get_process_manager_parameters(filename):
@@ -84,6 +85,8 @@ def test_calculator_job_accepts_parameters_from_process_manager(
         "foo",
         "--only-validate-args",
         "1",
+        "--time-zone",
+        "Europe/Copenhagen",
     ]
     python_parameters.extend(process_manager_parameters)
 
@@ -94,88 +97,11 @@ def test_calculator_job_accepts_parameters_from_process_manager(
     assert exit_code == 0, "Calculator job failed to accept provided input arguments"
 
 
-def test_calculator_job_input_and_output_integration_test(
-    spark,
-    json_test_files,
-    databricks_path,
-    data_lake_path,
-    source_path,
-    find_first_file,
+def test__result_is_generated_for_requested_grid_areas(
+    spark, test_data_job_parameters, data_lake_path, source_path
 ):
-    """This a massive test that tests multiple aspects of the job.
-    It ain't pretty but most of the aspects need to be tested in conjunction
-    with a successful execution in order to be (relatively) sure
-    that they provide the desired guarantees.
-
-    We haven't split this test into multiple tests, which would have to all
-    run the very slow process of starting spark instance over again
-    each time the external process is executed.
-    """
-
-    # Reads integration_events json file into dataframe and writes it to parquet
-    spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
-        "body", col("body").cast("binary")
-    ).write.mode("overwrite").parquet(
-        f"{data_lake_path}/parquet_test_files/integration_events"
-    )
-
-    # Schema should match published_time_series_points_schema in time series
-    published_time_series_points_schema = StructType(
-        [
-            StructField("GsrnNumber", StringType(), True),
-            StructField("TransactionId", StringType(), True),
-            StructField("Quantity", DecimalType(18, 3), True),
-            StructField("Quality", LongType(), True),
-            StructField("Resolution", LongType(), True),
-            StructField("RegistrationDateTime", TimestampType(), True),
-            StructField("storedTime", TimestampType(), False),
-            StructField("time", TimestampType(), True),
-            StructField("year", IntegerType(), True),
-            StructField("month", IntegerType(), True),
-            StructField("day", IntegerType(), True),
-        ]
-    )
-
-    # Reads time_series_points json file into dataframe with published_time_series_points_schema and writes it to parquet
-    spark.read.schema(published_time_series_points_schema).json(
-        f"{json_test_files}/time_series_points.json"
-    ).write.mode("overwrite").parquet(
-        f"{data_lake_path}/parquet_test_files/time_series_points"
-    )
-
-    # Arrange
-    python_parameters = [
-        "python",
-        f"{databricks_path}/package/calculator_job.py",
-        "--data-storage-account-name",
-        "foo",
-        "--data-storage-account-key",
-        "foo",
-        "--integration-events-path",
-        f"{data_lake_path}/parquet_test_files/integration_events",
-        "--time-series-points-path",
-        f"{data_lake_path}/parquet_test_files/time_series_points",
-        "--process-results-path",
-        f"{data_lake_path}/results",
-        "--batch-id",
-        "1",
-        "--batch-grid-areas",
-        "[805, 806]",
-        "--batch-snapshot-datetime",
-        "2022-09-02T21:59:00Z",
-        "--batch-period-start-datetime",
-        "2022-04-01T22:00:00Z",
-        "--batch-period-end-datetime",
-        "2022-09-01T22:00:00Z",
-    ]
-
-    # Reads time_series_points from parquet into dataframe
-    input_time_series_points = spark.read.parquet(
-        f"{data_lake_path}/parquet_test_files/time_series_points"
-    )
-
     # Act
-    subprocess.call(python_parameters)
+    start_calculator(spark, test_data_job_parameters)
 
     # Assert
     result_805 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=805")
@@ -183,7 +109,17 @@ def test_calculator_job_input_and_output_integration_test(
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
 
-    # Asserts that the published-time-series-points contract matches the schema from input_time_series_points.
+
+def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
+    spark, test_data_job_parameters, data_lake_path, source_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    input_time_series_points = spark.read.parquet(
+        f"{data_lake_path}/parquet_test_files/time_series_points"
+    )
     # When asserting both that the calculator creates output and it does it with input data that matches
     # the time series points contract from the time-series domain (in the same test), then we can infer that the
     # calculator works with the format of the data published from the time-series domain.
@@ -192,20 +128,103 @@ def test_calculator_job_input_and_output_integration_test(
         input_time_series_points.schema,
     )
 
-    # Assert: Calculator result schema must match contract with .NET
+
+def test__calculator_result_schema_must_match_contract_with_dotnet(
+    spark, test_data_job_parameters, data_lake_path, source_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    result_805 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=805")
     assert_contract_matches_schema(
         f"{source_path}/contracts/calculator-result.json",
         result_805.schema,
     )
 
+
+def test__quantity_is_with_precision_3(
+    spark, test_data_job_parameters, data_lake_path, find_first_file
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
+    result_805 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=805")
     import re
 
     assert re.search(r"^\d+\.\d{3}$", result_805.first().quantity)
+
+
+def test__result_file_is_created(
+    spark, test_data_job_parameters, data_lake_path, find_first_file
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
 
     # Assert: Relative path of result file must match expectation of .NET
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
     expected_result_path = f"{data_lake_path}/results/batch_id=1/grid_area=805"
     actual_result_file = find_first_file(expected_result_path, "part-*.json")
     assert actual_result_file is not None
+
+
+def test__creates_hour_csv_with_expected_columns_names(
+    spark, test_data_job_parameters, data_lake_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-hour/grid_area=805"
+    )
+
+    assert actual.columns == [
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        *[f"ENERGYQUANTITY{i+1}" for i in range(24)],
+    ]
+
+
+def test__creates_quarter_csv_with_expected_columns_names(
+    spark, test_data_job_parameters, data_lake_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+    )
+
+    assert actual.columns == [
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        *[f"ENERGYQUANTITY{i+1}" for i in range(96)],
+    ]
+
+
+def test__creates_csv_per_grid_area(spark, test_data_job_parameters, data_lake_path):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    basis_data_805 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+    )
+
+    basis_data_806 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=806"
+    )
+
+    assert (
+        basis_data_805.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 805"
+
+    assert (
+        basis_data_806.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 806"
