@@ -116,7 +116,7 @@ def write_time_series_basis_data_to_csv(
     )
 
 
-def start(spark: SparkSession, args):
+def internal_start(spark: SparkSession, args):
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.
@@ -174,7 +174,9 @@ def start(spark: SparkSession, args):
     )
 
 
-if __name__ == "__main__":
+# The start() method should only have its name updated in correspondence with the wheels entry point for it.
+# Further the method must remain parameterless because it will be called from the entry point when deployed.
+def start():
     args = _get_valid_args_or_throw()
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
@@ -185,4 +187,8 @@ if __name__ == "__main__":
         args.data_storage_account_name, args.data_storage_account_key
     )
 
-    start(spark, args)
+    internal_start(spark, args)
+
+
+if __name__ == "__main__":
+    start()
