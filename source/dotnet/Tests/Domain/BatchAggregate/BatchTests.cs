@@ -47,11 +47,27 @@ public class BatchTests
     {
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
+        var clock = SystemClock.Instance;
         Assert.Throws<ArgumentException>(() => new Batch(
             ProcessType.BalanceFixing,
             emptyGridAreaCodes,
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
-            Instant.FromDateTimeOffset(DateTimeOffset.Now)));
+            Instant.FromDateTimeOffset(DateTimeOffset.Now),
+            clock));
+    }
+
+    [Fact]
+    public void Ctor_SetsExecutionTimeEndToNull()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        sut.ExecutionTimeEnd.Should().BeNull();
+    }
+
+    [Fact]
+    public void Ctor_ExecutionTimeStartNotNull()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        sut.ExecutionTimeStart.Should().NotBeNull();
     }
 
     [Fact]
@@ -77,6 +93,14 @@ public class BatchTests
     }
 
     [Fact]
+    public void MarkAsCompleted_SetsExecutionTimeEnd()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
+        sut.MarkAsCompleted();
+        sut.ExecutionTimeEnd.Should().NotBeNull();
+    }
+
+    [Fact]
     public void MarkAsExecuting_WhenExecuting_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
@@ -96,5 +120,13 @@ public class BatchTests
         var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
         sut.MarkAsExecuting(_fakeJobRunId);
         sut.ExecutionState.Should().Be(BatchExecutionState.Executing);
+    }
+
+    [Fact]
+    public void MarkAsExecuting_ExecutionTimeIsSetToNull()
+    {
+        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        sut.MarkAsExecuting(_fakeJobRunId);
+        sut.ExecutionTimeEnd.Should().BeNull();
     }
 }
