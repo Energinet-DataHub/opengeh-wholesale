@@ -116,6 +116,18 @@ def write_time_series_basis_data_to_csv(
     )
 
 
+def write_master_basis_data_to_csv(
+    data_df: DataFrame, process_results_path: str, batch_id: str
+):
+    (
+        data_df.withColumnRenamed("GridAreaCode", "grid_area")
+        .coalesce(1)
+        .write.mode("overwrite")
+        .option("header", True)
+        .csv(f"{process_results_path}/master-basis-data/batch_id={batch_id}")
+    )
+
+
 def internal_start(spark: SparkSession, args):
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
@@ -129,7 +141,11 @@ def internal_start(spark: SparkSession, args):
         args.time_series_points_path
     )
 
-    (result_df, timeseries_basis_data_df) = calculate_balance_fixing_total_production(
+    (
+        result_df,
+        timeseries_basis_data,
+        master_basis_data,
+    ) = calculate_balance_fixing_total_production(
         raw_integration_events_df,
         raw_time_series_points_df,
         args.batch_id,
@@ -142,9 +158,10 @@ def internal_start(spark: SparkSession, args):
 
     debug("raw_timeseries", raw_time_series_points_df)
 
-    (timeseries_quarter_df, timeseries_hour_df) = timeseries_basis_data_df
+    (timeseries_quarter_df, timeseries_hour_df) = timeseries_basis_data
     debug("timeseries basis data df_hour", timeseries_hour_df)
     debug("timeseries basis data df_quarter", timeseries_quarter_df)
+    debug("master basis data", master_basis_data)
 
     write_time_series_basis_data_to_csv(
         timeseries_quarter_df,
@@ -158,6 +175,10 @@ def internal_start(spark: SparkSession, args):
         args.process_results_path,
         args.batch_id,
         "time-series-hour",
+    )
+
+    write_master_basis_data_to_csv(
+        master_basis_data, args.process_results_path, args.batch_id
     )
 
     # First repartition to co-locate all rows for a grid area on a single executor.

@@ -109,11 +109,13 @@ def calculate_balance_fixing_total_production(
         enriched_time_series_point_df, time_zone
     )
 
+    master_basis_data_df = _get_master_basis_data(metering_point_period_df)
+
     result_df = _get_result_df(enriched_time_series_point_df)
 
     cached_integration_events_df.unpersist()
 
-    return (result_df, time_series_basis_data_df)
+    return (result_df, time_series_basis_data_df, master_basis_data_df)
 
 
 def _get_cached_integration_events(
@@ -346,6 +348,27 @@ def _get_enriched_time_series_points_df(
     )
 
     return enriched_time_series_point_df
+
+
+def _get_master_basis_data(metering_point_df):
+    productionType = MeteringPointType.production.value
+
+    return metering_point_df.withColumn(
+        "TYPEOFMP",
+        when(col("MeteringPointType") == productionType, "E18").otherwise(
+            col("MeteringPointType")
+        ),
+    ).select(
+        col("GsrnNumber").alias("METERINGPOINTID"),
+        col("EffectiveDate").alias("VALIDFROM"),
+        col("toEffectiveDate").alias("VALIDTO"),
+        col("GridAreaCode").alias("GRIDAREAID"),
+        "TYPEOFMP"
+        # TODO add the following data to metering point
+        # .withColumnRenamed("", "TOGRIDAREAID") # only aplicable for E20 metering points
+        # .withColumnRenamed("", "FROMGRIDAREAID") # only aplicable for E20 metering points
+        # .withColumnRenamed("", "SETTLEMENTMETHOD") # is availerble on the created event
+    )
 
 
 def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
