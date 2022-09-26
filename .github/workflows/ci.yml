@@ -93,7 +93,7 @@ jobs:
   wheel_ci:
     uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@v8
     with:
-      PYHTON_VERSION: '3.8.6'
+      PYHTON_VERSION: '3.9.7'
       ARCHITECTURE: 'x64'
       WHEEL_WORKING_DIRECTORY: './source/databricks'
       ARTIFACT_NAME: 'wheel'
