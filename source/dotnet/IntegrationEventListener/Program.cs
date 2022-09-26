@@ -82,12 +82,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             var integrationEventsEventHubName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsEventHubName);
 
             var serviceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventConnectionManagerString);
-            var meteringPointCreatedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedTopicName);
+            var integrationEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
             var meteringPointCreatedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName);
-            var meteringPointConnectedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedTopicName);
             var meteringPointConnectedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName);
-
-            var marketParticipantConnectedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedTopicName);
             var marketParticipantConnectedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName);
 
             serviceCollection
@@ -99,17 +96,17 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                     name: "IntegrationEventsEventHubExists")
                 .AddAzureServiceBusSubscription(
                     serviceBusConnectionString,
-                    meteringPointCreatedTopicName,
+                    integrationEventsTopicName,
                     meteringPointCreatedSubscriptionName,
                     name: "MeteringPointCreatedSubscriptionExists")
                 .AddAzureServiceBusSubscription(
                     serviceBusConnectionString,
-                    meteringPointConnectedTopicName,
+                    integrationEventsTopicName,
                     meteringPointConnectedSubscriptionName,
                     name: "MeteringPointConnectedSubscriptionExists")
                 .AddAzureServiceBusSubscription(
                     serviceBusConnectionString,
-                    marketParticipantConnectedTopicName,
+                    integrationEventsTopicName,
                     marketParticipantConnectedSubscriptionName,
                     name: "MarketParticipantUpdateSubscriptionExists");
         }
