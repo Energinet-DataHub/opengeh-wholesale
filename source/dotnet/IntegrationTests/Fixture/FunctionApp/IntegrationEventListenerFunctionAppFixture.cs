@@ -114,16 +114,20 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             await EventHubListener.InitializeAsync().ConfigureAwait(false);
 
             IntegrationEventsTopic = await ServiceBusResourceProvider
+                    // Topic
                 .BuildTopic("integration-events")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.IntegrationEventsTopicName)
+                    // Metering point created subscription
                 .AddSubscription("metering-point-created")
-                .AddRule(new CreateRuleOptions("foo", new CorrelationRuleFilter { ApplicationProperties = { new KeyValuePair<string, object>("MessageType", "MeteringPointCreated") } }))
+                .AddMessageTypeFilter("MeteringPointCreated")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName)
+                    // Metering point connected subscription
                 .AddSubscription("metering-point-connected")
-                .AddRule(new CreateRuleOptions("foo", new CorrelationRuleFilter { ApplicationProperties = { new KeyValuePair<string, object>("MessageType", "MeteringPointConnected") } }))
+                .AddMessageTypeFilter("MeteringPointConnected")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName)
+                    // Grid area updated subscription
                 .AddSubscription("market-participant-changed")
-                .AddRule(new CreateRuleOptions("foo", new CorrelationRuleFilter { ApplicationProperties = { new KeyValuePair<string, object>("MessageType", "GridAreaUpdatedIntegrationEvent") } }))
+                .AddMessageTypeFilter("GridAreaUpdatedIntegrationEvent")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
                 .CreateAsync();
 

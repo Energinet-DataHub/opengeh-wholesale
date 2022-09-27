@@ -49,13 +49,13 @@ public sealed class MarketParticipantChangedListenerEndpointTests
 
         var operationTimestamp = DateTime.UtcNow;
         var correlationId = Guid.NewGuid().ToString();
-        var messageType = "GridAreaUpdatedIntegrationEvent";
+        var messageType = ServiceBusMessageType;
 
         var message = ServiceBusTestMessage.Create(
             CreateUnusedEvent(),
             operationTimestamp,
             correlationId,
-            messageType);
+            "some-message-type-not-included-in-subscription-filter");
 
         // Act
         await Fixture.IntegrationEventsTopic.SenderClient.SendMessageAsync(message);
