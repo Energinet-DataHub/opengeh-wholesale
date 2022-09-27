@@ -58,7 +58,7 @@ public sealed class MarketParticipantChangedListenerEndpointTests
             messageType);
 
         // Act
-        await Fixture.MarketParticipantChangedTopic.SenderClient.SendMessageAsync(message);
+        await Fixture.IntegrationEventsTopic.SenderClient.SendMessageAsync(message);
 
         // Assert
         await FunctionAsserts
@@ -72,7 +72,7 @@ public sealed class MarketParticipantChangedListenerEndpointTests
     protected override string EventHubMessageType => "GridAreaUpdated";
 
     protected override ServiceBusSender IntegrationEventTopicSender =>
-        Fixture.MarketParticipantChangedTopic.SenderClient;
+        Fixture.IntegrationEventsTopic.SenderClient;
 
     protected override ServiceBusReceiver IntegrationEventDeadLetterReceiver =>
         Fixture.MarketParticipantChangedDeadLetterReceiver;

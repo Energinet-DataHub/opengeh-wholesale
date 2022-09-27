@@ -56,11 +56,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
 
-        public TopicResource MeteringPointCreatedTopic { get; private set; } = null!;
-
-        public TopicResource MeteringPointConnectedTopic { get; private set; } = null!;
-
-        public TopicResource MarketParticipantChangedTopic { get; private set; } = null!;
+        public TopicResource IntegrationEventsTopic { get; private set; } = null!;
 
         public ServiceBusReceiver MeteringPointCreatedDeadLetterReceiver { get; private set; } = null!;
 
@@ -116,23 +112,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
             await EventHubListener.InitializeAsync().ConfigureAwait(false);
 
-            MeteringPointCreatedTopic = await ServiceBusResourceProvider
-                .BuildTopic("metering-point-created")
+            IntegrationEventsTopic = await ServiceBusResourceProvider
+                .BuildTopic("integration-events")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.IntegrationEventsTopicName)
                 .AddSubscription("metering-point-created-to-wholesale")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName)
-                .CreateAsync();
-
-            MeteringPointConnectedTopic = await ServiceBusResourceProvider
-                .BuildTopic("metering-point-connected")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.IntegrationEventsTopicName)
                 .AddSubscription("metering-point-connected-to-wholesale")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName)
-                .CreateAsync();
-
-            MarketParticipantChangedTopic = await ServiceBusResourceProvider
-                .BuildTopic("market-participant-changed")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.IntegrationEventsTopicName)
                 .AddSubscription("market-participant-changed-to-wholesale")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
                 .CreateAsync();
