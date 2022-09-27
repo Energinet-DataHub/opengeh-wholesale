@@ -195,6 +195,8 @@ def _get_metering_point_periods_df(
             "body.Resolution",
             "body.OperationTime",
             "body.SettlementMethod",
+            "body.FromGridAreaCode",
+            "body.ToGridAreaCode",
         )
     ).dropDuplicates(
         [
@@ -208,6 +210,8 @@ def _get_metering_point_periods_df(
             "Resolution",
             "OperationTime",
             "SettlementMethod",
+            "FromGridAreaCode",
+            "ToGridAreaCode",
         ]
     )
     debug(
@@ -252,6 +256,16 @@ def _get_metering_point_periods_df(
                 col("SettlementMethod"), last("SettlementMethod", True).over(window)
             ),
         )
+        .withColumn(
+            "FromGridAreaCode",
+            coalesce(
+                col("FromGridAreaCode"), last("FromGridAreaCode", True).over(window)
+            ),
+        )
+        .withColumn(
+            "ToGridAreaCode",
+            coalesce(col("ToGridAreaCode"), last("ToGridAreaCode", True).over(window)),
+        )
         .where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
@@ -277,6 +291,8 @@ def _get_metering_point_periods_df(
         "toEffectiveDate",
         "MeteringPointType",
         "SettlementMethod",
+        "FromGridAreaCode",
+        "ToGridAreaCode",
     )
 
     debug(
