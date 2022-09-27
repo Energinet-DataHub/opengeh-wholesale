@@ -115,7 +115,7 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
             CreateIntegrationEventData(),
             DateTime.UtcNow,
             Guid.NewGuid().ToString(),
-            EventHubMessageType);
+            ServiceBusMessageType);
 
         // Act
         message.ApplicationProperties.Remove(missingIntegrationEventProperty);
@@ -150,7 +150,7 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
             CreateIntegrationEventData(),
             timestamp,
             correlationId,
-            EventHubMessageType);
+            ServiceBusMessageType);
 
         // Act
         await IntegrationEventTopicSender.SendMessageAsync(message);
