@@ -14,6 +14,7 @@
 
 using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -116,10 +117,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
                 .BuildTopic("integration-events")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.IntegrationEventsTopicName)
                 .AddSubscription("metering-point-created")
+                .AddRule(new CreateRuleOptions("foo", new CorrelationRuleFilter { ApplicationProperties = { new KeyValuePair<string, object>("MessageType", "MeteringPointCreated") } }))
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName)
                 .AddSubscription("metering-point-connected")
+                .AddRule(new CreateRuleOptions("foo", new CorrelationRuleFilter { ApplicationProperties = { new KeyValuePair<string, object>("MessageType", "MeteringPointConnected") } }))
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName)
                 .AddSubscription("market-participant-changed")
+                .AddRule(new CreateRuleOptions("foo", new CorrelationRuleFilter { ApplicationProperties = { new KeyValuePair<string, object>("MessageType", "GridAreaUpdatedIntegrationEvent") } }))
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
                 .CreateAsync();
 
