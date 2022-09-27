@@ -42,6 +42,8 @@ def metering_point_period_df_factory(spark, timestamp_factory):
                 "MeteringPointType": "the_metering_point_type",
                 "EffectiveDate": effective_date,
                 "toEffectiveDate": to_effective_date,
+                "FromGridAreaCode": "some-from-grid-area-code",
+                "ToGridAreaCode": "some-to-grid-area-code",
                 "SettlementMethod": "the_settlement_method",
             }
         ]
@@ -60,6 +62,7 @@ def test__get_master_basis_data(metering_point_period_df_factory, timestamp_fact
     )
     master_basis_data = _get_master_basis_data(metering_point_period_df)
     master_basis_data.show()
+    print(master_basis_data.columns)
     # Assert: order of columns
     assert master_basis_data.columns == [
         "GridAreaCode",
@@ -67,8 +70,8 @@ def test__get_master_basis_data(metering_point_period_df_factory, timestamp_fact
         "VALIDFROM",
         "VALIDTO",
         "GRIDAREAID",
-        # "TOGRIDAREAID",
-        # "FROMGRIDAREAID",
+        "TOGRIDAREAID",
+        "FROMGRIDAREAID",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
         # "BALANCESUPPLIERID",

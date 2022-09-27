@@ -385,12 +385,10 @@ def _get_master_basis_data(metering_point_df):
         col("EffectiveDate").alias("VALIDFROM"),
         col("toEffectiveDate").alias("VALIDTO"),
         col("GridAreaCode").alias("GRIDAREAID"),
-        "TYPEOFMP",
-        # TODO add the following data to metering point
-        # .withColumnRenamed("", "TOGRIDAREAID") # only aplicable for E20 metering points
-        # .withColumnRenamed("", "FROMGRIDAREAID") # only aplicable for E20 metering points
-        col("SettlementMethod").alias("SETTLEMENTMETHOD")
-        # .withColumnRenamed("", "SETTLEMENTMETHOD") # is availerble on the created event
+        col("ToGridAreaCode").alias("TOGRIDAREAID"),
+        col("FromGridAreaCode").alias("FROMGRIDAREAID"),
+        col("TYPEOFMP"),
+        col("SettlementMethod").alias("SETTLEMENTMETHOD"),
     )
 
 
