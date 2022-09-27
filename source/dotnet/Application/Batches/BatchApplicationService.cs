@@ -65,8 +65,9 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task UpdateExecutionStateAsync()
     {
-        var completedBatches = await BatchExecutionStateUpdater.UpdateExecutionStatesAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
-        var completedProcesses = CreateProcessCompletedEvents(completedBatches);
+        var updater = new BatchExecutionStateUpdater();
+        await updater.UpdateExecutionStatesAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
+        var completedProcesses = CreateProcessCompletedEvents(updater.GetCompletedBatches());
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }

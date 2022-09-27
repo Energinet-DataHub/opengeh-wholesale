@@ -17,23 +17,28 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public static class BatchExecutionStateUpdater
+public class BatchExecutionStateUpdater
 {
-    public static async Task<IEnumerable<Batch>> UpdateExecutionStatesAsync(IBatchRepository batchRepository, ICalculatorJobRunner calculatorJobRunner)
+    private readonly List<Batch> _completedBatches = new List<Batch>();
+
+    public async Task UpdateExecutionStatesAsync(IBatchRepository batchRepository, ICalculatorJobRunner calculatorJobRunner)
     {
         var pendingBatches = await batchRepository.GetPendingAsync().ConfigureAwait(false);
         var executingBatches = await batchRepository.GetExecutingAsync().ConfigureAwait(false);
 
         await UpdateFromPendingAsync(pendingBatches, calculatorJobRunner).ConfigureAwait(false);
-        var completedBatches = await UpdateFromExecutingAsync(executingBatches, calculatorJobRunner).ConfigureAwait(false);
-
-        return completedBatches;
+        await UpdateFromExecutingAsync(executingBatches, calculatorJobRunner).ConfigureAwait(false);
     }
 
-    private static async Task<IEnumerable<Batch>> UpdateFromExecutingAsync(IEnumerable<Batch> executingBatches, ICalculatorJobRunner calculatorJobRunner)
+    public IEnumerable<Batch> GetCompletedBatches()
+    {
+        return _completedBatches;
+    }
+
+    private async Task UpdateFromExecutingAsync(IEnumerable<Batch> executingBatches, ICalculatorJobRunner calculatorJobRunner)
     {
         if (!executingBatches.Any())
-            return new List<Batch>();
+            return;
 
         var completedBatches = new List<Batch>();
 
@@ -50,15 +55,13 @@ public static class BatchExecutionStateUpdater
             {
                 case JobState.Completed:
                     batch.MarkAsCompleted();
-                    completedBatches.Add(batch);
+                    _completedBatches.Add(batch);
                     break;
                 case JobState.Failed:
                     batch.MarkAsFailed();
                     break;
             }
         }
-
-        return completedBatches;
     }
 
     private static async Task UpdateFromPendingAsync(IEnumerable<Batch> pendingBatches, ICalculatorJobRunner calculatorJobRunner)
