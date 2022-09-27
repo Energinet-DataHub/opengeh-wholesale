@@ -11,8 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-resource "azurerm_monitor_scheduled_query_rules_alert" "wholesales_databricks_job_alert" {
-  name                      = "alert-wholesales-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
+resource "azurerm_monitor_scheduled_query_rules_alert" "wholesale_calculator_job_alert" {
+  name                      = "alert-calculator-job-failed-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   location                  = azurerm_resource_group.this.location
   resource_group_name       = var.shared_resources_resource_group_name
 
@@ -21,12 +21,12 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "wholesales_databricks_jo
   }
   
   data_source_id            = data.azurerm_key_vault_secret.log_shared_id.value
-  description               = "One or more databricks jobs has failed"
+  description               = "One or more calculation jobs has failed"
   enabled                   = true
   query                     = <<-QUERY
   DatabricksJobs 
 | where OperationName == "Microsoft.Databricks/jobs/runFailed"
-| where parse_json(RequestParams).jobTriggerType != "retry"
+| where parse_json(RequestParams).taskKey startswith "calculator_job"
   QUERY
   severity                  = 1
   frequency                 = 5
