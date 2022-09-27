@@ -55,7 +55,9 @@ public class MeteringPointCreatedDtoFactory
             resolution,
             _correlationContext.Id,
             eventMetadata.MessageType,
-            eventMetadata.OperationTimestamp);
+            eventMetadata.OperationTimestamp,
+            meteringPointCreated.FromGridAreaCode,
+            meteringPointCreated.ToGridAreaCode);
     }
 
     private static SettlementMethod? MapSettlementMethod(mpTypes.SettlementMethod settlementMethod)
