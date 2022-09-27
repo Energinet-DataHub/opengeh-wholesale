@@ -71,6 +71,8 @@ public sealed class MarketParticipantChangedListenerEndpointTests
 
     protected override string EventHubMessageType => "GridAreaUpdated";
 
+    protected override string ServiceBusMessageType => "GridAreaUpdatedIntegrationEvent";
+
     protected override ServiceBusSender IntegrationEventTopicSender =>
         Fixture.IntegrationEventsTopic.SenderClient;
 

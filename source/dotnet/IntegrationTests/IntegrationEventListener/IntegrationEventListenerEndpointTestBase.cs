@@ -42,6 +42,8 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
 
     protected abstract string EventHubMessageType { get; }
 
+    protected abstract string ServiceBusMessageType { get; }
+
     protected abstract ServiceBusSender IntegrationEventTopicSender { get; }
 
     protected abstract ServiceBusReceiver IntegrationEventDeadLetterReceiver { get; }
@@ -73,7 +75,7 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
             CreateIntegrationEventData(),
             operationTimestamp,
             correlationId,
-            EventHubMessageType);
+            ServiceBusMessageType);
 
         // Act
         await IntegrationEventTopicSender.SendMessageAsync(message);
