@@ -78,7 +78,7 @@ jobs:
       AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
 
   databricks_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@v8
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@poc
     with:
       PATH_STATIC_CHECKS: './source/databricks'
       # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
@@ -86,7 +86,7 @@ jobs:
       TEST_REPORT_PATH: ./source/databricks/htmlcov/
 
   wheel_ci:
-    uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@v8
+    uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@poc
     with:
       PYHTON_VERSION: '3.9.7'
       ARCHITECTURE: 'x64'
