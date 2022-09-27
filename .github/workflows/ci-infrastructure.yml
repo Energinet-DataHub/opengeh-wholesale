@@ -11,13 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-name: CI License and Markdown Check
+name: CI Infrastructure
 
 on:
   pull_request:
     branches:
       - main
+    paths:
+      - .github/workflows/ci-infrastructure.yml
+      - build/**
 
 jobs:
-  ci_base:
-    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@poc
+  terraform_validate:
+    uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@v8
+    with:
+      TERRAFORM_WORKING_DIR_PATH: "./build/infrastructure/main"
+      TERRAFORM_VERSION: '1.2.2'

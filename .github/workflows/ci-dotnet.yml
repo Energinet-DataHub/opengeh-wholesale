@@ -1,0 +1,76 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+name: CI .NET
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/ci-dotnet.yml
+      - .github/actions/dotnet-*/**
+      - source/dotnet/**
+
+jobs:
+  # Build all projects within solution
+  dotnet_solution_ci_build:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-build.yml@8.7.0
+    with:
+      SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
+
+  # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
+  dotnet_solution_ci_test_integrationtests_part1:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@8.7.0
+    with:
+      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
+      TESTS_FILTER_EXPRESSION: 'FullyQualifiedName~IntegrationEventListener'
+      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
+      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\WebApi'
+      DOWNLOAD_ATTEMPT_LIMIT: 8
+      USE_AZURE_FUNCTIONS_TOOLS: true
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
+      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+      AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
+
+  # Run tests in 'IntegrationTests.dll' NOT within the namespace 'IntegrationEventListener'
+  dotnet_solution_ci_test_integrationtests_part2:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@8.7.0
+    with:
+      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
+      TESTS_FILTER_EXPRESSION: 'FullyQualifiedName!~IntegrationEventListener'
+      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
+      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\WebApi'
+      DOWNLOAD_ATTEMPT_LIMIT: 8
+      USE_AZURE_FUNCTIONS_TOOLS: true
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
+      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+      AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
+
+  # Run all tests in 'Tests.dll'
+  dotnet_solution_ci_test_tests:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@8.7.0
+    with:
+      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
+      DOWNLOAD_ATTEMPT_LIMIT: 8
+      USE_AZURE_FUNCTIONS_TOOLS: false
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
