@@ -101,7 +101,6 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
     [Theory]
     [InlineData("OperationCorrelationId")]
     [InlineData("OperationTimestamp")]
-    [InlineData("MessageType")]
     public async Task When_ReceivingMessageWithoutIntegrationEventProperty_Then_MessageIsDeadLettered(string missingIntegrationEventProperty)
     {
         // Arrange

@@ -49,7 +49,7 @@ public sealed class MarketParticipantChangedListenerEndpointTests
 
         var operationTimestamp = DateTime.UtcNow;
         var correlationId = Guid.NewGuid().ToString();
-        var messageType = nameof(GridAreaUpdatedDto);
+        var messageType = "GridAreaUpdatedIntegrationEvent";
 
         var message = ServiceBusTestMessage.Create(
             CreateUnusedEvent(),
