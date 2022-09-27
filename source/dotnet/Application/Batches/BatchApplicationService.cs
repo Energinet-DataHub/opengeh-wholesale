@@ -58,8 +58,7 @@ public class BatchApplicationService : IBatchApplicationService
         foreach (var batch in batches)
         {
             var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);
-            var jobRunId = await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
-            batch.MarkAsExecuting(jobRunId);
+            await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
@@ -81,10 +80,18 @@ public class BatchApplicationService : IBatchApplicationService
                 .GetJobStateAsync(runId)
                 .ConfigureAwait(false);
 
-            if (state == JobState.Completed)
+            switch (state)
             {
-                batch.MarkAsCompleted();
-                completedBatches.Add(batch);
+                case JobState.Running:
+                    batch.MarkAsExecuting(runId);
+                    break;
+                case JobState.Completed:
+                    batch.MarkAsCompleted();
+                    completedBatches.Add(batch);
+                    break;
+                case JobState.Failed:
+                    batch.MarkAsFailed();
+                    break;
             }
         }
 
@@ -92,6 +99,13 @@ public class BatchApplicationService : IBatchApplicationService
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
 
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
+    }
+
+    public async Task<JobState> GetJobStateAsync(JobRunId jobRunId)
+    {
+        return await _calculatorJobRunner
+            .GetJobStateAsync(jobRunId)
+            .ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)

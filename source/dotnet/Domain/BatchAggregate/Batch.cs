@@ -93,4 +93,9 @@ public class Batch
         ExecutionState = BatchExecutionState.Executing;
         RunId = jobRunId;
     }
+
+    public void MarkAsFailed()
+    {
+        ExecutionState = BatchExecutionState.Failed;
+    }
 }
