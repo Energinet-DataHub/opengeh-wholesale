@@ -48,12 +48,11 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
 
     protected abstract ServiceBusReceiver IntegrationEventDeadLetterReceiver { get; }
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
         Fixture.EventHubListener.Reset();
 
-        // Clear dead letter queue
-        await foreach (var unused in IntegrationEventDeadLetterReceiver.ReceiveMessagesAsync()) { }
+        return Task.CompletedTask;
     }
 
     public Task DisposeAsync()
