@@ -17,7 +17,7 @@ module "sbs_int_events_metering_point_created" {
   name                = "metering-point-created"
   project_name        = var.domain_name_short
   topic_id            = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
-  max_delivery_count  = 1
+  max_delivery_count  = 10
   correlation_filter  = {
     properties     = {
       "MessageType" = "MeteringPointCreated"
@@ -30,7 +30,7 @@ module "sbs_int_events_metering_point_connected" {
   name                = "metering-point-connected"
   project_name        = var.domain_name_short
   topic_id            = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
-  max_delivery_count  = 1
+  max_delivery_count  = 10
   correlation_filter  = {
     properties     = {
       "MessageType" = "MeteringPointConnected"
@@ -43,7 +43,7 @@ module "sbs_int_events_grid_area_updated" {
   name                = "grid-area-updated"
   project_name        = var.domain_name_short
   topic_id            = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
-  max_delivery_count  = 1
+  max_delivery_count  = 10
   correlation_filter  = {
     properties     = {
       "MessageType" = "GridAreaUpdatedIntegrationEvent"
