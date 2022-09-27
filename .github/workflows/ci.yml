@@ -77,15 +77,7 @@ jobs:
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
 
-  databricks_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@poc
-    with:
-      PATH_STATIC_CHECKS: './source/databricks'
-      # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
-      IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
-      TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
-
-  wheel_ci:
+  databricks_ci_build:
     uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@poc
     with:
       PYHTON_VERSION: '3.9.7'
@@ -93,6 +85,14 @@ jobs:
       WHEEL_WORKING_DIRECTORY: './source/databricks'
       ARTIFACT_NAME: 'wheel'
       ARTIFACT_PATH: './source/databricks/dist'
+
+  databricks_ci_test:
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@poc
+    with:
+      PATH_STATIC_CHECKS: './source/databricks'
+      # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
+      IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
+      TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
 
   terraform_validate:
     uses: Energinet-DataHub/.github/.github/workflows/terraform-validate.yml@v8
@@ -108,8 +108,8 @@ jobs:
       dotnet_solution_ci_test_integrationtests_part1,
       dotnet_solution_ci_test_integrationtests_part2,
       dotnet_solution_ci_test_tests,
-      databricks_ci,
-      wheel_ci
+      databricks_ci_build,
+      databricks_ci_test
     ]
     uses: Energinet-DataHub/.github/.github/workflows/create-prerelease.yml@v8
     with:
