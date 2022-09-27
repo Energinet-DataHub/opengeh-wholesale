@@ -115,11 +115,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             IntegrationEventsTopic = await ServiceBusResourceProvider
                 .BuildTopic("integration-events")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.IntegrationEventsTopicName)
-                .AddSubscription("metering-point-created-to-wholesale")
+                .AddSubscription("metering-point-created")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName)
-                .AddSubscription("metering-point-connected-to-wholesale")
+                .AddSubscription("metering-point-connected")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName)
-                .AddSubscription("market-participant-changed-to-wholesale")
+                .AddSubscription("market-participant-changed")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
                 .CreateAsync();
 
