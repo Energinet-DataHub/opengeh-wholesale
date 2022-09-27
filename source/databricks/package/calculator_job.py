@@ -103,28 +103,14 @@ def _get_valid_args_or_throw():
     return args
 
 
-def write_time_series_basis_data_to_csv(
-    data_df: DataFrame, process_results_path: str, batch_id: str, resolution_type: str
-):
+def write_basis_data_to_csv(data_df: DataFrame, path: str):
     (
         data_df.withColumnRenamed("GridAreaCode", "grid_area")
         .repartition("grid_area")
         .write.mode("overwrite")
         .partitionBy("grid_area")
         .option("header", True)
-        .csv(f"{process_results_path}/basis-data/batch_id={batch_id}/{resolution_type}")
-    )
-
-
-def write_master_basis_data_to_csv(
-    data_df: DataFrame, process_results_path: str, batch_id: str
-):
-    (
-        data_df.withColumnRenamed("GridAreaCode", "grid_area")
-        .coalesce(1)
-        .write.mode("overwrite")
-        .option("header", True)
-        .csv(f"{process_results_path}/master-basis-data/batch_id={batch_id}")
+        .csv(path)
     )
 
 
@@ -143,8 +129,8 @@ def internal_start(spark: SparkSession, args):
 
     (
         result_df,
-        timeseries_basis_data,
-        master_basis_data,
+        timeseries_basis_data_df,
+        master_basis_data_df,
     ) = calculate_balance_fixing_total_production(
         raw_integration_events_df,
         raw_time_series_points_df,
@@ -158,27 +144,24 @@ def internal_start(spark: SparkSession, args):
 
     debug("raw_timeseries", raw_time_series_points_df)
 
-    (timeseries_quarter_df, timeseries_hour_df) = timeseries_basis_data
+    (timeseries_quarter_df, timeseries_hour_df) = timeseries_basis_data_df
     debug("timeseries basis data df_hour", timeseries_hour_df)
     debug("timeseries basis data df_quarter", timeseries_quarter_df)
-    debug("master basis data", master_basis_data)
+    debug("master basis data", master_basis_data_df)
 
-    write_time_series_basis_data_to_csv(
+    write_basis_data_to_csv(
         timeseries_quarter_df,
-        args.process_results_path,
-        args.batch_id,
-        "time-series-quarter",
+        f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-quarter",
     )
 
-    write_time_series_basis_data_to_csv(
+    write_basis_data_to_csv(
         timeseries_hour_df,
-        args.process_results_path,
-        args.batch_id,
-        "time-series-hour",
+        f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-hour",
     )
 
-    write_master_basis_data_to_csv(
-        master_basis_data, args.process_results_path, args.batch_id
+    write_basis_data_to_csv(
+        master_basis_data_df,
+        f"{args.process_results_path}/master-basis-data/batch_id={args.batch_id}",
     )
 
     # First repartition to co-locate all rows for a grid area on a single executor.

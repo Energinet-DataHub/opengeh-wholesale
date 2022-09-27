@@ -62,6 +62,7 @@ def test__get_master_basis_data(metering_point_period_df_factory, timestamp_fact
     master_basis_data.show()
     # Assert: order of columns
     assert master_basis_data.columns == [
+        "GridAreaCode",
         "METERINGPOINTID",
         "VALIDFROM",
         "VALIDTO",
