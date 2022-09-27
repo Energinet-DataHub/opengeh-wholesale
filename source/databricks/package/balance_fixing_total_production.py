@@ -194,6 +194,7 @@ def _get_metering_point_periods_df(
             "body.EffectiveDate",
             "body.Resolution",
             "body.OperationTime",
+            "body.SettlementMethod",
         )
     ).dropDuplicates(
         [
@@ -206,6 +207,7 @@ def _get_metering_point_periods_df(
             "EffectiveDate",
             "Resolution",
             "OperationTime",
+            "SettlementMethod",
         ]
     )
     debug(
@@ -215,45 +217,47 @@ def _get_metering_point_periods_df(
 
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
 
-    metering_point_periods_df = metering_point_events_df.withColumn(
-        "toEffectiveDate",
-        lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
-    )
-    metering_point_periods_df = metering_point_periods_df.withColumn(
-        "GridAreaLinkId",
-        coalesce(col("GridAreaLinkId"), last("GridAreaLinkId", True).over(window)),
-    )
-    metering_point_periods_df = metering_point_periods_df.withColumn(
-        "ConnectionState",
-        when(
-            col("MessageType") == metering_point_created_message_type,
-            lit(ConnectionState.new.value),
-        ).when(
-            col("MessageType") == metering_point_connected_message_type,
-            lit(ConnectionState.connected.value),
-        ),
-    )
-    metering_point_periods_df = metering_point_periods_df.withColumn(
-        "MeteringPointType",
-        coalesce(
-            col("MeteringPointType"), last("MeteringPointType", True).over(window)
-        ),
-    )
-    metering_point_periods_df = metering_point_periods_df.withColumn(
-        "Resolution",
-        coalesce(col("Resolution"), last("Resolution", True).over(window)),
-    )
-    metering_point_periods_df = metering_point_periods_df.where(
-        col("EffectiveDate") <= period_end_datetime
-    )
-    metering_point_periods_df = metering_point_periods_df.where(
-        col("toEffectiveDate") >= period_start_datetime
-    )
-    metering_point_periods_df = metering_point_periods_df.where(
-        col("ConnectionState") == ConnectionState.connected.value
-    )  # Only aggregate when metering points is connected
-    metering_point_periods_df = metering_point_periods_df.where(
-        col("MeteringPointType") == MeteringPointType.production.value
+    metering_point_periods_df = (
+        metering_point_events_df.withColumn(
+            "toEffectiveDate",
+            lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
+        )
+        .withColumn(
+            "GridAreaLinkId",
+            coalesce(col("GridAreaLinkId"), last("GridAreaLinkId", True).over(window)),
+        )
+        .withColumn(
+            "ConnectionState",
+            when(
+                col("MessageType") == metering_point_created_message_type,
+                lit(ConnectionState.new.value),
+            ).when(
+                col("MessageType") == metering_point_connected_message_type,
+                lit(ConnectionState.connected.value),
+            ),
+        )
+        .withColumn(
+            "MeteringPointType",
+            coalesce(
+                col("MeteringPointType"), last("MeteringPointType", True).over(window)
+            ),
+        )
+        .withColumn(
+            "Resolution",
+            coalesce(col("Resolution"), last("Resolution", True).over(window)),
+        )
+        .withColumn(
+            "SettlementMethod",
+            coalesce(
+                col("SettlementMethod"), last("SettlementMethod", True).over(window)
+            ),
+        )
+        .where(col("EffectiveDate") <= period_end_datetime)
+        .where(col("toEffectiveDate") >= period_start_datetime)
+        .where(
+            col("ConnectionState") == ConnectionState.connected.value
+        )  # Only aggregate when metering points is connected
+        .where(col("MeteringPointType") == MeteringPointType.production.value)
     )
 
     debug(
@@ -272,6 +276,7 @@ def _get_metering_point_periods_df(
         "EffectiveDate",
         "toEffectiveDate",
         "MeteringPointType",
+        "SettlementMethod",
     )
 
     debug(
@@ -363,10 +368,11 @@ def _get_master_basis_data(metering_point_df):
         col("EffectiveDate").alias("VALIDFROM"),
         col("toEffectiveDate").alias("VALIDTO"),
         col("GridAreaCode").alias("GRIDAREAID"),
-        "TYPEOFMP"
+        "TYPEOFMP",
         # TODO add the following data to metering point
         # .withColumnRenamed("", "TOGRIDAREAID") # only aplicable for E20 metering points
         # .withColumnRenamed("", "FROMGRIDAREAID") # only aplicable for E20 metering points
+        col("SettlementMethod").alias("SETTLEMENTMETHOD")
         # .withColumnRenamed("", "SETTLEMENTMETHOD") # is availerble on the created event
     )
 
