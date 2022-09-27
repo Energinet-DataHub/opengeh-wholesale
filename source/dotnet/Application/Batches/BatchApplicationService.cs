@@ -65,47 +65,10 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task UpdateExecutionStateAsync()
     {
-        var batches = await _batchRepository.GetExecutingAsync().ConfigureAwait(false);
-        if (!batches.Any())
-            return;
-
-        var completedBatches = new List<Batch>();
-
-        foreach (var batch in batches)
-        {
-            // The batch will have received a RunId when the batch have started.
-            var runId = batch.RunId!;
-
-            var state = await _calculatorJobRunner
-                .GetJobStateAsync(runId)
-                .ConfigureAwait(false);
-
-            switch (state)
-            {
-                case JobState.Running:
-                    batch.MarkAsExecuting(runId);
-                    break;
-                case JobState.Completed:
-                    batch.MarkAsCompleted();
-                    completedBatches.Add(batch);
-                    break;
-                case JobState.Failed:
-                    batch.MarkAsFailed();
-                    break;
-            }
-        }
-
+        var completedBatches = await BatchExecutionStateUpdater.UpdateExecutionStatesAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
         var completedProcesses = CreateProcessCompletedEvents(completedBatches);
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
-
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
-    }
-
-    public async Task<JobState> GetJobStateAsync(JobRunId jobRunId)
-    {
-        return await _calculatorJobRunner
-            .GetJobStateAsync(jobRunId)
-            .ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
@@ -132,7 +95,7 @@ public class BatchApplicationService : IBatchApplicationService
         return batch;
     }
 
-    private List<ProcessCompletedEventDto> CreateProcessCompletedEvents(List<Batch> completedBatches)
+    private static List<ProcessCompletedEventDto> CreateProcessCompletedEvents(IEnumerable<Batch> completedBatches)
     {
         return completedBatches
             .SelectMany(b => b.GridAreaCodes.Select(x => new { b.Id, x.Code }))
@@ -140,7 +103,7 @@ public class BatchApplicationService : IBatchApplicationService
             .ToList();
     }
 
-    private BatchDto MapToBatchDto(Batch batch)
+    private static BatchDto MapToBatchDto(Batch batch)
     {
         return new BatchDto(
             batch.RunId?.Id ?? 0,
