@@ -120,6 +120,8 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
             meteringPointCreatedEvent.MeteringPointType = mpTypes.MeteringPointType.MptConsumption;
             meteringPointCreatedEvent.SettlementMethod = mpTypes.SettlementMethod.SmFlex;
             meteringPointCreatedEvent.ConnectionState = mpTypes.ConnectionState.CsNew;
+            meteringPointCreatedEvent.FromGridAreaCode = Guid.NewGuid().ToString();
+            meteringPointCreatedEvent.ToGridAreaCode = Guid.NewGuid().ToString();
 
             // Act
             var actual = sut.Create(meteringPointCreatedEvent);
@@ -133,6 +135,8 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
             actual.ConnectionState.Should().Be(ConnectionState.New);
             actual.MeteringPointType.Should().Be(MeteringPointType.Consumption);
             actual.MeteringPointId.Should().Be(meteringPointCreatedEvent.MeteringPointId);
+            actual.FromGridAreaCode.Should().Be(meteringPointCreatedEvent.FromGridAreaCode);
+            actual.ToGridAreaCode.Should().Be(meteringPointCreatedEvent.ToGridAreaCode);
         }
 
         [Theory]
