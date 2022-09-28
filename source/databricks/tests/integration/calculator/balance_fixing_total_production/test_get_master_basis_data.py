@@ -34,20 +34,24 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     def factory(
         effective_date: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
         to_effective_date: datetime = timestamp_factory("2022-06-10T22:00:00.000Z"),
+        number_of_points=1,
     ):
-        df = [
-            {
-                "GsrnNumber": "the-gsrn-number",
-                "GridAreaCode": "805",
-                "MeteringPointType": "the_metering_point_type",
-                "EffectiveDate": effective_date,
-                "toEffectiveDate": to_effective_date,
-                "FromGridAreaCode": "some-from-grid-area-code",
-                "ToGridAreaCode": "some-to-grid-area-code",
-                "SettlementMethod": "the_settlement_method",
-            }
-        ]
-        return spark.createDataFrame(df)
+        df_array = []
+
+        for i in range(number_of_points):
+            df_array.append(
+                {
+                    "GsrnNumber": "the-gsrn-number",
+                    "GridAreaCode": "805",
+                    "MeteringPointType": "the_metering_point_type",
+                    "EffectiveDate": effective_date,
+                    "toEffectiveDate": to_effective_date,
+                    "FromGridAreaCode": "some-from-grid-area-code",
+                    "ToGridAreaCode": "some-to-grid-area-code",
+                    "SettlementMethod": "the_settlement_method",
+                }
+            )
+        return spark.createDataFrame(df_array)
 
     return factory
 
@@ -61,9 +65,8 @@ def test__get_master_basis_data(metering_point_period_df_factory, timestamp_fact
         )
     )
     master_basis_data = _get_master_basis_data(metering_point_period_df)
-    master_basis_data.show()
-    print(master_basis_data.columns)
-    # Assert: order of columns
+
+    # Assert
     assert master_basis_data.columns == [
         "GridAreaCode",
         "METERINGPOINTID",
@@ -74,8 +77,16 @@ def test__get_master_basis_data(metering_point_period_df_factory, timestamp_fact
         "FROMGRIDAREAID",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
-        # "BALANCESUPPLIERID",
     ]
 
+
+def test__each_meteringpoint_has_a_row(
+    metering_point_period_df_factory, timestamp_factory
+):
+
+    metering_point_period_df = metering_point_period_df_factory(number_of_points=3)
+
+    master_basis_data = _get_master_basis_data(metering_point_period_df)
+
     # Assert: number of rows
-    assert master_basis_data.count() == 2
+    assert master_basis_data.count() == 3
