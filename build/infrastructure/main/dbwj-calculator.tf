@@ -18,7 +18,7 @@ resource "databricks_job" "calculator_job" {
   always_running = false
 
   task {
-    task_key = "unique_job_${uuid()}"
+    task_key = "calculator_job_${uuid()}"
     max_retries = 0
 
     new_cluster {

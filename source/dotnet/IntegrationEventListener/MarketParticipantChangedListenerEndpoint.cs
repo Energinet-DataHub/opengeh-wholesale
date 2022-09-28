@@ -45,7 +45,7 @@ public class MarketParticipantChangedListenerEndpoint
         Connection = EnvironmentSettingNames.IntegrationEventsEventHubConnectionString)]
     public string? Run(
         [ServiceBusTrigger(
-            "%" + EnvironmentSettingNames.MarketParticipantChangedTopicName + "%",
+            "%" + EnvironmentSettingNames.IntegrationEventsTopicName + "%",
             "%" + EnvironmentSettingNames.MarketParticipantChangedSubscriptionName + "%",
             Connection = EnvironmentSettingNames.IntegrationEventConnectionListenerString)]
         byte[] message)
@@ -58,8 +58,8 @@ public class MarketParticipantChangedListenerEndpoint
                 var gridAreaUpdatedDto = _gridAreaUpdatedDtoFactory.Create(gridAreaUpdatedIntegrationEvent);
                 return _jsonSerializer.Serialize(gridAreaUpdatedDto);
             default:
-                // Other types of events are irrelevant.
-                return null;
+                // Other types of events are unexpected
+                throw new Exception($"Received event of type '{marketParticipantEvent.Type}'. Only expected grid area updated events.");
         }
     }
 }
