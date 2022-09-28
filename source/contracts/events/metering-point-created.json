@@ -51,7 +51,7 @@
       "type": "string"
     },
     {
-      "name": "TomGridAreaCode",
+      "name": "ToGridAreaCode",
       "type": "string"
     }
   ]
