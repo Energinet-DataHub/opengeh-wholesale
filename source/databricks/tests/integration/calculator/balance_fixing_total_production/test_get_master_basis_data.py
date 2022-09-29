@@ -80,9 +80,9 @@ def test__get_master_basis_data_has_expected_columns(
         "METERINGPOINTID",
         "VALIDFROM",
         "VALIDTO",
-        "GRIDAREAID",
-        "TOGRIDAREAID",
-        "FROMGRIDAREAID",
+        "GRIDAREA",
+        "TOGRIDAREA",
+        "FROMGRIDAREA",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
     ]
@@ -136,8 +136,8 @@ def test__columns_have_expected_values(
     assert actual.METERINGPOINTID == expected_gsrn_number
     assert actual.VALIDFROM == expected_effective_date
     assert actual.VALIDTO == expected_to_effective_date
-    assert actual.GRIDAREAID == expected_grid_area_code
-    assert actual.TOGRIDAREAID == expected_to_grid_area_code
-    assert actual.FROMGRIDAREAID == expected_from_grid_area_code
+    assert actual.GRIDAREA == expected_grid_area_code
+    assert actual.TOGRIDAREA == expected_to_grid_area_code
+    assert actual.FROMGRIDAREA == expected_from_grid_area_code
     assert actual.TYPEOFMP == expected_meteringpoint_type
     assert actual.SETTLEMENTMETHOD == expected_settlement_method
