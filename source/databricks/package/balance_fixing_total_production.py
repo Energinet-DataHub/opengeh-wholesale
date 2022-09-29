@@ -375,10 +375,7 @@ def _get_master_basis_data(metering_point_df):
     productionType = MeteringPointType.production.value
 
     return metering_point_df.withColumn(
-        "TYPEOFMP",
-        when(col("MeteringPointType") == productionType, "E18").otherwise(
-            col("MeteringPointType")
-        ),
+        "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
     ).select(
         col("GridAreaCode"),  # column is only used for partitioning
         col("GsrnNumber").alias("METERINGPOINTID"),

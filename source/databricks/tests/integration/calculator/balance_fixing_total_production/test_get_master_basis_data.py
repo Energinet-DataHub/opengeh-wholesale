@@ -27,36 +27,44 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, sum, lit
 from functools import reduce
 from operator import add
+from pyspark.sql.types import (
+    StructField,
+    StringType,
+    TimestampType,
+    StructType,
+)
 
 
 @pytest.fixture(scope="module")
 def metering_point_period_df_factory(spark, timestamp_factory):
     def factory(
+        gsrn_number="the-gsrn-number",
+        grid_area_code="some-grid-area-code",
         effective_date: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
         to_effective_date: datetime = timestamp_factory("2022-06-10T22:00:00.000Z"),
-        number_of_points=1,
+        meteringpoint_type=MeteringPointType.production.value,
+        from_grid_area_code="some-from-grid-area-code",
+        to_grid_area_code="some-to-grid-area-code",
+        settlement_method="some-settlement-method",
     ):
-        df_array = []
-
-        for i in range(number_of_points):
-            df_array.append(
-                {
-                    "GsrnNumber": "the-gsrn-number",
-                    "GridAreaCode": "805",
-                    "MeteringPointType": "the_metering_point_type",
-                    "EffectiveDate": effective_date,
-                    "toEffectiveDate": to_effective_date,
-                    "FromGridAreaCode": "some-from-grid-area-code",
-                    "ToGridAreaCode": "some-to-grid-area-code",
-                    "SettlementMethod": "the_settlement_method",
-                }
-            )
-        return spark.createDataFrame(df_array)
+        row = {
+            "GsrnNumber": gsrn_number,
+            "GridAreaCode": grid_area_code,
+            "MeteringPointType": meteringpoint_type,
+            "EffectiveDate": effective_date,
+            "toEffectiveDate": to_effective_date,
+            "FromGridAreaCode": from_grid_area_code,
+            "ToGridAreaCode": to_grid_area_code,
+            "SettlementMethod": settlement_method,
+        }
+        return spark.createDataFrame([row])
 
     return factory
 
 
-def test__get_master_basis_data(metering_point_period_df_factory, timestamp_factory):
+def test__get_master_basis_data_has_expected_columns(
+    metering_point_period_df_factory, timestamp_factory
+):
 
     metering_point_period_df = metering_point_period_df_factory().union(
         metering_point_period_df_factory(
@@ -83,10 +91,53 @@ def test__get_master_basis_data(metering_point_period_df_factory, timestamp_fact
 def test__each_meteringpoint_has_a_row(
     metering_point_period_df_factory, timestamp_factory
 ):
-
-    metering_point_period_df = metering_point_period_df_factory(number_of_points=3)
+    expected_number_of_metering_points = 3
+    metering_point_period_df = (
+        metering_point_period_df_factory(gsrn_number="1")
+        .union(metering_point_period_df_factory(gsrn_number="2"))
+        .union(metering_point_period_df_factory(gsrn_number="3"))
+    )
 
     master_basis_data = _get_master_basis_data(metering_point_period_df)
 
-    # Assert: number of rows
-    assert master_basis_data.count() == 3
+    # Assert
+    assert master_basis_data.count() == expected_number_of_metering_points
+
+
+def test__columns_have_expected_values(
+    metering_point_period_df_factory, timestamp_factory
+):
+    expected_gsrn_number = "the-gsrn-number"
+    expected_grid_area_code = "some-grid-area-code"
+    expected_effective_date = timestamp_factory("2022-06-08T12:09:15.000Z")
+    expected_to_effective_date = timestamp_factory("2022-06-10T22:00:00.000Z")
+    expected_meteringpoint_type = "E18"
+    expected_from_grid_area_code = "some-from-grid-area-code"
+    expected_to_grid_area_code = "some-to-grid-area-code"
+    expected_settlement_method = "some-settlement-method"
+
+    metering_point_period_df = metering_point_period_df_factory(
+        gsrn_number=expected_gsrn_number,
+        grid_area_code=expected_grid_area_code,
+        effective_date=expected_effective_date,
+        to_effective_date=expected_to_effective_date,
+        meteringpoint_type=MeteringPointType.production.value,
+        from_grid_area_code=expected_from_grid_area_code,
+        to_grid_area_code=expected_to_grid_area_code,
+        settlement_method=expected_settlement_method,
+    )
+
+    master_basis_data = _get_master_basis_data(metering_point_period_df)
+
+    # Assert
+    actual = master_basis_data.first()
+
+    assert actual.GridAreaCode == expected_grid_area_code
+    assert actual.METERINGPOINTID == expected_gsrn_number
+    assert actual.VALIDFROM == expected_effective_date
+    assert actual.VALIDTO == expected_to_effective_date
+    assert actual.GRIDAREAID == expected_grid_area_code
+    assert actual.TOGRIDAREAID == expected_to_grid_area_code
+    assert actual.FROMGRIDAREAID == expected_from_grid_area_code
+    assert actual.TYPEOFMP == expected_meteringpoint_type
+    assert actual.SETTLEMENTMETHOD == expected_settlement_method

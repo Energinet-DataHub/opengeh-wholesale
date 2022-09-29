@@ -26,8 +26,8 @@ public record MeteringPointCreatedDto(
         MeteringPointType MeteringPointType,
         Resolution Resolution,
         string CorrelationId,
-        string MessageType,
-        Instant OperationTime,
         string FromGridAreaCode,
-        string ToGridAreaCode)
+        string ToGridAreaCode,
+        string MessageType,
+        Instant OperationTime)
         : EventHubEventDtoBase(CorrelationId, MessageType, OperationTime);

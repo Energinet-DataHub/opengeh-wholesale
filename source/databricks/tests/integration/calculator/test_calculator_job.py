@@ -240,7 +240,6 @@ def test__master_data_csv_with_expected_columns_names(
     actual = spark.read.option("header", "true").csv(
         f"{data_lake_path}/results/master-basis-data/batch_id=1/grid_area=805"
     )
-    print(actual.columns)
 
     assert actual.columns == [
         "METERINGPOINTID",
@@ -254,7 +253,9 @@ def test__master_data_csv_with_expected_columns_names(
     ]
 
 
-def test__creates_master_data_csv_per_grid_area(spark, test_data_job_parameters, data_lake_path):
+def test__creates_master_data_csv_per_grid_area(
+    spark, test_data_job_parameters, data_lake_path
+):
     # Act
     start_calculator(spark, test_data_job_parameters)
 
