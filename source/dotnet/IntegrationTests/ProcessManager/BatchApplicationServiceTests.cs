@@ -45,6 +45,7 @@ public sealed class BatchApplicationServiceTests
 
         await target.CreateAsync(batchRequest);
         await target.StartPendingAsync();
+        await target.UpdateExecutionStateAsync();
 
         // Assert 1: Verify that batch is now executing.
         var executing = await repository.GetExecutingAsync();

@@ -47,6 +47,7 @@ public class MapBatchExecutionState
     {
         return jobState switch
         {
+            JobState.Pending => BatchExecutionState.Pending,
             JobState.Canceled => BatchExecutionState.Completed,
             JobState.Running => BatchExecutionState.Executing,
             JobState.Completed => BatchExecutionState.Completed,

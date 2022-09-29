@@ -55,15 +55,33 @@ public sealed class DatabricksCalculatorJobRunner : ICalculatorJobRunner
             .RunsGet(jobRunId.Id)
             .ConfigureAwait(false);
 
-        return runState.State.ResultState switch
+        return runState.State.LifeCycleState switch
         {
-            RunResultState.SUCCESS => JobState.Completed,
-            RunResultState.FAILED => JobState.Failed,
-            RunResultState.TIMEDOUT => JobState.Failed,
-            RunResultState.CANCELED => JobState.Canceled,
-            null => JobState.Running,
+            RunLifeCycleState.PENDING => JobState.Pending,
+            RunLifeCycleState.RUNNING => JobState.Running,
+            RunLifeCycleState.TERMINATING => JobState.Running,
+            RunLifeCycleState.SKIPPED => JobState.Canceled,
+            RunLifeCycleState.INTERNAL_ERROR => JobState.Failed,
+            RunLifeCycleState.TERMINATED => runState.State.ResultState switch
+            {
+                RunResultState.SUCCESS => JobState.Completed,
+                RunResultState.FAILED => JobState.Failed,
+                RunResultState.CANCELED => JobState.Canceled,
+                RunResultState.TIMEDOUT => JobState.Canceled,
+                _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
+            },
             _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
         };
+
+        // return runState.State.ResultState switch
+        // {
+        //     RunResultState.SUCCESS => JobState.Completed,
+        //     RunResultState.FAILED => JobState.Failed,
+        //     RunResultState.TIMEDOUT => JobState.Failed,
+        //     RunResultState.CANCELED => JobState.Canceled,
+        //     null => JobState.Running,
+        //     _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
+        // };
     }
 
     private static RunParameters MergeRunParameters(WheelJob job, IEnumerable<string> jobParameters)
