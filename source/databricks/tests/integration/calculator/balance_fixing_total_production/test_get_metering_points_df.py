@@ -85,6 +85,8 @@ def metering_point_created_df_factory(spark):
             "MeteringPointId": metering_point_id,
             "Resolution": resolution,
             "CorrelationId": "some-correlation-id",
+            "FromGridAreaCode": "some-from-grid-area-code",
+            "ToGridAreaCode": "some-to-grid-area-code",
         }
 
         return (
@@ -107,6 +109,8 @@ def metering_point_created_df_factory(spark):
                         col("Resolution"),
                         col("OperationTime"),
                         col("CorrelationId"),
+                        col("FromGridAreaCode"),
+                        col("ToGridAreaCode"),
                     )
                 ),
             )
@@ -136,6 +140,8 @@ def metering_point_connected_df_factory(spark):
                 "EffectiveDate": effective_date,
                 "MeteringPointId": metering_point_id,
                 "CorrelationId": "some-other-correlation-id",
+                "FromGridAreaCode": "some-from-grid-area-code",
+                "ToGridAreaCode": "some-to-grid-area-code",
             }
         ]
 
@@ -153,6 +159,8 @@ def metering_point_connected_df_factory(spark):
                         col("MeteringPointId"),
                         col("OperationTime"),
                         col("CorrelationId"),
+                        col("FromGridAreaCode"),
+                        col("ToGridAreaCode"),
                     )
                 ),
             )

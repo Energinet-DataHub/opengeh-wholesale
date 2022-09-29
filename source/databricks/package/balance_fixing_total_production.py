@@ -109,11 +109,13 @@ def calculate_balance_fixing_total_production(
         enriched_time_series_point_df, time_zone
     )
 
+    master_basis_data_df = _get_master_basis_data(metering_point_period_df)
+
     result_df = _get_result_df(enriched_time_series_point_df)
 
     cached_integration_events_df.unpersist()
 
-    return (result_df, time_series_basis_data_df)
+    return (result_df, time_series_basis_data_df, master_basis_data_df)
 
 
 def _get_cached_integration_events(
@@ -192,6 +194,9 @@ def _get_metering_point_periods_df(
             "body.EffectiveDate",
             "body.Resolution",
             "body.OperationTime",
+            "body.SettlementMethod",
+            "body.FromGridAreaCode",
+            "body.ToGridAreaCode",
         )
     ).dropDuplicates(
         [
@@ -204,6 +209,9 @@ def _get_metering_point_periods_df(
             "EffectiveDate",
             "Resolution",
             "OperationTime",
+            "SettlementMethod",
+            "FromGridAreaCode",
+            "ToGridAreaCode",
         ]
     )
     debug(
@@ -213,45 +221,57 @@ def _get_metering_point_periods_df(
 
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
 
-    metering_point_periods_df = metering_point_events_df.withColumn(
-        "toEffectiveDate",
-        lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
-    )
-    metering_point_periods_df = metering_point_periods_df.withColumn(
-        "GridAreaLinkId",
-        coalesce(col("GridAreaLinkId"), last("GridAreaLinkId", True).over(window)),
-    )
-    metering_point_periods_df = metering_point_periods_df.withColumn(
-        "ConnectionState",
-        when(
-            col("MessageType") == metering_point_created_message_type,
-            lit(ConnectionState.new.value),
-        ).when(
-            col("MessageType") == metering_point_connected_message_type,
-            lit(ConnectionState.connected.value),
-        ),
-    )
-    metering_point_periods_df = metering_point_periods_df.withColumn(
-        "MeteringPointType",
-        coalesce(
-            col("MeteringPointType"), last("MeteringPointType", True).over(window)
-        ),
-    )
-    metering_point_periods_df = metering_point_periods_df.withColumn(
-        "Resolution",
-        coalesce(col("Resolution"), last("Resolution", True).over(window)),
-    )
-    metering_point_periods_df = metering_point_periods_df.where(
-        col("EffectiveDate") <= period_end_datetime
-    )
-    metering_point_periods_df = metering_point_periods_df.where(
-        col("toEffectiveDate") >= period_start_datetime
-    )
-    metering_point_periods_df = metering_point_periods_df.where(
-        col("ConnectionState") == ConnectionState.connected.value
-    )  # Only aggregate when metering points is connected
-    metering_point_periods_df = metering_point_periods_df.where(
-        col("MeteringPointType") == MeteringPointType.production.value
+    metering_point_periods_df = (
+        metering_point_events_df.withColumn(
+            "toEffectiveDate",
+            lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
+        )
+        .withColumn(
+            "GridAreaLinkId",
+            coalesce(col("GridAreaLinkId"), last("GridAreaLinkId", True).over(window)),
+        )
+        .withColumn(
+            "ConnectionState",
+            when(
+                col("MessageType") == metering_point_created_message_type,
+                lit(ConnectionState.new.value),
+            ).when(
+                col("MessageType") == metering_point_connected_message_type,
+                lit(ConnectionState.connected.value),
+            ),
+        )
+        .withColumn(
+            "MeteringPointType",
+            coalesce(
+                col("MeteringPointType"), last("MeteringPointType", True).over(window)
+            ),
+        )
+        .withColumn(
+            "Resolution",
+            coalesce(col("Resolution"), last("Resolution", True).over(window)),
+        )
+        .withColumn(
+            "SettlementMethod",
+            coalesce(
+                col("SettlementMethod"), last("SettlementMethod", True).over(window)
+            ),
+        )
+        .withColumn(
+            "FromGridAreaCode",
+            coalesce(
+                col("FromGridAreaCode"), last("FromGridAreaCode", True).over(window)
+            ),
+        )
+        .withColumn(
+            "ToGridAreaCode",
+            coalesce(col("ToGridAreaCode"), last("ToGridAreaCode", True).over(window)),
+        )
+        .where(col("EffectiveDate") <= period_end_datetime)
+        .where(col("toEffectiveDate") >= period_start_datetime)
+        .where(
+            col("ConnectionState") == ConnectionState.connected.value
+        )  # Only aggregate when metering points is connected
+        .where(col("MeteringPointType") == MeteringPointType.production.value)
     )
 
     debug(
@@ -270,6 +290,9 @@ def _get_metering_point_periods_df(
         "EffectiveDate",
         "toEffectiveDate",
         "MeteringPointType",
+        "SettlementMethod",
+        "FromGridAreaCode",
+        "ToGridAreaCode",
     )
 
     debug(
@@ -346,6 +369,24 @@ def _get_enriched_time_series_points_df(
     )
 
     return enriched_time_series_point_df
+
+
+def _get_master_basis_data(metering_point_df):
+    productionType = MeteringPointType.production.value
+
+    return metering_point_df.withColumn(
+        "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
+    ).select(
+        col("GridAreaCode"),  # column is only used for partitioning
+        col("GsrnNumber").alias("METERINGPOINTID"),
+        col("EffectiveDate").alias("VALIDFROM"),
+        col("toEffectiveDate").alias("VALIDTO"),
+        col("GridAreaCode").alias("GRIDAREAID"),
+        col("ToGridAreaCode").alias("TOGRIDAREAID"),
+        col("FromGridAreaCode").alias("FROMGRIDAREAID"),
+        col("TYPEOFMP"),
+        col("SettlementMethod").alias("SETTLEMENTMETHOD"),
+    )
 
 
 def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
