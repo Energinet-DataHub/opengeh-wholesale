@@ -45,6 +45,14 @@
     {
       "name": "CorrelationId",
       "type": "string"
+    },
+    {
+      "name": "FromGridAreaCode",
+      "type": "string"
+    },
+    {
+      "name": "ToGridAreaCode",
+      "type": "string"
     }
   ]
 }
