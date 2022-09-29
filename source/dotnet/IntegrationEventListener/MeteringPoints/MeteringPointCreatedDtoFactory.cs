@@ -54,6 +54,8 @@ public class MeteringPointCreatedDtoFactory
             meteringPointType,
             resolution,
             _correlationContext.Id,
+            meteringPointCreated.FromGridAreaCode,
+            meteringPointCreated.ToGridAreaCode,
             eventMetadata.MessageType,
             eventMetadata.OperationTimestamp);
     }
