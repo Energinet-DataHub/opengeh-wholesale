@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
-using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
@@ -26,7 +25,7 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.Tests.Application;
 
 [UnitTest]
-public class BatchExecutionStateUpdaterTests
+public class MapBatchExecutionStateTests
 {
     [Theory]
     [InlineAutoMoqData]
@@ -43,7 +42,7 @@ public class BatchExecutionStateUpdaterTests
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Running);
 
         // Act
-        await sut.MapExecutionStatesAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object);
+        await sut.UpdateExecutionStatesInBatchRepositoryAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object);
 
         // Assert
         Assert.Equal(BatchExecutionState.Executing, batch.ExecutionState);
@@ -64,7 +63,7 @@ public class BatchExecutionStateUpdaterTests
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Completed);
 
         // Act and assert
-        await Assert.ThrowsAsync<InvalidOperationException>(async () => await sut.MapExecutionStatesAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object));
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await sut.UpdateExecutionStatesInBatchRepositoryAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object));
     }
 
     [Theory]
@@ -82,7 +81,7 @@ public class BatchExecutionStateUpdaterTests
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Completed);
 
         // Act
-        await sut.MapExecutionStatesAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object);
+        await sut.UpdateExecutionStatesInBatchRepositoryAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object);
 
         // Assert
         Assert.Equal(BatchExecutionState.Completed, batch.ExecutionState);
@@ -106,7 +105,7 @@ public class BatchExecutionStateUpdaterTests
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(executingBatch.RunId!)).ReturnsAsync(JobState.Completed);
 
         // Act
-        var completedBatches = await sut.MapExecutionStatesAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object);
+        var completedBatches = (await sut.UpdateExecutionStatesInBatchRepositoryAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object)).ToList();
 
         // Assert
         Assert.Single(completedBatches);
