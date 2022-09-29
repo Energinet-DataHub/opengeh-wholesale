@@ -21,6 +21,7 @@ on:
       - .github/workflows/ci-databricks.yml
       - .github/actions/python-*/**
       - source/databricks/**
+      - source/contracts/**
 
 jobs:
   databricks_ci_build:
