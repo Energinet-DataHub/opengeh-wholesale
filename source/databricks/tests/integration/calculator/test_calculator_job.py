@@ -245,9 +245,9 @@ def test__master_data_csv_with_expected_columns_names(
         "METERINGPOINTID",
         "VALIDFROM",
         "VALIDTO",
-        "GRIDAREAID",
-        "TOGRIDAREAID",
-        "FROMGRIDAREAID",
+        "GRIDAREA",
+        "TOGRIDAREA",
+        "FROMGRIDAREA",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
     ]
