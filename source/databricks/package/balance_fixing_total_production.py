@@ -374,18 +374,21 @@ def _get_enriched_time_series_points_df(
 def _get_master_basis_data(metering_point_df):
     productionType = MeteringPointType.production.value
 
-    return metering_point_df.withColumn(
-        "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
-    ).select(
-        col("GridAreaCode"),  # column is only used for partitioning
-        col("GsrnNumber").alias("METERINGPOINTID"),
-        col("EffectiveDate").alias("VALIDFROM"),
-        col("toEffectiveDate").alias("VALIDTO"),
-        col("GridAreaCode").alias("GRIDAREA"),
-        col("ToGridAreaCode").alias("TOGRIDAREA"),
-        col("FromGridAreaCode").alias("FROMGRIDAREA"),
-        col("TYPEOFMP"),
-        col("SettlementMethod").alias("SETTLEMENTMETHOD"),
+    return (
+        metering_point_df.withColumn("ENERGYSUPPLIERID", lit(""))
+        .withColumn("TYPEOFMP", when(col("MeteringPointType") == productionType, "E18"))
+        .select(
+            col("GridAreaCode"),  # column is only used for partitioning
+            col("GsrnNumber").alias("METERINGPOINTID"),
+            col("EffectiveDate").alias("VALIDFROM"),
+            col("toEffectiveDate").alias("VALIDTO"),
+            col("GridAreaCode").alias("GRIDAREA"),
+            col("ToGridAreaCode").alias("TOGRIDAREA"),
+            col("FromGridAreaCode").alias("FROMGRIDAREA"),
+            col("TYPEOFMP"),
+            col("SettlementMethod").alias("SETTLEMENTMETHOD"),
+            col("ENERGYSUPPLIERID"),  # column is soley there for completness
+        )
     )
 
 
