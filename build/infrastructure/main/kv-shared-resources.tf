@@ -52,22 +52,13 @@ data "azurerm_key_vault_secret" "st_shared_data_lake_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "dbw_databricks_workspace_url" {
-  name         = "dbw-shared-workspace-url"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "dbw_databricks_workspace_id" {
-  name         = "dbw-shared-workspace-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "kvs_st_data_lake_primary_access_key" {
   name         = "st-data-lake-primary-access-key"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "dbw_databricks_workspace_token" {
-  name         = "dbw-shared-workspace-token"
+# ID of the topic receiving all domain integration events
+data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
+  name         = "sbt-sharedres-integrationevent-received-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

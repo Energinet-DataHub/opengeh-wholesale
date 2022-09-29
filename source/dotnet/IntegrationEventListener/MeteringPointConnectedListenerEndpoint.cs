@@ -41,7 +41,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             Connection = EnvironmentSettingNames.IntegrationEventsEventHubConnectionString)]
         public string Run(
             [ServiceBusTrigger(
-                "%" + EnvironmentSettingNames.MeteringPointConnectedTopicName + "%",
+                "%" + EnvironmentSettingNames.IntegrationEventsTopicName + "%",
                 "%" + EnvironmentSettingNames.MeteringPointConnectedSubscriptionName + "%",
                 Connection = EnvironmentSettingNames.IntegrationEventConnectionListenerString)]
             byte[] message)
