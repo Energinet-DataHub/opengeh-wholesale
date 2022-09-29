@@ -21,6 +21,7 @@ on:
       - .github/workflows/ci-dotnet.yml
       - .github/actions/dotnet-*/**
       - source/dotnet/**
+      - source/contracts/**
 
 jobs:
   # Build all projects within solution
