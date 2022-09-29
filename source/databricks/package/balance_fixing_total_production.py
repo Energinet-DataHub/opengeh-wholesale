@@ -381,9 +381,9 @@ def _get_master_basis_data(metering_point_df):
         col("GsrnNumber").alias("METERINGPOINTID"),
         col("EffectiveDate").alias("VALIDFROM"),
         col("toEffectiveDate").alias("VALIDTO"),
-        col("GridAreaCode").alias("GRIDAREAID"),
-        col("ToGridAreaCode").alias("TOGRIDAREAID"),
-        col("FromGridAreaCode").alias("FROMGRIDAREAID"),
+        col("GridAreaCode").alias("GRIDAREA"),
+        col("ToGridAreaCode").alias("TOGRIDAREA"),
+        col("FromGridAreaCode").alias("FROMGRIDAREA"),
         col("TYPEOFMP"),
         col("SettlementMethod").alias("SETTLEMENTMETHOD"),
     )
