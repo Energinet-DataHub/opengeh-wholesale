@@ -23,9 +23,9 @@ on:
       - build/**
 
 jobs:
-  terraform_validate:
+  infrastructure_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@poc
     with:
-      TERRAFORM_WORKING_DIR_PATH: './build/infrastructure/main'
+      TERRAFORM_WORKING_DIRECTORY: './build/infrastructure/main'
       TERRAFORM_VERSION: '1.2.2'
       INFRASTRUCTURE_PATH: './build/infrastructure'
