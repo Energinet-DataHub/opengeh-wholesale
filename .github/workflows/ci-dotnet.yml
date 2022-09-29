@@ -24,6 +24,7 @@ on:
       - source/contracts/**
 
 jobs:
+  # TODO: Move this into a new dotnet workflow, which can combine "dotnet-solution-ci-build.yml" (build) and prerelease (dotnet-build-prerelease)
   # Build all projects within solution
   dotnet_solution_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-build.yml@8.7.0

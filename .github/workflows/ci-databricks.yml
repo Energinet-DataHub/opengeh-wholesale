@@ -24,6 +24,7 @@ on:
       - source/contracts/**
 
 jobs:
+  # TODO: Move this into a new databricks workflow, which can combine "python-wheel-ci.yml" (build) and prerelease (databricks-build-prerelease)
   databricks_ci_build:
     uses:  Energinet-DataHub/.github/.github/workflows/python-wheel-ci.yml@poc
     with:
