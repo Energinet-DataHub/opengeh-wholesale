@@ -42,6 +42,8 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
 
     protected abstract string EventHubMessageType { get; }
 
+    protected abstract string ServiceBusMessageType { get; }
+
     protected abstract ServiceBusSender IntegrationEventTopicSender { get; }
 
     protected abstract ServiceBusReceiver IntegrationEventDeadLetterReceiver { get; }
@@ -49,6 +51,7 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
     public Task InitializeAsync()
     {
         Fixture.EventHubListener.Reset();
+
         return Task.CompletedTask;
     }
 
@@ -73,7 +76,7 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
             CreateIntegrationEventData(),
             operationTimestamp,
             correlationId,
-            EventHubMessageType);
+            ServiceBusMessageType);
 
         // Act
         await IntegrationEventTopicSender.SendMessageAsync(message);
@@ -101,7 +104,6 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
     [Theory]
     [InlineData("OperationCorrelationId")]
     [InlineData("OperationTimestamp")]
-    [InlineData("MessageType")]
     public async Task When_ReceivingMessageWithoutIntegrationEventProperty_Then_MessageIsDeadLettered(string missingIntegrationEventProperty)
     {
         // Arrange
@@ -114,7 +116,7 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
             CreateIntegrationEventData(),
             DateTime.UtcNow,
             Guid.NewGuid().ToString(),
-            EventHubMessageType);
+            ServiceBusMessageType);
 
         // Act
         message.ApplicationProperties.Remove(missingIntegrationEventProperty);
@@ -149,7 +151,7 @@ public abstract class IntegrationEventListenerEndpointTestBase<TTargetFunction, 
             CreateIntegrationEventData(),
             timestamp,
             correlationId,
-            EventHubMessageType);
+            ServiceBusMessageType);
 
         // Act
         await IntegrationEventTopicSender.SendMessageAsync(message);

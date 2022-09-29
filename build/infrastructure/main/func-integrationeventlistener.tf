@@ -38,12 +38,10 @@ module "func_integrationeventlistener" {
     EVENT_HUB_NAME                                        = module.evh_masterdataevents.name
     INTEGRATIONEVENT_LISTENER_CONNECTION_STRING           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     INTEGRATIONEVENT_MANAGER_CONNECTION_STRING            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
-    METERING_POINT_CREATED_SUBSCRIPTION_NAME              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-metering-point-created-to-wholesale-name)"
-    METERING_POINT_CREATED_TOPIC_NAME                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-metering-point-created-name)"
-    METERING_POINT_CONNECTED_SUBSCRIPTION_NAME            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-metering-point-connected-to-wholesale-name)"
-    METERING_POINT_CONNECTED_TOPIC_NAME                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-metering-point-connected-name)"
-    MARKET_PARTICIPANT_CHANGED_SUBSCRIPTION_NAME          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbs-market-participant-changed-to-wholesale-name)"
-    MARKET_PARTICIPANT_CHANGED_TOPIC_NAME                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-market-participant-changed-name)"
+    INTEGRATION_EVENTS_TOPIC_NAME                         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-sharedres-integrationevent-received-name)"
+    METERING_POINT_CREATED_SUBSCRIPTION_NAME              = module.sbs_int_events_metering_point_created.name
+    METERING_POINT_CONNECTED_SUBSCRIPTION_NAME            = module.sbs_int_events_metering_point_connected.name
+    MARKET_PARTICIPANT_CHANGED_SUBSCRIPTION_NAME          = module.sbs_int_events_grid_area_updated.name
   }
 
   tags                                  = azurerm_resource_group.this.tags
