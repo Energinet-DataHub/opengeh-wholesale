@@ -104,7 +104,7 @@ public class BatchApplicationServiceTests
             Instant.FromUtc(2022, 5, 31, 22, 00),
             Instant.FromUtc(2022, 6, 1, 22, 00),
             clockMock.Object);
-        batch1.MarkAsExecuting(new JobRunId(111));
+        batch1.MarkAsExecuting();
 
         var batch2 = new Batch(
             ProcessType.BalanceFixing,

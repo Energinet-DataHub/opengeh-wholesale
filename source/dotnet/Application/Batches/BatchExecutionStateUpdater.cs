@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public class BatchExecutionStateUpdater
 {
-    private readonly List<Batch> _completedBatches = new List<Batch>();
+    private IEnumerable<Batch> _completedBatches = new List<Batch>();
 
     public async Task UpdateExecutionStatesAsync(IBatchRepository batchRepository, ICalculatorJobRunner calculatorJobRunner)
     {
@@ -27,7 +27,7 @@ public class BatchExecutionStateUpdater
         var executingBatches = await batchRepository.GetExecutingAsync().ConfigureAwait(false);
 
         await UpdateFromPendingAsync(pendingBatches, calculatorJobRunner).ConfigureAwait(false);
-        await UpdateFromExecutingAsync(executingBatches, calculatorJobRunner).ConfigureAwait(false);
+        _completedBatches = await UpdateFromExecutingAsync(executingBatches, calculatorJobRunner).ConfigureAwait(false);
     }
 
     public IEnumerable<Batch> GetCompletedBatches()
@@ -35,10 +35,10 @@ public class BatchExecutionStateUpdater
         return _completedBatches;
     }
 
-    private async Task UpdateFromExecutingAsync(IEnumerable<Batch> executingBatches, ICalculatorJobRunner calculatorJobRunner)
+    private static async Task<IEnumerable<Batch>> UpdateFromExecutingAsync(IEnumerable<Batch> executingBatches, ICalculatorJobRunner calculatorJobRunner)
     {
         if (!executingBatches.Any())
-            return;
+            return new List<Batch>();
 
         var completedBatches = new List<Batch>();
 
@@ -55,13 +55,15 @@ public class BatchExecutionStateUpdater
             {
                 case JobState.Completed:
                     batch.MarkAsCompleted();
-                    _completedBatches.Add(batch);
+                    completedBatches.Add(batch);
                     break;
                 case JobState.Failed:
                     batch.MarkAsFailed();
                     break;
             }
         }
+
+        return completedBatches;
     }
 
     private static async Task UpdateFromPendingAsync(IEnumerable<Batch> pendingBatches, ICalculatorJobRunner calculatorJobRunner)
@@ -78,7 +80,7 @@ public class BatchExecutionStateUpdater
             switch (state)
             {
                 case JobState.Running:
-                    batch.MarkAsExecuting(runId);
+                    batch.MarkAsExecuting();
                     break;
                 case JobState.Failed:
                     batch.MarkAsFailed();

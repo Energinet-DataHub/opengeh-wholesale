@@ -83,15 +83,18 @@ public class Batch
         ExecutionTimeEnd = _clock.GetCurrentInstant();
     }
 
-    public void MarkAsExecuting(JobRunId jobRunId)
+    public void SetJobRunId(JobRunId jobRunId)
     {
         ArgumentNullException.ThrowIfNull(jobRunId);
+        RunId = jobRunId;
+    }
 
+    public void MarkAsExecuting()
+    {
         if (ExecutionState != BatchExecutionState.Pending)
             throw new InvalidOperationException("Batch cannot be completed because it is not in state pending.");
 
         ExecutionState = BatchExecutionState.Executing;
-        RunId = jobRunId;
     }
 
     public void MarkAsFailed()

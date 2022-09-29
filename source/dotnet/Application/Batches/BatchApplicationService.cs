@@ -58,7 +58,8 @@ public class BatchApplicationService : IBatchApplicationService
         foreach (var batch in batches)
         {
             var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);
-            await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
+            var jobRunId = await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
+            batch.SetJobRunId(jobRunId);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
