@@ -26,6 +26,8 @@ public interface IBatchRepository
 
     Task<List<Batch>> GetExecutingAsync();
 
+    Task<List<Batch>> GetPendingAndExecutingAsync();
+
     Task<List<Batch>> GetCompletedAsync();
 
     Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart);

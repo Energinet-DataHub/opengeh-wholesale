@@ -41,6 +41,15 @@ public class BatchRepository : IBatchRepository
 
     public Task<List<Batch>> GetExecutingAsync() => GetByStateAsync(BatchExecutionState.Executing);
 
+    public async Task<List<Batch>> GetPendingAndExecutingAsync()
+    {
+        return await _context
+            .Batches
+            .Where(b => b.ExecutionState == BatchExecutionState.Pending || b.ExecutionState == BatchExecutionState.Executing)
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
+
     public Task<List<Batch>> GetCompletedAsync() => GetByStateAsync(BatchExecutionState.Completed);
 
     public async Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart)
