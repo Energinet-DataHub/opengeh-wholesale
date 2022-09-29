@@ -18,6 +18,7 @@ on:
   pull_request:
     branches:
       - main
+      - simmain
     paths:
       - .github/workflows/ci-dotnet.yml
       - .github/actions/dotnet-*/**
