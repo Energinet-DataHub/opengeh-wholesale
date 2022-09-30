@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: CI License and Markdown Check
+name: CI
 
 on:
   pull_request:
@@ -28,6 +28,7 @@ jobs:
   #
 
   changes:
+    name: Determine relevant jobs
     runs-on: ubuntu-latest
     # Set job outputs to values from filter step
     outputs:
@@ -36,20 +37,21 @@ jobs:
       dotnet: ${{ steps.filter.outputs.dotnet }}
     steps:
     # For pull requests it's not necessary to checkout the code
-    - uses: dorny/paths-filter@v2
+    - name: Detect file changes
+      uses: dorny/paths-filter@v2
       id: filter
       with:
         filters: |
           infrastructure:
-            - '.github/workflows/ci-infrastructure.yml'
+            - '.github/workflows/ci.yml'
             - 'build/**'
           databricks:
-            - '.github/workflows/ci-databricks.yml'
+            - '.github/workflows/ci.yml'
             - '.github/actions/python-*/**'
             - 'source/databricks/**'
             - 'source/contracts/**'
           dotnet:
-            - '.github/workflows/ci-dotnet.yml'
+            - '.github/workflows/ci.yml'
             - '.github/actions/dotnet-*/**'
             - 'source/dotnet/**'
             - 'source/contracts/**'
