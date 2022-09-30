@@ -22,4 +22,3 @@ runs:
       run: |
         chmod +x ./.github/actions/python-unit-test/entrypoint.sh
         docker-compose -f .devcontainer/docker-compose.yml run -u root -w //workspaces/opengeh-wholesale wholesale ./.github/actions/python-unit-test/entrypoint.sh
-
