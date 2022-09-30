@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
     /// The code is based on https://github.com/Azure/azure-databricks-client and can be replaced by the official
     /// package when support for Job API 2.1 is added.
     /// </summary>
-    public class DatabricksWheelClient : IDisposable
+    public class DatabricksWheelClient : IDisposable, IDatabricksWheelClient
     {
         private const string Version = "2.1";
         private readonly HttpClient _httpClient;

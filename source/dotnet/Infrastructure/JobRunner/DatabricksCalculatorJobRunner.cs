@@ -21,12 +21,12 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
 public sealed class DatabricksCalculatorJobRunner : ICalculatorJobRunner
 {
-    private readonly DatabricksCalculatorJobSelector _databricksCalculatorJobSelector;
-    private readonly DatabricksWheelClient _wheelClient;
+    private readonly IDatabricksCalculatorJobSelector _databricksCalculatorJobSelector;
+    private readonly IDatabricksWheelClient _wheelClient;
 
     public DatabricksCalculatorJobRunner(
-        DatabricksCalculatorJobSelector databricksCalculatorJobSelector,
-        DatabricksWheelClient wheelClient)
+        IDatabricksCalculatorJobSelector databricksCalculatorJobSelector,
+        IDatabricksWheelClient wheelClient)
     {
         _databricksCalculatorJobSelector = databricksCalculatorJobSelector;
         _wheelClient = wheelClient;
@@ -72,16 +72,6 @@ public sealed class DatabricksCalculatorJobRunner : ICalculatorJobRunner
             },
             _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
         };
-
-        // return runState.State.ResultState switch
-        // {
-        //     RunResultState.SUCCESS => JobState.Completed,
-        //     RunResultState.FAILED => JobState.Failed,
-        //     RunResultState.TIMEDOUT => JobState.Failed,
-        //     RunResultState.CANCELED => JobState.Canceled,
-        //     null => JobState.Running,
-        //     _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
-        // };
     }
 
     private static RunParameters MergeRunParameters(WheelJob job, IEnumerable<string> jobParameters)
