@@ -18,7 +18,7 @@ on:
   pull_request:
     branches:
       - main
-      - simmain
+      - simmain # TODO: Delete before merge
 
 jobs:
   ci_base:

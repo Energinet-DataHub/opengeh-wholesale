@@ -1,3 +1,0 @@
-# Nothing
-
-Documentation for nothing.
