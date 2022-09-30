@@ -85,6 +85,7 @@ def test__get_master_basis_data_has_expected_columns(
         "FROMGRIDAREA",
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
+        "ENERGYSUPPLIERID",
     ]
 
 
@@ -141,3 +142,4 @@ def test__columns_have_expected_values(
     assert actual.FROMGRIDAREA == expected_from_grid_area_code
     assert actual.TYPEOFMP == expected_meteringpoint_type
     assert actual.SETTLEMENTMETHOD == expected_settlement_method
+    assert actual.ENERGYSUPPLIERID == ""
