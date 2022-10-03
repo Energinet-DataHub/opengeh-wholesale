@@ -59,17 +59,18 @@ from package.schemas import (
     metering_point_generic_event_schema,
 )
 from package.db_logging import debug
-from datetime import datetime, timedelta, tzinfo, date
+from datetime import datetime, timedelta, date
 import time
 from pytz import timezone
 import pytz
-
+from decimal import Decimal
 
 metering_point_created_message_type = "MeteringPointCreated"
 metering_point_connected_message_type = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
+    spark,
     raw_integration_events_df,
     raw_time_series_points_df,
     batch_id,
@@ -111,7 +112,9 @@ def calculate_balance_fixing_total_production(
 
     master_basis_data_df = _get_master_basis_data(metering_point_period_df)
 
-    result_df = _get_result_df(enriched_time_series_point_df)
+    result_df = _get_result_df(
+        enriched_time_series_point_df, period_start_datetime, period_end_datetime
+    )
 
     cached_integration_events_df.unpersist()
 
@@ -443,7 +446,7 @@ def _get_time_series_basis_data_by_resolution(
         "METERINGPOINTID",
         "TYPEOFMP",
         "STARTDATETIME",
-        *quantity_columns
+        *quantity_columns,
     )
     return timeseries_basis_data_df
 
@@ -462,7 +465,9 @@ def _get_sorted_quantity_columns(timeseries_basis_data):
     return quantity_columns
 
 
-def _get_result_df(enriched_time_series_points_df) -> DataFrame:
+def _get_result_df(
+    enriched_time_series_points_df, period_start_datetime, period_end_datetime
+) -> DataFrame:
     # Total production in batch grid areas with quarterly resolution per grid area
     result_df = (
         enriched_time_series_points_df.withColumn(
@@ -521,6 +526,33 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         result_df.orderBy(col("GridAreaCode"), col("quarter_time")),
     )
 
+    exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
+
+    times_df = (
+        result_df.select("GridAreaCode")
+        .distinct()
+        .select(
+            "GridAreaCode",
+            expr(
+                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
+            ).alias("quarter_times"),
+        )
+        .select("GridAreaCode", explode("quarter_times").alias("quarter_time"))
+    )
+
+    # times_df = (
+    #     result_df.groupBy("GridAreaCode")
+    #     .select(
+    #         "GridAreaCode",
+    #         expr(
+    #             f"sequence({period_start_datetime}, {period_end_datetime}, interval 15 minutes"
+    #         ).alias("quarter_times"),
+    #     )
+    #     .select("GridAreaCode", explode("quarter_times").alias("quarter_time"))
+    # )
+
+    result_df = result_df.join(times_df, ["GridAreaCode", "quarter_time"], "right")
+
     window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
 
     # Points may be missing in result time series if all metering points are missing a point at a certain moment.
@@ -528,6 +560,16 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
     result_df = (
         result_df.withColumn("position", row_number().over(window))
         .withColumnRenamed("sum(quarter_quantity)", "Quantity")
+        .withColumn(
+            "Quantity",
+            when(col("Quantity").isNull(), Decimal("0.00")).otherwise(col("Quantity")),
+        )
+        .withColumn(
+            "quality",
+            when(col("quality").isNull(), Quality.incomplete.value).otherwise(
+                col("quality")
+            ),
+        )
         .select(
             "GridAreaCode",
             col("Quantity").cast(DecimalType(18, 3)),
