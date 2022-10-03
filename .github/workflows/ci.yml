@@ -33,33 +33,6 @@ jobs:
 
   changes:
     uses: ./.github/workflows/detect-changes.yml
-    # name: Determine relevant jobs
-    # runs-on: ubuntu-latest
-    # # Set job outputs to values from filter step
-    # outputs:
-    #   infrastructure: ${{ steps.filter.outputs.infrastructure }}
-    #   databricks: ${{ steps.filter.outputs.databricks }}
-    #   dotnet: ${{ steps.filter.outputs.dotnet }}
-    # steps:
-    # # For pull requests it's not necessary to checkout the code
-    # - name: Detect file changes
-    #   uses: dorny/paths-filter@v2
-    #   id: filter
-    #   with:
-    #     filters: |
-    #       infrastructure:
-    #         - '.github/workflows/ci.yml'
-    #         - 'build/**'
-    #       databricks:
-    #         - '.github/workflows/ci.yml'
-    #         - '.github/actions/python-*/**'
-    #         - 'source/databricks/**'
-    #         - 'source/contracts/**'
-    #       dotnet:
-    #         - '.github/workflows/ci.yml'
-    #         - '.github/actions/dotnet-*/**'
-    #         - 'source/dotnet/**'
-    #         - 'source/contracts/**'
 
   #
   # CI Infrastructure
