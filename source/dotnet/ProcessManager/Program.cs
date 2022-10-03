@@ -123,7 +123,7 @@ public static class Program
                 client.CreateSender(processCompletedTopicName));
         });
 
-        serviceCollection.AddScoped<DatabricksCalculatorJobSelector>();
+        serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         serviceCollection
             .AddScoped<ICalculatorJobParametersFactory, DatabricksCalculatorJobParametersFactory>();
 
