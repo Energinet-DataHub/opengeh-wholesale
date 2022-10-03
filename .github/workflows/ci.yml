@@ -60,14 +60,6 @@ jobs:
   # CI Infrastructure
   #
 
-  # TODO: Fail infrastructure to test workflow
-  infrastructure_fail:
-    runs-on: ubuntu-latest
-    needs: changes
-    if: ${{ needs.changes.outputs.infrastructure == 'true' }}
-    steps:
-      - run: exit 1
-
   infrastructure_ci_build:
     needs: changes
     if: ${{ needs.changes.outputs.infrastructure == 'true' }}
@@ -80,6 +72,14 @@ jobs:
   #
   # CI Databricks
   #
+
+  # TODO: Fail databricks to test workflow
+  databricks_fail:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ needs.changes.outputs.databricks == 'true' }}
+    steps:
+      - run: exit 1
 
   databricks_ci_build:
     needs: changes
@@ -173,9 +173,9 @@ jobs:
     needs: [
       ci_base,
       # Infrastructure
-      infrastructure_fail, # TODO: Remove after test
       infrastructure_ci_build,
       # Databricks
+      databricks_fail, # TODO: Remove after test
       databricks_ci_build,
       databricks_ci_test,
       # .NET
