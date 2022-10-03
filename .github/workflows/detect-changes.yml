@@ -38,7 +38,11 @@ jobs:
       databricks: ${{ steps.filter.outputs.databricks }}
       dotnet: ${{ steps.filter.outputs.dotnet }}
     steps:
-    # For pull requests it's not necessary to checkout the code
+    # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
+    - name: Checkout repository (main branch)
+      if: ${{ github.ref_name == 'main' }}
+      uses: actions/checkout@v3
+
     - name: Detect file changes
       uses: dorny/paths-filter@v2
       id: filter
