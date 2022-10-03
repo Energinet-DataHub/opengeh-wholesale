@@ -540,17 +540,6 @@ def _get_result_df(
         .select("GridAreaCode", explode("quarter_times").alias("quarter_time"))
     )
 
-    # times_df = (
-    #     result_df.groupBy("GridAreaCode")
-    #     .select(
-    #         "GridAreaCode",
-    #         expr(
-    #             f"sequence({period_start_datetime}, {period_end_datetime}, interval 15 minutes"
-    #         ).alias("quarter_times"),
-    #     )
-    #     .select("GridAreaCode", explode("quarter_times").alias("quarter_time"))
-    # )
-
     result_df = result_df.join(times_df, ["GridAreaCode", "quarter_time"], "right")
 
     window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
