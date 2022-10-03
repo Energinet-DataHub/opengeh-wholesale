@@ -96,14 +96,6 @@ jobs:
   # CI .NET
   #
 
-  # TODO: Fail .NET to test workflow
-  dotnet_fail:
-    runs-on: ubuntu-latest
-    needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    steps:
-      - run: exit 1
-
   # Build all projects within solution
   dotnet_ci_build:
     needs: changes
@@ -178,7 +170,6 @@ jobs:
       databricks_ci_build,
       databricks_ci_test,
       # .NET
-      dotnet_fail, # TODO: Remove after test
       dotnet_ci_build,
       dotnet_ci_test_integrationtests_part1,
       dotnet_ci_test_integrationtests_part2,
