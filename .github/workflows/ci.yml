@@ -61,7 +61,7 @@ jobs:
   #
 
   # TODO: Fail infrastructure to test workflow
-  infrastructure_ci_build:
+  infrastructure_fail:
     runs-on: ubuntu-latest
     needs: changes
     if: ${{ needs.changes.outputs.infrastructure == 'true' }}
