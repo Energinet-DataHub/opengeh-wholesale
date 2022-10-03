@@ -60,6 +60,14 @@ jobs:
   # CI Infrastructure
   #
 
+  # TODO: Fail infrastructure to test workflow
+  infrastructure_ci_build:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ needs.changes.outputs.infrastructure == 'true' }}
+    steps:
+      - run: exit 1
+
   infrastructure_ci_build:
     needs: changes
     if: ${{ needs.changes.outputs.infrastructure == 'true' }}
