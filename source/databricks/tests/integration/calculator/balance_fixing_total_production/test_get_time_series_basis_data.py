@@ -282,3 +282,8 @@ def test__multiple_dates_are_split_into_rows_for_hourly_meteringpoints(
     )
 
     assert hour_df.count() == expected_number_of_rows
+
+
+def test__missing_point_has_empty_quantity():
+    # TODO: Use null/None and not 0
+    raise Exception("TODO")

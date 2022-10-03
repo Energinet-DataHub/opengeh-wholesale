@@ -276,3 +276,7 @@ def test__creates_master_data_csv_per_grid_area(
     assert (
         master_basis_data_806.count() >= 1
     ), "Calculator job failed to write master basis data files for grid area 806"
+
+
+def test__missing_point_has_empty_quantity_in_time_series_basis_data():
+    raise Exception("TODO")

@@ -289,3 +289,20 @@ def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_l
     # Assert
     assert actual.count() == 1
     assert actual.first().Quantity == expected_quantity
+
+
+def test__missing_point_has_quantity_0():
+    raise Exception("TODO")
+
+
+def test__missing_point_has_quality_incomplete():
+    raise Exception("TODO")
+
+
+def test__df_has_expected_row_count():
+    # TODO: 23, 24, 25 for hour and 95, 96, 97 for quarter
+    raise Exception("TODO")
+
+
+def test__df_is_not_empty_when_no_time_series_points():
+    raise Exception("TODO")

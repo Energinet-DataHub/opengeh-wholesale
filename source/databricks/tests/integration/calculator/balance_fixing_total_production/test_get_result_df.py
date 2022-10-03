@@ -295,3 +295,11 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
         timestamp_factory("2022-06-08T13:09:15.000Z"),
     )
     assert result_df.first().quality == expected_quality
+
+
+def test__quality_has_value_incomplete_for_missing_point():
+    raise Exception("todo")
+
+
+def test__quantity_is_0_for_missing_point():
+    raise Exception("todo")

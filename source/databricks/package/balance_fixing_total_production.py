@@ -318,6 +318,20 @@ def _get_enriched_time_series_points_df(
         col("time") >= period_start_datetime
     ).where(col("time") < period_end_datetime)
 
+    times_df = (
+        result_df.select("GridAreaCode")
+        .distinct()
+        .select(
+            "GridAreaCode",
+            expr(
+                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
+            ).alias("quarter_times"),
+        )
+        .select("GridAreaCode", explode("quarter_times").alias("quarter_time"))
+    )
+
+    result_df = result_df.join(times_df, ["GridAreaCode", "quarter_time"], "right")
+
     debug(
         "Time series points where time is within period",
         timeseries_df.orderBy(
