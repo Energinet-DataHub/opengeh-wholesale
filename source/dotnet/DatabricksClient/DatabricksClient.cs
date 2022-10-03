@@ -36,7 +36,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
         /// <param name="baseUrl">Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net</param>
         /// <param name="token">The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token </param>
         /// <param name="timeoutSeconds">Web request time out in seconds</param>
-        public static DatabricksWheelClient CreateClient(string baseUrl, string token, long timeoutSeconds = 30)
+        public static IDatabricksWheelClient CreateClient(string baseUrl, string token, long timeoutSeconds = 30)
         {
             return new DatabricksWheelClient(baseUrl, token, timeoutSeconds);
         }

@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using FluentAssertions;
 using Microsoft.Azure.Databricks.Client;
@@ -74,7 +75,7 @@ public sealed class BatchApplicationServiceTests
             .Setup(x => x.RunsGet(It.IsAny<long>(), default))
             .ReturnsAsync(canceledRun);
 
-        var mockedDatabricksClient = new Mock<DatabricksWheelClient>();
+        var mockedDatabricksClient = new Mock<IDatabricksWheelClient>();
         mockedDatabricksClient
             .Setup(x => x.Jobs)
             .Returns(mockedJobsApi.Object);

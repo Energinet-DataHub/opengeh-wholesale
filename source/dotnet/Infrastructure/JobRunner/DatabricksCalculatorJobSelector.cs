@@ -18,9 +18,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
 public sealed class DatabricksCalculatorJobSelector : IDatabricksCalculatorJobSelector
 {
-    private readonly DatabricksWheelClient _wheelClient;
+    private readonly IDatabricksWheelClient _wheelClient;
 
-    public DatabricksCalculatorJobSelector(DatabricksWheelClient wheelClient)
+    public DatabricksCalculatorJobSelector(IDatabricksWheelClient wheelClient)
     {
         _wheelClient = wheelClient;
     }
