@@ -41,15 +41,37 @@ public sealed class BatchApplicationServiceTests
     [Theory]
     [InlineAutoMoqData]
     public async Task When_RunIsCompleted_Then_BatchIsCompleted(
-        [Frozen] Mock<IJobsApi> jobsApiMock)
+        [Frozen] Mock<IJobsWheelApi> jobsApiMock)
     {
-        var canceledRun = new Run { State = new RunState { ResultState = RunResultState.CANCELED } };
+        var pendingRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.PENDING, ResultState = RunResultState.SUCCESS } };
 
         jobsApiMock
             .Setup(x => x.RunsGet(It.IsAny<long>(), default))
-            .ReturnsAsync(canceledRun);
+            .ReturnsAsync(pendingRun);
 
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ConfigureDatabricksClientToCancel);
+        var jobs = new List<Job>() { CreateJob(DummyJobId, DummyJobName) };
+        jobsApiMock.Setup(x => x.List(It.IsAny<CancellationToken>())).ReturnsAsync(jobs);
+        jobsApiMock.Setup(x => x.GetWheel(It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateCalculatorJob(DummyJobId, DummyJobName));
+        var runIdentifier = new RunIdentifier() { RunId = 22, NumberInJob = 1 };
+        jobsApiMock.Setup(
+                x => x.RunNow(
+                    It.IsAny<long>(),
+                    It.IsAny<RunParameters>(),
+                    It.IsAny<CancellationToken>()))
+            .ReturnsAsync(runIdentifier);
+
+        var mockedDatabricksClient = new Mock<IDatabricksWheelClient>();
+        mockedDatabricksClient
+            .Setup(x => x.Jobs)
+            .Returns(jobsApiMock.Object);
+
+        var foo = (IServiceCollection collection) =>
+        {
+            collection.Replace(ServiceDescriptor.Singleton(mockedDatabricksClient.Object));
+        };
+
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(foo);
 
         await using var scope = host.BeginScope();
         var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
@@ -62,10 +84,27 @@ public sealed class BatchApplicationServiceTests
         await target.StartPendingAsync();
         await target.UpdateExecutionStateAsync();
 
-        // Assert 1: Verify that batch is now pending.
+        // // Assert 1: Verify that batch is now pending.
         var pending = await repository.GetPendingAsync();
         var createdBatch = pending.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
+        var runningRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.RUNNING, ResultState = RunResultState.SUCCESS } };
 
+        jobsApiMock
+            .Setup(x => x.RunsGet(It.IsAny<long>(), default))
+            .ReturnsAsync(runningRun);
+
+        // Act
+        await target.UpdateExecutionStateAsync();
+
+        // Assert 2: Verify that batch is now running.
+        var running = await repository.GetExecutingAsync();
+        var runningBatch = running.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
+
+        var completedRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.TERMINATED, ResultState = RunResultState.SUCCESS } };
+
+        jobsApiMock
+            .Setup(x => x.RunsGet(It.IsAny<long>(), default))
+            .ReturnsAsync(completedRun);
 
         // Act
         await target.UpdateExecutionStateAsync();
@@ -74,30 +113,6 @@ public sealed class BatchApplicationServiceTests
         var completed = await repository.GetCompletedAsync();
         var updatedBatch = completed.Single(x => x.Id == createdBatch.Id);
         updatedBatch.GridAreaCodes.Should().ContainSingle(code => code.Code == gridAreaCode);
-    }
-
-    private static void ConfigureDatabricksClientToCancel(IServiceCollection serviceCollection)
-    {
-
-
-        var jobs = new List<Job>() { CreateJob(DummyJobId, DummyJobName) };
-        mockedJobsApi.Setup(x => x.List(It.IsAny<CancellationToken>())).ReturnsAsync(jobs);
-        mockedJobsApi.Setup(x => x.GetWheel(It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(CreateCalculatorJob(DummyJobId, DummyJobName));
-        var runIdentifier = new RunIdentifier() { RunId = 22, NumberInJob = 1 };
-        mockedJobsApi.Setup(
-                x => x.RunNow(
-                    It.IsAny<long>(),
-                    It.IsAny<RunParameters>(),
-                    It.IsAny<CancellationToken>()))
-            .ReturnsAsync(runIdentifier);
-
-        var mockedDatabricksClient = new Mock<DatabricksWheelClient>();
-        mockedDatabricksClient
-            .Setup(x => x.Jobs)
-            .Returns(mockedJobsApi.Object);
-
-        serviceCollection.Replace(ServiceDescriptor.Singleton(mockedDatabricksClient.Object));
     }
 
     private static Job CreateJob(long jobId, string jobName)
