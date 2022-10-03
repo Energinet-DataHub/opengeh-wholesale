@@ -40,33 +40,30 @@ public sealed class BatchApplicationServiceTests
     private const string GridAreaCode = "321";
     private readonly Mock<IJobsWheelApi> _jobsApiMock = new Mock<IJobsWheelApi>();
     private readonly Mock<IDatabricksWheelClient> _databricksWheelClientMock = new Mock<IDatabricksWheelClient>();
-    private BatchRequestDto _batchRequest = new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { GridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now);
+    private readonly BatchRequestDto _batchRequest = new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { GridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now);
 
     [Fact]
     public async Task When_RunIsCompleted_Then_BatchIsCompleted()
     {
         Setup();
+
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        await using var scope = host.BeginScope();
+
+        var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
+        var repository = scope.ServiceProvider.GetRequiredService<IBatchRepository>();
+
         var pendingRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.PENDING, ResultState = RunResultState.SUCCESS } };
 
         _jobsApiMock
             .Setup(x => x.RunsGet(It.IsAny<long>(), default))
             .ReturnsAsync(pendingRun);
 
-        var foo = (IServiceCollection collection) =>
-        {
-            collection.Replace(ServiceDescriptor.Singleton(_databricksWheelClientMock.Object));
-        };
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(foo);
-
-        await using var scope = host.BeginScope();
-        var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-        var repository = scope.ServiceProvider.GetRequiredService<IBatchRepository>();
-
         await target.CreateAsync(_batchRequest);
         await target.StartPendingAsync();
         await target.UpdateExecutionStateAsync();
 
-        // // Assert 1: Verify that batch is now pending.
+        // Assert 1: Verify that batch is now pending.
         var pending = await repository.GetPendingAsync();
         var createdBatch = pending.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
         var runningRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.RUNNING, ResultState = RunResultState.SUCCESS } };
@@ -103,6 +100,7 @@ public sealed class BatchApplicationServiceTests
         _jobsApiMock.Setup(x => x.List(It.IsAny<CancellationToken>())).ReturnsAsync(jobs);
         _jobsApiMock.Setup(x => x.GetWheel(It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateCalculatorJob(DummyJobId, DummyJobName));
+
         var runIdentifier = new RunIdentifier() { RunId = 22, NumberInJob = 1 };
         _jobsApiMock.Setup(
                 x => x.RunNow(
@@ -112,6 +110,11 @@ public sealed class BatchApplicationServiceTests
             .ReturnsAsync(runIdentifier);
 
         _databricksWheelClientMock.Setup(x => x.Jobs).Returns(_jobsApiMock.Object);
+    }
+
+    private void ServiceCollection(IServiceCollection collection)
+    {
+        collection.Replace(ServiceDescriptor.Singleton(_databricksWheelClientMock.Object));
     }
 
     private static Job CreateJob(long jobId, string jobName)
