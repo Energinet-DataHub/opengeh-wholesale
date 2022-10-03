@@ -173,6 +173,7 @@ jobs:
     needs: [
       ci_base,
       # Infrastructure
+      infrastructure_fail, # TODO: Remove after test
       infrastructure_ci_build,
       # Databricks
       databricks_ci_build,
