@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
-using FluentAssertions;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -59,15 +58,11 @@ public sealed class BatchApplicationServiceTests
         await target.StartPendingAsync();
         await target.UpdateExecutionStateAsync();
 
-        // Assert 1: Verify that batch is now pending.
+        // Assert: Verify that batch is now pending.
         var pending = await repository.GetPendingAsync();
         Assert.Single(pending);
         var createdBatch = pending.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
-        // // Assert 2: Verify that batch is completed.
-        // var completed = await repository.GetCompletedAsync();
-        // var updatedBatch = completed.Single(x => x.Id == createdBatch.Id);
-        // updatedBatch.GridAreaCodes.Should().ContainSingle(code => code.Code == GridAreaCode);
     }
 
     private void Setup()
