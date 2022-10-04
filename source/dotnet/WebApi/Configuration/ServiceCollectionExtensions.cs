@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IdentityModel.Tokens.Jwt;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Core.App.Common.Identity;
@@ -25,6 +26,9 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -36,18 +40,30 @@ internal static class ServiceCollectionExtensions
     /// <param name="serviceCollection">ServiceCollection container</param>
     public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<JwtTokenMiddleware>();
-        serviceCollection.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
-        serviceCollection.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
-        serviceCollection.AddScoped<ClaimsPrincipalContext>();
-
-        var address = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
-                      throw new Exception(
-                          $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
+        var metadataAddress = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
+                              throw new Exception(
+                                  $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
         var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
                        throw new Exception(
                            $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
-        serviceCollection.AddScoped(_ => new OpenIdSettings(address, audience));
+
+        serviceCollection.AddSingleton<ISecurityTokenValidator, JwtSecurityTokenHandler>();
+        serviceCollection.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(_ =>
+            new ConfigurationManager<OpenIdConnectConfiguration>(
+                metadataAddress,
+                new OpenIdConnectConfigurationRetriever()));
+
+        serviceCollection.AddScoped<IJwtTokenValidator>(sp =>
+            new JwtTokenValidator(
+                sp.GetRequiredService<ILogger<JwtTokenValidator>>(),
+                sp.GetRequiredService<ISecurityTokenValidator>(),
+                sp.GetRequiredService<IConfigurationManager<OpenIdConnectConfiguration>>(),
+                audience));
+
+        serviceCollection.AddScoped<ClaimsPrincipalContext>();
+        serviceCollection.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
+
+        serviceCollection.AddScoped<JwtTokenMiddleware>();
     }
 
     public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)

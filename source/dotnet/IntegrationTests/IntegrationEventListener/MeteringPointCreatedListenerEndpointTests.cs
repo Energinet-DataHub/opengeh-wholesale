@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts;
+using Energinet.DataHub.MeteringPoints.IntegrationEvents.CreateMeteringPoint;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
