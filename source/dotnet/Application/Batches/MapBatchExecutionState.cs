@@ -26,9 +26,12 @@ public class MapBatchExecutionState
     public async Task<IEnumerable<Batch>> UpdateExecutionStatesInBatchRepositoryAsync(IBatchRepository batchRepository, ICalculatorJobRunner calculatorJobRunner)
     {
         var completedBatches = new List<Batch>();
-        var pendingOrExecutingBatches = await batchRepository.GetPendingAndExecutingAsync().ConfigureAwait(false);
-        foreach (var batch in pendingOrExecutingBatches)
+        var pendingAndExecutingBatches = await batchRepository.GetPendingAndExecutingAsync().ConfigureAwait(false);
+        foreach (var batch in pendingAndExecutingBatches)
         {
+            if (batch.RunId == null)
+                continue;
+
             var jobState = await calculatorJobRunner
                 .GetJobStateAsync(batch.RunId!)
                 .ConfigureAwait(false);
