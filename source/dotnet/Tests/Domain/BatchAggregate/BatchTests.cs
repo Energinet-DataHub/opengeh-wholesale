@@ -71,13 +71,6 @@ public class BatchTests
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenPending_ThrowsInvalidOperationException()
-    {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
-        Assert.Throws<InvalidOperationException>(() => sut.MarkAsCompleted());
-    }
-
-    [Fact]
     public void MarkAsCompleted_WhenComplete_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();

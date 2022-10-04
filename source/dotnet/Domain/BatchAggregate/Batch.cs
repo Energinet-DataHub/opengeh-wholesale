@@ -76,6 +76,9 @@ public class Batch
 
     public void MarkAsCompleted()
     {
+        if (ExecutionState == BatchExecutionState.Completed)
+            throw new InvalidOperationException("Batch is already in state Completed.");
+
         ExecutionState = BatchExecutionState.Completed;
         ExecutionTimeEnd = _clock.GetCurrentInstant();
     }
