@@ -50,24 +50,6 @@ public class MapBatchExecutionStateTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task MapBatchExecutionState_FromPendingToCompleted_ThrowsException(
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-        [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
-        MapBatchExecutionState sut)
-    {
-        // Arrange
-        var batch = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
-        batch.SetJobRunId(new JobRunId(11));
-        var pendingBatches = new List<Batch>() { batch };
-        batchRepositoryMock.Setup(repo => repo.GetPendingAndExecutingAsync()).ReturnsAsync(pendingBatches);
-        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Completed);
-
-        // Act and assert
-        await Assert.ThrowsAsync<InvalidOperationException>(async () => await sut.UpdateExecutionStatesInBatchRepositoryAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object));
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
     public async Task MapBatchExecutionState_WhenJobStateIsCompleted_UpdateBatchToCompleted(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
