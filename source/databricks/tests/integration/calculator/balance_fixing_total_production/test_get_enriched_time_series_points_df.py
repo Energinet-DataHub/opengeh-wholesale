@@ -386,19 +386,23 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
 ):
     # Arrange
     start_time = "2022-06-08T12:00:00.000Z"
+    end_time = "2022-06-08T14:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
         resolution=Resolution.hour.value,
     )
 
-    metering_point_period_df = metering_point_period_df_factory()
+    metering_point_period_df = metering_point_period_df_factory(
+        effective_date=timestamp_factory(start_time),
+        to_effective_date=timestamp_factory(end_time),
+    )
 
     # Act
     actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
-        timestamp_factory("2022-06-08T14:00:00.000Z"),
+        timestamp_factory(end_time),
     )
 
     # Assert
@@ -406,7 +410,7 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     actual = actual.filter(col("time") != timestamp_factory(start_time))
 
     assert (
-        actual.where(col("quality") == TimeSeriesQuality.incomplete.value).count()
+        actual.where(col("quality") == TimeSeriesQuality.invalid.value).count()
         == actual.count()
     )
 

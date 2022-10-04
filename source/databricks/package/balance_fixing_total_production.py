@@ -390,20 +390,25 @@ def _get_enriched_time_series_points_df(
         "GsrnNumber", "time", "Quantity", "Quality", "Resolution"
     )
 
-    tss = times_df.join(timeseries_df, ["GsrnNumber", "time"], "right")
+    tss = times_df.join(timeseries_df, ["GsrnNumber", "time"], "left")
 
+    print("tss")
     tss.show()
+    print("metering_point_period_df")
+    metering_point_period_df.show()
 
     enriched_time_series_point_df = tss.join(
         metering_point_period_df,
         (metering_point_period_df["GsrnNumber"] == tss["GsrnNumber"])
-        & (tss["time"] >= metering_point_period_df["EffectiveDate"])
-        & (tss["time"] < metering_point_period_df["toEffectiveDate"]),
-        "right",
-    ).select(
+        & (tss["time"] >= col("EffectiveDate"))
+        & (tss["time"] < col("toEffectiveDate")),
+        "left",
+    )
+
+    enriched_time_series_point_df = enriched_time_series_point_df.select(
         "GridAreaCode",
-        metering_point_period_df["GsrnNumber"],
-        metering_point_period_df["MeteringPointType"],
+        tss["GsrnNumber"],
+        "MeteringPointType",
         tss["Resolution"],
         "time",
         "Quantity",
