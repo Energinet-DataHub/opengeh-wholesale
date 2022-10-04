@@ -36,7 +36,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.infrastructure == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v8
-    inputs:
+    with:
       RELEASE_NAME_PREFIX: infrastructure
 
   #
@@ -56,7 +56,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.databricks == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v8
-    inputs:
+    with:
       RELEASE_NAME_PREFIX: databricks
 
   #
@@ -81,7 +81,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v8
-    inputs:
+    with:
       RELEASE_NAME_PREFIX: dotnet
 
   #
