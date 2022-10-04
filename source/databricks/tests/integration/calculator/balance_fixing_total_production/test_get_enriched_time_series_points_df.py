@@ -410,11 +410,6 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     )
 
 
-def test__df_has_expected_row_count():
-    # TODO: 23, 24, 25 for hour and 95, 96, 97 for quarter
-    raise Exception("TODO")
-
-
 def test__df_is_not_empty_when_no_time_series_points():
     raise Exception("TODO")
 
@@ -436,9 +431,7 @@ def test__df_is_not_empty_when_no_time_series_points():
             Resolution.hour.value,
             24,
         ),
-        # Act
         # going from DST to standard time there are 25 hours (100 quarters)
-        # creating 292 points from 22:00 the 29 oktober will create points for 3 days
         # where the 30 oktober is day with 25 hours.and
         # Therefore there should be 100 rows for quarter resolution and 25 for  hour resolution
         (
@@ -480,7 +473,7 @@ def test__df_has_expected_row_count_according_to_dst(
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(period_start), resolution=resolution
-    )
+    ).filter(col("GsrnNumber") != "the-gsrn-number")
 
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=timestamp_factory(period_start),
