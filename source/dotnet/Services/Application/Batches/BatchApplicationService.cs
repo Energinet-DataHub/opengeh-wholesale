@@ -53,13 +53,13 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task StartPendingAsync()
     {
-        var batches = await _batchRepository.GetPendingAsync().ConfigureAwait(false);
+        var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
 
         foreach (var batch in batches)
         {
             var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);
             var jobRunId = await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
-            batch.SetJobRunId(jobRunId);
+            batch.MarkAsPending(jobRunId);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }

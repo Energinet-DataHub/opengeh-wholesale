@@ -26,7 +26,7 @@ public class Batch
     public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes, Instant periodStart, Instant periodEnd, IClock clock)
         : this()
     {
-        ExecutionState = BatchExecutionState.Pending;
+        ExecutionState = BatchExecutionState.Created;
         ProcessType = processType;
         _clock = clock;
 
@@ -74,6 +74,23 @@ public class Batch
 
     public Instant PeriodEnd { get; }
 
+    public void MarkAsPending(JobRunId jobRunId)
+    {
+        if (ExecutionState is BatchExecutionState.Pending or BatchExecutionState.Executing or BatchExecutionState.Completed)
+            throw new InvalidOperationException("Batch is already state Pending.");
+        ArgumentNullException.ThrowIfNull(jobRunId);
+        RunId = jobRunId;
+        ExecutionState = BatchExecutionState.Pending;
+    }
+
+    public void MarkAsExecuting()
+    {
+        if (ExecutionState is BatchExecutionState.Executing or BatchExecutionState.Completed)
+            throw new InvalidOperationException("Batch is already state Executing.");
+
+        ExecutionState = BatchExecutionState.Executing;
+    }
+
     public void MarkAsCompleted()
     {
         if (ExecutionState == BatchExecutionState.Completed)
@@ -81,20 +98,6 @@ public class Batch
 
         ExecutionState = BatchExecutionState.Completed;
         ExecutionTimeEnd = _clock.GetCurrentInstant();
-    }
-
-    public void SetJobRunId(JobRunId jobRunId)
-    {
-        ArgumentNullException.ThrowIfNull(jobRunId);
-        RunId = jobRunId;
-    }
-
-    public void MarkAsExecuting()
-    {
-        if (ExecutionState != BatchExecutionState.Pending)
-            throw new InvalidOperationException("Batch cannot be completed because it is not in state pending.");
-
-        ExecutionState = BatchExecutionState.Executing;
     }
 
     public void MarkAsFailed()

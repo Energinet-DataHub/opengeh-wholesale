@@ -37,7 +37,9 @@ public class BatchRepository : IBatchRepository
         return await _context.Batches.FirstAsync(x => x.Id == batchId).ConfigureAwait(false);
     }
 
-    public Task<List<Batch>> GetPendingAsync() => GetByStateAndRunIdNullAsync(BatchExecutionState.Pending);
+    public Task<List<Batch>> GetCreatedAsync() => GetByStateAsync(BatchExecutionState.Created);
+
+    public Task<List<Batch>> GetPendingAsync() => GetByStateAsync(BatchExecutionState.Pending);
 
     public Task<List<Batch>> GetExecutingAsync() => GetByStateAsync(BatchExecutionState.Executing);
 
@@ -66,15 +68,6 @@ public class BatchRepository : IBatchRepository
         return await _context
             .Batches
             .Where(b => b.ExecutionState == state)
-            .ToListAsync()
-            .ConfigureAwait(false);
-    }
-
-    private async Task<List<Batch>> GetByStateAndRunIdNullAsync(BatchExecutionState state)
-    {
-        return await _context
-            .Batches
-            .Where(b => b.ExecutionState == state && b.RunId == null)
             .ToListAsync()
             .ConfigureAwait(false);
     }

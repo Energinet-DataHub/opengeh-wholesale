@@ -20,6 +20,11 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 public enum BatchExecutionState
 {
     /// <summary>
+    /// The batch is created.
+    /// </summary>
+    Created = -1,
+
+    /// <summary>
     /// The batch is pending.
     /// </summary>
     Pending = 0,
