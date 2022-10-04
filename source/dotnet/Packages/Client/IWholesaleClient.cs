@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.JobRunner;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Application.Batches;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Client;
 
-/// <summary>
-/// An immutable criteria for batch search.
-/// </summary>
-public sealed record BatchSearchDto(DateTimeOffset MinExecutionTime, DateTimeOffset MaxExecutionTime);
+public interface IWholesaleClient
+{
+    Task<HttpResponseMessage> CreateAsync(BatchRequestDto wholesaleBatchRequestDto);
+
+    Task<(HttpResponseMessage Response, IEnumerable<BatchDto> Batches)> PostAsync(BatchSearchDto batchSearchDto);
+}

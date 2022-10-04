@@ -62,4 +62,28 @@ limitations under the License.
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Contracts\BatchDto.cs">
+      <Link>Dtos\BatchDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\BatchExecutionState.cs">
+      <Link>Model\BatchExecutionState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\BatchRequestDto.cs">
+      <Link>Dtos\BatchRequestDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\BatchSearchDto.cs">
+      <Link>Dtos\BatchSearchDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\WholesaleProcessType.cs">
+      <Link>Model\WholesaleProcessType.cs</Link>
+    </Compile>
+  </ItemGroup>
 </Project>
