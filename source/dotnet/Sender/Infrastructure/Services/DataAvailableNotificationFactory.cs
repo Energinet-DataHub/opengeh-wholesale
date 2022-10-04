@@ -37,7 +37,7 @@ public class DataAvailableNotificationFactory : IDataAvailableNotificationFactor
 #pragma warning restore CS0618
             new MessageTypeDto("process-completed"),
             CimDocumentType,
-            DomainOrigin.Aggregations,
+            DomainOrigin.Wholesale,
             supportsBundling: false,
             relativeWeight: unusedRelativeWeight);
         return notification;

@@ -18,7 +18,7 @@ using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
-using Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts;
+using Energinet.DataHub.MeteringPoints.IntegrationEvents.CreateMeteringPoint;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
@@ -28,7 +28,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 using Xunit.Categories;
-using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated.Types;
+using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEvents.CreateMeteringPoint.MeteringPointCreated.Types;
 
 namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoints
 {
