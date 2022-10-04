@@ -65,52 +65,52 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\contracts\calculation-job-parameters-reference.txt">
+    <EmbeddedResource Include="..\..\..\contracts\calculation-job-parameters-reference.txt">
       <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\contracts\events\grid-area-updated.json">
+    <EmbeddedResource Include="..\..\..\contracts\events\grid-area-updated.json">
       <Link>IntegrationEventListener\MarketParticipant\grid-area-updated.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\contracts\events\metering-point-connected.json">
+    <EmbeddedResource Include="..\..\..\contracts\events\metering-point-connected.json">
       <Link>IntegrationEventListener\MeteringPoints\metering-point-connected.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\contracts\events\metering-point-created.json">
+    <EmbeddedResource Include="..\..\..\contracts\events\metering-point-created.json">
       <Link>IntegrationEventListener\MeteringPoints\metering-point-created.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\contracts\enums\connection-state.json">
+    <EmbeddedResource Include="..\..\..\contracts\enums\connection-state.json">
       <Link>IntegrationEventListener\MeteringPoints\connection-state.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\contracts\enums\metering-point-type.json">
+    <EmbeddedResource Include="..\..\..\contracts\enums\metering-point-type.json">
       <Link>IntegrationEventListener\MeteringPoints\metering-point-type.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\contracts\enums\settlement-method.json">
+    <EmbeddedResource Include="..\..\..\contracts\enums\settlement-method.json">
       <Link>IntegrationEventListener\MeteringPoints\settlement-method.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\contracts\enums\metering-point-resolution.json">
+    <EmbeddedResource Include="..\..\..\contracts\enums\metering-point-resolution.json">
       <Link>IntegrationEventListener\MeteringPoints\metering-point-resolution.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\contracts\calculator-result.json">
+    <EmbeddedResource Include="..\..\..\contracts\calculator-result.json">
       <Link>Sender\Infrastructure\Calculator\calculator-result.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\contracts\enums\quality.json">
+    <EmbeddedResource Include="..\..\..\contracts\enums\quality.json">
       <Link>Sender\Infrastructure\quality.json</Link>
     </EmbeddedResource>
   </ItemGroup>
