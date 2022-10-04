@@ -76,9 +76,6 @@ public class Batch
 
     public void MarkAsCompleted()
     {
-        if (ExecutionState != BatchExecutionState.Executing)
-            throw new InvalidOperationException("Batch cannot be completed because it is not in state executing.");
-
         ExecutionState = BatchExecutionState.Completed;
         ExecutionTimeEnd = _clock.GetCurrentInstant();
     }
