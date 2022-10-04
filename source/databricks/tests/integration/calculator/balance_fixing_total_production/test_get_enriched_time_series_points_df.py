@@ -33,6 +33,7 @@ from pyspark.sql.functions import col
 def raw_time_series_points_factory(spark, timestamp_factory):
     def factory(
         time: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
+        resolution: Resolution = Resolution.quarter.value,
     ):
         df = [
             {
@@ -40,7 +41,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
                 "TransactionId": "1",
                 "Quantity": Decimal("1.1"),
                 "Quality": 3,
-                "Resolution": Resolution.quarter.value,
+                "Resolution": resolution,
                 "RegistrationDateTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
                 "storedTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
                 "time": time,
