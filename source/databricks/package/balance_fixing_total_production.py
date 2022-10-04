@@ -400,6 +400,7 @@ def _get_enriched_time_series_points_df(
 
     timeseries_df = quarterly_joined_timeseries_df.union(hourly_joined_timeseries_df)
 
+    print(timeseries_df.count())
     timeseries_df.show()
 
     enriched_time_series_point_df = timeseries_df.join(
@@ -422,7 +423,7 @@ def _get_enriched_time_series_points_df(
         "Enriched time series points",
         timeseries_df.orderBy(col("GsrnNumber"), col("time")),
     )
-
+    print(enriched_time_series_point_df.count())
     enriched_time_series_point_df.show()
 
     return enriched_time_series_point_df
