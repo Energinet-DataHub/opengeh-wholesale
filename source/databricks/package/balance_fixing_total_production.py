@@ -318,20 +318,6 @@ def _get_enriched_time_series_points_df(
         col("time") >= period_start_datetime
     ).where(col("time") < period_end_datetime)
 
-    times_df = (
-        result_df.select("GridAreaCode")
-        .distinct()
-        .select(
-            "GridAreaCode",
-            expr(
-                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
-            ).alias("quarter_times"),
-        )
-        .select("GridAreaCode", explode("quarter_times").alias("quarter_time"))
-    )
-
-    result_df = result_df.join(times_df, ["GridAreaCode", "quarter_time"], "right")
-
     debug(
         "Time series points where time is within period",
         timeseries_df.orderBy(
@@ -363,6 +349,21 @@ def _get_enriched_time_series_points_df(
     timeseries_df = timeseries_df.select(
         "GsrnNumber", "time", "Quantity", "Quality", "Resolution"
     )
+
+    exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
+    times_df = (
+        timeseries_df.select("GsrnNumber")
+        .distinct()
+        .select(
+            "GsrnNumber",
+            expr(
+                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
+            ).alias("quarter_times"),
+        )
+        .select("Gsrnnumber", explode("quarter_times").alias("time"))
+    )
+
+    timeseries_df = timeseries_df.join(times_df, ["GsrnNumber", "time"], "right")
 
     enriched_time_series_point_df = timeseries_df.join(
         metering_point_period_df,
@@ -540,21 +541,21 @@ def _get_result_df(
         result_df.orderBy(col("GridAreaCode"), col("quarter_time")),
     )
 
-    exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
+    # exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
 
-    times_df = (
-        result_df.select("GridAreaCode")
-        .distinct()
-        .select(
-            "GridAreaCode",
-            expr(
-                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
-            ).alias("quarter_times"),
-        )
-        .select("GridAreaCode", explode("quarter_times").alias("quarter_time"))
-    )
+    #  times_df = (
+    #      result_df.select("GridAreaCode")
+    #      .distinct()
+    #      .select(
+    #          "GridAreaCode",
+    #          expr(
+    #              f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
+    #          ).alias("quarter_times"),
+    #      )
+    #      .select("GridAreaCode", explode("quarter_times").alias("quarter_time"))
+    #  )
 
-    result_df = result_df.join(times_df, ["GridAreaCode", "quarter_time"], "right")
+    #  result_df = result_df.join(times_df, ["GridAreaCode", "quarter_time"], "right")
 
     window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
 
