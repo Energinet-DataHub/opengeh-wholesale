@@ -18,6 +18,7 @@ on:
   push:
     branches:
       - main
+      - dstenroejl/split-release-content #TODO: Fix when CD has been tested
 
 jobs:
   #
@@ -38,17 +39,6 @@ jobs:
     secrets:
       RELEASE_NAME_PREFIX: infrastructure
 
-  # TODO: Determine how we want to deploy - should we have ne event telling which packages to use OR should we dispatch an event per packages
-  # infrastructure_dispatch_deployment_request:
-  #   needs: infrastructure_promote_prerelease
-  #   uses: Energinet-DataHub/.github/.github/workflows/dispatch-deployment-request.yml@v8
-  #   with:
-  #     CALLER_REPOSITORY_NAME: opengeh-wholesale
-  #     CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
-  #   secrets:
-  #     PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-  #     ENVIRONMENT_REPOSITORY_PATH: ${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}
-
   #
   # CD Databricks
   #
@@ -68,17 +58,6 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/promote_prerelease.yml@v8
     secrets:
       RELEASE_NAME_PREFIX: databricks
-
-  # TODO: Determine how we want to deploy - should we have ne event telling which packages to use OR should we dispatch an event per packages
-  # databricks_dispatch_deployment_request:
-  #   needs: databricks_promote_prerelease
-  #   uses: Energinet-DataHub/.github/.github/workflows/dispatch-deployment-request.yml@v8
-  #   with:
-  #     CALLER_REPOSITORY_NAME: opengeh-wholesale
-  #     CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
-  #   secrets:
-  #     PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-  #     ENVIRONMENT_REPOSITORY_PATH: ${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}
 
   #
   # CD .NET
@@ -105,13 +84,47 @@ jobs:
     secrets:
       RELEASE_NAME_PREFIX: dotnet
 
-  # TODO: Determine how we want to deploy - should we have ne event telling which packages to use OR should we dispatch an event per packages
-  # dotnet_dispatch_deployment_request:
-  #   needs: dotnet_promote_prerelease
-  #   uses: Energinet-DataHub/.github/.github/workflows/dispatch-deployment-request.yml@v8
-  #   with:
-  #     CALLER_REPOSITORY_NAME: opengeh-wholesale
-  #     CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
-  #   secrets:
-  #     PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-  #     ENVIRONMENT_REPOSITORY_PATH: ${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}
+  #
+  # Dispatch deployment request
+  #
+
+  dispatch_deploment_event:
+    runs-on: ubuntu-latest
+    needs: [
+      # Infrastructure
+      infrastructure_promote_prerelease,
+      # Databricks
+      databricks_promote_prerelease,
+      # .NET
+      dotnet_promote_prerelease,
+    ]
+    if: |
+      always() &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
+    steps:
+      - run: echo "${{ toJSON(needs) }}"
+
+      - name: Find associated PR
+        uses: jwalton/gh-find-current-pr@v1
+        id: find_pull_request
+        with:
+          state: all
+
+      - name: Fail if PR not found
+        if: steps.find_pull_request.outputs.pr == ''
+        run: exit 1
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          repository: '${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}'
+          event-type: 'opengeh-wholesale-deployment-request-domain'
+          client-payload: >
+            '{
+            "pr": "${{ steps.find_pull_request.outputs.pr }}",
+            "infrastructure_deploy": "${{ needs.changes.outputs.infrastructure }}",
+            "databricks_deploy": "${{ needs.changes.outputs.databricks }}",
+            "dotnet_deploy": "${{ needs.changes.outputs.dotnet }}"
+            }'
