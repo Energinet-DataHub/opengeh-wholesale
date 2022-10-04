@@ -356,3 +356,94 @@ def test__df_has_expected_row_count():
 
 def test__df_is_not_empty_when_no_time_series_points():
     raise Exception("TODO")
+
+
+@pytest.mark.parametrize(
+    "period_start, period_end, resolution, expected_number_of_rows",
+    [
+        # DST has 24 hours
+        (
+            "2022-06-08T22:00:00.000Z",
+            "2022-06-09T22:00:00.000Z",
+            Resolution.quarter.value,
+            96,
+        ),
+        # DST has 24 hours
+        (
+            "2022-06-08T22:00:00.000Z",
+            "2022-06-09T22:00:00.000Z",
+            Resolution.hour.value,
+            24,
+        ),
+        # standard time has 24 hours
+        (
+            "2022-06-08T22:00:00.000Z",
+            "2022-06-09T22:00:00.000Z",
+            Resolution.quarter.value,
+            96,
+        ),
+        # standard time has 24 hours
+        (
+            "2022-06-08T22:00:00.000Z",
+            "2022-06-09T22:00:00.000Z",
+            Resolution.hour.value,
+            24,
+        ),
+        # going from DST to standard time there are 25 hours (100 quarters)
+        # creating 292 points from 22:00 the 29 oktober will create points for 3 days
+        # where the 30 oktober is day with 25 hours.and
+        # Therefore there should be 100 rows for quarter resolution and 25 for  hour resolution
+        (
+            "2022-10-29T22:00:00.000Z",
+            "2022-10-30T23:00:00.000Z",
+            Resolution.quarter.value,
+            100,
+        ),
+        (
+            "2022-10-29T22:00:00.000Z",
+            "2022-10-30T23:00:00.000Z",
+            Resolution.hour.value,
+            25,
+        ),
+        # going from vinter to summertime there are 23 hours (92 quarters)
+        (
+            "2022-03-26T23:00:00.000Z",
+            "2022-03-27T22:00:00.000Z",
+            Resolution.hour.value,
+            23,
+        ),
+        (
+            "2022-03-26T23:00:00.000Z",
+            "2022-03-27T22:00:00.000Z",
+            Resolution.hour.value,
+            25,
+        ),
+    ],
+)
+def test__df_has_expected_row_count_according_to_dst(
+    raw_time_series_points_factory,
+    metering_point_period_df_factory,
+    timestamp_factory,
+    period_start,
+    period_end,
+    resolution,
+    expected_number_of_rows,
+):
+    # Arrange
+    raw_time_series_points = raw_time_series_points_factory(
+        time=timestamp_factory(period_start)
+    )
+
+    metering_point_period_df = metering_point_period_df_factory(
+        effective_date=timestamp_factory(period_start),
+        to_effective_date=timestamp_factory(period_end),
+    )
+
+    # Act
+    actual = _get_enriched_time_series_points_df(
+        raw_time_series_points,
+        metering_point_period_df,
+        timestamp_factory(period_start),
+        timestamp_factory(period_end),
+    )
+    assert actual.count() == expected_number_of_rows
