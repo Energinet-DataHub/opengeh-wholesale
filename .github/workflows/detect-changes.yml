@@ -17,6 +17,8 @@ name: Detect changes
 # DESCRIPTION:
 # This workflow will determine which categories of jobs should be executed,
 # based on detected changes.
+# It should be used by the 'ci.yml' and 'cd.yml' to ensure they both use
+# the same path's to detect changes.
 
 on:
   workflow_call:
