@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts;
+using Energinet.DataHub.MeteringPoints.IntegrationEvents.CreateMeteringPoint;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Microsoft.Azure.Functions.Worker;
@@ -41,7 +41,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             Connection = EnvironmentSettingNames.IntegrationEventsEventHubConnectionString)]
         public string Run(
             [ServiceBusTrigger(
-                "%" + EnvironmentSettingNames.MeteringPointCreatedTopicName + "%",
+                "%" + EnvironmentSettingNames.IntegrationEventsTopicName + "%",
                 "%" + EnvironmentSettingNames.MeteringPointCreatedSubscriptionName + "%",
                 Connection = EnvironmentSettingNames.IntegrationEventConnectionListenerString)]
             byte[] message)

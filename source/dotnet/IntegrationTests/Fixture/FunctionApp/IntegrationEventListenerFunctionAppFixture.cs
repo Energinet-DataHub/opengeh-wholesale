@@ -14,6 +14,7 @@
 
 using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -56,11 +57,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
 
-        public TopicResource MeteringPointCreatedTopic { get; private set; } = null!;
-
-        public TopicResource MeteringPointConnectedTopic { get; private set; } = null!;
-
-        public TopicResource MarketParticipantChangedTopic { get; private set; } = null!;
+        public TopicResource IntegrationEventsTopic { get; private set; } = null!;
 
         public ServiceBusReceiver MeteringPointCreatedDeadLetterReceiver { get; private set; } = null!;
 
@@ -116,39 +113,36 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
             await EventHubListener.InitializeAsync().ConfigureAwait(false);
 
-            MeteringPointCreatedTopic = await ServiceBusResourceProvider
-                .BuildTopic("metering-point-created")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.MeteringPointCreatedTopicName)
-                .AddSubscription("metering-point-created-to-wholesale")
+            IntegrationEventsTopic = await ServiceBusResourceProvider
+                    // Topic
+                .BuildTopic("integration-events")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.IntegrationEventsTopicName)
+                    // Metering point created subscription
+                .AddSubscription("metering-point-created")
+                .AddMessageTypeFilter("MeteringPointCreated")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName)
-                .CreateAsync();
-
-            MeteringPointConnectedTopic = await ServiceBusResourceProvider
-                .BuildTopic("metering-point-connected")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.MeteringPointConnectedTopicName)
-                .AddSubscription("metering-point-connected-to-wholesale")
+                    // Metering point connected subscription
+                .AddSubscription("metering-point-connected")
+                .AddMessageTypeFilter("MeteringPointConnected")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName)
-                .CreateAsync();
-
-            MarketParticipantChangedTopic = await ServiceBusResourceProvider
-                .BuildTopic("market-participant-changed")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.MarketParticipantChangedTopicName)
-                .AddSubscription("market-participant-changed-to-wholesale")
+                    // Grid area updated subscription
+                .AddSubscription("market-participant-changed")
+                .AddMessageTypeFilter("GridAreaUpdatedIntegrationEvent")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
                 .CreateAsync();
 
             MeteringPointCreatedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
-                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedTopicName),
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
 
             MeteringPointConnectedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
-                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedTopicName),
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
 
             MarketParticipantChangedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
-                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedTopicName),
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
         }

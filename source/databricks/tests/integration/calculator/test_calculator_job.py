@@ -228,3 +228,51 @@ def test__creates_csv_per_grid_area(spark, test_data_job_parameters, data_lake_p
     assert (
         basis_data_806.count() >= 1
     ), "Calculator job failed to write basis data files for grid area 806"
+
+
+def test__master_data_csv_with_expected_columns_names(
+    spark, test_data_job_parameters, data_lake_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/master-basis-data/batch_id=1/grid_area=805"
+    )
+
+    assert actual.columns == [
+        "METERINGPOINTID",
+        "VALIDFROM",
+        "VALIDTO",
+        "GRIDAREA",
+        "TOGRIDAREA",
+        "FROMGRIDAREA",
+        "TYPEOFMP",
+        "SETTLEMENTMETHOD",
+        "ENERGYSUPPLIERID",
+    ]
+
+
+def test__creates_master_data_csv_per_grid_area(
+    spark, test_data_job_parameters, data_lake_path
+):
+    # Act
+    start_calculator(spark, test_data_job_parameters)
+
+    # Assert
+    master_basis_data_805 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/master-basis-data/batch_id=1/grid_area=805"
+    )
+
+    master_basis_data_806 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/results/master-basis-data/batch_id=1/grid_area=806"
+    )
+
+    assert (
+        master_basis_data_805.count() >= 1
+    ), "Calculator job failed to write master basis data files for grid area 805"
+
+    assert (
+        master_basis_data_806.count() >= 1
+    ), "Calculator job failed to write master basis data files for grid area 806"

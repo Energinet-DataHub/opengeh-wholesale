@@ -18,7 +18,7 @@ using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
-using Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts;
+using Energinet.DataHub.MeteringPoints.IntegrationEvents.CreateMeteringPoint;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
@@ -28,7 +28,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 using Xunit.Categories;
-using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated.Types;
+using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEvents.CreateMeteringPoint.MeteringPointCreated.Types;
 
 namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoints
 {
@@ -120,6 +120,8 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
             meteringPointCreatedEvent.MeteringPointType = mpTypes.MeteringPointType.MptConsumption;
             meteringPointCreatedEvent.SettlementMethod = mpTypes.SettlementMethod.SmFlex;
             meteringPointCreatedEvent.ConnectionState = mpTypes.ConnectionState.CsNew;
+            meteringPointCreatedEvent.FromGridAreaCode = Guid.NewGuid().ToString();
+            meteringPointCreatedEvent.ToGridAreaCode = Guid.NewGuid().ToString();
 
             // Act
             var actual = sut.Create(meteringPointCreatedEvent);
@@ -133,6 +135,8 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
             actual.ConnectionState.Should().Be(ConnectionState.New);
             actual.MeteringPointType.Should().Be(MeteringPointType.Consumption);
             actual.MeteringPointId.Should().Be(meteringPointCreatedEvent.MeteringPointId);
+            actual.FromGridAreaCode.Should().Be(meteringPointCreatedEvent.FromGridAreaCode);
+            actual.ToGridAreaCode.Should().Be(meteringPointCreatedEvent.ToGridAreaCode);
         }
 
         [Theory]

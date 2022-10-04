@@ -16,7 +16,7 @@ using System.ComponentModel;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Extensions;
-using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated.Types;
+using mpTypes = Energinet.DataHub.MeteringPoints.IntegrationEvents.CreateMeteringPoint.MeteringPointCreated.Types;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
@@ -33,7 +33,7 @@ public class MeteringPointCreatedDtoFactory
         _integrationEventContext = integrationEventContext;
     }
 
-    public MeteringPointCreatedDto Create(Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated meteringPointCreated)
+    public MeteringPointCreatedDto Create(Energinet.DataHub.MeteringPoints.IntegrationEvents.CreateMeteringPoint.MeteringPointCreated meteringPointCreated)
     {
         ArgumentNullException.ThrowIfNull(meteringPointCreated);
 
@@ -54,6 +54,8 @@ public class MeteringPointCreatedDtoFactory
             meteringPointType,
             resolution,
             _correlationContext.Id,
+            meteringPointCreated.FromGridAreaCode,
+            meteringPointCreated.ToGridAreaCode,
             eventMetadata.MessageType,
             eventMetadata.OperationTimestamp);
     }
