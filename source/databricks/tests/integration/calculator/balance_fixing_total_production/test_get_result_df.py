@@ -297,9 +297,21 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
     assert result_df.first().quality == expected_quality
 
 
-def test__quality_has_value_incomplete_for_missing_point():
-    raise Exception("todo")
+def test__quality_has_value_incomplete_for_missing_point(
+    enriched_time_series_factory,
+    timestamp_factory,
+):
+    df = enriched_time_series_factory(quality=None, quantity=None)
+
+    result_df = _get_result_df(df)
+    assert result_df.first().TimeSeriesQuality == TimeSeriesQuality.incomplete.value
 
 
-def test__quantity_is_0_for_missing_point():
-    raise Exception("todo")
+def test__quantity_is_0_for_missing_point(
+    enriched_time_series_factory,
+    timestamp_factory,
+):
+    df = enriched_time_series_factory(quantity=None)
+
+    result_df = _get_result_df(df)
+    assert result_df.first().Quantity == Decimal(0.00)

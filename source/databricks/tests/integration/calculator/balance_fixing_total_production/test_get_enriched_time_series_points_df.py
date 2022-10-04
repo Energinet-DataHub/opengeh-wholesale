@@ -25,7 +25,7 @@ from tests.contract_utils import (
     get_message_type,
 )
 
-from package.codelists import Resolution
+from package.codelists import Resolution, TimeSeriesQuality
 from pyspark.sql.functions import col
 
 
@@ -299,8 +299,10 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
     raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
 ):
     # Arrange
+    start_time = "2022-06-08T12:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory("2022-06-08T12:00:00.000Z")
+        time=timestamp_factory(start_time),
+        resolution=Resolution.quarter.value,
     )
 
     metering_point_period_df = metering_point_period_df_factory()
@@ -309,13 +311,13 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
     actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
-        timestamp_factory("2022-06-08T12:00:00.000Z"),
-        timestamp_factory("2022-06-08T13:00:00.000Z"),
+        timestamp_factory(start_time),
+        timestamp_factory("2022-06-08T14:00:00.000Z"),
     )
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory("2022-06-08T12:00:00.000Z"))
+    actual = actual.filter(col("time") != timestamp_factory(start_time))
 
     assert actual.where(col("Quantity").isNull()).count() == actual.count()
 
@@ -324,8 +326,10 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
     raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
 ):
     # Arrange
+    start_time = "2022-06-08T12:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory("2022-06-08T12:00:00.000Z")
+        time=timestamp_factory(start_time),
+        resolution=Resolution.hour.value,
     )
 
     metering_point_period_df = metering_point_period_df_factory()
@@ -334,19 +338,76 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
     actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
-        timestamp_factory("2022-06-08T12:00:00.000Z"),
-        timestamp_factory("2022-06-08T13:00:00.000Z"),
+        timestamp_factory(start_time),
+        timestamp_factory("2022-06-08T14:00:00.000Z"),
     )
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory("2022-06-08T12:00:00.000Z"))
+    actual = actual.filter(col("time") != timestamp_factory(start_time))
 
+    assert actual.count() > 1
     assert actual.where(col("Quantity").isNull()).count() == actual.count()
 
 
-def test__missing_point_has_quality_incomplete():
-    raise Exception("TODO")
+def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
+    raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
+):
+    # Arrange
+    start_time = "2022-06-08T12:00:00.000Z"
+    raw_time_series_points = raw_time_series_points_factory(
+        time=timestamp_factory(start_time),
+        resolution=Resolution.quarter.value,
+    )
+
+    metering_point_period_df = metering_point_period_df_factory()
+
+    # Act
+    actual = _get_enriched_time_series_points_df(
+        raw_time_series_points,
+        metering_point_period_df,
+        timestamp_factory(start_time),
+        timestamp_factory("2022-06-08T14:00:00.000Z"),
+    )
+
+    # Assert
+    # We remove the point we created before inspecting the remaining
+    actual = actual.filter(col("time") != timestamp_factory(start_time))
+
+    assert (
+        actual.where(col("quality") == TimeSeriesQuality.incomplete.value).count()
+        == actual.count()
+    )
+
+
+def test__missing_point_has_quality_incomplete_for_hourly_resolution(
+    raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
+):
+    # Arrange
+    start_time = "2022-06-08T12:00:00.000Z"
+    raw_time_series_points = raw_time_series_points_factory(
+        time=timestamp_factory(start_time),
+        resolution=Resolution.hour.value,
+    )
+
+    metering_point_period_df = metering_point_period_df_factory()
+
+    # Act
+    actual = _get_enriched_time_series_points_df(
+        raw_time_series_points,
+        metering_point_period_df,
+        timestamp_factory(start_time),
+        timestamp_factory("2022-06-08T14:00:00.000Z"),
+    )
+
+    # Assert
+    # We remove the point we created before inspecting the remaining
+    actual = actual.filter(col("time") != timestamp_factory(start_time))
+
+    assert (
+        actual.where(col("quality") == TimeSeriesQuality.incomplete.value).count()
+        == actual.count()
+    )
 
 
 def test__df_has_expected_row_count():
