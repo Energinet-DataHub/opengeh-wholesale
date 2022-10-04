@@ -15,7 +15,7 @@
 from inspect import stack
 from pyspark.sql import DataFrame
 
-loglevel = "debug"
+loglevel = "information"
 
 
 def _log(level: str, message: str, df: DataFrame):

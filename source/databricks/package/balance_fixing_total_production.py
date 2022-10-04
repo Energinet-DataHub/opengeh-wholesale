@@ -350,9 +350,13 @@ def _get_enriched_time_series_points_df(
         "GsrnNumber", "time", "Quantity", "Quality", "Resolution"
     )
 
+    quarterly = timeseries_df.where(col("Resolution") == Resolution.quarter.value)
+    hourly = timeseries_df.where(col("Resolution") == Resolution.hour.value)
+
     exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
-    times_df = (
-        timeseries_df.select("GsrnNumber")
+
+    quaterly_times_df = (
+        quarterly.select("GsrnNumber")
         .distinct()
         .select(
             "GsrnNumber",
@@ -363,7 +367,40 @@ def _get_enriched_time_series_points_df(
         .select("Gsrnnumber", explode("quarter_times").alias("time"))
     )
 
-    timeseries_df = timeseries_df.join(times_df, ["GsrnNumber", "time"], "right")
+    # print("quaryly_times_df")
+    # quaterly_times_df.show()
+    # quaterly_times_df.printSchema()
+
+    hourly_times_df = (
+        hourly.select("GsrnNumber")
+        .distinct()
+        .select(
+            "GsrnNumber",
+            expr(
+                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 1 hour)"
+            ).alias("times"),
+        )
+        .select("Gsrnnumber", explode("times").alias("time"))
+    )
+
+    # print("time_series_df")
+    # timeseries_df.printSchema()
+    # timeseries_df.show()
+
+    quarterly_joined_timeseries_df = timeseries_df.join(
+        quaterly_times_df, ["GsrnNumber", "time"], "right"
+    )
+
+    # print("quarterly_joined_timeseries_df")
+    # quarterly_joined_timeseries_df.show()
+
+    hourly_joined_timeseries_df = timeseries_df.join(
+        hourly_times_df, ["GsrnNumber", "time"], "right"
+    )
+
+    timeseries_df = quarterly_joined_timeseries_df.union(hourly_joined_timeseries_df)
+
+    timeseries_df.show()
 
     enriched_time_series_point_df = timeseries_df.join(
         metering_point_period_df,
@@ -385,6 +422,8 @@ def _get_enriched_time_series_points_df(
         "Enriched time series points",
         timeseries_df.orderBy(col("GsrnNumber"), col("time")),
     )
+
+    enriched_time_series_point_df.show()
 
     return enriched_time_series_point_df
 
@@ -540,22 +579,6 @@ def _get_result_df(
         "Pre-result split into quarter times",
         result_df.orderBy(col("GridAreaCode"), col("quarter_time")),
     )
-
-    # exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
-
-    #  times_df = (
-    #      result_df.select("GridAreaCode")
-    #      .distinct()
-    #      .select(
-    #          "GridAreaCode",
-    #          expr(
-    #              f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
-    #          ).alias("quarter_times"),
-    #      )
-    #      .select("GridAreaCode", explode("quarter_times").alias("quarter_time"))
-    #  )
-
-    #  result_df = result_df.join(times_df, ["GridAreaCode", "quarter_time"], "right")
 
     window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
 
