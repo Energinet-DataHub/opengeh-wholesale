@@ -21,11 +21,11 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="6.0.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="6.0.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="7.1.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="7.1.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.9" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
