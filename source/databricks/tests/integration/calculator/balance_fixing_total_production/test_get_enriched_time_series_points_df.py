@@ -25,7 +25,7 @@ from tests.contract_utils import (
     get_message_type,
 )
 
-from package.codelists import Resolution, TimeSeriesQuality
+from package.codelists import Resolution, TimeSeriesQuality, MeteringpointResolution
 from pyspark.sql.functions import col
 
 
@@ -68,6 +68,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
                 "MeteringPointType": "the_metering_point_type",
                 "EffectiveDate": effective_date,
                 "toEffectiveDate": to_effective_date,
+                "Resolution": MeteringpointResolution.quarterly.value,
             }
         ]
         return spark.createDataFrame(df)
