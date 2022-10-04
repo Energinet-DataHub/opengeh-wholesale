@@ -56,8 +56,9 @@ public class MapBatchExecutionStateTests
         MapBatchExecutionState sut)
     {
         // Arrange
-        var batch = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
+        var batch = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
         batch.MarkAsPending(new JobRunId(11));
+        batch.MarkAsExecuting();
         var executingBatches = new List<Batch>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetPendingAndExecutingAsync()).ReturnsAsync(executingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Completed);
