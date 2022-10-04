@@ -35,7 +35,7 @@ limitations under the License.
     -->
     <PackageReleaseNotes>
       [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/documents/release-notes/release-notes.md)
-      [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/documentation.md)
+      [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/documents/documentation.md)
     </PackageReleaseNotes>
     <!-- PackageDescription:
       Is shown in GitHub packages "About this package" section,
