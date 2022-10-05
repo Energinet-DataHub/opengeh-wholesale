@@ -33,7 +33,7 @@ public class WholesaleClient : IWholesaleClient
             .ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
-            throw new Exception($"Wholesale backend returned HTTP status code {response.StatusCode}");
+            throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
     }
 
     public async Task<IEnumerable<BatchDto>> GetBatchesAsync(
@@ -44,7 +44,7 @@ public class WholesaleClient : IWholesaleClient
             .ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
-            throw new Exception($"Wholesale backend returned HTTP status code {response.StatusCode}");
+            throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
 
         var batches = await response.Content.ReadFromJsonAsync<IEnumerable<BatchDto>>().ConfigureAwait(false);
         return batches ?? new List<BatchDto>();
