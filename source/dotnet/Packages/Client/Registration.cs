@@ -30,14 +30,15 @@ public static class Registration
     public static IServiceCollection AddWholesaleClient(
         this IServiceCollection serviceCollection,
         Uri wholesaleBaseUri,
-        Func<string> authorizationHeaderProvider)
+        Func<IServiceProvider, string> authorizationHeaderProvider)
     {
-        serviceCollection.AddHttpClient();
+        if (serviceCollection.All(x => x.ServiceType != typeof(IHttpClientFactory)))
+            serviceCollection.AddHttpClient();
 
         serviceCollection.AddSingleton(provider =>
         {
             var factory = provider.GetRequiredService<IHttpClientFactory>();
-            return new AuthorizedHttpClientFactory(factory, authorizationHeaderProvider);
+            return new AuthorizedHttpClientFactory(factory, () => authorizationHeaderProvider(provider));
         });
 
         serviceCollection.AddScoped<IWholesaleClient, WholesaleClient>(provider =>

@@ -24,7 +24,7 @@ public class RegistrationTests
     public void AddWholesaleClient_EnablesResolvingAClient()
     {
         IServiceCollection serviceCollection = new ServiceCollection();
-        serviceCollection.AddWholesaleClient(new Uri("http://some.base.uri"), () => "some-authorization-token");
+        serviceCollection.AddWholesaleClient(new Uri("http://some.base.uri"), _ => "some-authorization-token");
         serviceCollection.BuildServiceProvider().GetRequiredService<IWholesaleClient>();
     }
 }
