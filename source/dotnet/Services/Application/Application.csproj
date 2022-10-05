@@ -32,4 +32,16 @@ limitations under the License.
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\..\Contracts\BatchDto.cs">
+      <Link>Batches\BatchDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\BatchRequestDto.cs">
+      <Link>Batches\BatchRequestDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\BatchSearchDto.cs">
+      <Link>Batches\BatchSearchDto.cs</Link>
+    </Compile>
+  </ItemGroup>
+
 </Project>

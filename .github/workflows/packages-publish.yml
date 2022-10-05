@@ -21,6 +21,7 @@ on:
     branches:
       - main
     paths:
+      - source/dotnet/Contracts/**
       - source/dotnet/Packages/Client/**
       - .github/workflows/packages-publish.yml
   # Build, test, pack
@@ -29,6 +30,7 @@ on:
     branches:
       - main
     paths:
+      - source/dotnet/Contracts/**
       - source/dotnet/Packages/**
       - .github/workflows/packages-publish.yml
   # Build, test, pack and publish prerelease packages

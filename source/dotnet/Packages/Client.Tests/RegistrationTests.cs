@@ -12,12 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using NodaTime;
+using Energinet.DataHub.Wholesale.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Client.Tests;
 
-/// <summary>
-/// An immutable batch.
-/// </summary>
-public sealed record BatchDto(long BatchNumber, DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeOffset? ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchExecutionState ExecutionState);
+public class RegistrationTests
+{
+    [Fact]
+    public void AddWholesaleClient_EnablesResolvingAClient()
+    {
+        IServiceCollection serviceCollection = new ServiceCollection();
+        serviceCollection.AddWholesaleClient(new Uri("http://some.base.uri"), _ => "some-authorization-token");
+        serviceCollection.BuildServiceProvider().GetRequiredService<IWholesaleClient>();
+    }
+}
