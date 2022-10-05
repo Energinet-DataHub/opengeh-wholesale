@@ -323,25 +323,22 @@ def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
-        timestamp_factory("2022-06-08T14:00:00.000Z"),
+        timestamp_factory("2022-06-08T22:00:00.000Z"),
     )
 
     # Assert
     # We remove the point we created before inspecting the remaining
     actual = actual.filter(col("time") != timestamp_factory(start_time))
 
-    assert (
-        actual.where(col("quality") == TimeSeriesQuality.incomplete.value).count()
-        == actual.count()
-    )
+    assert actual.where(col("quality").isNull()).count() == actual.count()
 
 
 def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
 ):
     # Arrange
-    start_time = "2022-06-08T12:00:00.000Z"
-    end_time = "2022-06-08T14:00:00.000Z"
+    start_time = "2022-06-08T22:00:00.000Z"
+    end_time = "2022-06-08T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
         resolution=Resolution.hour.value,
@@ -364,15 +361,36 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     # We remove the point we created before inspecting the remaining
     actual = actual.filter(col("time") != timestamp_factory(start_time))
     actual.show()
-    assert (
-        #    actual.where(col("quality") == TimeSeriesQuality.invalid.value).count()
-        actual.where(col("quality").isNull()).count()
-        == actual.count()
+    assert actual.where(col("quality").isNull()).count() == actual.count()
+
+
+def test__df_is_not_empty_when_no_time_series_points(
+    raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
+):
+    # Arrange
+    start_time = "2022-06-08T22:00:00.000Z"
+    end_time = "2022-06-09T22:00:00.000Z"
+
+    empty_raw_time_series_points = raw_time_series_points_factory().filter(
+        col("GsrnNumber") == ""
+    )
+    metering_point_period_df = metering_point_period_df_factory(
+        effective_date=timestamp_factory(start_time),
+        to_effective_date=timestamp_factory(end_time),
     )
 
-
-def test__df_is_not_empty_when_no_time_series_points():
-    raise Exception("TODO")
+    # Act
+    actual = _get_enriched_time_series_points_df(
+        empty_raw_time_series_points,
+        metering_point_period_df,
+        timestamp_factory(start_time),
+        timestamp_factory(end_time),
+    )
+    actual.count()
+    actual.show()
+    # Assert
+    # We remove the point we created before inspecting the remaining
+    assert actual.count() == 96
 
 
 @pytest.mark.parametrize(
