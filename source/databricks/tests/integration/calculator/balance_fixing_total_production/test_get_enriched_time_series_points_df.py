@@ -60,6 +60,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     def factory(
         effective_date: datetime = timestamp_factory("2022-06-08T12:00:00.000Z"),
         to_effective_date: datetime = timestamp_factory("2022-06-08T13:00:00.000Z"),
+        resolution: MeteringpointResolution = MeteringpointResolution.quarterly.value,
     ):
         df = [
             {
@@ -68,7 +69,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
                 "MeteringPointType": "the_metering_point_type",
                 "EffectiveDate": effective_date,
                 "toEffectiveDate": to_effective_date,
-                "Resolution": MeteringpointResolution.quarterly.value,
+                "Resolution": resolution,
             }
         ]
         return spark.createDataFrame(df)
@@ -427,14 +428,14 @@ def test__df_is_not_empty_when_no_time_series_points():
         (
             "2022-06-08T22:00:00.000Z",
             "2022-06-09T22:00:00.000Z",
-            Resolution.quarter.value,
+            MeteringpointResolution.quarterly.value,
             96,
         ),
         # DST has 24 hours
         (
             "2022-06-08T22:00:00.000Z",
             "2022-06-09T22:00:00.000Z",
-            Resolution.hour.value,
+            MeteringpointResolution.hour.value,
             24,
         ),
         # going from DST to standard time there are 25 hours (100 quarters)
@@ -443,26 +444,26 @@ def test__df_is_not_empty_when_no_time_series_points():
         (
             "2022-10-29T22:00:00.000Z",
             "2022-10-30T23:00:00.000Z",
-            Resolution.quarter.value,
+            MeteringpointResolution.quarterly.value,
             100,
         ),
         (
             "2022-10-29T22:00:00.000Z",
             "2022-10-30T23:00:00.000Z",
-            Resolution.hour.value,
+            MeteringpointResolution.hour.value,
             25,
         ),
         # going from vinter to summertime there are 23 hours (92 quarters)
         (
             "2022-03-26T23:00:00.000Z",
             "2022-03-27T22:00:00.000Z",
-            Resolution.hour.value,
+            MeteringpointResolution.hour.value,
             23,
         ),
         (
             "2022-03-26T23:00:00.000Z",
             "2022-03-27T22:00:00.000Z",
-            Resolution.quarter.value,
+            MeteringpointResolution.quarterly.value,
             92,
         ),
     ],
@@ -484,6 +485,7 @@ def test__df_has_expected_row_count_according_to_dst(
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=timestamp_factory(period_start),
         to_effective_date=timestamp_factory(period_end),
+        resolution=resolution,
     )
 
     # Act
