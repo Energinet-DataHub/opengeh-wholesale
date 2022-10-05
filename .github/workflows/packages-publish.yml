@@ -30,7 +30,7 @@ on:
       - main
     paths:
       - source/dotnet/Packages/**
-      - .github/workflows/app-common-bundle-publish.yml
+      - .github/workflows/packages-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
