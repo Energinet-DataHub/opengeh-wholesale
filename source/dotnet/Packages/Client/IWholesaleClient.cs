@@ -18,11 +18,15 @@ namespace Energinet.DataHub.Wholesale.Client;
 
 public interface IWholesaleClient
 {
+    /// <summary>
+    /// Start processes by creating a batch request.
+    /// In case of errors an exception is thrown.
+    /// </summary>
     Task CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
 
     /// <summary>
     /// Returns batches matching the search criteria.
-    /// In case of error the batches of the result is null.
+    /// In case of errors an exception is thrown.
     /// </summary>
     Task<IEnumerable<BatchDto>> GetBatchesAsync(BatchSearchDto batchSearchDto);
 }
