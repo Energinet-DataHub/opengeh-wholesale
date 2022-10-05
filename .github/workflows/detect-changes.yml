@@ -41,8 +41,7 @@ jobs:
       dotnet: ${{ steps.filter.outputs.dotnet }}
     steps:
     # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
-    - name: Checkout repository (main branch)
-      #if: ${{ github.ref_name == 'main' }}
+    - name: Checkout repository
       if: ${{ github.event_name != 'pull_request' }}
       uses: actions/checkout@v3
 
