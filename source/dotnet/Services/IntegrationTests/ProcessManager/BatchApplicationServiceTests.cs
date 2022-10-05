@@ -55,7 +55,7 @@ public sealed class BatchApplicationServiceTests
     }
 
     [Fact]
-    public async Task When_RunCreated_Then_BatchIsPending()
+    public async Task When_RunIsPending_Then_BatchIsPending()
     {
         // Arrange
         using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
@@ -76,8 +76,7 @@ public sealed class BatchApplicationServiceTests
 
         // Assert: Verify that batch is now pending.
         var pending = await repository.GetPendingAsync();
-        Assert.Single(pending);
-        var createdBatch = pending.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
+        var createdBatch = pending.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
     }
 
@@ -103,8 +102,7 @@ public sealed class BatchApplicationServiceTests
 
         // Assert: Verify that batch is now pending.
         var executing = await repository.GetExecutingAsync();
-        Assert.Single(executing);
-        var createdBatch = executing.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
+        var createdBatch = executing.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
     }
 
@@ -130,8 +128,7 @@ public sealed class BatchApplicationServiceTests
 
         // Assert: Verify that batch is now pending.
         var completed = await repository.GetCompletedAsync();
-        Assert.Single(completed);
-        var createdBatch = completed.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
+        var createdBatch = completed.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
     }
 

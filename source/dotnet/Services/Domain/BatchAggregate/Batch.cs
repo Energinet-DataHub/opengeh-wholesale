@@ -83,14 +83,14 @@ public class Batch
     public void MarkAsPending()
     {
         if (ExecutionState is BatchExecutionState.Pending or BatchExecutionState.Executing or BatchExecutionState.Completed)
-            throw new InvalidOperationException("Batch is already state Pending.");
+            throw new InvalidOperationException("Cannot change batchExecutionState from Pending, Executing or Completed to Pending");
         ExecutionState = BatchExecutionState.Pending;
     }
 
     public void MarkAsExecuting()
     {
         if (ExecutionState is BatchExecutionState.Executing or BatchExecutionState.Completed)
-            throw new InvalidOperationException("Batch is already state Executing.");
+            throw new InvalidOperationException("Cannot change batchExecutionState from Executing or Completed to Executing");
 
         ExecutionState = BatchExecutionState.Executing;
     }
@@ -98,7 +98,7 @@ public class Batch
     public void MarkAsCompleted()
     {
         if (ExecutionState == BatchExecutionState.Completed)
-            throw new InvalidOperationException("Batch is already in state Completed.");
+            throw new InvalidOperationException("Cannot change batchExecutionState from Completed to Completed");
 
         ExecutionState = BatchExecutionState.Completed;
         ExecutionTimeEnd = _clock.GetCurrentInstant();
