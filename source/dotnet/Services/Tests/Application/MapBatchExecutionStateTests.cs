@@ -36,7 +36,8 @@ public class MapBatchExecutionStateTests
     {
         // Arrange
         var batch = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch.MarkAsPending(new JobRunId(11));
+        batch.SetRunId(new JobRunId(11));
+        batch.MarkAsPending();
         var pendingBatches = new List<Batch>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetPendingAndExecutingAsync()).ReturnsAsync(pendingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Running);
@@ -57,7 +58,8 @@ public class MapBatchExecutionStateTests
     {
         // Arrange
         var batch = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch.MarkAsPending(new JobRunId(11));
+        batch.SetRunId(new JobRunId(11));
+        batch.MarkAsPending();
         batch.MarkAsExecuting();
         var executingBatches = new List<Batch>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetPendingAndExecutingAsync()).ReturnsAsync(executingBatches);
@@ -79,9 +81,11 @@ public class MapBatchExecutionStateTests
     {
         // Arrange
         var batch1 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch1.MarkAsPending(new JobRunId(11));
+        batch1.SetRunId(new JobRunId(11));
+        batch1.MarkAsPending();
         var batch2 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch2.MarkAsPending(new JobRunId(12));
+        batch2.SetRunId(new JobRunId(11));
+        batch2.MarkAsPending();
         batch2.MarkAsExecuting();
         var batches = new List<Batch>() { batch1, batch2 };
 

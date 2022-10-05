@@ -74,12 +74,16 @@ public class Batch
 
     public Instant PeriodEnd { get; }
 
-    public void MarkAsPending(JobRunId jobRunId)
+    public void SetRunId(JobRunId jobRunId)
+    {
+        ArgumentNullException.ThrowIfNull(jobRunId);
+        RunId = jobRunId;
+    }
+
+    public void MarkAsPending()
     {
         if (ExecutionState is BatchExecutionState.Pending or BatchExecutionState.Executing or BatchExecutionState.Completed)
             throw new InvalidOperationException("Batch is already state Pending.");
-        ArgumentNullException.ThrowIfNull(jobRunId);
-        RunId = jobRunId;
         ExecutionState = BatchExecutionState.Pending;
     }
 
