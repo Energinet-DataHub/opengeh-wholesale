@@ -27,4 +27,10 @@ limitations under the License.
       </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Include="..\..\Contracts\WholesaleProcessType.cs">
+        <Link>WholesaleProcess\WholesaleProcessType.cs</Link>
+      </Compile>
+    </ItemGroup>
+
 </Project>
