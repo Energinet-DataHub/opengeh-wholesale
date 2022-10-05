@@ -408,9 +408,10 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     # Assert
     # We remove the point we created before inspecting the remaining
     actual = actual.filter(col("time") != timestamp_factory(start_time))
-
+    actual.show()
     assert (
-        actual.where(col("quality") == TimeSeriesQuality.invalid.value).count()
+        #    actual.where(col("quality") == TimeSeriesQuality.invalid.value).count()
+        actual.where(col("quality").isNull()).count()
         == actual.count()
     )
 
