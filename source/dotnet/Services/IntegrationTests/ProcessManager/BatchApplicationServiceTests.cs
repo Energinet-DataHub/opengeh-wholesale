@@ -100,7 +100,7 @@ public sealed class BatchApplicationServiceTests
         await target.StartPendingAsync();
         await target.UpdateExecutionStateAsync();
 
-        // Assert: Verify that batch is now pending.
+        // Assert: Verify that batch is now executing.
         var executing = await repository.GetExecutingAsync();
         var createdBatch = executing.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
@@ -126,7 +126,7 @@ public sealed class BatchApplicationServiceTests
         await target.StartPendingAsync();
         await target.UpdateExecutionStateAsync();
 
-        // Assert: Verify that batch is now pending.
+        // Assert: Verify that batch is now completed.
         var completed = await repository.GetCompletedAsync();
         var createdBatch = completed.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
