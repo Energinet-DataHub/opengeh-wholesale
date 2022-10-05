@@ -105,7 +105,7 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
     )
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=timestamp_factory("2022-06-08T12:00:00.000Z"),
-        to_effective_date=timestamp_factory("2022-06-10T13:00:00.000Z"),
+        to_effective_date=timestamp_factory("2023-06-10T13:00:00.000Z"),
     )
 
     # Act
@@ -124,13 +124,9 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
     "effective_date, to_effective_date, expected_rows",
     [
         # effective_date = time and to_effective_date > time should have 1
-        ("2022-06-15T00:00:00.000Z", "2022-06-16T00:00:00.000Z", 1),
+        ("2022-06-15T22:00:00.000Z", "2022-06-16T22:00:00.000Z", 96),
         # effective_date < time and to_effective_date > time should have 1
-        ("2022-06-14T00:00:00.000Z", "2022-06-16T00:00:00.000Z", 1),
-        # effective_date > time and to_effective_date > time should have 0
-        ("2022-06-16T00:00:00.000Z", "2022-06-16T00:00:00.000Z", 0),
-        # effective_date = time and to_effective_date = time should have 0
-        ("2022-06-15T00:00:00.000Z", "2022-06-15T00:00:00.000Z", 0),
+        ("2022-06-14T22:00:00.000Z", "2022-06-16T22:00:00.000Z", 192),
     ],
 )
 def test__given_different_effective_date_and_to_effective_date__return_dataframe_with_correct_number_of_rows(
@@ -147,7 +143,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
 
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory("2022-06-08T12:09:15.000Z")
+        time=timestamp_factory("2022-06-08T12:15:00.000Z")
     )
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=effective_date, to_effective_date=to_effective_date
@@ -157,8 +153,8 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
-        timestamp_factory("2022-06-15T00:00:00.000Z"),
-        timestamp_factory("2022-06-15T00:00:00.000Z"),
+        timestamp_factory(effective_date),
+        timestamp_factory(to_effective_date),
     )
 
     # Assert
