@@ -84,7 +84,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         # period_start = time and period_end > time should have 1
         ("2022-06-08T22:00:00.000Z", "2022-06-09T22:00:00.000Z", 96),
         # period_start < time and period_end > time should have 1
-        ("2022-06-08T12:00:00.000Z", "2022-06-10T12:00:00.000Z", 192),
+        ("2022-06-08T22:00:00.000Z", "2022-06-10T22:00:00.000Z", 192),
     ],
 )
 def test__given_different_period_start_and_period_end__return_dataframe_with_correct_number_of_rows(
@@ -101,9 +101,12 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
 
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory("2022-06-08T12:09:15.000Z")
+        time=timestamp_factory("2022-06-08T22:15:00.000Z")
     )
-    metering_point_period_df = metering_point_period_df_factory()
+    metering_point_period_df = metering_point_period_df_factory(
+        effective_date=timestamp_factory("2022-06-08T12:00:00.000Z"),
+        to_effective_date=timestamp_factory("2022-06-10T13:00:00.000Z"),
+    )
 
     # Act
     actual = _get_enriched_time_series_points_df(

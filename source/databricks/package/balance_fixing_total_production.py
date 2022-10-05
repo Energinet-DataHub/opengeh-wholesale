@@ -339,7 +339,7 @@ def _get_enriched_time_series_points_df(
                 f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
             ).alias("quarter_times"),
         )
-        .select("Gsrnnumber", explode("quarter_times").alias("time"))
+        .select("GsrnNumber", explode("quarter_times").alias("time"))
     )
 
     hourly_times = (
@@ -351,7 +351,7 @@ def _get_enriched_time_series_points_df(
                 f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 1 hour)"
             ).alias("times"),
         )
-        .select("Gsrnnumber", explode("times").alias("time"))
+        .select("GsrnNumber", explode("times").alias("time"))
     )
 
     times_df = quarterly_times.union(hourly_times)
@@ -404,7 +404,8 @@ def _get_enriched_time_series_points_df(
         & (tss["time"] < col("toEffectiveDate")),
         "left",
     )
-
+    print("enriched_time_series_point_df: -- ")
+    enriched_time_series_point_df.show()
     enriched_time_series_point_df = enriched_time_series_point_df.select(
         "GridAreaCode",
         tss["GsrnNumber"],
