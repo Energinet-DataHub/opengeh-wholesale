@@ -102,7 +102,7 @@ def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_fact
                 "Resolution": 2,
                 "RegistrationDateTime": registration_date_time_1,
                 "storedTime": stored_time_1,
-                "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
+                "time": timestamp_factory("2022-06-10T12:15:00.000Z"),
                 "year": 2022,
                 "month": 6,
                 "day": 8,
@@ -115,7 +115,7 @@ def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_fact
                 "Resolution": 2,
                 "RegistrationDateTime": registration_date_time_2,
                 "storedTime": stored_time_2,
-                "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
+                "time": timestamp_factory("2022-06-10T12:15:00.000Z"),
                 "year": 2022,
                 "month": 6,
                 "day": 8,
@@ -218,7 +218,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
         (time_2, time_1, point_1_quantity),
     ],
 )
-def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_latest_stored_time(
+def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_latest_registation_time(
     raw_time_series_points_with_same_gsrn_and_time_factory,
     metering_point_period_df_factory,
     timestamp_factory,
@@ -226,9 +226,6 @@ def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_l
     registration_date_time_2,
     expected_quantity,
 ):
-    """Test that _get_enriched_time_series_points_df gets a two time_series_points,
-    with the same gsrn and time that only the lateset stored will be used"""
-
     # Arrange
     raw_time_series_points = raw_time_series_points_with_same_gsrn_and_time_factory(
         registration_date_time_1=registration_date_time_1,
@@ -240,15 +237,15 @@ def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_l
     actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
-        timestamp_factory("2022-06-08T12:00:00.000Z"),
-        timestamp_factory("2022-06-08T13:00:00.000Z"),
+        timestamp_factory("2022-06-10T12:00:00.000Z"),
+        timestamp_factory("2022-06-10T13:00:00.000Z"),
     )
-
-    actual.show()
 
     # Assert
     assert actual.count() == 4
-    assert actual.first().Quantity == expected_quantity
+    assert (
+        actual.filter(col("Quantity").isNotNull()).first().Quantity == expected_quantity
+    )
 
 
 def test__missing_point_has_quantity_null_for_quarterly_resolution(
