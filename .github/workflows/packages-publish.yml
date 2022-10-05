@@ -57,6 +57,8 @@ jobs:
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
+    environment: AzureAuth
+
     steps:
       - name: Checkout repository
         uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v8
