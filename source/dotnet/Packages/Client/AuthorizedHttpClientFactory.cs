@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Http;
-
 namespace Energinet.DataHub.Wholesale.Client
 {
     /// <summary>
-    /// Factory to create <see cref="HttpClient"/>s with authentication headers.
+    /// Factory to create an <see cref="HttpClient"/>, which will re-apply the authorization header
+    /// from the current HTTP context.
     /// </summary>
-    public class HttpClientFactory
+    public class AuthorizedHttpClientFactory
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly Func<string> _authorizationHeaderProvider;
 
-        public HttpClientFactory(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        public AuthorizedHttpClientFactory(IHttpClientFactory httpClientFactory, Func<string> authorizationHeaderProvider)
         {
             _httpClientFactory = httpClientFactory;
-            _httpContextAccessor = httpContextAccessor;
+            _authorizationHeaderProvider = authorizationHeaderProvider;
         }
 
         public HttpClient CreateClient(Uri baseUrl)
@@ -40,16 +39,8 @@ namespace Energinet.DataHub.Wholesale.Client
 
         private void SetAuthorizationHeader(HttpClient httpClient)
         {
-            var authHeaderValue = GetAuthorizationHeaderValue();
+            var authHeaderValue = _authorizationHeaderProvider();
             httpClient.DefaultRequestHeaders.Add("Authorization", authHeaderValue);
-        }
-
-        private string GetAuthorizationHeaderValue()
-        {
-            return _httpContextAccessor.HttpContext!.Request.Headers
-                .Where(x => x.Key.Equals("Authorization", StringComparison.OrdinalIgnoreCase))
-                .Select(x => x.Value.ToString())
-                .Single();
         }
     }
 }

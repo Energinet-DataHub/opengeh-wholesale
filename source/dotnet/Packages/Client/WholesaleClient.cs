@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.Application.Batches;
 
@@ -22,7 +21,7 @@ public class WholesaleClient : IWholesaleClient
 {
     private readonly HttpClient _httpClient;
 
-    public WholesaleClient(HttpClientFactory httpClientFactory, Uri wholesaleBaseUrl)
+    public WholesaleClient(AuthorizedHttpClientFactory httpClientFactory, Uri wholesaleBaseUrl)
     {
         _httpClient = httpClientFactory.CreateClient(wholesaleBaseUrl);
     }
