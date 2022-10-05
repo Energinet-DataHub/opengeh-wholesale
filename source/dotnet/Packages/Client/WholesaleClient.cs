@@ -26,14 +26,17 @@ public class WholesaleClient : IWholesaleClient
         _httpClient = httpClientFactory.CreateClient(wholesaleBaseUrl);
     }
 
-    public async Task<HttpResponseMessage> CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto)
+    public async Task CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto)
     {
-        return await _httpClient
+        var response = await _httpClient
             .PostAsJsonAsync("v1/Batch", wholesaleBatchRequestDto)
             .ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Wholesale backend returned HTTP status code {response.StatusCode}");
     }
 
-    public async Task<(HttpResponseMessage Response, IEnumerable<BatchDto>? Batches)> GetBatchesAsync(
+    public async Task<IEnumerable<BatchDto>> GetBatchesAsync(
         BatchSearchDto batchSearchDto)
     {
         var response = await _httpClient
@@ -41,9 +44,9 @@ public class WholesaleClient : IWholesaleClient
             .ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
-            return new(response, null);
+            throw new Exception($"Wholesale backend returned HTTP status code {response.StatusCode}");
 
         var batches = await response.Content.ReadFromJsonAsync<IEnumerable<BatchDto>>().ConfigureAwait(false);
-        return new(response, batches ?? new List<BatchDto>());
+        return batches ?? new List<BatchDto>();
     }
 }
