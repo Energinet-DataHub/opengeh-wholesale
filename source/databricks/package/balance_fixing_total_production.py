@@ -329,7 +329,6 @@ def _get_enriched_time_series_points_df(
 
     exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
 
-    # GsrnNumber, time
     quarterly_times = (
         quarterly_mp_df.select("GsrnNumber")
         .distinct()
@@ -354,9 +353,7 @@ def _get_enriched_time_series_points_df(
         .select("GsrnNumber", explode("times").alias("time"))
     )
 
-    times_df = quarterly_times.union(hourly_times)
-
-    times_df.show()
+    empty_points_for_each_metering_point = quarterly_times.union(hourly_times)
 
     debug(
         "Time series points where time is within period",
@@ -390,109 +387,35 @@ def _get_enriched_time_series_points_df(
         "GsrnNumber", "time", "Quantity", "Quality", "Resolution"
     )
 
-    tss = times_df.join(timeseries_df, ["GsrnNumber", "time"], "left")
-
-    print("tss")
-    tss.show()
-    print("metering_point_period_df")
-    metering_point_period_df.show()
-
-    enriched_time_series_point_df = tss.join(
-        metering_point_period_df,
-        (metering_point_period_df["GsrnNumber"] == tss["GsrnNumber"])
-        & (tss["time"] >= col("EffectiveDate"))
-        & (tss["time"] < col("toEffectiveDate")),
-        "left",
+    points_for_each_metering_point = empty_points_for_each_metering_point.join(
+        timeseries_df, ["GsrnNumber", "time"], "left"
     )
-    print("enriched_time_series_point_df: -- ")
-    enriched_time_series_point_df.show()
-    enriched_time_series_point_df = enriched_time_series_point_df.select(
+
+    enriched_points_for_each_metering_point = points_for_each_metering_point.join(
+        metering_point_period_df,
+        (
+            metering_point_period_df["GsrnNumber"]
+            == points_for_each_metering_point["GsrnNumber"]
+        )
+        & (points_for_each_metering_point["time"] >= col("EffectiveDate"))
+        & (points_for_each_metering_point["time"] < col("toEffectiveDate")),
+        "left",
+    ).select(
         "GridAreaCode",
-        tss["GsrnNumber"],
+        points_for_each_metering_point["GsrnNumber"],
         "MeteringPointType",
-        tss["Resolution"],
+        points_for_each_metering_point["Resolution"],
         "time",
         "Quantity",
-        tss["Quality"],
+        points_for_each_metering_point["Quality"],
     )
-
-    # quarterly = timeseries_df.where(col("Resolution") == Resolution.quarter.value)
-    # hourly = timeseries_df.where(col("Resolution") == Resolution.hour.value)
-
-    # exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
-
-    # quaterly_times_df = (
-    #     quarterly.select("GsrnNumber")
-    #     .distinct()
-    #     .select(
-    #         "GsrnNumber",
-    #         expr(
-    #             f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
-    #         ).alias("quarter_times"),
-    #     )
-    #     .select("Gsrnnumber", explode("quarter_times").alias("time"))
-    # )
-
-    # print("quaryly_times_df")
-    # quaterly_times_df.show()
-    # quaterly_times_df.printSchema()
-
-    # hourly_times_df = (
-    #     hourly.select("GsrnNumber")
-    #     .distinct()
-    #     .select(
-    #         "GsrnNumber",
-    #         expr(
-    #             f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 1 hour)"
-    #         ).alias("times"),
-    #     )
-    #     .select("Gsrnnumber", explode("times").alias("time"))
-    # )
-
-    # print("time_series_df")
-    # timeseries_df.printSchema()
-    # timeseries_df.show()
-
-    # quarterly_joined_timeseries_df = timeseries_df.join(
-    #     quaterly_times_df, ["GsrnNumber", "time"], "right"
-    # )
-
-    # # print("quarterly_joined_timeseries_df")
-    # # quarterly_joined_timeseries_df.show()
-
-    # hourly_joined_timeseries_df = timeseries_df.join(
-    #     hourly_times_df, ["GsrnNumber", "time"], "right"
-    # )
-
-    # timeseries_df = quarterly_joined_timeseries_df.union(hourly_joined_timeseries_df)
-
-    # print(timeseries_df.count())
-    # timeseries_df.show()
-
-    # enriched_time_series_point_df = timeseries_df.join(
-    #     metering_point_period_df,
-    #     (metering_point_period_df["GsrnNumber"] == timeseries_df["GsrnNumber"])
-    #     & (timeseries_df["time"] >= metering_point_period_df["EffectiveDate"])
-    #     & (timeseries_df["time"] < metering_point_period_df["toEffectiveDate"]),
-    #     "inner",
-    # ).select(
-    #     "GridAreaCode",
-    #     metering_point_period_df["GsrnNumber"],
-    #     metering_point_period_df["MeteringPointType"],
-    #     "Resolution",
-    #     "time",
-    #     "Quantity",
-    #     "Quality",
-    # )
 
     debug(
         "Enriched time series points",
         timeseries_df.orderBy(col("GsrnNumber"), col("time")),
     )
-    # print(enriched_time_series_point_df.count())
-    # enriched_time_series_point_df.show()
 
-    return enriched_time_series_point_df
+    return enriched_points_for_each_metering_point
 
 
 def _get_master_basis_data(metering_point_df):

@@ -326,7 +326,7 @@ def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
     # Assert
     # We remove the point we created before inspecting the remaining
     actual = actual.filter(col("time") != timestamp_factory(start_time))
-
+    assert actual.count() > 1
     assert actual.where(col("quality").isNull()).count() == actual.count()
 
 
@@ -335,7 +335,7 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
 ):
     # Arrange
     start_time = "2022-06-08T22:00:00.000Z"
-    end_time = "2022-06-08T22:00:00.000Z"
+    end_time = "2022-06-09T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
         resolution=Resolution.hour.value,
@@ -357,7 +357,7 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     # Assert
     # We remove the point we created before inspecting the remaining
     actual = actual.filter(col("time") != timestamp_factory(start_time))
-    actual.show()
+    assert actual.count() > 1
     assert actual.where(col("quality").isNull()).count() == actual.count()
 
 
@@ -383,10 +383,8 @@ def test__df_is_not_empty_when_no_time_series_points(
         timestamp_factory(start_time),
         timestamp_factory(end_time),
     )
-    actual.count()
-    actual.show()
+
     # Assert
-    # We remove the point we created before inspecting the remaining
     assert actual.count() == 96
 
 
