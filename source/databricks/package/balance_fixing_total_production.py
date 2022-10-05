@@ -509,9 +509,7 @@ def _get_sorted_quantity_columns(timeseries_basis_data):
     return quantity_columns
 
 
-def _get_result_df(
-    enriched_time_series_points_df, period_start_datetime, period_end_datetime
-) -> DataFrame:
+def _get_result_df(enriched_time_series_points_df) -> DataFrame:
     # Total production in batch grid areas with quarterly resolution per grid area
     result_df = (
         enriched_time_series_points_df.withColumn(
