@@ -32,7 +32,7 @@ on:
     paths:
       - source/dotnet/Contracts/**
       - source/dotnet/Packages/**
-      - .github/workflows/app-common-bundle-publish.yml
+      - .github/workflows/packages-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
@@ -58,6 +58,8 @@ jobs:
 
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
+
+    environment: AzureAuth
 
     steps:
       - name: Checkout repository
