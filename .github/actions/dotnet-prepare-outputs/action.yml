@@ -36,7 +36,7 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\IntegrationEventListener\IntegrationEventListener.csproj' \
+          '.\source\dotnet\Services\IntegrationEventListener\IntegrationEventListener.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
@@ -46,7 +46,7 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\ProcessManager\ProcessManager.csproj' \
+          '.\source\dotnet\Services\ProcessManager\ProcessManager.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
@@ -56,7 +56,7 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\Sender\Sender.csproj' \
+          '.\source\dotnet\Services\Sender\Sender.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
@@ -66,7 +66,7 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\WebApi\WebApi.csproj' \
+          '.\source\dotnet\Services\WebApi\WebApi.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
@@ -76,7 +76,7 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\DatabaseMigration\DatabaseMigration.csproj' \
+          '.\source\dotnet\Services\DatabaseMigration\DatabaseMigration.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \

@@ -81,7 +81,7 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@poc
     with:
-      SOLUTION_FILE_PATH: 'source/dotnet/Wholesale.sln'
+      SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
 
   # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
   dotnet_ci_test_integrationtests_part1:
@@ -89,10 +89,10 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
-      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
+      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       TESTS_FILTER_EXPRESSION: 'FullyQualifiedName~IntegrationEventListener'
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
-      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\WebApi'
+      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\Services\WebApi'
       DOWNLOAD_ATTEMPT_LIMIT: 8
       USE_AZURE_FUNCTIONS_TOOLS: true
     secrets:
@@ -108,10 +108,10 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
-      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
+      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       TESTS_FILTER_EXPRESSION: 'FullyQualifiedName!~IntegrationEventListener'
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
-      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\WebApi'
+      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\Services\WebApi'
       DOWNLOAD_ATTEMPT_LIMIT: 8
       USE_AZURE_FUNCTIONS_TOOLS: true
     secrets:
@@ -127,7 +127,7 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
     with:
-      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
+      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 8
       USE_AZURE_FUNCTIONS_TOOLS: false
     secrets:
