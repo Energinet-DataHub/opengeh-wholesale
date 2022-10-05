@@ -60,7 +60,6 @@ public class BatchApplicationService : IBatchApplicationService
             var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);
             var jobRunId = await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
             batch.SetRunId(jobRunId);
-            batch.MarkAsPending();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }

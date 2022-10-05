@@ -28,7 +28,7 @@ public interface IBatchRepository
 
     Task<List<Batch>> GetExecutingAsync();
 
-    Task<List<Batch>> GetPendingAndExecutingAsync();
+    Task<List<Batch>> GetCreatedAndPendingAndExecutingAsync();
 
     Task<List<Batch>> GetCompletedAsync();
 
