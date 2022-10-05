@@ -161,47 +161,6 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     assert actual.count() == expected_rows
 
 
-@pytest.mark.parametrize(
-    "time, expected_rows",
-    [
-        ("2022-06-08T12:09:16.000Z", 1),
-        ("2022-06-08T12:09:15.000Z", 1),
-        ("2022-06-08T12:09:14.000Z", 0),
-        ("2022-06-08T13:09:15.000Z", 0),
-        ("2022-06-08T13:09:16.000Z", 0),
-    ],
-)
-def test__given_raw_time_series_points_with_different_time__return_dataframe_with_correct_number_of_rows(
-    raw_time_series_points_factory,
-    metering_point_period_df_factory,
-    timestamp_factory,
-    time,
-    expected_rows,
-):
-    """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
-    expected_rows is the number of rows in the output dataframe when given different time on time series point"""
-
-    # Arrange
-    raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory(time)
-    )
-    metering_point_period_df = metering_point_period_df_factory(
-        effective_date=timestamp_factory("2022-06-08T12:09:15.000Z"),
-        to_effective_date=timestamp_factory("2022-06-08T13:09:15.000Z"),
-    )
-
-    # Act
-    actual = _get_enriched_time_series_points_df(
-        raw_time_series_points,
-        metering_point_period_df,
-        timestamp_factory("2022-06-08T12:09:15.000Z"),
-        timestamp_factory("2022-06-08T13:09:15.000Z"),
-    )
-
-    # Assert
-    assert actual.count() == expected_rows
-
-
 point_1_quantity = Decimal("1.1")
 point_2_quantity = Decimal("2.2")
 
@@ -210,10 +169,10 @@ point_2_quantity = Decimal("2.2")
 def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_factory):
     def factory(
         registration_date_time_1: datetime = timestamp_factory(
-            "2022-06-10T12:09:15.000Z"
+            "2022-06-10T12:00:00.000Z"
         ),
         registration_date_time_2: datetime = timestamp_factory(
-            "2022-06-10T12:09:15.000Z"
+            "2022-06-10T12:15:00.000Z"
         ),
         stored_time_1: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
         stored_time_2: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
@@ -251,8 +210,8 @@ def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_fact
     return factory
 
 
-time_1 = "2022-06-10T12:09:15.000Z"
-time_2 = "2022-06-10T13:09:15.000Z"
+time_1 = "2022-06-10T12:15:00.000Z"
+time_2 = "2022-06-10T13:15:00.000Z"
 
 
 @pytest.mark.parametrize(
@@ -284,12 +243,14 @@ def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_l
     actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
-        timestamp_factory("2022-06-08T12:09:15.000Z"),
-        timestamp_factory("2022-06-08T13:09:15.000Z"),
+        timestamp_factory("2022-06-08T12:00:00.000Z"),
+        timestamp_factory("2022-06-08T13:00:00.000Z"),
     )
 
+    actual.show()
+
     # Assert
-    assert actual.count() == 1
+    assert actual.count() == 4
     assert actual.first().Quantity == expected_quantity
 
 
