@@ -77,13 +77,63 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     return factory
 
 
-#
+point_1_quantity = Decimal("1.1")
+point_2_quantity = Decimal("2.2")
+
+
+@pytest.fixture(scope="module")
+def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_factory):
+    def factory(
+        registration_date_time_1: datetime = timestamp_factory(
+            "2022-06-10T12:00:00.000Z"
+        ),
+        registration_date_time_2: datetime = timestamp_factory(
+            "2022-06-10T12:15:00.000Z"
+        ),
+        stored_time_1: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
+        stored_time_2: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
+    ):
+        df = [
+            {
+                "GsrnNumber": "the-gsrn-number",
+                "TransactionId": "1",
+                "Quantity": point_1_quantity,
+                "Quality": 3,
+                "Resolution": 2,
+                "RegistrationDateTime": registration_date_time_1,
+                "storedTime": stored_time_1,
+                "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
+                "year": 2022,
+                "month": 6,
+                "day": 8,
+            },
+            {
+                "GsrnNumber": "the-gsrn-number",
+                "TransactionId": "1",
+                "Quantity": point_2_quantity,
+                "Quality": 3,
+                "Resolution": 2,
+                "RegistrationDateTime": registration_date_time_2,
+                "storedTime": stored_time_2,
+                "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
+                "year": 2022,
+                "month": 6,
+                "day": 8,
+            },
+        ]
+        return spark.createDataFrame(df)
+
+    return factory
+
+
+time_1 = "2022-06-10T12:15:00.000Z"
+time_2 = "2022-06-10T13:15:00.000Z"
+
+
 @pytest.mark.parametrize(
     "period_start, period_end, expected_rows",
     [
-        # period_start = time and period_end > time should have 1
         ("2022-06-08T22:00:00.000Z", "2022-06-09T22:00:00.000Z", 96),
-        # period_start < time and period_end > time should have 1
         ("2022-06-08T22:00:00.000Z", "2022-06-10T22:00:00.000Z", 192),
     ],
 )
@@ -159,59 +209,6 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
 
     # Assert
     assert actual.count() == expected_rows
-
-
-point_1_quantity = Decimal("1.1")
-point_2_quantity = Decimal("2.2")
-
-
-@pytest.fixture(scope="module")
-def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_factory):
-    def factory(
-        registration_date_time_1: datetime = timestamp_factory(
-            "2022-06-10T12:00:00.000Z"
-        ),
-        registration_date_time_2: datetime = timestamp_factory(
-            "2022-06-10T12:15:00.000Z"
-        ),
-        stored_time_1: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
-        stored_time_2: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
-    ):
-        df = [
-            {
-                "GsrnNumber": "the-gsrn-number",
-                "TransactionId": "1",
-                "Quantity": point_1_quantity,
-                "Quality": 3,
-                "Resolution": 2,
-                "RegistrationDateTime": registration_date_time_1,
-                "storedTime": stored_time_1,
-                "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
-                "year": 2022,
-                "month": 6,
-                "day": 8,
-            },
-            {
-                "GsrnNumber": "the-gsrn-number",
-                "TransactionId": "1",
-                "Quantity": point_2_quantity,
-                "Quality": 3,
-                "Resolution": 2,
-                "RegistrationDateTime": registration_date_time_2,
-                "storedTime": stored_time_2,
-                "time": timestamp_factory("2022-06-08T12:09:15.000Z"),
-                "year": 2022,
-                "month": 6,
-                "day": 8,
-            },
-        ]
-        return spark.createDataFrame(df)
-
-    return factory
-
-
-time_1 = "2022-06-10T12:15:00.000Z"
-time_2 = "2022-06-10T13:15:00.000Z"
 
 
 @pytest.mark.parametrize(
