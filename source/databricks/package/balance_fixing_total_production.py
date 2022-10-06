@@ -113,9 +113,7 @@ def calculate_balance_fixing_total_production(
 
     master_basis_data_df = _get_master_basis_data(metering_point_period_df)
 
-    result_df = _get_result_df(
-        enriched_time_series_point_df, period_start_datetime, period_end_datetime
-    )
+    result_df = _get_result_df(enriched_time_series_point_df)
 
     cached_integration_events_df.unpersist()
 

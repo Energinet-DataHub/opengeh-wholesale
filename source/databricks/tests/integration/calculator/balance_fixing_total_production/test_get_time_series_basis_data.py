@@ -55,7 +55,6 @@ def enriched_time_series_factory(spark, timestamp_factory):
         metering_point_type=MeteringPointType.production.value,
         time="2022-06-08T22:00:00.000Z",
         number_of_points=1,
-        no_quantitys=False,
     ):
         df_array = []
 
@@ -81,7 +80,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                     "Resolution": resolution,
                     "GridAreaLinkId": "GridAreaLinkId",
                     "time": time,
-                    "Quantity": quantity,
+                    "Quantity": quantity + i,
                     "GsrnNumber": gsrn_number,
                     "MeteringPointType": metering_point_type,
                 }
@@ -291,13 +290,11 @@ def test__missing_point_has_empty_quantity(
     enriched_time_series_points_df = enriched_time_series_factory(
         time="2022-10-28T22:00:00.000Z",
         resolution=Resolution.quarter.value,
-        quantity=None,
         number_of_points=96,
-    )
-
+    ).withColumn("Quantity", lit(None).cast(DecimalType()))
     (quarter_df, _) = _get_time_series_basis_data(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
 
     for position in range(1, 97):
-        assert quarter_df.first()[f"ENERGYQUANTITY{position}"].IsNull()
+        assert quarter_df.first()[f"ENERGYQUANTITY{position}"] is None
