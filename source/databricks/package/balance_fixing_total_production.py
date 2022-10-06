@@ -326,7 +326,7 @@ def _get_enriched_time_series_points_df(
 
     exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
 
-    quarterly_times = (
+    quarterly_times_df = (
         quarterly_mp_df.select("GsrnNumber")
         .distinct()
         .select(
@@ -338,7 +338,7 @@ def _get_enriched_time_series_points_df(
         .select("GsrnNumber", explode("quarter_times").alias("time"))
     )
 
-    hourly_times = (
+    hourly_times_df = (
         hourly_mp_df.select("GsrnNumber")
         .distinct()
         .select(
@@ -350,7 +350,7 @@ def _get_enriched_time_series_points_df(
         .select("GsrnNumber", explode("times").alias("time"))
     )
 
-    empty_points_for_each_metering_point = quarterly_times.union(hourly_times)
+    empty_points_for_each_metering_point_df = quarterly_times_df.union(hourly_times_df)
 
     debug(
         "Time series points where time is within period",
@@ -384,27 +384,27 @@ def _get_enriched_time_series_points_df(
         "GsrnNumber", "time", "Quantity", "Quality", "Resolution"
     )
 
-    points_for_each_metering_point = empty_points_for_each_metering_point.join(
+    points_for_each_metering_point_df = empty_points_for_each_metering_point_df.join(
         timeseries_df, ["GsrnNumber", "time"], "left"
     )
 
-    enriched_points_for_each_metering_point = points_for_each_metering_point.join(
+    enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
         metering_point_period_df,
         (
             metering_point_period_df["GsrnNumber"]
-            == points_for_each_metering_point["GsrnNumber"]
+            == points_for_each_metering_point_df["GsrnNumber"]
         )
-        & (points_for_each_metering_point["time"] >= col("EffectiveDate"))
-        & (points_for_each_metering_point["time"] < col("toEffectiveDate")),
+        & (points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
+        & (points_for_each_metering_point_df["time"] < col("toEffectiveDate")),
         "left",
     ).select(
         "GridAreaCode",
-        points_for_each_metering_point["GsrnNumber"],
+        points_for_each_metering_point_df["GsrnNumber"],
         "MeteringPointType",
-        points_for_each_metering_point["Resolution"],
+        points_for_each_metering_point_df["Resolution"],
         "time",
         "Quantity",
-        points_for_each_metering_point["Quality"],
+        points_for_each_metering_point_df["Quality"],
     )
 
     debug(
@@ -412,7 +412,7 @@ def _get_enriched_time_series_points_df(
         timeseries_df.orderBy(col("GsrnNumber"), col("time")),
     )
 
-    return enriched_points_for_each_metering_point
+    return enriched_points_for_each_metering_point_df
 
 
 def _get_master_basis_data(metering_point_df):
