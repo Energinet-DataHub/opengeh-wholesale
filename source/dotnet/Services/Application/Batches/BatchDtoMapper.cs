@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public class MapToBatchDto
+public static class BatchDtoMapper
 {
     public static BatchDto Map(Batch batch)
     {

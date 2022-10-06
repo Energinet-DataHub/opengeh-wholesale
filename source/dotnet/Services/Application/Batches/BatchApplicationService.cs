@@ -66,7 +66,7 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task UpdateExecutionStateAsync()
     {
-        var mapStates = new MapBatchExecutionState();
+        var mapStates = new BatchExecutionStateHandler();
         var completedBatches = await mapStates.UpdateExecutionStateAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
         var completedProcesses = CreateProcessCompletedEvents(completedBatches);
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
@@ -79,7 +79,7 @@ public class BatchApplicationService : IBatchApplicationService
         var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
-        return batches.Select(MapToBatchDto.Map);
+        return batches.Select(BatchDtoMapper.Map);
     }
 
     private static Batch CreateBatch(BatchRequestDto batchRequestDto)

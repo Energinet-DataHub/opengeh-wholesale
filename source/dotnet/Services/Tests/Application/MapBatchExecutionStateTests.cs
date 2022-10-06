@@ -33,7 +33,7 @@ public class MapBatchExecutionStateTests
     public async Task MapBatchExecutionState_WhenJobStateIsRunning_UpdateBatchToExecuting(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
-        MapBatchExecutionState sut)
+        BatchExecutionStateHandler sut)
     {
         // Arrange
         var batch = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
@@ -55,7 +55,7 @@ public class MapBatchExecutionStateTests
     public async Task MapBatchExecutionState_WhenJobStateIsCompleted_UpdateBatchToCompleted(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
-        MapBatchExecutionState sut)
+        BatchExecutionStateHandler sut)
     {
         // Arrange
         var batch = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
@@ -78,7 +78,7 @@ public class MapBatchExecutionStateTests
     public async Task MapBatchExecutionState_ToCompleted(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
-        MapBatchExecutionState sut)
+        BatchExecutionStateHandler sut)
     {
         // Arrange
         var batch1 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();

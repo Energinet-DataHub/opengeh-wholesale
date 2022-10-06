@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public class MapBatchExecutionState
+public class BatchExecutionStateHandler
 {
     /// <summary>
     /// Update the execution states in the batch repository by mapping the job states from the runs <see cref="ICalculatorJobRunner"/>
