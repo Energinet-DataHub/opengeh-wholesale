@@ -447,7 +447,7 @@ def test__df_has_expected_row_count_according_to_dst(
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(period_start), resolution=resolution
-    ).filter(False)
+    ).filter(col("GsrnNumber") != "the-gsrn-number")
 
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=timestamp_factory(period_start),
