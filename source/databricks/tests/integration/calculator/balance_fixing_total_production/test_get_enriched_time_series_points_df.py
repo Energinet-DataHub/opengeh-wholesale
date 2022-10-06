@@ -77,8 +77,8 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     return factory
 
 
-point_1_quantity = Decimal("1.1")
-point_2_quantity = Decimal("2.2")
+point_1_quantity = Decimal("1.100")
+point_2_quantity = Decimal("2.200")
 
 
 @pytest.fixture(scope="module")
@@ -271,8 +271,7 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
     # Assert
     # We remove the point we created before inspecting the remaining
     actual = actual.filter(col("time") != timestamp_factory(start_time))
-
-    assert actual.where(col("Quantity").isNull()).count() == actual.count()
+    assert actual.where(col("Quantity").isNull()).count() == 95
 
 
 def test__missing_point_has_quantity_null_for_hourly_resolution(
@@ -299,8 +298,7 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
     # We remove the point we created before inspecting the remaining
     actual = actual.filter(col("time") != timestamp_factory(start_time))
 
-    assert actual.count() > 1
-    assert actual.where(col("Quantity").isNull()).count() == actual.count()
+    assert actual.where(col("Quantity").isNull()).count() == 95
 
 
 def test__missing_point_has_quality_incomplete_for_quarterly_resolution(

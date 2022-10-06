@@ -14,6 +14,8 @@
 
 from enum import IntEnum
 
+"Resolution values used in contracts exposed by the metering point domain."
+
 
 class MeteringpointResolution(IntEnum):
     hour = 1
