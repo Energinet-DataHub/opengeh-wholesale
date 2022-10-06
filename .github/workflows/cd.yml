@@ -49,7 +49,7 @@ jobs:
     with:
       PATH_STATIC_CHECKS: './source/databricks'
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
-      TEST_REPORT_PATH: ./source/databricks/tests/coverage.json
+      TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
 
   databricks_promote_prerelease:
     needs: changes
