@@ -128,7 +128,7 @@ public class BatchApplicationServiceTests
         // Assert
         for (var i = 0; i < batches.Count; i++)
         {
-            Assert.Equal(MapToBatchDto.Map(batches[i]), searchResult.ElementAt(i));
+            searchResult.ElementAt(i).Should().Be(MapToBatchDto.Map(batches[i]));
         }
     }
 }

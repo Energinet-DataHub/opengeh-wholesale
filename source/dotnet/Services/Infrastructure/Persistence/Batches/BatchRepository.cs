@@ -43,12 +43,11 @@ public class BatchRepository : IBatchRepository
 
     public Task<List<Batch>> GetExecutingAsync() => GetByStateAsync(BatchExecutionState.Executing);
 
-    public async Task<List<Batch>> GetSubmittedAndPendingAndExecutingAsync()
+    public async Task<List<Batch>> GetByStatesAsync(IEnumerable<BatchExecutionState> states)
     {
         return await _context
             .Batches
-            .Where(b => b.ExecutionState == BatchExecutionState.Submitted || b.ExecutionState == BatchExecutionState.Pending || b.ExecutionState == BatchExecutionState.Executing)
-            .Where(b => b.RunId != null)
+            .Where(b => states.Contains(b.ExecutionState))
             .ToListAsync()
             .ConfigureAwait(false);
     }

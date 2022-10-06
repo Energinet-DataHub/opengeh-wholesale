@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
 public interface IDatabricksCalculatorJobSelector
 {
-    Task<WheelJob> SelectCalculatorJobAsync();
+    Task<WheelJob> GetAsync();
 }

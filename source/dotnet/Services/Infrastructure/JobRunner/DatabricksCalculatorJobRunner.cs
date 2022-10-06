@@ -35,7 +35,7 @@ public sealed class DatabricksCalculatorJobRunner : ICalculatorJobRunner
     public async Task<JobRunId> SubmitJobAsync(IEnumerable<string> jobParameters)
     {
         var calculatorJob = await _databricksCalculatorJobSelector
-            .SelectCalculatorJobAsync()
+            .GetAsync()
             .ConfigureAwait(false);
 
         var runParameters = MergeRunParameters(calculatorJob, jobParameters);

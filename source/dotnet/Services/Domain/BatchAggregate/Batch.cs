@@ -76,10 +76,10 @@ public class Batch
 
     public void MarkAsSubmitted(JobRunId jobRunId)
     {
+        ArgumentNullException.ThrowIfNull(jobRunId);
         if (ExecutionState is BatchExecutionState.Submitted or BatchExecutionState.Pending
             or BatchExecutionState.Executing or BatchExecutionState.Completed)
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Submitted);
-        ArgumentNullException.ThrowIfNull(jobRunId);
         RunId = jobRunId;
         ExecutionState = BatchExecutionState.Submitted;
     }
