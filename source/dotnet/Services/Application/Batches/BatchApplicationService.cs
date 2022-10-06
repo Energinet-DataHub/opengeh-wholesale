@@ -113,6 +113,20 @@ public class BatchApplicationService : IBatchApplicationService
             batch.PeriodEnd.ToDateTimeOffset(),
             batch.ExecutionTimeStart?.ToDateTimeOffset() ?? null,
             batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
-            batch.ExecutionState);
+            MapState(batch.ExecutionState));
+    }
+
+    private static BatchState MapState(BatchExecutionState state)
+    {
+        return state switch
+        {
+            BatchExecutionState.Created => BatchState.Pending,
+            BatchExecutionState.Submitted => BatchState.Pending,
+            BatchExecutionState.Pending => BatchState.Pending,
+            BatchExecutionState.Executing => BatchState.Executing,
+            BatchExecutionState.Completed => BatchState.Completed,
+            BatchExecutionState.Failed => BatchState.Failed,
+            _ => throw new ArgumentOutOfRangeException(nameof(state)),
+        };
     }
 }
