@@ -222,14 +222,10 @@ def test__that_grid_area_code_in_input_is_in_output(
     assert result_df.first().GridAreaCode == str(grid_area_code_805)
 
 
-def test__each_grid_area_has_a_sum(
-    enriched_time_series_quarterly_same_time_factory, timestamp_factory
-):
+def test__each_grid_area_has_a_sum(enriched_time_series_quarterly_same_time_factory):
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
     result_df = _get_result_df(df)
-    # assert result_df.count() == 2
-    result_df.show()
     assert result_df.where("GridAreaCode == 805").count() == 1
     assert result_df.where("GridAreaCode == 806").count() == 1
 
