@@ -36,10 +36,10 @@ public class MapBatchExecutionStateTests
     {
         // Arrange
         var batch = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch.SetRunId(new JobRunId(11));
+        batch.MarkAsSubmitted(new JobRunId(11));
         batch.MarkAsPending();
         var pendingBatches = new List<Batch>() { batch };
-        batchRepositoryMock.Setup(repo => repo.GetCreatedAndPendingAndExecutingAsync()).ReturnsAsync(pendingBatches);
+        batchRepositoryMock.Setup(repo => repo.GetSubmittedAndPendingAndExecutingAsync()).ReturnsAsync(pendingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Running);
 
         // Act
@@ -58,11 +58,11 @@ public class MapBatchExecutionStateTests
     {
         // Arrange
         var batch = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch.SetRunId(new JobRunId(11));
+        batch.MarkAsSubmitted(new JobRunId(11));
         batch.MarkAsPending();
         batch.MarkAsExecuting();
         var executingBatches = new List<Batch>() { batch };
-        batchRepositoryMock.Setup(repo => repo.GetCreatedAndPendingAndExecutingAsync()).ReturnsAsync(executingBatches);
+        batchRepositoryMock.Setup(repo => repo.GetSubmittedAndPendingAndExecutingAsync()).ReturnsAsync(executingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Completed);
 
         // Act
@@ -81,15 +81,15 @@ public class MapBatchExecutionStateTests
     {
         // Arrange
         var batch1 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch1.SetRunId(new JobRunId(11));
+        batch1.MarkAsSubmitted(new JobRunId(11));
         batch1.MarkAsPending();
         var batch2 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch2.SetRunId(new JobRunId(12));
+        batch2.MarkAsSubmitted(new JobRunId(12));
         batch2.MarkAsPending();
         batch2.MarkAsExecuting();
         var batches = new List<Batch>() { batch1, batch2 };
 
-        batchRepositoryMock.Setup(repo => repo.GetCreatedAndPendingAndExecutingAsync()).ReturnsAsync(batches);
+        batchRepositoryMock.Setup(repo => repo.GetSubmittedAndPendingAndExecutingAsync()).ReturnsAsync(batches);
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch2.RunId!)).ReturnsAsync(JobState.Completed);
 
         // Act

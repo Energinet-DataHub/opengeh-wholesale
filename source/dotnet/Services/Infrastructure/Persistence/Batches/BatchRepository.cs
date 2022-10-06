@@ -37,17 +37,17 @@ public class BatchRepository : IBatchRepository
         return await _context.Batches.FirstAsync(x => x.Id == batchId).ConfigureAwait(false);
     }
 
-    public Task<List<Batch>> GetCreatedAsync() => GetByCreatedStateWithoutRunIdAsync();
+    public Task<List<Batch>> GetCreatedAsync() => GetByStateAsync(BatchExecutionState.Created);
 
     public Task<List<Batch>> GetPendingAsync() => GetByStateAsync(BatchExecutionState.Pending);
 
     public Task<List<Batch>> GetExecutingAsync() => GetByStateAsync(BatchExecutionState.Executing);
 
-    public async Task<List<Batch>> GetCreatedAndPendingAndExecutingAsync()
+    public async Task<List<Batch>> GetSubmittedAndPendingAndExecutingAsync()
     {
         return await _context
             .Batches
-            .Where(b => b.ExecutionState == BatchExecutionState.Created || b.ExecutionState == BatchExecutionState.Pending || b.ExecutionState == BatchExecutionState.Executing)
+            .Where(b => b.ExecutionState == BatchExecutionState.Submitted || b.ExecutionState == BatchExecutionState.Pending || b.ExecutionState == BatchExecutionState.Executing)
             .Where(b => b.RunId != null)
             .ToListAsync()
             .ConfigureAwait(false);
@@ -69,15 +69,6 @@ public class BatchRepository : IBatchRepository
         return await _context
             .Batches
             .Where(b => b.ExecutionState == state)
-            .ToListAsync()
-            .ConfigureAwait(false);
-    }
-
-    private async Task<List<Batch>> GetByCreatedStateWithoutRunIdAsync()
-    {
-        return await _context
-            .Batches
-            .Where(b => b.ExecutionState == BatchExecutionState.Created && b.RunId == null)
             .ToListAsync()
             .ConfigureAwait(false);
     }

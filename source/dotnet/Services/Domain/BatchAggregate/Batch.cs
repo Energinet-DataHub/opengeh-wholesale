@@ -74,10 +74,13 @@ public class Batch
 
     public Instant PeriodEnd { get; }
 
-    public void SetRunId(JobRunId jobRunId)
+    public void MarkAsSubmitted(JobRunId jobRunId)
     {
+        if (ExecutionState is BatchExecutionState.Submitted or BatchExecutionState.Pending or BatchExecutionState.Executing or BatchExecutionState.Completed)
+            throw new InvalidOperationException("Cannot change batchExecutionState from Submitted, Pending, Executing or Completed to Submitted");
         ArgumentNullException.ThrowIfNull(jobRunId);
         RunId = jobRunId;
+        ExecutionState = BatchExecutionState.Submitted;
     }
 
     public void MarkAsPending()

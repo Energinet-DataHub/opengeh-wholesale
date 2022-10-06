@@ -26,7 +26,7 @@ public class MapBatchExecutionState
     public async Task<IEnumerable<Batch>> UpdateExecutionStatesInBatchRepositoryAsync(IBatchRepository batchRepository, ICalculatorJobRunner calculatorJobRunner)
     {
         var completedBatches = new List<Batch>();
-        var pendingAndExecutingBatches = await batchRepository.GetCreatedAndPendingAndExecutingAsync().ConfigureAwait(false);
+        var pendingAndExecutingBatches = await batchRepository.GetSubmittedAndPendingAndExecutingAsync().ConfigureAwait(false);
         foreach (var batch in pendingAndExecutingBatches)
         {
             if (batch.RunId == null)
@@ -51,9 +51,9 @@ public class MapBatchExecutionState
         return jobState switch
         {
             JobState.Pending => BatchExecutionState.Pending,
-            JobState.Canceled => BatchExecutionState.Completed,
             JobState.Running => BatchExecutionState.Executing,
             JobState.Completed => BatchExecutionState.Completed,
+            JobState.Canceled => BatchExecutionState.Failed,
             JobState.Failed => BatchExecutionState.Failed,
             _ => throw new ArgumentOutOfRangeException(nameof(jobState), jobState, "Unexpected JobState."),
         };

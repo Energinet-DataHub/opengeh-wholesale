@@ -22,7 +22,12 @@ public enum BatchExecutionState
     /// <summary>
     /// The batch is created.
     /// </summary>
-    Created = -1,
+    Created = -2,
+
+    /// <summary>
+    /// The batch is submitted.
+    /// </summary>
+    Submitted = -1,
 
     /// <summary>
     /// The batch is pending.
