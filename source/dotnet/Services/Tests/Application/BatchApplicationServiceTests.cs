@@ -128,17 +128,7 @@ public class BatchApplicationServiceTests
         // Assert
         for (var i = 0; i < batches.Count; i++)
         {
-            Assert.True(IsEqual(batches[i], searchResult.ElementAt(i)));
+            Assert.Equal(MapToBatchDto.Map(batches[i]), searchResult.ElementAt(i));
         }
-    }
-
-    private static bool IsEqual(Batch batch, BatchDto batchDto)
-    {
-        return (batch.RunId?.Id ?? 0) == batchDto.BatchNumber
-               && batch.ExecutionState == batchDto.ExecutionState
-               && batch.PeriodStart.ToDateTimeOffset() == batchDto.PeriodStart
-               && batch.PeriodEnd.ToDateTimeOffset() == batchDto.PeriodEnd
-               && batch.ExecutionTimeStart?.ToDateTimeOffset() == batchDto.ExecutionTimeStart
-               && batch.ExecutionTimeEnd?.ToDateTimeOffset() == batchDto.ExecutionTimeEnd;
     }
 }

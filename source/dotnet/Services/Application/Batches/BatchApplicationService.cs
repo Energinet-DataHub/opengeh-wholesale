@@ -67,7 +67,7 @@ public class BatchApplicationService : IBatchApplicationService
     public async Task UpdateExecutionStateAsync()
     {
         var mapStates = new MapBatchExecutionState();
-        var completedBatches = await mapStates.UpdateExecutionStatesInBatchRepositoryAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
+        var completedBatches = await mapStates.UpdateExecutionStateAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
         var completedProcesses = CreateProcessCompletedEvents(completedBatches);
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
@@ -79,7 +79,7 @@ public class BatchApplicationService : IBatchApplicationService
         var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
-        return batches.Select(MapToBatchDto);
+        return batches.Select(MapToBatchDto.Map);
     }
 
     private static Batch CreateBatch(BatchRequestDto batchRequestDto)
@@ -103,30 +103,5 @@ public class BatchApplicationService : IBatchApplicationService
             .SelectMany(b => b.GridAreaCodes.Select(x => new { b.Id, x.Code }))
             .Select(c => new ProcessCompletedEventDto(c.Code, c.Id))
             .ToList();
-    }
-
-    private static BatchDto MapToBatchDto(Batch batch)
-    {
-        return new BatchDto(
-            batch.RunId?.Id ?? 0,
-            batch.PeriodStart.ToDateTimeOffset(),
-            batch.PeriodEnd.ToDateTimeOffset(),
-            batch.ExecutionTimeStart?.ToDateTimeOffset() ?? null,
-            batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
-            MapState(batch.ExecutionState));
-    }
-
-    private static BatchState MapState(BatchExecutionState state)
-    {
-        return state switch
-        {
-            BatchExecutionState.Created => BatchState.Pending,
-            BatchExecutionState.Submitted => BatchState.Pending,
-            BatchExecutionState.Pending => BatchState.Pending,
-            BatchExecutionState.Executing => BatchState.Executing,
-            BatchExecutionState.Completed => BatchState.Completed,
-            BatchExecutionState.Failed => BatchState.Failed,
-            _ => throw new ArgumentOutOfRangeException(nameof(state)),
-        };
     }
 }

@@ -23,7 +23,7 @@ public class MapBatchExecutionState
     /// Update the execution states in the batch repository by mapping the job states from the runs <see cref="ICalculatorJobRunner"/>
     /// </summary>
     /// <returns>Batches that have been completed</returns>
-    public async Task<IEnumerable<Batch>> UpdateExecutionStatesInBatchRepositoryAsync(IBatchRepository batchRepository, ICalculatorJobRunner calculatorJobRunner)
+    public async Task<IEnumerable<Batch>> UpdateExecutionStateAsync(IBatchRepository batchRepository, ICalculatorJobRunner calculatorJobRunner)
     {
         var completedBatches = new List<Batch>();
         var pendingAndExecutingBatches = await batchRepository.GetSubmittedAndPendingAndExecutingAsync().ConfigureAwait(false);
