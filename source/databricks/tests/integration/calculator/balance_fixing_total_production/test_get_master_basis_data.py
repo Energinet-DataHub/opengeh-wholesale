@@ -143,3 +143,8 @@ def test__columns_have_expected_values(
     assert actual.TYPEOFMP == expected_meteringpoint_type
     assert actual.SETTLEMENTMETHOD == expected_settlement_method
     assert actual.ENERGYSUPPLIERID == ""
+
+
+def test__df_is_not_empty_when_no_time_series_points():
+    # TODO: Hour and quarter
+    raise Exception("TODO")
