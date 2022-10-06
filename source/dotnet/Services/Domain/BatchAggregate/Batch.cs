@@ -76,8 +76,9 @@ public class Batch
 
     public void MarkAsSubmitted(JobRunId jobRunId)
     {
-        if (ExecutionState is BatchExecutionState.Submitted or BatchExecutionState.Pending or BatchExecutionState.Executing or BatchExecutionState.Completed)
-            throw new InvalidOperationException("Cannot change batchExecutionState from Submitted, Pending, Executing or Completed to Submitted");
+        if (ExecutionState is BatchExecutionState.Submitted or BatchExecutionState.Pending
+            or BatchExecutionState.Executing or BatchExecutionState.Completed)
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Submitted);
         ArgumentNullException.ThrowIfNull(jobRunId);
         RunId = jobRunId;
         ExecutionState = BatchExecutionState.Submitted;
@@ -86,14 +87,14 @@ public class Batch
     public void MarkAsPending()
     {
         if (ExecutionState is BatchExecutionState.Pending or BatchExecutionState.Executing or BatchExecutionState.Completed)
-            throw new InvalidOperationException("Cannot change batchExecutionState from Pending, Executing or Completed to Pending");
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Pending);
         ExecutionState = BatchExecutionState.Pending;
     }
 
     public void MarkAsExecuting()
     {
         if (ExecutionState is BatchExecutionState.Executing or BatchExecutionState.Completed)
-            throw new InvalidOperationException("Cannot change batchExecutionState from Executing or Completed to Executing");
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Executing);
 
         ExecutionState = BatchExecutionState.Executing;
     }
@@ -101,7 +102,7 @@ public class Batch
     public void MarkAsCompleted()
     {
         if (ExecutionState == BatchExecutionState.Completed)
-            throw new InvalidOperationException("Cannot change batchExecutionState from Completed to Completed");
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Completed);
 
         ExecutionState = BatchExecutionState.Completed;
         ExecutionTimeEnd = _clock.GetCurrentInstant();
@@ -110,5 +111,10 @@ public class Batch
     public void MarkAsFailed()
     {
         ExecutionState = BatchExecutionState.Failed;
+    }
+
+    private void ThrowInvalidStateTransitionException(BatchExecutionState currentState, BatchExecutionState desiredState)
+    {
+        throw new InvalidOperationException($"Cannot change batchExecutionState from {currentState} to {desiredState}");
     }
 }
