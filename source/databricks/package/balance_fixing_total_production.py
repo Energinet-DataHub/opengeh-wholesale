@@ -574,7 +574,7 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         .withColumnRenamed("sum(quarter_quantity)", "Quantity")
         .withColumn(
             "Quantity",
-            when(col("Quantity").isNull(), Decimal("0.00")).otherwise(col("Quantity")),
+            when(col("Quantity").isNull(), Decimal("0.000")).otherwise(col("Quantity")),
         )
         .withColumn(
             "quality",
