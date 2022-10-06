@@ -75,7 +75,10 @@ public sealed class BatchApplicationServiceTests
         await target.UpdateExecutionStateAsync();
 
         // Assert: Verify that batch is now pending.
-        var pending = await repository.GetPendingAsync();
+        using var hostAssert = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        await using var scopeAssert = hostAssert.BeginScope();
+        var repositoryAssert = scopeAssert.ServiceProvider.GetRequiredService<IBatchRepository>();
+        var pending = await repositoryAssert.GetPendingAsync();
         var createdBatch = pending.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
     }
@@ -101,7 +104,10 @@ public sealed class BatchApplicationServiceTests
         await target.UpdateExecutionStateAsync();
 
         // Assert: Verify that batch is now executing.
-        var executing = await repository.GetExecutingAsync();
+        using var hostAssert = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        await using var scopeAssert = hostAssert.BeginScope();
+        var repositoryAssert = scopeAssert.ServiceProvider.GetRequiredService<IBatchRepository>();
+        var executing = await repositoryAssert.GetExecutingAsync();
         var createdBatch = executing.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
     }
@@ -127,6 +133,9 @@ public sealed class BatchApplicationServiceTests
         await target.UpdateExecutionStateAsync();
 
         // Assert: Verify that batch is now completed.
+        using var hostAssert = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        await using var scopeAssert = hostAssert.BeginScope();
+        var repositoryAssert = scopeAssert.ServiceProvider.GetRequiredService<IBatchRepository>();
         var completed = await repository.GetCompletedAsync();
         var createdBatch = completed.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
