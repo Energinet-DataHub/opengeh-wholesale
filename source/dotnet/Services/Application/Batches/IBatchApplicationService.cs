@@ -26,7 +26,7 @@ public interface IBatchApplicationService
     /// <summary>
     /// Create and start all processes of batches with state <see cref="BatchExecutionState.Pending"/>.
     /// </summary>
-    Task StartPendingAsync();
+    Task StartSubmittingAsync();
 
     Task UpdateExecutionStateAsync();
 

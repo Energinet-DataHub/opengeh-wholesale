@@ -18,19 +18,19 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class StartPendingBatches
+public class SubmitCreatedBatches
 {
     private readonly IBatchApplicationService _batchApplicationService;
     private readonly ICorrelationContext _correlationContext;
 
-    public StartPendingBatches(IBatchApplicationService batchApplicationService, ICorrelationContext correlationContext)
+    public SubmitCreatedBatches(IBatchApplicationService batchApplicationService, ICorrelationContext correlationContext)
     {
         _batchApplicationService = batchApplicationService;
         _correlationContext = correlationContext;
     }
 
     // Executes every 10 seconds (see the [TimerTrigger] below)
-    [Function(nameof(StartPendingBatches))]
+    [Function(nameof(SubmitCreatedBatches))]
     public async Task RunAsync(
         [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
         FunctionContext context)
@@ -39,6 +39,6 @@ public class StartPendingBatches
         // so we need to add a correlation ID ourselves
         _correlationContext.SetId(Guid.NewGuid().ToString());
 
-        await _batchApplicationService.StartPendingAsync().ConfigureAwait(false);
+        await _batchApplicationService.StartSubmittingAsync().ConfigureAwait(false);
     }
 }

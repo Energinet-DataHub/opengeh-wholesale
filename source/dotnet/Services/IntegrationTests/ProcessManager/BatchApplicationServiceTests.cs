@@ -71,7 +71,7 @@ public sealed class BatchApplicationServiceTests
 
         // Act
         await target.CreateAsync(_batchRequest);
-        await target.StartPendingAsync();
+        await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
         // Assert: Verify that batch is now pending.
@@ -97,7 +97,7 @@ public sealed class BatchApplicationServiceTests
 
         // Act
         await target.CreateAsync(_batchRequest);
-        await target.StartPendingAsync();
+        await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
         // Assert: Verify that batch is now executing.
@@ -123,7 +123,7 @@ public sealed class BatchApplicationServiceTests
 
         // Act
         await target.CreateAsync(_batchRequest);
-        await target.StartPendingAsync();
+        await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
         // Assert: Verify that batch is now completed.
