@@ -71,7 +71,6 @@ metering_point_connected_message_type = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
-    spark,
     raw_integration_events_df,
     raw_time_series_points_df,
     batch_id,
