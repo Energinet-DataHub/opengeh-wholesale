@@ -30,6 +30,7 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly ICalculatorJobRunner _calculatorJobRunner;
     private readonly ICalculatorJobParametersFactory _calculatorJobParametersFactory;
     private readonly IBatchExecutionStateHandler _batchExecutionStateHandler;
+    private readonly IBatchDtoMapper _batchDtoMapper;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
@@ -37,7 +38,8 @@ public class BatchApplicationService : IBatchApplicationService
         IProcessCompletedPublisher processCompletedPublisher,
         ICalculatorJobRunner calculatorJobRunner,
         ICalculatorJobParametersFactory calculatorJobParametersFactory,
-        IBatchExecutionStateHandler batchExecutionStateHandler)
+        IBatchExecutionStateHandler batchExecutionStateHandler,
+        IBatchDtoMapper batchDtoMapper)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
@@ -45,6 +47,7 @@ public class BatchApplicationService : IBatchApplicationService
         _calculatorJobRunner = calculatorJobRunner;
         _calculatorJobParametersFactory = calculatorJobParametersFactory;
         _batchExecutionStateHandler = batchExecutionStateHandler;
+        _batchDtoMapper = batchDtoMapper;
     }
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
@@ -81,7 +84,7 @@ public class BatchApplicationService : IBatchApplicationService
         var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
-        return batches.Select(BatchDtoMapper.Map);
+        return batches.Select(_batchDtoMapper.Map);
     }
 
     private static Batch CreateBatch(BatchRequestDto batchRequestDto)

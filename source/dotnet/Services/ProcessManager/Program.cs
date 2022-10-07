@@ -124,6 +124,7 @@ public static class Program
         });
 
         serviceCollection.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
+        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         serviceCollection
             .AddScoped<ICalculatorJobParametersFactory, DatabricksCalculatorJobParametersFactory>();

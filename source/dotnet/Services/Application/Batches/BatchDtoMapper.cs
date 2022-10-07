@@ -16,9 +16,9 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public static class BatchDtoMapper
+public class BatchDtoMapper : IBatchDtoMapper
 {
-    public static BatchDto Map(Batch batch)
+    public BatchDto Map(Batch batch)
     {
         return new BatchDto(
             batch.RunId?.Id ?? 0,
