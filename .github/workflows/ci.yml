@@ -25,7 +25,7 @@ jobs:
   #
 
   ci_base:
-    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@poc
+    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v8
 
   #
   # Detect changes to start relevant jobs
@@ -41,7 +41,7 @@ jobs:
   infrastructure_ci_build:
     needs: changes
     if: ${{ needs.changes.outputs.infrastructure == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@poc
+    uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v8
     with:
       TERRAFORM_WORKING_DIRECTORY: './build/infrastructure/main'
       TERRAFORM_VERSION: '1.2.2'
@@ -54,7 +54,7 @@ jobs:
   databricks_ci_build:
     needs: changes
     if: ${{ needs.changes.outputs.databricks == 'true' }}
-    uses:  Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@poc
+    uses:  Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v8
     with:
       PYHTON_VERSION: '3.9.7'
       ARCHITECTURE: 'x64'
@@ -63,7 +63,7 @@ jobs:
   databricks_ci_test:
     needs: changes
     if: ${{ needs.changes.outputs.databricks == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@poc
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v8
     with:
       PATH_STATIC_CHECKS: './source/databricks'
       # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
@@ -78,7 +78,7 @@ jobs:
   dotnet_ci_build:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@poc
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v8
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
 
@@ -86,7 +86,7 @@ jobs:
   dotnet_ci_test_integrationtests_part1:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
     with:
       TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       TESTS_FILTER_EXPRESSION: 'FullyQualifiedName~IntegrationEventListener'
@@ -105,7 +105,7 @@ jobs:
   dotnet_ci_test_integrationtests_part2:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
     with:
       TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       TESTS_FILTER_EXPRESSION: 'FullyQualifiedName!~IntegrationEventListener'
@@ -124,7 +124,7 @@ jobs:
   dotnet_ci_test_tests:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
     with:
       TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 8
