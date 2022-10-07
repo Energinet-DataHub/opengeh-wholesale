@@ -17,4 +17,4 @@ from .connection_state import ConnectionState
 from .quality import Quality
 from .settlement_method import SettlementMethod
 from .time_series_quality import TimeSeriesQuality
-from .metering_point_resolution import MeteringpointResolution
+from .metering_point_resolution import MeteringPointResolution

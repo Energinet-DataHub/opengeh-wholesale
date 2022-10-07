@@ -28,7 +28,7 @@ from tests.contract_utils import (
 from package.codelists import (
     TimeSeriesResolution,
     TimeSeriesQuality,
-    MeteringpointResolution,
+    MeteringPointResolution,
 )
 from pyspark.sql.functions import col
 
@@ -159,7 +159,7 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
         resolution=TimeSeriesResolution.quarter.value,
     )
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringpointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarterly.value,
         effective_date=timestamp_factory("2022-06-08T12:00:00.000Z"),
         to_effective_date=timestamp_factory("2023-06-10T13:00:00.000Z"),
     )
@@ -205,7 +205,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=effective_date,
         to_effective_date=to_effective_date,
-        resolution=MeteringpointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarterly.value,
     )
 
     # Act
@@ -241,7 +241,7 @@ def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_l
         registration_date_time_2=registration_date_time_2,
     )
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringpointResolution.quarterly.value
+        resolution=MeteringPointResolution.quarterly.value
     )
 
     # Act
@@ -270,7 +270,7 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
     )
 
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringpointResolution.quarterly.value
+        resolution=MeteringPointResolution.quarterly.value
     )
     # Act
     actual = _get_enriched_time_series_points_df(
@@ -297,7 +297,7 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
     )
 
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringpointResolution.hour.value
+        resolution=MeteringPointResolution.hour.value
     )
 
     # Act
@@ -325,7 +325,7 @@ def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
     )
 
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringpointResolution.quarterly.value
+        resolution=MeteringPointResolution.quarterly.value
     )
 
     # Act
@@ -357,7 +357,7 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=timestamp_factory(start_time),
         to_effective_date=timestamp_factory(end_time),
-        resolution=MeteringpointResolution.hour.value,
+        resolution=MeteringPointResolution.hour.value,
     )
 
     # Act
@@ -383,10 +383,10 @@ def test__df_is_not_empty_when_no_time_series_points(
     end_time = "2022-06-09T22:00:00.000Z"
 
     empty_raw_time_series_points = raw_time_series_points_factory(
-        resolution=MeteringpointResolution.hour.value,
+        resolution=MeteringPointResolution.hour.value,
     ).filter(col("GsrnNumber") == "")
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringpointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarterly.value,
         effective_date=timestamp_factory(start_time),
         to_effective_date=timestamp_factory(end_time),
     )
@@ -410,14 +410,14 @@ def test__df_is_not_empty_when_no_time_series_points(
         (
             "2022-06-08T22:00:00.000Z",
             "2022-06-09T22:00:00.000Z",
-            MeteringpointResolution.quarterly.value,
+            MeteringPointResolution.quarterly.value,
             96,
         ),
         # DST has 24 hours
         (
             "2022-06-08T22:00:00.000Z",
             "2022-06-09T22:00:00.000Z",
-            MeteringpointResolution.hour.value,
+            MeteringPointResolution.hour.value,
             24,
         ),
         # going from DST to standard time there are 25 hours (100 quarters)
@@ -426,26 +426,26 @@ def test__df_is_not_empty_when_no_time_series_points(
         (
             "2022-10-29T22:00:00.000Z",
             "2022-10-30T23:00:00.000Z",
-            MeteringpointResolution.quarterly.value,
+            MeteringPointResolution.quarterly.value,
             100,
         ),
         (
             "2022-10-29T22:00:00.000Z",
             "2022-10-30T23:00:00.000Z",
-            MeteringpointResolution.hour.value,
+            MeteringPointResolution.hour.value,
             25,
         ),
         # going from vinter to summertime there are 23 hours (92 quarters)
         (
             "2022-03-26T23:00:00.000Z",
             "2022-03-27T22:00:00.000Z",
-            MeteringpointResolution.hour.value,
+            MeteringPointResolution.hour.value,
             23,
         ),
         (
             "2022-03-26T23:00:00.000Z",
             "2022-03-27T22:00:00.000Z",
-            MeteringpointResolution.quarterly.value,
+            MeteringPointResolution.quarterly.value,
             92,
         ),
     ],
