@@ -151,7 +151,8 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
 
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory("2022-06-08T22:15:00.000Z")
+        time=timestamp_factory("2022-06-08T22:15:00.000Z"),
+        resolution=Resolution.quarter.value,
     )
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringpointResolution.quarterly.value,
@@ -194,7 +195,8 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
 
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory("2022-06-08T12:15:00.000Z")
+        time=timestamp_factory("2022-06-08T12:15:00.000Z"),
+        resolution=Resolution.quarter.value,
     )
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=effective_date,
@@ -376,13 +378,13 @@ def test__df_is_not_empty_when_no_time_series_points(
     start_time = "2022-06-08T22:00:00.000Z"
     end_time = "2022-06-09T22:00:00.000Z"
 
-    empty_raw_time_series_points = raw_time_series_points_factory().filter(
-        col("GsrnNumber") == ""
-    )
+    empty_raw_time_series_points = raw_time_series_points_factory(
+        resolution=MeteringpointResolution.hour.value,
+    ).filter(col("GsrnNumber") == "")
     metering_point_period_df = metering_point_period_df_factory(
+        resolution=MeteringpointResolution.quarterly.value,
         effective_date=timestamp_factory(start_time),
         to_effective_date=timestamp_factory(end_time),
-        resolution=MeteringpointResolution.quarterly.value,
     )
 
     # Act
