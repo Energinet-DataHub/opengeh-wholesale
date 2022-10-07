@@ -274,6 +274,10 @@ def _get_metering_point_periods_df(
         )  # Only aggregate when metering points is connected
         .where(col("MeteringPointType") == MeteringPointType.production.value)
     )
+    print(metering_point_periods_df.count())
+    metering_point_periods_df.show()
+    if metering_point_periods_df.count() == 0:
+        raise Exception("There are no metering points for the requested period")
 
     debug(
         "Metering point events before join with grid areas",
