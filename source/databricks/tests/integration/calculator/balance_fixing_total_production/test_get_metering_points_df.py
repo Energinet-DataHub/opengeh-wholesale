@@ -475,13 +475,20 @@ def test__metering_points_are_periodized_by_effective_date(
     )
     integration_events_df = connected_events_df.union(created_events_df)
 
-    # Act
-    actual_df = _get_metering_point_periods_df(
-        integration_events_df, grid_area_df, second_of_june, third_of_june
-    )
+    if expected:
+        actual_df = _get_metering_point_periods_df(
+            integration_events_df, grid_area_df, second_of_june, third_of_june
+        )
+        assert (actual_df.count() == 1) == expected
+    else:
+        with pytest.raises(Exception) as e_info:
+            _get_metering_point_periods_df(
+                integration_events_df, grid_area_df, second_of_june, third_of_june
+            )
 
-    # Assert
-    assert (actual_df.count() == 1) == expected
+        assert (
+            str(e_info.value) == "There are no metering points for the requested period"
+        )
 
 
 def test__duplicate_connected_events_do_not_affect_amount_of_periods(
