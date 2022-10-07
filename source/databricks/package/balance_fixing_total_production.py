@@ -50,7 +50,7 @@ from pyspark.sql.window import Window
 from package.codelists import (
     ConnectionState,
     MeteringPointType,
-    MeteringPointQuality,
+    Quality,
     TimeSeriesResolution,
     TimeSeriesQuality,
     MeteringpointResolution,
@@ -546,20 +546,20 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
                 array_contains(
                     col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
                 ),
-                lit(MeteringPointQuality.incomplete.value),
+                lit(Quality.incomplete.value),
             )
             .when(
                 array_contains(
                     col("collect_set(Quality)"), lit(TimeSeriesQuality.estimated.value)
                 ),
-                lit(MeteringPointQuality.estimated.value),
+                lit(Quality.estimated.value),
             )
             .when(
                 array_contains(
                     col("collect_set(Quality)"),
                     lit(TimeSeriesQuality.measured.value),
                 ),
-                lit(MeteringPointQuality.measured.value),
+                lit(Quality.measured.value),
             ),
         )
         .withColumnRenamed("Quality", "quality")
@@ -583,9 +583,9 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         )
         .withColumn(
             "quality",
-            when(
-                col("quality").isNull(), MeteringPointQuality.incomplete.value
-            ).otherwise(col("quality")),
+            when(col("quality").isNull(), Quality.incomplete.value).otherwise(
+                col("quality")
+            ),
         )
         .select(
             "GridAreaCode",

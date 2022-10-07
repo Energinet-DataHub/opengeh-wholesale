@@ -17,11 +17,7 @@ import os
 import shutil
 import pytest
 import json
-from package.codelists import (
-    TimeSeriesResolution,
-    TimeSeriesQuality,
-    MeteringPointQuality,
-)
+from package.codelists import TimeSeriesResolution, TimeSeriesQuality, Quality
 from decimal import Decimal
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_result_df
@@ -271,19 +267,19 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
             TimeSeriesQuality.measured.value,
             TimeSeriesQuality.estimated.value,
             TimeSeriesQuality.missing.value,
-            MeteringPointQuality.incomplete.value,
+            Quality.incomplete.value,
         ),
         (
             TimeSeriesQuality.measured.value,
             TimeSeriesQuality.estimated.value,
             TimeSeriesQuality.measured.value,
-            MeteringPointQuality.estimated.value,
+            Quality.estimated.value,
         ),
         (
             TimeSeriesQuality.measured.value,
             TimeSeriesQuality.measured.value,
             TimeSeriesQuality.measured.value,
-            MeteringPointQuality.measured.value,
+            Quality.measured.value,
         ),
     ],
 )
@@ -311,7 +307,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     df = enriched_time_series_factory().withColumn("quality", lit(None))
 
     result_df = _get_result_df(df)
-    assert result_df.first().quality == MeteringPointQuality.incomplete.value
+    assert result_df.first().quality == Quality.incomplete.value
 
 
 def test__when_time_series_point_is_missing__quantity_is_0(
