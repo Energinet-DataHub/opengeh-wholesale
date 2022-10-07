@@ -46,6 +46,7 @@ from pyspark.sql.types import (
     StructType,
     DecimalType,
 )
+from pyspark.sql import Row
 from pyspark.sql.window import Window
 from package.codelists import (
     ConnectionState,
@@ -94,6 +95,7 @@ def calculate_balance_fixing_total_production(
 
     metering_point_period_df = _get_metering_point_periods_df(
         cached_integration_events_df,
+        batch_grid_areas,
         grid_area_df,
         period_start_datetime,
         period_end_datetime,
@@ -168,6 +170,7 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFr
 
 def _get_metering_point_periods_df(
     cached_integration_events_df,
+    batch_grid_areas,
     grid_area_df,
     period_start_datetime,
     period_end_datetime,
@@ -275,9 +278,6 @@ def _get_metering_point_periods_df(
         .where(col("MeteringPointType") == MeteringPointType.production.value)
     )
 
-    if metering_point_periods_df.count() == 0:
-        raise Exception("There are no metering points for the requested period")
-
     debug(
         "Metering point events before join with grid areas",
         metering_point_periods_df.orderBy(col("storedTime").desc()),
@@ -299,6 +299,23 @@ def _get_metering_point_periods_df(
         "ToGridAreaCode",
         "Resolution",
     )
+
+    distinct_grid_areas_rows = (
+        metering_point_periods_df.select("GridAreaCode").distinct().collect()
+    )
+    distinct_grid_areas = []
+    for row in distinct_grid_areas_rows:
+        distinct_grid_areas.append(row.__getitem__("GridAreaCode"))
+    grid_areas_without_metering_points = [
+        grid_area
+        for grid_area in batch_grid_areas
+        if grid_area not in distinct_grid_areas
+    ]
+
+    if len(grid_areas_without_metering_points) > 0:
+        raise Exception(
+            f"There are no metering points for the grid areas: {grid_areas_without_metering_points} in the requested period"
+        )
 
     debug(
         "Metering point periods",
