@@ -1,4 +1,4 @@
-// Copyright 2020 Energinet DataHub A/S
+﻿// Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 public class BatchFileManager : IBatchFileManager
 {
     private const string ZipFilename = "Basis Data.zip";
+
     private (string Directory, string Extension) GetResultDirectory(Guid batchId, GridAreaCode gridAreaCode) => ($"results/batch_id={batchId}/grid_area={gridAreaCode}/", ".json");
 
     private (string Directory, string Extension) GetTimeSeriesHourBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode) => ($"results/basis-data/batch_id={batchId}/time-series-hour/grid_area={gridAreaCode}/", ".csv");
@@ -76,7 +77,7 @@ public class BatchFileManager : IBatchFileManager
             ZipFile.CreateFromDirectory(tempDirectoryPath, ZipFilename);
             var zipFilePath = Path.Combine(Path.GetTempPath(), ZipFilename);
 
-            await UploadFileAsync(zipFilePath);
+            await UploadFileAsync(zipFilePath).ConfigureAwait(false);
         }
         finally
         {
@@ -98,8 +99,11 @@ public class BatchFileManager : IBatchFileManager
         var inputStream = await GetFileStreamAsync(fileIdentifier).ConfigureAwait(false);
         await using (inputStream.ConfigureAwait(false))
         {
-            await using var outputStream = new FileStream(tempFilePath, FileMode.Append);
-            await inputStream.CopyToAsync(outputStream).ConfigureAwait(false);
+            var outputStream = new FileStream(tempFilePath, FileMode.Append);
+            await using (outputStream.ConfigureAwait(false))
+            {
+                await inputStream.CopyToAsync(outputStream).ConfigureAwait(false);
+            }
         }
 
         File.Move(tempFilePath, tempDirectoryPath);
@@ -132,6 +136,6 @@ public class BatchFileManager : IBatchFileManager
         var fileName = Path.GetFileName(localFilePath);
         var blobClient = _blobContainerClient.GetBlobClient(fileName);
 
-        await blobClient.UploadAsync(localFilePath, true);
+        await blobClient.UploadAsync(localFilePath, true).ConfigureAwait(false);
     }
 }

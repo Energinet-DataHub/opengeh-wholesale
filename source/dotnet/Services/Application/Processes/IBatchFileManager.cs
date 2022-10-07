@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
+// TODO BJARKE: Add DI container unit test in case unit tests doesn't catch problem with unregistered type
 public interface IBatchFileManager
 {
     /// <summary>
