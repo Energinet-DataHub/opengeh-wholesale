@@ -22,9 +22,13 @@ public interface IBatchRepository
 
     Task<Batch> GetAsync(Guid batchId);
 
+    Task<List<Batch>> GetCreatedAsync();
+
     Task<List<Batch>> GetPendingAsync();
 
     Task<List<Batch>> GetExecutingAsync();
+
+    Task<List<Batch>> GetByStatesAsync(IEnumerable<BatchExecutionState> states);
 
     Task<List<Batch>> GetCompletedAsync();
 

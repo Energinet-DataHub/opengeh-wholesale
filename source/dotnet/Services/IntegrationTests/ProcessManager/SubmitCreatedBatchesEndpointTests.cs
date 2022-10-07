@@ -30,7 +30,7 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
-public class StartPendingBatchesEndpointTests
+public class SubmitCreatedBatchesEndpointTests
 {
     [Collection(nameof(ProcessManagerFunctionAppCollectionFixture))]
     public class RunAsync : FunctionAppTestBase<ProcessManagerFunctionAppFixture>, IAsyncLifetime
@@ -62,7 +62,7 @@ public class StartPendingBatchesEndpointTests
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
             // Assert: Await timer triggered endpoints has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartPendingBatches));
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(SubmitCreatedBatches));
 
             // clear log to ensure that initial run of UpdateBatchExecutionState does not count.
             Fixture.HostManager.ClearHostLog();
@@ -86,7 +86,7 @@ public class StartPendingBatchesEndpointTests
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
             // Assert: Await timer triggered endpoints has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartPendingBatches));
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(SubmitCreatedBatches));
 
             // clear log to ensure that initial run of UpdateBatchExecutionState does not count.
             Fixture.HostManager.ClearHostLog();
