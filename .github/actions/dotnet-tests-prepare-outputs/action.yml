@@ -55,6 +55,6 @@ runs:
       shell: bash
       run: |
         # Create base directory
-        mkdir -p '${{ inputs.OUTPUT_PATH }}/dotnet' ';'
+        mkdir -p '${{ inputs.OUTPUT_PATH }}/source/dotnet' ';'
         # Copy everything from source/dotnet to the new directory
-        cp -a source/dotnet/. 'experiment/dotnet'
+        cp -a source/dotnet/. '${{ inputs.OUTPUT_PATH }}/source/dotnet'

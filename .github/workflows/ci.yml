@@ -38,37 +38,37 @@ jobs:
   # CI Infrastructure
   #
 
-  infrastructure_ci_build:
-    needs: changes
-    if: ${{ needs.changes.outputs.infrastructure == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v8
-    with:
-      TERRAFORM_WORKING_DIRECTORY: './build/infrastructure/main'
-      TERRAFORM_VERSION: '1.2.2'
-      INFRASTRUCTURE_PATH: './build/infrastructure'
+  # infrastructure_ci_build:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.infrastructure == 'true' }}
+  #   uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v8
+  #   with:
+  #     TERRAFORM_WORKING_DIRECTORY: './build/infrastructure/main'
+  #     TERRAFORM_VERSION: '1.2.2'
+  #     INFRASTRUCTURE_PATH: './build/infrastructure'
 
   #
   # CI Databricks
   #
 
-  databricks_ci_build:
-    needs: changes
-    if: ${{ needs.changes.outputs.databricks == 'true' }}
-    uses:  Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v8
-    with:
-      PYHTON_VERSION: '3.9.7'
-      ARCHITECTURE: 'x64'
-      WHEEL_WORKING_DIRECTORY: './source/databricks'
+  # databricks_ci_build:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.databricks == 'true' }}
+  #   uses:  Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v8
+  #   with:
+  #     PYHTON_VERSION: '3.9.7'
+  #     ARCHITECTURE: 'x64'
+  #     WHEEL_WORKING_DIRECTORY: './source/databricks'
 
-  databricks_ci_test:
-    needs: changes
-    if: ${{ needs.changes.outputs.databricks == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v8
-    with:
-      PATH_STATIC_CHECKS: './source/databricks'
-      # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
-      IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
-      TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
+  # databricks_ci_test:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.databricks == 'true' }}
+  #   uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v8
+  #   with:
+  #     PATH_STATIC_CHECKS: './source/databricks'
+  #     # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
+  #     IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
+  #     TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
 
   #
   # CI .NET
@@ -78,56 +78,56 @@ jobs:
   dotnet_ci_build:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v8
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@poc-test-coverage
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
       OPERATING_SYSTEM: 'windows-2022'
 
   # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
-  dotnet_ci_test_integrationtests_part1:
-    needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
-    with:
-      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
-      TESTS_FILTER_EXPRESSION: 'FullyQualifiedName~IntegrationEventListener'
-      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
-      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\Services\WebApi'
-      DOWNLOAD_ATTEMPT_LIMIT: 8
-      USE_AZURE_FUNCTIONS_TOOLS: true
-    secrets:
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
-      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
-      AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
+  # dotnet_ci_test_integrationtests_part1:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.dotnet == 'true' }}
+  #   uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
+  #   with:
+  #     TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
+  #     TESTS_FILTER_EXPRESSION: 'FullyQualifiedName~IntegrationEventListener'
+  #     ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
+  #     ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\Services\WebApi'
+  #     DOWNLOAD_ATTEMPT_LIMIT: 8
+  #     USE_AZURE_FUNCTIONS_TOOLS: true
+  #   secrets:
+  #     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  #     AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #     AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
+  #     AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+  #     AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
   # Run tests in 'IntegrationTests.dll' NOT within the namespace 'IntegrationEventListener'
-  dotnet_ci_test_integrationtests_part2:
-    needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
-    with:
-      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
-      TESTS_FILTER_EXPRESSION: 'FullyQualifiedName!~IntegrationEventListener'
-      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
-      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\Services\WebApi'
-      DOWNLOAD_ATTEMPT_LIMIT: 8
-      USE_AZURE_FUNCTIONS_TOOLS: true
-    secrets:
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
-      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
-      AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
+  # dotnet_ci_test_integrationtests_part2:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.dotnet == 'true' }}
+  #   uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
+  #   with:
+  #     TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
+  #     TESTS_FILTER_EXPRESSION: 'FullyQualifiedName!~IntegrationEventListener'
+  #     ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
+  #     ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\tests\source\dotnet\Services\WebApi'
+  #     DOWNLOAD_ATTEMPT_LIMIT: 8
+  #     USE_AZURE_FUNCTIONS_TOOLS: true
+  #   secrets:
+  #     AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  #     AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  #     AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
+  #     AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+  #     AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
   # Run all tests in 'Tests.dll'
   dotnet_ci_test_tests:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@poc-test-coverage
     with:
-      TESTS_DLL_FILE_PATH: '\tests\source\dotnet\Services\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
+      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 8
       USE_AZURE_FUNCTIONS_TOOLS: false
     secrets:
@@ -144,14 +144,14 @@ jobs:
     needs: [
       ci_base,
       # Infrastructure
-      infrastructure_ci_build,
+      # infrastructure_ci_build,
       # Databricks
-      databricks_ci_build,
-      databricks_ci_test,
+      # databricks_ci_build,
+      # databricks_ci_test,
       # .NET
       dotnet_ci_build,
-      dotnet_ci_test_integrationtests_part1,
-      dotnet_ci_test_integrationtests_part2,
+      # dotnet_ci_test_integrationtests_part1,
+      # dotnet_ci_test_integrationtests_part2,
       dotnet_ci_test_tests
     ]
     if: |
