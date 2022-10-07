@@ -78,7 +78,7 @@ public class Batch
     {
         ArgumentNullException.ThrowIfNull(jobRunId);
         if (ExecutionState is BatchExecutionState.Submitted or BatchExecutionState.Pending
-            or BatchExecutionState.Executing or BatchExecutionState.Completed)
+            or BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Submitted);
         RunId = jobRunId;
         ExecutionState = BatchExecutionState.Submitted;
@@ -86,14 +86,14 @@ public class Batch
 
     public void MarkAsPending()
     {
-        if (ExecutionState is BatchExecutionState.Pending or BatchExecutionState.Executing or BatchExecutionState.Completed)
+        if (ExecutionState is BatchExecutionState.Pending or BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Pending);
         ExecutionState = BatchExecutionState.Pending;
     }
 
     public void MarkAsExecuting()
     {
-        if (ExecutionState is BatchExecutionState.Executing or BatchExecutionState.Completed)
+        if (ExecutionState is BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Executing);
 
         ExecutionState = BatchExecutionState.Executing;
@@ -101,7 +101,7 @@ public class Batch
 
     public void MarkAsCompleted()
     {
-        if (ExecutionState == BatchExecutionState.Completed)
+        if (ExecutionState is BatchExecutionState.Completed or BatchExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Completed);
 
         ExecutionState = BatchExecutionState.Completed;
@@ -110,6 +110,9 @@ public class Batch
 
     public void MarkAsFailed()
     {
+        if (ExecutionState is BatchExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Failed);
+
         ExecutionState = BatchExecutionState.Failed;
     }
 
