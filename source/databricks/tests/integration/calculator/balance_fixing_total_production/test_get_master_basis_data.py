@@ -19,7 +19,7 @@ import os
 import shutil
 import pytest
 import json
-from package.codelists import Resolution, MeteringPointType
+from package.codelists import MeteringPointType
 from decimal import Decimal
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_master_basis_data

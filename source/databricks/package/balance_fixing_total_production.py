@@ -51,7 +51,7 @@ from package.codelists import (
     ConnectionState,
     MeteringPointType,
     Quality,
-    Resolution,
+    TimeSeriesResolution,
     TimeSeriesQuality,
     MeteringpointResolution,
 )
@@ -441,13 +441,13 @@ def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
 
     time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        Resolution.quarter.value,
+        TimeSeriesResolution.quarter.value,
         time_zone,
     )
 
     time_series_hour_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        Resolution.hour.value,
+        TimeSeriesResolution.hour.value,
         time_zone,
     )
 
@@ -512,14 +512,17 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         enriched_time_series_points_df.withColumn(
             "quarter_times",
             when(
-                col("Resolution") == Resolution.hour.value,
+                col("Resolution") == TimeSeriesResolution.hour.value,
                 array(
                     col("time"),
                     col("time") + expr("INTERVAL 15 minutes"),
                     col("time") + expr("INTERVAL 30 minutes"),
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
-            ).when(col("Resolution") == Resolution.quarter.value, array(col("time"))),
+            ).when(
+                col("Resolution") == TimeSeriesResolution.quarter.value,
+                array(col("time")),
+            ),
         )
         .select(
             enriched_time_series_points_df["*"],
@@ -529,9 +532,11 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         .withColumn(
             "quarter_quantity",
             when(
-                col("Resolution") == Resolution.hour.value,
+                col("Resolution") == TimeSeriesResolution.hour.value,
                 col("Quantity") / 4,
-            ).when(col("Resolution") == Resolution.quarter.value, col("Quantity")),
+            ).when(
+                col("Resolution") == TimeSeriesResolution.quarter.value, col("Quantity")
+            ),
         )
         .groupBy("GridAreaCode", "quarter_time")
         .agg(sum("quarter_quantity"), collect_set("Quality"))

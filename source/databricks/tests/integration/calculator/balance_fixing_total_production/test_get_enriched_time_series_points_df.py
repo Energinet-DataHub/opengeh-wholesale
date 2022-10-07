@@ -25,7 +25,11 @@ from tests.contract_utils import (
     get_message_type,
 )
 
-from package.codelists import Resolution, TimeSeriesQuality, MeteringpointResolution
+from package.codelists import (
+    TimeSeriesResolution,
+    TimeSeriesQuality,
+    MeteringpointResolution,
+)
 from pyspark.sql.functions import col
 
 
@@ -152,7 +156,7 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory("2022-06-08T22:15:00.000Z"),
-        resolution=Resolution.quarter.value,
+        resolution=TimeSeriesResolution.quarter.value,
     )
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringpointResolution.quarterly.value,
@@ -196,7 +200,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory("2022-06-08T12:15:00.000Z"),
-        resolution=Resolution.quarter.value,
+        resolution=TimeSeriesResolution.quarter.value,
     )
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=effective_date,
@@ -262,7 +266,7 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
     start_time = "2022-06-08T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
-        resolution=Resolution.quarter.value,
+        resolution=TimeSeriesResolution.quarter.value,
     )
 
     metering_point_period_df = metering_point_period_df_factory(
@@ -289,7 +293,7 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
     start_time = "2022-06-08T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
-        resolution=Resolution.hour.value,
+        resolution=TimeSeriesResolution.hour.value,
     )
 
     metering_point_period_df = metering_point_period_df_factory(
@@ -317,7 +321,7 @@ def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
     start_time = "2022-06-08T12:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
-        resolution=Resolution.quarter.value,
+        resolution=TimeSeriesResolution.quarter.value,
     )
 
     metering_point_period_df = metering_point_period_df_factory(
@@ -347,7 +351,7 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     end_time = "2022-06-09T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
-        resolution=Resolution.hour.value,
+        resolution=TimeSeriesResolution.hour.value,
     )
 
     metering_point_period_df = metering_point_period_df_factory(
