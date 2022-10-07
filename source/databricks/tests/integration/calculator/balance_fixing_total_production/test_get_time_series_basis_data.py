@@ -282,3 +282,19 @@ def test__multiple_dates_are_split_into_rows_for_hourly_meteringpoints(
     )
 
     assert hour_df.count() == expected_number_of_rows
+
+
+def test__missing_point_has_empty_quantity(
+    enriched_time_series_factory,
+):
+    enriched_time_series_points_df = enriched_time_series_factory(
+        time="2022-10-28T22:00:00.000Z",
+        resolution=Resolution.quarter.value,
+        number_of_points=96,
+    ).withColumn("Quantity", lit(None).cast(DecimalType()))
+    (quarter_df, _) = _get_time_series_basis_data(
+        enriched_time_series_points_df, "Europe/Copenhagen"
+    )
+
+    for position in range(1, 97):
+        assert quarter_df.first()[f"ENERGYQUANTITY{position}"] is None

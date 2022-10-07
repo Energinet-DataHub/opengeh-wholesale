@@ -22,7 +22,8 @@ from decimal import Decimal
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_result_df
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, sum
+from pyspark.sql.functions import col, sum, lit
+from pyspark.sql.types import DecimalType
 
 minimum_quantity = Decimal("0.001")
 grid_area_code_805 = "805"
@@ -221,13 +222,10 @@ def test__that_grid_area_code_in_input_is_in_output(
     assert result_df.first().GridAreaCode == str(grid_area_code_805)
 
 
-def test__each_grid_area_has_a_sum(
-    enriched_time_series_quarterly_same_time_factory,
-):
+def test__each_grid_area_has_a_sum(enriched_time_series_quarterly_same_time_factory):
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
     result_df = _get_result_df(df)
-    assert result_df.count() == 2
     assert result_df.where("GridAreaCode == 805").count() == 1
     assert result_df.where("GridAreaCode == 806").count() == 1
 
@@ -272,7 +270,12 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
     ],
 )
 def test__quality_is_lowest_common_denominator_among_measured_estimated_and_missing(
-    enriched_time_series_factory, quality_1, quality_2, quality_3, expected_quality
+    enriched_time_series_factory,
+    timestamp_factory,
+    quality_1,
+    quality_2,
+    quality_3,
+    expected_quality,
 ):
     df = (
         enriched_time_series_factory(quality=quality_1)
@@ -281,3 +284,24 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
     )
     result_df = _get_result_df(df)
     assert result_df.first().quality == expected_quality
+
+
+def test__when_time_series_point_is_missing__quality_has_value_incomplete(
+    enriched_time_series_factory,
+    timestamp_factory,
+):
+    df = enriched_time_series_factory().withColumn("quality", lit(None))
+
+    result_df = _get_result_df(df)
+    assert result_df.first().quality == Quality.incomplete.value
+
+
+def test__when_time_series_point_is_missing__quantity_is_0(
+    enriched_time_series_factory,
+    timestamp_factory,
+):
+    df = enriched_time_series_factory().withColumn(
+        "Quantity", lit(None).cast(DecimalType())
+    )
+    result_df = _get_result_df(df)
+    assert result_df.first().Quantity == Decimal("0.000")
