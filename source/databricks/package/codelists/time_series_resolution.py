@@ -15,7 +15,7 @@
 from enum import IntEnum
 
 
-class Resolution(IntEnum):
+class TimeSeriesResolution(IntEnum):
     quarter = 1
     hour = 2
     day = 3

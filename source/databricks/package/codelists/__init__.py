@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .resolution import Resolution
+from .time_series_resolution import TimeSeriesResolution
 from .metering_point_type import MeteringPointType
 from .connection_state import ConnectionState
 from .quality import Quality
