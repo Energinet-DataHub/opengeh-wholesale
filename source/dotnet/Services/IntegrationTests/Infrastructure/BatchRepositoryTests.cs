@@ -70,7 +70,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
         var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, somePeriodStart, somePeriodEnd, clock);
         var sut = new BatchRepository(writeContext);
-        batch.MarkAsExecuting(new JobRunId(1)); // This call will ensure ExecutionTimeStart is set
+        batch.MarkAsExecuting(); // This call will ensure ExecutionTimeStart is set
         batch.MarkAsCompleted();  // This call will ensure ExecutionTimeEnd is set
         batch.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
         batch.ExecutionTimeStart.Should().NotBeNull(); // Additional check
