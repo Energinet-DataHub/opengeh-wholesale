@@ -37,6 +37,8 @@ public static class EnvironmentSettingNames
     public const string ProcessCompletedTopicName = "PROCESS_COMPLETED_TOPIC_NAME";
 
     public const string DatabricksWorkspaceUrl = "DATABRICKS_WORKSPACE_URL";
-
     public const string DatabricksWorkspaceToken = "DATABRICKS_WORKSPACE_TOKEN";
+
+    public const string CalculatorResultsConnectionString = "CALCULATOR_RESULTS_CONNECTION_STRING";
+    public const string CalculatorResultsFileSystemName = "CALCULATOR_RESULTS_FILE_SYSTEM_NAME";
 }

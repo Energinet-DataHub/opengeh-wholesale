@@ -29,19 +29,22 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
     private readonly ICalculatorJobRunner _calculatorJobRunner;
     private readonly ICalculatorJobParametersFactory _calculatorJobParametersFactory;
+    private readonly IBatchFileManager _batchFileManager;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         IProcessCompletedPublisher processCompletedPublisher,
         ICalculatorJobRunner calculatorJobRunner,
-        ICalculatorJobParametersFactory calculatorJobParametersFactory)
+        ICalculatorJobParametersFactory calculatorJobParametersFactory,
+        IBatchFileManager batchFileManager)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _processCompletedPublisher = processCompletedPublisher;
         _calculatorJobRunner = calculatorJobRunner;
         _calculatorJobParametersFactory = calculatorJobParametersFactory;
+        _batchFileManager = batchFileManager ?? throw new ArgumentNullException(nameof(batchFileManager));
     }
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
@@ -87,6 +90,10 @@ public class BatchApplicationService : IBatchApplicationService
                 completedBatches.Add(batch);
             }
         }
+
+        // TODO BJARKE: What to do in case of error?
+        foreach (var batch in completedBatches)
+            await _batchFileManager.ZipBasisDataAndResultAsync(batch).ConfigureAwait(false);
 
         var completedProcesses = CreateProcessCompletedEvents(completedBatches);
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);

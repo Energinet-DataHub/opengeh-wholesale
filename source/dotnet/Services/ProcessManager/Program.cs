@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
@@ -102,6 +103,10 @@ public static class Program
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
+
+        var calculatorResultConnection = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsConnectionString);
+        var calculatorResultFileSystem = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsFileSystemName);
+        serviceCollection.AddSingleton(new DataLakeFileSystemClient(calculatorResultConnection, calculatorResultFileSystem));
 
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
