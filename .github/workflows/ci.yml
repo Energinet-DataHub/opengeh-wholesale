@@ -81,6 +81,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@poc-test-coverage
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
+      OPERATING_SYSTEM: 'windows-2022'
 
   # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
   dotnet_ci_test_integrationtests_part1:
