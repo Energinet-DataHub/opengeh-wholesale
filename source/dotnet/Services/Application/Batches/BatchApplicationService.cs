@@ -29,19 +29,22 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
     private readonly ICalculatorJobRunner _calculatorJobRunner;
     private readonly ICalculatorJobParametersFactory _calculatorJobParametersFactory;
+    private readonly BatchExecutionStateHandler _batchExecutionStateHandler;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         IProcessCompletedPublisher processCompletedPublisher,
         ICalculatorJobRunner calculatorJobRunner,
-        ICalculatorJobParametersFactory calculatorJobParametersFactory)
+        ICalculatorJobParametersFactory calculatorJobParametersFactory,
+        BatchExecutionStateHandler batchExecutionStateHandler)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _processCompletedPublisher = processCompletedPublisher;
         _calculatorJobRunner = calculatorJobRunner;
         _calculatorJobParametersFactory = calculatorJobParametersFactory;
+        _batchExecutionStateHandler = batchExecutionStateHandler;
     }
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
@@ -66,8 +69,7 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task UpdateExecutionStateAsync()
     {
-        var mapStates = new BatchExecutionStateHandler();
-        var completedBatches = await mapStates.UpdateExecutionStateAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
+        var completedBatches = await _batchExecutionStateHandler.UpdateExecutionStateAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
         var completedProcesses = CreateProcessCompletedEvents(completedBatches);
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
