@@ -45,11 +45,12 @@ jobs:
   databricks_update_coverage_report:
     needs: changes
     if: ${{ needs.changes.outputs.databricks == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@v8
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@poc
     with:
       PATH_STATIC_CHECKS: './source/databricks'
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
       TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
+      USE_NEW_ACTIONNAME: true
 
   databricks_promote_prerelease:
     needs: changes
