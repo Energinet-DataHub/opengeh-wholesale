@@ -286,7 +286,7 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
     assert result_df.first().quality == expected_quality
 
 
-def test__quality_has_value_incomplete_for_missing_quality(
+def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     enriched_time_series_factory,
     timestamp_factory,
 ):
@@ -296,7 +296,7 @@ def test__quality_has_value_incomplete_for_missing_quality(
     assert result_df.first().quality == Quality.incomplete.value
 
 
-def test__quantity_is_0_for_missing_quantity(
+def test__when_time_series_point_is_missing__quantity_is_0(
     enriched_time_series_factory,
     timestamp_factory,
 ):
@@ -304,4 +304,4 @@ def test__quantity_is_0_for_missing_quantity(
         "Quantity", lit(None).cast(DecimalType())
     )
     result_df = _get_result_df(df)
-    assert result_df.first().Quantity == Decimal(0.00)
+    assert result_df.first().Quantity == Decimal("0.000")

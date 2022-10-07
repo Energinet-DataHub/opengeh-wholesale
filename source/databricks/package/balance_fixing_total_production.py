@@ -388,9 +388,6 @@ def _get_enriched_time_series_points_df(
         timeseries_df, ["GsrnNumber", "time"], "left"
     )
 
-    points_for_each_metering_point_df.show()
-    metering_point_period_df.show()
-
     enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
         metering_point_period_df,
         (
