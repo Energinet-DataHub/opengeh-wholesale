@@ -54,7 +54,7 @@ runs:
     - name: Copy all bin folders
       shell: bash
       run: |
-        # Create subfolder hierarchy matching 'bin' folders
-        find source/dotnet -type d -name 'bin' -exec mkdir -p '${{ inputs.OUTPUT_PATH }}/tests/{}' ';'
-        # Copy 'bin/Release' folders into hierarchy (cannot copy obj folders since we did not create those)
-        find source/dotnet -type d -name 'Release' -exec cp -r '{}' '${{ inputs.OUTPUT_PATH }}/tests/{}' ';'
+        # Create base directory
+        mkdir -p '${{ inputs.OUTPUT_PATH }}/dotnet' ';'
+        # Copy everything from source/dotnet to the new directory
+        cp -a source/dotnet/. 'experiment/dotnet'
