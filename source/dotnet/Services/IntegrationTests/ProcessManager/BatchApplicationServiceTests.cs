@@ -31,10 +31,8 @@ public sealed class BatchApplicationServiceTests
 {
     private const long DummyJobId = 42;
     private const string DummyJobName = "CalculatorJob";
-    private const string GridAreaCode = "321";
     private readonly Mock<IJobsWheelApi> _jobsApiMock = new Mock<IJobsWheelApi>();
     private readonly Mock<IDatabricksWheelClient> _databricksWheelClientMock = new Mock<IDatabricksWheelClient>();
-    private readonly BatchRequestDto _batchRequest = new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { GridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now);
 
     public BatchApplicationServiceTests()
     {
@@ -61,7 +59,6 @@ public sealed class BatchApplicationServiceTests
         using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
         await using var scope = host.BeginScope();
         var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-        var repository = scope.ServiceProvider.GetRequiredService<IBatchRepository>();
 
         var pendingRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.PENDING, ResultState = RunResultState.SUCCESS } };
 
@@ -69,14 +66,19 @@ public sealed class BatchApplicationServiceTests
             .Setup(x => x.RunsGet(It.IsAny<long>(), default))
             .ReturnsAsync(pendingRun);
 
+        const string gridAreaCode = "123";
+
         // Act
-        await target.CreateAsync(_batchRequest);
+        await target.CreateAsync(new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
+        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        await using var readScope = readHost.BeginScope();
+        var repository = readScope.ServiceProvider.GetRequiredService<IBatchRepository>();
         // Assert: Verify that batch is now pending.
         var pending = await repository.GetPendingAsync();
-        var createdBatch = pending.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
+        var createdBatch = pending.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
     }
 
@@ -87,7 +89,6 @@ public sealed class BatchApplicationServiceTests
         using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
         await using var scope = host.BeginScope();
         var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-        var repository = scope.ServiceProvider.GetRequiredService<IBatchRepository>();
 
         var executingRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.RUNNING, ResultState = RunResultState.SUCCESS } };
 
@@ -95,14 +96,19 @@ public sealed class BatchApplicationServiceTests
             .Setup(x => x.RunsGet(It.IsAny<long>(), default))
             .ReturnsAsync(executingRun);
 
+        const string gridAreaCode = "456";
+
         // Act
-        await target.CreateAsync(_batchRequest);
+        await target.CreateAsync(new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
+        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        await using var readScope = readHost.BeginScope();
+        var repository = readScope.ServiceProvider.GetRequiredService<IBatchRepository>();
         // Assert: Verify that batch is now executing.
         var executing = await repository.GetExecutingAsync();
-        var createdBatch = executing.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
+        var createdBatch = executing.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
     }
 
@@ -113,7 +119,6 @@ public sealed class BatchApplicationServiceTests
         using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
         await using var scope = host.BeginScope();
         var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-        var repository = scope.ServiceProvider.GetRequiredService<IBatchRepository>();
 
         var executingRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.TERMINATED, ResultState = RunResultState.SUCCESS } };
 
@@ -121,14 +126,19 @@ public sealed class BatchApplicationServiceTests
             .Setup(x => x.RunsGet(It.IsAny<long>(), default))
             .ReturnsAsync(executingRun);
 
+        const string gridAreaCode = "789";
+
         // Act
-        await target.CreateAsync(_batchRequest);
+        await target.CreateAsync(new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
+        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        await using var readScope = readHost.BeginScope();
+        var repository = readScope.ServiceProvider.GetRequiredService<IBatchRepository>();
         // Assert: Verify that batch is now completed.
         var completed = await repository.GetCompletedAsync();
-        var createdBatch = completed.First(x => x.GridAreaCodes.Contains(new GridAreaCode(GridAreaCode)));
+        var createdBatch = completed.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
         Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
     }
 
