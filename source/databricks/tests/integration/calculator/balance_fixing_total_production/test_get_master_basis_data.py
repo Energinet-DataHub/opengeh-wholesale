@@ -19,7 +19,7 @@ import os
 import shutil
 import pytest
 import json
-from package.codelists import MeteringPointType
+from package.codelists import MeteringPointType, MeteringpointResolution
 from decimal import Decimal
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_master_basis_data
@@ -46,6 +46,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         from_grid_area_code="some-from-grid-area-code",
         to_grid_area_code="some-to-grid-area-code",
         settlement_method="some-settlement-method",
+        resolution=MeteringpointResolution.hour.value,
     ):
         row = {
             "GsrnNumber": gsrn_number,
@@ -56,6 +57,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
             "FromGridAreaCode": from_grid_area_code,
             "ToGridAreaCode": to_grid_area_code,
             "SettlementMethod": settlement_method,
+            "Resolution": resolution,
         }
         return spark.createDataFrame([row])
 
@@ -143,3 +145,21 @@ def test__columns_have_expected_values(
     assert actual.TYPEOFMP == expected_meteringpoint_type
     assert actual.SETTLEMENTMETHOD == expected_settlement_method
     assert actual.ENERGYSUPPLIERID == ""
+
+
+def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
+    metering_point_period_df_factory, timestamp_factory
+):
+    expected_number_of_metering_points = 2
+    metering_point_period_df = metering_point_period_df_factory(
+        gsrn_number="1", resolution=MeteringpointResolution.quarterly.value
+    ).union(
+        metering_point_period_df_factory(
+            gsrn_number="2", resolution=MeteringpointResolution.hour.value
+        )
+    )
+
+    master_basis_data = _get_master_basis_data(metering_point_period_df)
+
+    # Assert
+    assert master_basis_data.count() == expected_number_of_metering_points
