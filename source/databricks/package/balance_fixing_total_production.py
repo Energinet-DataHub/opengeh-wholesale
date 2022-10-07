@@ -53,17 +53,18 @@ from package.codelists import (
     Quality,
     Resolution,
     TimeSeriesQuality,
+    MeteringpointResolution,
 )
 from package.schemas import (
     grid_area_updated_event_schema,
     metering_point_generic_event_schema,
 )
 from package.db_logging import debug
-from datetime import datetime, timedelta, tzinfo, date
+from datetime import datetime, timedelta, date
 import time
 from pytz import timezone
 import pytz
-
+from decimal import Decimal
 
 metering_point_created_message_type = "MeteringPointCreated"
 metering_point_connected_message_type = "MeteringPointConnected"
@@ -293,6 +294,7 @@ def _get_metering_point_periods_df(
         "SettlementMethod",
         "FromGridAreaCode",
         "ToGridAreaCode",
+        "Resolution",
     )
 
     debug(
@@ -314,6 +316,41 @@ def _get_enriched_time_series_points_df(
     timeseries_df = time_series_points.where(
         col("time") >= period_start_datetime
     ).where(col("time") < period_end_datetime)
+
+    quarterly_mp_df = metering_point_period_df.where(
+        col("Resolution") == MeteringpointResolution.quarterly.value
+    )
+    hourly_mp_df = metering_point_period_df.where(
+        col("Resolution") == MeteringpointResolution.hour.value
+    )
+
+    exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
+
+    quarterly_times_df = (
+        quarterly_mp_df.select("GsrnNumber")
+        .distinct()
+        .select(
+            "GsrnNumber",
+            expr(
+                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
+            ).alias("quarter_times"),
+        )
+        .select("GsrnNumber", explode("quarter_times").alias("time"))
+    )
+
+    hourly_times_df = (
+        hourly_mp_df.select("GsrnNumber")
+        .distinct()
+        .select(
+            "GsrnNumber",
+            expr(
+                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 1 hour)"
+            ).alias("times"),
+        )
+        .select("GsrnNumber", explode("times").alias("time"))
+    )
+
+    empty_points_for_each_metering_point_df = quarterly_times_df.union(hourly_times_df)
 
     debug(
         "Time series points where time is within period",
@@ -347,17 +384,24 @@ def _get_enriched_time_series_points_df(
         "GsrnNumber", "time", "Quantity", "Quality", "Resolution"
     )
 
-    enriched_time_series_point_df = timeseries_df.join(
+    points_for_each_metering_point_df = empty_points_for_each_metering_point_df.join(
+        timeseries_df, ["GsrnNumber", "time"], "left"
+    )
+
+    enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
         metering_point_period_df,
-        (metering_point_period_df["GsrnNumber"] == timeseries_df["GsrnNumber"])
-        & (timeseries_df["time"] >= metering_point_period_df["EffectiveDate"])
-        & (timeseries_df["time"] < metering_point_period_df["toEffectiveDate"]),
-        "inner",
+        (
+            metering_point_period_df["GsrnNumber"]
+            == points_for_each_metering_point_df["GsrnNumber"]
+        )
+        & (points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
+        & (points_for_each_metering_point_df["time"] < col("toEffectiveDate")),
+        "left",
     ).select(
         "GridAreaCode",
-        metering_point_period_df["GsrnNumber"],
-        metering_point_period_df["MeteringPointType"],
-        "Resolution",
+        points_for_each_metering_point_df["GsrnNumber"],
+        "MeteringPointType",
+        points_for_each_metering_point_df["Resolution"],
         "time",
         "Quantity",
         "Quality",
@@ -368,7 +412,7 @@ def _get_enriched_time_series_points_df(
         timeseries_df.orderBy(col("GsrnNumber"), col("time")),
     )
 
-    return enriched_time_series_point_df
+    return enriched_points_for_each_metering_point_df
 
 
 def _get_master_basis_data(metering_point_df):
@@ -443,7 +487,7 @@ def _get_time_series_basis_data_by_resolution(
         "METERINGPOINTID",
         "TYPEOFMP",
         "STARTDATETIME",
-        *quantity_columns
+        *quantity_columns,
     )
     return timeseries_basis_data_df
 
@@ -528,6 +572,16 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
     result_df = (
         result_df.withColumn("position", row_number().over(window))
         .withColumnRenamed("sum(quarter_quantity)", "Quantity")
+        .withColumn(
+            "Quantity",
+            when(col("Quantity").isNull(), Decimal("0.000")).otherwise(col("Quantity")),
+        )
+        .withColumn(
+            "quality",
+            when(col("quality").isNull(), Quality.incomplete.value).otherwise(
+                col("quality")
+            ),
+        )
         .select(
             "GridAreaCode",
             col("Quantity").cast(DecimalType(18, 3)),
