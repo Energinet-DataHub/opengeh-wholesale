@@ -33,9 +33,6 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
         var activeBatches = await batchRepository.GetByStatesAsync(states).ConfigureAwait(false);
         foreach (var batch in activeBatches)
         {
-            if (batch.RunId == null)
-                continue;
-
             var jobState = await calculatorJobRunner
                 .GetJobStateAsync(batch.RunId!)
                 .ConfigureAwait(false);
