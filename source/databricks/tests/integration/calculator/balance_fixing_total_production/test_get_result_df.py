@@ -146,7 +146,7 @@ def test__quarterly_and_hourly_sums_correctly(
     first_quantity = Decimal("2")
     second_quantity = Decimal("2")
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=MeteringPointResolution.quarter.value,
+        first_resolution=MeteringPointResolution.quarterly.value,
         first_quantity=first_quantity,
         second_resolution=MeteringPointResolution.hour.value,
         second_quantity=second_quantity,
