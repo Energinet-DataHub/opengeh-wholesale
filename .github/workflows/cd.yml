@@ -18,7 +18,6 @@ on:
   push:
     branches:
       - main
-      - dstenroejl/split-release-content # TODO: Remove
 
 jobs:
   #
@@ -46,7 +45,7 @@ jobs:
   databricks_update_coverage_report:
     needs: changes
     if: ${{ needs.changes.outputs.databricks == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@poc
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@poc
     with:
       PATH_STATIC_CHECKS: './source/databricks'
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'

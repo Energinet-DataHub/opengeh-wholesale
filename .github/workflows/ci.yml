@@ -17,7 +17,7 @@ name: CI
 on:
   pull_request:
     branches:
-      - mainX # TODO: Fix
+      - main
 
 jobs:
   #
@@ -63,7 +63,7 @@ jobs:
   databricks_ci_test:
     needs: changes
     if: ${{ needs.changes.outputs.databricks == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@poc
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@poc
     with:
       PATH_STATIC_CHECKS: './source/databricks'
       # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
