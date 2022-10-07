@@ -29,7 +29,7 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
     private readonly ICalculatorJobRunner _calculatorJobRunner;
     private readonly ICalculatorJobParametersFactory _calculatorJobParametersFactory;
-    private readonly BatchExecutionStateHandler _batchExecutionStateHandler;
+    private readonly IBatchExecutionStateHandler _batchExecutionStateHandler;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
@@ -37,7 +37,7 @@ public class BatchApplicationService : IBatchApplicationService
         IProcessCompletedPublisher processCompletedPublisher,
         ICalculatorJobRunner calculatorJobRunner,
         ICalculatorJobParametersFactory calculatorJobParametersFactory,
-        BatchExecutionStateHandler batchExecutionStateHandler)
+        IBatchExecutionStateHandler batchExecutionStateHandler)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
