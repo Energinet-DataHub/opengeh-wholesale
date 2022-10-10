@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 name: CD
 
 on:
@@ -19,22 +20,51 @@ on:
       - main
 
 jobs:
-  publish_release:
-    uses: Energinet-DataHub/.github/.github/workflows/publish-release.yml@v8
-    secrets:
-      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+  #
+  # Detect changes to start relevant jobs
+  #
 
-  dispatch_deployment_request:
-    needs: publish_release
-    uses: Energinet-DataHub/.github/.github/workflows/dispatch-deployment-request.yml@v8
+  changes:
+    uses: ./.github/workflows/detect-changes.yml
+
+  #
+  # CD Infrastructure
+  #
+
+  infrastructure_promote_prerelease:
+    needs: changes
+    if: ${{ needs.changes.outputs.infrastructure == 'true' }}
+    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v8
     with:
-      CALLER_REPOSITORY_NAME: opengeh-wholesale
-      CALLER_REPOSITORY_PATH: Energinet-DataHub/opengeh-wholesale
-    secrets:
-      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-      ENVIRONMENT_REPOSITORY_PATH: ${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}
+      RELEASE_NAME_PREFIX: infrastructure
 
-  update_coverage_report:
+  #
+  # CD Databricks
+  #
+
+  databricks_update_coverage_report:
+    needs: changes
+    if: ${{ needs.changes.outputs.databricks == 'true' }}
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v8
+    with:
+      PATH_STATIC_CHECKS: './source/databricks'
+      IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
+      TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
+
+  databricks_promote_prerelease:
+    needs: changes
+    if: ${{ needs.changes.outputs.databricks == 'true' }}
+    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v8
+    with:
+      RELEASE_NAME_PREFIX: databricks
+
+  #
+  # CD .NET
+  #
+
+  dotnet_update_coverage_report:
+    needs: changes
+    if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v8
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
@@ -46,9 +76,49 @@ jobs:
       AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
       AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
-  update_python_coverage_report:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci-test-and-coverage.yml@v8
+  dotnet_promote_prerelease:
+    needs: changes
+    if: ${{ needs.changes.outputs.dotnet == 'true' }}
+    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v8
     with:
-      PATH_STATIC_CHECKS: './source/databricks'
-      IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,W503,E122,E123,E126,F811'
-      TEST_REPORT_PATH: ./source/databricks/tests/coverage.json
+      RELEASE_NAME_PREFIX: dotnet
+
+  #
+  # Dispatch deployment request
+  #
+
+  dispatch_deploment_event:
+    runs-on: ubuntu-latest
+    needs: [
+      changes,
+      # Infrastructure
+      infrastructure_promote_prerelease,
+      # Databricks
+      databricks_promote_prerelease,
+      # .NET
+      dotnet_promote_prerelease,
+    ]
+    if: |
+      always() &&
+      !contains(needs.*.result, 'failure') &&
+      !contains(needs.*.result, 'cancelled')
+    steps:
+      - run: echo "${{ toJSON(needs) }}"
+
+      - name: Find associated PR
+        uses: jwalton/gh-find-current-pr@v1
+        id: find_pull_request
+        with:
+          state: all
+
+      - name: Fail if PR not found
+        if: steps.find_pull_request.outputs.pr == ''
+        run: exit 1
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          repository: '${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}'
+          event-type: 'opengeh-wholesale-deployment-request-domain'
+          client-payload: '{"pr": "${{ steps.find_pull_request.outputs.pr }}", "infrastructure_deploy": "${{ needs.changes.outputs.infrastructure }}", "databricks_deploy": "${{ needs.changes.outputs.databricks }}", "dotnet_deploy": "${{ needs.changes.outputs.dotnet }}"}'
