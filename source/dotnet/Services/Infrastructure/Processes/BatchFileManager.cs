@@ -18,10 +18,10 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Zip;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
-// TODO BJARKE: Split file zipping into separate class
 // TODO BJARKE: The directory paths must match the directory used by Databricks (see calculator.py).
 public class BatchFileManager : IBatchFileManager
 {
@@ -35,16 +35,19 @@ public class BatchFileManager : IBatchFileManager
 
     private (string Directory, string Extension) GetMasterBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode) => ($"results/master-basis-data/batch_id={batchId}/grid_area={gridAreaCode}/", ".csv");
 
+    private string GetZipBlobName(Guid batchId) => $"results/zip/batch_id={batchId}";
+
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension)>> _fileIdentifierProviders;
 
-    // TODO BJARKE: Create in DI with correct path
     private readonly BlobContainerClient _blobContainerClient;
+    private readonly IWebFilesZipper _webFilesZipper;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, BlobContainerClient blobContainerClient)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, BlobContainerClient blobContainerClient, IWebFilesZipper webFilesZipper)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _blobContainerClient = blobContainerClient;
+        _webFilesZipper = webFilesZipper;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension)>>
         {
             GetResultDirectory,
@@ -54,88 +57,76 @@ public class BatchFileManager : IBatchFileManager
         };
     }
 
-    // TODO BJARKE: Remove result file (including in naming)?
-    public async Task ZipBasisDataAndResultAsync(Batch completedBatch)
+    public async Task CreateBasisDataZipAsync(Batch completedBatch)
     {
-        foreach (var gridAreaCode in completedBatch.GridAreaCodes)
-        {
-            await ZipBasisDataAndResultAsync(completedBatch.Id, gridAreaCode).ConfigureAwait(false);
-        }
+        var batchBasisFileUrls = GetBatchBasisFileUrlsAsync(completedBatch);
+
+        var zipBlobName = GetZipBlobName(completedBatch.Id);
+        var zipStream = await GetWriteStreamAsync(zipBlobName).ConfigureAwait(false);
+        await using (zipStream)
+            await _webFilesZipper.ZipAsync(batchBasisFileUrls, zipStream).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Create a zip archive for a process.
-    /// </summary>
-    private async Task ZipBasisDataAndResultAsync(Guid batchId, GridAreaCode gridAreaCode)
+    private async Task<IEnumerable<Uri>> GetBatchBasisFileUrlsAsync(Batch batch)
     {
-        var tempDirectoryPath = CreateTempDirectory();
-        try
-        {
-            foreach (var fileIdentifierProvider in _fileIdentifierProviders)
-                await CreateTempInputFileAsync(fileIdentifierProvider(batchId, gridAreaCode), tempDirectoryPath).ConfigureAwait(false);
+        var basisDataFileUrls = new List<Uri>();
 
-            ZipFile.CreateFromDirectory(tempDirectoryPath, ZipFilename);
-            var zipFilePath = Path.Combine(Path.GetTempPath(), ZipFilename);
-
-            await UploadFileAsync(zipFilePath).ConfigureAwait(false);
-        }
-        finally
+        foreach (var gridAreaCode in batch.GridAreaCodes)
         {
-            Directory.Delete(tempDirectoryPath);
+            var gridAreaFileUrls = await GetProcessBasisFileUrlsAsync(batch.Id, gridAreaCode).ConfigureAwait(false);
+            basisDataFileUrls.AddRange(gridAreaFileUrls);
         }
+
+        return basisDataFileUrls;
     }
 
-    private static string CreateTempDirectory()
+    private async Task<List<Uri>> GetProcessBasisFileUrlsAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
-        // Files must be collocated in an (empty) folder from which the zip archive can be created
-        var tempDirectoryPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDirectoryPath);
-        return tempDirectoryPath;
-    }
+        var processDataFilesUrls = new List<Uri>();
 
-    private async Task CreateTempInputFileAsync((string Directory, string Extension) fileIdentifier, string tempDirectoryPath)
-    {
-        var tempFilePath = Path.GetTempFileName();
-        var inputStream = await GetFileStreamAsync(fileIdentifier).ConfigureAwait(false);
-        await using (inputStream.ConfigureAwait(false))
+        foreach (var fileIdentifierProvider in _fileIdentifierProviders)
         {
-            var outputStream = new FileStream(tempFilePath, FileMode.Append);
-            await using (outputStream.ConfigureAwait(false))
+            var (directory, extension) = fileIdentifierProvider(batchId, gridAreaCode);
+            var processDataFileUrl = await SearchBlobUrlAsync(directory, extension).ConfigureAwait(false);
+            if (processDataFileUrl != null)
             {
-                await inputStream.CopyToAsync(outputStream).ConfigureAwait(false);
+                processDataFilesUrls.Add(processDataFileUrl);
+            }
+            else
+            {
+                // TODO BJARKE: Log error instead
+                throw new InvalidOperationException($"Blob for process was not found in '{directory}*{extension}'.");
             }
         }
 
-        File.Move(tempFilePath, tempDirectoryPath);
+        return processDataFilesUrls;
     }
 
-    private async Task<Stream> GetFileStreamAsync((string Directory, string Extension) fileIdentifier)
+    /// <summary>
+    /// Search for a file by a given extension in a blob directory.
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <param name="extension"></param>
+    /// <returns>The first file with matching file extension.</returns>
+    private async Task<Uri?> SearchBlobUrlAsync(string directory, string extension)
     {
-        var (directory, extension) = fileIdentifier;
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
 
-        DataLakeFileClient? file = null;
         await foreach (var pathItem in directoryClient.GetPathsAsync())
         {
             if (Path.GetExtension(pathItem.Name) == extension)
             {
-                file = _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
-                break;
+                var fileClient = _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
+                return fileClient.Uri;
             }
         }
 
-        if (file == null)
-            throw new InvalidOperationException($"Blob for process was not found in '{directory}*{extension}'.");
-
-        return await file.OpenReadAsync().ConfigureAwait(false);
+        return null;
     }
 
-    // TODO BJARKE: Move to new class
-    private async Task UploadFileAsync(string localFilePath)
+    private async Task<Stream> GetWriteStreamAsync(string blobName)
     {
-        var fileName = Path.GetFileName(localFilePath);
-        var blobClient = _blobContainerClient.GetBlobClient(fileName);
-
-        await blobClient.UploadAsync(localFilePath, true).ConfigureAwait(false);
+        var blobClient = _blobContainerClient.GetBlobClient(blobName);
+        return await blobClient.OpenWriteAsync(false).ConfigureAwait(false);
     }
 }

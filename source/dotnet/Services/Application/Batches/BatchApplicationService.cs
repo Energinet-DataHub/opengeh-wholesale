@@ -93,7 +93,7 @@ public class BatchApplicationService : IBatchApplicationService
 
         // TODO BJARKE: What to do in case of error?
         foreach (var batch in completedBatches)
-            await _batchFileManager.ZipBasisDataAndResultAsync(batch).ConfigureAwait(false);
+            await _batchFileManager.CreateBasisDataZipAsync(batch).ConfigureAwait(false);
 
         var completedProcesses = CreateProcessCompletedEvents(completedBatches);
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);

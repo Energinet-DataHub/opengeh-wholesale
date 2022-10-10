@@ -49,4 +49,9 @@ public class WholesaleClient : IWholesaleClient
         var batches = await response.Content.ReadFromJsonAsync<IEnumerable<BatchDto>>().ConfigureAwait(false);
         return batches ?? new List<BatchDto>();
     }
+
+    public Task<Stream> GetProcessBasisDataAsync(long batchNumber)
+    {
+        throw new NotImplementedException();
+    }
 }

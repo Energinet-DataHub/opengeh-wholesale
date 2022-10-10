@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Energinet DataHub A/S
+// Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Zip;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
-
-// TODO BJARKE: Add DI container unit test in case unit tests doesn't catch problem with unregistered type
-public interface IBatchFileManager
+public interface IWebFilesZipper
 {
     /// <summary>
-    /// Create zip archives for each process in the batch.
-    /// The archive contains the basis data files and the result file.
+    /// Create a zip file containing the remove files.
     /// </summary>
-    Task CreateBasisDataZipAsync(Batch completedBatch);
+    /// <param name="inputFiles">Tuples with url of remove source file and the name to use in the zip archive.</param>
+    /// <param name="zipFileStream">The local file system path of the output zip file.</param>
+    Task ZipAsync(IEnumerable<string> inputFiles, Stream zipFileStream);
 }
