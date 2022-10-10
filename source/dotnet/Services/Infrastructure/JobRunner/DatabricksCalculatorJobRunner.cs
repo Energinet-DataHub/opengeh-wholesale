@@ -21,12 +21,12 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
 public sealed class DatabricksCalculatorJobRunner : ICalculatorJobRunner
 {
-    private readonly DatabricksCalculatorJobSelector _databricksCalculatorJobSelector;
-    private readonly DatabricksWheelClient _wheelClient;
+    private readonly IDatabricksCalculatorJobSelector _databricksCalculatorJobSelector;
+    private readonly IDatabricksWheelClient _wheelClient;
 
     public DatabricksCalculatorJobRunner(
-        DatabricksCalculatorJobSelector databricksCalculatorJobSelector,
-        DatabricksWheelClient wheelClient)
+        IDatabricksCalculatorJobSelector databricksCalculatorJobSelector,
+        IDatabricksWheelClient wheelClient)
     {
         _databricksCalculatorJobSelector = databricksCalculatorJobSelector;
         _wheelClient = wheelClient;
@@ -35,7 +35,7 @@ public sealed class DatabricksCalculatorJobRunner : ICalculatorJobRunner
     public async Task<JobRunId> SubmitJobAsync(IEnumerable<string> jobParameters)
     {
         var calculatorJob = await _databricksCalculatorJobSelector
-            .SelectCalculatorJobAsync()
+            .GetAsync()
             .ConfigureAwait(false);
 
         var runParameters = MergeRunParameters(calculatorJob, jobParameters);
@@ -55,13 +55,21 @@ public sealed class DatabricksCalculatorJobRunner : ICalculatorJobRunner
             .RunsGet(jobRunId.Id)
             .ConfigureAwait(false);
 
-        return runState.State.ResultState switch
+        return runState.State.LifeCycleState switch
         {
-            RunResultState.SUCCESS => JobState.Completed,
-            RunResultState.FAILED => JobState.Failed,
-            RunResultState.TIMEDOUT => JobState.Failed,
-            RunResultState.CANCELED => JobState.Canceled,
-            null => JobState.Running,
+            RunLifeCycleState.PENDING => JobState.Pending,
+            RunLifeCycleState.RUNNING => JobState.Running,
+            RunLifeCycleState.TERMINATING => JobState.Running,
+            RunLifeCycleState.SKIPPED => JobState.Canceled,
+            RunLifeCycleState.INTERNAL_ERROR => JobState.Failed,
+            RunLifeCycleState.TERMINATED => runState.State.ResultState switch
+            {
+                RunResultState.SUCCESS => JobState.Completed,
+                RunResultState.FAILED => JobState.Failed,
+                RunResultState.CANCELED => JobState.Canceled,
+                RunResultState.TIMEDOUT => JobState.Canceled,
+                _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
+            },
             _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
         };
     }

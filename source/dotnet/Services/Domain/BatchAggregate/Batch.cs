@@ -26,7 +26,7 @@ public class Batch
     public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes, Instant periodStart, Instant periodEnd, IClock clock)
         : this()
     {
-        ExecutionState = BatchExecutionState.Pending;
+        ExecutionState = BatchExecutionState.Created;
         ProcessType = processType;
         _clock = clock;
 
@@ -74,23 +74,50 @@ public class Batch
 
     public Instant PeriodEnd { get; }
 
+    public void MarkAsSubmitted(JobRunId jobRunId)
+    {
+        ArgumentNullException.ThrowIfNull(jobRunId);
+        if (ExecutionState is BatchExecutionState.Submitted or BatchExecutionState.Pending
+            or BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Submitted);
+        RunId = jobRunId;
+        ExecutionState = BatchExecutionState.Submitted;
+    }
+
+    public void MarkAsPending()
+    {
+        if (ExecutionState is BatchExecutionState.Pending or BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Pending);
+        ExecutionState = BatchExecutionState.Pending;
+    }
+
+    public void MarkAsExecuting()
+    {
+        if (ExecutionState is BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Executing);
+
+        ExecutionState = BatchExecutionState.Executing;
+    }
+
     public void MarkAsCompleted()
     {
-        if (ExecutionState != BatchExecutionState.Executing)
-            throw new InvalidOperationException("Batch cannot be completed because it is not in state executing.");
+        if (ExecutionState is BatchExecutionState.Completed or BatchExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Completed);
 
         ExecutionState = BatchExecutionState.Completed;
         ExecutionTimeEnd = _clock.GetCurrentInstant();
     }
 
-    public void MarkAsExecuting(JobRunId jobRunId)
+    public void MarkAsFailed()
     {
-        ArgumentNullException.ThrowIfNull(jobRunId);
+        if (ExecutionState is BatchExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Failed);
 
-        if (ExecutionState != BatchExecutionState.Pending)
-            throw new InvalidOperationException("Batch cannot be completed because it is not in state pending.");
+        ExecutionState = BatchExecutionState.Failed;
+    }
 
-        ExecutionState = BatchExecutionState.Executing;
-        RunId = jobRunId;
+    private void ThrowInvalidStateTransitionException(BatchExecutionState currentState, BatchExecutionState desiredState)
+    {
+        throw new InvalidOperationException($"Cannot change batchExecutionState from {currentState} to {desiredState}");
     }
 }

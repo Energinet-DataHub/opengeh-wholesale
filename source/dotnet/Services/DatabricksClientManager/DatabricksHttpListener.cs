@@ -121,7 +121,7 @@ public sealed class DatabricksHttpListener : IDisposable
         if (VerifyRunId(context, id))
             return;
 
-        var run = new Run { RunId = id, State = new RunState { ResultState = RunResultState.SUCCESS } };
+        var run = new Run { RunId = id, State = new RunState { LifeCycleState = RunLifeCycleState.TERMINATED, ResultState = RunResultState.SUCCESS } };
 
         var serialized = JsonConvert.SerializeObject(run);
 
