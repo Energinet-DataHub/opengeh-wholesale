@@ -14,11 +14,19 @@
 
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public class BatchExecutionStateHandler : IBatchExecutionStateHandler
 {
+    private readonly ILogger _logger;
+
+    public BatchExecutionStateHandler(ILoggerFactory loggerFactory)
+    {
+        _logger = loggerFactory.CreateLogger(nameof(BatchExecutionStateHandler));
+    }
+
     /// <summary>
     /// Update the execution states in the batch repository by mapping the job states from the runs <see cref="ICalculatorJobRunner"/>
     /// </summary>
@@ -30,17 +38,25 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
         {
             BatchExecutionState.Submitted, BatchExecutionState.Pending, BatchExecutionState.Executing,
         };
+
         var activeBatches = await batchRepository.GetByStatesAsync(states).ConfigureAwait(false);
         foreach (var batch in activeBatches)
         {
-            var jobState = await calculatorJobRunner
-                .GetJobStateAsync(batch.RunId!)
-                .ConfigureAwait(false);
-
-            var executionState = MapState(jobState);
-            if (executionState != batch.ExecutionState)
+            try
             {
-                HandleNewState(executionState, batch, completedBatches);
+                var jobState = await calculatorJobRunner
+                    .GetJobStateAsync(batch.RunId!)
+                    .ConfigureAwait(false);
+
+                var executionState = MapState(jobState);
+                if (executionState != batch.ExecutionState)
+                {
+                    HandleNewState(executionState, batch, completedBatches);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Exception caught while trying to update execution state for run {batch.RunId}");
             }
         }
 
