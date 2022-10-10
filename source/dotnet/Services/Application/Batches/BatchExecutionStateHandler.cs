@@ -22,9 +22,9 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
 {
     private readonly ILogger _logger;
 
-    public BatchExecutionStateHandler(ILoggerFactory loggerFactory)
+    public BatchExecutionStateHandler(ILogger logger)
     {
-        _logger = loggerFactory.CreateLogger(nameof(BatchExecutionStateHandler));
+        _logger = logger;
     }
 
     /// <summary>
