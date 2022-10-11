@@ -30,7 +30,7 @@ public class MapBatchExecutionStateTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task MapBatchExecutionState_WhenJobStateIsRunning_UpdateBatchToExecuting(
+    public async Task UpdateExecutionState_WhenJobStateIsRunning_UpdateBatchToExecuting(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
         BatchExecutionStateHandler sut)
@@ -52,7 +52,7 @@ public class MapBatchExecutionStateTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task MapBatchExecutionState_WhenJobStateIsCompleted_UpdateBatchToCompleted(
+    public async Task UpdateExecutionState_WhenJobStateIsCompleted_UpdateBatchToCompleted(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
         BatchExecutionStateHandler sut)
@@ -75,7 +75,7 @@ public class MapBatchExecutionStateTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task MapBatchExecutionState_ToCompleted(
+    public async Task UpdateExecutionState_ToCompleted(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
         BatchExecutionStateHandler sut)
@@ -99,5 +99,22 @@ public class MapBatchExecutionStateTests
         // Assert
         completedBatches.Should().ContainSingle();
         completedBatches.First().Should().Be(batch2);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task UpdateExecutionState_When_RunnerThrowsException_Then_SkipBatch(
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
+        BatchExecutionStateHandler sut)
+    {
+        // Arrange
+        var batch1 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
+        var batch2 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
+
+
+        // Act
+
+        // Assert
     }
 }
