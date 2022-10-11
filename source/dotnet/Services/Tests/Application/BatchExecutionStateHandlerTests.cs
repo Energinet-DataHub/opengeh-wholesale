@@ -19,7 +19,6 @@ using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
-using Microsoft.Azure.Amqp.Serialization;
 using Moq;
 using Xunit;
 using Xunit.Categories;
