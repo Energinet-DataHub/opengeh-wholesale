@@ -1,4 +1,4 @@
-// Copyright 2020 Energinet DataHub A/S
+﻿// Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 
 using System.IO.Compression;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Zip;
+namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
 public class WebFilesZipper : IWebFilesZipper
 {
@@ -28,7 +28,7 @@ public class WebFilesZipper : IWebFilesZipper
         _httpClient = httpClient;
     }
 
-    public async Task ZipAsync(IEnumerable<string> inputFiles, Stream zipFileStream)
+    public async Task ZipAsync(IEnumerable<(Uri Url, string EntryPath)> inputFiles, Stream zipFileStream)
     {
         using var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create);
 
