@@ -14,7 +14,6 @@
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
 
-// TODO BJARKE: Do we want overlapping env settings files in all endpoints?
 public static class EnvironmentSettingNames
 {
     public const string AzureWebJobsStorage = "AzureWebJobsStorage";
@@ -42,9 +41,11 @@ public static class EnvironmentSettingNames
     public const string DatabricksWorkspaceUrl = "DATABRICKS_WORKSPACE_URL";
     public const string DatabricksWorkspaceToken = "DATABRICKS_WORKSPACE_TOKEN";
 
+    // TODO BJARKE: Remove these two?
     public const string CalculatorResultsConnectionString = "CALCULATOR_RESULTS_CONNECTION_STRING";
     public const string CalculatorResultsFileSystemName = "CALCULATOR_RESULTS_FILE_SYSTEM_NAME";
 
     public const string BatchCompletedTopicName = "BATCH_COMPLETED_TOPIC_NAME";
-    public const string BatchCompletedSubscriptionName = "BATCH_COMPLETED_SUBSCRIPTION_NAME";
+    public const string BatchCompletedSubscriptionZipBasisData = "COMPLETED_BATCH_SUBSCRIPTION_ZIP_BASIS_DATA";
+    public const string BatchCompletedSubscriptionPublishProcessesCompleted = "COMPLETED_BATCH_SUBSCRIPTION_PUBLISH_PROCESSES_COMPLETED";
 }

@@ -140,15 +140,35 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
         var processCompletedTopicName =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
+        var batchCompletedTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedTopicName);
+        var batchCompletedSubscriptionPublishProcessesCompleted =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedSubscriptionPublishProcessesCompleted);
+        var batchCompletedSubscriptionZipBasisData =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedSubscriptionZipBasisData);
 
         serviceCollection
             .AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
             .AddAzureServiceBusTopic(
-                serviceBusConnectionString,
-                processCompletedTopicName,
+                connectionString: serviceBusConnectionString,
+                topicName: processCompletedTopicName,
                 name: "ProcessCompletedTopicExists")
+            .AddAzureServiceBusTopic(
+                connectionString: serviceBusConnectionString,
+                topicName: batchCompletedTopicName,
+                name: "BatchCompletedTopicExists")
+            .AddAzureServiceBusSubscription(
+                connectionString: serviceBusConnectionString,
+                topicName: processCompletedTopicName,
+                subscriptionName: batchCompletedSubscriptionPublishProcessesCompleted,
+                name: "BatchCompletedSubscriptionPublishProcessesCompleted")
+            .AddAzureServiceBusSubscription(
+                connectionString: serviceBusConnectionString,
+                topicName: processCompletedTopicName,
+                subscriptionName: batchCompletedSubscriptionZipBasisData,
+                name: "BatchCompletedSubscriptionZipBasisData")
             .AddDatabricksCheck(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl),
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken));

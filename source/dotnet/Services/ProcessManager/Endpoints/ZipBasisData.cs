@@ -35,7 +35,7 @@ public class ZipBasisData
     public async Task RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.BatchCompletedTopicName + "%",
-            "%" + EnvironmentSettingNames.BatchCompletedSubscriptionName + "%",
+            "%" + EnvironmentSettingNames.BatchCompletedSubscriptionZipBasisData + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
