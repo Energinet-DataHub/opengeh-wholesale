@@ -58,3 +58,4 @@ runs:
         mkdir -p '${{ inputs.OUTPUT_PATH }}/source/dotnet' ';'
         # Copy everything from source/dotnet to the new directory
         cp -a source/dotnet/. '${{ inputs.OUTPUT_PATH }}/source/dotnet'
+        find ${{ inputs.OUTPUT_PATH }}/ -type d -name 'obj' -exec rm -rf {} +
