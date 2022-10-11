@@ -22,7 +22,7 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
 {
     private readonly ILogger _logger;
 
-    public BatchExecutionStateHandler(ILogger logger)
+    public BatchExecutionStateHandler(ILogger<BatchExecutionStateHandler> logger)
     {
         _logger = logger;
     }
@@ -33,6 +33,7 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
     /// <returns>Batches that have been completed</returns>
     public async Task<IEnumerable<Batch>> UpdateExecutionStateAsync(IBatchRepository batchRepository, ICalculatorJobRunner calculatorJobRunner)
     {
+        _logger.LogInformation("Now entering UpdateExecutionStateAsync");
         var completedBatches = new List<Batch>();
         var states = new List<BatchExecutionState>
         {
@@ -56,7 +57,7 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Exception caught while trying to update execution state for run {batch.RunId}");
+                _logger.LogError(e, $"Exception caught while trying to update execution state for run ID {batch.RunId}");
             }
         }
 
