@@ -16,6 +16,7 @@ from enum import IntEnum
 
 
 class TimeSeriesResolution(IntEnum):
+    "Resolution values used in contracts exposed by the time series domain."
     quarter = 1
     hour = 2
     day = 3
