@@ -52,9 +52,9 @@ from package.codelists import (
     ConnectionState,
     MeteringPointType,
     Quality,
-    Resolution,
+    TimeSeriesResolution,
     TimeSeriesQuality,
-    MeteringpointResolution,
+    MeteringPointResolution,
 )
 from package.schemas import (
     grid_area_updated_event_schema,
@@ -338,10 +338,10 @@ def _get_enriched_time_series_points_df(
     ).where(col("time") < period_end_datetime)
 
     quarterly_mp_df = metering_point_period_df.where(
-        col("Resolution") == MeteringpointResolution.quarterly.value
+        col("Resolution") == MeteringPointResolution.quarterly.value
     )
     hourly_mp_df = metering_point_period_df.where(
-        col("Resolution") == MeteringpointResolution.hour.value
+        col("Resolution") == MeteringPointResolution.hour.value
     )
 
     exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
@@ -408,20 +408,29 @@ def _get_enriched_time_series_points_df(
         timeseries_df, ["GsrnNumber", "time"], "left"
     )
 
+    # the metering_point_period_df is allready used once when creating the empty_points_for_each_metering_point_df
+    # rejoining metering_point_period_df with empty_points_for_each_metering_point_df requires the GsrNumber and
+    # Resolution column must be renamed for the select to be succesfull.
+    points_for_each_metering_point_df = (
+        points_for_each_metering_point_df.withColumnRenamed(
+            "GsrnNumber", "pfemp_GsrnNumber"
+        ).withColumnRenamed("Resolution", "pfemp_Resolution")
+    )
+
     enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
         metering_point_period_df,
         (
             metering_point_period_df["GsrnNumber"]
-            == points_for_each_metering_point_df["GsrnNumber"]
+            == points_for_each_metering_point_df["pfemp_GsrnNumber"]
         )
         & (points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
         & (points_for_each_metering_point_df["time"] < col("toEffectiveDate")),
         "left",
     ).select(
         "GridAreaCode",
-        points_for_each_metering_point_df["GsrnNumber"],
+        metering_point_period_df["GsrnNumber"],
         "MeteringPointType",
-        points_for_each_metering_point_df["Resolution"],
+        metering_point_period_df["Resolution"],
         "time",
         "Quantity",
         "Quality",
@@ -461,13 +470,13 @@ def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
 
     time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        Resolution.quarter.value,
+        MeteringPointResolution.quarterly.value,
         time_zone,
     )
 
     time_series_hour_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        Resolution.hour.value,
+        MeteringPointResolution.hour.value,
         time_zone,
     )
 
@@ -532,14 +541,17 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         enriched_time_series_points_df.withColumn(
             "quarter_times",
             when(
-                col("Resolution") == Resolution.hour.value,
+                col("Resolution") == MeteringPointResolution.hour.value,
                 array(
                     col("time"),
                     col("time") + expr("INTERVAL 15 minutes"),
                     col("time") + expr("INTERVAL 30 minutes"),
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
-            ).when(col("Resolution") == Resolution.quarter.value, array(col("time"))),
+            ).when(
+                col("Resolution") == MeteringPointResolution.quarterly.value,
+                array(col("time")),
+            ),
         )
         .select(
             enriched_time_series_points_df["*"],
@@ -549,9 +561,12 @@ def _get_result_df(enriched_time_series_points_df) -> DataFrame:
         .withColumn(
             "quarter_quantity",
             when(
-                col("Resolution") == Resolution.hour.value,
+                col("Resolution") == MeteringPointResolution.hour.value,
                 col("Quantity") / 4,
-            ).when(col("Resolution") == Resolution.quarter.value, col("Quantity")),
+            ).when(
+                col("Resolution") == MeteringPointResolution.quarterly.value,
+                col("Quantity"),
+            ),
         )
         .groupBy("GridAreaCode", "quarter_time")
         .agg(sum("quarter_quantity"), collect_set("Quality"))

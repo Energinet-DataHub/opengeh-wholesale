@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.JobRunner;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public enum JobState
+public enum BatchState
 {
     Pending,
-    Running,
+    Executing,
     Completed,
-    Canceled,
     Failed,
 }

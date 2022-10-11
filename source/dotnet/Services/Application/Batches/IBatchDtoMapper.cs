@@ -12,30 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-/// <summary>
-/// IMPORTANT: Do not change numeric values as it'll affect persistence or communication.
-/// </summary>
-public enum BatchExecutionState
+namespace Energinet.DataHub.Wholesale.Application.Batches;
+
+public interface IBatchDtoMapper
 {
-    /// <summary>
-    /// The batch is pending.
-    /// </summary>
-    Pending = 0,
-
-    /// <summary>
-    /// The batch is currently executing.
-    /// </summary>
-    Executing = 1,
-
-    /// <summary>
-    /// The batch has (successfully) completed.
-    /// </summary>
-    Completed = 2,
-
-    /// <summary>
-    /// The batch has (Failed) failed.
-    /// </summary>
-    Failed = 3,
+    BatchDto Map(Batch batch);
 }
