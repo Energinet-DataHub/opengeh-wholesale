@@ -163,10 +163,10 @@ def _get_time_series_points(
 
 def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> DataFrame:
     message_type = "GridAreaUpdated"  # Must correspond to the value stored by the integration event listener
-    print(
-        "#################################################################get_grid_ares_df"
+    batch_grid_areas = map(
+        lambda x: x.__getitem__("gridAreaCode"), batch_grid_areas_df.collect()
     )
-    batch_grid_areas = batch_grid_areas_df.collect()
+    print(list(batch_grid_areas))
 
     grid_area_events_df = (
         cached_integration_events_df.withColumn(

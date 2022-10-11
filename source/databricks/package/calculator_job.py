@@ -16,12 +16,7 @@ from datetime import datetime
 import sys
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
-from pyspark.sql.types import (
-    StructField,
-    StringType,
-    StructType,
-    IntegerType,
-)
+from pyspark.sql.types import StructField, StringType, StructType, IntegerType, Row
 import ast
 
 # Required when executing in a subprocess from pytest (without using wheel)
@@ -133,24 +128,10 @@ def internal_start(spark: SparkSession, args):
         args.time_series_points_path
     )
 
-    print(args.batch_grid_areas)
-
-    batch_grid_area_schema = StructType(
-        [
-            StructField("GridAreaCode", StringType(), True),
-        ]
-    )
-
-    # columns = ["GridAreaCode"]
-    # strings = ast.literal_eval(args.batch_grid_areas)
-    # print(args.batch_grid_areas)
-    # print(strings)
-
-    batch_grid_areas_df = spark.createDataFrame(
-        args.batch_grid_areas, batch_grid_area_schema
-    )
-
-    batch_grid_areas_df.show()
+    columns = ["gridAreaCode"]
+    rowData = map(lambda x: Row(str(x)), args.batch_grid_areas)
+    batch_grid_areas_df = spark.createDataFrame(rowData, columns)
+    batch_grid_areas_df.printSchema()
 
     (
         result_df,
