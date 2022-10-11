@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import IntEnum
-
-
-class SettlementMethod(IntEnum):
-    "SettlementMethod values used in contracts exposed by the metering point domain."
-    unknown = 0
-    profiled = 1
-    nonprofiled = 2
-    flex = 3
+name: 'PySpark execution'
+description: 'This action allows you to execute code, written for Spark, Databricks or other similar engines.'
+runs:
+  using: composite
+  steps:
+    - name: Execute entrypoint.sh
+      shell: bash
+      run: |
+        chmod +x ./.github/actions/python-unit-test/entrypoint.sh
+        docker-compose -f .devcontainer/docker-compose.yml run -u root -w //workspaces/opengeh-wholesale wholesale ./.github/actions/python-unit-test/entrypoint.sh

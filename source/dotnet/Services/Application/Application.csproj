@@ -44,6 +44,9 @@ limitations under the License.
     <Compile Include="..\..\Contracts\WholesaleProcessType.cs">
       <Link>Processes\WholesaleProcessType.cs</Link>
     </Compile>
+    <Compile Include="..\..\Contracts\BatchState.cs">
+      <Link>Batches\BatchState.cs</Link>
+    </Compile>
   </ItemGroup>
 
 </Project>

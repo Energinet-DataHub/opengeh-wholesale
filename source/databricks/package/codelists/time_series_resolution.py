@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: 'PySpark execution'
-description: 'This action allows you to execute code, written for Spark, Databricks or other similar engines.'
-runs:
-  using: composite
-  steps:
-    - name: Execute entrypoint.sh
-      shell: bash
-      run: |
-        chmod +x ./.github/actions/databricks-unit-test/entrypoint.sh
-        docker-compose -f .devcontainer/docker-compose.yml run -u root -w //workspaces/opengeh-wholesale wholesale ./.github/actions/databricks-unit-test/entrypoint.sh
+from enum import IntEnum
+
+
+class TimeSeriesResolution(IntEnum):
+    "Resolution values used in contracts exposed by the time series domain."
+    quarter = 1
+    hour = 2
+    day = 3
+    month = 4

@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.JobRunner;
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient;
 
-public enum JobState
+public interface IDatabricksWheelClient
 {
-    Pending,
-    Running,
-    Completed,
-    Canceled,
-    Failed,
+    IJobsWheelApi Jobs { get; }
 }

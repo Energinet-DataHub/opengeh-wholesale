@@ -16,7 +16,7 @@ from enum import IntEnum
 
 
 class Quality(IntEnum):
-    "Be aware that quality exposed by the time series domain uses values from enum TimeSeriesQuality."
+    "Wholesales representation of Quality"
     measured = 0
     estimated = 1
     incomplete = 2

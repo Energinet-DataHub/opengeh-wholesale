@@ -28,19 +28,25 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly ICalculatorJobRunner _calculatorJobRunner;
     private readonly ICalculatorJobParametersFactory _calculatorJobParametersFactory;
     private readonly IBatchCompletedPublisher _batchCompletedPublisher;
+    private readonly IBatchExecutionStateHandler _batchExecutionStateHandler;
+    private readonly IBatchDtoMapper _batchDtoMapper;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         ICalculatorJobRunner calculatorJobRunner,
         ICalculatorJobParametersFactory calculatorJobParametersFactory,
-        IBatchCompletedPublisher batchCompletedPublisher)
+        IBatchCompletedPublisher batchCompletedPublisher,
+        IBatchExecutionStateHandler batchExecutionStateHandler,
+        IBatchDtoMapper batchDtoMapper)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _calculatorJobRunner = calculatorJobRunner;
         _calculatorJobParametersFactory = calculatorJobParametersFactory;
         _batchCompletedPublisher = batchCompletedPublisher;
+        _batchExecutionStateHandler = batchExecutionStateHandler;
+        _batchDtoMapper = batchDtoMapper;
     }
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
@@ -50,44 +56,24 @@ public class BatchApplicationService : IBatchApplicationService
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task StartPendingAsync()
+    public async Task StartSubmittingAsync()
     {
-        var batches = await _batchRepository.GetPendingAsync().ConfigureAwait(false);
+        var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
 
         foreach (var batch in batches)
         {
             var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);
             var jobRunId = await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
-            batch.MarkAsExecuting(jobRunId);
+            batch.MarkAsSubmitted(jobRunId);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
 
     public async Task UpdateExecutionStateAsync()
     {
-        var batches = await _batchRepository.GetExecutingAsync().ConfigureAwait(false);
-        if (!batches.Any())
-            return;
+        var completedBatches = await _batchExecutionStateHandler.UpdateExecutionStateAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
+        var batchCompletedEvents = completedBatches.Select(b => new BatchCompletedEventDto(b.Id));
 
-        var batchCompletedEvents = new List<BatchCompletedEventDto>();
-
-        foreach (var batch in batches)
-        {
-            // The batch will have received a RunId when the batch have started.
-            var runId = batch.RunId!;
-
-            var state = await _calculatorJobRunner
-                .GetJobStateAsync(runId)
-                .ConfigureAwait(false);
-
-            if (state == JobState.Completed)
-            {
-                batch.MarkAsCompleted();
-                batchCompletedEvents.Add(new BatchCompletedEventDto(batch.Id));
-            }
-        }
-
-        // TODO BJARKE: Make publish part of UoW commit?
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
         await _batchCompletedPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
     }
@@ -98,7 +84,7 @@ public class BatchApplicationService : IBatchApplicationService
         var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
-        return batches.Select(MapToBatchDto);
+        return batches.Select(_batchDtoMapper.Map);
     }
 
     // TODO BJARKE: Move to factory
@@ -115,17 +101,5 @@ public class BatchApplicationService : IBatchApplicationService
         var clock = SystemClock.Instance;
         var batch = new Batch(processType, gridAreaCodes, periodStart, periodEnd, clock);
         return batch;
-    }
-
-    // TODO BJARKE: Move to static mapper?
-    private BatchDto MapToBatchDto(Batch batch)
-    {
-        return new BatchDto(
-            batch.RunId?.Id ?? 0,
-            batch.PeriodStart.ToDateTimeOffset(),
-            batch.PeriodEnd.ToDateTimeOffset(),
-            batch.ExecutionTimeStart?.ToDateTimeOffset() ?? null,
-            batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
-            batch.ExecutionState);
     }
 }

@@ -28,7 +28,7 @@ from package.schemas import (
 from package.codelists import (
     ConnectionState,
     MeteringPointType,
-    Resolution,
+    TimeSeriesResolution,
     SettlementMethod,
 )
 from pyspark.sql.functions import col, struct, to_json
@@ -70,7 +70,7 @@ def metering_point_created_df_factory(spark):
         gsrn_number=gsrn_number,
         effective_date=first_of_june,
         metering_point_type=MeteringPointType.production.value,
-        resolution=Resolution.hour.value,
+        resolution=TimeSeriesResolution.hour.value,
     ):
         row = {
             "storedTime": stored_time,

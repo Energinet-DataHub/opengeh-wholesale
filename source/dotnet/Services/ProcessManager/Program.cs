@@ -116,7 +116,9 @@ public static class Program
         var processCompletedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
         serviceCollection.AddProcessCompletedPublisher(serviceBusConnectionString, processCompletedTopicName);
 
-        serviceCollection.AddScoped<DatabricksCalculatorJobSelector>();
+        serviceCollection.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
+        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+        serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         serviceCollection
             .AddScoped<ICalculatorJobParametersFactory, DatabricksCalculatorJobParametersFactory>();
 
