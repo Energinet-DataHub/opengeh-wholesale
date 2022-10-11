@@ -12,15 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "sbt_completed_process" {
+module "sbt_completed_batch" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic?ref=7.0.0"
 
-  name                = "completed-process"
+  name                = "completed-batch"
   namespace_id        = module.sb_wholesale.id
 
   subscriptions       = [
     {
-      name                = local.COMPLETED_PROCESS_SUBSCRIPTION_SEND_DATA_AVAILABLE
+      name                = local.COMPLETED_BATCH_SUBSCRIPTION_ZIP_BASIS_DATA
+      max_delivery_count  = 1
+    },
+    {
+      name                = local.COMPLETED_BATCH_SUBSCRIPTION_PUBLISH_PROCESSES_COMPLETED
       max_delivery_count  = 1
     },
   ]

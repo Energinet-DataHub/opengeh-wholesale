@@ -38,13 +38,13 @@ public static class EnvironmentSettingNames
     /// The service bus topic for completed process events.
     /// </summary>
     public const string ProcessCompletedTopicName = "PROCESS_COMPLETED_TOPIC_NAME";
-    public const string ProcessCompletedSubscriptionName = "PROCESS_COMPLETED_SUBSCRIPTION_NAME";
 
     public const string DatabricksWorkspaceUrl = "DATABRICKS_WORKSPACE_URL";
     public const string DatabricksWorkspaceToken = "DATABRICKS_WORKSPACE_TOKEN";
 
     public const string CalculatorResultsConnectionString = "CALCULATOR_RESULTS_CONNECTION_STRING";
     public const string CalculatorResultsFileSystemName = "CALCULATOR_RESULTS_FILE_SYSTEM_NAME";
-    public const string BatchCompletedTopicName = "TODO BJARKE";
-    public const string BatchCompletedSubscriptionName = "TODO BJARKE";
+
+    public const string BatchCompletedTopicName = "BATCH_COMPLETED_TOPIC_NAME";
+    public const string BatchCompletedSubscriptionName = "BATCH_COMPLETED_SUBSCRIPTION_NAME";
 }

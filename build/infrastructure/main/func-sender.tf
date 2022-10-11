@@ -39,22 +39,22 @@ module "func_sender" {
     INTEGRATIONEVENT_MANAGER_CONNECTION_STRING       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
 
     # Service Bus
-    SERVICE_BUS_MANAGE_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["manage"]
-    SERVICE_BUS_LISTEN_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["listen"]
-    PROCESS_COMPLETED_TOPIC_NAME                     = module.sbt_completed_process.name
-    PROCESS_COMPLETED_SUBSCRIPTION_NAME              = local.COMPLETED_PROCESS_SUBSCRIPTION
+    SERVICE_BUS_MANAGE_CONNECTION_STRING                    = module.sb_wholesale.primary_connection_strings["manage"]
+    SERVICE_BUS_LISTEN_CONNECTION_STRING                    = module.sb_wholesale.primary_connection_strings["listen"]
+    PROCESS_COMPLETED_TOPIC_NAME                            = module.sbt_completed_process.name
+    PROCESS_COMPLETED_SUBSCRIPTION_NAME_SEND_DATA_AVAILABLE = local.COMPLETED_PROCESS_SUBSCRIPTION_SEND_DATA_AVAILABLE
 
     # Message Hub
-    MESSAGE_HUB_SERVICE_BUS_SEND_CONNECTION_STRING   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
-    MESSAGE_HUB_SERVICE_BUS_LISTEN_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
-    MESSAGE_HUB_DATA_AVAILABLE_QUEUE_NAME            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-data-available-name)"
-    MESSAGE_HUB_REQUEST_QUEUE_NAME                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-name)"
-    MESSAGE_HUB_REPLY_QUEUE_NAME                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-reply-name)"
-    MESSAGE_HUB_STORAGE_CONNECTION_STRING            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketres-primary-connection-string)"
-    MESSAGE_HUB_STORAGE_CONTAINER_NAME               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketres-postofficereply-container-name)"
+    MESSAGE_HUB_SERVICE_BUS_SEND_CONNECTION_STRING          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
+    MESSAGE_HUB_SERVICE_BUS_LISTEN_CONNECTION_STRING        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
+    MESSAGE_HUB_DATA_AVAILABLE_QUEUE_NAME                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-data-available-name)"
+    MESSAGE_HUB_REQUEST_QUEUE_NAME                          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-name)"
+    MESSAGE_HUB_REPLY_QUEUE_NAME                            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-reply-name)"
+    MESSAGE_HUB_STORAGE_CONNECTION_STRING                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketres-primary-connection-string)"
+    MESSAGE_HUB_STORAGE_CONTAINER_NAME                      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketres-postofficereply-container-name)"
 
-    CALCULATOR_RESULTS_CONNECTION_STRING             = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
-    CALCULATOR_RESULTS_FILE_SYSTEM_NAME              = local.PROCESSES_CONTAINER_NAME
+    CALCULATOR_RESULTS_CONNECTION_STRING                    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
+    CALCULATOR_RESULTS_FILE_SYSTEM_NAME                     = local.PROCESSES_CONTAINER_NAME
   }
 
   tags                                  = azurerm_resource_group.this.tags

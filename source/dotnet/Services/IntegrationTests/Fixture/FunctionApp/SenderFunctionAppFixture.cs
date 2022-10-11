@@ -100,7 +100,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             CompletedProcessTopic = await ServiceBusResourceProvider
                 .BuildTopic("completed-process")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
-                .AddSubscription("completed-process-sub-sender")
+                .AddSubscription("completed-process-sub-send-data-available")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ProcessCompletedSubscriptionName)
                 .CreateAsync();
 

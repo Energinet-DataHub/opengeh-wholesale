@@ -31,15 +31,22 @@ module "func_processmanager" {
   health_check_alert_enabled                = var.enable_health_check_alerts
   dotnet_framework_version                  = "6"
   use_dotnet_isolated_runtime               = true
+  tags                                      = azurerm_resource_group.this.tags
 
   app_settings                              = {
-    DB_CONNECTION_STRING                             = local.DB_CONNECTION_STRING
-    SERVICE_BUS_SEND_CONNECTION_STRING               = module.sb_wholesale.primary_connection_strings["send"]
-    SERVICE_BUS_MANAGE_CONNECTION_STRING             = module.sb_wholesale.primary_connection_strings["manage"]
-    PROCESS_COMPLETED_TOPIC_NAME                     = module.sbt_completed_process.name
-    DATABRICKS_WORKSPACE_TOKEN                       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
-    DATABRICKS_WORKSPACE_URL                         = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
-  }
+    # Database
+    DB_CONNECTION_STRING                                     = local.DB_CONNECTION_STRING
 
-  tags                                  = azurerm_resource_group.this.tags
+    # Service bus
+    SERVICE_BUS_SEND_CONNECTION_STRING                       = module.sb_wholesale.primary_connection_strings["send"]
+    SERVICE_BUS_MANAGE_CONNECTION_STRING                     = module.sb_wholesale.primary_connection_strings["manage"]
+    BATCH_COMPLETED_TOPIC_NAME                               = module.sbt_completed_batch.name
+    PROCESS_COMPLETED_TOPIC_NAME                             = module.sbt_completed_process.name
+    COMPLETED_BATCH_SUBSCRIPTION_ZIP_BASIS_DATA              = local.COMPLETED_BATCH_SUBSCRIPTION_ZIP_BASIS_DATA
+    COMPLETED_BATCH_SUBSCRIPTION_PUBLISH_PROCESSES_COMPLETED = local.COMPLETED_BATCH_SUBSCRIPTION_PUBLISH_PROCESSES_COMPLETED
+    
+    # Databricks
+    DATABRICKS_WORKSPACE_TOKEN                               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
+    DATABRICKS_WORKSPACE_URL                                 = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
+  }
 }
