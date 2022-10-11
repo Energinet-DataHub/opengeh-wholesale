@@ -33,13 +33,11 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
     /// <returns>Batches that have been completed</returns>
     public async Task<IEnumerable<Batch>> UpdateExecutionStateAsync(IBatchRepository batchRepository, ICalculatorJobRunner calculatorJobRunner)
     {
-        _logger.LogInformation("Now entering UpdateExecutionStateAsync");
         var completedBatches = new List<Batch>();
         var states = new List<BatchExecutionState>
         {
             BatchExecutionState.Submitted, BatchExecutionState.Pending, BatchExecutionState.Executing,
         };
-
         var activeBatches = await batchRepository.GetByStatesAsync(states).ConfigureAwait(false);
         foreach (var batch in activeBatches)
         {
