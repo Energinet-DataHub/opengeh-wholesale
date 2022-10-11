@@ -388,10 +388,17 @@ def _get_enriched_time_series_points_df(
         timeseries_df, ["GsrnNumber", "time"], "left"
     )
 
+    # the metering_point_period_df is allready used once when creating the empty_points_for_each_metering_point_df
+    # rejoining metering_point_period_df with empty_points_for_each_metering_point_df requires the GsrNumber and
+    # Resolution column must be renamed for the join to be succesfull.
+    metering_point_period_df = metering_point_period_df.withColumnRenamed(
+        "GsrnNumber", "mp_GsrnNumber"
+    ).withColumnRenamed("Resolution", "mp_Resolution")
+
     enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
         metering_point_period_df,
         (
-            metering_point_period_df["GsrnNumber"]
+            metering_point_period_df["mp_GsrnNumber"]
             == points_for_each_metering_point_df["GsrnNumber"]
         )
         & (points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
@@ -399,9 +406,9 @@ def _get_enriched_time_series_points_df(
         "left",
     ).select(
         "GridAreaCode",
-        points_for_each_metering_point_df["GsrnNumber"],
+        (metering_point_period_df["mp_GsrnNumber"]).alias("GsrnNumber"),
         "MeteringPointType",
-        points_for_each_metering_point_df["Resolution"],
+        (metering_point_period_df["mp_Resolution"]).alias("Resolution"),
         "time",
         "Quantity",
         "Quality",
