@@ -28,7 +28,7 @@ public class ProcessApplicationService : IProcessApplicationService
         _processCompletedPublisher = processCompletedPublisher;
     }
 
-    public async Task PublishAsync(BatchCompletedEventDto batchCompletedEvent)
+    public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
     {
         var completedBatch = await _batchRepository.GetAsync(batchCompletedEvent.BatchId).ConfigureAwait(false);
         var processCompletedEvents = CreateProcessCompletedEvents(completedBatch);

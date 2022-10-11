@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Application.Processes;
 
 public interface IProcessApplicationService
 {
-    Task PublishAsync(BatchCompletedEventDto batchCompletedEvent);
+    Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent);
 }

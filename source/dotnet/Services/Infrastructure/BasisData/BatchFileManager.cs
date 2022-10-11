@@ -14,7 +14,7 @@
 
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Microsoft.Extensions.Logging;
@@ -53,6 +53,16 @@ public class BatchFileManager : IBatchFileManager
         var zipStream = await GetWriteStreamAsync(zipBlobName).ConfigureAwait(false);
         await using (zipStream)
             await _webFilesZipper.ZipAsync(batchBasisFileUrls, zipStream).ConfigureAwait(false);
+    }
+
+    public Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)
+    {
+        // TODO
+        // var (directory, extension, entryPath) = GetResultDirectory(batchId, gridAreaCode);
+        // var url = await TryGetBlobUrlAsync(directory, extension).ConfigureAwait(false);
+        // var blobClient = _blobContainerClient.GetBlobClient(blobName);
+        // return await blobClient.OpenWriteAsync(false).ConfigureAwait(false);
+        throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
     }
 
     private async Task<IEnumerable<(Uri Url, string EntryPath)>> GetBatchBasisFileUrlsAsync(Batch batch)

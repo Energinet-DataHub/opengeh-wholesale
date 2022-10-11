@@ -12,11 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Application.Infrastructure;
 
-public interface IBasisDataService
+public interface IBatchFileManager
 {
-    Task ZipBasisDataAsync(BatchCompletedEventDto batchCompletedEvent);
+    /// <summary>
+    /// Create zip archives for each process in the batch.
+    /// The archive contains the basis data files and the result file.
+    /// </summary>
+    Task CreateBasisDataZipAsync(Batch completedBatch);
+
+    Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode);
 }

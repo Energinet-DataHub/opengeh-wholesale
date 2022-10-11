@@ -28,28 +28,30 @@ namespace Energinet.DataHub.Wholesale.Tests.Sender.Infrastructure.Calculator;
 public sealed class CalculatedResultsReaderTests
 {
     [Fact]
-    public async Task ReadResultAsync_GivenProcess_RequestsCorrectPath()
+    public Task ReadResultAsync_GivenProcess_RequestsCorrectPath()
     {
-        // Arrange
-        var jsonSerializer = new JsonSerializer();
-        var dataLakeClient = CreateDataLakeFileSystemClientMock();
-
-        var target = new CalculatedResultsReader(jsonSerializer, dataLakeClient.Object);
-        var process = new Process(
-            new MessageHubReference(Guid.NewGuid()),
-            "123",
-            Guid.NewGuid());
-
-        // Act
-        await target.ReadResultAsync(process);
-
-        // Assert
-        // This expected path must match the directory used by Databricks (see calculator.py).
-        var expectedPath = $"results/batch_id={process.BatchId}/grid_area={process.GridAreaCode}/";
-
-        dataLakeClient.Verify(
-            client => client.GetDirectoryClient(It.Is<string>(dir => dir == expectedPath)),
-            Times.Once);
+        // TODO
+        throw new NotImplementedException();
+        // // Arrange
+        // var jsonSerializer = new JsonSerializer();
+        // var dataLakeClient = CreateDataLakeFileSystemClientMock();
+        //
+        // var target = new CalculatedResultsReader(jsonSerializer, dataLakeClient.Object);
+        // var process = new Process(
+        //     new MessageHubReference(Guid.NewGuid()),
+        //     "123",
+        //     Guid.NewGuid());
+        //
+        // // Act
+        // await target.ReadResultAsync(process);
+        //
+        // // Assert
+        // // This expected path must match the directory used by Databricks (see calculator.py).
+        // var expectedPath = $"results/batch_id={process.BatchId}/grid_area={process.GridAreaCode}/";
+        //
+        // dataLakeClient.Verify(
+        //     client => client.GetDirectoryClient(It.Is<string>(dir => dir == expectedPath)),
+        //     Times.Once);
     }
 
     private static Mock<DataLakeFileSystemClient> CreateDataLakeFileSystemClientMock()

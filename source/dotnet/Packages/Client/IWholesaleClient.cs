@@ -33,5 +33,5 @@ public interface IWholesaleClient
     /// <summary>
     /// Get basis data files of a process as a zipped file.
     /// </summary>
-    Task<Stream> GetProcessBasisDataAsync(long batchNumber);
+    Task<Stream> GetBatchBasisDataAsync(Guid batchId);
 }

@@ -40,7 +40,7 @@ public class PublishProcessCompletedEvents
         byte[] message)
     {
         var batchCompletedEvent = await DeserializeByteArrayAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
-        await _processApplicationService.PublishAsync(batchCompletedEvent).ConfigureAwait(false);
+        await _processApplicationService.PublishProcessCompletedEventsAsync(batchCompletedEvent).ConfigureAwait(false);
     }
 
     private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)
