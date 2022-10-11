@@ -100,21 +100,4 @@ public class MapBatchExecutionStateTests
         completedBatches.Should().ContainSingle();
         completedBatches.First().Should().Be(batch2);
     }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task UpdateExecutionState_When_RunnerThrowsException_Then_SkipBatch(
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-        [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
-        BatchExecutionStateHandler sut)
-    {
-        // Arrange
-        var batch1 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        var batch2 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-
-
-        // Act
-
-        // Assert
-    }
 }
