@@ -19,28 +19,28 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class ZipBasisData
+public class PublishProcessCompletedEvents
 {
-    private const string FunctionName = nameof(ZipBasisData);
+    private const string FunctionName = nameof(PublishProcessCompletedEvents);
     private readonly IJsonSerializer _jsonSerializer;
-    private readonly IBasisDataService _basisDataService;
+    private readonly IProcessApplicationService _processApplicationService;
 
-    public ZipBasisData(IJsonSerializer jsonSerializer, IBasisDataService basisDataService)
+    public PublishProcessCompletedEvents(IJsonSerializer jsonSerializer, IProcessApplicationService processApplicationService)
     {
         _jsonSerializer = jsonSerializer;
-        _basisDataService = basisDataService;
+        _processApplicationService = processApplicationService;
     }
 
     [Function(FunctionName)]
     public async Task RunAsync(
         [ServiceBusTrigger(
-            "%" + EnvironmentSettingNames.ProcessCompletedTopicName + "%",
-            "%" + EnvironmentSettingNames.ProcessCompletedSubscriptionName + "%",
+            "%" + EnvironmentSettingNames.BatchCompletedTopicName + "%",
+            "%" + EnvironmentSettingNames.BatchCompletedSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
-        var completedProcessEvent = await DeserializeByteArrayAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
-        await _basisDataService.ZipBasisDataAsync(completedProcessEvent).ConfigureAwait(false);
+        var batchCompletedEvent = await DeserializeByteArrayAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
+        await _processApplicationService.PublishAsync(batchCompletedEvent).ConfigureAwait(false);
     }
 
     private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)

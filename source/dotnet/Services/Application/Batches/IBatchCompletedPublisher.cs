@@ -14,9 +14,9 @@
 
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public interface IBasisDataService
+public interface IBatchCompletedPublisher
 {
-    Task ZipBasisDataAsync(BatchCompletedEventDto batchCompletedEvent);
+    Task PublishAsync(IEnumerable<BatchCompletedEventDto> batchCompletedEvents);
 }

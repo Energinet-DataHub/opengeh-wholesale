@@ -13,24 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
-public class BasisDataService : IBasisDataService
+public interface IProcessApplicationService
 {
-    private readonly IBatchRepository _batchRepository;
-    private readonly IBatchFileManager _batchFileManager;
-
-    public BasisDataService(IBatchRepository batchRepository, IBatchFileManager batchFileManager)
-    {
-        _batchRepository = batchRepository;
-        _batchFileManager = batchFileManager;
-    }
-
-    public async Task ZipBasisDataAsync(BatchCompletedEventDto batchCompletedEvent)
-    {
-        var batch = await _batchRepository.GetAsync(batchCompletedEvent.BatchId).ConfigureAwait(false);
-        await _batchFileManager.CreateBasisDataZipAsync(batch).ConfigureAwait(false);
-    }
+    Task PublishAsync(BatchCompletedEventDto batchCompletedEvent);
 }

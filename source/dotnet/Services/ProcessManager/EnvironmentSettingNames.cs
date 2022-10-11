@@ -45,4 +45,6 @@ public static class EnvironmentSettingNames
 
     public const string CalculatorResultsConnectionString = "CALCULATOR_RESULTS_CONNECTION_STRING";
     public const string CalculatorResultsFileSystemName = "CALCULATOR_RESULTS_FILE_SYSTEM_NAME";
+    public const string BatchCompletedTopicName = "TODO BJARKE";
+    public const string BatchCompletedSubscriptionName = "TODO BJARKE";
 }

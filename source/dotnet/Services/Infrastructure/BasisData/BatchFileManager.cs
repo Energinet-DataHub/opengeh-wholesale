@@ -55,17 +55,6 @@ public class BatchFileManager : IBatchFileManager
             await _webFilesZipper.ZipAsync(batchBasisFileUrls, zipStream).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Checks if the batch basis data zip file exists (already has been created).
-    /// </summary>
-    public async Task<bool> ExistsBasisDataZipAsync(Batch batch)
-    {
-        var zipBlobName = GetZipBlobName(batch);
-        var blobClient = _blobContainerClient.GetBlobClient(zipBlobName);
-        var exists = await blobClient.ExistsAsync().ConfigureAwait(false);
-        return exists.Value;
-    }
-
     private async Task<IEnumerable<(Uri Url, string EntryPath)>> GetBatchBasisFileUrlsAsync(Batch batch)
     {
         var basisDataFileUrls = new List<(Uri Url, string EntryPath)>();

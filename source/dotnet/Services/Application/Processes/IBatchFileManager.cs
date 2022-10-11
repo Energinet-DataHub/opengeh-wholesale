@@ -23,6 +23,4 @@ public interface IBatchFileManager
     /// The archive contains the basis data files and the result file.
     /// </summary>
     Task CreateBasisDataZipAsync(Batch completedBatch);
-
-    Task<bool> ExistsBasisDataZipAsync(Batch batch);
 }

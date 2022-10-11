@@ -13,18 +13,18 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Batches;
 
-public class ProcessCompletedPublisher : IProcessCompletedPublisher
+public class BatchCompletedPublisher : IBatchCompletedPublisher
 {
     private readonly ServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
 
-    public ProcessCompletedPublisher(
+    public BatchCompletedPublisher(
         ServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory)
     {
@@ -32,9 +32,9 @@ public class ProcessCompletedPublisher : IProcessCompletedPublisher
         _serviceBusMessageFactory = serviceBusMessageFactory;
     }
 
-    public async Task PublishAsync(List<ProcessCompletedEventDto> completedProcesses)
+    public async Task PublishAsync(IEnumerable<BatchCompletedEventDto> batchCompletedEvents)
     {
-        var messages = _serviceBusMessageFactory.Create(completedProcesses);
+        var messages = _serviceBusMessageFactory.Create(batchCompletedEvents);
         await _serviceBusSender.SendMessagesAsync(messages).ConfigureAwait(false);
     }
 }
