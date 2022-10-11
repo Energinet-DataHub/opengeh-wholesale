@@ -50,7 +50,7 @@ public class WholesaleClient : IWholesaleClient
         return batches ?? new List<BatchDto>();
     }
 
-    public Task<Stream> GetProcessBasisDataAsync(long batchNumber)
+    public Task<Stream> GetBatchBasisDataZipAsync(Guid batchId)
     {
         throw new NotImplementedException();
     }
