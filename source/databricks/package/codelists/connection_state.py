@@ -16,6 +16,7 @@ from enum import IntEnum
 
 
 class ConnectionState(IntEnum):
+    "ConnectionState values used in contracts exposed by the time series domain."
     new = 1
     connected = 2
     disconnected = 3

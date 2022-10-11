@@ -16,4 +16,5 @@ from enum import IntEnum
 
 
 class MeteringPointType(IntEnum):
+    "MeteringPointType values used in contracts exposed by the metering point domain."
     production = 2

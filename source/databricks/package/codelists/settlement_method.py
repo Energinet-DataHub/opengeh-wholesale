@@ -16,6 +16,7 @@ from enum import IntEnum
 
 
 class SettlementMethod(IntEnum):
+    "SettlementMethod values used in contracts exposed by the metering point domain."
     unknown = 0
     profiled = 1
     nonprofiled = 2
