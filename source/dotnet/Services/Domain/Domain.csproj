@@ -35,10 +35,4 @@ limitations under the License.
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\..\Contracts\BatchExecutionState.cs">
-      <Link>BatchAggregate\BatchExecutionState.cs</Link>
-    </Compile>
-  </ItemGroup>
-
 </Project>

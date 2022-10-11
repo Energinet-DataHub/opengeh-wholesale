@@ -29,19 +29,25 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
     private readonly ICalculatorJobRunner _calculatorJobRunner;
     private readonly ICalculatorJobParametersFactory _calculatorJobParametersFactory;
+    private readonly IBatchExecutionStateHandler _batchExecutionStateHandler;
+    private readonly IBatchDtoMapper _batchDtoMapper;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         IProcessCompletedPublisher processCompletedPublisher,
         ICalculatorJobRunner calculatorJobRunner,
-        ICalculatorJobParametersFactory calculatorJobParametersFactory)
+        ICalculatorJobParametersFactory calculatorJobParametersFactory,
+        IBatchExecutionStateHandler batchExecutionStateHandler,
+        IBatchDtoMapper batchDtoMapper)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _processCompletedPublisher = processCompletedPublisher;
         _calculatorJobRunner = calculatorJobRunner;
         _calculatorJobParametersFactory = calculatorJobParametersFactory;
+        _batchExecutionStateHandler = batchExecutionStateHandler;
+        _batchDtoMapper = batchDtoMapper;
     }
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
@@ -51,46 +57,24 @@ public class BatchApplicationService : IBatchApplicationService
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task StartPendingAsync()
+    public async Task StartSubmittingAsync()
     {
-        var batches = await _batchRepository.GetPendingAsync().ConfigureAwait(false);
+        var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
 
         foreach (var batch in batches)
         {
             var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);
             var jobRunId = await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
-            batch.MarkAsExecuting(jobRunId);
+            batch.MarkAsSubmitted(jobRunId);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
 
     public async Task UpdateExecutionStateAsync()
     {
-        var batches = await _batchRepository.GetExecutingAsync().ConfigureAwait(false);
-        if (!batches.Any())
-            return;
-
-        var completedBatches = new List<Batch>();
-
-        foreach (var batch in batches)
-        {
-            // The batch will have received a RunId when the batch have started.
-            var runId = batch.RunId!;
-
-            var state = await _calculatorJobRunner
-                .GetJobStateAsync(runId)
-                .ConfigureAwait(false);
-
-            if (state == JobState.Completed)
-            {
-                batch.MarkAsCompleted();
-                completedBatches.Add(batch);
-            }
-        }
-
+        var completedBatches = await _batchExecutionStateHandler.UpdateExecutionStateAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
         var completedProcesses = CreateProcessCompletedEvents(completedBatches);
         await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
-
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
@@ -100,7 +84,7 @@ public class BatchApplicationService : IBatchApplicationService
         var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
-        return batches.Select(MapToBatchDto);
+        return batches.Select(_batchDtoMapper.Map);
     }
 
     private static Batch CreateBatch(BatchRequestDto batchRequestDto)
@@ -118,22 +102,11 @@ public class BatchApplicationService : IBatchApplicationService
         return batch;
     }
 
-    private List<ProcessCompletedEventDto> CreateProcessCompletedEvents(List<Batch> completedBatches)
+    private static List<ProcessCompletedEventDto> CreateProcessCompletedEvents(IEnumerable<Batch> completedBatches)
     {
         return completedBatches
             .SelectMany(b => b.GridAreaCodes.Select(x => new { b.Id, x.Code }))
             .Select(c => new ProcessCompletedEventDto(c.Code, c.Id))
             .ToList();
-    }
-
-    private BatchDto MapToBatchDto(Batch batch)
-    {
-        return new BatchDto(
-            batch.RunId?.Id ?? 0,
-            batch.PeriodStart.ToDateTimeOffset(),
-            batch.PeriodEnd.ToDateTimeOffset(),
-            batch.ExecutionTimeStart?.ToDateTimeOffset() ?? null,
-            batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
-            batch.ExecutionState);
     }
 }

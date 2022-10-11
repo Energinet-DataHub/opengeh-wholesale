@@ -16,19 +16,19 @@ using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
-public sealed class DatabricksCalculatorJobSelector
+public sealed class DatabricksCalculatorJobSelector : IDatabricksCalculatorJobSelector
 {
-    private readonly DatabricksWheelClient _wheelClient;
+    private readonly IDatabricksWheelClient _wheelClient;
 
-    public DatabricksCalculatorJobSelector(DatabricksWheelClient wheelClient)
+    public DatabricksCalculatorJobSelector(IDatabricksWheelClient wheelClient)
     {
         _wheelClient = wheelClient;
     }
 
-    public async Task<WheelJob> SelectCalculatorJobAsync()
+    public async Task<WheelJob> GetAsync()
     {
-        var knownJobs = await _wheelClient.Jobs.List().ConfigureAwait(false);
-        var calculatorJob = knownJobs.Single(j => j.Settings.Name == "CalculatorJob");
+        var jobs = await _wheelClient.Jobs.List().ConfigureAwait(false);
+        var calculatorJob = jobs.Single(j => j.Settings.Name == "CalculatorJob");
         return await _wheelClient.Jobs.GetWheel(calculatorJob.JobId).ConfigureAwait(false);
     }
 }

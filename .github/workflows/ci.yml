@@ -94,6 +94,7 @@ jobs:
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\source\dotnet\Services\WebApi'
       DOWNLOAD_ATTEMPT_LIMIT: 8
       USE_AZURE_FUNCTIONS_TOOLS: true
+      ENVIRONMENT: AzureAuth
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -113,6 +114,7 @@ jobs:
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\source\dotnet\Services\WebApi'
       DOWNLOAD_ATTEMPT_LIMIT: 8
       USE_AZURE_FUNCTIONS_TOOLS: true
+      ENVIRONMENT: AzureAuth
     secrets:
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
