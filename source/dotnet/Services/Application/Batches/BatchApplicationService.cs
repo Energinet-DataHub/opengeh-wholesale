@@ -55,7 +55,12 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
     {
-        var batch = _batchFactory.Create(batchRequestDto);
+        var processType = batchRequestDto.ProcessType switch
+        {
+            WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
+        };
+        var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }

@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public class BatchFactory : IBatchFactory
 {
@@ -29,17 +27,11 @@ public class BatchFactory : IBatchFactory
         _clock = clock;
     }
 
-    public Batch Create(BatchRequestDto batchRequestDto)
+    public Batch Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate)
     {
-        var gridAreaCodes = batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c));
-        var processType = batchRequestDto.ProcessType switch
-        {
-            WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
-        };
-        var periodStart = Instant.FromDateTimeOffset(batchRequestDto.StartDate);
-        var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
-        var batch = new Batch(processType, gridAreaCodes, periodStart, periodEnd, _clock);
-        return batch;
+        var gridAreas = gridAreaCodes.Select(c => new GridAreaCode(c));
+        var periodStart = Instant.FromDateTimeOffset(startDate);
+        var periodEnd = Instant.FromDateTimeOffset(endDate);
+        return new Batch(processType, gridAreas, periodStart, periodEnd, _clock);
     }
 }
