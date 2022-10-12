@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module "sbt_domain_events" {
-  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic?ref=7.0.0"
+  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic?ref=v9"
 
   name                = "domain-events"
   namespace_id        = data.azurerm_key_vault_secret.sb_domainrelay_namespace_id.value
@@ -32,4 +32,15 @@ module "sbt_domain_events" {
       max_delivery_count  = 1
     },
   ]
+}
+
+module "sbtsub-charges-info-operations-accepted" {
+  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
+  name                = "info-operations-accepted"
+  project_name        = var.domain_name_short
+  topic_id            = module.sbt_charges_domain_events.id
+  max_delivery_count  = 1
+  correlation_filter  = {
+    label = "ChargeInformationOperationsAcceptedEvent"
+  }
 }
