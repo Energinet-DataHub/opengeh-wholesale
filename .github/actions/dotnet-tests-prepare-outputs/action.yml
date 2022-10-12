@@ -51,7 +51,7 @@ runs:
           --configuration Release \
           --output '.\source\dotnet\Services\Tests\bin\Release\net6.0'
 
-    - name: Copy all bin folders
+    - name: Copy all directories and files in source/dotnet except the obj-directories
       shell: bash
       run: |
         # Create base directory
