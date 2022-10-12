@@ -16,7 +16,7 @@ from datetime import datetime
 import sys
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
-from pyspark.sql.types import StructField, StringType, StructType, IntegerType, Row
+from pyspark.sql.types import Row
 import ast
 
 # Required when executing in a subprocess from pytest (without using wheel)

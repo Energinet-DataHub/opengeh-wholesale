@@ -46,7 +46,6 @@ from pyspark.sql.types import (
     StructType,
     DecimalType,
 )
-from pyspark.sql import Row
 from pyspark.sql.window import Window
 from package.codelists import (
     ConnectionState,
@@ -127,12 +126,12 @@ def calculate_balance_fixing_total_production(
 def _check_all_grid_areas_have_metering_points(
     batch_grid_areas_df, metering_point_period_df
 ):
-    distinct_grid_areas_rows = metering_point_period_df.select(
+    distinct_grid_areas_rows_df = metering_point_period_df.select(
         "GridAreaCode"
     ).distinct()
 
     grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
-        distinct_grid_areas_rows, "GridAreaCode", "leftanti"
+        distinct_grid_areas_rows_df, "GridAreaCode", "leftanti"
     )
 
     if grid_area_with_no_metering_point_df.count() > 0:

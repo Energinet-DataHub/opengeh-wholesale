@@ -20,12 +20,6 @@ from package.balance_fixing_total_production import (
 from package.codelists import (
     MeteringPointResolution,
 )
-from pyspark.sql.functions import col, struct, to_json
-from tests.contract_utils import (
-    assert_contract_matches_schema,
-    read_contract,
-    get_message_type,
-)
 
 
 @pytest.fixture(scope="module")
