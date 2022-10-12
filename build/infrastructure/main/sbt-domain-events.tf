@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "sbt_completed_batch" {
+module "sbt_domain_events" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic?ref=7.0.0"
 
-  name                = "completed-batch"
-  namespace_id        = module.sb_wholesale.id
-
+  name                = "domain-events"
+  namespace_id        = data.azurerm_key_vault_secret.sb_domainrelay_namespace_id.value
+ 
   subscriptions       = [
     {
       name                = local.COMPLETED_BATCH_SUBSCRIPTION_ZIP_BASIS_DATA
@@ -25,6 +25,10 @@ module "sbt_completed_batch" {
     },
     {
       name                = local.COMPLETED_BATCH_SUBSCRIPTION_PUBLISH_PROCESSES_COMPLETED
+      max_delivery_count  = 1
+    },
+    {
+      name                = local.COMPLETED_PROCESS_SUBSCRIPTION_SEND_DATA_AVAILABLE
       max_delivery_count  = 1
     },
   ]
