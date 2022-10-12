@@ -83,12 +83,12 @@ def test__when_no_metering_point_exist_in_grid_area_exception_is_thrown(
     # Act
     metering_points_df = metering_point_period_df_factory(grid_area_code="806")
 
-    # Assert
     with pytest.raises(Exception) as e_info:
         _check_all_grid_areas_have_metering_points(
             grid_area_df,
             metering_points_df,
         )
+    # assert
     assert (
         str(e_info.value)
         == "There are no metering points for the grid areas ['805'] in the requested period"
