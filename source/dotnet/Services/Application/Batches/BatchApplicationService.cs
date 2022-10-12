@@ -24,6 +24,7 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public class BatchApplicationService : IBatchApplicationService
 {
+    private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
@@ -33,6 +34,7 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchDtoMapper _batchDtoMapper;
 
     public BatchApplicationService(
+        IBatchFactory batchFactory,
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         IProcessCompletedPublisher processCompletedPublisher,
@@ -41,6 +43,7 @@ public class BatchApplicationService : IBatchApplicationService
         IBatchExecutionStateHandler batchExecutionStateHandler,
         IBatchDtoMapper batchDtoMapper)
     {
+        _batchFactory = batchFactory;
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _processCompletedPublisher = processCompletedPublisher;
@@ -52,7 +55,7 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
     {
-        var batch = CreateBatch(batchRequestDto);
+        var batch = _batchFactory.Create(batchRequestDto);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
