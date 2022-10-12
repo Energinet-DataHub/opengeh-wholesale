@@ -135,13 +135,16 @@ def _check_all_grid_areas_have_metering_points(
         distinct_grid_areas_rows, "GridAreaCode", "leftanti"
     )
 
-    grid_areas_to_inform_about = grid_area_with_no_metering_point_df.select(
-        "GridAreaCode"
-    ).collect()
-
     if grid_area_with_no_metering_point_df.count() > 0:
+        grid_areas_to_inform_about = grid_area_with_no_metering_point_df.select(
+            "GridAreaCode"
+        ).collect()
+
+        grid_area_codes_to_inform_about = map(
+            lambda x: x.__getitem__("GridAreaCode"), grid_areas_to_inform_about
+        )
         raise Exception(
-            f"There are no metering points for the grid areas: {grid_areas_to_inform_about} in the requested period"
+            f"There are no metering points for the grid areas: {list(grid_area_codes_to_inform_about)} in the requested period"
         )
 
 
