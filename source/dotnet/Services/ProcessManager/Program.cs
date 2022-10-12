@@ -78,6 +78,8 @@ public static class Program
     private static void Applications(IServiceCollection services)
     {
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
+        services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
+        services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
         services.AddScoped<IProcessCompletedPublisher>(provider =>
         {
@@ -92,6 +94,7 @@ public static class Program
 
     private static void Domains(IServiceCollection services)
     {
+        services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
     }
 
@@ -123,8 +126,6 @@ public static class Program
                 client.CreateSender(processCompletedTopicName));
         });
 
-        serviceCollection.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
-        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         serviceCollection
             .AddScoped<ICalculatorJobParametersFactory, DatabricksCalculatorJobParametersFactory>();

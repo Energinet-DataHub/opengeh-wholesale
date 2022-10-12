@@ -24,6 +24,7 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public class BatchApplicationService : IBatchApplicationService
 {
+    private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
@@ -33,6 +34,7 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchDtoMapper _batchDtoMapper;
 
     public BatchApplicationService(
+        IBatchFactory batchFactory,
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         IProcessCompletedPublisher processCompletedPublisher,
@@ -41,6 +43,7 @@ public class BatchApplicationService : IBatchApplicationService
         IBatchExecutionStateHandler batchExecutionStateHandler,
         IBatchDtoMapper batchDtoMapper)
     {
+        _batchFactory = batchFactory;
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _processCompletedPublisher = processCompletedPublisher;
@@ -52,7 +55,12 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
     {
-        var batch = CreateBatch(batchRequestDto);
+        var processType = batchRequestDto.ProcessType switch
+        {
+            WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
+        };
+        var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
@@ -85,21 +93,6 @@ public class BatchApplicationService : IBatchApplicationService
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
         return batches.Select(_batchDtoMapper.Map);
-    }
-
-    private static Batch CreateBatch(BatchRequestDto batchRequestDto)
-    {
-        var gridAreaCodes = batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c));
-        var processType = batchRequestDto.ProcessType switch
-        {
-            WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
-        };
-        var periodStart = Instant.FromDateTimeOffset(batchRequestDto.StartDate);
-        var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
-        var clock = SystemClock.Instance;
-        var batch = new Batch(processType, gridAreaCodes, periodStart, periodEnd, clock);
-        return batch;
     }
 
     private static List<ProcessCompletedEventDto> CreateProcessCompletedEvents(IEnumerable<Batch> completedBatches)
