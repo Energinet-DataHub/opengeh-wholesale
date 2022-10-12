@@ -163,31 +163,36 @@ def _get_time_series_points(
 
 def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> DataFrame:
     message_type = "GridAreaUpdated"  # Must correspond to the value stored by the integration event listener
-    batch_grid_areas = map(
-        lambda x: x.__getitem__("gridAreaCode"), batch_grid_areas_df.collect()
-    )
-    print(list(batch_grid_areas))
 
     grid_area_events_df = (
         cached_integration_events_df.withColumn(
             "body", from_json(col("body"), grid_area_updated_event_schema)
         )
         .where(col("body.MessageType") == message_type)
-        .where(col("body.GridAreaCode").isin(batch_grid_areas))
+        .select("body.GridAreaLinkId", "body.GridAreaCode", "body.OperationTime")
+    ).join(
+        batch_grid_areas_df,
+        ["GridAreaCode"],
+        "leftanti",
     )
 
     # Use latest update for the grid area
-    window = Window.partitionBy("body.GridAreaCode").orderBy(
-        col("body.OperationTime").desc()
-    )
+    window = Window.partitionBy("GridAreaCode").orderBy(col("OperationTime").desc())
     grid_area_df = (
         grid_area_events_df.withColumn("row", row_number().over(window))
         .filter(col("row") == 1)
-        .drop("row")
-        .select("body.GridAreaLinkId", "body.GridAreaCode")
+        .select("GridAreaLinkId", "GridAreaCode")
     )
+    print("grid_area_df.count()")
+    grid_area_df.count()
+    print("batch_grid_areas_df.count()")
+    batch_grid_areas_df.count()
+    print("grid_area_df.sow()")
+    grid_area_df.show()
+    print("batch_grid_areas_df.sow()")
+    batch_grid_areas_df.show()
 
-    if grid_area_df.count() != len(batch_grid_areas):
+    if grid_area_df.count() != batch_grid_areas_df.count():
         raise Exception(
             "Grid areas for processes in batch does not match the known grid areas in wholesale"
         )

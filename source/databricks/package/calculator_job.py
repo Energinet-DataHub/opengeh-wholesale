@@ -128,7 +128,7 @@ def internal_start(spark: SparkSession, args):
         args.time_series_points_path
     )
 
-    columns = ["gridAreaCode"]
+    columns = ["GridAreaCode"]
     rowData = map(lambda x: Row(str(x)), args.batch_grid_areas)
     batch_grid_areas_df = spark.createDataFrame(rowData, columns)
     batch_grid_areas_df.printSchema()
