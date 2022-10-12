@@ -38,7 +38,7 @@ The calculated results are packaged and forwarded to the legitimate market parti
 These are the business processes maintained by this domain:
 
 | Processes |
-| ----------- |
+| ------------ |
 | [Submission of calculated energy time series](docs/business-processes/submission-of-calculated-energy-time-series.md) |
 | [Request for calculated energy time series](docs/business-processes/request-for-calculated-energy-time-series.md) |
 | [Aggregation of wholesale services](docs/business-processes/aggregation-of-wholesale-services.md) |
