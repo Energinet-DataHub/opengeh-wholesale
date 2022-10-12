@@ -81,7 +81,9 @@ def test__when_no_metering_point_exist_in_grid_area_exception_is_thrown(
     metering_point_period_df_factory,
 ):
     # Arrange
-    grid_area_df = grid_area_df_factory(grid_area_code="805")
+    grid_area_df = grid_area_df_factory(grid_area_code="805").union(
+        grid_area_df_factory(grid_area_code="806")
+    )
 
     metering_points_df = metering_point_period_df_factory(grid_area_code="806")
 
