@@ -45,7 +45,6 @@ grid_area_link_id = "the-grid-area-link-id"
 gsrn_number = "the-gsrn-number"
 metering_point_id = "the-metering-point-id"
 
-grid_area_codes = ["805"]
 first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
 second_of_june = first_of_june + timedelta(days=1)
 third_of_june = first_of_june + timedelta(days=2)
@@ -257,12 +256,12 @@ def test__metering_point_connected_message_type__matches_contract(
     "created_message_type,connected_message_type,expected",
     [
         ("MeteringPointCreated", "MeteringPointConnected", True),
-        # ("BadCreatedMessageType", "MeteringPointConnected", False),
-        # ("MeteringPointCreated", "BadConnectedMessageType", False),
-        # ("BadCreatedMessageType", "BadConnectedMessageType", False),
+        ("BadCreatedMessageType", "MeteringPointConnected", False),
+        ("MeteringPointCreated", "BadConnectedMessageType", False),
+        ("BadCreatedMessageType", "BadConnectedMessageType", False),
     ],
 )
-def test__when_correct_message_types__returns_row_else_raises_exception(
+def test__when_correct_message_types__returns_row(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
     grid_area_df,
@@ -279,30 +278,13 @@ def test__when_correct_message_types__returns_row_else_raises_exception(
     )
     integration_events_df = created_events_df.union(connected_events_df)
 
-    if expected:
-        actual_df = _get_metering_point_periods_df(
-            integration_events_df,
-            grid_area_codes,
-            grid_area_df,
-            second_of_june,
-            third_of_june,
-        )
-        assert (actual_df.count() == 1) == expected
-    else:
-        # Assert
-        with pytest.raises(Exception) as e_info:
-            _get_metering_point_periods_df(
-                integration_events_df,
-                grid_area_codes,
-                grid_area_df,
-                second_of_june,
-                third_of_june,
-            )
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
 
-        assert (
-            str(e_info.value)
-            == "There are no metering points for the grid areas: ['805'] in the requested period"
-        )
+    # Assert
+    assert (actual_df.count() == 1) == expected
 
 
 @pytest.mark.parametrize(
@@ -327,31 +309,14 @@ def test__when_metering_point_type_is_production__metering_point_is_included(
     connected_events_df = metering_point_connected_df_factory()
     integration_events_df = created_events_df.union(connected_events_df)
 
-    if expected_is_included:
-        actual_df = _get_metering_point_periods_df(
-            integration_events_df,
-            grid_area_codes,
-            grid_area_df,
-            second_of_june,
-            third_of_june,
-        )
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
 
-        assert (actual_df.count() == 1) == expected_is_included
-    else:
-        # Assert
-        with pytest.raises(Exception) as e_info:
-            _get_metering_point_periods_df(
-                integration_events_df,
-                grid_area_codes,
-                grid_area_df,
-                second_of_june,
-                third_of_june,
-            )
-
-        assert (
-            str(e_info.value)
-            == "There are no metering points for the grid areas: ['805'] in the requested period"
-        )
+    # Assert
+    actual_is_included = actual_df.count() == 1
+    assert actual_is_included == expected_is_included
 
 
 def test__gsrn_code_value(
@@ -364,11 +329,7 @@ def test__gsrn_code_value(
 
     # Act
     actual_df = _get_metering_point_periods_df(
-        integration_events_df,
-        grid_area_codes,
-        grid_area_df,
-        second_of_june,
-        third_of_june,
+        integration_events_df, grid_area_df, second_of_june, third_of_june
     )
 
     # Assert
@@ -385,11 +346,7 @@ def test__grid_area_code(
 
     # Act
     actual_df = _get_metering_point_periods_df(
-        integration_events_df,
-        grid_area_codes,
-        grid_area_df,
-        second_of_june,
-        third_of_june,
+        integration_events_df, grid_area_df, second_of_june, third_of_june
     )
 
     # Assert
@@ -410,11 +367,7 @@ def test__effective_date__matches_effective_date_of_connected_event(
 
     # Act
     actual_df = _get_metering_point_periods_df(
-        integration_events_df,
-        grid_area_codes,
-        grid_area_df,
-        second_of_june,
-        third_of_june,
+        integration_events_df, grid_area_df, second_of_june, third_of_june
     )
 
     # Assert
@@ -434,11 +387,7 @@ def test__to_effective_date__is_in_the_far_future(
 
     # Act
     actual_df = _get_metering_point_periods_df(
-        integration_events_df,
-        grid_area_codes,
-        grid_area_df,
-        second_of_june,
-        third_of_june,
+        integration_events_df, grid_area_df, second_of_june, third_of_june
     )
 
     # Assert
@@ -468,31 +417,14 @@ def test__when_effective_date_less_than_or_equal_to_period_end__row_is_included(
     )
     integration_events_df = created_events_df.union(connected_events_df)
 
-    if expected_is_included:
-        actual_df = _get_metering_point_periods_df(
-            integration_events_df,
-            grid_area_codes,
-            grid_area_df,
-            second_of_june,
-            third_of_june,
-        )
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, period_end_date
+    )
 
-        assert (actual_df.count() == 1) == expected_is_included
-    else:
-        # Assert
-        with pytest.raises(Exception) as e_info:
-            _get_metering_point_periods_df(
-                integration_events_df,
-                grid_area_codes,
-                grid_area_df,
-                second_of_june,
-                third_of_june,
-            )
-
-        assert (
-            str(e_info.value)
-            == "There are no metering points for the grid areas: ['805'] in the requested period"
-        )
+    # Assert
+    actual_is_included = actual_df.count() == 1
+    assert actual_is_included == expected_is_included
 
 
 @pytest.mark.parametrize(
@@ -519,29 +451,13 @@ def test__metering_points_are_periodized_by_effective_date(
     )
     integration_events_df = connected_events_df.union(created_events_df)
 
-    if expected:
-        actual_df = _get_metering_point_periods_df(
-            integration_events_df,
-            grid_area_codes,
-            grid_area_df,
-            second_of_june,
-            third_of_june,
-        )
-        assert (actual_df.count() == 1) == expected
-    else:
-        with pytest.raises(Exception) as e_info:
-            _get_metering_point_periods_df(
-                integration_events_df,
-                grid_area_codes,
-                grid_area_df,
-                second_of_june,
-                third_of_june,
-            )
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, second_of_june, third_of_june
+    )
 
-        assert (
-            str(e_info.value)
-            == "There are no metering points for the grid areas: ['805'] in the requested period"
-        )
+    # Assert
+    assert (actual_df.count() == 1) == expected
 
 
 def test__duplicate_connected_events_do_not_affect_amount_of_periods(
@@ -561,11 +477,7 @@ def test__duplicate_connected_events_do_not_affect_amount_of_periods(
 
     # Act
     actual_df = _get_metering_point_periods_df(
-        integration_events_df,
-        grid_area_codes,
-        grid_area_df,
-        first_of_june,
-        third_of_june,
+        integration_events_df, grid_area_df, first_of_june, third_of_june
     )
 
     # Assert
@@ -589,60 +501,28 @@ def test__duplicate_created_events_do_not_affect_amount_of_periods(
 
     # Act
     actual_df = _get_metering_point_periods_df(
-        integration_events_df,
-        grid_area_codes,
-        grid_area_df,
-        first_of_june,
-        third_of_june,
+        integration_events_df, grid_area_df, first_of_june, third_of_june
     )
 
     # Assert
     assert actual_df.count() == 1
 
 
-def test__raises_exception_when_there_are_only_created_events(
+def test__only_created_events_results_in_no_periods(
     metering_point_created_df_factory,
     grid_area_df,
 ):
     # Arrange
     created_events_df = metering_point_created_df_factory(operation_time=first_of_june)
 
-    # Assert
-    with pytest.raises(Exception) as e_info:
-        _get_metering_point_periods_df(
-            created_events_df,
-            grid_area_codes,
-            grid_area_df,
-            first_of_june,
-            third_of_june,
-        )
+    # duplicate 'created' events are added to the dataframe
+    integration_events_df = created_events_df.union(created_events_df)
 
-    assert (
-        str(e_info.value)
-        == "There are no metering points for the grid areas: ['805'] in the requested period"
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df, grid_area_df, first_of_june, third_of_june
     )
 
-
-def test__raises_exception_when_there_are_no_metering_points(
-    metering_point_created_df_factory,
-    grid_area_df,
-):
-    # Arrange
-    created_events_df = metering_point_created_df_factory(
-        operation_time=first_of_june
-    ).filter(col("GsrnNumber") == "")
-
     # Assert
-    with pytest.raises(Exception) as e_info:
-        _get_metering_point_periods_df(
-            created_events_df,
-            grid_area_codes,
-            grid_area_df,
-            first_of_june,
-            third_of_june,
-        )
-
-    assert (
-        str(e_info.value)
-        == "There are no metering points for the grid areas: ['805'] in the requested period"
-    )
+    # Periods are only established after they are connected
+    assert actual_df.count() == 0
