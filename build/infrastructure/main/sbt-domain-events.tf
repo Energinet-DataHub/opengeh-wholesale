@@ -34,13 +34,37 @@ module "sbt_domain_events" {
   ]
 }
 
-module "sbtsub-charges-info-operations-accepted" {
+# TODO: Consider moving filter labels to locals + add tests to ensure alignment between tf and .NET. _Or_ inject labels as app settings into .NET
+# TODO: Update .NET to set correct label when publishing events
+module "sbtsub_batch_completed__zip_basis_data" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
-  name                = "info-operations-accepted"
+  name                = "batch-completed--zip-basis-data"
   project_name        = var.domain_name_short
-  topic_id            = module.sbt_charges_domain_events.id
-  max_delivery_count  = 1
+  topic_id            = module.sbt_domain_events.id
+  max_delivery_count  = 10
   correlation_filter  = {
-    label = "ChargeInformationOperationsAcceptedEvent"
+    label = "BatchCompletedEvent"
+  }
+}
+
+module "sbtsub_batch_completed__publish_process_completed" {
+  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
+  name                = "batch-completed--publish-process-completed"
+  project_name        = var.domain_name_short
+  topic_id            = module.sbt_domain_events.id
+  max_delivery_count  = 10
+  correlation_filter  = {
+    label = "BatchCompletedEvent"
+  }
+}
+
+module "sbtsub_process_completed__send_data_available" {
+  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
+  name                = "process-completed--send-data-available"
+  project_name        = var.domain_name_short
+  topic_id            = module.sbt_domain_events.id
+  max_delivery_count  = 10
+  correlation_filter  = {
+    label = "ProcessCompletedEvent"
   }
 }
