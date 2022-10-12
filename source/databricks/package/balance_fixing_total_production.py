@@ -173,7 +173,7 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
     ).join(
         batch_grid_areas_df,
         ["GridAreaCode"],
-        "leftanti",
+        "inner",
     )
 
     # Use latest update for the grid area
@@ -183,14 +183,6 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
         .filter(col("row") == 1)
         .select("GridAreaLinkId", "GridAreaCode")
     )
-    print("grid_area_df.count()")
-    grid_area_df.count()
-    print("batch_grid_areas_df.count()")
-    batch_grid_areas_df.count()
-    print("grid_area_df.sow()")
-    grid_area_df.show()
-    print("batch_grid_areas_df.sow()")
-    batch_grid_areas_df.show()
 
     if grid_area_df.count() != batch_grid_areas_df.count():
         raise Exception(
