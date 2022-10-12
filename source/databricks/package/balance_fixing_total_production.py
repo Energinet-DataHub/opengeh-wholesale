@@ -143,7 +143,7 @@ def _check_all_grid_areas_have_metering_points(
             lambda x: x.__getitem__("GridAreaCode"), grid_areas_to_inform_about
         )
         raise Exception(
-            f"There are no metering points for the grid areas: {list(grid_area_codes_to_inform_about)} in the requested period"
+            f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"
         )
 
 

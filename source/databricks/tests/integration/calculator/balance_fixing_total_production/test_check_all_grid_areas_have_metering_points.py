@@ -91,5 +91,5 @@ def test__when_no_metering_point_exist_in_grid_area_exception_is_thrown(
         )
     assert (
         str(e_info.value)
-        == "There are no metering points for the grid areas: ['805'] in the requested period"
+        == "There are no metering points for the grid areas ['805'] in the requested period"
     )
