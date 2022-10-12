@@ -90,21 +90,6 @@ public class BatchApplicationService : IBatchApplicationService
         return batches.Select(_batchDtoMapper.Map);
     }
 
-    private static Batch CreateBatch(BatchRequestDto batchRequestDto)
-    {
-        var gridAreaCodes = batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c));
-        var processType = batchRequestDto.ProcessType switch
-        {
-            WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
-        };
-        var periodStart = Instant.FromDateTimeOffset(batchRequestDto.StartDate);
-        var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
-        var clock = SystemClock.Instance;
-        var batch = new Batch(processType, gridAreaCodes, periodStart, periodEnd, clock);
-        return batch;
-    }
-
     private static List<ProcessCompletedEventDto> CreateProcessCompletedEvents(IEnumerable<Batch> completedBatches)
     {
         return completedBatches
