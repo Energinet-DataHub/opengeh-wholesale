@@ -78,7 +78,6 @@ public static class Program
     private static void Applications(IServiceCollection services)
     {
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
-        services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
@@ -95,6 +94,7 @@ public static class Program
 
     private static void Domains(IServiceCollection services)
     {
+        services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
     }
 

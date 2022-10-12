@@ -13,14 +13,15 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application;
+namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 
 [UnitTest]
 public class BatchFactoryTests
@@ -30,14 +31,16 @@ public class BatchFactoryTests
     public void Create_ReturnsBatchWithCorrectPeriod(BatchFactory sut)
     {
         // Arrange
-        var batchRequestDto = CreateBatchRequestDto();
+        var startDate = new DateTimeOffset(2022, 5, 1, 8, 6, 32, TimeSpan.Zero);
+        var endDate = new DateTimeOffset(2022, 5, 5, 8, 6, 32, TimeSpan.Zero);
+        var someGridAreasIds = new List<string> { "004", "805" };
 
         // Act
-        var batch = sut.Create(batchRequestDto);
+        var batch = sut.Create(ProcessType.BalanceFixing, someGridAreasIds, startDate, endDate);
 
         // Assert
-        batch.PeriodStart.Should().Be(Instant.FromDateTimeOffset(batchRequestDto.StartDate));
-        batch.PeriodEnd.Should().Be(Instant.FromDateTimeOffset(batchRequestDto.EndDate));
+        batch.PeriodStart.Should().Be(Instant.FromDateTimeOffset(startDate));
+        batch.PeriodEnd.Should().Be(Instant.FromDateTimeOffset(endDate));
     }
 
     [Theory]
@@ -45,21 +48,15 @@ public class BatchFactoryTests
     public void Create_ReturnsBatchWithCorrectGridAreas(BatchFactory sut)
     {
         // Arrange
-        var batchRequestDto = CreateBatchRequestDto();
-
-        // Act
-        var batch = sut.Create(batchRequestDto);
-
-        // Assert
-        batch.GridAreaCodes.Select(x => x.Code).Should().Contain(batchRequestDto.GridAreaCodes);
-        batch.GridAreaCodes.Count.Should().Be(batchRequestDto.GridAreaCodes.Count());
-    }
-
-    private BatchRequestDto CreateBatchRequestDto()
-    {
         var startDate = new DateTimeOffset(2022, 5, 1, 8, 6, 32, TimeSpan.Zero);
         var endDate = new DateTimeOffset(2022, 5, 5, 8, 6, 32, TimeSpan.Zero);
         var someGridAreasIds = new List<string> { "004", "805" };
-        return new BatchRequestDto(WholesaleProcessType.BalanceFixing, someGridAreasIds, startDate, endDate);
+
+        // Act
+        var batch = sut.Create(ProcessType.BalanceFixing, someGridAreasIds, startDate, endDate);
+
+        // Assert
+        batch.GridAreaCodes.Select(x => x.Code).Should().Contain(someGridAreasIds);
+        batch.GridAreaCodes.Count.Should().Be(someGridAreasIds.Count);
     }
 }
