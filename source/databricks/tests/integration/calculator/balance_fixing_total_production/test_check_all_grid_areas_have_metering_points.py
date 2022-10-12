@@ -61,6 +61,7 @@ def test__when_metering_point_exist_in_grid_area_no_exception_is_thrown(
     # Arrange
     grid_area_df = grid_area_df_factory(grid_area_code="805")
 
+    # Act
     metering_points_df = metering_point_period_df_factory(grid_area_code="805")
 
     # Assert
