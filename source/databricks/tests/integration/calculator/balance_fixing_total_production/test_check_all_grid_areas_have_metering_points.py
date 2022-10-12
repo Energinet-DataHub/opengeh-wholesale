@@ -71,8 +71,8 @@ def test__when_metering_point_exist_in_grid_area_no_exception_is_thrown(
 
     # Assert
     _check_all_grid_areas_have_metering_points(
-        metering_points_df,
         grid_area_df,
+        metering_points_df,
     )
 
 

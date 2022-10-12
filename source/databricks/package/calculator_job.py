@@ -128,10 +128,7 @@ def internal_start(spark: SparkSession, args):
         args.time_series_points_path
     )
 
-    columns = ["GridAreaCode"]
-    rowData = map(lambda x: Row(str(x)), args.batch_grid_areas)
-    batch_grid_areas_df = spark.createDataFrame(rowData, columns)
-    batch_grid_areas_df.printSchema()
+    batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
 
     (
         result_df,
@@ -181,6 +178,12 @@ def internal_start(spark: SparkSession, args):
         .write.mode("overwrite")
         .partitionBy("grid_area")
         .json(f"{args.process_results_path}/batch_id={args.batch_id}")
+    )
+
+
+def get_batch_grid_areas_df(batch_grid_areas, spark):
+    return spark.createDataFrame(
+        map(lambda x: Row(str(x)), batch_grid_areas), ["GridAreaCode"]
     )
 
 
