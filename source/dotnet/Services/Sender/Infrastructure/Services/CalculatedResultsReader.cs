@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -32,24 +33,22 @@ public class CalculatedResultsReader : ICalculatedResultReader
         _batchFileManager = batchFileManager ?? throw new ArgumentNullException(nameof(batchFileManager));
     }
 
-    public Task<BalanceFixingResultDto> ReadResultAsync(Process process)
+    public async Task<BalanceFixingResultDto> ReadResultAsync(Process process)
     {
-        // TODO
-        throw new NotImplementedException();
-        // var resultFileStream = await _batchFileManager.GetResultFileStreamAsync(process.BatchId, process.GridAreaCode).ConfigureAwait(false);
-        // await using (resultFileStream.ConfigureAwait(false))
-        // {
-        //     using var reader = new StreamReader(resultFileStream);
-        //
-        //     var points = new List<PointDto>();
-        //
-        //     while (await reader.ReadLineAsync().ConfigureAwait(false) is { } nextLine)
-        //     {
-        //         var point = _jsonSerializer.Deserialize<PointDto>(nextLine);
-        //         points.Add(point);
-        //     }
-        //
-        //     return new BalanceFixingResultDto(points.ToArray());
-        // }
+        var resultFileStream = await _batchFileManager.GetResultFileStreamAsync(process.BatchId, new GridAreaCode(process.GridAreaCode)).ConfigureAwait(false);
+        await using (resultFileStream.ConfigureAwait(false))
+        {
+            using var reader = new StreamReader(resultFileStream);
+
+            var points = new List<PointDto>();
+
+            while (await reader.ReadLineAsync().ConfigureAwait(false) is { } nextLine)
+            {
+                var point = _jsonSerializer.Deserialize<PointDto>(nextLine);
+                points.Add(point);
+            }
+
+            return new BalanceFixingResultDto(points.ToArray());
+        }
     }
 }

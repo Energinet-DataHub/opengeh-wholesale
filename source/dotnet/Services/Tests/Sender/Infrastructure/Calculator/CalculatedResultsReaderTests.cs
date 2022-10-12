@@ -13,11 +13,15 @@
 // limitations under the License.
 
 using Azure;
+using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using Xunit.Categories;
@@ -27,31 +31,34 @@ namespace Energinet.DataHub.Wholesale.Tests.Sender.Infrastructure.Calculator;
 [UnitTest]
 public sealed class CalculatedResultsReaderTests
 {
-    [Fact]
-    public Task ReadResultAsync_GivenProcess_RequestsCorrectPath()
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ReadResultAsync_GivenProcess_RequestsCorrectPath(
+        IWebFilesZipper wfz,
+        ILogger logger)
     {
-        // TODO
-        throw new NotImplementedException();
-        // // Arrange
-        // var jsonSerializer = new JsonSerializer();
-        // var dataLakeClient = CreateDataLakeFileSystemClientMock();
-        //
-        // var target = new CalculatedResultsReader(jsonSerializer, dataLakeClient.Object);
-        // var process = new Process(
-        //     new MessageHubReference(Guid.NewGuid()),
-        //     "123",
-        //     Guid.NewGuid());
-        //
-        // // Act
-        // await target.ReadResultAsync(process);
-        //
-        // // Assert
-        // // This expected path must match the directory used by Databricks (see calculator.py).
-        // var expectedPath = $"results/batch_id={process.BatchId}/grid_area={process.GridAreaCode}/";
-        //
-        // dataLakeClient.Verify(
-        //     client => client.GetDirectoryClient(It.Is<string>(dir => dir == expectedPath)),
-        //     Times.Once);
+        // Arrange
+        var jsonSerializer = new JsonSerializer();
+        var dataLakeClient = CreateDataLakeFileSystemClientMock();
+        var blobContainerClient = new BlobContainerClient("UseDevelopmentStorage=true", "test");
+        var batchFileManager = new BatchFileManager(dataLakeClient.Object, blobContainerClient, wfz, logger);
+
+        var target = new CalculatedResultsReader(jsonSerializer, batchFileManager);
+        var process = new Process(
+            new MessageHubReference(Guid.NewGuid()),
+            "123",
+            Guid.NewGuid());
+
+        // Act
+        await target.ReadResultAsync(process);
+
+        // Assert
+        // This expected path must match the directory used by Databricks (see calculator.py).
+        var expectedPath = $"results/batch_id={process.BatchId}/grid_area={process.GridAreaCode}/";
+
+        dataLakeClient.Verify(
+            client => client.GetDirectoryClient(It.Is<string>(dir => dir == expectedPath)),
+            Times.Once);
     }
 
     private static Mock<DataLakeFileSystemClient> CreateDataLakeFileSystemClientMock()

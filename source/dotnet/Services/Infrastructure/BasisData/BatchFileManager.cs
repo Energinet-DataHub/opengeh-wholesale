@@ -55,14 +55,16 @@ public class BatchFileManager : IBatchFileManager
             await _webFilesZipper.ZipAsync(batchBasisFileUrls, zipStream).ConfigureAwait(false);
     }
 
-    public Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)
+    public async Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
-        // TODO
-        // var (directory, extension, entryPath) = GetResultDirectory(batchId, gridAreaCode);
-        // var url = await TryGetBlobUrlAsync(directory, extension).ConfigureAwait(false);
-        // var blobClient = _blobContainerClient.GetBlobClient(blobName);
-        // return await blobClient.OpenWriteAsync(false).ConfigureAwait(false);
-        throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
+        var (directory, extension, entryPath) = GetResultDirectory(batchId, gridAreaCode);
+        var dataLakeFileClient = await TryGetBlobUrlAsync(directory, extension).ConfigureAwait(false);
+        if (dataLakeFileClient == null)
+        {
+            throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
+        }
+
+        return await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
     }
 
     private async Task<IEnumerable<(Uri Url, string EntryPath)>> GetBatchBasisFileUrlsAsync(Batch batch)
@@ -85,15 +87,15 @@ public class BatchFileManager : IBatchFileManager
         foreach (var fileIdentifierProvider in _fileIdentifierProviders)
         {
             var (directory, extension, entryPath) = fileIdentifierProvider(batchId, gridAreaCode);
-            var processDataFileUrl = await TryGetBlobUrlAsync(directory, extension).ConfigureAwait(false);
+            var processDataFile = await TryGetBlobUrlAsync(directory, extension).ConfigureAwait(false);
 
-            if (processDataFileUrl == null)
+            if (processDataFile == null)
             {
                 _logger.LogError("Blob matching '{Directory}*{Extension}' not found", directory, extension);
             }
             else
             {
-                processDataFilesUrls.Add((processDataFileUrl, entryPath));
+                processDataFilesUrls.Add((processDataFile.Uri, entryPath));
             }
         }
 
@@ -106,7 +108,7 @@ public class BatchFileManager : IBatchFileManager
     /// <param name="directory"></param>
     /// <param name="extension"></param>
     /// <returns>The first file with matching file extension.</returns>
-    private async Task<Uri?> TryGetBlobUrlAsync(string directory, string extension)
+    private async Task<DataLakeFileClient?> TryGetBlobUrlAsync(string directory, string extension)
     {
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
 
@@ -114,8 +116,7 @@ public class BatchFileManager : IBatchFileManager
         {
             if (Path.GetExtension(pathItem.Name) == extension)
             {
-                var fileClient = _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
-                return fileClient.Uri;
+                return _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
             }
         }
 
