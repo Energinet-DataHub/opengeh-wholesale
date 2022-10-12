@@ -54,7 +54,7 @@ def grid_area_df_factory(spark):
     return factory
 
 
-def test__when_metering_point_exist_in_grid_area_no_exception_is_thrown(
+def test__when_all_grid_areas_have_metering_points_does_not_throw_exception(
     grid_area_df_factory,
     metering_point_period_df_factory,
 ):
