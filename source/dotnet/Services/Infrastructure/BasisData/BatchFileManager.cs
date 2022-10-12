@@ -58,7 +58,7 @@ public class BatchFileManager : IBatchFileManager
     public async Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
         var (directory, extension, entryPath) = GetResultDirectory(batchId, gridAreaCode);
-        var dataLakeFileClient = await TryGetBlobUrlAsync(directory, extension).ConfigureAwait(false);
+        var dataLakeFileClient = await TryGetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
         if (dataLakeFileClient == null)
         {
             throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
@@ -87,7 +87,7 @@ public class BatchFileManager : IBatchFileManager
         foreach (var fileIdentifierProvider in _fileIdentifierProviders)
         {
             var (directory, extension, entryPath) = fileIdentifierProvider(batchId, gridAreaCode);
-            var processDataFile = await TryGetBlobUrlAsync(directory, extension).ConfigureAwait(false);
+            var processDataFile = await TryGetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
             if (processDataFile == null)
             {
@@ -108,7 +108,7 @@ public class BatchFileManager : IBatchFileManager
     /// <param name="directory"></param>
     /// <param name="extension"></param>
     /// <returns>The first file with matching file extension.</returns>
-    private async Task<DataLakeFileClient?> TryGetBlobUrlAsync(string directory, string extension)
+    private async Task<DataLakeFileClient?> TryGetDataLakeFileClientAsync(string directory, string extension)
     {
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
 
