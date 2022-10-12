@@ -125,17 +125,13 @@ def calculate_balance_fixing_total_production(
 
 
 def _check_all_grid_areas_have_metering_points(
-    batch_grid_areas, metering_point_period_df
+    batch_grid_areas_df, metering_point_period_df
 ):
     distinct_grid_areas_rows = metering_point_period_df.select(
         "GridAreaCode"
     ).distinct()
-    distinct_grid_areas_rows.printSchema()
-    distinct_grid_areas_rows.show()
-    batch_grid_areas.printSchema()
-    batch_grid_areas.show()
 
-    grid_area_with_no_metering_point_df = batch_grid_areas.join(
+    grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
         distinct_grid_areas_rows, "GridAreaCode", "leftanti"
     )
 
