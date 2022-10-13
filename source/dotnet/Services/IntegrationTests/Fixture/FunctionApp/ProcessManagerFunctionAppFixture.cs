@@ -53,7 +53,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
 
-        public TopicResource ProcessCompletedTopic { get; private set; } = null!;
+        public TopicResource DomainEventsTopic { get; private set; } = null!;
 
         public ServiceBusTestListener ProcessCompletedListener { get; private set; } = null!;
 
@@ -94,14 +94,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             DatabricksManager.BeginListen();
 
             var processCompletedSubscriptionName = "process-completed-sub";
-            ProcessCompletedTopic = await ServiceBusResourceProvider
-                .BuildTopic("process-completed")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
+            DomainEventsTopic = await ServiceBusResourceProvider
+                .BuildTopic("domain-events")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
                 .AddSubscription(processCompletedSubscriptionName)
                 .CreateAsync();
 
             var processCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
-            await processCompletedListener.AddTopicSubscriptionListenerAsync(ProcessCompletedTopic.Name, processCompletedSubscriptionName);
+            await processCompletedListener.AddTopicSubscriptionListenerAsync(DomainEventsTopic.Name, processCompletedSubscriptionName);
             ProcessCompletedListener = new ServiceBusTestListener(processCompletedListener);
         }
 

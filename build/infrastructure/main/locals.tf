@@ -13,25 +13,23 @@
 # limitations under the License.
 
 locals {
-    PROCESSES_CONTAINER_NAME                                 = "processes"
+    PROCESSES_CONTAINER_NAME                                           = "processes"
 
-    # Batch completed events
-    COMPLETED_BATCH_SUBSCRIPTION_ZIP_BASIS_DATA              = "completed-batch-sub-zip-basis-data"
-    COMPLETED_BATCH_SUBSCRIPTION_PUBLISH_PROCESSES_COMPLETED = "completed-batch-sub-publish-processes-completed"
-    
-    # Process completed
-    COMPLETED_PROCESS_SUBSCRIPTION_SEND_DATA_AVAILABLE       = "completed-process-sub-send-data-available"
+    # Service Bus domain event subscriptions
+    ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME              = "completed-batch-sub-zip-basis-data"
+    PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME = "completed-batch-sub-publish-processes-completed"
+    SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME       = "completed-process-sub-send-data-available"
     
     # Integration events
-    INTERGRATION_EVENTS_CONTAINER_NAME                       = "integration-events"
+    INTERGRATION_EVENTS_CONTAINER_NAME                                 = "integration-events"
 
     # Database
-    DB_CONNECTION_STRING_SQL_AUTH                            = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_wholesale.name};Persist Security Info=False;User ID=${data.azurerm_key_vault_secret.mssql_data_admin_name.value};Password=${data.azurerm_key_vault_secret.mssql_data_admin_password.value};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
-    DB_CONNECTION_STRING                                     = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Database=${module.mssqldb_wholesale.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
+    DB_CONNECTION_STRING_SQL_AUTH                                      = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_wholesale.name};Persist Security Info=False;User ID=${data.azurerm_key_vault_secret.mssql_data_admin_name.value};Password=${data.azurerm_key_vault_secret.mssql_data_admin_password.value};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
+    DB_CONNECTION_STRING                                               = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Database=${module.mssqldb_wholesale.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
 
-    TIME_ZONE                                                = "Europe/Copenhagen"
+    TIME_ZONE                                                          = "Europe/Copenhagen"
 
     # Domain event names
-    BATCH_COMPLETED_EVENT_NAME                               = "BatchCompleted"
-    PROCESS_COMPLETED_EVENT_NAME                             = "ProcessCompleted"
+    BATCH_COMPLETED_EVENT_NAME                                         = "BatchCompleted"
+    PROCESS_COMPLETED_EVENT_NAME                                       = "ProcessCompleted"
 }

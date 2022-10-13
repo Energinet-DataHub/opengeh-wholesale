@@ -16,29 +16,12 @@ module "sbt_domain_events" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic?ref=v9"
 
   name                = "domain-events"
-  namespace_id        = data.azurerm_key_vault_secret.sb_domainrelay_namespace_id.value
- 
-  subscriptions       = [
-    {
-      name                = local.COMPLETED_BATCH_SUBSCRIPTION_ZIP_BASIS_DATA
-      max_delivery_count  = 1
-    },
-    {
-      name                = local.COMPLETED_BATCH_SUBSCRIPTION_PUBLISH_PROCESSES_COMPLETED
-      max_delivery_count  = 1
-    },
-    {
-      name                = local.COMPLETED_PROCESS_SUBSCRIPTION_SEND_DATA_AVAILABLE
-      max_delivery_count  = 1
-    },
-  ]
+  namespace_id        = data.azurerm_key_vault_secret.sb_integration_events_id.value
 }
 
-# TODO: Consider moving filter labels to locals + add tests to ensure alignment between tf and .NET. _Or_ inject labels as app settings into .NET
-# TODO: Update .NET to set correct label when publishing events
-module "sbtsub_batch_completed__zip_basis_data" {
+module "sbtsub_zip_basis_data_when_batch_completed" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
-  name                = "batch-completed--zip-basis-data"
+  name                = local.ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME
   project_name        = var.domain_name_short
   topic_id            = module.sbt_domain_events.id
   max_delivery_count  = 10
@@ -47,9 +30,9 @@ module "sbtsub_batch_completed__zip_basis_data" {
   }
 }
 
-module "sbtsub_batch_completed__publish_process_completed" {
+module "sbtsub_publish_process_completed_when_batch_completed" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
-  name                = "batch-completed--publish-process-completed"
+  name                = local.PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME
   project_name        = var.domain_name_short
   topic_id            = module.sbt_domain_events.id
   max_delivery_count  = 10
@@ -58,9 +41,9 @@ module "sbtsub_batch_completed__publish_process_completed" {
   }
 }
 
-module "sbtsub_process_completed__send_data_available" {
+module "sbtsub_send_data_available_when_process_completed" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
-  name                = "process-completed--send-data-available"
+  name                = local.SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME
   project_name        = var.domain_name_short
   topic_id            = module.sbt_domain_events.id
   max_delivery_count  = 10

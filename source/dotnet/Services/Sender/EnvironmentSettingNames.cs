@@ -27,8 +27,8 @@ public static class EnvironmentSettingNames
 
     public const string ServiceBusManageConnectionString = "SERVICE_BUS_MANAGE_CONNECTION_STRING";
     public const string ServiceBusListenConnectionString = "SERVICE_BUS_LISTEN_CONNECTION_STRING";
-    public const string ProcessCompletedTopicName = "PROCESS_COMPLETED_TOPIC_NAME";
-    public const string ProcessCompletedSubscriptionName = "PROCESS_COMPLETED_SUBSCRIPTION_NAME";
+    public const string DomainEventsTopicName = "DOMAIN_EVENTS_TOPIC_NAME";
+    public const string SendDataAvailableWhenCompletedProcessSubscriptionName = "SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME";
 
     public const string MessageHubServiceBusSendConnectionString = "MESSAGE_HUB_SERVICE_BUS_SEND_CONNECTION_STRING";
     public const string MessageHubServiceBusListenConnectionString = "MESSAGE_HUB_SERVICE_BUS_LISTEN_CONNECTION_STRING";

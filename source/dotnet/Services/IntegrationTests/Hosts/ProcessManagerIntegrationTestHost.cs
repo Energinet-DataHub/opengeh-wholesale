@@ -63,7 +63,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, "fake_value");
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, "fake_value");
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, "fake_value");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedTopicName, "fake_value");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, "fake_value");
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)

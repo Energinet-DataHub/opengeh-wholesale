@@ -110,11 +110,9 @@ public static class Program
         var serviceBusConnectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusSendConnectionString);
 
-        var batchCompletedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedTopicName);
-        serviceCollection.AddBatchCompletedPublisher(serviceBusConnectionString, batchCompletedTopicName);
-
-        var processCompletedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
-        serviceCollection.AddProcessCompletedPublisher(serviceBusConnectionString, processCompletedTopicName);
+        var domainEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        serviceCollection.AddBatchCompletedPublisher(serviceBusConnectionString, domainEventsTopicName);
+        serviceCollection.AddProcessCompletedPublisher(serviceBusConnectionString, domainEventsTopicName);
 
         serviceCollection.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
         serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
@@ -138,14 +136,12 @@ public static class Program
 
         var serviceBusConnectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
-        var processCompletedTopicName =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
-        var batchCompletedTopicName =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedTopicName);
+        var domainEventsTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
         var batchCompletedSubscriptionPublishProcessesCompleted =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedSubscriptionPublishProcessesCompleted);
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName);
         var batchCompletedSubscriptionZipBasisData =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedSubscriptionZipBasisData);
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName);
 
         serviceCollection
             .AddHealthChecks()
@@ -153,20 +149,16 @@ public static class Program
             .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,
-                topicName: processCompletedTopicName,
-                name: "ProcessCompletedTopicExists")
-            .AddAzureServiceBusTopic(
-                connectionString: serviceBusConnectionString,
-                topicName: batchCompletedTopicName,
-                name: "BatchCompletedTopicExists")
+                topicName: domainEventsTopicName,
+                name: "DomainEventsTopicExists")
             .AddAzureServiceBusSubscription(
                 connectionString: serviceBusConnectionString,
-                topicName: processCompletedTopicName,
+                topicName: domainEventsTopicName,
                 subscriptionName: batchCompletedSubscriptionPublishProcessesCompleted,
                 name: "BatchCompletedSubscriptionPublishProcessesCompleted")
             .AddAzureServiceBusSubscription(
                 connectionString: serviceBusConnectionString,
-                topicName: processCompletedTopicName,
+                topicName: domainEventsTopicName,
                 subscriptionName: batchCompletedSubscriptionZipBasisData,
                 name: "BatchCompletedSubscriptionZipBasisData")
             .AddDatabricksCheck(

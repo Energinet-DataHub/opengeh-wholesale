@@ -34,8 +34,8 @@ public class PublishProcessCompletedEvents
     [Function(FunctionName)]
     public async Task RunAsync(
         [ServiceBusTrigger(
-            "%" + EnvironmentSettingNames.BatchCompletedTopicName + "%",
-            "%" + EnvironmentSettingNames.BatchCompletedSubscriptionPublishProcessesCompleted + "%",
+            "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
+            "%" + EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {

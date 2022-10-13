@@ -34,8 +34,8 @@ public class DataAvailableSenderEndpoint
     [Function(FunctionName)]
     public async Task RunAsync(
         [ServiceBusTrigger(
-            "%" + EnvironmentSettingNames.ProcessCompletedTopicName + "%",
-            "%" + EnvironmentSettingNames.ProcessCompletedSubscriptionName + "%",
+            "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
+            "%" + EnvironmentSettingNames.SendDataAvailableWhenCompletedProcessSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {

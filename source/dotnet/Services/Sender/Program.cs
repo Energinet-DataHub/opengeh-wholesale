@@ -143,12 +143,12 @@ public static class Program
             .AddDbContextCheck<SenderDatabaseContext>("DatabaseContext")
             .AddAzureServiceBusTopic(
                 EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
-                EnvironmentSettingNames.ProcessCompletedTopicName.Val(),
+                EnvironmentSettingNames.DomainEventsTopicName.Val(),
                 "ProcessCompletedTopic")
             .AddAzureServiceBusSubscription(
                 EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
-                EnvironmentSettingNames.ProcessCompletedTopicName.Val(),
-                EnvironmentSettingNames.ProcessCompletedSubscriptionName.Val(),
+                EnvironmentSettingNames.DomainEventsTopicName.Val(),
+                EnvironmentSettingNames.SendDataAvailableWhenCompletedProcessSubscriptionName.Val(),
                 "ProcessCompletedSubscription")
             .AddAzureServiceBusQueue(
                 EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
