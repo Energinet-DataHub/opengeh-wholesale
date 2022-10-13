@@ -93,8 +93,8 @@ public static class Program
         serviceCollection.AddApplicationInsights();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
-        var calculatorResultConnection = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsConnectionString);
-        var calculatorResultFileSystem = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsFileSystemName);
+        var calculatorResultConnection = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
+        var calculatorResultFileSystem = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         serviceCollection.AddSingleton(new DataLakeFileSystemClient(calculatorResultConnection, calculatorResultFileSystem));
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
@@ -163,7 +163,7 @@ public static class Program
                 EnvironmentSettingNames.MessageHubReplyQueueName.Val(),
                 "MessageHubReplyQueue")
             .AddDataLakeCheck(
-                EnvironmentSettingNames.CalculatorResultsConnectionString.Val(),
-                EnvironmentSettingNames.CalculatorResultsFileSystemName.Val());
+                EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
+                EnvironmentSettingNames.CalculationStorageContainerName.Val());
     }
 }

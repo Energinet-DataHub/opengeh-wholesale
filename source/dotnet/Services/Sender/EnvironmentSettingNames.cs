@@ -38,6 +38,6 @@ public static class EnvironmentSettingNames
     public const string MessageHubStorageConnectionString = "MESSAGE_HUB_STORAGE_CONNECTION_STRING";
     public const string MessageHubStorageContainerName = "MESSAGE_HUB_STORAGE_CONTAINER_NAME";
 
-    public const string CalculatorResultsConnectionString = "CALCULATOR_RESULTS_CONNECTION_STRING";
-    public const string CalculatorResultsFileSystemName = "CALCULATOR_RESULTS_FILE_SYSTEM_NAME";
+    public const string CalculationStorageConnectionString = "CALCULATION_STORAGE_CONNECTION_STRING";
+    public const string CalculationStorageContainerName = "CALCULATION_STORAGE_CONTAINER_NAME";
 }

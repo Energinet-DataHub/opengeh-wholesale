@@ -30,7 +30,7 @@ public class MapBatchExecutionStateTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task MapBatchExecutionState_WhenJobStateIsRunning_UpdateBatchToExecuting(
+    public async Task UpdateExecutionState_WhenJobStateIsRunning_UpdateBatchToExecuting(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
         BatchExecutionStateHandler sut)
@@ -40,7 +40,8 @@ public class MapBatchExecutionStateTests
         batch.MarkAsSubmitted(new JobRunId(11));
         batch.MarkAsPending();
         var pendingBatches = new List<Batch>() { batch };
-        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>())).ReturnsAsync(pendingBatches);
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+            .ReturnsAsync(pendingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Running);
 
         // Act
@@ -52,7 +53,7 @@ public class MapBatchExecutionStateTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task MapBatchExecutionState_WhenJobStateIsCompleted_UpdateBatchToCompleted(
+    public async Task UpdateExecutionState_WhenJobStateIsCompleted_UpdateBatchToCompleted(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
         BatchExecutionStateHandler sut)
@@ -63,7 +64,8 @@ public class MapBatchExecutionStateTests
         batch.MarkAsPending();
         batch.MarkAsExecuting();
         var executingBatches = new List<Batch>() { batch };
-        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>())).ReturnsAsync(executingBatches);
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+            .ReturnsAsync(executingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Completed);
 
         // Act
@@ -75,7 +77,7 @@ public class MapBatchExecutionStateTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task MapBatchExecutionState_ToCompleted(
+    public async Task UpdateExecutionState_ToCompleted(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
         BatchExecutionStateHandler sut)
@@ -90,14 +92,50 @@ public class MapBatchExecutionStateTests
         batch2.MarkAsExecuting();
         var batches = new List<Batch>() { batch1, batch2 };
 
-        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>())).ReturnsAsync(batches);
-        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch2.RunId!)).ReturnsAsync(JobState.Completed);
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+            .ReturnsAsync(batches);
+        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch2.RunId!))
+            .ReturnsAsync(JobState.Completed);
 
         // Act
-        var completedBatches = (await sut.UpdateExecutionStateAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object)).ToList();
+        var completedBatches =
+            (await sut.UpdateExecutionStateAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object)).ToList();
 
         // Assert
         completedBatches.Should().ContainSingle();
         completedBatches.First().Should().Be(batch2);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task UpdateExecutionState_When_JobRunnerThrowsException_Then_SkipBatch(
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
+        BatchExecutionStateHandler sut)
+    {
+        // Arrange
+        var batch1 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
+        batch1.MarkAsSubmitted(new JobRunId(111));
+        var batch2 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
+        batch2.MarkAsSubmitted(new JobRunId(222));
+        var batch3 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
+        batch3.MarkAsSubmitted(new JobRunId(333));
+        var batches = new List<Batch>() { batch1, batch2, batch3 };
+
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+            .ReturnsAsync(batches);
+        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch1.RunId!))
+            .ReturnsAsync(JobState.Completed);
+        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch2.RunId!)).ThrowsAsync(default);
+        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch3.RunId!))
+            .ReturnsAsync(JobState.Completed);
+
+        // Act
+        var completedBatches =
+            (await sut.UpdateExecutionStateAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object)).ToList();
+
+        // Assert
+        completedBatches.Should().Contain(new[] { batch1, batch3 });
+        completedBatches.Should().NotContain(batch2);
     }
 }

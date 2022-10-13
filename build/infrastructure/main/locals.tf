@@ -13,12 +13,12 @@
 # limitations under the License.
 
 locals {
-    PROCESSES_CONTAINER_NAME                                           = "processes"
+    CALCULATION_STORAGE_CONTAINER_NAME                                 = "processes"
 
     # Service Bus domain event subscriptions
-    ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME              = "completed-batch-sub-zip-basis-data"
-    PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME = "completed-batch-sub-publish-processes-completed"
-    SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME       = "completed-process-sub-send-data-available"
+    ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME              = "zip-basis-data"
+    PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME = "publish-processes-completed"
+    SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME       = "send-data-available"
     
     # Integration events
     INTERGRATION_EVENTS_CONTAINER_NAME                                 = "integration-events"

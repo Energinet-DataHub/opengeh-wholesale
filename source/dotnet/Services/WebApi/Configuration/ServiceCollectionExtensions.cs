@@ -29,6 +29,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -78,10 +79,12 @@ internal static class ServiceCollectionExtensions
                 o.UseNodaTime();
                 o.EnableRetryOnFailure();
             }));
-
+        services.AddScoped<IClock>(_ => SystemClock.Instance);
         services.AddScoped<IDatabaseContext, DatabaseContext>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
+        services.AddScoped<IBatchCompletedPublisher>(_ => null!); // Unused in the use cases of this app
+        services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
         services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
