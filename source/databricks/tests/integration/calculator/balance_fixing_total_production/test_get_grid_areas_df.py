@@ -79,6 +79,17 @@ def grid_area_df_factory(spark):
     return factory
 
 
+@pytest.fixture
+def batch_grid_area_df_factory(spark):
+    def factory(grid_area_code=grid_area_code):
+        row = {
+            "GridAreaCode": grid_area_code,
+        }
+        return spark.createDataFrame([row])
+
+    return factory
+
+
 def test__stored_time_matches_persister(grid_area_df_factory, source_path):
     """Test that the anticipated stored time column name matches the column that was created
     by the integration events persister. This test uses the shared contract."""
@@ -92,7 +103,7 @@ def test__stored_time_matches_persister(grid_area_df_factory, source_path):
 
 
 def test__when_input_data_matches_contract__returns_expected_row(
-    grid_area_df_factory, source_path
+    grid_area_df_factory, source_path, batch_grid_area_df_factory
 ):
     cached_integration_events_df = grid_area_df_factory()
 
@@ -114,12 +125,14 @@ def test__when_input_data_matches_contract__returns_expected_row(
     # Assert: From previous asserts:
     # If schema matches contract and test data matches schema and test data results in
     # the expected row we know that the production code works correct with data that complies with the contract
-    actual_df = _get_grid_areas_df(cached_integration_events_df, [grid_area_code])
+    actual_df = _get_grid_areas_df(
+        cached_integration_events_df, batch_grid_area_df_factory()
+    )
     assert actual_df.count() == 1
 
 
 def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_data(
-    grid_area_df_factory, source_path
+    grid_area_df_factory, source_path, batch_grid_area_df_factory
 ):
     # Arrange
     message_type = get_message_type(
@@ -128,18 +141,24 @@ def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_da
     cached_integration_events_df = grid_area_df_factory(message_type=message_type)
 
     # Act
-    actual_df = _get_grid_areas_df(cached_integration_events_df, [grid_area_code])
+    actual_df = _get_grid_areas_df(
+        cached_integration_events_df, batch_grid_area_df_factory()
+    )
 
     # Assert
     assert actual_df.count() == 1
 
 
-def test__returns_correct_grid_area_data(grid_area_df_factory):
+def test__returns_correct_grid_area_data(
+    grid_area_df_factory, batch_grid_area_df_factory
+):
     # Arrange
     cached_integration_events_df = grid_area_df_factory()
 
     # Act
-    actual_df = _get_grid_areas_df(cached_integration_events_df, [grid_area_code])
+    actual_df = _get_grid_areas_df(
+        cached_integration_events_df, batch_grid_area_df_factory()
+    )
 
     # Assert
     actual = actual_df.first()
@@ -148,7 +167,7 @@ def test__returns_correct_grid_area_data(grid_area_df_factory):
 
 
 def test__when_grid_area_code_does_not_match__throws_because_grid_area_not_found(
-    grid_area_df_factory,
+    grid_area_df_factory, batch_grid_area_df_factory
 ):
     # Arrange
     non_matching_grid_area_code = "999"
@@ -158,11 +177,14 @@ def test__when_grid_area_code_does_not_match__throws_because_grid_area_not_found
 
     # Act and assert exception
     with pytest.raises(Exception, match=r".* grid areas .*"):
-        _get_grid_areas_df(cached_integration_events_df, [non_matching_grid_area_code])
+        _get_grid_areas_df(
+            cached_integration_events_df,
+            batch_grid_area_df_factory(grid_area_code=non_matching_grid_area_code),
+        )
 
 
 def test__when_message_type_is_not_grid_area_updated__throws_because_grid_area_not_found(
-    grid_area_df_factory,
+    grid_area_df_factory, batch_grid_area_df_factory
 ):
     # Arrange
     cached_integration_events_df = grid_area_df_factory(
@@ -171,11 +193,11 @@ def test__when_message_type_is_not_grid_area_updated__throws_because_grid_area_n
 
     # Act and assert exception
     with pytest.raises(Exception, match=r".* grid areas .*"):
-        _get_grid_areas_df(cached_integration_events_df, [grid_area_code])
+        _get_grid_areas_df(cached_integration_events_df, batch_grid_area_df_factory())
 
 
 def test__returns_newest_grid_area_state(
-    grid_area_df_factory,
+    grid_area_df_factory, batch_grid_area_df_factory
 ):
     # Arrange
     expected_grid_area_link_id = "foo"
@@ -203,7 +225,9 @@ def test__returns_newest_grid_area_state(
     ).withColumn("body", col("body").cast("string"))
 
     # Act
-    actual_df = _get_grid_areas_df(cached_integration_events_df, [grid_area_code])
+    actual_df = _get_grid_areas_df(
+        cached_integration_events_df, batch_grid_area_df_factory()
+    )
 
     # Assert
     assert actual_df.count() == 1
@@ -212,7 +236,7 @@ def test__returns_newest_grid_area_state(
 
 
 def test__duplicate_grid_area_events_does_not_affect_amount_of_grid_areas(
-    grid_area_df_factory,
+    grid_area_df_factory, batch_grid_area_df_factory
 ):
     # Arrange
     cached_integration_events_df = grid_area_df_factory()
@@ -224,7 +248,7 @@ def test__duplicate_grid_area_events_does_not_affect_amount_of_grid_areas(
 
     # Act
     actual_df = _get_grid_areas_df(
-        integration_events_df_with_dublicates, [grid_area_code]
+        integration_events_df_with_dublicates, batch_grid_area_df_factory()
     )
 
     # Assert
