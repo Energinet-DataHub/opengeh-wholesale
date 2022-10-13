@@ -55,6 +55,9 @@ module "func_sender" {
 
     CALCULATOR_RESULTS_CONNECTION_STRING                    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
     CALCULATOR_RESULTS_FILE_SYSTEM_NAME                     = local.PROCESSES_CONTAINER_NAME
+
+    # Domain events
+    PROCESS_COMPLETED_EVENT_NAME                            = local.PROCESS_COMPLETED_EVENT_NAME
   }
 
   tags                                  = azurerm_resource_group.this.tags

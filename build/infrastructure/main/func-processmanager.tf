@@ -48,5 +48,8 @@ module "func_processmanager" {
     # Databricks
     DATABRICKS_WORKSPACE_TOKEN                               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
     DATABRICKS_WORKSPACE_URL                                 = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
+
+    # Domain events
+    BATCH_COMPLETED_EVENT_NAME                               = local.BATCH_COMPLETED_EVENT_NAME
   }
 }

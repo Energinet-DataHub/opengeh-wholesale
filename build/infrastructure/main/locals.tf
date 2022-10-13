@@ -30,4 +30,8 @@ locals {
     DB_CONNECTION_STRING                                     = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Database=${module.mssqldb_wholesale.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
 
     TIME_ZONE                                                = "Europe/Copenhagen"
+
+    # Domain event names
+    BATCH_COMPLETED_EVENT_NAME                               = "BatchCompleted"
+    PROCESS_COMPLETED_EVENT_NAME                             = "ProcessCompleted"
 }
