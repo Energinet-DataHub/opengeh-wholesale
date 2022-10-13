@@ -43,7 +43,7 @@ module "sbtsub_batch_completed__zip_basis_data" {
   topic_id            = module.sbt_domain_events.id
   max_delivery_count  = 10
   correlation_filter  = {
-    label = "BatchCompletedEvent"
+    label = local.BATCH_COMPLETED_EVENT_NAME
   }
 }
 
@@ -54,7 +54,7 @@ module "sbtsub_batch_completed__publish_process_completed" {
   topic_id            = module.sbt_domain_events.id
   max_delivery_count  = 10
   correlation_filter  = {
-    label = "BatchCompletedEvent"
+    label = local.BATCH_COMPLETED_EVENT_NAME
   }
 }
 
@@ -65,6 +65,6 @@ module "sbtsub_process_completed__send_data_available" {
   topic_id            = module.sbt_domain_events.id
   max_delivery_count  = 10
   correlation_filter  = {
-    label = "ProcessCompletedEvent"
+    label = local.PROCESS_COMPLETED_EVENT_NAME
   }
 }
