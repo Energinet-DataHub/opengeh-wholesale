@@ -78,6 +78,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
@@ -97,16 +98,22 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             await DatabaseManager.CreateDatabaseAsync();
             DatabricksManager.BeginListen();
 
+            var batchCompletedEventName = "batch-completed";
+            var processCompletedEventName = "process-completed";
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, batchCompletedEventName);
             var processCompletedSubscriptionName = "process-completed";
             DomainEventsTopic = await ServiceBusResourceProvider
                 .BuildTopic("domain-events")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
                 .AddSubscription("zip-basis-data")
+                .AddSubjectFilter(batchCompletedEventName)
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName)
                 .AddSubscription("publish-process-completed")
+                .AddSubjectFilter(batchCompletedEventName)
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName)
                 // Subscription to observe side effects of the process manager (events published by the function)
                 .AddSubscription(processCompletedSubscriptionName)
+                .AddSubjectFilter(processCompletedEventName)
                 .CreateAsync();
 
             var processCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);

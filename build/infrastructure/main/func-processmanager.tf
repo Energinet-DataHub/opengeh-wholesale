@@ -41,8 +41,8 @@ module "func_processmanager" {
     CALCULATION_STORAGE_CONTAINER_NAME                                 = local.CALCULATION_STORAGE_CONTAINER_NAME
 
     # Service bus
-    SERVICE_BUS_SEND_CONNECTION_STRING                                 = module.sb_wholesale.primary_connection_strings["send"]
-    SERVICE_BUS_MANAGE_CONNECTION_STRING                               = module.sb_wholesale.primary_connection_strings["manage"]
+    SERVICE_BUS_SEND_CONNECTION_STRING                                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
+    SERVICE_BUS_MANAGE_CONNECTION_STRING                               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
     DOMAIN_EVENTS_TOPIC_NAME                                           = module.sbt_domain_events.name
     ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME              = local.ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME
     PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME = local.PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME

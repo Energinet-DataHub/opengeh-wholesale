@@ -33,14 +33,14 @@ module "func_sender" {
   use_dotnet_isolated_runtime               = true
 
   app_settings                              = {
-    DB_CONNECTION_STRING                             = local.DB_CONNECTION_STRING
+    DB_CONNECTION_STRING                                         = local.DB_CONNECTION_STRING
     
     # Used for health check of all inter domain service bus connections (integration events and Message Hub)
-    INTEGRATIONEVENT_MANAGER_CONNECTION_STRING       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
+    INTEGRATIONEVENT_MANAGER_CONNECTION_STRING                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
 
     # Service Bus
-    SERVICE_BUS_MANAGE_CONNECTION_STRING                         = module.sb_wholesale.primary_connection_strings["manage"]
-    SERVICE_BUS_LISTEN_CONNECTION_STRING                         = module.sb_wholesale.primary_connection_strings["listen"]
+    SERVICE_BUS_LISTEN_CONNECTION_STRING                         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
+    SERVICE_BUS_MANAGE_CONNECTION_STRING                         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
     DOMAIN_EVENTS_TOPIC_NAME                                     = module.sbt_domain_events.name
     SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME = local.SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME
 
