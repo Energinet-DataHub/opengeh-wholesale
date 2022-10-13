@@ -92,7 +92,6 @@ jobs:
   dispatch_deploment_event:
     runs-on: ubuntu-latest
     needs: [
-      changes,
       # Infrastructure
       infrastructure_promote_prerelease,
       # Databricks
