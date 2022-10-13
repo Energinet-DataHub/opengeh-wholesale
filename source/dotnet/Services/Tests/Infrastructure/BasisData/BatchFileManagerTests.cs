@@ -18,6 +18,7 @@ using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -33,28 +34,23 @@ public class BatchFileManagerTests
 {
     // [Theory]
     // [InlineAutoMoqData]
-    // public async Task ReadResultAsync_GivenProcess_RequestsCorrectPath(
+    // public async Task GetResultFileStreamAsync_Test(
     //     IWebFilesZipper wfz,
     //     ILogger logger)
     // {
     //     // Arrange
-    //     var jsonSerializer = new JsonSerializer();
     //     var dataLakeClient = CreateDataLakeFileSystemClientMock();
-    //     var blobContainerClient = new BlobContainerClient("UseDevelopmentStorage=true", "test");
-    //     var batchFileManager = new BatchFileManager(dataLakeClient.Object, blobContainerClient, wfz, logger);
-    //
-    //     var target = new CalculatedResultsReader(jsonSerializer, batchFileManager);
-    //     var process = new Process(
-    //         new MessageHubReference(Guid.NewGuid()),
-    //         "123",
-    //         Guid.NewGuid());
+    //     var blobContainerClient = new Mock<BlobContainerClient>();
+    //     var target = new BatchFileManager(dataLakeClient.Object, blobContainerClient.Object, wfz, logger);
+    //     var gridAreaCode = "123";
+    //     var batchId = Guid.NewGuid();
     //
     //     // Act
-    //     await target.ReadResultAsync(process);
+    //     await target.GetResultFileStreamAsync(batchId, new GridAreaCode(gridAreaCode));
     //
     //     // Assert
     //     // This expected path must match the directory used by Databricks (see calculator.py).
-    //     var expectedPath = $"results/batch_id={process.BatchId}/grid_area={process.GridAreaCode}/";
+    //     var expectedPath = $"results/batch_id={batchId}/grid_area={gridAreaCode}/";
     //
     //     dataLakeClient.Verify(
     //         client => client.GetDirectoryClient(It.Is<string>(dir => dir == expectedPath)),
