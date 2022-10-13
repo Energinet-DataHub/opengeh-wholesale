@@ -48,6 +48,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v8
     with:
       PATH_STATIC_CHECKS: './source/databricks'
+      # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
       TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
 
@@ -91,7 +92,6 @@ jobs:
   dispatch_deploment_event:
     runs-on: ubuntu-latest
     needs: [
-      changes,
       # Infrastructure
       infrastructure_promote_prerelease,
       # Databricks
