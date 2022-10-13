@@ -29,9 +29,4 @@ public interface IWholesaleClient
     /// In case of errors an exception is thrown.
     /// </summary>
     Task<IEnumerable<BatchDto>> GetBatchesAsync(BatchSearchDto batchSearchDto);
-
-    /// <summary>
-    /// Get basis data files of a process as a zipped file.
-    /// </summary>
-    Task<Stream> GetBatchBasisDataZipAsync(Guid batchId);
 }
