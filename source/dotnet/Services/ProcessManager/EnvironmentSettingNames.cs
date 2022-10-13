@@ -36,9 +36,8 @@ public static class EnvironmentSettingNames
     public const string DatabricksWorkspaceUrl = "DATABRICKS_WORKSPACE_URL";
     public const string DatabricksWorkspaceToken = "DATABRICKS_WORKSPACE_TOKEN";
 
-    // TODO BJARKE: Remove these two?
-    public const string CalculatorResultsConnectionString = "CALCULATOR_RESULTS_CONNECTION_STRING";
-    public const string CalculatorResultsFileSystemName = "CALCULATOR_RESULTS_FILE_SYSTEM_NAME";
+    public const string CalculationStorageConnectionString = "CALCULATION_STORAGE_CONNECTION_STRING";
+    public const string CalculationStorageContainerName = "CALCULATION_STORAGE_CONTAINER_NAME";
 
     public const string DomainEventsTopicName = "DOMAIN_EVENTS_TOPIC_NAME";
     public const string ZipBasisDataWhenCompletedBatchSubscriptionName = "ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME";

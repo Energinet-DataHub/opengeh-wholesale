@@ -37,6 +37,9 @@ module "func_processmanager" {
     # Database
     DB_CONNECTION_STRING                                               = local.DB_CONNECTION_STRING
 
+    CALCULATION_STORAGE_CONNECTION_STRING                              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
+    CALCULATION_STORAGE_CONTAINER_NAME                                 = local.CALCULATION_STORAGE_CONTAINER_NAME
+
     # Service bus
     SERVICE_BUS_SEND_CONNECTION_STRING                                 = module.sb_wholesale.primary_connection_strings["send"]
     SERVICE_BUS_MANAGE_CONNECTION_STRING                               = module.sb_wholesale.primary_connection_strings["manage"]

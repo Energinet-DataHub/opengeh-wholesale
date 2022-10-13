@@ -94,9 +94,9 @@ public static class Program
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
-        var calculatorResultConnection = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsConnectionString);
-        var calculatorResultFileSystem = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsFileSystemName);
-        serviceCollection.AddSingleton(new DataLakeFileSystemClient(calculatorResultConnection, calculatorResultFileSystem));
+        var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
+        var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
+        serviceCollection.AddSingleton(new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName));
 
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);

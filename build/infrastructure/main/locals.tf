@@ -13,7 +13,7 @@
 # limitations under the License.
 
 locals {
-    PROCESSES_CONTAINER_NAME                                           = "processes"
+    CALCULATION_STORAGE_CONTAINER_NAME                                 = "processes"
 
     # Service Bus domain event subscriptions
     ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME              = "completed-batch-sub-zip-basis-data"
