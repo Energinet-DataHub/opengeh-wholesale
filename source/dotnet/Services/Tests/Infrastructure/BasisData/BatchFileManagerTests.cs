@@ -32,30 +32,31 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BasisData;
 [UnitTest]
 public class BatchFileManagerTests
 {
-    // [Theory]
-    // [InlineAutoMoqData]
-    // public async Task GetResultFileStreamAsync_Test(
-    //     IWebFilesZipper wfz,
-    //     ILogger logger)
-    // {
-    //     // Arrange
-    //     var dataLakeClient = CreateDataLakeFileSystemClientMock();
-    //     var blobContainerClient = new Mock<BlobContainerClient>();
-    //     var target = new BatchFileManager(dataLakeClient.Object, blobContainerClient.Object, wfz, logger);
-    //     var gridAreaCode = "123";
-    //     var batchId = Guid.NewGuid();
-    //
-    //     // Act
-    //     await target.GetResultFileStreamAsync(batchId, new GridAreaCode(gridAreaCode));
-    //
-    //     // Assert
-    //     // This expected path must match the directory used by Databricks (see calculator.py).
-    //     var expectedPath = $"results/batch_id={batchId}/grid_area={gridAreaCode}/";
-    //
-    //     dataLakeClient.Verify(
-    //         client => client.GetDirectoryClient(It.Is<string>(dir => dir == expectedPath)),
-    //         Times.Once);
-    // }
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetResultFileStreamAsync_BatchId_ReadsFromCorrectPath(
+        IWebFilesZipper wfz,
+        ILogger logger)
+    {
+        // Arrange
+        var dataLakeClient = CreateDataLakeFileSystemClientMock();
+        var blobContainerClient = new Mock<BlobContainerClient>();
+        var target = new BatchFileManager(dataLakeClient.Object, blobContainerClient.Object, wfz, logger);
+        var gridAreaCode = new GridAreaCode("123");
+        var batchId = Guid.NewGuid();
+
+        // Act
+        await target.GetResultFileStreamAsync(batchId, gridAreaCode);
+
+        // Assert
+        // This expected path must match the directory used by Databricks (see calculator.py).
+        var expectedPath = $"results/batch_id={batchId}/grid_area={gridAreaCode}/";
+
+        dataLakeClient.Verify(
+            client => client.GetDirectoryClient(It.Is<string>(dir => dir == expectedPath)),
+            Times.Once);
+    }
+
     private static Mock<DataLakeFileSystemClient> CreateDataLakeFileSystemClientMock()
     {
         var dataLakeClient = new Mock<DataLakeFileSystemClient>();
