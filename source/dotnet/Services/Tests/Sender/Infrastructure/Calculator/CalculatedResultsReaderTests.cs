@@ -57,10 +57,11 @@ public sealed class CalculatedResultsReaderTests
 
         // Act
         var actual = await calculatedResultsReader.ReadResultAsync(process);
+        var actualPointsFirst = actual.Points.First();
 
         // Assert
-        actual.Points.First().position.Should().Be(expected.position);
-        actual.Points.First().quantity.Should().Be(expected.quantity);
-        actual.Points.First().quality.Should().Be(expected.quality);
+        actualPointsFirst.position.Should().Be(expected.position);
+        actualPointsFirst.quantity.Should().Be(expected.quantity);
+        actualPointsFirst.quality.Should().Be(expected.quality);
     }
 }
