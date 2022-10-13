@@ -16,6 +16,7 @@ from datetime import datetime
 import sys
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
+from pyspark.sql.types import Row
 import ast
 
 # Required when executing in a subprocess from pytest (without using wheel)
@@ -127,6 +128,8 @@ def internal_start(spark: SparkSession, args):
         args.time_series_points_path
     )
 
+    batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
+
     (
         result_df,
         timeseries_basis_data_df,
@@ -135,7 +138,7 @@ def internal_start(spark: SparkSession, args):
         raw_integration_events_df,
         raw_time_series_points_df,
         args.batch_id,
-        args.batch_grid_areas,
+        batch_grid_areas_df,
         args.batch_snapshot_datetime,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
@@ -175,6 +178,12 @@ def internal_start(spark: SparkSession, args):
         .write.mode("overwrite")
         .partitionBy("grid_area")
         .json(f"{args.process_results_path}/batch_id={args.batch_id}")
+    )
+
+
+def get_batch_grid_areas_df(batch_grid_areas, spark):
+    return spark.createDataFrame(
+        map(lambda x: Row(str(x)), batch_grid_areas), ["GridAreaCode"]
     )
 
 
