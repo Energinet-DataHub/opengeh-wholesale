@@ -15,7 +15,7 @@
 module "sbt_domain_events" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic?ref=v9"
 
-  name                = "domain-events"
+  name                = "wholesale-domain-events"
   namespace_id        = data.azurerm_key_vault_secret.sb_integration_events_id.value
 }
 

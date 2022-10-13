@@ -97,13 +97,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             await DatabaseManager.CreateDatabaseAsync();
             DatabricksManager.BeginListen();
 
-            var processCompletedSubscriptionName = "process-completed-sub";
+            var processCompletedSubscriptionName = "process-completed";
             DomainEventsTopic = await ServiceBusResourceProvider
                 .BuildTopic("domain-events")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
-                .AddSubscription("zip-basis-data-when-batch-completed")
+                .AddSubscription("zip-basis-data")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName)
-                .AddSubscription("publish-process-completed-events-when-batch-completed")
+                .AddSubscription("publish-process-completed")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName)
                 // Subscription to observe side effects of the process manager (events published by the function)
                 .AddSubscription(processCompletedSubscriptionName)
