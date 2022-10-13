@@ -74,7 +74,7 @@ def calculate_balance_fixing_total_production(
     raw_integration_events_df,
     raw_time_series_points_df,
     batch_id,
-    batch_grid_areas,
+    batch_grid_areas_df,
     batch_snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
@@ -90,13 +90,17 @@ def calculate_balance_fixing_total_production(
         raw_time_series_points_df, batch_snapshot_datetime
     )
 
-    grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas)
+    grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df)
 
     metering_point_period_df = _get_metering_point_periods_df(
         cached_integration_events_df,
         grid_area_df,
         period_start_datetime,
         period_end_datetime,
+    )
+
+    _check_all_grid_areas_have_metering_points(
+        batch_grid_areas_df, metering_point_period_df
     )
 
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
@@ -119,6 +123,30 @@ def calculate_balance_fixing_total_production(
     return (result_df, time_series_basis_data_df, master_basis_data_df)
 
 
+def _check_all_grid_areas_have_metering_points(
+    batch_grid_areas_df, metering_point_period_df
+):
+    distinct_grid_areas_rows_df = metering_point_period_df.select(
+        "GridAreaCode"
+    ).distinct()
+
+    grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
+        distinct_grid_areas_rows_df, "GridAreaCode", "leftanti"
+    )
+
+    if grid_area_with_no_metering_point_df.count() > 0:
+        grid_areas_to_inform_about = grid_area_with_no_metering_point_df.select(
+            "GridAreaCode"
+        ).collect()
+
+        grid_area_codes_to_inform_about = map(
+            lambda x: x.__getitem__("GridAreaCode"), grid_areas_to_inform_about
+        )
+        raise Exception(
+            f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"
+        )
+
+
 def _get_cached_integration_events(
     raw_integration_events_df, batch_snapshot_datetime
 ) -> DataFrame:
@@ -135,7 +163,7 @@ def _get_time_series_points(
     return raw_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
 
 
-def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFrame:
+def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> DataFrame:
     message_type = "GridAreaUpdated"  # Must correspond to the value stored by the integration event listener
 
     grid_area_events_df = (
@@ -143,21 +171,22 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas) -> DataFr
             "body", from_json(col("body"), grid_area_updated_event_schema)
         )
         .where(col("body.MessageType") == message_type)
-        .where(col("body.GridAreaCode").isin(batch_grid_areas))
+        .select("body.GridAreaLinkId", "body.GridAreaCode", "body.OperationTime")
+    ).join(
+        batch_grid_areas_df,
+        ["GridAreaCode"],
+        "inner",
     )
 
     # Use latest update for the grid area
-    window = Window.partitionBy("body.GridAreaCode").orderBy(
-        col("body.OperationTime").desc()
-    )
+    window = Window.partitionBy("GridAreaCode").orderBy(col("OperationTime").desc())
     grid_area_df = (
         grid_area_events_df.withColumn("row", row_number().over(window))
         .filter(col("row") == 1)
-        .drop("row")
-        .select("body.GridAreaLinkId", "body.GridAreaCode")
+        .select("GridAreaLinkId", "GridAreaCode")
     )
 
-    if grid_area_df.count() != len(batch_grid_areas):
+    if grid_area_df.count() != batch_grid_areas_df.count():
         raise Exception(
             "Grid areas for processes in batch does not match the known grid areas in wholesale"
         )
