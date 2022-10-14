@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
@@ -41,6 +42,7 @@ using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
@@ -117,7 +119,8 @@ public static class Program
 
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
-        serviceCollection.AddSingleton(new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName));
+        var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
+        serviceCollection.AddSingleton(dataLakeFileSystemClient);
 
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
@@ -146,9 +149,16 @@ public static class Program
 
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
-
-        serviceCollection.AddScoped<IBatchFileManager, BatchFileManager>();
+        var blob = new BlobContainerClient(
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName));
         serviceCollection.AddScoped<IWebFilesZipper, WebFilesZipper>();
+        serviceCollection.AddScoped<IBatchFileManager>(
+            provider => new BatchFileManager(
+                dataLakeFileSystemClient,
+                blob,
+                provider.GetRequiredService<IWebFilesZipper>(),
+                provider.GetRequiredService<ILogger<IBatchFileManager>>()));
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)
