@@ -53,7 +53,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
         public AuthorizationConfiguration AuthorizationConfiguration { get; }
 
-        public TopicResource ProcessCompletedTopic { get; private set; } = null!;
+        public TopicResource DomainEventsTopic { get; private set; } = null!;
+
+        public ServiceBusTestListener BatchCompletedListener { get; private set; } = null!;
 
         public ServiceBusTestListener ProcessCompletedListener { get; private set; } = null!;
 
@@ -78,11 +80,16 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
+
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksManager.DatabricksToken);
+
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "processes");
         }
 
         /// <inheritdoc/>
@@ -93,15 +100,36 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             await DatabaseManager.CreateDatabaseAsync();
             DatabricksManager.BeginListen();
 
-            var processCompletedSubscriptionName = "process-completed-sub";
-            ProcessCompletedTopic = await ServiceBusResourceProvider
-                .BuildTopic("process-completed")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.ProcessCompletedTopicName)
+            var batchCompletedEventName = "batch-completed";
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, batchCompletedEventName);
+            var batchCompletedSubscriptionName = "batch-completed";
+
+            var processCompletedEventName = "process-completed";
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, processCompletedEventName);
+            var processCompletedSubscriptionName = "process-completed";
+
+            DomainEventsTopic = await ServiceBusResourceProvider
+                .BuildTopic("domain-events")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
+                .AddSubscription("zip-basis-data")
+                .AddSubjectFilter(batchCompletedEventName)
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName)
+                .AddSubscription("publish-process-completed")
+                .AddSubjectFilter(batchCompletedEventName)
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName)
+                // Subscriptions to observe side effects of the process manager
+                .AddSubscription(batchCompletedSubscriptionName)
+                .AddSubjectFilter(batchCompletedEventName)
                 .AddSubscription(processCompletedSubscriptionName)
+                .AddSubjectFilter(processCompletedEventName)
                 .CreateAsync();
 
+            var batchCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
+            await batchCompletedListener.AddTopicSubscriptionListenerAsync(DomainEventsTopic.Name, batchCompletedSubscriptionName);
+            BatchCompletedListener = new ServiceBusTestListener(batchCompletedListener);
+
             var processCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
-            await processCompletedListener.AddTopicSubscriptionListenerAsync(ProcessCompletedTopic.Name, processCompletedSubscriptionName);
+            await processCompletedListener.AddTopicSubscriptionListenerAsync(DomainEventsTopic.Name, processCompletedSubscriptionName);
             ProcessCompletedListener = new ServiceBusTestListener(processCompletedListener);
         }
 

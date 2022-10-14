@@ -19,21 +19,36 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
-    private const string CorrelationIdName = "OperationCorrelationId";
     private readonly ICorrelationContext _correlationContext;
+    private readonly IDictionary<Type, string> _messageTypes;
 
-    public ServiceBusMessageFactory(ICorrelationContext correlationContext)
+    public ServiceBusMessageFactory(ICorrelationContext correlationContext, IDictionary<Type, string> messageTypes)
     {
         _correlationContext = correlationContext;
+        _messageTypes = messageTypes;
     }
 
     public IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages)
     {
-        return messages.Select(message =>
+        return messages.Select(CreateServiceBusMessage);
+    }
+
+    private ServiceBusMessage CreateServiceBusMessage<TMessage>(TMessage message)
+    {
+        if (!_messageTypes.ContainsKey(typeof(TMessage)))
+            throw new NotImplementedException($"No message type identifier has been registered for message of type {typeof(TMessage).FullName}");
+
+        var messageType = _messageTypes[typeof(TMessage)];
+
+        return new ServiceBusMessage
         {
-            var serviceBusMessage = new ServiceBusMessage { Body = new BinaryData(message) };
-            serviceBusMessage.ApplicationProperties.Add(CorrelationIdName, _correlationContext.Id);
-            return serviceBusMessage;
-        });
+            Body = new BinaryData(message),
+            Subject = messageType,
+            ApplicationProperties =
+            {
+                new KeyValuePair<string, object>(MessageMetaDataConstants.CorrelationId, _correlationContext.Id),
+                new KeyValuePair<string, object>(MessageMetaDataConstants.MessageType, messageType),
+            },
+        };
     }
 }

@@ -13,34 +13,34 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 using Microsoft.Azure.Functions.Worker;
 
-namespace Energinet.DataHub.Wholesale.Sender.Endpoints;
+namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class DataAvailableSenderEndpoint
+public class PublishProcessCompletedEvents
 {
-    private const string FunctionName = nameof(DataAvailableSenderEndpoint);
+    private const string FunctionName = nameof(PublishProcessCompletedEvents);
     private readonly IJsonSerializer _jsonSerializer;
-    private readonly IDataAvailableNotifier _dataAvailableNotifier;
+    private readonly IProcessApplicationService _processApplicationService;
 
-    public DataAvailableSenderEndpoint(IJsonSerializer jsonSerializer, IDataAvailableNotifier dataAvailableNotifier)
+    public PublishProcessCompletedEvents(IJsonSerializer jsonSerializer, IProcessApplicationService processApplicationService)
     {
         _jsonSerializer = jsonSerializer;
-        _dataAvailableNotifier = dataAvailableNotifier;
+        _processApplicationService = processApplicationService;
     }
 
     [Function(FunctionName)]
     public async Task RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
-            "%" + EnvironmentSettingNames.SendDataAvailableWhenCompletedProcessSubscriptionName + "%",
+            "%" + EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
-        var completedProcessEvent = await DeserializeByteArrayAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
-        await _dataAvailableNotifier.NotifyAsync(completedProcessEvent).ConfigureAwait(false);
+        var batchCompletedEvent = await DeserializeByteArrayAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
+        await _processApplicationService.PublishProcessCompletedEventsAsync(batchCompletedEvent).ConfigureAwait(false);
     }
 
     private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)

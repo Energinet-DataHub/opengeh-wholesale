@@ -27,8 +27,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProcessManager", "ProcessMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sender", "Sender\Sender.csproj", "{FF7C0086-D637-4265-A667-85275B4E05EF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionFolder", "_SolutionFolder", "{2F06D7A0-5E4C-4245-8E2E-CD342C13C840}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -90,10 +88,6 @@ Global
 		{FF7C0086-D637-4265-A667-85275B4E05EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF7C0086-D637-4265-A667-85275B4E05EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF7C0086-D637-4265-A667-85275B4E05EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC65D7D4-36FB-453A-BDF6-1438E482BB0C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33BF8FF4-25BA-40AA-AA43-263DF0B13B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
