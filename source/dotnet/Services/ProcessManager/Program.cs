@@ -42,7 +42,6 @@ using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
@@ -149,16 +148,12 @@ public static class Program
 
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
-        var blob = new BlobContainerClient(
+
+        serviceCollection.AddSingleton(_ => new BlobContainerClient(
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName)));
         serviceCollection.AddScoped<IWebFilesZipper, WebFilesZipper>();
-        serviceCollection.AddScoped<IBatchFileManager>(
-            provider => new BatchFileManager(
-                dataLakeFileSystemClient,
-                blob,
-                provider.GetRequiredService<IWebFilesZipper>(),
-                provider.GetRequiredService<ILogger<IBatchFileManager>>()));
+        serviceCollection.AddScoped<IBatchFileManager, BatchFileManager>();
         serviceCollection.AddHttpClient();
     }
 

@@ -14,6 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Wholesale.IntegrationTests.Mock;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,11 +25,19 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 
 public sealed class ProcessManagerIntegrationTestHost : IDisposable
 {
+    public const string CalculationStorageConnectionString = "UseDevelopmentStorage=true";
+    public const string CalculationStorageContainerName = "calculation-storage-container";
+
     private readonly IHost _processManagerHost;
+
+    private AzuriteManager? AzuriteManager { get; }
 
     private ProcessManagerIntegrationTestHost(IHost processManagerHost)
     {
         _processManagerHost = processManagerHost;
+
+        AzuriteManager = new AzuriteManager();
+        AzuriteManager.StartAzurite();
     }
 
     public static Task<ProcessManagerIntegrationTestHost> CreateAsync(
@@ -56,6 +65,9 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
     public void Dispose()
     {
         _processManagerHost.Dispose();
+
+        if (AzuriteManager != null)
+            AzuriteManager.Dispose();
     }
 
     private static void ConfigureEnvironmentVars()
@@ -69,8 +81,8 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName, anyValue);
 
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, CalculationStorageConnectionString);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, CalculationStorageContainerName);
 
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, anyValue);
