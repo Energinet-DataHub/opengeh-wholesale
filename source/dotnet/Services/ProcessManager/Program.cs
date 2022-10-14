@@ -24,6 +24,7 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.JobRunner;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -80,6 +81,7 @@ public static class Program
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
         services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+        services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
         services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
