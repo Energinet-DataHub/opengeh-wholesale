@@ -23,11 +23,13 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
@@ -84,6 +86,7 @@ public static class Program
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
         services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IBasisDataApplicationService, BasisDataApplicationService>();
     }
 
     private static void Domains(IServiceCollection services)
@@ -143,6 +146,9 @@ public static class Program
 
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
+
+        serviceCollection.AddScoped<IBatchFileManager, BatchFileManager>();
+        serviceCollection.AddScoped<IWebFilesZipper, WebFilesZipper>();
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)
