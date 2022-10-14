@@ -25,6 +25,7 @@ using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
@@ -95,7 +96,19 @@ public static class Program
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
-        serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
+
+        var batchCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName);
+        var processCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName);
+        var messageTypes = new Dictionary<Type, string>
+        {
+            { typeof(BatchCompletedEventDto), batchCompletedMessageType },
+            { typeof(ProcessCompletedEventDto), processCompletedMessageType },
+        };
+        serviceCollection.AddScoped<IServiceBusMessageFactory>(provider =>
+        {
+            var correlationContext = provider.GetRequiredService<ICorrelationContext>();
+            return new ServiceBusMessageFactory(correlationContext, messageTypes);
+        });
 
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);

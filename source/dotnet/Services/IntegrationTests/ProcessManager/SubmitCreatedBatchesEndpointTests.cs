@@ -42,21 +42,21 @@ public class SubmitCreatedBatchesEndpointTests
 
         public Task InitializeAsync()
         {
-            Fixture.ProcessCompletedListener.Reset();
+            Fixture.BatchCompletedListener.Reset();
             return Task.CompletedTask;
         }
 
         public Task DisposeAsync() => Task.CompletedTask;
 
         [Fact]
-        public async Task When_PendingBatchCreated_Then_ProcessCompletedEventIsPublished()
+        public async Task When_PendingBatchCreated_Then_BatchAndProcessCompletedEventsArePublished()
         {
             // Arrange
             var gridAreaCode = CreateGridAreaCode();
             await CreateAndSavePendingBatch(gridAreaCode);
 
-            using var eventualProcessCompletedEvent = await Fixture
-                .ProcessCompletedListener
+            using var eventualBatchCompletedEvent = await Fixture
+                .BatchCompletedListener
                 .ListenForMessageAsync<ProcessCompletedEventDto>(e => e.GridAreaCode == gridAreaCode);
 
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
@@ -68,11 +68,17 @@ public class SubmitCreatedBatchesEndpointTests
             Fixture.HostManager.ClearHostLog();
             await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(UpdateBatchExecutionState));
 
-            // Assert: The process completed events have been published
-            var isProcessCompletedEventReceived = eventualProcessCompletedEvent
+            // Assert: Batch and process completed events have been published
+            // TODO: Check correlation ID?
+            var isBatchCompletedEventPublished = eventualBatchCompletedEvent
                 .MessageAwaiter!
                 .Wait(TimeSpan.FromSeconds(20));
-            isProcessCompletedEventReceived.Should().BeTrue();
+            isBatchCompletedEventPublished.Should().BeTrue();
+
+            var isProcessCompletedEventPublished = eventualBatchCompletedEvent
+                .MessageAwaiter!
+                .Wait(TimeSpan.FromSeconds(20));
+            isProcessCompletedEventPublished.Should().BeTrue();
         }
 
         [Fact]

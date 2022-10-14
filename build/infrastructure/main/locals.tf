@@ -16,6 +16,7 @@ locals {
     CALCULATION_STORAGE_CONTAINER_NAME                                 = "processes"
 
     # Service Bus domain event subscriptions
+    # The names are made shorter due to name length limit of 50 characters in Azure and the module eats up like 15 of the characters for convention based naming
     ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME              = "zip-basis-data"
     PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME = "publish-processes-completed"
     SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME       = "send-data-available"
