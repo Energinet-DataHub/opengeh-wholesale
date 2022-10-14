@@ -42,7 +42,7 @@ module "func_sender" {
     SERVICE_BUS_LISTEN_CONNECTION_STRING                         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     SERVICE_BUS_MANAGE_CONNECTION_STRING                         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
     DOMAIN_EVENTS_TOPIC_NAME                                     = module.sbt_domain_events.name
-    SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME = local.SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME
+    SEND_DATA_AVAILABLE_WHEN_COMPLETED_PROCESS_SUBSCRIPTION_NAME = module.sbtsub_send_data_available_when_process_completed.name
 
     # Message Hub
     MESSAGE_HUB_SERVICE_BUS_SEND_CONNECTION_STRING               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
