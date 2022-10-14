@@ -12,16 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "sbt_completed_process" {
-  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic?ref=7.0.0"
-
-  name                = "completed-process"
-  namespace_id        = module.sb_wholesale.id
-
-  subscriptions       = [
-    {
-      name                = local.COMPLETED_PROCESS_SUBSCRIPTION
-      max_delivery_count  = 1
-    },
-  ]
+resource "azurerm_storage_container" "calculation_storage_container" {
+  name                  = local.CALCULATION_STORAGE_CONTAINER_NAME
+  storage_account_name  = data.azurerm_key_vault_secret.st_shared_data_lake_name.value
 }
