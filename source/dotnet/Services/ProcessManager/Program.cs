@@ -159,6 +159,7 @@ public static class Program
                 blob,
                 provider.GetRequiredService<IWebFilesZipper>(),
                 provider.GetRequiredService<ILogger<IBatchFileManager>>()));
+        serviceCollection.AddHttpClient();
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)

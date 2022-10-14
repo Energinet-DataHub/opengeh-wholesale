@@ -32,15 +32,16 @@ public class ZipBasisData
     }
 
     [Function(FunctionName)]
-    public async Task RunAsync(
+    public Task RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
             "%" + EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
-        var batchCompletedEvent = await DeserializeByteArrayAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
-        await _basisDataApplicationService.ZipBasisDataAsync(batchCompletedEvent).ConfigureAwait(false);
+        // var batchCompletedEvent = await DeserializeByteArrayAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
+        // await _basisDataApplicationService.ZipBasisDataAsync(batchCompletedEvent).ConfigureAwait(false);
+        return Task.CompletedTask;
     }
 
     private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)

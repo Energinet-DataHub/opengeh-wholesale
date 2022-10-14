@@ -57,6 +57,9 @@ public class SubmitCreatedBatchesEndpointTests
 
             using var eventualBatchCompletedEvent = await Fixture
                 .BatchCompletedListener
+                .ListenForMessageAsync<BatchCompletedEventDto>(_ => true);
+            using var eventualProcessCompletedEvent = await Fixture
+                .ProcessCompletedListener
                 .ListenForMessageAsync<ProcessCompletedEventDto>(e => e.GridAreaCode == gridAreaCode);
 
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
@@ -75,7 +78,7 @@ public class SubmitCreatedBatchesEndpointTests
                 .Wait(TimeSpan.FromSeconds(20));
             isBatchCompletedEventPublished.Should().BeTrue();
 
-            var isProcessCompletedEventPublished = eventualBatchCompletedEvent
+            var isProcessCompletedEventPublished = eventualProcessCompletedEvent
                 .MessageAwaiter!
                 .Wait(TimeSpan.FromSeconds(20));
             isProcessCompletedEventPublished.Should().BeTrue();
