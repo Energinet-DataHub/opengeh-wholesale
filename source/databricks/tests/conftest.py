@@ -23,15 +23,20 @@ from pyspark.sql import SparkSession
 from datetime import datetime
 
 
-# Create Spark Conf/Session.
 @pytest.fixture(scope="session")
-def spark():
-    spark_conf = (
-        SparkConf(loadDefaults=True)
-        .set("spark.sql.session.timeZone", "UTC")
-        .set("spark.sql.extensions")
-        .set("spark.sql.catalog.spark_catalog")
-    )
+def spark() -> SparkSession:
+    return (
+        SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
+        .config("spark.ui.showConsoleProgress", "false")
+        .config("spark.ui.enabled", "false")
+        .config("spark.ui.dagGraph.retainedRootRDDs", "1")
+        .config("spark.ui.retainedJobs", "1")
+        .config("spark.ui.retainedStages", "1")
+        .config("spark.ui.retainedTasks", "1")
+        .config("spark.sql.ui.retainedExecutions", "1")
+        .config("spark.worker.ui.retainedExecutors", "1")
+        .config("spark.worker.ui.retainedDrivers", "1")
+    ).getOrCreate()
 
     return SparkSession.builder.config(conf=spark_conf).getOrCreate()
 
