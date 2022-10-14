@@ -36,9 +36,11 @@ def spark() -> SparkSession:
         .config("spark.sql.ui.retainedExecutions", "1")
         .config("spark.worker.ui.retainedExecutors", "1")
         .config("spark.worker.ui.retainedDrivers", "1")
+        .config('spark.default.parallelism', 1)
+        .config('spark.rdd.compress', False)
+        .config('spark.shuffle.compress', False)
+        .config('spark.shuffle.spill.compress', False)
     ).getOrCreate()
-
-    # return SparkSession.builder.config(conf=spark_conf).getOrCreate()
 
 
 @pytest.fixture(scope="session")
