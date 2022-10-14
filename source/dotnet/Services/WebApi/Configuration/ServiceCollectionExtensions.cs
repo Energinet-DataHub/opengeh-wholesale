@@ -83,6 +83,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IDatabaseContext, DatabaseContext>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
+        services.AddScoped<IBatchCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
         services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();

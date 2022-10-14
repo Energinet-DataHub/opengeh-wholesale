@@ -57,8 +57,14 @@ data "azurerm_key_vault_secret" "kvs_st_data_lake_primary_access_key" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+# ID of the shared servicebus namespace 
+data "azurerm_key_vault_secret" "sb_integration_events_id" {
+  name         = "sb-domain-relay-namespace-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 # ID of the topic receiving all domain integration events
-data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
-  name         = "sbt-sharedres-integrationevent-received-id"
+data "azurerm_key_vault_secret" "sbt_integration_events_id" {
+  name         = "sbt-sharedres-integrationevent-received-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

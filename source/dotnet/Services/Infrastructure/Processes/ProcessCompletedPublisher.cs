@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 public class ProcessCompletedPublisher : IProcessCompletedPublisher
 {

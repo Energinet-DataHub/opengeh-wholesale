@@ -13,34 +13,35 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 using Microsoft.Azure.Functions.Worker;
 
-namespace Energinet.DataHub.Wholesale.Sender.Endpoints;
+namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class DataAvailableSenderEndpoint
+public class ZipBasisData
 {
-    private const string FunctionName = nameof(DataAvailableSenderEndpoint);
+    private const string FunctionName = nameof(ZipBasisData);
     private readonly IJsonSerializer _jsonSerializer;
-    private readonly IDataAvailableNotifier _dataAvailableNotifier;
+    private readonly IBasisDataApplicationService _basisDataApplicationService;
 
-    public DataAvailableSenderEndpoint(IJsonSerializer jsonSerializer, IDataAvailableNotifier dataAvailableNotifier)
+    public ZipBasisData(IJsonSerializer jsonSerializer, IBasisDataApplicationService basisDataApplicationService)
     {
         _jsonSerializer = jsonSerializer;
-        _dataAvailableNotifier = dataAvailableNotifier;
+        _basisDataApplicationService = basisDataApplicationService;
     }
 
     [Function(FunctionName)]
-    public async Task RunAsync(
+    public Task RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
-            "%" + EnvironmentSettingNames.SendDataAvailableWhenCompletedProcessSubscriptionName + "%",
+            "%" + EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
-        var completedProcessEvent = await DeserializeByteArrayAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
-        await _dataAvailableNotifier.NotifyAsync(completedProcessEvent).ConfigureAwait(false);
+        // var batchCompletedEvent = await DeserializeByteArrayAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
+        // await _basisDataApplicationService.ZipBasisDataAsync(batchCompletedEvent).ConfigureAwait(false);
+        return Task.CompletedTask;
     }
 
     private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)
