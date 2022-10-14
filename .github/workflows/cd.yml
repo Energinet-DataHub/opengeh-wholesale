@@ -48,6 +48,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v8
     with:
       PATH_STATIC_CHECKS: './source/databricks'
+      # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
       TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
 
@@ -91,7 +92,6 @@ jobs:
   dispatch_deploment_event:
     runs-on: ubuntu-latest
     needs: [
-      changes,
       # Infrastructure
       infrastructure_promote_prerelease,
       # Databricks
@@ -102,7 +102,12 @@ jobs:
     if: |
       always() &&
       !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled')
+      !contains(needs.*.result, 'cancelled') &&
+      !(
+        needs.infrastructure_promote_prerelease.result == 'skipped' &&
+        needs.databricks_promote_prerelease.result == 'skipped' &&
+        needs.dotnet_promote_prerelease.result == 'skipped'
+      )
     steps:
       - run: echo "${{ toJSON(needs) }}"
 
@@ -122,4 +127,4 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
           repository: '${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}'
           event-type: 'opengeh-wholesale-deployment-request-domain'
-          client-payload: '{"pr": "${{ steps.find_pull_request.outputs.pr }}", "infrastructure_deploy": "${{ needs.changes.outputs.infrastructure }}", "databricks_deploy": "${{ needs.changes.outputs.databricks }}", "dotnet_deploy": "${{ needs.changes.outputs.dotnet }}"}'
+          client-payload: '{"pr": "${{ steps.find_pull_request.outputs.pr }}", "infrastructure_deploy": "${{ jobs.changes.outputs.infrastructure }}", "databricks_deploy": "${{ jobs.changes.outputs.databricks }}", "dotnet_deploy": "${{ jobs.changes.outputs.dotnet }}"}'
