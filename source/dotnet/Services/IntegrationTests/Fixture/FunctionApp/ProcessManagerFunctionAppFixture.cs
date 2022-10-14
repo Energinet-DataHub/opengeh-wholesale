@@ -100,6 +100,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
             var batchCompletedEventName = "batch-completed";
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, batchCompletedEventName);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, "process-completed");
             var batchCompletedSubscriptionName = "batch-completed";
             DomainEventsTopic = await ServiceBusResourceProvider
                 .BuildTopic("domain-events")

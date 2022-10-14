@@ -43,6 +43,8 @@ public sealed class ProcessManagerHostTests
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, placeholderValue);
 
         // Act + Assert
         target.Build();
