@@ -65,6 +65,6 @@ data "azurerm_key_vault_secret" "sb_integration_events_id" {
 
 # ID of the topic receiving all domain integration events
 data "azurerm_key_vault_secret" "sbt_integration_events_id" {
-  name         = "sbt-sharedres-integrationevent-received-name"
+  name         = "sbt-sharedres-integrationevent-received-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

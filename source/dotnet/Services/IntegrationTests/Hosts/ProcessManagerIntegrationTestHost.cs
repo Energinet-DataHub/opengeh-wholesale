@@ -60,14 +60,20 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
 
     private static void ConfigureEnvironmentVars()
     {
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, "fake_value");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, "fake_value");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, "fake_value");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, "fake_value");
+        var anyValue = "fake_value";
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, anyValue);
+
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName, anyValue);
+
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "processes");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, "batch-completed");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, "process-completed");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, anyValue);
+
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, anyValue);
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
