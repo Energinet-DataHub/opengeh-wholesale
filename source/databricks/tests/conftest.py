@@ -38,7 +38,7 @@ def spark() -> SparkSession:
         .config("spark.worker.ui.retainedDrivers", "1")
     ).getOrCreate()
 
-    return SparkSession.builder.config(conf=spark_conf).getOrCreate()
+    # return SparkSession.builder.config(conf=spark_conf).getOrCreate()
 
 
 @pytest.fixture(scope="session")
