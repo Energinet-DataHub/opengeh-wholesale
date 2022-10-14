@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "azurerm_storage_container" "processes_container" {
-  name                  = local.PROCESSES_CONTAINER_NAME
+resource "azurerm_storage_container" "calculation_storage_container" {
+  name                  = local.CALCULATION_STORAGE_CONTAINER_NAME
   storage_account_name  = data.azurerm_key_vault_secret.st_shared_data_lake_name.value
 }
