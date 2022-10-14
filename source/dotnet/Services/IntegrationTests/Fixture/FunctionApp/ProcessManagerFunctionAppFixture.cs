@@ -57,7 +57,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
         public ServiceBusTestListener BatchCompletedListener { get; private set; } = null!;
 
-        public ServiceBusTestListener ProcessCompletedListener { get; private set; } = null!;
+        public ServiceBusTestListener SendDataAvailableWhenProcessCompletedListener { get; private set; } = null!;
 
         private AzuriteManager AzuriteManager { get; }
 
@@ -102,11 +102,12 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
 
             var batchCompletedEventName = "batch-completed";
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, batchCompletedEventName);
-            var batchCompletedSubscriptionName = "batch-completed";
 
             var processCompletedEventName = "process-completed";
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, processCompletedEventName);
-            var processCompletedSubscriptionName = "process-completed";
+
+            var batchCompletedSubscriptionName = "batch-completed";
+            var sendDataAvailableWhenProcessCompletedSubscriptionName = "process-completed";
 
             DomainEventsTopic = await ServiceBusResourceProvider
                 .BuildTopic("domain-events")
@@ -120,7 +121,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
                 // Subscriptions to observe side effects of the process manager
                 .AddSubscription(batchCompletedSubscriptionName)
                 .AddSubjectFilter(batchCompletedEventName)
-                .AddSubscription(processCompletedSubscriptionName)
+                .AddSubscription(sendDataAvailableWhenProcessCompletedSubscriptionName)
                 .AddSubjectFilter(processCompletedEventName)
                 .CreateAsync();
 
@@ -128,9 +129,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp
             await batchCompletedListener.AddTopicSubscriptionListenerAsync(DomainEventsTopic.Name, batchCompletedSubscriptionName);
             BatchCompletedListener = new ServiceBusTestListener(batchCompletedListener);
 
-            var processCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
-            await processCompletedListener.AddTopicSubscriptionListenerAsync(DomainEventsTopic.Name, processCompletedSubscriptionName);
-            ProcessCompletedListener = new ServiceBusTestListener(processCompletedListener);
+            var sendDataAvailableWhenProcessCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
+            await sendDataAvailableWhenProcessCompletedListener.AddTopicSubscriptionListenerAsync(DomainEventsTopic.Name, sendDataAvailableWhenProcessCompletedSubscriptionName);
+            SendDataAvailableWhenProcessCompletedListener = new ServiceBusTestListener(sendDataAvailableWhenProcessCompletedListener);
         }
 
         /// <inheritdoc/>
