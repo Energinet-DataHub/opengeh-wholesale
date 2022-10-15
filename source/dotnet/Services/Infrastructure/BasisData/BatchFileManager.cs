@@ -110,14 +110,9 @@ public class BatchFileManager : IBatchFileManager
             var (directory, extension, entryPath) = fileIdentifierProvider(batchId, gridAreaCode);
             var processDataFile = await TryGetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
-            if (processDataFile == null)
-            {
-                _logger.LogError("Blob matching '{Directory}*{Extension}' not found", directory, extension);
-            }
-            else
-            {
-                processDataFilesUrls.Add((processDataFile.Uri, entryPath));
-            }
+            if (processDataFile == null) continue;
+
+            processDataFilesUrls.Add((processDataFile.Uri, entryPath));
         }
 
         return processDataFilesUrls;
@@ -132,6 +127,12 @@ public class BatchFileManager : IBatchFileManager
     private async Task<DataLakeFileClient?> TryGetDataLakeFileClientAsync(string directory, string extension)
     {
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
+        var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
+        if (!directoryExists)
+        {
+            _logger.LogError("Calculation storage directory '{Directory}' does not exist", directory);
+            return null;
+        }
 
         await foreach (var pathItem in directoryClient.GetPathsAsync())
         {
@@ -141,12 +142,13 @@ public class BatchFileManager : IBatchFileManager
             }
         }
 
+        _logger.LogError("Blob matching '{Directory}*{Extension}' not found", directory, extension);
         return null;
     }
 
     private async Task<Stream> GetWriteStreamAsync(string blobName)
     {
         var blobClient = _blobContainerClient.GetBlobClient(blobName);
-        return await blobClient.OpenWriteAsync(false).ConfigureAwait(false);
+        return await blobClient.OpenWriteAsync(true).ConfigureAwait(false);
     }
 }

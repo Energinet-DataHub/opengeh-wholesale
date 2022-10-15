@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Wholesale.IntegrationTests.Mock;
@@ -26,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 public sealed class ProcessManagerIntegrationTestHost : IDisposable
 {
     public const string CalculationStorageConnectionString = "UseDevelopmentStorage=true";
-    public const string CalculationStorageContainerName = "calculation-storage-container";
+    public static readonly string _calculationStorageContainerName = $"calculation-{Guid.NewGuid()}";
 
     private readonly IHost _processManagerHost;
 
@@ -36,8 +37,12 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
     {
         _processManagerHost = processManagerHost;
 
+        // TODO: Is it a bad idea to add and start Azurite?
         AzuriteManager = new AzuriteManager();
         AzuriteManager.StartAzurite();
+        var dataLakeFileSystemClient =
+            new DataLakeFileSystemClient(CalculationStorageConnectionString, _calculationStorageContainerName);
+        dataLakeFileSystemClient.Create();
     }
 
     public static Task<ProcessManagerIntegrationTestHost> CreateAsync(
@@ -82,7 +87,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName, anyValue);
 
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, CalculationStorageConnectionString);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, CalculationStorageContainerName);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, _calculationStorageContainerName);
 
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, anyValue);

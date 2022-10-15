@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics;
 using System.IO.Compression;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
@@ -25,6 +24,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NodaTime;
 using Test.Core;
 using Xunit;
@@ -43,21 +43,30 @@ public sealed class BasisDataApplicationServiceTests
     public async Task When_BatchIsCompleted_Then_CalculationFilesAreZipped(BatchCompletedEventDto batchCompletedEvent)
     {
         // Arrange
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync();
-
         var gridAreaCode = new GridAreaCode("805");
         var batch = new Batch(ProcessType.BalanceFixing, new[] { gridAreaCode }, SystemClock.Instance.GetCurrentInstant(), SystemClock.Instance.GetCurrentInstant(), SystemClock.Instance);
         batch.SetPrivateProperty(b => b.Id, batchCompletedEvent.BatchId);
+
+        // TODO: How is there actually a database?
+        void ServiceCollectionAction(IServiceCollection collection)
+        {
+            // TODO: I'd like to not mock the repo, but I'm missing the batch ID to look up
+            var repo = new Mock<IBatchRepository>();
+            repo.Setup(repository => repository.GetAsync(batchCompletedEvent.BatchId)).ReturnsAsync(batch);
+            collection.AddScoped(_ => repo.Object);
+        }
+
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollectionAction);
 
         // TODO: Create all calculation files (basis data and result)
         var blobContainerClient =
             new BlobContainerClient(
                 ProcessManagerIntegrationTestHost.CalculationStorageConnectionString,
-                ProcessManagerIntegrationTestHost.CalculationStorageContainerName);
-        await blobContainerClient.CreateIfNotExistsAsync();
+                ProcessManagerIntegrationTestHost._calculationStorageContainerName);
+        //await blobContainerClient.CreateIfNotExistsAsync();
         var (directory, extension, masterDataEntryPath) = BatchFileManager.GetMasterBasisDataDirectory(batchCompletedEvent.BatchId, gridAreaCode);
-        var blobClient = blobContainerClient.GetBlobClient($"{directory}/master-basis-data{extension}");
-        await blobClient.UploadAsync(new BinaryData("master basis data"));
+        var blobClient = blobContainerClient.GetBlobClient(Path.Combine(directory, $"master-basis-data{extension}"));
+        await blobClient.UploadAsync(new BinaryData("master basis data content"));
 
         // TODO: Why create this scope?
         await using var scope = host.BeginScope();
@@ -77,7 +86,7 @@ public sealed class BasisDataApplicationServiceTests
 
         var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         ZipFile.ExtractToDirectory(zipFilePath, dir);
-        Debugger.Break();
+        //Debugger.Break();
         File.Exists(Path.Combine(dir, masterDataEntryPath)).Should().BeTrue();
         // TODO: assert expected content
     }

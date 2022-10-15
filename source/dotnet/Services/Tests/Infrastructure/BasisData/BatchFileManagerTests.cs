@@ -16,12 +16,9 @@ using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -36,7 +33,7 @@ public class BatchFileManagerTests
     [InlineAutoMoqData]
     public async Task GetResultFileStreamAsync_BatchId_ReadsFromCorrectPath(
         IWebFilesZipper wfz,
-        ILogger logger)
+        ILogger<BatchFileManager> logger)
     {
         // Arrange
         var dataLakeClient = CreateDataLakeFileSystemClientMock();
@@ -50,7 +47,7 @@ public class BatchFileManagerTests
 
         // Assert
         // This expected path must match the directory used by Databricks (see calculator.py).
-        var expectedPath = $"results/batch_id={batchId}/grid_area={gridAreaCode}/";
+        var expectedPath = $"results/batch_id={batchId}/grid_area={gridAreaCode.Code}/";
 
         dataLakeClient.Verify(
             client => client.GetDirectoryClient(It.Is<string>(dir => dir == expectedPath)),
