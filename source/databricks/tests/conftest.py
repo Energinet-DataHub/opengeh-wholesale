@@ -40,6 +40,8 @@ def spark() -> SparkSession:
         .config('spark.rdd.compress', False)
         .config('spark.shuffle.compress', False)
         .config('spark.shuffle.spill.compress', False)
+        .config('spark.sql.shuffle.partitions', 1)
+        .enableHiveSupport()
     ).getOrCreate()
 
 
