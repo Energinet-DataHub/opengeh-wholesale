@@ -28,5 +28,5 @@ public interface IWholesaleClient
     /// Returns batches matching the search criteria.
     /// In case of errors an exception is thrown.
     /// </summary>
-    Task<IEnumerable<BatchDto>> GetBatchesAsync(BatchSearchDto batchSearchDto);
+    Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(BatchSearchDto batchSearchDto);
 }
