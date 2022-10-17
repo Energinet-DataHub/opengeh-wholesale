@@ -40,8 +40,7 @@ public class BatchFileManagerTests
     {
         // Arrange
         var dataLakeClient = CreateDataLakeFileSystemClientMock();
-        var blobContainerClient = new Mock<BlobContainerClient>();
-        var target = new BatchFileManager(dataLakeClient.Object, blobContainerClient.Object, wfz, logger);
+        var target = new BatchFileManager(dataLakeClient.Object, wfz, logger);
         var gridAreaCode = new GridAreaCode("123");
         var batchId = Guid.NewGuid();
 
