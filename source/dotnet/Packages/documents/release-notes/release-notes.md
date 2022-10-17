@@ -1,5 +1,8 @@
 # Wholesale Client Package Release notes
 
+## Version 2.0.0
+BatchNumber changed form long type to Guid.
+
 ## Version 1.0.0
 
 Necessary functionality to replace the current backend communication from the BFF to the wholesale domain.
