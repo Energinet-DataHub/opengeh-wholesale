@@ -41,6 +41,7 @@ using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
@@ -49,11 +50,11 @@ public static class Program
 {
     public static async Task Main()
     {
-        using var host = BuildAppHost().Build();
+        using var host = CreateHostBuilder().Build();
         await host.RunAsync().ConfigureAwait(false);
     }
 
-    public static IHostBuilder BuildAppHost()
+    public static IHostBuilder CreateHostBuilder()
     {
         return new HostBuilder()
             .ConfigureFunctionsWorkerDefaults(builder =>
@@ -147,9 +148,12 @@ public static class Program
 
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
-
         serviceCollection.AddScoped<IWebFilesZipper, WebFilesZipper>();
-        serviceCollection.AddScoped<IBatchFileManager, BatchFileManager>();
+        serviceCollection.AddScoped<IBatchFileManager>(
+            provider => new BatchFileManager(
+                dataLakeFileSystemClient,
+                provider.GetRequiredService<IWebFilesZipper>(),
+                provider.GetRequiredService<ILogger<BatchFileManager>>()));
         serviceCollection.AddHttpClient();
     }
 

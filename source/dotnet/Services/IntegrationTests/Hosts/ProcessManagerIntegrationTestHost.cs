@@ -40,7 +40,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         ConfigureEnvironmentVars();
 
         var hostBuilder = Program
-            .BuildAppHost()
+            .CreateHostBuilder()
             .ConfigureServices(ConfigureServices);
 
         if (serviceConfiguration != null)
