@@ -93,6 +93,5 @@ public sealed class SenderIntegrationTestHost : IDisposable
             mock.Setup(x => x.Create()).Returns(provider.GetRequiredService<ServiceBusClient>());
             return mock.Object;
         }));
-        serviceCollection.AddScoped<PeekEndpoint>();
     }
 }
