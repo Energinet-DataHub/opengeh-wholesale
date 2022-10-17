@@ -17,9 +17,12 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
+using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon;
+using Energinet.DataHub.Wholesale.Sender.Endpoints;
 using FluentAssertions;
 using FluentAssertions.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -73,6 +76,19 @@ public class DataAvailableSenderEndpointTests
 
             var response = await Fixture.MessageHubMock.PeekAsync();
             response.Content.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task ServiceCollection_CanResolveDataAvailableEndpoint()
+        {
+            // Arrange
+            using var host = await SenderIntegrationTestHost
+                .CreateAsync(collection => collection.AddScoped<DataAvailableSenderEndpoint>());
+
+            await using var scope = host.BeginScope();
+
+            // Act & Assert that the container can resolve the endpoints dependencies
+            scope.ServiceProvider.GetRequiredService<DataAvailableSenderEndpoint>();
         }
     }
 }
