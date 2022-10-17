@@ -16,8 +16,8 @@ terraform {
 
   required_providers {
     databricks = {
-      source = "databrickslabs/databricks"
-      version = "0.5.1"
+      source = "databricks/databricks"
+      version = "1.5.0"
     }
     # It is recommended to pin to a given version of the Azure provider
     azurerm = "=3.9.0"
