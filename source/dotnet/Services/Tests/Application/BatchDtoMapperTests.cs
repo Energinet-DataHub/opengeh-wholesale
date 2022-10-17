@@ -102,7 +102,7 @@ public class BatchDtoMapperTests
         var batchDto = sut.Map(batch);
 
         // Assert
-        batchDto.BatchNumber.Should().Be(expectedRunId.Id);
+        batchDto.RunId.Should().Be(expectedRunId.Id);
     }
 
     [Theory]
@@ -117,6 +117,6 @@ public class BatchDtoMapperTests
         var batchDto = sut.Map(batch);
 
         // Assert
-        batchDto.BatchNumber.Should().Be(null);
+        batchDto.RunId.Should().Be(null);
     }
 }

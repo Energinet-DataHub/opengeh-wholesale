@@ -14,19 +14,9 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches;
 
-namespace Energinet.DataHub.Wholesale.Client;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public interface IWholesaleClient
-{
-    /// <summary>
-    /// Start processes by creating a batch request.
-    /// In case of errors an exception is thrown.
-    /// </summary>
-    Task CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
-
-    /// <summary>
-    /// Returns batches matching the search criteria.
-    /// In case of errors an exception is thrown.
-    /// </summary>
-    Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(BatchSearchDto batchSearchDto);
-}
+/// <summary>
+/// An immutable batch.
+/// </summary>
+public sealed record BatchDtoV1(long? BatchNumber, DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeOffset? ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchState ExecutionState);

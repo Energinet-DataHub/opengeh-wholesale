@@ -25,6 +25,8 @@ using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
+using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -88,6 +90,8 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IBatchRepository, BatchRepository>();
         services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+        services.AddScoped<IBatchDtoV1Mapper, BatchDtoV1Mapper>();
+        services.AddScoped<IBatchDtoV2Mapper, BatchDtoV2Mapper>();
         services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobRunner>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobParametersFactory>(_ => null!); // Unused in the use cases of this app
