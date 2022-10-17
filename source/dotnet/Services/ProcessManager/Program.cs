@@ -51,11 +51,11 @@ public static class Program
 {
     public static async Task Main()
     {
-        using var host = BuildAppHost().Build();
+        using var host = CreateHostBuilder().Build();
         await host.RunAsync().ConfigureAwait(false);
     }
 
-    public static IHostBuilder BuildAppHost()
+    public static IHostBuilder CreateHostBuilder()
     {
         return new HostBuilder()
             .ConfigureFunctionsWorkerDefaults(builder =>
@@ -149,14 +149,10 @@ public static class Program
 
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
-        var blob = new BlobContainerClient(
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName));
         serviceCollection.AddScoped<IWebFilesZipper, WebFilesZipper>();
         serviceCollection.AddScoped<IBatchFileManager>(
             provider => new BatchFileManager(
                 dataLakeFileSystemClient,
-                blob,
                 provider.GetRequiredService<IWebFilesZipper>(),
                 provider.GetRequiredService<ILogger<IBatchFileManager>>()));
         serviceCollection.AddHttpClient();
