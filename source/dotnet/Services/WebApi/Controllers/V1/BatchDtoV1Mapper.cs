@@ -14,9 +14,18 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
 
-/// <summary>
-/// An immutable batch.
-/// </summary>
-public sealed record BatchDto(long? BatchNumber, DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeOffset? ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchState ExecutionState);
+public class BatchDtoV1Mapper : IBatchDtoV1Mapper
+{
+    public BatchDtoV1 Map(BatchDto batchDto)
+    {
+        return new BatchDtoV1(
+            batchDto.RunId,
+            batchDto.PeriodStart,
+            batchDto.PeriodEnd,
+            batchDto.ExecutionTimeStart,
+            batchDto.ExecutionTimeEnd,
+            batchDto.ExecutionState);
+    }
+}

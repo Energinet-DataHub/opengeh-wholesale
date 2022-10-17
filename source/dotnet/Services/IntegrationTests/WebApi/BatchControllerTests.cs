@@ -22,7 +22,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi.V1;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
 
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
 public class BatchControllerTests :
@@ -31,8 +31,6 @@ public class BatchControllerTests :
     IClassFixture<WebApiFactory>,
     IAsyncLifetime
 {
-    private const string BaseUrl = "/v1/batch";
-
     private readonly HttpClient _client;
 
     public BatchControllerTests(
@@ -57,8 +55,10 @@ public class BatchControllerTests :
         return Task.CompletedTask;
     }
 
-    [Fact]
-    public async Task CreateAsync_WhenCalled_AlwaysReturnsOk()
+    [Theory]
+    [InlineData("/v1/batch")]
+    [InlineData("/v2/batch")]
+    public async Task CreateAsync_WhenCalled_AlwaysReturnsOk(string baseUrl)
     {
         // Arrange
         var periodStart = DateTimeOffset.Now;
@@ -70,14 +70,16 @@ public class BatchControllerTests :
             periodEnd);
 
         // Act
-        var response = await _client.PostAsJsonAsync(BaseUrl, batchRequest, CancellationToken.None);
+        var response = await _client.PostAsJsonAsync(baseUrl, batchRequest, CancellationToken.None);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Fact]
-    public async Task SearchAsync_WhenCalled_AlwaysReturnsOk()
+    [Theory]
+    [InlineData("/v1/batch")]
+    [InlineData("/v2/batch")]
+    public async Task SearchAsync_WhenCalled_AlwaysReturnsOk(string baseUrl)
     {
         // Arrange
         var minExecutionTime = new DateTimeOffset(
@@ -93,7 +95,7 @@ public class BatchControllerTests :
         var batchSearchDto = new BatchSearchDto(minExecutionTime, maxExecutionTime);
 
         // Act
-        const string searchUrl = BaseUrl + "/Search";
+        var searchUrl = baseUrl + "/Search";
         var response = await _client.PostAsJsonAsync(searchUrl, batchSearchDto, CancellationToken.None);
 
         // Assert
