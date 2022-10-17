@@ -24,9 +24,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 
 public sealed class ProcessManagerIntegrationTestHost : IDisposable
 {
-    public const string CalculationStorageConnectionString = "UseDevelopmentStorage=true";
-    public static readonly string _calculationStorageContainerName = $"calculation-{Guid.NewGuid()}";
-
     private readonly IHost _processManagerHost;
 
     private ProcessManagerIntegrationTestHost(IHost processManagerHost)
@@ -72,8 +69,8 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName, anyValue);
 
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, CalculationStorageConnectionString);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, _calculationStorageContainerName);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, anyValue);
 
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, anyValue);
