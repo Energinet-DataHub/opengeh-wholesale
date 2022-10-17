@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using System.IO.Compression;
-using Azure.Storage.Blobs;
+using Azure;
+using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
@@ -47,28 +48,69 @@ public sealed class BasisDataApplicationServiceTests
         var batch = new Batch(ProcessType.BalanceFixing, new[] { gridAreaCode }, SystemClock.Instance.GetCurrentInstant(), SystemClock.Instance.GetCurrentInstant(), SystemClock.Instance);
         batch.SetPrivateProperty(b => b.Id, batchCompletedEvent.BatchId);
 
-        // TODO: How is there actually a database?
+        var repo = new Mock<IBatchRepository>();
+        repo.Setup(repository => repository.GetAsync(batchCompletedEvent.BatchId)).ReturnsAsync(batch);
+
+        var response = new Mock<Response<bool>>();
+        response
+            .Setup(r => r.Value)
+            .Returns(true);
+
+        var dataLakeDirectoryClient = new Mock<DataLakeDirectoryClient>();
+        dataLakeDirectoryClient
+            .Setup(client => client.ExistsAsync(CancellationToken.None))
+            .ReturnsAsync(response.Object);
+
+        var dataLakeFileSystemClient = new Mock<DataLakeFileSystemClient>();
+        var resultsDirectoryName = $"results/batch_id={batchCompletedEvent.BatchId}/grid_area={gridAreaCode.Code}/";
+        dataLakeFileSystemClient
+            .Setup(client => client.GetDirectoryClient(It.IsAny<string>() /*resultsDirectoryName*/))
+            .Returns(dataLakeDirectoryClient.Object);
+
+        var zipBlobName = BatchFileManager.GetZipBlobName(batch);
+        var zipFilePath = Path.GetTempFileName();
+        await using (var stream = File.OpenWrite(zipFilePath))
+        {
+            var zipFileClient = new Mock<DataLakeFileClient>();
+            zipFileClient
+                .Setup(client => client.OpenWriteAsync(false, null, default))
+                .ReturnsAsync(stream);
+            dataLakeFileSystemClient
+                .Setup(client => client.GetFileClient(zipBlobName))
+                .Returns(zipFileClient.Object);
+        }
+
         void ServiceCollectionAction(IServiceCollection collection)
         {
-            // TODO: I'd like to not mock the repo, but I'm missing the batch ID to look up
-            var repo = new Mock<IBatchRepository>();
-            repo.Setup(repository => repository.GetAsync(batchCompletedEvent.BatchId)).ReturnsAsync(batch);
             collection.AddScoped(_ => repo.Object);
+            collection.AddScoped(_ => dataLakeFileSystemClient.Object);
+
+            collection.AddSingleton(_ =>
+            {
+                var body = new MemoryStream();
+
+                var content = new Mock<HttpContent>();
+                content.Setup(httpContent => httpContent.ReadAsStreamAsync()).ReturnsAsync(body);
+
+                var responseMessage = new Mock<HttpResponseMessage>();
+                responseMessage.Setup(message => message.Content).Returns(content.Object);
+
+                var client = new Mock<HttpClient>();
+                client
+                    .Setup(httpClient => httpClient.GetAsync(It.IsAny<string>()))
+                    .ReturnsAsync(responseMessage.Object);
+
+                return client.Object;
+            });
         }
 
         using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollectionAction);
 
         // TODO: Create all calculation files (basis data and result)
-        var blobContainerClient =
-            new BlobContainerClient(
-                ProcessManagerIntegrationTestHost.CalculationStorageConnectionString,
-                ProcessManagerIntegrationTestHost._calculationStorageContainerName);
-        //await blobContainerClient.CreateIfNotExistsAsync();
         var (directory, extension, masterDataEntryPath) = BatchFileManager.GetMasterBasisDataDirectory(batchCompletedEvent.BatchId, gridAreaCode);
-        var blobClient = blobContainerClient.GetBlobClient(Path.Combine(directory, $"master-basis-data{extension}"));
-        await blobClient.UploadAsync(new BinaryData("master basis data content"));
-
-        // TODO: Why create this scope?
+        // var path = Path.Combine(directory, $"master-basis-data{extension}");
+        // var fileClient = await dataLakeFileSystemClient.CreateFileAsync(path);
+        // await fileClient.Value.UploadAsync("master basis data content");
         await using var scope = host.BeginScope();
         var sut = scope.ServiceProvider.GetRequiredService<IBasisDataApplicationService>();
 
@@ -76,17 +118,12 @@ public sealed class BasisDataApplicationServiceTests
         await sut.ZipBasisDataAsync(batchCompletedEvent);
 
         // Assert
-        var zipBlobName = BatchFileManager.GetZipBlobName(batch);
-        var zipBlobClient = blobContainerClient.GetBlobClient(zipBlobName);
-        var zipFilePath = Path.GetTempFileName();
-        await using (var stream = File.OpenWrite(zipFilePath))
-        {
-            await zipBlobClient.DownloadToAsync(stream);
-        }
-
+        // await using (var stream = File.OpenWrite(zipFilePath))
+        // {
+        //     await zipFileClient.ReadToAsync(stream);
+        // }
         var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         ZipFile.ExtractToDirectory(zipFilePath, dir);
-        //Debugger.Break();
         File.Exists(Path.Combine(dir, masterDataEntryPath)).Should().BeTrue();
         // TODO: assert expected content
     }

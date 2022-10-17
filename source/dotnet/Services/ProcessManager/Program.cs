@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
@@ -149,9 +148,6 @@ public static class Program
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
 
-        serviceCollection.AddSingleton(_ => new BlobContainerClient(
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName)));
         serviceCollection.AddScoped<IWebFilesZipper, WebFilesZipper>();
         serviceCollection.AddScoped<IBatchFileManager, BatchFileManager>();
         serviceCollection.AddHttpClient();

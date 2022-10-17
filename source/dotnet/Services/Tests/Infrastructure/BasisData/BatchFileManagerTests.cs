@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure;
-using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
@@ -37,8 +36,7 @@ public class BatchFileManagerTests
     {
         // Arrange
         var dataLakeClient = CreateDataLakeFileSystemClientMock();
-        var blobContainerClient = new Mock<BlobContainerClient>();
-        var target = new BatchFileManager(dataLakeClient.Object, blobContainerClient.Object, wfz, logger);
+        var target = new BatchFileManager(dataLakeClient.Object, wfz, logger);
         var gridAreaCode = new GridAreaCode("123");
         var batchId = Guid.NewGuid();
 

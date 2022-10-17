@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -26,14 +25,12 @@ public class BatchFileManager : IBatchFileManager
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
-    private readonly BlobContainerClient _blobContainerClient;
     private readonly IWebFilesZipper _webFilesZipper;
     private readonly ILogger _logger;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, BlobContainerClient blobContainerClient, IWebFilesZipper webFilesZipper, ILogger<BatchFileManager> logger)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IWebFilesZipper webFilesZipper, ILogger<BatchFileManager> logger)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
-        _blobContainerClient = blobContainerClient;
         _webFilesZipper = webFilesZipper;
         _logger = logger;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
@@ -128,7 +125,7 @@ public class BatchFileManager : IBatchFileManager
     {
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
         var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
-        if (!directoryExists)
+        if (!directoryExists.Value)
         {
             _logger.LogError("Calculation storage directory '{Directory}' does not exist", directory);
             return null;
@@ -146,9 +143,9 @@ public class BatchFileManager : IBatchFileManager
         return null;
     }
 
-    private async Task<Stream> GetWriteStreamAsync(string blobName)
+    private Task<Stream> GetWriteStreamAsync(string fileName)
     {
-        var blobClient = _blobContainerClient.GetBlobClient(blobName);
-        return await blobClient.OpenWriteAsync(true).ConfigureAwait(false);
+        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(fileName);
+        return dataLakeFileClient.OpenWriteAsync(false);
     }
 }

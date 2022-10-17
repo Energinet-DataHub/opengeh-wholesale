@@ -13,9 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Wholesale.IntegrationTests.Mock;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,18 +29,9 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
 
     private readonly IHost _processManagerHost;
 
-    private AzuriteManager? AzuriteManager { get; }
-
     private ProcessManagerIntegrationTestHost(IHost processManagerHost)
     {
         _processManagerHost = processManagerHost;
-
-        // TODO: Is it a bad idea to add and start Azurite?
-        AzuriteManager = new AzuriteManager();
-        AzuriteManager.StartAzurite();
-        var dataLakeFileSystemClient =
-            new DataLakeFileSystemClient(CalculationStorageConnectionString, _calculationStorageContainerName);
-        dataLakeFileSystemClient.Create();
     }
 
     public static Task<ProcessManagerIntegrationTestHost> CreateAsync(
@@ -70,9 +59,6 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
     public void Dispose()
     {
         _processManagerHost.Dispose();
-
-        if (AzuriteManager != null)
-            AzuriteManager.Dispose();
     }
 
     private static void ConfigureEnvironmentVars()
