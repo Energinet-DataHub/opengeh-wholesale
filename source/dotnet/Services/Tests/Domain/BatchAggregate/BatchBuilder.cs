@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using NodaTime;
+using Test.Core;
 
 namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 
