@@ -26,14 +26,12 @@ public class BatchFileManager : IBatchFileManager
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
-    private readonly BlobContainerClient _blobContainerClient;
     private readonly IWebFilesZipper _webFilesZipper;
     private readonly ILogger _logger;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, BlobContainerClient blobContainerClient, IWebFilesZipper webFilesZipper, ILogger logger)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IWebFilesZipper webFilesZipper, ILogger logger)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
-        _blobContainerClient = blobContainerClient;
         _webFilesZipper = webFilesZipper;
         _logger = logger;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
@@ -123,10 +121,10 @@ public class BatchFileManager : IBatchFileManager
         return null;
     }
 
-    private async Task<Stream> GetWriteStreamAsync(string blobName)
+    private Task<Stream> GetWriteStreamAsync(string fileName)
     {
-        var blobClient = _blobContainerClient.GetBlobClient(blobName);
-        return await blobClient.OpenWriteAsync(false).ConfigureAwait(false);
+        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(fileName);
+        return dataLakeFileClient.OpenWriteAsync(false);
     }
 
     // TODO BJARKE: The directory paths must match the directory used by Databricks (see calculator.py).

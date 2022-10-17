@@ -27,7 +27,7 @@ public sealed class ProcessManagerHostTests
     {
         // Arrange
         var target = Program
-            .BuildAppHost()
+            .CreateHostBuilder()
             .UseDefaultServiceProvider(config => config.ValidateOnBuild = true);
 
         const string placeholderValue = "placeholder_value";
