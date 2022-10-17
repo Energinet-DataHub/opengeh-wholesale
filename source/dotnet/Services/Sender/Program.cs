@@ -87,7 +87,6 @@ public static class Program
         services.AddScoped<CorrelationIdMiddleware>();
         services.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
         services.AddScoped<IntegrationEventMetadataMiddleware>();
-        services.AddScoped<IntegrationEventMetadataMiddleware>();
     }
 
     private static void Domains(IServiceCollection services)
