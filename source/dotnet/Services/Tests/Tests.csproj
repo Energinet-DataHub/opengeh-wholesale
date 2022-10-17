@@ -35,6 +35,7 @@ limitations under the License.
     <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
     <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
     <ProjectReference Include="..\Sender\Sender.csproj" />
+    <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
