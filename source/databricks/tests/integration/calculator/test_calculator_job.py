@@ -30,6 +30,49 @@ from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import internal_start as start_calculator
 
 
+# Code snippet from https://joelmccune.com/python-dictionary-as-object/
+class DictObj:
+    def __init__(self, in_dict: dict):
+        assert isinstance(in_dict, dict)
+        for key, val in in_dict.items():
+            if isinstance(val, (list, tuple)):
+                setattr(
+                    self, key, [DictObj(x) if isinstance(x, dict) else x for x in val]
+                )
+            else:
+                setattr(self, key, DictObj(val) if isinstance(val, dict) else val)
+
+
+@pytest.fixture(scope="session")
+def test_data_job_parameters(
+    test_data, databricks_path, data_lake_path, timestamp_factory, worker_id
+):
+    "test_data parameter ensures that the corresponding test data has been created when using these corresponding job parameters"
+    return DictObj(
+        {
+            "data_storage_account_name": "foo",
+            "data_storage_account_key": "foo",
+            "integration_events_path": f"{data_lake_path}/{worker_id}/parquet_test_files/integration_events",
+            "time_series_points_path": f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points",
+            "process_results_path": f"{data_lake_path}/{worker_id}/results",
+            "batch_id": "1",
+            "batch_grid_areas": [805, 806],
+            "batch_snapshot_datetime": timestamp_factory("2022-09-02T21:59:00.000Z"),
+            "batch_period_start_datetime": timestamp_factory(
+                "2022-04-01T22:00:00.000Z"
+            ),
+            "batch_period_end_datetime": timestamp_factory("2022-09-01T22:00:00.000Z"),
+            "time_zone": "Europe/Copenhagen",
+        }
+    )
+
+
+@pytest.fixture(scope="session")
+def start_calc(spark, test_data_job_parameters):
+    print("test_calculator_job: start calculator")
+    start_calculator(spark, test_data_job_parameters)
+
+
 def _get_process_manager_parameters(filename):
     """Get the parameters as they are expected to be received from the process manager."""
     with open(filename) as file:
@@ -98,10 +141,10 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
 
 def test__result_is_generated_for_requested_grid_areas(
-    spark, test_data_job_parameters, data_lake_path, source_path, worker_id
+    spark, test_data_job_parameters, data_lake_path, source_path, worker_id, start_calc
 ):
     # Act
-    start_calculator(spark, test_data_job_parameters)
+    # start_calculator(spark, test_data_job_parameters)
 
     # Assert
     result_805 = spark.read.json(
@@ -115,14 +158,14 @@ def test__result_is_generated_for_requested_grid_areas(
 
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
-    spark, test_data_job_parameters, data_lake_path, source_path
+    spark, test_data_job_parameters, data_lake_path, source_path, start_calc, worker_id
 ):
     # Act
-    start_calculator(spark, test_data_job_parameters)
+    # start_calculator(spark, test_data_job_parameters)
 
     # Assert
     input_time_series_points = spark.read.parquet(
-        f"{data_lake_path}/parquet_test_files/time_series_points"
+        f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points"
     )
     # When asserting both that the calculator creates output and it does it with input data that matches
     # the time series points contract from the time-series domain (in the same test), then we can infer that the
@@ -134,10 +177,10 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 
 
 def test__calculator_result_schema_must_match_contract_with_dotnet(
-    spark, test_data_job_parameters, data_lake_path, source_path, worker_id
+    spark, test_data_job_parameters, data_lake_path, source_path, worker_id, start_calc
 ):
     # Act
-    start_calculator(spark, test_data_job_parameters)
+    # start_calculator(spark, test_data_job_parameters)
 
     # Assert
     result_805 = spark.read.json(
@@ -150,10 +193,15 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 
 
 def test__quantity_is_with_precision_3(
-    spark, test_data_job_parameters, data_lake_path, find_first_file, worker_id
+    spark,
+    test_data_job_parameters,
+    data_lake_path,
+    find_first_file,
+    worker_id,
+    start_calc,
 ):
     # Act
-    start_calculator(spark, test_data_job_parameters)
+    # start_calculator(spark, test_data_job_parameters)
 
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
@@ -166,10 +214,15 @@ def test__quantity_is_with_precision_3(
 
 
 def test__result_file_is_created(
-    spark, test_data_job_parameters, data_lake_path, find_first_file, worker_id
+    spark,
+    test_data_job_parameters,
+    data_lake_path,
+    find_first_file,
+    worker_id,
+    start_calc,
 ):
     # Act
-    start_calculator(spark, test_data_job_parameters)
+    # start_calculator(spark, test_data_job_parameters)
 
     # Assert: Relative path of result file must match expectation of .NET
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
@@ -181,14 +234,14 @@ def test__result_file_is_created(
 
 
 def test__creates_hour_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path
+    spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
 ):
     # Act
-    start_calculator(spark, test_data_job_parameters)
+    # start_calculator(spark, test_data_job_parameters)
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-hour/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-hour/grid_area=805"
     )
 
     assert actual.columns == [
@@ -200,14 +253,14 @@ def test__creates_hour_csv_with_expected_columns_names(
 
 
 def test__creates_quarter_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path
+    spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
 ):
     # Act
-    start_calculator(spark, test_data_job_parameters)
+    # start_calculator(spark, test_data_job_parameters)
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
     )
 
     assert actual.columns == [
@@ -218,17 +271,19 @@ def test__creates_quarter_csv_with_expected_columns_names(
     ]
 
 
-def test__creates_csv_per_grid_area(spark, test_data_job_parameters, data_lake_path):
+def test__creates_csv_per_grid_area(
+    spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
+):
     # Act
-    start_calculator(spark, test_data_job_parameters)
+    # start_calculator(spark, test_data_job_parameters)
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
     )
 
     basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/results/basis-data/batch_id=1/time-series-quarter/grid_area=806"
+        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-quarter/grid_area=806"
     )
 
     assert (
@@ -241,14 +296,14 @@ def test__creates_csv_per_grid_area(spark, test_data_job_parameters, data_lake_p
 
 
 def test__master_data_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path
+    spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
 ):
     # Act
-    start_calculator(spark, test_data_job_parameters)
+    # start_calculator(spark, test_data_job_parameters)
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/results/master-basis-data/batch_id=1/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id=1/grid_area=805"
     )
 
     assert actual.columns == [
@@ -265,18 +320,18 @@ def test__master_data_csv_with_expected_columns_names(
 
 
 def test__creates_master_data_csv_per_grid_area(
-    spark, test_data_job_parameters, data_lake_path
+    spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
 ):
     # Act
-    start_calculator(spark, test_data_job_parameters)
+    # start_calculator(spark, test_data_job_parameters)
 
     # Assert
     master_basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/results/master-basis-data/batch_id=1/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id=1/grid_area=805"
     )
 
     master_basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/results/master-basis-data/batch_id=1/grid_area=806"
+        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id=1/grid_area=806"
     )
 
     assert (
