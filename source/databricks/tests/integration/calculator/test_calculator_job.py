@@ -98,14 +98,18 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
 
 def test__result_is_generated_for_requested_grid_areas(
-    spark, test_data_job_parameters, data_lake_path, source_path
+    spark, test_data_job_parameters, data_lake_path, source_path, worker_id
 ):
     # Act
     start_calculator(spark, test_data_job_parameters)
 
     # Assert
-    result_805 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=805")
-    result_806 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=806")
+    result_805 = spark.read.json(
+        f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=805"
+    )
+    result_806 = spark.read.json(
+        f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=806"
+    )
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
 
@@ -130,13 +134,15 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 
 
 def test__calculator_result_schema_must_match_contract_with_dotnet(
-    spark, test_data_job_parameters, data_lake_path, source_path
+    spark, test_data_job_parameters, data_lake_path, source_path, worker_id
 ):
     # Act
     start_calculator(spark, test_data_job_parameters)
 
     # Assert
-    result_805 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=805")
+    result_805 = spark.read.json(
+        f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=805"
+    )
     assert_contract_matches_schema(
         f"{source_path}/contracts/calculator-result.json",
         result_805.schema,
@@ -144,28 +150,32 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 
 
 def test__quantity_is_with_precision_3(
-    spark, test_data_job_parameters, data_lake_path, find_first_file
+    spark, test_data_job_parameters, data_lake_path, find_first_file, worker_id
 ):
     # Act
     start_calculator(spark, test_data_job_parameters)
 
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
-    result_805 = spark.read.json(f"{data_lake_path}/results/batch_id=1/grid_area=805")
+    result_805 = spark.read.json(
+        f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=805"
+    )
     import re
 
     assert re.search(r"^\d+\.\d{3}$", result_805.first().quantity)
 
 
 def test__result_file_is_created(
-    spark, test_data_job_parameters, data_lake_path, find_first_file
+    spark, test_data_job_parameters, data_lake_path, find_first_file, worker_id
 ):
     # Act
     start_calculator(spark, test_data_job_parameters)
 
     # Assert: Relative path of result file must match expectation of .NET
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
-    expected_result_path = f"{data_lake_path}/results/batch_id=1/grid_area=805"
+    expected_result_path = (
+        f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=805"
+    )
     actual_result_file = find_first_file(expected_result_path, "part-*.json")
     assert actual_result_file is not None
 
