@@ -49,9 +49,6 @@ def find_first_file():
 
 @pytest.fixture(scope="session")
 def test_data(spark, json_test_files, data_lake_path, worker_id):
-    print(
-        "--------------------------------------------------------------hej-----------------------------------------------"
-    )
     # Reads integration_events json file into dataframe and writes it to parquet
     spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
         "body", col("body").cast("binary")

@@ -31,7 +31,7 @@ RUN mamba install --quiet --yes --satisfied-skip-solve \
     'coverage=6.3.*' 'azure-storage-blob=12.8.*' 'pytest-mock=3.7.*'
 
 # Install python packages used in pyspark development 
-RUN pip --no-cache-dir install pyspelling azure-eventhub coverage-threshold ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json
+RUN pip --no-cache-dir install pyspelling azure-eventhub coverage-threshold ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist
 # Below will make everything in the directory owned by the group ${NB_GID}
 RUN fix-permissions "${CONDA_DIR}"
 
@@ -40,3 +40,4 @@ RUN fix-permissions "${CONDA_DIR}"
 ENV PATH=$SPARK_HOME/bin:$HADOOP_HOME/bin:$PATH \
     PYTHONPATH="${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.9-src.zip" \
     SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info"
+

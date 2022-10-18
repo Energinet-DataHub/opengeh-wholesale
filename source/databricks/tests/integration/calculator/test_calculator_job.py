@@ -144,7 +144,7 @@ def test__result_is_generated_for_requested_grid_areas(
     spark, test_data_job_parameters, data_lake_path, source_path, worker_id, start_calc
 ):
     # Act
-    # start_calculator(spark, test_data_job_parameters)
+    # we run the calculator once per session. See the fixture start_calc in top of this file
 
     # Assert
     result_805 = spark.read.json(
@@ -161,7 +161,7 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
     spark, test_data_job_parameters, data_lake_path, source_path, start_calc, worker_id
 ):
     # Act
-    # start_calculator(spark, test_data_job_parameters)
+    # we run the calculator once per session. See the fixture start_calc in top of this file
 
     # Assert
     input_time_series_points = spark.read.parquet(
@@ -180,7 +180,7 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
     spark, test_data_job_parameters, data_lake_path, source_path, worker_id, start_calc
 ):
     # Act
-    # start_calculator(spark, test_data_job_parameters)
+    # we run the calculator once per session. See the fixture start_calc in top of this file
 
     # Assert
     result_805 = spark.read.json(
@@ -201,7 +201,7 @@ def test__quantity_is_with_precision_3(
     start_calc,
 ):
     # Act
-    # start_calculator(spark, test_data_job_parameters)
+    # we run the calculator once per session. See the fixture start_calc in top of this file
 
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
@@ -222,7 +222,7 @@ def test__result_file_is_created(
     start_calc,
 ):
     # Act
-    # start_calculator(spark, test_data_job_parameters)
+    # we run the calculator once per session. See the fixture start_calc in top of this file
 
     # Assert: Relative path of result file must match expectation of .NET
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
@@ -237,7 +237,7 @@ def test__creates_hour_csv_with_expected_columns_names(
     spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
 ):
     # Act
-    # start_calculator(spark, test_data_job_parameters)
+    # we run the calculator once per session. See the fixture start_calc in top of this file
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -256,7 +256,7 @@ def test__creates_quarter_csv_with_expected_columns_names(
     spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
 ):
     # Act
-    # start_calculator(spark, test_data_job_parameters)
+    # we run the calculator once per session. See the fixture start_calc in top of this file
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -275,7 +275,7 @@ def test__creates_csv_per_grid_area(
     spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
 ):
     # Act
-    # start_calculator(spark, test_data_job_parameters)
+    # we run the calculator once per session. See the fixture start_calc in top of this file
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
@@ -299,7 +299,7 @@ def test__master_data_csv_with_expected_columns_names(
     spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
 ):
     # Act
-    # start_calculator(spark, test_data_job_parameters)
+    # we run the calculator once per session. See the fixture start_calc in top of this file
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -323,7 +323,7 @@ def test__creates_master_data_csv_per_grid_area(
     spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
 ):
     # Act
-    # start_calculator(spark, test_data_job_parameters)
+    # we run the calculator once per session. See the fixture start_calc in top of this file
 
     # Assert
     master_basis_data_805 = spark.read.option("header", "true").csv(
