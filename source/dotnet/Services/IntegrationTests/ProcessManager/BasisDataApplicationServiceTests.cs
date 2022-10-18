@@ -33,7 +33,6 @@ using Xunit;
 // - Logs error when files are missing
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
-// TODO: Why collection as a string? Why even a collection?
 [Collection("ProcessManagerIntegrationTest")]
 public sealed class BasisDataApplicationServiceTests
 {

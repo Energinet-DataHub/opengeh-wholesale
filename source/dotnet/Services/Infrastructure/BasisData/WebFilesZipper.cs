@@ -13,19 +13,22 @@
 // limitations under the License.
 
 using System.IO.Compression;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
 public class WebFilesZipper : IWebFilesZipper
 {
     private readonly HttpClient _httpClient;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// The <paramref name="httpClient"/> should be registered as a singleton.
     /// </summary>
-    public WebFilesZipper(HttpClient httpClient)
+    public WebFilesZipper(HttpClient httpClient, ILogger<WebFilesZipper> logger)
     {
         _httpClient = httpClient;
+        _logger = logger;
     }
 
     public async Task ZipAsync(IEnumerable<(Uri Url, string EntryPath)> inputFiles, Stream zipFileStream)
@@ -48,8 +51,11 @@ public class WebFilesZipper : IWebFilesZipper
 
     private async Task<Stream> GetStreamAsync(Uri webFileUrl)
     {
-        // TODO BJARKE: Log errors fetching file
         using var response = await _httpClient.GetAsync(webFileUrl).ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Failed to access web file {webFileUrl}, HTTP status code was {response.StatusCode}");
+
         return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
     }
 }
