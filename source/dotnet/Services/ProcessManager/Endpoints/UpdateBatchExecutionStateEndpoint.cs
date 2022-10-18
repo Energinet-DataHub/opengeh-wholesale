@@ -18,12 +18,12 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class UpdateBatchExecutionState
+public class UpdateBatchExecutionStateEndpoint
 {
     private readonly IBatchApplicationService _batchApplicationService;
     private readonly ICorrelationContext _correlationContext;
 
-    public UpdateBatchExecutionState(
+    public UpdateBatchExecutionStateEndpoint(
         IBatchApplicationService batchApplicationService,
         ICorrelationContext correlationContext)
     {
@@ -32,7 +32,7 @@ public class UpdateBatchExecutionState
     }
 
     // Executes every 20 seconds (see the [TimerTrigger] below)
-    [Function(nameof(UpdateBatchExecutionState))]
+    [Function(nameof(UpdateBatchExecutionStateEndpoint))]
     public async Task RunAsync([TimerTrigger("*/20 * * * * *")] TimerInfo timerInfo)
     {
         // CorrelationIdMiddleware does not currently support timer triggered functions,
