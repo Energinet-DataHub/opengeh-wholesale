@@ -28,7 +28,7 @@ public class BatchFileManager : IBatchFileManager
     private readonly IWebFilesZipper _webFilesZipper;
     private readonly ILogger _logger;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IWebFilesZipper webFilesZipper, ILogger<IBatchFileManager> logger)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IWebFilesZipper webFilesZipper, ILogger<BatchFileManager> logger)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _webFilesZipper = webFilesZipper;
@@ -46,8 +46,8 @@ public class BatchFileManager : IBatchFileManager
     {
         var batchBasisFileUrls = await GetBatchBasisFileUrlsAsync(completedBatch).ConfigureAwait(false);
 
-        var zipBlobName = GetZipBlobName(completedBatch);
-        var zipStream = await GetWriteStreamAsync(zipBlobName).ConfigureAwait(false);
+        var zipFileName = GetZipFileName(completedBatch);
+        var zipStream = await GetWriteStreamAsync(zipFileName).ConfigureAwait(false);
         await using (zipStream)
             await _webFilesZipper.ZipAsync(batchBasisFileUrls, zipStream).ConfigureAwait(false);
     }
@@ -83,7 +83,7 @@ public class BatchFileManager : IBatchFileManager
             ".csv",
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
 
-    public static string GetZipBlobName(Batch batch) => $"results/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
+    public static string GetZipFileName(Batch batch) => $"results/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
 
     private async Task<IEnumerable<(Uri Url, string EntryPath)>> GetBatchBasisFileUrlsAsync(Batch batch)
     {

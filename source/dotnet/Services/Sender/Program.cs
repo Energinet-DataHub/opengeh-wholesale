@@ -129,7 +129,7 @@ public static class Program
             provider => new BatchFileManager(
                 dataLakeFileSystemClient,
                 provider.GetService<IWebFilesZipper>()!,
-                provider.GetRequiredService<ILogger<IBatchFileManager>>()));
+                provider.GetRequiredService<ILogger<BatchFileManager>>()));
         serviceCollection.AddHttpClient();
     }
 

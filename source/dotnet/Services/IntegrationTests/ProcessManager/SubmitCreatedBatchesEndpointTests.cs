@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
+using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;

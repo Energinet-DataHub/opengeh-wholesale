@@ -151,9 +151,9 @@ public static class Program
         serviceCollection.AddScoped<IWebFilesZipper, WebFilesZipper>();
         serviceCollection.AddScoped<IBatchFileManager>(
             provider => new BatchFileManager(
-                dataLakeFileSystemClient,
+                provider.GetRequiredService<DataLakeFileSystemClient>(),
                 provider.GetRequiredService<IWebFilesZipper>(),
-                provider.GetRequiredService<ILogger<IBatchFileManager>>()));
+                provider.GetRequiredService<ILogger<BatchFileManager>>()));
         serviceCollection.AddHttpClient();
     }
 

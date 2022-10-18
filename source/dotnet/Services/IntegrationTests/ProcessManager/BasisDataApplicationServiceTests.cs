@@ -13,19 +13,27 @@
 // limitations under the License.
 
 using System.IO.Compression;
+using System.Net;
+using System.Text;
 using Azure;
 using Azure.Storage.Files.DataLake;
+using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Processes;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
+using Moq.Protected;
 using NodaTime;
 using Test.Core;
 using Xunit;
@@ -35,13 +43,149 @@ using Xunit;
 // - Logs error when files are missing
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
-// TODO: Why collection as a string?
+// TODO: Why collection as a string? Why even a collection?
 [Collection("ProcessManagerIntegrationTest")]
 public sealed class BasisDataApplicationServiceTests
 {
+    public class ServiceCollectionConfigurator
+    {
+        private readonly List<Batch> _batches = new();
+        private (Batch Batch, string ZipFileName)? _withBasisDataFilesForBatch;
+
+        public ServiceCollectionConfigurator WithBatchInDatabase(Batch batch)
+        {
+            _batches.Add(batch);
+            return this;
+        }
+
+        public ServiceCollectionConfigurator WithBasisDataFilesInCalculationStorage(Batch batch, string zipFileName)
+        {
+            _withBasisDataFilesForBatch = (batch, zipFileName);
+            return this;
+        }
+
+        public void Configure(IServiceCollection serviceCollection)
+        {
+            // TODO: Use database
+            serviceCollection.AddScoped(_ =>
+                Moq.Mock.Of<IBatchRepository>(repo =>
+                    repo.GetAsync(_withBasisDataFilesForBatch!.Value.Batch.Id) ==
+                    Task.FromResult(_withBasisDataFilesForBatch!.Value.Batch)));
+
+            if (_withBasisDataFilesForBatch != null)
+            {
+                var dataLakeFileSystemClientMock = new Mock<DataLakeFileSystemClient>();
+                serviceCollection.Replace(ServiceDescriptor.Singleton(dataLakeFileSystemClientMock.Object));
+
+                // Mock zip file
+                var zipFileClient = new Mock<DataLakeFileClient>();
+                zipFileClient
+                    .Setup(client => client.OpenWriteAsync(false, null, default))
+                    .ReturnsAsync(() => File.OpenRead(_withBasisDataFilesForBatch.Value.ZipFileName));
+                dataLakeFileSystemClientMock
+                    .Setup(client => client.GetFileClient(BatchFileManager.GetZipFileName(_withBasisDataFilesForBatch.Value.Batch)))
+                    .Returns(zipFileClient.Object);
+
+                // Mock batch basis files
+                foreach (var gridAreaCode in _withBasisDataFilesForBatch.Value.Batch.GridAreaCodes)
+                {
+                    var response = new Mock<Response<bool>>();
+                    response
+                        .Setup(r => r.Value)
+                        .Returns(true);
+
+                    var dataLakeDirectoryClient = new Mock<DataLakeDirectoryClient>();
+                    dataLakeDirectoryClient
+                        .Setup(client => client.ExistsAsync(default))
+                        .ReturnsAsync(response.Object);
+
+                    var (directory, extension, zipEntryPath) =
+                        BatchFileManager.GetResultDirectory(_withBasisDataFilesForBatch.Value.Batch.Id, gridAreaCode);
+
+                    var pathItemName = $"foo{extension}";
+                    var pathItem = DataLakeModelFactory
+                        .PathItem(pathItemName, false, DateTimeOffset.Now, ETag.All, 42, "owner", "group", "permissions");
+                    var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
+                    var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
+                    dataLakeDirectoryClient
+                        .Setup(client => client.GetPathsAsync(false, false, default))
+                        .Returns(asyncPageable);
+
+                    // TODO: Add the rest of the basis data files
+                    dataLakeFileSystemClientMock
+                        .Setup(client => client.GetDirectoryClient(directory))
+                        .Returns(dataLakeDirectoryClient.Object);
+
+                    // var dataLakeFileClientMock = new Mock<DataLakeFileClient>();
+                    // dataLakeFileSystemClientMock
+                    //     .Setup(client => client.GetFileClient(pathItemName))
+                    //     .Returns(dataLakeFileClientMock.Object);
+                    //
+                    // dataLakeFileClientMock
+                    //     .Setup(client => client.Uri)
+                    //     .Returns(new Uri("http://todo"));
+
+                    // Mock HttpClient for fetching basis data files
+                    // TODO: Determine which file
+                    var mockMessageHandler = new Mock<HttpMessageHandler>();
+                    mockMessageHandler.Protected()
+                        .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                        .ReturnsAsync(new HttpResponseMessage
+                        {
+                            StatusCode = HttpStatusCode.OK,
+                            Content = new StreamContent(new MemoryStream(Encoding.UTF8.GetBytes($"The '{extension}' file from directory '{directory}'"))),
+                        });
+                    serviceCollection.Replace(ServiceDescriptor.Singleton(new HttpClient(mockMessageHandler.Object)));
+                }
+            }
+        }
+    }
+
     [Theory]
     [InlineAutoMoqData]
     public async Task When_BatchIsCompleted_Then_CalculationFilesAreZipped(BatchCompletedEventDto batchCompletedEvent)
+    {
+        // Arrange
+        var batch = CreateBatch(batchCompletedEvent);
+        var serviceCollectionConfigurator = new ServiceCollectionConfigurator();
+        var zipFileName = Path.GetTempFileName();
+
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(collection =>
+            serviceCollectionConfigurator
+                .WithBatchInDatabase(batch)
+                .WithBasisDataFilesInCalculationStorage(batch, zipFileName)
+                .Configure(collection));
+
+        await using var scope = host.BeginScope();
+        var sut = scope.ServiceProvider.GetRequiredService<IBasisDataApplicationService>();
+
+        // Act
+        await sut.ZipBasisDataAsync(batchCompletedEvent);
+
+        // Assert
+        // TODO: assert expected content and all files
+        var zipExtractDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        ZipFile.ExtractToDirectory(zipFileName, zipExtractDirectory);
+        var (directory, extension, zipEntryPath) = BatchFileManager.GetResultDirectory(batch.Id, batch.GridAreaCodes.Single());
+        File.Exists(Path.Combine(zipExtractDirectory, zipEntryPath)).Should().BeTrue();
+    }
+
+    private static Batch CreateBatch(BatchCompletedEventDto batchCompletedEvent)
+    {
+        var gridAreaCode = new GridAreaCode("805");
+        var batch = new Batch(
+            ProcessType.BalanceFixing,
+            new[] { gridAreaCode },
+            SystemClock.Instance.GetCurrentInstant(),
+            SystemClock.Instance.GetCurrentInstant(),
+            SystemClock.Instance);
+        batch.SetPrivateProperty(b => b.Id, batchCompletedEvent.BatchId);
+        return batch;
+    }
+
+    // [Theory]
+    // [InlineAutoMoqData]
+    private async Task When_BatchIsCompleted_Then_CalculationFilesAreZipped_DEPRECATED(BatchCompletedEventDto batchCompletedEvent)
     {
         // Arrange
         var gridAreaCode = new GridAreaCode("805");
@@ -67,7 +211,7 @@ public sealed class BasisDataApplicationServiceTests
             .Setup(client => client.GetDirectoryClient(It.IsAny<string>() /*resultsDirectoryName*/))
             .Returns(dataLakeDirectoryClient.Object);
 
-        var zipBlobName = BatchFileManager.GetZipBlobName(batch);
+        var zipBlobName = BatchFileManager.GetZipFileName(batch);
         var zipFilePath = Path.GetTempFileName();
         await using (var stream = File.OpenWrite(zipFilePath))
         {
