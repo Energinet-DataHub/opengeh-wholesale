@@ -51,10 +51,12 @@ runs:
           --configuration Release \
           --output '.\source\dotnet\Services\Tests\bin\Release\net6.0'
 
-    - name: Copy all bin folders
+    - name: Copy all directories and files in source/dotnet except the obj-directories
       shell: bash
       run: |
-        # Create subfolder hierarchy matching 'bin' folders
-        find source/dotnet -type d -name 'bin' -exec mkdir -p '${{ inputs.OUTPUT_PATH }}/tests/{}' ';'
-        # Copy 'bin/Release' folders into hierarchy (cannot copy obj folders since we did not create those)
-        find source/dotnet -type d -name 'Release' -exec cp -r '{}' '${{ inputs.OUTPUT_PATH }}/tests/{}' ';'
+        # Create base directory
+        mkdir -p '${{ inputs.OUTPUT_PATH }}/source/dotnet' ';'
+        # Copy everything from source/dotnet to the new directory
+        cp -a source/dotnet/. '${{ inputs.OUTPUT_PATH }}/source/dotnet'
+        # Remove obj-directories from artifact
+        find ${{ inputs.OUTPUT_PATH }}/ -type d -name 'obj' -exec rm -rf {} +

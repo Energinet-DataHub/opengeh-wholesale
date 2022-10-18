@@ -13,10 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.JobRunner;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using NodaTime;
 
@@ -24,74 +22,67 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public class BatchApplicationService : IBatchApplicationService
 {
+    private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IProcessCompletedPublisher _processCompletedPublisher;
     private readonly ICalculatorJobRunner _calculatorJobRunner;
     private readonly ICalculatorJobParametersFactory _calculatorJobParametersFactory;
+    private readonly IBatchCompletedPublisher _batchCompletedPublisher;
+    private readonly IBatchExecutionStateHandler _batchExecutionStateHandler;
+    private readonly IBatchDtoMapper _batchDtoMapper;
 
     public BatchApplicationService(
+        IBatchFactory batchFactory,
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
-        IProcessCompletedPublisher processCompletedPublisher,
         ICalculatorJobRunner calculatorJobRunner,
-        ICalculatorJobParametersFactory calculatorJobParametersFactory)
+        ICalculatorJobParametersFactory calculatorJobParametersFactory,
+        IBatchCompletedPublisher batchCompletedPublisher,
+        IBatchExecutionStateHandler batchExecutionStateHandler,
+        IBatchDtoMapper batchDtoMapper)
     {
+        _batchFactory = batchFactory;
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
-        _processCompletedPublisher = processCompletedPublisher;
         _calculatorJobRunner = calculatorJobRunner;
         _calculatorJobParametersFactory = calculatorJobParametersFactory;
+        _batchCompletedPublisher = batchCompletedPublisher;
+        _batchExecutionStateHandler = batchExecutionStateHandler;
+        _batchDtoMapper = batchDtoMapper;
     }
 
     public async Task CreateAsync(BatchRequestDto batchRequestDto)
     {
-        var batch = CreateBatch(batchRequestDto);
+        var processType = batchRequestDto.ProcessType switch
+        {
+            WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
+        };
+        var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task StartPendingAsync()
+    public async Task StartSubmittingAsync()
     {
-        var batches = await _batchRepository.GetPendingAsync().ConfigureAwait(false);
+        var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
 
         foreach (var batch in batches)
         {
             var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);
             var jobRunId = await _calculatorJobRunner.SubmitJobAsync(jobParameters).ConfigureAwait(false);
-            batch.MarkAsExecuting(jobRunId);
+            batch.MarkAsSubmitted(jobRunId);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
 
     public async Task UpdateExecutionStateAsync()
     {
-        var batches = await _batchRepository.GetExecutingAsync().ConfigureAwait(false);
-        if (!batches.Any())
-            return;
-
-        var completedBatches = new List<Batch>();
-
-        foreach (var batch in batches)
-        {
-            // The batch will have received a RunId when the batch have started.
-            var runId = batch.RunId!;
-
-            var state = await _calculatorJobRunner
-                .GetJobStateAsync(runId)
-                .ConfigureAwait(false);
-
-            if (state == JobState.Completed)
-            {
-                batch.MarkAsCompleted();
-                completedBatches.Add(batch);
-            }
-        }
-
-        var completedProcesses = CreateProcessCompletedEvents(completedBatches);
-        await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
+        var completedBatches = await _batchExecutionStateHandler.UpdateExecutionStateAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
+        var batchCompletedEvents = completedBatches.Select(b => new BatchCompletedEventDto(b.Id));
 
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        await _batchCompletedPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
@@ -100,40 +91,6 @@ public class BatchApplicationService : IBatchApplicationService
         var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
-        return batches.Select(MapToBatchDto);
-    }
-
-    private static Batch CreateBatch(BatchRequestDto batchRequestDto)
-    {
-        var gridAreaCodes = batchRequestDto.GridAreaCodes.Select(c => new GridAreaCode(c));
-        var processType = batchRequestDto.ProcessType switch
-        {
-            WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
-        };
-        var periodStart = Instant.FromDateTimeOffset(batchRequestDto.StartDate);
-        var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
-        var clock = SystemClock.Instance;
-        var batch = new Batch(processType, gridAreaCodes, periodStart, periodEnd, clock);
-        return batch;
-    }
-
-    private List<ProcessCompletedEventDto> CreateProcessCompletedEvents(List<Batch> completedBatches)
-    {
-        return completedBatches
-            .SelectMany(b => b.GridAreaCodes.Select(x => new { b.Id, x.Code }))
-            .Select(c => new ProcessCompletedEventDto(c.Code, c.Id))
-            .ToList();
-    }
-
-    private BatchDto MapToBatchDto(Batch batch)
-    {
-        return new BatchDto(
-            batch.RunId?.Id ?? 0,
-            batch.PeriodStart.ToDateTimeOffset(),
-            batch.PeriodEnd.ToDateTimeOffset(),
-            batch.ExecutionTimeStart?.ToDateTimeOffset() ?? null,
-            batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
-            batch.ExecutionState);
+        return batches.Select(_batchDtoMapper.Map);
     }
 }

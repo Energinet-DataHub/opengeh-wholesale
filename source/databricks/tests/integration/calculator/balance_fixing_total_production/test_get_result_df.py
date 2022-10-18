@@ -17,12 +17,13 @@ import os
 import shutil
 import pytest
 import json
-from package.codelists import Resolution, TimeSeriesQuality, Quality
+from package.codelists import MeteringPointResolution, TimeSeriesQuality, Quality
 from decimal import Decimal
 from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_result_df
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, sum
+from pyspark.sql.functions import col, sum, lit
+from pyspark.sql.types import DecimalType
 
 minimum_quantity = Decimal("0.001")
 grid_area_code_805 = "805"
@@ -32,8 +33,8 @@ grid_area_code_806 = "806"
 @pytest.fixture
 def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
     def factory(
-        first_resolution=Resolution.quarter.value,
-        second_resolution=Resolution.quarter.value,
+        first_resolution=MeteringPointResolution.quarterly.value,
+        second_resolution=MeteringPointResolution.quarterly.value,
         first_quantity=Decimal("1"),
         second_quantity=Decimal("2"),
         first_time="2022-06-08T12:09:15.000Z",
@@ -69,7 +70,7 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
 @pytest.fixture
 def enriched_time_series_factory(spark, timestamp_factory):
     def factory(
-        resolution=Resolution.quarter.value,
+        resolution=MeteringPointResolution.quarterly.value,
         quantity=Decimal("1"),
         quality=TimeSeriesQuality.measured.value,
         gridArea="805",
@@ -129,7 +130,7 @@ def test__hourly_sums_are_rounded_correctly(
 ):
     """Test that checks acceptable rounding erros for hourly quantities summed on a quarterly basis"""
     df = enriched_time_series_factory(
-        resolution=Resolution.hour.value, quantity=quantity
+        resolution=MeteringPointResolution.hour.value, quantity=quantity
     )
 
     result_df = _get_result_df(df)
@@ -145,9 +146,9 @@ def test__quarterly_and_hourly_sums_correctly(
     first_quantity = Decimal("2")
     second_quantity = Decimal("2")
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=Resolution.quarter.value,
+        first_resolution=MeteringPointResolution.quarterly.value,
         first_quantity=first_quantity,
-        second_resolution=Resolution.hour.value,
+        second_resolution=MeteringPointResolution.hour.value,
         second_quantity=second_quantity,
     )
     result_df = _get_result_df(df)
@@ -160,9 +161,9 @@ def test__points_with_same_time_quantities_are_on_same_position(
 ):
     """Test that points with the same 'time' have added their 'Quantity's together on the same position"""
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=Resolution.quarter.value,
+        first_resolution=MeteringPointResolution.quarterly.value,
         first_quantity=Decimal("2"),
-        second_resolution=Resolution.hour.value,
+        second_resolution=MeteringPointResolution.hour.value,
         second_quantity=Decimal("2"),
     )
     result_df = _get_result_df(df)
@@ -176,9 +177,9 @@ def test__position_is_based_on_time_correctly(
 ):
     """'position' is correctly placed based on 'time'"""
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=Resolution.quarter.value,
+        first_resolution=MeteringPointResolution.quarterly.value,
         first_quantity=Decimal("1"),
-        second_resolution=Resolution.quarter.value,
+        second_resolution=MeteringPointResolution.quarterly.value,
         second_quantity=Decimal("2"),
         first_time="2022-06-08T12:09:15.000Z",
         second_time="2022-06-08T12:09:30.000Z",
@@ -198,9 +199,9 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
 ):
     "Test that checks if hourly quantities are summed as quarterly"
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=Resolution.hour.value,
+        first_resolution=MeteringPointResolution.hour.value,
         first_quantity=Decimal("4"),
-        second_resolution=Resolution.hour.value,
+        second_resolution=MeteringPointResolution.hour.value,
         second_quantity=Decimal("8"),
         first_time="2022-06-08T12:09:15.000Z",
         second_time="2022-06-08T13:09:15.000Z",
@@ -221,13 +222,10 @@ def test__that_grid_area_code_in_input_is_in_output(
     assert result_df.first().GridAreaCode == str(grid_area_code_805)
 
 
-def test__each_grid_area_has_a_sum(
-    enriched_time_series_quarterly_same_time_factory,
-):
+def test__each_grid_area_has_a_sum(enriched_time_series_quarterly_same_time_factory):
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
     result_df = _get_result_df(df)
-    assert result_df.count() == 2
     assert result_df.where("GridAreaCode == 805").count() == 1
     assert result_df.where("GridAreaCode == 806").count() == 1
 
@@ -237,10 +235,24 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
 ):
     """Test that values with different magnitudes do not lose precision when accumulated"""
     df = (
-        enriched_time_series_factory(Resolution.hour.value, Decimal("400000000000"))
-        .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
-        .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
-        .union(enriched_time_series_factory(Resolution.hour.value, minimum_quantity))
+        enriched_time_series_factory(
+            MeteringPointResolution.hour.value, Decimal("400000000000")
+        )
+        .union(
+            enriched_time_series_factory(
+                MeteringPointResolution.hour.value, minimum_quantity
+            )
+        )
+        .union(
+            enriched_time_series_factory(
+                MeteringPointResolution.hour.value, minimum_quantity
+            )
+        )
+        .union(
+            enriched_time_series_factory(
+                MeteringPointResolution.hour.value, minimum_quantity
+            )
+        )
     )
     result_df = _get_result_df(df)
 
@@ -272,7 +284,12 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
     ],
 )
 def test__quality_is_lowest_common_denominator_among_measured_estimated_and_missing(
-    enriched_time_series_factory, quality_1, quality_2, quality_3, expected_quality
+    enriched_time_series_factory,
+    timestamp_factory,
+    quality_1,
+    quality_2,
+    quality_3,
+    expected_quality,
 ):
     df = (
         enriched_time_series_factory(quality=quality_1)
@@ -281,3 +298,24 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
     )
     result_df = _get_result_df(df)
     assert result_df.first().quality == expected_quality
+
+
+def test__when_time_series_point_is_missing__quality_has_value_incomplete(
+    enriched_time_series_factory,
+    timestamp_factory,
+):
+    df = enriched_time_series_factory().withColumn("quality", lit(None))
+
+    result_df = _get_result_df(df)
+    assert result_df.first().quality == Quality.incomplete.value
+
+
+def test__when_time_series_point_is_missing__quantity_is_0(
+    enriched_time_series_factory,
+    timestamp_factory,
+):
+    df = enriched_time_series_factory().withColumn(
+        "Quantity", lit(None).cast(DecimalType())
+    )
+    result_df = _get_result_df(df)
+    assert result_df.first().Quantity == Decimal("0.000")

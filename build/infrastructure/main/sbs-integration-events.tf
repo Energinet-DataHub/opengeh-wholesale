@@ -16,7 +16,7 @@ module "sbs_int_events_metering_point_created" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
   name                = "metering-point-created"
   project_name        = var.domain_name_short
-  topic_id            = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
+  topic_id            = data.azurerm_key_vault_secret.sbt_integration_events_id.value
   max_delivery_count  = 10
   correlation_filter  = {
     properties     = {
@@ -29,7 +29,7 @@ module "sbs_int_events_metering_point_connected" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
   name                = "metering-point-connected"
   project_name        = var.domain_name_short
-  topic_id            = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
+  topic_id            = data.azurerm_key_vault_secret.sbt_integration_events_id.value
   max_delivery_count  = 10
   correlation_filter  = {
     properties     = {
@@ -42,7 +42,7 @@ module "sbs_int_events_grid_area_updated" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
   name                = "grid-area-updated"
   project_name        = var.domain_name_short
-  topic_id            = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
+  topic_id            = data.azurerm_key_vault_secret.sbt_integration_events_id.value
   max_delivery_count  = 10
   correlation_filter  = {
     properties     = {

@@ -24,7 +24,9 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.MessageHub.Client;
 using Energinet.DataHub.MessageHub.Client.SimpleInjector;
 using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
@@ -35,6 +37,7 @@ using Energinet.DataHub.Wholesale.Sender.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Sender;
@@ -43,7 +46,13 @@ public static class Program
 {
     public static async Task Main()
     {
-        using var host = new HostBuilder()
+        using var host = CreateHostBuilder().Build();
+        await host.RunAsync().ConfigureAwait(false);
+    }
+
+    public static IHostBuilder CreateHostBuilder()
+    {
+        return new HostBuilder()
             .ConfigureFunctionsWorkerDefaults(builder =>
             {
                 builder.UseMiddleware<CorrelationIdMiddleware>();
@@ -55,10 +64,7 @@ public static class Program
             .ConfigureServices(Domains)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(MessageHub)
-            .ConfigureServices(HealthCheck)
-            .Build();
-
-        await host.RunAsync().ConfigureAwait(false);
+            .ConfigureServices(HealthCheck);
     }
 
     private static void ApplicationServices(IServiceCollection services)
@@ -93,8 +99,8 @@ public static class Program
         serviceCollection.AddApplicationInsights();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
-        var calculatorResultConnection = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsConnectionString);
-        var calculatorResultFileSystem = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculatorResultsFileSystemName);
+        var calculatorResultConnection = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
+        var calculatorResultFileSystem = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         serviceCollection.AddSingleton(new DataLakeFileSystemClient(calculatorResultConnection, calculatorResultFileSystem));
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
@@ -115,6 +121,16 @@ public static class Program
             }));
 
         serviceCollection.AddScoped<ICalculatedResultReader, CalculatedResultsReader>();
+        var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
+        var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
+        var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
+        serviceCollection.AddScoped<IWebFilesZipper>(_ => null!);
+        serviceCollection.AddScoped<IBatchFileManager>(
+            provider => new BatchFileManager(
+                dataLakeFileSystemClient,
+                provider.GetService<IWebFilesZipper>()!,
+                provider.GetRequiredService<ILogger<IBatchFileManager>>()));
+        serviceCollection.AddHttpClient();
     }
 
     private static void MessageHub(IServiceCollection services)
@@ -143,12 +159,12 @@ public static class Program
             .AddDbContextCheck<SenderDatabaseContext>("DatabaseContext")
             .AddAzureServiceBusTopic(
                 EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
-                EnvironmentSettingNames.ProcessCompletedTopicName.Val(),
+                EnvironmentSettingNames.DomainEventsTopicName.Val(),
                 "ProcessCompletedTopic")
             .AddAzureServiceBusSubscription(
                 EnvironmentSettingNames.ServiceBusManageConnectionString.Val(),
-                EnvironmentSettingNames.ProcessCompletedTopicName.Val(),
-                EnvironmentSettingNames.ProcessCompletedSubscriptionName.Val(),
+                EnvironmentSettingNames.DomainEventsTopicName.Val(),
+                EnvironmentSettingNames.SendDataAvailableWhenCompletedProcessSubscriptionName.Val(),
                 "ProcessCompletedSubscription")
             .AddAzureServiceBusQueue(
                 EnvironmentSettingNames.DataHubServiceBusManageConnectionString.Val(),
@@ -163,7 +179,7 @@ public static class Program
                 EnvironmentSettingNames.MessageHubReplyQueueName.Val(),
                 "MessageHubReplyQueue")
             .AddDataLakeCheck(
-                EnvironmentSettingNames.CalculatorResultsConnectionString.Val(),
-                EnvironmentSettingNames.CalculatorResultsFileSystemName.Val());
+                EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
+                EnvironmentSettingNames.CalculationStorageContainerName.Val());
     }
 }

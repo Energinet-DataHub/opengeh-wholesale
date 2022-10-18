@@ -27,10 +27,12 @@ public class BatchController : ControllerBase
 {
     private const string Version = "1.0";
     private readonly IBatchApplicationService _batchApplicationService;
+    private readonly IBatchDtoV1Mapper _batchDtoV1Mapper;
 
-    public BatchController(IBatchApplicationService batchApplicationService)
+    public BatchController(IBatchApplicationService batchApplicationService, IBatchDtoV1Mapper batchDtoV1Mapper)
     {
         _batchApplicationService = batchApplicationService;
+        _batchDtoV1Mapper = batchDtoV1Mapper;
     }
 
     /// <summary>
@@ -55,6 +57,7 @@ public class BatchController : ControllerBase
     public async Task<IActionResult> SearchAsync([FromBody] BatchSearchDto batchSearchDto)
     {
         var batchesDto = await _batchApplicationService.SearchAsync(batchSearchDto).ConfigureAwait(false);
-        return Ok(batchesDto);
+        var batchesDtoV1 = batchesDto.Select(_batchDtoV1Mapper.Map);
+        return Ok(batchesDtoV1);
     }
 }

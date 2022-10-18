@@ -16,6 +16,7 @@ namespace Energinet.DataHub.Wholesale.Application.JobRunner;
 
 public enum JobState
 {
+    Pending,
     Running,
     Completed,
     Canceled,
