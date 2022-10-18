@@ -76,11 +76,5 @@ public sealed class IntegrationEventListenerIntegrationTestHost : IDisposable
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
         serviceCollection.Replace(ServiceDescriptor.Singleton<ServiceBusClient, MockedServiceBusClient>());
-        serviceCollection.Replace(ServiceDescriptor.Singleton(provider =>
-        {
-            var mock = new Moq.Mock<IServiceBusClientFactory>();
-            mock.Setup(x => x.Create()).Returns(provider.GetRequiredService<ServiceBusClient>());
-            return mock.Object;
-        }));
     }
 }
