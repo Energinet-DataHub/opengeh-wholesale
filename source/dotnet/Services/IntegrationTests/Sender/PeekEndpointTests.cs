@@ -26,7 +26,9 @@ public class PeekEndpointTests
     public async Task ServiceCollection_CanResolvePeekEndpoint()
     {
         // Arrange
-        using var host = await SenderIntegrationTestHost.CreateAsync();
+        using var host = await SenderIntegrationTestHost
+            .CreateAsync(collection => collection.AddScoped<PeekEndpoint>());
+
         await using var scope = host.BeginScope();
 
         // Act & Assert that the container can resolve the endpoints dependencies

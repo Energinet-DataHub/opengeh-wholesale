@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
+namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 
 /// <summary>
 /// Handle process batches.
@@ -25,14 +25,14 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
 [Route("v{version:apiVersion}/[controller]")]
 public class BatchController : ControllerBase
 {
-    private const string Version = "1.0";
+    private const string Version = "2.0";
     private readonly IBatchApplicationService _batchApplicationService;
-    private readonly IBatchDtoV1Mapper _batchDtoV1Mapper;
+    private readonly IBatchDtoV2Mapper _batchDtoV2Mapper;
 
-    public BatchController(IBatchApplicationService batchApplicationService, IBatchDtoV1Mapper batchDtoV1Mapper)
+    public BatchController(IBatchApplicationService batchApplicationService, IBatchDtoV2Mapper batchDtoV2Mapper)
     {
         _batchApplicationService = batchApplicationService;
-        _batchDtoV1Mapper = batchDtoV1Mapper;
+        _batchDtoV2Mapper = batchDtoV2Mapper;
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public class BatchController : ControllerBase
     public async Task<IActionResult> SearchAsync([FromBody] BatchSearchDto batchSearchDto)
     {
         var batchesDto = await _batchApplicationService.SearchAsync(batchSearchDto).ConfigureAwait(false);
-        var batchesDtoV1 = batchesDto.Select(_batchDtoV1Mapper.Map);
-        return Ok(batchesDtoV1);
+        var batchesDtoV2 = batchesDto.Select(_batchDtoV2Mapper.Map);
+        return Ok(batchesDtoV2);
     }
 }

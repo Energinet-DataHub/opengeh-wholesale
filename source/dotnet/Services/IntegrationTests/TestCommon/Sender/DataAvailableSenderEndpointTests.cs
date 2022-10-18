@@ -73,5 +73,18 @@ public class DataAvailableSenderEndpointTests
             var response = await Fixture.MessageHubMock.PeekAsync();
             response.Content.Should().NotBeNull();
         }
+
+        [Fact]
+        public async Task ServiceCollection_CanResolveDataAvailableEndpoint()
+        {
+            // Arrange
+            using var host = await SenderIntegrationTestHost
+                .CreateAsync(collection => collection.AddScoped<DataAvailableSenderEndpoint>());
+
+            await using var scope = host.BeginScope();
+
+            // Act & Assert that the container can resolve the endpoints dependencies
+            scope.ServiceProvider.GetRequiredService<DataAvailableSenderEndpoint>();
+        }
     }
 }

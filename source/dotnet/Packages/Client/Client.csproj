@@ -24,7 +24,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Client</PackageId>
-    <PackageVersion>1.0.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.0.0$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Client</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -69,8 +69,8 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Contracts\BatchDto.cs">
-      <Link>Dtos\BatchDto.cs</Link>
+    <Compile Include="..\..\Contracts\BatchDtoV2.cs">
+      <Link>Dtos\BatchDtoV2.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchRequestDto.cs">
       <Link>Dtos\BatchRequestDto.cs</Link>

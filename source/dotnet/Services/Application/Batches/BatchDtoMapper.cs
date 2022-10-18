@@ -22,6 +22,7 @@ public class BatchDtoMapper : IBatchDtoMapper
     {
         return new BatchDto(
             batch.RunId?.Id,
+            batch.Id,
             batch.PeriodStart.ToDateTimeOffset(),
             batch.PeriodEnd.ToDateTimeOffset(),
             batch.ExecutionTimeStart?.ToDateTimeOffset() ?? null,

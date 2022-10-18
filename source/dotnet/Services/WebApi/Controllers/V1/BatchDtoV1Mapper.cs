@@ -12,12 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Tests;
+using Energinet.DataHub.Wholesale.Application.Batches;
 
-public static class ObjectExtensions
+namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
+
+public class BatchDtoV1Mapper : IBatchDtoV1Mapper
 {
-    /// <summary>
-    /// Returns the object wrapped in a list.
-    /// </summary>
-    public static List<T> InList<T>(this T o) => new() { o };
+    public BatchDtoV1 Map(BatchDto batchDto)
+    {
+        return new BatchDtoV1(
+            batchDto.RunId,
+            batchDto.PeriodStart,
+            batchDto.PeriodEnd,
+            batchDto.ExecutionTimeStart,
+            batchDto.ExecutionTimeEnd,
+            batchDto.ExecutionState);
+    }
 }
