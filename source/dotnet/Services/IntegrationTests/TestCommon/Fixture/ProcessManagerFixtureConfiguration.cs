@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
+using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Client;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
 
-public interface IWholesaleClient
+/// <summary>
+/// Fixture configuration used for integration tests running without TestCommon function app.
+/// </summary>
+[CollectionDefinition("ProcessManagerIntegrationTest")]
+public sealed class ProcessManagerFixtureConfiguration :
+    ICollectionFixture<ProcessManagerDatabaseFixture>,
+    ICollectionFixture<ProcessManagerDatabricksFixture>
 {
-    /// <summary>
-    /// Start processes by creating a batch request.
-    /// In case of errors an exception is thrown.
-    /// </summary>
-    Task CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
-
-    /// <summary>
-    /// Returns batches matching the search criteria.
-    /// In case of errors an exception is thrown.
-    /// </summary>
-    Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(BatchSearchDto batchSearchDto);
 }

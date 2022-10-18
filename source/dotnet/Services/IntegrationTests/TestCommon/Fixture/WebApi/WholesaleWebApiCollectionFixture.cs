@@ -12,21 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
+using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Client;
-
-public interface IWholesaleClient
+namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
 {
     /// <summary>
-    /// Start processes by creating a batch request.
-    /// In case of errors an exception is thrown.
+    /// A xUnit collection fixture for ensuring tests don't run in parallel.
+    ///
+    /// xUnit documentation of collection fixtures:
+    ///  * https://xunit.net/docs/shared-context#collection-fixture
     /// </summary>
-    Task CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
-
-    /// <summary>
-    /// Returns batches matching the search criteria.
-    /// In case of errors an exception is thrown.
-    /// </summary>
-    Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(BatchSearchDto batchSearchDto);
+    [CollectionDefinition(nameof(WholesaleWebApiCollectionFixture))]
+    public class WholesaleWebApiCollectionFixture : ICollectionFixture<WholesaleWebApiFixture>
+    {
+    }
 }

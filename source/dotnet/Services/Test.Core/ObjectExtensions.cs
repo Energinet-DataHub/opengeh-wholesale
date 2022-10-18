@@ -12,21 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
+namespace Test.Core;
 
-namespace Energinet.DataHub.Wholesale.Client;
-
-public interface IWholesaleClient
+public static class ObjectExtensions
 {
     /// <summary>
-    /// Start processes by creating a batch request.
-    /// In case of errors an exception is thrown.
+    /// Returns the object wrapped in a list.
     /// </summary>
-    Task CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
-
-    /// <summary>
-    /// Returns batches matching the search criteria.
-    /// In case of errors an exception is thrown.
-    /// </summary>
-    Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(BatchSearchDto batchSearchDto);
+    public static List<T> InList<T>(this T o) => new() { o };
 }

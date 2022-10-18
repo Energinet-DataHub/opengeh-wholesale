@@ -14,19 +14,18 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches;
 
-namespace Energinet.DataHub.Wholesale.Client;
+namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
 
-public interface IWholesaleClient
+public class BatchDtoV1Mapper : IBatchDtoV1Mapper
 {
-    /// <summary>
-    /// Start processes by creating a batch request.
-    /// In case of errors an exception is thrown.
-    /// </summary>
-    Task CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
-
-    /// <summary>
-    /// Returns batches matching the search criteria.
-    /// In case of errors an exception is thrown.
-    /// </summary>
-    Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(BatchSearchDto batchSearchDto);
+    public BatchDtoV1 Map(BatchDto batchDto)
+    {
+        return new BatchDtoV1(
+            batchDto.RunId,
+            batchDto.PeriodStart,
+            batchDto.PeriodEnd,
+            batchDto.ExecutionTimeStart,
+            batchDto.ExecutionTimeEnd,
+            batchDto.ExecutionState);
+    }
 }
