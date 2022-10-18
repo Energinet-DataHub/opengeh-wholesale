@@ -83,7 +83,7 @@ public class ServiceCollectionConfigurator
                     .Returns(true);
 
                 var basisDataBuffer = Encoding.UTF8.GetBytes(
-                    $"The '{extension}' file from directory '{directory}'");
+                    $"{directory}");
 
                 var pathItemName = $"foo{extension}";
                 var pathItem = DataLakeModelFactory

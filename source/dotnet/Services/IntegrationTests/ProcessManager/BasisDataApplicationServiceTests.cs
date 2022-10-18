@@ -62,17 +62,25 @@ public sealed class BasisDataApplicationServiceTests
         var zipExtractDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         ZipFile.ExtractToDirectory(zipFileName, zipExtractDirectory);
 
-        var (_, _, resultPath) = BatchFileManager.GetResultDirectory(batch.Id, batch.GridAreaCodes.Single());
+        var (resultDir, _, resultPath) = BatchFileManager.GetResultDirectory(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, resultPath)).Should().BeTrue();
+        var resultContent = File.ReadLines(Path.Combine(zipExtractDirectory, resultPath)).First();
+        resultContent.Should().BeEquivalentTo(resultDir);
 
-        var (_, _, masterDataPath) = BatchFileManager.GetMasterBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
+        var (masterDataDir, _, masterDataPath) = BatchFileManager.GetMasterBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, masterDataPath)).Should().BeTrue();
+        var masterDataContent = File.ReadLines(Path.Combine(zipExtractDirectory, masterDataPath)).First();
+        masterDataContent.Should().BeEquivalentTo(masterDataDir);
 
-        var (_, _, quarterPath) = BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
+        var (quarterDir, _, quarterPath) = BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, quarterPath)).Should().BeTrue();
+        var quarterContent = File.ReadLines(Path.Combine(zipExtractDirectory, quarterPath)).First();
+        quarterContent.Should().BeEquivalentTo(quarterDir);
 
-        var (_, _, hourPath) = BatchFileManager.GetTimeSeriesHourBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
+        var (hourDir, _, hourPath) = BatchFileManager.GetTimeSeriesHourBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, hourPath)).Should().BeTrue();
+        var hourContent = File.ReadLines(Path.Combine(zipExtractDirectory, hourPath)).First();
+        hourContent.Should().BeEquivalentTo(hourDir);
     }
 
     private static async Task AddBatchToDatabase(AsyncServiceScope scope, Batch batch)
