@@ -14,6 +14,7 @@
 
 using System.IO.Compression;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -52,6 +53,7 @@ public sealed class BasisDataApplicationServiceTests
                 .Configure(collection));
 
         await using var scope = host.BeginScope();
+        await AddBatchToDatabase(scope, batch);
         var sut = scope.ServiceProvider.GetRequiredService<IBasisDataApplicationService>();
 
         // Act
@@ -63,6 +65,14 @@ public sealed class BasisDataApplicationServiceTests
         ZipFile.ExtractToDirectory(zipFileName, zipExtractDirectory);
         var (directory, extension, zipEntryPath) = BatchFileManager.GetResultDirectory(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, zipEntryPath)).Should().BeTrue();
+    }
+
+    private static async Task AddBatchToDatabase(AsyncServiceScope scope, Batch batch)
+    {
+        var batchRepository = scope.ServiceProvider.GetRequiredService<IBatchRepository>();
+        await batchRepository.AddAsync(batch);
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        await unitOfWork.CommitAsync();
     }
 
     private static Batch CreateBatch(BatchCompletedEventDto batchCompletedEvent)
