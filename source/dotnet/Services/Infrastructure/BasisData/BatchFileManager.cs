@@ -129,7 +129,7 @@ public class BatchFileManager : IBatchFileManager
 
     // TODO BJARKE: The directory paths must match the directory used by Databricks (see calculator.py).
     private (string Directory, string Extension, string ZipEntryPath) GetResultDirectory(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"results/batch_id={batchId}/grid_area={gridAreaCode}/", ".json", $"{gridAreaCode}/Result.json");
+        => ($"results/batch_id={batchId}/grid_area={gridAreaCode.Code}/", ".json", $"{gridAreaCode}/Result.json");
 
     private (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode)
         => ($"results/basis-data/batch_id={batchId}/time-series-hour/grid_area={gridAreaCode}/",
