@@ -64,7 +64,7 @@ public class ServiceCollectionConfigurator
                 };
             foreach (var descriptorProvider in fileDescriptorProviders)
             {
-                var (directory, extension, _) =
+                var (directory, _, entryPath) =
                     descriptorProvider(_withBasisDataFilesForBatch.Value.Batch.Id, gridAreaCode);
 
                 var response = new Mock<Response<bool>>();
@@ -82,10 +82,9 @@ public class ServiceCollectionConfigurator
                     .Setup(r => r.Value)
                     .Returns(true);
 
-                var basisDataBuffer = Encoding.UTF8.GetBytes(
-                    $"{directory}");
+                var basisDataBuffer = Encoding.UTF8.GetBytes(directory);
 
-                var pathItemName = $"foo{extension}";
+                var pathItemName = Path.GetFileName(entryPath);
                 var pathItem = DataLakeModelFactory
                     .PathItem(pathItemName, false, DateTimeOffset.Now, ETag.All, basisDataBuffer.Length, "owner", "group", "permissions");
                 var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
