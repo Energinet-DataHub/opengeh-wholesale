@@ -31,7 +31,7 @@ public class ServiceCollectionConfigurator
 {
     private (Batch Batch, string ZipFileName)? _withBasisDataFilesForBatch;
 
-    public ServiceCollectionConfigurator WithBasisDataFilesInCalculationStorage(Batch batch, string zipFileName)
+    public ServiceCollectionConfigurator WithBatchFileManagerForBatch(Batch batch, string zipFileName)
     {
         _withBasisDataFilesForBatch = (batch, zipFileName);
         return this;

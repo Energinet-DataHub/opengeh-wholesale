@@ -32,6 +32,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.HttpClient;
 using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
@@ -155,6 +156,7 @@ public static class Program
                 provider.GetRequiredService<IWebFilesZipper>(),
                 provider.GetRequiredService<ILogger<BatchFileManager>>()));
         serviceCollection.AddHttpClient();
+        serviceCollection.AddSingleton<IHttpClient>();
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)
