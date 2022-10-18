@@ -42,7 +42,6 @@ using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
@@ -153,8 +152,7 @@ public static class Program
         serviceCollection.AddScoped<IBatchFileManager>(
             provider => new BatchFileManager(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
-                provider.GetRequiredService<IWebFilesZipper>(),
-                provider.GetRequiredService<ILogger<BatchFileManager>>()));
+                provider.GetRequiredService<IWebFilesZipper>()));
         serviceCollection.AddHttpClient();
         serviceCollection.AddSingleton<IHttpClient>();
     }

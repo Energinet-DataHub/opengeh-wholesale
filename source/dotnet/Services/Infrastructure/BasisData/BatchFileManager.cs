@@ -16,7 +16,6 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
@@ -26,13 +25,11 @@ public class BatchFileManager : IBatchFileManager
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
     private readonly IWebFilesZipper _webFilesZipper;
-    private readonly ILogger _logger;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IWebFilesZipper webFilesZipper, ILogger<BatchFileManager> logger)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IWebFilesZipper webFilesZipper)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _webFilesZipper = webFilesZipper;
-        _logger = logger;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         {
             GetResultDirectory,
@@ -55,7 +52,7 @@ public class BatchFileManager : IBatchFileManager
     public async Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
         var (directory, extension, _) = GetResultDirectory(batchId, gridAreaCode);
-        var dataLakeFileClient = await TryGetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
+        var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
         if (dataLakeFileClient == null)
         {
             throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
@@ -105,10 +102,7 @@ public class BatchFileManager : IBatchFileManager
         foreach (var fileIdentifierProvider in _fileIdentifierProviders)
         {
             var (directory, extension, entryPath) = fileIdentifierProvider(batchId, gridAreaCode);
-            var processDataFile = await TryGetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
-
-            if (processDataFile == null) continue;
-
+            var processDataFile = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
             processDataFilesUrls.Add((processDataFile.Uri, entryPath));
         }
 
@@ -121,26 +115,20 @@ public class BatchFileManager : IBatchFileManager
     /// <param name="directory"></param>
     /// <param name="extension"></param>
     /// <returns>The first file with matching file extension.</returns>
-    private async Task<DataLakeFileClient?> TryGetDataLakeFileClientAsync(string directory, string extension)
+    private async Task<DataLakeFileClient> GetDataLakeFileClientAsync(string directory, string extension)
     {
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
         var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
         if (!directoryExists.Value)
-        {
-            _logger.LogError("Calculation storage directory '{Directory}' does not exist", directory);
-            return null;
-        }
+            throw new Exception($"Calculation storage directory '{directory}' does not exist");
 
         await foreach (var pathItem in directoryClient.GetPathsAsync())
         {
             if (Path.GetExtension(pathItem.Name) == extension)
-            {
                 return _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
-            }
         }
 
-        _logger.LogError("Blob matching '{Directory}*{Extension}' not found", directory, extension);
-        return null;
+        throw new Exception($"No Data Lake file with extension '{extension}' was found in directory '{directory}'");
     }
 
     private Task<Stream> GetWriteStreamAsync(string fileName)
