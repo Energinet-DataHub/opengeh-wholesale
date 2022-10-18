@@ -60,11 +60,21 @@ public sealed class BasisDataApplicationServiceTests
         await sut.ZipBasisDataAsync(batchCompletedEvent);
 
         // Assert
-        // TODO: assert expected content and all files
+        // TODO: assert expected content
         var zipExtractDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         ZipFile.ExtractToDirectory(zipFileName, zipExtractDirectory);
-        var (directory, extension, zipEntryPath) = BatchFileManager.GetResultDirectory(batch.Id, batch.GridAreaCodes.Single());
-        File.Exists(Path.Combine(zipExtractDirectory, zipEntryPath)).Should().BeTrue();
+
+        var (_, _, resultPath) = BatchFileManager.GetResultDirectory(batch.Id, batch.GridAreaCodes.Single());
+        File.Exists(Path.Combine(zipExtractDirectory, resultPath)).Should().BeTrue();
+
+        var (_, _, masterDataPath) = BatchFileManager.GetMasterBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
+        File.Exists(Path.Combine(zipExtractDirectory, masterDataPath)).Should().BeTrue();
+
+        var (_, _, quarterPath) = BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
+        File.Exists(Path.Combine(zipExtractDirectory, quarterPath)).Should().BeTrue();
+
+        var (_, _, hourPath) = BatchFileManager.GetTimeSeriesHourBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
+        File.Exists(Path.Combine(zipExtractDirectory, hourPath)).Should().BeTrue();
     }
 
     private static async Task AddBatchToDatabase(AsyncServiceScope scope, Batch batch)
