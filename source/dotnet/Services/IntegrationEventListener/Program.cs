@@ -35,7 +35,15 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
     {
         public static async Task Main()
         {
-            using var host = new HostBuilder()
+            using var host = CreateHostBuilder()
+                .Build();
+
+            await host.RunAsync().ConfigureAwait(false);
+        }
+
+        public static IHostBuilder CreateHostBuilder()
+        {
+            return new HostBuilder()
                 .ConfigureFunctionsWorkerDefaults(builder =>
                 {
                     builder.UseMiddleware<CorrelationIdMiddleware>();
@@ -45,10 +53,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                 .ConfigureServices(Middlewares)
                 .ConfigureServices(Infrastructure)
                 .ConfigureServices(Host)
-                .ConfigureServices(HealthCheck)
-                .Build();
-
-            await host.RunAsync().ConfigureAwait(false);
+                .ConfigureServices(HealthCheck);
         }
 
         private static void Middlewares(IServiceCollection serviceCollection)
