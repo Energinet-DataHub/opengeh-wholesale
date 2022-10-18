@@ -30,9 +30,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 
 public class ServiceCollectionConfigurator
 {
+    // Used to provide better Moq experience for mocking HttpClient
     private interface IHttpResponseMessage
     {
-        Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken);
+        internal Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken);
     }
 
     private (Batch Batch, string ZipFileName)? _withBasisDataFilesForBatch;
@@ -93,13 +94,12 @@ public class ServiceCollectionConfigurator
                     .Setup(r => r.Value)
                     .Returns(true);
 
-                var memoryStream = new MemoryStream(
-                    Encoding.UTF8.GetBytes(
-                        $"The '{extension}' file from directory '{directory}'"));
+                var buffer = Encoding.UTF8.GetBytes(
+                    $"The '{extension}' file from directory '{directory}'");
 
                 var pathItemName = $"foo{extension}";
                 var pathItem = DataLakeModelFactory
-                    .PathItem(pathItemName, false, DateTimeOffset.Now, ETag.All, memoryStream.Length, "owner", "group", "permissions");
+                    .PathItem(pathItemName, false, DateTimeOffset.Now, ETag.All, buffer.Length, "owner", "group", "permissions");
                 var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
                 var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
                 dataLakeDirectoryClient
@@ -123,10 +123,10 @@ public class ServiceCollectionConfigurator
                         It.Is<HttpRequestMessage>(requestMessage =>
                             requestMessage.RequestUri!.AbsoluteUri.Contains(encodedDirectory)),
                         It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(new HttpResponseMessage
+                    .ReturnsAsync(() => new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Content = new StreamContent(memoryStream),
+                        Content = new StreamContent(new MemoryStream(buffer)),
                     });
             }
         }
