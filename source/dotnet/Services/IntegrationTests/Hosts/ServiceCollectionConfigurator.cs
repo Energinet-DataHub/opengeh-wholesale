@@ -27,22 +27,42 @@ using Moq;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 
+/// <summary>
+/// Extension methods to configure mocks for external dependencies of the host applications.
+///
+/// This allows for integration testing of the hosts without the problems with
+/// long waiting times to provision external resources and the related stability problems.
+///
+/// Uses a builder-like pattern.
+/// </summary>
 public class ServiceCollectionConfigurator
 {
     private (Batch Batch, string ZipFileName)? _withBasisDataFilesForBatch;
 
+    /// <summary>
+    /// Configure the service collection to support the methods of the <see cref="BatchFileManager"/>
+    /// for the given batch. The batch must exist in the database.
+    /// </summary>
     public ServiceCollectionConfigurator WithBatchFileManagerForBatch(Batch batch, string zipFileName)
     {
         _withBasisDataFilesForBatch = (batch, zipFileName);
         return this;
     }
 
+    /// <summary>
+    /// Execute the configuration of the service collection according to configuration
+    /// specified by calling the other methods.
+    /// </summary>
     public void Configure(IServiceCollection serviceCollection)
     {
         if (_withBasisDataFilesForBatch != null)
             ConfigureBasisDataFilesForBatch(serviceCollection);
     }
 
+    /// <summary>
+    /// Add the configuration needed to use the <see cref="BatchFileManager"/>
+    /// for the <see cref="Batch"/> specified in <see cref="WithBatchFileManagerForBatch"/>.
+    /// </summary>
     private void ConfigureBasisDataFilesForBatch(IServiceCollection serviceCollection)
     {
         var dataLakeFileSystemClientMock = new Mock<DataLakeFileSystemClient>();
@@ -51,7 +71,7 @@ public class ServiceCollectionConfigurator
         var httpClientMock = new Mock<IHttpClient>();
         serviceCollection.Replace(ServiceDescriptor.Singleton(httpClientMock.Object));
 
-        // Mock batch basis files
+        // Mock batch basis data files for each process (grid area)
         foreach (var gridAreaCode in _withBasisDataFilesForBatch!.Value.Batch.GridAreaCodes)
         {
             var fileDescriptorProviders =
@@ -62,6 +82,8 @@ public class ServiceCollectionConfigurator
                     BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory,
                     BatchFileManager.GetMasterBasisDataDirectory,
                 };
+
+            // Mock each basis data files for the process
             foreach (var descriptorProvider in fileDescriptorProviders)
             {
                 var (directory, _, entryPath) =
@@ -84,6 +106,7 @@ public class ServiceCollectionConfigurator
 
                 var basisDataBuffer = Encoding.UTF8.GetBytes(directory);
 
+                // Configure the Data Lake directory client to get paths in directory
                 var pathItemName = Path.GetFileName(entryPath);
                 var pathItem = DataLakeModelFactory
                     .PathItem(pathItemName, false, DateTimeOffset.Now, ETag.All, basisDataBuffer.Length, "owner", "group", "permissions");
@@ -104,6 +127,8 @@ public class ServiceCollectionConfigurator
                     .Setup(client => client.Uri)
                     .Returns(new Uri(uriString));
 
+                // Enable the IWebFilesZipper to access the basis data files
+                // The files are represented by mocked names and in-memory streams
                 httpClientMock
                     .Setup(client => client.GetStreamAsync(It.Is<Uri>(uri => uri.AbsoluteUri.Contains(encodedDirectory))))
                     .ReturnsAsync(() => new MemoryStream(basisDataBuffer));

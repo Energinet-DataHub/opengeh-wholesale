@@ -42,9 +42,7 @@ public class WebFilesZipper : IWebFilesZipper
             var zipArchiveEntry = archive.CreateEntry(inputFile.EntryPath);
             var entryStream = zipArchiveEntry.Open();
             await using (entryStream.ConfigureAwait(false))
-            {
                 await inputStream.CopyToAsync(entryStream).ConfigureAwait(false);
-            }
         }
     }
 }
