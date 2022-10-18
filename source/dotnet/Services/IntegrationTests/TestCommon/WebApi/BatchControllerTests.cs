@@ -21,11 +21,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-<<<<<<<< HEAD:source/dotnet/Services/IntegrationTests/TestCommon/WebApi/V1/BatchControllerTests.cs
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi.V1;
-========
-namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
->>>>>>>> main:source/dotnet/Services/IntegrationTests/TestCommon/WebApi/BatchControllerTests.cs
+namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
 public class BatchControllerTests :
