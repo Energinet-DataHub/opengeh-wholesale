@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationEventListener;
 
-[Collection("IntegrationEventListenerIntegrationTest")]
+[Collection(nameof(IntegrationEventListenerIntegrationTestHost))]
 public sealed class MeteringPointCreatedListenerEndpointTests
 {
     [Fact]

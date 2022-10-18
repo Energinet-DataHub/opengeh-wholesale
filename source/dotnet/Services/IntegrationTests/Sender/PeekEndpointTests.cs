@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Sender;
 
-[Collection("SenderIntegrationTest")]
+[Collection(nameof(SenderIntegrationTestHost))]
 public class PeekEndpointTests
 {
     [Fact]
