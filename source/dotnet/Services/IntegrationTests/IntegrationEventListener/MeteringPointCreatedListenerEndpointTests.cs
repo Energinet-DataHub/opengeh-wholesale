@@ -12,52 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.MeteringPoints.IntegrationEvents.CreateMeteringPoint;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
-using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
-using Xunit.Abstractions;
+using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationEventListener;
 
+[Collection("IntegrationEventListenerIntegrationTest")]
 public sealed class MeteringPointCreatedListenerEndpointTests
-    : IntegrationEventListenerEndpointTestBase<MeteringPointCreatedListenerEndpoint, MeteringPointCreatedDto>
 {
-    public MeteringPointCreatedListenerEndpointTests(
-        IntegrationEventListenerFunctionAppFixture fixture,
-        ITestOutputHelper testOutputHelper)
-        : base(fixture, testOutputHelper)
+    [Fact]
+    public async Task ServiceCollection_CanResolveMeteringPointCreatedListenerEndpoint()
     {
-    }
+        // Arrange
+        using var host = await IntegrationEventListenerIntegrationTestHost
+            .CreateAsync(collection => collection.AddScoped<MeteringPointCreatedListenerEndpoint>());
 
-    protected override string EventHubMessageType => "MeteringPointCreated";
+        await using var scope = host.BeginScope();
 
-    protected override string ServiceBusMessageType => "MeteringPointCreated";
-
-    protected override ServiceBusSender IntegrationEventTopicSender
-        => Fixture.IntegrationEventsTopic.SenderClient;
-
-    protected override ServiceBusReceiver IntegrationEventDeadLetterReceiver =>
-        Fixture.MeteringPointCreatedDeadLetterReceiver;
-
-    protected override byte[] CreateIntegrationEventData()
-    {
-        var meteringPointId = Random.Shared.Next(1, 100000);
-        var meteringPointCreated = new MeteringPointCreated
-        {
-            MeteringPointId = Guid.NewGuid().ToString(),
-            ConnectionState = MeteringPointCreated.Types.ConnectionState.CsNew,
-            EffectiveDate = Timestamp.FromDateTime(DateTime.UtcNow),
-            GridAreaCode = Guid.NewGuid().ToString(),
-            GsrnNumber = meteringPointId.ToString(),
-            MeteringPointType = MeteringPointCreated.Types.MeteringPointType.MptConsumption,
-            MeteringMethod = MeteringPointCreated.Types.MeteringMethod.MmPhysical,
-            SettlementMethod = MeteringPointCreated.Types.SettlementMethod.SmFlex,
-        };
-
-        return meteringPointCreated.ToByteArray();
+        // Act & Assert that the container can resolve the endpoints dependencies
+        scope.ServiceProvider.GetRequiredService<MeteringPointCreatedListenerEndpoint>();
     }
 }

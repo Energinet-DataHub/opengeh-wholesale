@@ -12,92 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.EventHub.ListenerMock;
-using Energinet.DataHub.MarketParticipant.Integration.Model.Dtos;
-using Energinet.DataHub.MarketParticipant.Integration.Model.Parsers.GridArea;
-using Energinet.DataHub.MarketParticipant.Integration.Model.Parsers.Organization;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
-using FluentAssertions;
+using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationEventListener;
 
-public sealed class MarketParticipantChangedListenerEndpointTests
-    : IntegrationEventListenerEndpointTestBase<MarketParticipantChangedListenerEndpoint, GridAreaUpdatedDto>
+[Collection("IntegrationEventListenerIntegrationTest")]
+public class MarketParticipantChangedListenerEndpointTests
 {
-    public MarketParticipantChangedListenerEndpointTests(
-        IntegrationEventListenerFunctionAppFixture fixture,
-        ITestOutputHelper testOutputHelper)
-        : base(fixture, testOutputHelper)
-    {
-    }
-
     [Fact]
-    public async Task When_ReceivingUnusedMessage_Then_NothingIsSentToEventHub()
+    public async Task ServiceCollection_CanResolveMarketParticipantChangedListenerEndpoint()
     {
         // Arrange
-        using var whenAllEvent = await Fixture.EventHubListener
-            .WhenAny()
-            .VerifyCountAsync(1)
-            .ConfigureAwait(false);
+        using var host = await IntegrationEventListenerIntegrationTestHost
+            .CreateAsync(collection => collection.AddScoped<MarketParticipantChangedListenerEndpoint>());
 
-        var operationTimestamp = DateTime.UtcNow;
-        var correlationId = Guid.NewGuid().ToString();
-        var messageType = ServiceBusMessageType;
+        await using var scope = host.BeginScope();
 
-        var message = ServiceBusTestMessage.Create(
-            CreateUnusedEvent(),
-            operationTimestamp,
-            correlationId,
-            "some-message-type-not-included-in-subscription-filter");
-
-        // Act
-        await Fixture.IntegrationEventsTopic.SenderClient.SendMessageAsync(message);
-
-        // Assert
-        await FunctionAsserts
-            .AssertHasExecutedAsync(Fixture.HostManager, nameof(MarketParticipantChangedListenerEndpoint))
-            .ConfigureAwait(false);
-
-        var allReceived = whenAllEvent.Wait(TimeSpan.FromSeconds(5));
-        allReceived.Should().BeFalse();
-    }
-
-    protected override string EventHubMessageType => "GridAreaUpdated";
-
-    protected override string ServiceBusMessageType => "GridAreaUpdatedIntegrationEvent";
-
-    protected override ServiceBusSender IntegrationEventTopicSender =>
-        Fixture.IntegrationEventsTopic.SenderClient;
-
-    protected override ServiceBusReceiver IntegrationEventDeadLetterReceiver =>
-        Fixture.MarketParticipantChangedDeadLetterReceiver;
-
-    protected override byte[] CreateIntegrationEventData()
-    {
-        var eventParser = new GridAreaUpdatedIntegrationEventParser();
-        return eventParser.ParseToSharedIntegrationEvent(new GridAreaUpdatedIntegrationEvent(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            "fake_value",
-            "001",
-            PriceAreaCode.DK1,
-            Guid.NewGuid()));
-    }
-
-    private static byte[] CreateUnusedEvent()
-    {
-        var eventParser = new OrganizationNameChangedIntegrationEventParser();
-        return eventParser.ParseToSharedIntegrationEvent(new OrganizationNameChangedIntegrationEvent(
-            Guid.NewGuid(),
-            DateTime.UtcNow,
-            Guid.NewGuid(),
-            "fake_value"));
+        // Act & Assert that the container can resolve the endpoints dependencies
+        scope.ServiceProvider.GetRequiredService<MarketParticipantChangedListenerEndpoint>();
     }
 }

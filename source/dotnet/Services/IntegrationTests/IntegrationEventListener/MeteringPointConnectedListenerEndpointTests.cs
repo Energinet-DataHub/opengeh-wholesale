@@ -12,46 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.MeteringPoints.IntegrationEvents.Connect;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixture.FunctionApp;
-using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
-using Xunit.Abstractions;
+using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.IntegrationEventListener;
 
+[Collection("IntegrationEventListenerIntegrationTest")]
 public sealed class MeteringPointConnectedListenerEndpointTests
-    : IntegrationEventListenerEndpointTestBase<MeteringPointConnectedListenerEndpoint, MeteringPointConnectedDto>
 {
-    public MeteringPointConnectedListenerEndpointTests(
-        IntegrationEventListenerFunctionAppFixture fixture,
-        ITestOutputHelper testOutputHelper)
-        : base(fixture, testOutputHelper)
+    [Fact]
+    public async Task ServiceCollection_CanResolveMeteringPointConnectedListenerEndpoint()
     {
-    }
+        // Arrange
+        using var host = await IntegrationEventListenerIntegrationTestHost
+            .CreateAsync(collection => collection.AddScoped<MeteringPointConnectedListenerEndpoint>());
 
-    protected override string EventHubMessageType => "MeteringPointConnected";
+        await using var scope = host.BeginScope();
 
-    protected override string ServiceBusMessageType => "MeteringPointConnected";
-
-    protected override ServiceBusSender IntegrationEventTopicSender
-        => Fixture.IntegrationEventsTopic.SenderClient;
-
-    protected override ServiceBusReceiver IntegrationEventDeadLetterReceiver =>
-        Fixture.MeteringPointConnectedDeadLetterReceiver;
-
-    protected override byte[] CreateIntegrationEventData()
-    {
-        var meteringPointId = Random.Shared.Next(1, 100000);
-        var meteringPointConnected = new MeteringPointConnected
-        {
-            MeteringpointId = Guid.NewGuid().ToString(),
-            EffectiveDate = Timestamp.FromDateTime(DateTime.UtcNow),
-            GsrnNumber = meteringPointId.ToString(),
-        };
-        return meteringPointConnected.ToByteArray();
+        // Act & Assert that the container can resolve the endpoints dependencies
+        scope.ServiceProvider.GetRequiredService<MeteringPointConnectedListenerEndpoint>();
     }
 }
