@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
@@ -43,12 +44,8 @@ internal static class ServiceCollectionExtensions
     /// <param name="serviceCollection">ServiceCollection container</param>
     public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection)
     {
-        var metadataAddress = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
-                              throw new Exception(
-                                  $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
-        var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
-                       throw new Exception(
-                           $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
+        var metadataAddress = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.FrontEndOpenIdUrl);
+        var audience = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.FrontEndServiceAppId);
 
         serviceCollection.AddSingleton<ISecurityTokenValidator, JwtSecurityTokenHandler>();
         serviceCollection.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(_ =>
@@ -69,9 +66,9 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<JwtTokenMiddleware>();
     }
 
-    public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)
+    public static void AddCommandStack(this IServiceCollection services)
     {
-        var connectionString = configuration.GetConnectionString(EnvironmentSettingNames.DbConnectionString);
+        var connectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DbConnectionString);
         if (connectionString == null)
             throw new ArgumentNullException(EnvironmentSettingNames.DbConnectionString, "does not exist in configuration settings");
 
