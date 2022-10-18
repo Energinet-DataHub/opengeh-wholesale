@@ -13,22 +13,17 @@
 // limitations under the License.
 
 using System.IO.Compression;
-using Microsoft.Extensions.Logging;
+using Energinet.DataHub.Wholesale.Infrastructure.HttpClient;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
 public class WebFilesZipper : IWebFilesZipper
 {
-    private readonly HttpClient _httpClient;
-    private readonly ILogger _logger;
+    private readonly IHttpClient _httpClient;
 
-    /// <summary>
-    /// The <paramref name="httpClient"/> should be registered as a singleton.
-    /// </summary>
-    public WebFilesZipper(HttpClient httpClient, ILogger<WebFilesZipper> logger)
+    public WebFilesZipper(IHttpClient httpClient)
     {
         _httpClient = httpClient;
-        _logger = logger;
     }
 
     public async Task ZipAsync(IEnumerable<(Uri Url, string EntryPath)> inputFiles, Stream zipFileStream)
@@ -41,21 +36,15 @@ public class WebFilesZipper : IWebFilesZipper
 
     private async Task AddEntryAsync(ZipArchive archive, (Uri Url, string EntryPath) inputFile)
     {
-        var inputStream = await GetStreamAsync(inputFile.Url).ConfigureAwait(false);
+        var inputStream = await _httpClient.GetStreamAsync(inputFile.Url).ConfigureAwait(false);
         await using (inputStream.ConfigureAwait(false))
         {
             var zipArchiveEntry = archive.CreateEntry(inputFile.EntryPath);
-            await inputStream.CopyToAsync(zipArchiveEntry.Open()).ConfigureAwait(false);
+            var entryStream = zipArchiveEntry.Open();
+            await using (entryStream.ConfigureAwait(false))
+            {
+                await inputStream.CopyToAsync(entryStream).ConfigureAwait(false);
+            }
         }
-    }
-
-    private async Task<Stream> GetStreamAsync(Uri webFileUrl)
-    {
-        using var response = await _httpClient.GetAsync(webFileUrl).ConfigureAwait(false);
-
-        if (!response.IsSuccessStatusCode)
-            throw new Exception($"Failed to access web file {webFileUrl}, HTTP status code was {response.StatusCode}");
-
-        return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
     }
 }

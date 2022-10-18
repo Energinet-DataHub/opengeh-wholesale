@@ -47,7 +47,6 @@ public sealed class BasisDataApplicationServiceTests
 
         using var host = await ProcessManagerIntegrationTestHost.CreateAsync(collection =>
             serviceCollectionConfigurator
-                .WithBatchInDatabase(batch)
                 .WithBasisDataFilesInCalculationStorage(batch, zipFileName)
                 .Configure(collection));
 

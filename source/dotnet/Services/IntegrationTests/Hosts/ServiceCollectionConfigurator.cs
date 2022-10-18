@@ -12,36 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
 using System.Text;
-using System.Text.Encodings.Web;
+using System.Web;
 using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Infrastructure.HttpClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
-using Moq.Protected;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 
 public class ServiceCollectionConfigurator
 {
-    // Used to provide better Moq experience for mocking HttpClient
-    private interface IHttpResponseMessage
-    {
-        internal Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken);
-    }
-
     private (Batch Batch, string ZipFileName)? _withBasisDataFilesForBatch;
-
-    public ServiceCollectionConfigurator WithBatchInDatabase(Batch batch)
-    {
-        return this;
-    }
 
     public ServiceCollectionConfigurator WithBasisDataFilesInCalculationStorage(Batch batch, string zipFileName)
     {
@@ -60,8 +48,8 @@ public class ServiceCollectionConfigurator
         var dataLakeFileSystemClientMock = new Mock<DataLakeFileSystemClient>();
         serviceCollection.Replace(ServiceDescriptor.Singleton(dataLakeFileSystemClientMock.Object));
 
-        var mockMessageHandler = new Mock<HttpMessageHandler>();
-        serviceCollection.Replace(ServiceDescriptor.Singleton(new HttpClient(mockMessageHandler.Object)));
+        var httpClientMock = new Mock<IHttpClient>();
+        serviceCollection.Replace(ServiceDescriptor.Singleton(httpClientMock.Object));
 
         // Mock batch basis files
         foreach (var gridAreaCode in _withBasisDataFilesForBatch!.Value.Batch.GridAreaCodes)
@@ -94,12 +82,12 @@ public class ServiceCollectionConfigurator
                     .Setup(r => r.Value)
                     .Returns(true);
 
-                var buffer = Encoding.UTF8.GetBytes(
+                var basisDataBuffer = Encoding.UTF8.GetBytes(
                     $"The '{extension}' file from directory '{directory}'");
 
                 var pathItemName = $"foo{extension}";
                 var pathItem = DataLakeModelFactory
-                    .PathItem(pathItemName, false, DateTimeOffset.Now, ETag.All, buffer.Length, "owner", "group", "permissions");
+                    .PathItem(pathItemName, false, DateTimeOffset.Now, ETag.All, basisDataBuffer.Length, "owner", "group", "permissions");
                 var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
                 var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
                 dataLakeDirectoryClient
@@ -111,23 +99,15 @@ public class ServiceCollectionConfigurator
                     .Setup(client => client.GetFileClient(pathItemName))
                     .Returns(dataLakeFileClientMock.Object);
 
-                var encodedDirectory = UrlEncoder.Create().Encode(directory);
+                var encodedDirectory = HttpUtility.UrlEncode(directory);
                 var uriString = $"https://foo.bar?directory={encodedDirectory}";
                 dataLakeFileClientMock
                     .Setup(client => client.Uri)
                     .Returns(new Uri(uriString));
 
-                // Mock HttpClient for fetching basis data files
-                mockMessageHandler.Protected().As<IHttpResponseMessage>()
-                    .Setup(message => message.SendAsync(
-                        It.Is<HttpRequestMessage>(requestMessage =>
-                            requestMessage.RequestUri!.AbsoluteUri.Contains(encodedDirectory)),
-                        It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(() => new HttpResponseMessage
-                    {
-                        StatusCode = HttpStatusCode.OK,
-                        Content = new StreamContent(new MemoryStream(buffer)),
-                    });
+                httpClientMock
+                    .Setup(client => client.GetStreamAsync(It.Is<Uri>(uri => uri.AbsoluteUri.Contains(encodedDirectory))))
+                    .ReturnsAsync(() => new MemoryStream(basisDataBuffer));
             }
         }
 
