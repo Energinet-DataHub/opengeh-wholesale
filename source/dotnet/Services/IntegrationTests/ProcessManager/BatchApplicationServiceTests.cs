@@ -26,7 +26,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
-[Collection("ProcessManagerIntegrationTest")]
+[Collection(nameof(ProcessManagerIntegrationTestHost))]
 public sealed class BatchApplicationServiceTests
 {
     private const long DummyJobId = 42;
