@@ -15,6 +15,7 @@
 using System.IO.Compression;
 using System.Net;
 using System.Text;
+using System.Text.Encodings.Web;
 using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
@@ -49,6 +50,11 @@ public sealed class BasisDataApplicationServiceTests
 {
     public class ServiceCollectionConfigurator
     {
+        public interface IHttpResponseMessage
+        {
+            Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken);
+        }
+
         private readonly List<Batch> _batches = new();
         private (Batch Batch, string ZipFileName)? _withBasisDataFilesForBatch;
 
@@ -77,66 +83,85 @@ public sealed class BasisDataApplicationServiceTests
                 var dataLakeFileSystemClientMock = new Mock<DataLakeFileSystemClient>();
                 serviceCollection.Replace(ServiceDescriptor.Singleton(dataLakeFileSystemClientMock.Object));
 
-                // Mock zip file
-                var zipFileClient = new Mock<DataLakeFileClient>();
-                zipFileClient
-                    .Setup(client => client.OpenWriteAsync(false, null, default))
-                    .ReturnsAsync(() => File.OpenRead(_withBasisDataFilesForBatch.Value.ZipFileName));
-                dataLakeFileSystemClientMock
-                    .Setup(client => client.GetFileClient(BatchFileManager.GetZipFileName(_withBasisDataFilesForBatch.Value.Batch)))
-                    .Returns(zipFileClient.Object);
+                var mockMessageHandler = new Mock<HttpMessageHandler>();
+                serviceCollection.Replace(ServiceDescriptor.Singleton(new HttpClient(mockMessageHandler.Object)));
 
                 // Mock batch basis files
                 foreach (var gridAreaCode in _withBasisDataFilesForBatch.Value.Batch.GridAreaCodes)
                 {
-                    var response = new Mock<Response<bool>>();
-                    response
-                        .Setup(r => r.Value)
-                        .Returns(true);
+                    var fileDescriptorProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
+                    {
+                        BatchFileManager.GetResultDirectory,
+                        BatchFileManager.GetTimeSeriesHourBasisDataDirectory,
+                        BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory,
+                        BatchFileManager.GetMasterBasisDataDirectory,
+                    };
+                    foreach (var descriptorProvider in fileDescriptorProviders)
+                    {
+                        var (directory, extension, zipEntryPath) =
+                            descriptorProvider(_withBasisDataFilesForBatch.Value.Batch.Id, gridAreaCode);
 
-                    var dataLakeDirectoryClient = new Mock<DataLakeDirectoryClient>();
-                    dataLakeDirectoryClient
-                        .Setup(client => client.ExistsAsync(default))
-                        .ReturnsAsync(response.Object);
+                        var response = new Mock<Response<bool>>();
+                        var dataLakeDirectoryClient = new Mock<DataLakeDirectoryClient>();
 
-                    var (directory, extension, zipEntryPath) =
-                        BatchFileManager.GetResultDirectory(_withBasisDataFilesForBatch.Value.Batch.Id, gridAreaCode);
+                        dataLakeFileSystemClientMock
+                            .Setup(client => client.GetDirectoryClient(directory))
+                            .Returns(dataLakeDirectoryClient.Object);
 
-                    var pathItemName = $"foo{extension}";
-                    var pathItem = DataLakeModelFactory
-                        .PathItem(pathItemName, false, DateTimeOffset.Now, ETag.All, 42, "owner", "group", "permissions");
-                    var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
-                    var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
-                    dataLakeDirectoryClient
-                        .Setup(client => client.GetPathsAsync(false, false, default))
-                        .Returns(asyncPageable);
+                        dataLakeDirectoryClient
+                            .Setup(client => client.ExistsAsync(default))
+                            .ReturnsAsync(response.Object);
 
-                    // TODO: Add the rest of the basis data files
-                    dataLakeFileSystemClientMock
-                        .Setup(client => client.GetDirectoryClient(directory))
-                        .Returns(dataLakeDirectoryClient.Object);
+                        response
+                            .Setup(r => r.Value)
+                            .Returns(true);
 
-                    // var dataLakeFileClientMock = new Mock<DataLakeFileClient>();
-                    // dataLakeFileSystemClientMock
-                    //     .Setup(client => client.GetFileClient(pathItemName))
-                    //     .Returns(dataLakeFileClientMock.Object);
-                    //
-                    // dataLakeFileClientMock
-                    //     .Setup(client => client.Uri)
-                    //     .Returns(new Uri("http://todo"));
+                        var pathItemName = $"foo{extension}";
+                        var pathItem = DataLakeModelFactory
+                            .PathItem(pathItemName, false, DateTimeOffset.Now, ETag.All, 10, "owner", "group", "permissions");
+                        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
+                        var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
+                        dataLakeDirectoryClient
+                            .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
+                            .Returns(asyncPageable);
 
-                    // Mock HttpClient for fetching basis data files
-                    // TODO: Determine which file
-                    var mockMessageHandler = new Mock<HttpMessageHandler>();
-                    mockMessageHandler.Protected()
-                        .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                        .ReturnsAsync(new HttpResponseMessage
-                        {
-                            StatusCode = HttpStatusCode.OK,
-                            Content = new StreamContent(new MemoryStream(Encoding.UTF8.GetBytes($"The '{extension}' file from directory '{directory}'"))),
-                        });
-                    serviceCollection.Replace(ServiceDescriptor.Singleton(new HttpClient(mockMessageHandler.Object)));
+                        var dataLakeFileClientMock = new Mock<DataLakeFileClient>();
+                        dataLakeFileSystemClientMock
+                            .Setup(client => client.GetFileClient(pathItemName))
+                            .Returns(dataLakeFileClientMock.Object);
+
+                        var encodedDirectory = UrlEncoder.Create().Encode(directory);
+                        var uriString = $"http://foo.bar?directory={encodedDirectory}";
+                        dataLakeFileClientMock
+                            .Setup(client => client.Uri)
+                            .Returns(new Uri(uriString));
+
+                        // Mock HttpClient for fetching basis data files
+                        // TODO: Make length match content length above
+                        var memoryStream = new MemoryStream(
+                            Encoding.UTF8.GetBytes(
+                                $"The '{extension}' file from directory '{directory}'"));
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        mockMessageHandler.Protected().As<IHttpResponseMessage>()
+                            .Setup(message => message.SendAsync(
+                                    It.Is<HttpRequestMessage>(requestMessage => requestMessage.RequestUri!.AbsoluteUri.Contains(encodedDirectory)),
+                                    It.IsAny<CancellationToken>()))
+                            .ReturnsAsync(new HttpResponseMessage
+                            {
+                                StatusCode = HttpStatusCode.OK,
+                                Content = new StreamContent(memoryStream),
+                            });
+                    }
                 }
+
+                // Mock zip file
+                var zipFileClient = new Mock<DataLakeFileClient>();
+                zipFileClient
+                    .Setup(client => client.OpenWriteAsync(false, null, default))
+                    .ReturnsAsync(() => File.OpenWrite(_withBasisDataFilesForBatch.Value.ZipFileName));
+                dataLakeFileSystemClientMock
+                    .Setup(client => client.GetFileClient(BatchFileManager.GetZipFileName(_withBasisDataFilesForBatch.Value.Batch)))
+                    .Returns(zipFileClient.Object);
             }
         }
     }
@@ -213,16 +238,13 @@ public sealed class BasisDataApplicationServiceTests
 
         var zipBlobName = BatchFileManager.GetZipFileName(batch);
         var zipFilePath = Path.GetTempFileName();
-        await using (var stream = File.OpenWrite(zipFilePath))
-        {
-            var zipFileClient = new Mock<DataLakeFileClient>();
-            zipFileClient
-                .Setup(client => client.OpenWriteAsync(false, null, default))
-                .ReturnsAsync(stream);
-            dataLakeFileSystemClient
-                .Setup(client => client.GetFileClient(zipBlobName))
-                .Returns(zipFileClient.Object);
-        }
+        var zipFileClient = new Mock<DataLakeFileClient>();
+        zipFileClient
+            .Setup(client => client.OpenWriteAsync(false, null, default))
+            .ReturnsAsync(() => File.OpenWrite(zipFilePath));
+        dataLakeFileSystemClient
+            .Setup(client => client.GetFileClient(zipBlobName))
+            .Returns(zipFileClient.Object);
 
         void ServiceCollectionAction(IServiceCollection collection)
         {

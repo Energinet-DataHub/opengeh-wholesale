@@ -39,8 +39,11 @@ public class WebFilesZipper : IWebFilesZipper
     private async Task AddEntryAsync(ZipArchive archive, (Uri Url, string EntryPath) inputFile)
     {
         var inputStream = await GetStreamAsync(inputFile.Url).ConfigureAwait(false);
-        var readmeEntry = archive.CreateEntry(inputFile.EntryPath);
-        await inputStream.CopyToAsync(readmeEntry.Open()).ConfigureAwait(false);
+        await using (inputStream.ConfigureAwait(false))
+        {
+            var zipArchiveEntry = archive.CreateEntry(inputFile.EntryPath);
+            await inputStream.CopyToAsync(zipArchiveEntry.Open()).ConfigureAwait(false);
+        }
     }
 
     private async Task<Stream> GetStreamAsync(Uri webFileUrl)
