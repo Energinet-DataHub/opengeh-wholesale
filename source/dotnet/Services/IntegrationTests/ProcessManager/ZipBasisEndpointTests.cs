@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -26,11 +27,11 @@ public class ZipBasisEndpointTests
     {
         // Arrange
         using var host = await ProcessManagerIntegrationTestHost
-            .CreateAsync(collection => collection.AddScoped<ZipBasisEndpointTests>());
+            .CreateAsync(collection => collection.AddScoped<ZipBasisDataEndpoint>());
 
         await using var scope = host.BeginScope();
 
         // Act & Assert that the container can resolve the endpoints dependencies
-        scope.ServiceProvider.GetRequiredService<ZipBasisEndpointTests>();
+        scope.ServiceProvider.GetRequiredService<ZipBasisDataEndpoint>();
     }
 }
