@@ -252,4 +252,3 @@ def test__master_data_csv_with_expected_columns_names(
         "SETTLEMENTMETHOD",
         "ENERGYSUPPLIERID",
     ]
-
