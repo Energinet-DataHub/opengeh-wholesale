@@ -13,17 +13,15 @@
 // limitations under the License.
 
 using System.IO.Compression;
+using Energinet.DataHub.Wholesale.Infrastructure.HttpClient;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
 public class WebFilesZipper : IWebFilesZipper
 {
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClient _httpClient;
 
-    /// <summary>
-    /// The <paramref name="httpClient"/> should be registered as a singleton.
-    /// </summary>
-    public WebFilesZipper(HttpClient httpClient)
+    public WebFilesZipper(IHttpClient httpClient)
     {
         _httpClient = httpClient;
     }
@@ -38,15 +36,13 @@ public class WebFilesZipper : IWebFilesZipper
 
     private async Task AddEntryAsync(ZipArchive archive, (Uri Url, string EntryPath) inputFile)
     {
-        var inputStream = await GetStreamAsync(inputFile.Url).ConfigureAwait(false);
-        var readmeEntry = archive.CreateEntry(inputFile.EntryPath);
-        await inputStream.CopyToAsync(readmeEntry.Open()).ConfigureAwait(false);
-    }
-
-    private async Task<Stream> GetStreamAsync(Uri webFileUrl)
-    {
-        // TODO BJARKE: Log errors fetching file
-        using var response = await _httpClient.GetAsync(webFileUrl).ConfigureAwait(false);
-        return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+        var inputStream = await _httpClient.GetStreamAsync(inputFile.Url).ConfigureAwait(false);
+        await using (inputStream.ConfigureAwait(false))
+        {
+            var zipArchiveEntry = archive.CreateEntry(inputFile.EntryPath);
+            var entryStream = zipArchiveEntry.Open();
+            await using (entryStream.ConfigureAwait(false))
+                await inputStream.CopyToAsync(entryStream).ConfigureAwait(false);
+        }
     }
 }
