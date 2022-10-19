@@ -66,9 +66,9 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<JwtTokenMiddleware>();
     }
 
-    public static void AddCommandStack(this IServiceCollection services)
+    public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DbConnectionString);
+        var connectionString = configuration.GetConnectionString(EnvironmentSettingNames.DbConnectionString);
         if (connectionString == null)
             throw new ArgumentNullException(EnvironmentSettingNames.DbConnectionString, "does not exist in configuration settings");
 

@@ -60,7 +60,7 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DbConnectionString, "UseDevelopmentStorage=true");
+        Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{EnvironmentSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)

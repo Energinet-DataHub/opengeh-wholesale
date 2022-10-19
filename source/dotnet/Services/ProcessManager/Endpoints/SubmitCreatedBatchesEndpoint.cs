@@ -18,19 +18,19 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class SubmitCreatedBatches
+public class SubmitCreatedBatchesEndpoint
 {
     private readonly IBatchApplicationService _batchApplicationService;
     private readonly ICorrelationContext _correlationContext;
 
-    public SubmitCreatedBatches(IBatchApplicationService batchApplicationService, ICorrelationContext correlationContext)
+    public SubmitCreatedBatchesEndpoint(IBatchApplicationService batchApplicationService, ICorrelationContext correlationContext)
     {
         _batchApplicationService = batchApplicationService;
         _correlationContext = correlationContext;
     }
 
     // Executes every 10 seconds (see the [TimerTrigger] below)
-    [Function(nameof(SubmitCreatedBatches))]
+    [Function(nameof(SubmitCreatedBatchesEndpoint))]
     public async Task RunAsync(
         [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
         FunctionContext context)
