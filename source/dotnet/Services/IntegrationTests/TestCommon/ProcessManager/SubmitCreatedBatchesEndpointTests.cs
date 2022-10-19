@@ -66,11 +66,11 @@ public class SubmitCreatedBatchesEndpointTests
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
             // Assert: Await timer triggered endpoints has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(SubmitCreatedBatches));
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(SubmitCreatedBatchesEndpoint));
 
-            // clear log to ensure that initial run of UpdateBatchExecutionState does not count.
+            // clear log to ensure that initial run of UpdateBatchExecutionStateEndpoint does not count.
             Fixture.HostManager.ClearHostLog();
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(UpdateBatchExecutionState));
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(UpdateBatchExecutionStateEndpoint));
 
             // Assert: Batch and process completed events have been published
             // TODO: Check correlation ID?
@@ -96,11 +96,11 @@ public class SubmitCreatedBatchesEndpointTests
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
             // Assert: Await timer triggered endpoints has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(SubmitCreatedBatches));
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(SubmitCreatedBatchesEndpoint));
 
-            // clear log to ensure that initial run of UpdateBatchExecutionState does not count.
+            // clear log to ensure that initial run of UpdateBatchExecutionStateEndpoint does not count.
             Fixture.HostManager.ClearHostLog();
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(UpdateBatchExecutionState));
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(UpdateBatchExecutionStateEndpoint));
 
             // Assert: The pending batch is now complete
             await using var dbContext = Fixture.DatabaseManager.CreateDbContext();

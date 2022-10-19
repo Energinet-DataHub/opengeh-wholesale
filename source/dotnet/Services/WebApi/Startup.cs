@@ -50,7 +50,7 @@ public class Startup
             config.ReportApiVersions = true;
         });
 
-        services.AddCommandStack();
+        services.AddCommandStack(Configuration);
         services.AddApplicationInsightsTelemetry();
 
         ConfigureHealthChecks(services);
