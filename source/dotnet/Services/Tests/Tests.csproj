@@ -116,12 +116,4 @@ limitations under the License.
     </EmbeddedResource>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Infrastructure\BasisData" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Infrastructure\BasisData\BatchFileManagerTests.cs" />
-  </ItemGroup>
-
 </Project>
