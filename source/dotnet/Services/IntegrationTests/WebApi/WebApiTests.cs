@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
 [Collection(nameof(WebApiIntegrationTestHost))]
 public class WebApiTests
 {
-    [Fact(Skip = "No way to reconfigure the db connection string used in IConfiguration")]
+    [Fact]
     public async Task ServiceCollection_CanResolveBatchControllerV1()
     {
         // Arrange
@@ -35,7 +35,7 @@ public class WebApiTests
         scope.ServiceProvider.GetRequiredService<BatchControllerV1>();
     }
 
-    [Fact(Skip = "No way to reconfigure the db connection string used in IConfiguration")]
+    [Fact]
     public async Task ServiceCollection_CanResolveBatchControllerV2()
     {
         // Arrange
