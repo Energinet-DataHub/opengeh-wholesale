@@ -31,7 +31,7 @@ RUN mamba install --quiet --yes --satisfied-skip-solve \
     'coverage=6.3.*' 'azure-storage-blob=12.8.*' 'pytest-mock=3.7.*'
 
 # Install python packages used in pyspark development 
-RUN pip --no-cache-dir install pyspelling azure-eventhub coverage-threshold ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json
+RUN pip --no-cache-dir install pyspelling azure-eventhub coverage-threshold ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist
 # Below will make everything in the directory owned by the group ${NB_GID}
 RUN fix-permissions "${CONDA_DIR}"
 
