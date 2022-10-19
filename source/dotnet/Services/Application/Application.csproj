@@ -21,7 +21,6 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
@@ -34,14 +33,14 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Contracts\BatchDto.cs">
-      <Link>Batches\BatchDto.cs</Link>
-    </Compile>
     <Compile Include="..\..\Contracts\BatchRequestDto.cs">
       <Link>Batches\BatchRequestDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchSearchDto.cs">
       <Link>Batches\BatchSearchDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\WholesaleProcessType.cs">
+      <Link>Processes\WholesaleProcessType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Batches\BatchState.cs</Link>

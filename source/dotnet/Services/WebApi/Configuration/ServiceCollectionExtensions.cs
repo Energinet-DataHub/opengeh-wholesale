@@ -23,8 +23,11 @@ using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.WebApi.Controllers.V1;
+using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -41,12 +44,8 @@ internal static class ServiceCollectionExtensions
     /// <param name="serviceCollection">ServiceCollection container</param>
     public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection)
     {
-        var metadataAddress = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl) ??
-                              throw new Exception(
-                                  $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndOpenIdUrl}'");
-        var audience = Environment.GetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId) ??
-                       throw new Exception(
-                           $"Function app is missing required environment variable '{EnvironmentSettingNames.FrontEndServiceAppId}'");
+        var metadataAddress = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.FrontEndOpenIdUrl);
+        var audience = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.FrontEndServiceAppId);
 
         serviceCollection.AddSingleton<ISecurityTokenValidator, JwtSecurityTokenHandler>();
         serviceCollection.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(_ =>
@@ -67,9 +66,9 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<JwtTokenMiddleware>();
     }
 
-    public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)
+    public static void AddCommandStack(this IServiceCollection services)
     {
-        var connectionString = configuration.GetConnectionString(EnvironmentSettingNames.DbConnectionString);
+        var connectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DbConnectionString);
         if (connectionString == null)
             throw new ArgumentNullException(EnvironmentSettingNames.DbConnectionString, "does not exist in configuration settings");
 
@@ -83,10 +82,13 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IDatabaseContext, DatabaseContext>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
+        services.AddScoped<IBatchCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
         services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+        services.AddScoped<IBatchDtoV1Mapper, BatchDtoV1Mapper>();
+        services.AddScoped<IBatchDtoV2Mapper, BatchDtoV2Mapper>();
         services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobRunner>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobParametersFactory>(_ => null!); // Unused in the use cases of this app

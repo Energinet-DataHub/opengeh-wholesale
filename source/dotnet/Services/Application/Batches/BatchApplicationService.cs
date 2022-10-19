@@ -13,10 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.JobRunner;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using NodaTime;
 
@@ -27,9 +25,9 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IProcessCompletedPublisher _processCompletedPublisher;
     private readonly ICalculatorJobRunner _calculatorJobRunner;
     private readonly ICalculatorJobParametersFactory _calculatorJobParametersFactory;
+    private readonly IBatchCompletedPublisher _batchCompletedPublisher;
     private readonly IBatchExecutionStateHandler _batchExecutionStateHandler;
     private readonly IBatchDtoMapper _batchDtoMapper;
 
@@ -37,18 +35,18 @@ public class BatchApplicationService : IBatchApplicationService
         IBatchFactory batchFactory,
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
-        IProcessCompletedPublisher processCompletedPublisher,
         ICalculatorJobRunner calculatorJobRunner,
         ICalculatorJobParametersFactory calculatorJobParametersFactory,
+        IBatchCompletedPublisher batchCompletedPublisher,
         IBatchExecutionStateHandler batchExecutionStateHandler,
         IBatchDtoMapper batchDtoMapper)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
-        _processCompletedPublisher = processCompletedPublisher;
         _calculatorJobRunner = calculatorJobRunner;
         _calculatorJobParametersFactory = calculatorJobParametersFactory;
+        _batchCompletedPublisher = batchCompletedPublisher;
         _batchExecutionStateHandler = batchExecutionStateHandler;
         _batchDtoMapper = batchDtoMapper;
     }
@@ -81,9 +79,10 @@ public class BatchApplicationService : IBatchApplicationService
     public async Task UpdateExecutionStateAsync()
     {
         var completedBatches = await _batchExecutionStateHandler.UpdateExecutionStateAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
-        var completedProcesses = CreateProcessCompletedEvents(completedBatches);
-        await _processCompletedPublisher.PublishAsync(completedProcesses).ConfigureAwait(false);
+        var batchCompletedEvents = completedBatches.Select(b => new BatchCompletedEventDto(b.Id));
+
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        await _batchCompletedPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
@@ -93,13 +92,5 @@ public class BatchApplicationService : IBatchApplicationService
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
         return batches.Select(_batchDtoMapper.Map);
-    }
-
-    private static List<ProcessCompletedEventDto> CreateProcessCompletedEvents(IEnumerable<Batch> completedBatches)
-    {
-        return completedBatches
-            .SelectMany(b => b.GridAreaCodes.Select(x => new { b.Id, x.Code }))
-            .Select(c => new ProcessCompletedEventDto(c.Code, c.Id))
-            .ToList();
     }
 }

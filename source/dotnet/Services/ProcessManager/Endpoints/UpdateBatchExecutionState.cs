@@ -33,9 +33,7 @@ public class UpdateBatchExecutionState
 
     // Executes every 20 seconds (see the [TimerTrigger] below)
     [Function(nameof(UpdateBatchExecutionState))]
-    public async Task RunAsync(
-        [TimerTrigger("*/20 * * * * *")] TimerInfo timerInfo,
-        FunctionContext context)
+    public async Task RunAsync([TimerTrigger("*/20 * * * * *")] TimerInfo timerInfo)
     {
         // CorrelationIdMiddleware does not currently support timer triggered functions,
         // so we need to add a correlation ID ourselves

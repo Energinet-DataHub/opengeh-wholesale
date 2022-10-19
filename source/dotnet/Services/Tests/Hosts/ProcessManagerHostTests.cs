@@ -27,18 +27,24 @@ public sealed class ProcessManagerHostTests
     {
         // Arrange
         var target = Program
-            .BuildAppHost()
+            .CreateHostBuilder()
             .UseDefaultServiceProvider(config => config.ValidateOnBuild = true);
 
         const string placeholderValue = "placeholder_value";
 
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, placeholderValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, "UseDevelopmentStorage=true");
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, placeholderValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedTopicName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, placeholderValue);
 
         // Act + Assert
         target.Build();

@@ -92,6 +92,8 @@ jobs:
   dispatch_deploment_event:
     runs-on: ubuntu-latest
     needs: [
+      # Necessary to be able to use its outputs in the dispatch event
+      changes,
       # Infrastructure
       infrastructure_promote_prerelease,
       # Databricks
@@ -111,15 +113,9 @@ jobs:
     steps:
       - run: echo "${{ toJSON(needs) }}"
 
-      - name: Find associated PR
-        uses: jwalton/gh-find-current-pr@v1
+      - name: Find associated pull request
+        uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v8
         id: find_pull_request
-        with:
-          state: all
-
-      - name: Fail if PR not found
-        if: steps.find_pull_request.outputs.pr == ''
-        run: exit 1
 
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
@@ -127,4 +123,4 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
           repository: '${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}'
           event-type: 'opengeh-wholesale-deployment-request-domain'
-          client-payload: '{"pr": "${{ steps.find_pull_request.outputs.pr }}", "infrastructure_deploy": "${{ needs.changes.outputs.infrastructure }}", "databricks_deploy": "${{ needs.changes.outputs.databricks }}", "dotnet_deploy": "${{ needs.changes.outputs.dotnet }}"}'
+          client-payload: '{"pr": "${{ steps.find_pull_request.outputs.pull_request_number }}", "infrastructure_deploy": "${{ needs.changes.outputs.infrastructure }}", "databricks_deploy": "${{ needs.changes.outputs.databricks }}", "dotnet_deploy": "${{ needs.changes.outputs.dotnet }}"}'

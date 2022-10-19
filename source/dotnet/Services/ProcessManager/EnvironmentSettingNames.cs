@@ -31,12 +31,18 @@ public static class EnvironmentSettingNames
     /// </summary>
     public const string ServiceBusSendConnectionString = "SERVICE_BUS_SEND_CONNECTION_STRING";
 
-    /// <summary>
-    /// The service bus topic for completed process events.
-    /// </summary>
-    public const string ProcessCompletedTopicName = "PROCESS_COMPLETED_TOPIC_NAME";
+    public const string ServiceBusListenConnectionString = "SERVICE_BUS_LISTEN_CONNECTION_STRING";
 
     public const string DatabricksWorkspaceUrl = "DATABRICKS_WORKSPACE_URL";
-
     public const string DatabricksWorkspaceToken = "DATABRICKS_WORKSPACE_TOKEN";
+
+    public const string CalculationStorageConnectionString = "CALCULATION_STORAGE_CONNECTION_STRING";
+    public const string CalculationStorageContainerName = "CALCULATION_STORAGE_CONTAINER_NAME";
+
+    public const string DomainEventsTopicName = "DOMAIN_EVENTS_TOPIC_NAME";
+    public const string ZipBasisDataWhenCompletedBatchSubscriptionName = "ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME";
+    public const string PublishProcessesCompletedWhenCompletedBatchSubscriptionName = "PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME";
+
+    public const string BatchCompletedEventName = "BATCH_COMPLETED_EVENT_NAME";
+    public const string ProcessCompletedEventName = "PROCESS_COMPLETED_EVENT_NAME";
 }

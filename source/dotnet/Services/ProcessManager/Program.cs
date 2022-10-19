@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+using Azure.Storage.Blobs;
+using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
@@ -23,21 +24,25 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure;
+using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Infrastructure.Registration;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
@@ -46,11 +51,11 @@ public static class Program
 {
     public static async Task Main()
     {
-        using var host = BuildAppHost().Build();
+        using var host = CreateHostBuilder().Build();
         await host.RunAsync().ConfigureAwait(false);
     }
 
-    public static IHostBuilder BuildAppHost()
+    public static IHostBuilder CreateHostBuilder()
     {
         return new HostBuilder()
             .ConfigureFunctionsWorkerDefaults(builder =>
@@ -80,16 +85,10 @@ public static class Program
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
         services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+        services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
         services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
-        services.AddScoped<IProcessCompletedPublisher>(provider =>
-        {
-            var sender = provider
-                .GetRequiredService<TargetedSingleton<ServiceBusSender, ProcessCompletedPublisher>>()
-                .Instance;
-            var factory = provider.GetRequiredService<IServiceBusMessageFactory>();
-            return new ProcessCompletedPublisher(sender, factory);
-        });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IBasisDataApplicationService, BasisDataApplicationService>();
     }
 
     private static void Domains(IServiceCollection services)
@@ -104,7 +103,24 @@ public static class Program
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
-        serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
+
+        var batchCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName);
+        var processCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName);
+        var messageTypes = new Dictionary<Type, string>
+        {
+            { typeof(BatchCompletedEventDto), batchCompletedMessageType },
+            { typeof(ProcessCompletedEventDto), processCompletedMessageType },
+        };
+        serviceCollection.AddScoped<IServiceBusMessageFactory>(provider =>
+        {
+            var correlationContext = provider.GetRequiredService<ICorrelationContext>();
+            return new ServiceBusMessageFactory(correlationContext, messageTypes);
+        });
+
+        var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
+        var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
+        var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
+        serviceCollection.AddSingleton(dataLakeFileSystemClient);
 
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
@@ -117,14 +133,10 @@ public static class Program
 
         var serviceBusConnectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusSendConnectionString);
-        var processCompletedTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
-        serviceCollection.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
-        serviceCollection.AddSingleton(provider =>
-        {
-            var client = provider.GetRequiredService<ServiceBusClient>();
-            return new TargetedSingleton<ServiceBusSender, ProcessCompletedPublisher>(
-                client.CreateSender(processCompletedTopicName));
-        });
+
+        var domainEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        serviceCollection.AddBatchCompletedPublisher(serviceBusConnectionString, domainEventsTopicName);
+        serviceCollection.AddProcessCompletedPublisher(serviceBusConnectionString, domainEventsTopicName);
 
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         serviceCollection
@@ -137,6 +149,13 @@ public static class Program
 
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
+        serviceCollection.AddScoped<IWebFilesZipper, WebFilesZipper>();
+        serviceCollection.AddScoped<IBatchFileManager>(
+            provider => new BatchFileManager(
+                dataLakeFileSystemClient,
+                provider.GetRequiredService<IWebFilesZipper>(),
+                provider.GetRequiredService<ILogger<IBatchFileManager>>()));
+        serviceCollection.AddHttpClient();
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)
@@ -146,17 +165,31 @@ public static class Program
 
         var serviceBusConnectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
-        var processCompletedTopicName =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedTopicName);
+        var domainEventsTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        var batchCompletedSubscriptionPublishProcessesCompleted =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName);
+        var batchCompletedSubscriptionZipBasisData =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName);
 
         serviceCollection
             .AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
             .AddAzureServiceBusTopic(
-                serviceBusConnectionString,
-                processCompletedTopicName,
-                name: "ProcessCompletedTopicExists")
+                connectionString: serviceBusConnectionString,
+                topicName: domainEventsTopicName,
+                name: "DomainEventsTopicExists")
+            .AddAzureServiceBusSubscription(
+                connectionString: serviceBusConnectionString,
+                topicName: domainEventsTopicName,
+                subscriptionName: batchCompletedSubscriptionPublishProcessesCompleted,
+                name: "BatchCompletedSubscriptionPublishProcessesCompleted")
+            .AddAzureServiceBusSubscription(
+                connectionString: serviceBusConnectionString,
+                topicName: domainEventsTopicName,
+                subscriptionName: batchCompletedSubscriptionZipBasisData,
+                name: "BatchCompletedSubscriptionZipBasisData")
             .AddDatabricksCheck(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl),
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken));

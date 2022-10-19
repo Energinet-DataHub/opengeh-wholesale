@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Application.Infrastructure;
+using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
 
 namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
@@ -21,24 +23,22 @@ namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
 public class CalculatedResultsReader : ICalculatedResultReader
 {
     private readonly IJsonSerializer _jsonSerializer;
-    private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
+    private readonly IBatchFileManager _batchFileManager;
 
     public CalculatedResultsReader(
         IJsonSerializer jsonSerializer,
-        DataLakeFileSystemClient dataLakeFileSystemClient)
+        IBatchFileManager batchFileManager)
     {
         _jsonSerializer = jsonSerializer;
-        _dataLakeFileSystemClient = dataLakeFileSystemClient;
+        _batchFileManager = batchFileManager ?? throw new ArgumentNullException(nameof(batchFileManager));
     }
 
     public async Task<BalanceFixingResultDto> ReadResultAsync(Process process)
     {
-        var resultsFile = await GetResultsFileAsync(process).ConfigureAwait(false);
-        var stream = await resultsFile.OpenReadAsync().ConfigureAwait(false);
-
-        await using (stream.ConfigureAwait(false))
+        var resultFileStream = await _batchFileManager.GetResultFileStreamAsync(process.BatchId, new GridAreaCode(process.GridAreaCode)).ConfigureAwait(false);
+        await using (resultFileStream.ConfigureAwait(false))
         {
-            using var reader = new StreamReader(stream);
+            using var reader = new StreamReader(resultFileStream);
 
             var points = new List<PointDto>();
 
@@ -50,20 +50,5 @@ public class CalculatedResultsReader : ICalculatedResultReader
 
             return new BalanceFixingResultDto(points.ToArray());
         }
-    }
-
-    private async Task<DataLakeFileClient> GetResultsFileAsync(Process process)
-    {
-        // This directory path must match the directory used by Databricks (see calculator.py).
-        var directory = $"results/batch_id={process.BatchId}/grid_area={process.GridAreaCode}/";
-        var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
-
-        await foreach (var pathItem in directoryClient.GetPathsAsync())
-        {
-            if (Path.GetExtension(pathItem.Name) == ".json")
-                return _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
-        }
-
-        throw new InvalidOperationException($"Blob for process {process.Id} was not found.");
     }
 }
