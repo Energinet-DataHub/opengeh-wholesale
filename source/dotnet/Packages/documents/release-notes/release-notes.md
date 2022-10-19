@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 2.0.1
+
+Add GetStreamBasisDataAsync.
+
 ## Version 2.0.0
 
 BatchNumber changed form long type to Guid.
