@@ -28,7 +28,7 @@ export PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python
 # python coverage-threshold install
 #pip install coverage-threshold
 pip install pytest-xdist
-coverage run --branch -m pytest -vs test_spark_init.py
+pytest -vs test_spark_init.py
 coverage run --branch -m pytest -n 2 -vs .
 # Create data for threshold evaluation
 coverage json
