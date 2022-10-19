@@ -12,6 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Infrastructure.HttpClient;
 
-public sealed record BatchCompletedEventDto(Guid BatchId);
+/// <summary>
+/// Interface aimed at simplifying testing of code otherwise depending directly on <see cref="HttpClient"/>.
+/// </summary>
+public interface IHttpClient
+{
+    /// <summary>
+    /// Throws exception on error.
+    /// </summary>
+    Task<Stream> GetStreamAsync(Uri uri);
+}

@@ -16,46 +16,46 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
 public class BatchFileManager : IBatchFileManager
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
-    private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
+
+    private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
+        _fileIdentifierProviders;
 
     private readonly IWebFilesZipper _webFilesZipper;
-    private readonly ILogger _logger;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IWebFilesZipper webFilesZipper, ILogger logger)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IWebFilesZipper webFilesZipper)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _webFilesZipper = webFilesZipper;
-        _logger = logger;
-        _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
-        {
-            GetResultDirectory,
-            GetTimeSeriesHourBasisDataDirectory,
-            GetTimeSeriesQuarterBasisDataDirectory,
-            GetMasterBasisDataDirectory,
-        };
+        _fileIdentifierProviders =
+            new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
+            {
+                GetResultDirectory,
+                GetTimeSeriesHourBasisDataDirectory,
+                GetTimeSeriesQuarterBasisDataDirectory,
+                GetMasterBasisDataDirectory,
+            };
     }
 
     public async Task CreateBasisDataZipAsync(Batch completedBatch)
     {
         var batchBasisFileUrls = await GetBatchBasisFileUrlsAsync(completedBatch).ConfigureAwait(false);
 
-        var zipBlobName = GetZipBlobName(completedBatch);
-        var zipStream = await GetWriteStreamAsync(zipBlobName).ConfigureAwait(false);
+        var zipFileName = GetZipFileName(completedBatch);
+        var zipStream = await GetWriteStreamAsync(zipFileName).ConfigureAwait(false);
         await using (zipStream)
             await _webFilesZipper.ZipAsync(batchBasisFileUrls, zipStream).ConfigureAwait(false);
     }
 
     public async Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
-        var (directory, extension, entryPath) = GetResultDirectory(batchId, gridAreaCode);
-        var dataLakeFileClient = await TryGetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
+        var (directory, extension, _) = GetResultDirectory(batchId, gridAreaCode);
+        var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
         if (dataLakeFileClient == null)
         {
             throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
@@ -66,10 +66,34 @@ public class BatchFileManager : IBatchFileManager
 
     public async Task<Stream> GetZippedBasisDataStreamAsync(Batch batch)
     {
-        var zipBlobName = GetZipBlobName(batch);
-        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(zipBlobName);
+        var zipFileName = GetZipFileName(batch);
+        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(zipFileName);
         return await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
     }
+
+    // TODO: Test that the directory paths match the directory used by Databricks (see calculator.py).
+    public static (string Directory, string Extension, string ZipEntryPath) GetResultDirectory(Guid batchId, GridAreaCode gridAreaCode)
+        => ($"results/batch_id={batchId}/grid_area={gridAreaCode.Code}/", ".json", $"{gridAreaCode.Code}/Result.json");
+
+    public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataDirectory(
+        Guid batchId, GridAreaCode gridAreaCode)
+        => ($"results/basis-data/batch_id={batchId}/time-series-hour/grid_area={gridAreaCode.Code}/",
+            ".csv",
+            $"{gridAreaCode.Code}/Timeseries_PT1H.csv");
+
+    public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesQuarterBasisDataDirectory(
+        Guid batchId, GridAreaCode gridAreaCode)
+        => ($"results/basis-data/batch_id={batchId}/time-series-quarter/grid_area={gridAreaCode.Code}/",
+            ".csv",
+            $"{gridAreaCode.Code}/Timeseries_PT15M.csv");
+
+    public static (string Directory, string Extension, string ZipEntryPath) GetMasterBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode)
+        => ($"results/master-basis-data/batch_id={batchId}/grid_area={gridAreaCode.Code}/",
+            ".csv",
+            $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
+
+    public static string GetZipFileName(Batch batch) =>
+        $"results/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
 
     private async Task<IEnumerable<(Uri Url, string EntryPath)>> GetBatchBasisFileUrlsAsync(Batch batch)
     {
@@ -91,16 +115,8 @@ public class BatchFileManager : IBatchFileManager
         foreach (var fileIdentifierProvider in _fileIdentifierProviders)
         {
             var (directory, extension, entryPath) = fileIdentifierProvider(batchId, gridAreaCode);
-            var processDataFile = await TryGetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
-
-            if (processDataFile == null)
-            {
-                _logger.LogError("Blob matching '{Directory}*{Extension}' not found", directory, extension);
-            }
-            else
-            {
-                processDataFilesUrls.Add((processDataFile.Uri, entryPath));
-            }
+            var processDataFile = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
+            processDataFilesUrls.Add((processDataFile.Uri, entryPath));
         }
 
         return processDataFilesUrls;
@@ -112,19 +128,20 @@ public class BatchFileManager : IBatchFileManager
     /// <param name="directory"></param>
     /// <param name="extension"></param>
     /// <returns>The first file with matching file extension.</returns>
-    private async Task<DataLakeFileClient?> TryGetDataLakeFileClientAsync(string directory, string extension)
+    private async Task<DataLakeFileClient> GetDataLakeFileClientAsync(string directory, string extension)
     {
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
+        var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
+        if (!directoryExists.Value)
+            throw new Exception($"Calculation storage directory '{directory}' does not exist");
 
         await foreach (var pathItem in directoryClient.GetPathsAsync())
         {
             if (Path.GetExtension(pathItem.Name) == extension)
-            {
                 return _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
-            }
         }
 
-        return null;
+        throw new Exception($"No Data Lake file with extension '{extension}' was found in directory '{directory}'");
     }
 
     private Task<Stream> GetWriteStreamAsync(string fileName)
@@ -132,25 +149,4 @@ public class BatchFileManager : IBatchFileManager
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(fileName);
         return dataLakeFileClient.OpenWriteAsync(false);
     }
-
-    // TODO BJARKE: The directory paths must match the directory used by Databricks (see calculator.py).
-    private (string Directory, string Extension, string ZipEntryPath) GetResultDirectory(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"results/batch_id={batchId}/grid_area={gridAreaCode.Code}/", ".json", $"{gridAreaCode}/Result.json");
-
-    private (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"results/basis-data/batch_id={batchId}/time-series-hour/grid_area={gridAreaCode}/",
-            ".csv",
-            $"{gridAreaCode}/Timeseries_PT1H.csv");
-
-    private (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesQuarterBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"results/basis-data/batch_id={batchId}/time-series-quarter/grid_area={gridAreaCode}/",
-            ".csv",
-            $"{gridAreaCode}/Timeseries_PT15M.csv");
-
-    private (string Directory, string Extension, string ZipEntryPath) GetMasterBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"results/master-basis-data/batch_id={batchId}/grid_area={gridAreaCode}/",
-            ".csv",
-            $"{gridAreaCode}/MeteringPointMasterData.csv");
-
-    private string GetZipBlobName(Batch batch) => $"results/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
 }

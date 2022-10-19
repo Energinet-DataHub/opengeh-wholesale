@@ -27,7 +27,12 @@ public class DatabaseContext : DbContext, IDatabaseContext
     {
     }
 
-    public DbSet<Batch> Batches { get; private set; } = null!;
+    // Added to support Moq in tests
+    public DatabaseContext()
+    {
+    }
+
+    public virtual DbSet<Batch> Batches { get; private set; } = null!;
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
