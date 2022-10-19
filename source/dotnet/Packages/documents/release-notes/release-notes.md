@@ -2,7 +2,7 @@
 
 ## Version 2.0.1
 
-Add GetStreamBasisDataAsync.
+Add get zipped basis data as a stream
 
 ## Version 2.0.0
 
