@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -62,6 +61,13 @@ public class BatchFileManager : IBatchFileManager
             throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
         }
 
+        return await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
+    }
+
+    public async Task<Stream> GetZippedBasisDataStreamAsync(Batch batch)
+    {
+        var zipBlobName = GetZipBlobName(batch);
+        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(zipBlobName);
         return await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
     }
 

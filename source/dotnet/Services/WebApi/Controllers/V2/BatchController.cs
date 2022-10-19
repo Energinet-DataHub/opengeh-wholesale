@@ -66,15 +66,15 @@ public class BatchController : ControllerBase
     }
 
     /// <summary>
-    /// Get zipped basis data for batch matching <paramref name="batchCompletedEventDto"/>
+    /// Get zipped basis data for batch matching <paramref name="batchId"/>
     /// </summary>
-    /// <param name="batchCompletedEventDto">BatchId</param>
+    /// <param name="batchId">BatchId</param>
     /// <returns>Always 200 OK</returns>
-    [HttpPost("ZipBasisData")]
+    [HttpPost("ZippedBasisDataUrl")]
     [MapToApiVersion(Version)]
-    public async Task<IActionResult> ZipBasisDataAsync([FromBody] BatchCompletedEventDto batchCompletedEventDto)
+    public async Task<IActionResult> ZipBasisDataAsync([FromBody] Guid batchId)
     {
-        await _basisDataApplicationService.ZipBasisDataAsync(batchCompletedEventDto).ConfigureAwait(false);
-        return Ok();
+        var stream = await _basisDataApplicationService.GetZippedBasisDataAsync(batchId).ConfigureAwait(false);
+        return Ok(stream);
     }
 }
