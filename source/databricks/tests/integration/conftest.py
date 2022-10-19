@@ -18,13 +18,6 @@ from pyspark.sql import SparkSession
 
 
 @pytest.fixture(scope="session")
-def spark() -> SparkSession:
-    return SparkSession.builder.config(
-        "spark.sql.streaming.schemaInference", True
-    ).getOrCreate()
-
-
-@pytest.fixture(scope="session")
 def integration_tests_path(databricks_path) -> str:
     """
     Returns the integration tests folder path.
