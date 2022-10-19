@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using BatchControllerV1 = Energinet.DataHub.Wholesale.WebApi.Controllers.V1.BatchController;
 using BatchControllerV2 = Energinet.DataHub.Wholesale.WebApi.Controllers.V2.BatchController;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
@@ -23,18 +22,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
 [Collection(nameof(WebApiIntegrationTestHost))]
 public class WebApiTests
 {
-    [Fact]
-    public async Task ServiceCollection_CanResolveBatchControllerV1()
-    {
-        // Arrange
-        using var host = await WebApiIntegrationTestHost.CreateAsync(collection => collection.AddScoped<BatchControllerV1>());
-
-        await using var scope = host.BeginScope();
-
-        // Act & Assert that the container can resolve the endpoints dependencies
-        scope.ServiceProvider.GetRequiredService<BatchControllerV1>();
-    }
-
     [Fact]
     public async Task ServiceCollection_CanResolveBatchControllerV2()
     {
