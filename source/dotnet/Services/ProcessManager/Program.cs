@@ -154,7 +154,7 @@ public static class Program
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
                 provider.GetRequiredService<IWebFilesZipper>()));
         serviceCollection.AddHttpClient();
-        serviceCollection.AddSingleton<IHttpClient>();
+        serviceCollection.AddSingleton<IHttpClient, HttpClientWrapper>();
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)
