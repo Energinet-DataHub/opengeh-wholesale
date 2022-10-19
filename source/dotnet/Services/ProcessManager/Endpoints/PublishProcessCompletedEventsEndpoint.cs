@@ -19,13 +19,13 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class PublishProcessCompletedEvents
+public class PublishProcessCompletedEventsEndpoint
 {
-    private const string FunctionName = nameof(PublishProcessCompletedEvents);
+    private const string FunctionName = nameof(PublishProcessCompletedEventsEndpoint);
     private readonly IJsonSerializer _jsonSerializer;
     private readonly IProcessApplicationService _processApplicationService;
 
-    public PublishProcessCompletedEvents(IJsonSerializer jsonSerializer, IProcessApplicationService processApplicationService)
+    public PublishProcessCompletedEventsEndpoint(IJsonSerializer jsonSerializer, IProcessApplicationService processApplicationService)
     {
         _jsonSerializer = jsonSerializer;
         _processApplicationService = processApplicationService;

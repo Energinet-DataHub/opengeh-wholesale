@@ -19,13 +19,13 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class ZipBasisData
+public class ZipBasisDataEndpoint
 {
-    private const string FunctionName = nameof(ZipBasisData);
+    private const string FunctionName = nameof(ZipBasisDataEndpoint);
     private readonly IJsonSerializer _jsonSerializer;
     private readonly IBasisDataApplicationService _basisDataApplicationService;
 
-    public ZipBasisData(IJsonSerializer jsonSerializer, IBasisDataApplicationService basisDataApplicationService)
+    public ZipBasisDataEndpoint(IJsonSerializer jsonSerializer, IBasisDataApplicationService basisDataApplicationService)
     {
         _jsonSerializer = jsonSerializer;
         _basisDataApplicationService = basisDataApplicationService;
