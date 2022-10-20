@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
@@ -33,6 +32,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.HttpClient;
 using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
@@ -42,7 +42,6 @@ using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
@@ -152,10 +151,10 @@ public static class Program
         serviceCollection.AddScoped<IWebFilesZipper, WebFilesZipper>();
         serviceCollection.AddScoped<IBatchFileManager>(
             provider => new BatchFileManager(
-                dataLakeFileSystemClient,
-                provider.GetRequiredService<IWebFilesZipper>(),
-                provider.GetRequiredService<ILogger<IBatchFileManager>>()));
+                provider.GetRequiredService<DataLakeFileSystemClient>(),
+                provider.GetRequiredService<IWebFilesZipper>()));
         serviceCollection.AddHttpClient();
+        serviceCollection.AddSingleton<IHttpClient, HttpClientWrapper>();
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)

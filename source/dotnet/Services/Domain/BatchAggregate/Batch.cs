@@ -56,7 +56,8 @@ public class Batch
         _clock = SystemClock.Instance;
     }
 
-    public Guid Id { get; }
+    // Private setter is used implicitly by tests
+    public Guid Id { get; private set; }
 
     public ProcessType ProcessType { get; }
 

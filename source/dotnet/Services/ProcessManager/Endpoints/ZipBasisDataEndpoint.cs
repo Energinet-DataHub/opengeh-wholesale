@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Microsoft.Azure.Functions.Worker;
@@ -32,16 +33,15 @@ public class ZipBasisDataEndpoint
     }
 
     [Function(FunctionName)]
-    public Task RunAsync(
+    public async Task RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
             "%" + EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
-        // var batchCompletedEvent = await DeserializeByteArrayAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
-        // await _basisDataApplicationService.ZipBasisDataAsync(batchCompletedEvent).ConfigureAwait(false);
-        return Task.CompletedTask;
+        var batchCompletedEvent = await DeserializeByteArrayAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
+        await _basisDataApplicationService.ZipBasisDataAsync(batchCompletedEvent).ConfigureAwait(false);
     }
 
     private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)
