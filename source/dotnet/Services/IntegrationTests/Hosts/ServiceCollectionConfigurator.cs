@@ -123,11 +123,11 @@ public class ServiceCollectionConfigurator
                     .Setup(client => client.Uri)
                     .Returns(new Uri(uriString));
 
-                var str = "stringValue";
+                const string anyStringValue = "stringValue";
                 // Enable the IStreamZipper to access the basis data files
                 // The files are represented by mocked names and in-memory streams
                 var memoryStream = new MemoryStream(basisDataBuffer);
-                var response1 = Response.FromValue<FileDownloadInfo>(
+                var fileDownloadResponse = Response.FromValue(
                     DataLakeModelFactory.FileDownloadInfo(
                     memoryStream.Length,
                     memoryStream,
@@ -136,29 +136,29 @@ public class ServiceCollectionConfigurator
                         DateTimeOffset.Now,
                         new Dictionary<string,
                             string>(),
-                        str,
+                        anyStringValue,
                         ETag.All,
-                        str,
-                        str,
-                        str,
-                        str,
+                        anyStringValue,
+                        anyStringValue,
+                        anyStringValue,
+                        anyStringValue,
                         DateTimeOffset.Now,
-                        str,
-                        str,
-                        str,
-                        new Uri("http://stuff.com"),
+                        anyStringValue,
+                        anyStringValue,
+                        anyStringValue,
+                        new Uri("https://stuff.com"),
                         CopyStatus.Success,
                         DataLakeLeaseDuration.Fixed,
                         DataLakeLeaseState.Available,
                         DataLakeLeaseStatus.Locked,
-                        str,
+                        anyStringValue,
                         false,
-                        str,
+                        anyStringValue,
                         basisDataBuffer)),
                     null!);
                 dataLakeFileClientMock
                     .Setup(client => client.ReadAsync())
-                    .ReturnsAsync(() => response1);
+                    .ReturnsAsync(() => fileDownloadResponse);
             }
         }
 
