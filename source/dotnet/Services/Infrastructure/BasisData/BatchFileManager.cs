@@ -41,12 +41,12 @@ public class BatchFileManager : IBatchFileManager
 
     public async Task CreateBasisDataZipAsync(Batch completedBatch)
     {
-        var batchBasisFileUrls = await GetBatchBasisFilesAsync(completedBatch).ConfigureAwait(false);
+        var batchBasisFileStreams = await GetBatchBasisFileStreamsAsync(completedBatch).ConfigureAwait(false);
 
         var zipFileName = GetZipFileName(completedBatch);
         var zipStream = await GetWriteStreamAsync(zipFileName).ConfigureAwait(false);
         await using (zipStream)
-            await _streamZipper.ZipAsync(batchBasisFileUrls, zipStream).ConfigureAwait(false);
+            await _streamZipper.ZipAsync(batchBasisFileStreams, zipStream).ConfigureAwait(false);
     }
 
     public async Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)
@@ -82,20 +82,20 @@ public class BatchFileManager : IBatchFileManager
 
     public static string GetZipFileName(Batch batch) => $"results/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
 
-    private async Task<IEnumerable<(Stream FileStream, string EntryPath)>> GetBatchBasisFilesAsync(Batch batch)
+    private async Task<IEnumerable<(Stream FileStream, string EntryPath)>> GetBatchBasisFileStreamsAsync(Batch batch)
     {
         var batchBasisFiles = new List<(Stream FileStream, string EntryPath)>();
 
         foreach (var gridAreaCode in batch.GridAreaCodes)
         {
-            var gridAreaFileUrls = await GetProcessBasisFileUrlsAsync(batch.Id, gridAreaCode).ConfigureAwait(false);
+            var gridAreaFileUrls = await GetProcessBasisFileStreamsAsync(batch.Id, gridAreaCode).ConfigureAwait(false);
             batchBasisFiles.AddRange(gridAreaFileUrls);
         }
 
         return batchBasisFiles;
     }
 
-    private async Task<List<(Stream FileStream, string EntryPath)>> GetProcessBasisFileUrlsAsync(Guid batchId, GridAreaCode gridAreaCode)
+    private async Task<List<(Stream FileStream, string EntryPath)>> GetProcessBasisFileStreamsAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
         var processDataFilesUrls = new List<(Stream FileStream, string EntryPath)>();
 
