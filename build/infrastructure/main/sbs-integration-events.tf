@@ -20,7 +20,7 @@ module "sbs_int_events_metering_point_created" {
   max_delivery_count  = 10
   correlation_filter  = {
     properties     = {
-      "MessageType" = "MeteringPointCreated"
+      "messageType" = "MeteringPointCreated"
     }
   }
 }
@@ -33,7 +33,7 @@ module "sbs_int_events_metering_point_connected" {
   max_delivery_count  = 10
   correlation_filter  = {
     properties     = {
-      "MessageType" = "MeteringPointConnected"
+      "messageType" = "MeteringPointConnected"
     }
   }
 }
@@ -46,7 +46,7 @@ module "sbs_int_events_grid_area_updated" {
   max_delivery_count  = 10
   correlation_filter  = {
     properties     = {
-      "MessageType" = "GridAreaUpdatedIntegrationEvent"
+      "messageType" = "GridAreaUpdatedIntegrationEvent"
     }
   }
 }
