@@ -74,7 +74,7 @@ public class BatchController : ControllerBase
     [MapToApiVersion(Version)]
     public async Task<IActionResult> ZipBasisDataAsync([FromBody] Guid batchId)
     {
-        var stream = await _basisDataApplicationService.GetZippedBasisDataAsync(batchId).ConfigureAwait(false);
-        return Ok(stream);
+        var uri = await _basisDataApplicationService.GetZippedBasisDataUrlAsync(batchId).ConfigureAwait(false);
+        return Ok(uri);
     }
 }

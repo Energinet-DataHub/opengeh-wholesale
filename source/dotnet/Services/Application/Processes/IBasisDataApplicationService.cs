@@ -21,5 +21,5 @@ public interface IBasisDataApplicationService
 {
     Task ZipBasisDataAsync(BatchCompletedEventDto batchCompletedEvent);
 
-    Task<Stream> GetZippedBasisDataAsync(Guid batchId);
+    Task<Uri> GetZippedBasisDataUrlAsync(Guid batchId);
 }
