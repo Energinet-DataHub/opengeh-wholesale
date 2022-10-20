@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoFixture.Xunit2;
 using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using FluentAssertions;
@@ -27,22 +29,20 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BasisData;
 [UnitTest]
 public class BatchFileManagerTests
 {
-    [Fact]
-    public async Task GetResultFileStreamAsync_WhenDirectoryDoesNotExist_ThrowsException()
+    [Theory]
+    [AutoMoqData]
+    public async Task GetResultFileStreamAsync_WhenDirectoryDoesNotExist_ThrowsException(
+        [Frozen] Mock<IWebFilesZipper> webFileZipperMock,
+        [Frozen] Mock<Response<bool>> responseMock,
+        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
+        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock)
     {
         // Arrange
-        var webFileZipperMock = new Mock<IWebFilesZipper>();
-        var response = new Mock<Response<bool>>();
-        var dataLakeFileSystemClientMock = new Mock<DataLakeFileSystemClient>();
-        var dataLakeDirectoryClientMock = new Mock<DataLakeDirectoryClient>();
-
-        response.Setup(res => res.Value).Returns(false);
-
+        responseMock.Setup(res => res.Value).Returns(false);
         dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
             .Returns(dataLakeDirectoryClientMock.Object);
-
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(response.Object);
+            .ReturnsAsync(responseMock.Object);
 
         var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, webFileZipperMock.Object);
 
@@ -53,22 +53,20 @@ public class BatchFileManagerTests
             .ThrowAsync<Exception>();
     }
 
-    [Fact]
-    public async Task GetResultFileStreamAsync_WhenNoFilesMatchExtension_ThrowsException()
+    [Theory]
+    [AutoMoqData]
+    public async Task GetResultFileStreamAsync_WhenNoFilesMatchExtension_ThrowsException(
+        [Frozen] Mock<IWebFilesZipper> webFileZipperMock,
+        [Frozen] Mock<Response<bool>> responseMock,
+        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
+        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock)
     {
         // Arrange
-        var webFileZipperMock = new Mock<IWebFilesZipper>();
-        var response = new Mock<Response<bool>>();
-        var dataLakeFileSystemClientMock = new Mock<DataLakeFileSystemClient>();
-        var dataLakeDirectoryClientMock = new Mock<DataLakeDirectoryClient>();
-
-        response.Setup(res => res.Value).Returns(true);
-
+        responseMock.Setup(res => res.Value).Returns(true);
         dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
             .Returns(dataLakeDirectoryClientMock.Object);
-
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(response.Object);
+            .ReturnsAsync(responseMock.Object);
 
         var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, webFileZipperMock.Object);
 
@@ -79,15 +77,15 @@ public class BatchFileManagerTests
             .ThrowAsync<Exception>();
     }
 
-    [Fact]
-    public async Task GetResultFileStreamAsync_WhenFileExtensionNotFound_ThrowException()
+    [Theory]
+    [AutoMoqData]
+    public async Task GetResultFileStreamAsync_WhenFileExtensionNotFound_ThrowException(
+        [Frozen] Mock<IWebFilesZipper> webFileZipperMock,
+        [Frozen] Mock<Response<bool>> responseMock,
+        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
+        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock)
     {
         // Arrange
-        var webFileZipperMock = new Mock<IWebFilesZipper>();
-        var response = new Mock<Response<bool>>();
-        var dataLakeFileSystemClientMock = new Mock<DataLakeFileSystemClient>();
-        var dataLakeDirectoryClientMock = new Mock<DataLakeDirectoryClient>();
-
         const string pathWithUnknownExtension = "my_file.xxx";
         var pathItem = DataLakeModelFactory.PathItem(pathWithUnknownExtension, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
         var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
@@ -96,14 +94,12 @@ public class BatchFileManagerTests
         dataLakeDirectoryClientMock
             .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
             .Returns(asyncPageable);
-
-        response.Setup(res => res.Value).Returns(true);
-
+        responseMock.Setup(res => res.Value).Returns(true);
         dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
             .Returns(dataLakeDirectoryClientMock.Object);
 
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(response.Object);
+            .ReturnsAsync(responseMock.Object);
 
         var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, webFileZipperMock.Object);
 
@@ -114,16 +110,16 @@ public class BatchFileManagerTests
             .ThrowAsync<Exception>();
     }
 
-    [Fact]
-    public async Task GetResultFileStreamAsync_ReturnsStream()
+    [Theory]
+    [AutoMoqData]
+    public async Task GetResultFileStreamAsync_ReturnsStream(
+        [Frozen] Mock<IWebFilesZipper> webFileZipperMock,
+        [Frozen] Mock<Response<bool>> responseMock,
+        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
+        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock)
     {
         // Arrange
-        var webFileZipperMock = new Mock<IWebFilesZipper>();
-        var response = new Mock<Response<bool>>();
-        var dataLakeFileSystemClientMock = new Mock<DataLakeFileSystemClient>();
-        var dataLakeDirectoryClientMock = new Mock<DataLakeDirectoryClient>();
-        var dataLakeFileClientMock = new Mock<DataLakeFileClient>();
-
         const string pathWithKnownExtension = "my_file.json";
         var pathItem = DataLakeModelFactory
             .PathItem(pathWithKnownExtension, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
@@ -133,19 +129,18 @@ public class BatchFileManagerTests
         dataLakeDirectoryClientMock
             .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
             .Returns(asyncPageable);
-
-        response.Setup(res => res.Value).Returns(true);
-
+        responseMock.Setup(res => res.Value).Returns(true);
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(response.Object);
-
+            .ReturnsAsync(responseMock.Object);
         dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
             .Returns(dataLakeDirectoryClientMock.Object);
-
-        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(pathWithKnownExtension)).Returns(dataLakeFileClientMock.Object);
+        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(pathWithKnownExtension))
+            .Returns(dataLakeFileClientMock.Object);
 
         var stream = new Mock<Stream>();
-        dataLakeFileClientMock.Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default)).ReturnsAsync(stream.Object);
+        dataLakeFileClientMock
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
+            .ReturnsAsync(stream.Object);
 
         var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, webFileZipperMock.Object);
 
