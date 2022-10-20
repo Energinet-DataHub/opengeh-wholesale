@@ -86,6 +86,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
         services.AddScoped<IBasisDataApplicationService, BasisDataApplicationService>();
         services.AddScoped<IBatchFileManager, BatchFileManager>();
+        services.AddScoped<IStreamZipper, StreamZipper>();
         services.AddScoped<DataLakeFileSystemClient>(_ => null!);
         services.AddScoped<HttpClient>(_ => null!);
         services.AddScoped<IBatchCompletedPublisher>(_ => null!); // Unused in the use cases of this app

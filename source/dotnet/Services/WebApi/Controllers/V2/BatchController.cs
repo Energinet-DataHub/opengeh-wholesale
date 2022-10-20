@@ -70,7 +70,7 @@ public class BatchController : ControllerBase
     /// </summary>
     /// <param name="batchId">BatchId</param>
     /// <returns>Always 200 OK</returns>
-    [HttpPost("ZippedBasisDataUrl")]
+    [HttpPost("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> ZipBasisDataAsync([FromBody] Guid batchId)
     {
