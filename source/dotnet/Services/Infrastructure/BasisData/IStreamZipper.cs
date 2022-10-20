@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
-public interface IStreamedFilesZipper
+public interface IStreamZipper
 {
     /// <summary>
     /// Create a zip file containing the remove files.

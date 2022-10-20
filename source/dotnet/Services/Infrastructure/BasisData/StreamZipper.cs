@@ -16,7 +16,7 @@ using System.IO.Compression;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
-public class StreamedFilesZipper : IStreamedFilesZipper
+public class StreamZipper : IStreamZipper
 {
     public async Task ZipAsync(IEnumerable<(Stream FileStream, string EntryPath)> inputFiles, Stream zipFileStream)
     {

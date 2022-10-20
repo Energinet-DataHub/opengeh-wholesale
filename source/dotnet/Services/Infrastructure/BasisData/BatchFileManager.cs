@@ -24,12 +24,12 @@ public class BatchFileManager : IBatchFileManager
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
-    private readonly IStreamedFilesZipper _streamedFilesZipper;
+    private readonly IStreamZipper _streamZipper;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamedFilesZipper streamedFilesZipper)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
-        _streamedFilesZipper = streamedFilesZipper;
+        _streamZipper = streamZipper;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         {
             GetResultDirectory,
@@ -46,7 +46,7 @@ public class BatchFileManager : IBatchFileManager
         var zipFileName = GetZipFileName(completedBatch);
         var zipStream = await GetWriteStreamAsync(zipFileName).ConfigureAwait(false);
         await using (zipStream)
-            await _streamedFilesZipper.ZipAsync(batchBasisFileUrls, zipStream).ConfigureAwait(false);
+            await _streamZipper.ZipAsync(batchBasisFileUrls, zipStream).ConfigureAwait(false);
     }
 
     public async Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)

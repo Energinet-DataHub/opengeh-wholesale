@@ -32,7 +32,6 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
-using Energinet.DataHub.Wholesale.Infrastructure.HttpClient;
 using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
@@ -148,13 +147,11 @@ public static class Program
 
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
-        serviceCollection.AddScoped<IStreamedFilesZipper, StreamedFilesZipper>();
+        serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<IBatchFileManager>(
             provider => new BatchFileManager(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
-                provider.GetRequiredService<IStreamedFilesZipper>()));
-        serviceCollection.AddHttpClient();
-        serviceCollection.AddSingleton<IHttpClient, HttpClientWrapper>();
+                provider.GetRequiredService<IStreamZipper>()));
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)
