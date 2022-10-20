@@ -27,7 +27,6 @@ using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
-using Energinet.DataHub.Wholesale.Infrastructure.HttpClient;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
@@ -87,10 +86,8 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
         services.AddScoped<IBasisDataApplicationService, BasisDataApplicationService>();
         services.AddScoped<IBatchFileManager, BatchFileManager>();
-        services.AddScoped<IWebFilesZipper, WebFilesZipper>();
         services.AddScoped<DataLakeFileSystemClient>(_ => null!);
         services.AddScoped<HttpClient>(_ => null!);
-        services.AddScoped<IHttpClient>(_ => null!);
         services.AddScoped<IBatchCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
