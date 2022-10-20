@@ -50,16 +50,16 @@ public class WholesaleClient : IWholesaleClient
         return batches ?? new List<BatchDtoV2>();
     }
 
-    public async Task<string> GetZippedBasisDataUrlAsync(
+    public async Task<Stream> GetZippedBasisDataStreamAsync(
         Guid batchId)
     {
         var response = await _httpClient
-            .PostAsJsonAsync("v2/Batch/ZippedBasisDataUrl", batchId)
+            .PostAsJsonAsync("v2/Batch/ZippedBasisDataStream", batchId)
             .ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
-        var url = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        return url;
+        var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+        return stream;
     }
 }
