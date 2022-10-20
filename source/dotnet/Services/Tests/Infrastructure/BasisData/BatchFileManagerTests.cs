@@ -40,10 +40,8 @@ public class BatchFileManagerTests
     {
         // Arrange
         const string pathWithKnownExtension = "my_file.json";
-        var pathItem = DataLakeModelFactory
-            .PathItem(pathWithKnownExtension, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
-        var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
+        var asyncPageable = CreateAsyncPageableWithOnePathItem(pathWithKnownExtension);
+        var stream = new Mock<Stream>();
 
         dataLakeDirectoryClientMock
             .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
@@ -55,8 +53,6 @@ public class BatchFileManagerTests
             .Returns(dataLakeDirectoryClientMock.Object);
         dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(pathWithKnownExtension))
             .Returns(dataLakeFileClientMock.Object);
-
-        var stream = new Mock<Stream>();
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
@@ -79,11 +75,7 @@ public class BatchFileManagerTests
         [Frozen] Mock<Response<bool>> responseMock)
     {
         // Arrange
-        const string pathWithKnownExtension = "my_file.json";
-        var pathItem = DataLakeModelFactory
-            .PathItem(pathWithKnownExtension, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
-        var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
+        var asyncPageable = CreateAsyncPageableWithOnePathItem("my_file.json");
 
         dataLakeDirectoryClientMock
             .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
@@ -160,5 +152,14 @@ public class BatchFileManagerTests
             .Invoking(s => s.GetResultFileStreamAsync(Guid.NewGuid(), new GridAreaCode("123")))
             .Should()
             .ThrowAsync<Exception>();
+    }
+
+    private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
+    {
+        var pathItem = DataLakeModelFactory
+            .PathItem(path, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
+        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
+        var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
+        return asyncPageable;
     }
 }
