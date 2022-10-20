@@ -14,15 +14,15 @@
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
-public interface IWebFilesZipper
+public interface IStreamedFilesZipper
 {
     /// <summary>
     /// Create a zip file containing the remove files.
     /// </summary>
     /// <param name="inputFiles">
-    /// Tuples with url of remove source file and the name to use in the zip archive.
+    /// Tuples with streamed source file and the name to use in the zip archive.
     /// <paramref name="inputFiles.EntryPath"/> is the relative path in the zip archive.
     /// </param>
     /// <param name="zipFileStream">The local file system path of the output zip file.</param>
-    Task ZipAsync(IEnumerable<(Uri Url, string EntryPath)> inputFiles, Stream zipFileStream);
+    Task ZipAsync(IEnumerable<(Stream FileStream, string EntryPath)> inputFiles, Stream zipFileStream);
 }

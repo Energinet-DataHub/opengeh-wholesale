@@ -127,7 +127,7 @@ public class ServiceCollectionConfigurator
                     .Setup(client => client.Uri)
                     .Returns(new Uri(uriString));
 
-                // Enable the IWebFilesZipper to access the basis data files
+                // Enable the IStreamedFilesZipper to access the basis data files
                 // The files are represented by mocked names and in-memory streams
                 httpClientMock
                     .Setup(client => client.GetStreamAsync(It.Is<Uri>(uri => uri.AbsoluteUri.Contains(encodedDirectory))))

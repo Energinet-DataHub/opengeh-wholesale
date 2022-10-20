@@ -148,11 +148,11 @@ public static class Program
 
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
-        serviceCollection.AddScoped<IWebFilesZipper, WebFilesZipper>();
+        serviceCollection.AddScoped<IStreamedFilesZipper, StreamedFilesZipper>();
         serviceCollection.AddScoped<IBatchFileManager>(
             provider => new BatchFileManager(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
-                provider.GetRequiredService<IWebFilesZipper>()));
+                provider.GetRequiredService<IStreamedFilesZipper>()));
         serviceCollection.AddHttpClient();
         serviceCollection.AddSingleton<IHttpClient, HttpClientWrapper>();
     }
