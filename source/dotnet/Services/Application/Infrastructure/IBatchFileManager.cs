@@ -27,5 +27,5 @@ public interface IBatchFileManager
 
     Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode);
 
-    Uri GetZippedBasisDataUrl(Batch batch);
+    Task<Stream> GetZippedBasisDataStreamAsync(Batch batch);
 }
