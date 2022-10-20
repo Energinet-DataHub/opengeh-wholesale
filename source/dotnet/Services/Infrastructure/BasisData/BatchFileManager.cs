@@ -22,34 +22,31 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 public class BatchFileManager : IBatchFileManager
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
+    private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
-    private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
-        _fileIdentifierProviders;
+    private readonly IStreamZipper _streamZipper;
 
-    private readonly IWebFilesZipper _webFilesZipper;
-
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IWebFilesZipper webFilesZipper)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
-        _webFilesZipper = webFilesZipper;
-        _fileIdentifierProviders =
-            new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
-            {
-                GetResultDirectory,
-                GetTimeSeriesHourBasisDataDirectory,
-                GetTimeSeriesQuarterBasisDataDirectory,
-                GetMasterBasisDataDirectory,
-            };
+        _streamZipper = streamZipper;
+        _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
+        {
+            GetResultDirectory,
+            GetTimeSeriesHourBasisDataDirectory,
+            GetTimeSeriesQuarterBasisDataDirectory,
+            GetMasterBasisDataDirectory,
+        };
     }
 
     public async Task CreateBasisDataZipAsync(Batch completedBatch)
     {
-        var batchBasisFileUrls = await GetBatchBasisFileUrlsAsync(completedBatch).ConfigureAwait(false);
+        var batchBasisFileStreams = await GetBatchBasisFileStreamsAsync(completedBatch).ConfigureAwait(false);
 
         var zipFileName = GetZipFileName(completedBatch);
         var zipStream = await GetWriteStreamAsync(zipFileName).ConfigureAwait(false);
         await using (zipStream)
-            await _webFilesZipper.ZipAsync(batchBasisFileUrls, zipStream).ConfigureAwait(false);
+            await _streamZipper.ZipAsync(batchBasisFileStreams, zipStream).ConfigureAwait(false);
     }
 
     public async Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)
@@ -76,14 +73,12 @@ public class BatchFileManager : IBatchFileManager
     public static (string Directory, string Extension, string ZipEntryPath) GetResultDirectory(Guid batchId, GridAreaCode gridAreaCode)
         => ($"results/batch_id={batchId}/grid_area={gridAreaCode.Code}/", ".json", $"{gridAreaCode.Code}/Result.json");
 
-    public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataDirectory(
-        Guid batchId, GridAreaCode gridAreaCode)
+    public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode)
         => ($"results/basis-data/batch_id={batchId}/time-series-hour/grid_area={gridAreaCode.Code}/",
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT1H.csv");
 
-    public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesQuarterBasisDataDirectory(
-        Guid batchId, GridAreaCode gridAreaCode)
+    public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesQuarterBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode)
         => ($"results/basis-data/batch_id={batchId}/time-series-quarter/grid_area={gridAreaCode.Code}/",
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT15M.csv");
@@ -93,31 +88,31 @@ public class BatchFileManager : IBatchFileManager
             ".csv",
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
 
-    public static string GetZipFileName(Batch batch) =>
-        $"results/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
+    public static string GetZipFileName(Batch batch) => $"results/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
 
-    private async Task<IEnumerable<(Uri Url, string EntryPath)>> GetBatchBasisFileUrlsAsync(Batch batch)
+    private async Task<IEnumerable<(Stream FileStream, string EntryPath)>> GetBatchBasisFileStreamsAsync(Batch batch)
     {
-        var basisDataFileUrls = new List<(Uri Url, string EntryPath)>();
+        var batchBasisFiles = new List<(Stream FileStream, string EntryPath)>();
 
         foreach (var gridAreaCode in batch.GridAreaCodes)
         {
-            var gridAreaFileUrls = await GetProcessBasisFileUrlsAsync(batch.Id, gridAreaCode).ConfigureAwait(false);
-            basisDataFileUrls.AddRange(gridAreaFileUrls);
+            var gridAreaFileUrls = await GetProcessBasisFileStreamsAsync(batch.Id, gridAreaCode).ConfigureAwait(false);
+            batchBasisFiles.AddRange(gridAreaFileUrls);
         }
 
-        return basisDataFileUrls;
+        return batchBasisFiles;
     }
 
-    private async Task<List<(Uri Url, string EntryPath)>> GetProcessBasisFileUrlsAsync(Guid batchId, GridAreaCode gridAreaCode)
+    private async Task<List<(Stream FileStream, string EntryPath)>> GetProcessBasisFileStreamsAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
-        var processDataFilesUrls = new List<(Uri Url, string EntryPath)>();
+        var processDataFilesUrls = new List<(Stream FileStream, string EntryPath)>();
 
         foreach (var fileIdentifierProvider in _fileIdentifierProviders)
         {
             var (directory, extension, entryPath) = fileIdentifierProvider(batchId, gridAreaCode);
             var processDataFile = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
-            processDataFilesUrls.Add((processDataFile.Uri, entryPath));
+            var response = await processDataFile.ReadAsync().ConfigureAwait(false);
+            processDataFilesUrls.Add((response.Value.Content, entryPath));
         }
 
         return processDataFilesUrls;

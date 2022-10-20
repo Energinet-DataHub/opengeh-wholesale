@@ -123,11 +123,11 @@ public static class Program
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
-        serviceCollection.AddScoped<IWebFilesZipper>(_ => null!);
+        serviceCollection.AddScoped<IStreamZipper>(_ => null!);
         serviceCollection.AddScoped<IBatchFileManager>(
             provider => new BatchFileManager(
                 dataLakeFileSystemClient,
-                provider.GetService<IWebFilesZipper>()!));
+                provider.GetService<IStreamZipper>()!));
         serviceCollection.AddHttpClient();
     }
 

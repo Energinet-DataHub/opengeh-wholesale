@@ -20,7 +20,6 @@ using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
-using Energinet.DataHub.Wholesale.Infrastructure.HttpClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
@@ -67,9 +66,6 @@ public class ServiceCollectionConfigurator
     {
         var dataLakeFileSystemClientMock = new Mock<DataLakeFileSystemClient>();
         serviceCollection.Replace(ServiceDescriptor.Singleton(dataLakeFileSystemClientMock.Object));
-
-        var httpClientMock = new Mock<IHttpClient>();
-        serviceCollection.Replace(ServiceDescriptor.Singleton(httpClientMock.Object));
 
         // Mock batch basis data files for each process (grid area)
         foreach (var gridAreaCode in _withBasisDataFilesForBatch!.Value.Batch.GridAreaCodes)
@@ -127,11 +123,42 @@ public class ServiceCollectionConfigurator
                     .Setup(client => client.Uri)
                     .Returns(new Uri(uriString));
 
-                // Enable the IWebFilesZipper to access the basis data files
+                const string anyStringValue = "stringValue";
+                // Enable the IStreamZipper to access the basis data files
                 // The files are represented by mocked names and in-memory streams
-                httpClientMock
-                    .Setup(client => client.GetStreamAsync(It.Is<Uri>(uri => uri.AbsoluteUri.Contains(encodedDirectory))))
-                    .ReturnsAsync(() => new MemoryStream(basisDataBuffer));
+                var memoryStream = new MemoryStream(basisDataBuffer);
+                var fileDownloadResponse = Response.FromValue(
+                    DataLakeModelFactory.FileDownloadInfo(
+                    memoryStream.Length,
+                    memoryStream,
+                    null,
+                    DataLakeModelFactory.FileDownloadDetails(
+                        DateTimeOffset.Now,
+                        new Dictionary<string,
+                            string>(),
+                        anyStringValue,
+                        ETag.All,
+                        anyStringValue,
+                        anyStringValue,
+                        anyStringValue,
+                        anyStringValue,
+                        DateTimeOffset.Now,
+                        anyStringValue,
+                        anyStringValue,
+                        anyStringValue,
+                        new Uri("https://stuff.com"),
+                        CopyStatus.Success,
+                        DataLakeLeaseDuration.Fixed,
+                        DataLakeLeaseState.Available,
+                        DataLakeLeaseStatus.Locked,
+                        anyStringValue,
+                        false,
+                        anyStringValue,
+                        basisDataBuffer)),
+                    null!);
+                dataLakeFileClientMock
+                    .Setup(client => client.ReadAsync())
+                    .ReturnsAsync(() => fileDownloadResponse);
             }
         }
 
