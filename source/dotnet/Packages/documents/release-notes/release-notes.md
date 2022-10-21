@@ -2,7 +2,7 @@
 
 ## Version 2.1.0
 
-Added `GetZippedBasisDataStreamAsync` that makes it possible to get the basis data for a specific batch as a stream 
+Added `GetZippedBasisDataStreamAsync` that makes it possible to get the basis data for a specific batch as a stream.
 
 ## Version 2.0.0
 
