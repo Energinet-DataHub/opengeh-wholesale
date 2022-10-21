@@ -69,7 +69,6 @@ public class BatchController : ControllerBase
     /// Returns a stream containing the zipped basis data for a batch matching <paramref name="batchId"/>
     /// </summary>
     /// <param name="batchId">BatchId</param>
-    /// <returns>Stream</returns>
     [HttpPost("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> ZipBasisDataAsync([FromBody] Guid batchId)
