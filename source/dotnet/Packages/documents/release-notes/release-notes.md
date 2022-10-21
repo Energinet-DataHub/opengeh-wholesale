@@ -1,8 +1,8 @@
 # Wholesale Client Package Release notes
 
-## Version 2.0.1
+## Version 2.1.0
 
-Add get zipped basis data as a stream
+Added `GetZippedBasisDataStreamAsync` that makes it possible to get the basis data for a specific batch as a stream 
 
 ## Version 2.0.0
 
