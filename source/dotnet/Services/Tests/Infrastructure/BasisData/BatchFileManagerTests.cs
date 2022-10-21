@@ -154,6 +154,78 @@ public class BatchFileManagerTests
             .ThrowAsync<Exception>();
     }
 
+    [Fact]
+    public static void GetResultFileDir_Path_Is_Correct()
+    {
+        // ##### IMPORTANT ######
+        // if the path from the filemanager changes, change the path accordingly in calculator_job.py
+
+        // Arrange
+        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string gridAreaCode = "123";
+        const string expected = $"results/batch_id={batchId}/grid_area={gridAreaCode}/";
+
+        // Act
+        var actual = BatchFileManager.GetResultDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+
+        // Assert
+        actual.Directory.Should().Be(expected);
+    }
+
+    [Fact]
+    public static void GetMasterBasisDataFileDir_Is_Correct()
+    {
+        // ##### IMPORTANT ######
+        // if the path from the BatchFileManager changes, change the path accordingly in calculator_job.py
+
+        // Arrange
+        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string gridAreaCode = "123";
+        const string expected = $"results/master-basis-data/batch_id={batchId}/grid_area={gridAreaCode}/";
+
+        // Act
+        var actual = BatchFileManager.GetMasterBasisDataDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+
+        // Assert
+        actual.Directory.Should().Be(expected);
+    }
+
+    [Fact]
+    public static void GetHourlyBasisDataFileDir_Is_Correct()
+    {
+        // ##### IMPORTANT ######
+        // if the path from the BatchFileManager changes, change the path accordingly in calculator_job.py
+
+        // Arrange
+        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string gridAreaCode = "123";
+        const string expected = $"results/basis-data/batch_id={batchId}/time-series-hour/grid_area={gridAreaCode}/";
+
+        // Act
+        var actual = BatchFileManager.GetTimeSeriesHourBasisDataDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+
+        // Assert
+        actual.Directory.Should().Be(expected);
+    }
+
+    [Fact]
+    public static void GetQuarterlyBasisDataFileDir_Is_Correct()
+    {
+        // ##### IMPORTANT ######
+        // if the path from the BatchFileManager changes, change the path accordingly in calculator_job.py
+
+        // Arrange
+        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string gridAreaCode = "123";
+        const string expected = $"results/basis-data/batch_id={batchId}/time-series-quarter/grid_area={gridAreaCode}/";
+
+        // Act
+        var actual = BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+
+        // Assert
+        actual.Directory.Should().Be(expected);
+    }
+
     private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
     {
         var pathItem = DataLakeModelFactory
