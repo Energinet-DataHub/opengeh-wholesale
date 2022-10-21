@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
@@ -28,11 +30,13 @@ public class BatchController : ControllerBase
     private const string Version = "2.0";
     private readonly IBatchApplicationService _batchApplicationService;
     private readonly IBatchDtoV2Mapper _batchDtoV2Mapper;
+    private readonly IBasisDataApplicationService _basisDataApplicationService;
 
-    public BatchController(IBatchApplicationService batchApplicationService, IBatchDtoV2Mapper batchDtoV2Mapper)
+    public BatchController(IBatchApplicationService batchApplicationService, IBatchDtoV2Mapper batchDtoV2Mapper, IBasisDataApplicationService basisDataApplicationService)
     {
         _batchApplicationService = batchApplicationService;
         _batchDtoV2Mapper = batchDtoV2Mapper;
+        _basisDataApplicationService = basisDataApplicationService;
     }
 
     /// <summary>
@@ -59,5 +63,17 @@ public class BatchController : ControllerBase
         var batchesDto = await _batchApplicationService.SearchAsync(batchSearchDto).ConfigureAwait(false);
         var batchesDtoV2 = batchesDto.Select(_batchDtoV2Mapper.Map);
         return Ok(batchesDtoV2);
+    }
+
+    /// <summary>
+    /// Returns a stream containing the zipped basis data for a batch matching <paramref name="batchId"/>
+    /// </summary>
+    /// <param name="batchId">BatchId</param>
+    [HttpPost("ZippedBasisDataStream")]
+    [MapToApiVersion(Version)]
+    public async Task<IActionResult> ZipBasisDataAsync([FromBody] Guid batchId)
+    {
+        var stream = await _basisDataApplicationService.GetZippedBasisDataStreamAsync(batchId).ConfigureAwait(false);
+        return Ok(stream);
     }
 }
