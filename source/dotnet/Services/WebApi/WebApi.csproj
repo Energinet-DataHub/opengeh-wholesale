@@ -42,9 +42,6 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Contracts\BatchDtoV1.cs">
-      <Link>Controllers\V1\BatchDtoV1.cs</Link>
-    </Compile>
     <Compile Include="..\..\Contracts\BatchDtoV2.cs">
       <Link>Controllers\V2\BatchDtoV2.cs</Link>
     </Compile>
