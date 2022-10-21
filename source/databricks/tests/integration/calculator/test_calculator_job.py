@@ -224,7 +224,7 @@ def test__result_file_is_created(
     # Act
     # we run the calculator once per session. See the fixture start_calc in top of this file
 
-    # Assert: Relative path of result file must match expectation of .NET
+    # Assert: Relative path of result file must match expectation of .NET (BathFileManager.GetResultDirectory())
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
     expected_result_path = (
         f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=805"
@@ -341,3 +341,57 @@ def test__creates_master_data_csv_per_grid_area(
     assert (
         master_basis_data_806.count() >= 1
     ), "Calculator job failed to write master basis data files for grid area 806"
+
+
+def test__master_basis_data_file_is_created(
+    spark,
+    test_data_job_parameters,
+    data_lake_path,
+    find_first_file,
+    worker_id,
+    start_calc,
+):
+    # Act
+    # we run the calculator once per session. See the fixture start_calc in top of this file
+
+    # Assert: Relative path of result file must match expectation of .NET  (BathFileManager.GetMasterBasisDataDirectory())
+    # IMPORTANT: If the expected result path changes it probably requires .NET changes too
+    expected_result_path = f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id=1/grid_area=805"
+    actual_result_file = find_first_file(expected_result_path, "part-*.csv")
+    assert actual_result_file is not None
+
+
+def test__hourly_basis_data_file_is_created(
+    spark,
+    test_data_job_parameters,
+    data_lake_path,
+    find_first_file,
+    worker_id,
+    start_calc,
+):
+    # Act
+    # we run the calculator once per session. See the fixture start_calc in top of this file
+
+    # Assert: Relative path of result file must match expectation of .NET (BathFileManager.GetTimeSeriesHourBasisDataDirectory())
+    # IMPORTANT: If the expected result path changes it probably requires .NET changes too
+    expected_result_path = f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-hour/grid_area=805"
+    actual_result_file = find_first_file(expected_result_path, "part-*.csv")
+    assert actual_result_file is not None
+
+
+def test__quarterly_basis_data_file_is_created(
+    spark,
+    test_data_job_parameters,
+    data_lake_path,
+    find_first_file,
+    worker_id,
+    start_calc,
+):
+    # Act
+    # we run the calculator once per session. See the fixture start_calc in top of this file
+
+    # Assert: Relative path of result file must match expectation of .NET (BathFileManager.GetTimeSeriesQuarterBasisDataDirectory())
+    # IMPORTANT: If the expected result path changes it probably requires .NET changes too
+    expected_result_path = f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+    actual_result_file = find_first_file(expected_result_path, "part-*.csv")
+    assert actual_result_file is not None
