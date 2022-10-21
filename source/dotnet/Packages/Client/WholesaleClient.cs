@@ -59,7 +59,6 @@ public class WholesaleClient : IWholesaleClient
 
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
-        var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-        return stream;
+        return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
     }
 }
