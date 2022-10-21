@@ -20,4 +20,6 @@ namespace Energinet.DataHub.Wholesale.Application.Processes;
 public interface IBasisDataApplicationService
 {
     Task ZipBasisDataAsync(BatchCompletedEventDto batchCompletedEvent);
+
+    Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId);
 }

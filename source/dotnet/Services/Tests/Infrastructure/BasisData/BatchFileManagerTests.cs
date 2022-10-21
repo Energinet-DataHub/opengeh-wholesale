@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using AutoFixture.Xunit2;
 using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -224,6 +228,59 @@ public class BatchFileManagerTests
 
         // Assert
         actual.Directory.Should().Be(expected);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task GetZippedBasisDataStreamAsync_WhenGivenBatch_ReturnCorrectStream(
+        [Frozen] Mock<IStreamZipper> streamZipperMock,
+        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock)
+    {
+        // Arrange
+        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(It.IsAny<string>()))
+            .Returns(dataLakeFileClientMock.Object);
+        var basisDataBuffer = Encoding.UTF8.GetBytes("test");
+        var memoryStream = new MemoryStream(basisDataBuffer);
+        const string anyStringValue = "anyStringValue";
+        var fileDownloadResponse = Response.FromValue(
+            DataLakeModelFactory.FileDownloadInfo(
+                memoryStream.Length,
+                memoryStream,
+                null,
+                DataLakeModelFactory.FileDownloadDetails(
+                    DateTimeOffset.Now,
+                    new Dictionary<string,
+                        string>(),
+                    anyStringValue,
+                    ETag.All,
+                    anyStringValue,
+                    anyStringValue,
+                    anyStringValue,
+                    anyStringValue,
+                    DateTimeOffset.Now,
+                    anyStringValue,
+                    anyStringValue,
+                    anyStringValue,
+                    new Uri("https://stuff.com"),
+                    CopyStatus.Success,
+                    DataLakeLeaseDuration.Fixed,
+                    DataLakeLeaseState.Available,
+                    DataLakeLeaseStatus.Locked,
+                    anyStringValue,
+                    false,
+                    anyStringValue,
+                    basisDataBuffer)),
+            null!);
+        dataLakeFileClientMock.Setup(x => x.ReadAsync()).ReturnsAsync(fileDownloadResponse);
+        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var batch = new BatchBuilder().Build();
+
+        // Act
+        var actual = await new StreamReader(await sut.GetZippedBasisDataStreamAsync(batch).ConfigureAwait(false)).ReadLineAsync();
+
+        // Assert
+        actual.Should().Be("test");
     }
 
     private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
