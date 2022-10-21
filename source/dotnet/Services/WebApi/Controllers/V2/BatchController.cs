@@ -66,7 +66,7 @@ public class BatchController : ControllerBase
     }
 
     /// <summary>
-    /// Get zipped basis data for batch matching <paramref name="batchId"/>
+    /// Returns a stream containing the zipped basis data for a batch matching <paramref name="batchId"/>
     /// </summary>
     /// <param name="batchId">BatchId</param>
     /// <returns>Always 200 OK</returns>
