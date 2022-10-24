@@ -28,9 +28,6 @@ using NodaTime;
 using Test.Core;
 using Xunit;
 
-// TODO: Tests:
-// - Creates zip without missing files
-// - Logs error when files are missing
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
 [Collection("ProcessManagerIntegrationTest")]
@@ -58,7 +55,6 @@ public sealed class BasisDataApplicationServiceTests
         await sut.ZipBasisDataAsync(batchCompletedEvent);
 
         // Assert
-        // TODO: assert expected content
         var zipExtractDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         ZipFile.ExtractToDirectory(zipFileName, zipExtractDirectory);
 
