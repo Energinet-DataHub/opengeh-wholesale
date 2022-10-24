@@ -21,17 +21,33 @@ public static class ReflectionHelper
 {
     private static readonly Type _functionAttribute = typeof(FunctionAttribute);
 
+    /// <summary>
+    /// Find all types
+    /// </summary>
+    /// <returns>All types within an assembly</returns>
     public static Func<Type, IEnumerable<Type>> FindAllTypes()
         => t => t.Assembly.GetTypes();
 
+    /// <summary>
+    /// Find all types within a collection of assemblies
+    /// </summary>
+    /// <returns>All types found within the collection of assemblies</returns>
     public static Func<Assembly[], IEnumerable<Type>> FindAllTypesInAssemblies()
         => assemblies => assemblies.SelectMany(t => t.GetTypes());
 
+    /// <summary>
+    /// Reduce collection to match all types that have at least one method that contains <see cref="FunctionAttribute"/>
+    /// </summary>
+    /// <returns>All types filter to contain <see cref="FunctionAttribute"/></returns>
     public static Func<IEnumerable<Type>, IEnumerable<Type>> FindAllFunctionTypes()
     {
         return types => types.Where(type => type.GetMethods().Any(MethodIsAnnotatedWithFunctionAttribute));
     }
 
+    /// <summary>
+    /// Map all constructor dependencies per type that have one public constructor
+    /// </summary>
+    /// <returns>All constructor dependencies</returns>
     public static Func<IEnumerable<Type>, IEnumerable<Type>> FindAllConstructorDependencies()
     {
         return types => types
@@ -39,30 +55,33 @@ public static class ReflectionHelper
             .SelectMany(GetConstructorParameters);
     }
 
+    /// <summary>
+    /// Find a constructor dependencies for a type
+    /// </summary>
+    /// <returns>Collection of all constructor dependencies</returns>
     public static Func<Type, IEnumerable<Type>> FindAllConstructorDependenciesForType()
     {
         return type => GetConstructorParameters(GetOnePublicConstructor(type));
     }
 
+    /// <summary>
+    /// Find all types that implement a certain type
+    /// </summary>
+    /// <returns>Collection of all types that implements the given type</returns>
     public static Func<Type, IEnumerable<Type>, IEnumerable<Type>> FindAllTypesThatImplementType()
     {
         return (targetType, types) =>
             types.Where(targetType.IsAssignableFrom);
     }
 
+    /// <summary>
+    /// Find all types that implement a generic interface
+    /// </summary>
+    /// <returns>Collection of the type that implements the certain generic interface</returns>
     public static Func<Type, IEnumerable<Type>, IEnumerable<Type>> FindAllTypesThatImplementGenericInterface()
     {
         return (targetType, types) =>
             types.Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == targetType));
-    }
-
-    public static Func<Type, Type, IEnumerable<Type>> MapToUnderlyingType()
-    {
-        return (type, targetType) =>
-        {
-            return type.GetInterfaces()
-                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition().IsAssignableFrom(targetType));
-        };
     }
 
     private static ConstructorInfo? GetOnePublicConstructor(Type? type)
