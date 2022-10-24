@@ -16,6 +16,7 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
@@ -25,11 +26,13 @@ public class BatchFileManager : IBatchFileManager
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
     private readonly IStreamZipper _streamZipper;
+    private readonly ILogger _logger;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper, ILogger<BatchFileManager> logger)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _streamZipper = streamZipper;
+        _logger = logger;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         {
             GetResultDirectory,
@@ -63,8 +66,11 @@ public class BatchFileManager : IBatchFileManager
 
     public async Task<Stream> GetZippedBasisDataStreamAsync(Batch batch)
     {
+        _logger.LogInformation(batch.Id.ToString());
         var zipFileName = GetZipFileName(batch);
+        _logger.LogInformation(zipFileName);
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(zipFileName);
+        _logger.LogInformation(dataLakeFileClient.Path);
         var stream = (await dataLakeFileClient.ReadAsync().ConfigureAwait(false)).Value.Content;
         return stream;
     }
