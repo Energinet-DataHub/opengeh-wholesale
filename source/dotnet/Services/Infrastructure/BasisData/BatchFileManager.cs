@@ -69,7 +69,6 @@ public class BatchFileManager : IBatchFileManager
         return stream;
     }
 
-    // TODO: Test that the directory paths match the directory used by Databricks (see calculator.py).
     public static (string Directory, string Extension, string ZipEntryPath) GetResultDirectory(Guid batchId, GridAreaCode gridAreaCode)
         => ($"results/batch_id={batchId}/grid_area={gridAreaCode.Code}/", ".json", $"{gridAreaCode.Code}/Result.json");
 
