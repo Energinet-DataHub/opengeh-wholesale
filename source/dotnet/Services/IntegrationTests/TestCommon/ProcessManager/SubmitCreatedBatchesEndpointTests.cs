@@ -73,7 +73,6 @@ public class SubmitCreatedBatchesEndpointTests
             await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(UpdateBatchExecutionStateEndpoint));
 
             // Assert: Batch and process completed events have been published
-            // TODO: Check correlation ID?
             var isBatchCompletedEventPublished = eventualBatchCompletedEvent
                 .MessageAwaiter!
                 .Wait(TimeSpan.FromSeconds(20));
