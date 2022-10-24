@@ -24,6 +24,7 @@ using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.Configuration;
+using DatabricksManager = Energinet.DataHub.Wholesale.IntegrationTests.Components.DatabricksManager;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.FunctionApp
 {
