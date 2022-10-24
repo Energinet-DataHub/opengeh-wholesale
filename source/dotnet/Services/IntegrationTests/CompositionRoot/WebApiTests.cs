@@ -20,6 +20,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.CompositionRoot;
 
+[Collection(nameof(WebApiIntegrationTestHost))]
 public class WebApiTests
 {
     public static IEnumerable<object[]> GetControllerRequirements()

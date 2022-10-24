@@ -19,6 +19,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.CompositionRoot;
 
+[Collection(nameof(IntegrationEventListenerIntegrationTestHost))]
 public class IntegrationEventListenerIntegrationTest
 {
     #region Member data providers
