@@ -87,7 +87,10 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IBasisDataApplicationService, BasisDataApplicationService>();
         services.AddScoped<IBatchFileManager, BatchFileManager>();
         services.AddScoped<IStreamZipper, StreamZipper>();
-        services.AddScoped<DataLakeFileSystemClient>(_ => null!);
+        var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
+        var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
+        var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
+        services.AddSingleton(dataLakeFileSystemClient);
         services.AddScoped<HttpClient>(_ => null!);
         services.AddScoped<IBatchCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IBatchFactory, BatchFactory>();
