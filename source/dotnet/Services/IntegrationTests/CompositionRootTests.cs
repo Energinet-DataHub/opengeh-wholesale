@@ -48,7 +48,7 @@ public class CompositionRootTests
 
     #endregion
 
-    [Theory(DisplayName = nameof(SenderIntegrationFunctions_can_resolve_dependencies_for))]
+    [Theory]
     [MemberData(nameof(SenderIntegrationFunctions))]
     public async Task SenderIntegrationFunctions_can_resolve_dependencies_for(Requirement requirement)
     {
@@ -57,7 +57,7 @@ public class CompositionRootTests
         Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
     }
 
-    [Theory(DisplayName = nameof(ProcessManagerFunctions_can_resolve_dependencies_for))]
+    [Theory]
     [MemberData(nameof(ProcessManagerFunctions))]
     public async Task ProcessManagerFunctions_can_resolve_dependencies_for(Requirement requirement)
     {
@@ -66,7 +66,7 @@ public class CompositionRootTests
         Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
     }
 
-    [Theory(DisplayName = nameof(IntegrationEventListener_can_resolve_dependencies_for))]
+    [Theory]
     [MemberData(nameof(IntegrationEventListenerFunctions))]
     public async Task IntegrationEventListener_can_resolve_dependencies_for(Requirement requirement)
     {
@@ -75,7 +75,7 @@ public class CompositionRootTests
         Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
     }
 
-    [Theory(DisplayName = nameof(WebApi_can_resolve_dependencies_for))]
+    [Theory]
     [MemberData(nameof(GetControllerRequirements))]
     public async Task WebApi_can_resolve_dependencies_for(Requirement requirement)
     {
