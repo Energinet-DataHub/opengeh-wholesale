@@ -66,11 +66,24 @@ public class BatchFileManager : IBatchFileManager
 
     public async Task<Stream> GetZippedBasisDataStreamAsync(Batch batch)
     {
-        _logger.LogInformation($"GetZippedBasisDataStreamAsync batchid:{batch.Id.ToString()}");
-        var zipFileName = GetZipFileName(batch);
-        _logger.LogInformation($"GetZippedBasisDataStreamAsync zipfileName:{zipFileName}");
-        var dataLakeFileClient = await GetDataLakeFileClientAsync(zipFileName, ".zip").ConfigureAwait(false);
-        _logger.LogInformation($"GetZippedBasisDataStreamAsync datalakefileclienpath:{dataLakeFileClient.Path}");
+        const string directory = "results/zip";
+        var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
+        var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
+        if (!directoryExists.Value)
+            throw new Exception($"Calculation storage directory '{directory}' does not exist");
+        DataLakeFileClient dataLakeFileClient = null!;
+
+        await foreach (var pathItem in directoryClient.GetPathsAsync())
+        {
+            if (pathItem.Name == GetZipFileNameNoResultAndZip(batch))
+                dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
+        }
+
+        if (dataLakeFileClient == null)
+        {
+            throw new Exception($"dataLakeFileClient not for found for{GetZipFileNameNoResultAndZip(batch)}");
+        }
+
         var stream = (await dataLakeFileClient.ReadAsync().ConfigureAwait(false)).Value.Content;
         return stream;
     }
@@ -94,6 +107,7 @@ public class BatchFileManager : IBatchFileManager
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
 
     public static string GetZipFileName(Batch batch) => $"results/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
+    public static string GetZipFileNameNoResultAndZip(Batch batch) => $"batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
 
     private async Task<IEnumerable<(Stream FileStream, string EntryPath)>> GetBatchBasisFileStreamsAsync(Batch batch)
     {
