@@ -32,10 +32,10 @@ public class BatchFileManager : IBatchFileManager
         _streamZipper = streamZipper;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         {
-            GetResultDirectory,
-            GetTimeSeriesHourBasisDataDirectory,
+            GetResultFileSpecification,
+            GetTimeSeriesHourBasisDataFileSpecification,
             GetTimeSeriesQuarterBasisDataFileSpecification,
-            GetMasterBasisDataDirectory,
+            GetMasterBasisDataFileSpecification,
         };
     }
 
@@ -51,7 +51,7 @@ public class BatchFileManager : IBatchFileManager
 
     public async Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
-        var (directory, extension, _) = GetResultDirectory(batchId, gridAreaCode);
+        var (directory, extension, _) = GetResultFileSpecification(batchId, gridAreaCode);
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
         if (dataLakeFileClient == null)
         {
@@ -70,10 +70,10 @@ public class BatchFileManager : IBatchFileManager
     }
 
     // TODO: Test that the directory paths match the directory used by Databricks (see calculator.py).
-    public static (string Directory, string Extension, string ZipEntryPath) GetResultDirectory(Guid batchId, GridAreaCode gridAreaCode)
+    public static (string Directory, string Extension, string ZipEntryPath) GetResultFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
         => ($"results/batch_id={batchId}/grid_area={gridAreaCode.Code}/", ".json", $"{gridAreaCode.Code}/Result.json");
 
-    public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode)
+    public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
         => ($"results/basis-data/batch_id={batchId}/time-series-hour/grid_area={gridAreaCode.Code}/",
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT1H.csv");
@@ -83,7 +83,7 @@ public class BatchFileManager : IBatchFileManager
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT15M.csv");
 
-    public static (string Directory, string Extension, string ZipEntryPath) GetMasterBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode)
+    public static (string Directory, string Extension, string ZipEntryPath) GetMasterBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
         => ($"results/master-basis-data/batch_id={batchId}/grid_area={gridAreaCode.Code}/",
             ".csv",
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");

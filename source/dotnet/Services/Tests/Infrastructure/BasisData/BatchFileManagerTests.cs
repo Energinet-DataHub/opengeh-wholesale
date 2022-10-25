@@ -161,61 +161,58 @@ public class BatchFileManagerTests
     }
 
     [Fact]
-    public static void GetResultFileDir_Path_Is_Correct()
+    public static async Task GetResultFileSpecification_MatchesContract()
     {
-        // ##### IMPORTANT ######
-        // if the path from the filemanager changes, change the path accordingly in calculator_job.py
-
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
-        const string expected = $"results/batch_id={batchId}/grid_area={gridAreaCode}/";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = BatchFileManager.GetResultDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual = BatchFileManager.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
-        actual.Directory.Should().Be(expected);
+        actual.Extension.Should().Be(expected.Extension);
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Fact]
-    public static void GetMasterBasisDataFileDir_Is_Correct()
+    public static async Task GetMasterBasisDataFileSpecification_MatchesContract()
     {
-        // ##### IMPORTANT ######
-        // if the path from the BatchFileManager changes, change the path accordingly in calculator_job.py
-
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
-        const string expected = $"results/master-basis-data/batch_id={batchId}/grid_area={gridAreaCode}/";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.MasterBasisDataFile;
 
         // Act
-        var actual = BatchFileManager.GetMasterBasisDataDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual = BatchFileManager.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
-        actual.Directory.Should().Be(expected);
+        actual.Extension.Should().Be(expected.Extension);
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Fact]
-    public static void GetHourlyBasisDataFileDir_Is_Correct()
+    public static async Task GetTimeSeriesHourBasisDataFileSpecification_MatchesContract()
     {
-        // ##### IMPORTANT ######
-        // if the path from the BatchFileManager changes, change the path accordingly in calculator_job.py
-
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
-        const string expected = $"results/basis-data/batch_id={batchId}/time-series-hour/grid_area={gridAreaCode}/";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.TimeSeriesHourBasisDataFile;
 
         // Act
-        var actual = BatchFileManager.GetTimeSeriesHourBasisDataDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual = BatchFileManager.GetTimeSeriesHourBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
-        actual.Directory.Should().Be(expected);
+        actual.Extension.Should().Be(expected.Extension);
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Fact]
-    public static async Task GetQuarterlyBasisDataFileSpecification_MatchesContract()
+    public static async Task GetTimeSeriesQuarterBasisDataFileSpecification_MatchesContract()
     {
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
@@ -228,7 +225,6 @@ public class BatchFileManagerTests
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
-        //new Regex(expected.DirectoryExpression, RegexOptions.ECMAScript).IsMatch(actual.Directory).Should().BeTrue();
         actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
