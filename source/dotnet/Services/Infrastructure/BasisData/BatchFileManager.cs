@@ -28,7 +28,7 @@ public class BatchFileManager : IBatchFileManager
     private readonly IStreamZipper _streamZipper;
     private readonly ILogger _logger;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper, ILogger logger)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper, ILogger<IBatchFileManager> logger)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _streamZipper = streamZipper;
