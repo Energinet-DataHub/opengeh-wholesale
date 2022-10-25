@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using DatabricksClientManager;
+using Energinet.DataHub.Wholesale.IntegrationTests.Components;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Xunit;
-using DatabricksManager = Energinet.DataHub.Wholesale.IntegrationTests.Components.DatabricksManager;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 
