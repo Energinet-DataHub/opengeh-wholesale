@@ -12,41 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 
+/// <summary>
+/// A requirement that must be meet by the composition root
+/// </summary>
+/// <param name="Name">Friendly name for the requirement</param>
+/// <param name="DependentOn">All dependencies that must be resolved</param>
+/// <param name="ActualType">Actual type that is inspected e.g.: function, web api controller, mvc controller</param>
 public record Requirement(string Name, IEnumerable<Type> DependentOn, Type? ActualType = null)
 {
     public override string ToString()
     {
         return Name;
-    }
-}
-
-internal static class IServiceProviderHelpers
-{
-    public static bool CanSatisfyRequirement(this IServiceProvider services, Requirement requirement)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(requirement);
-
-        return requirement.DependentOn.All(dependency => services.GetService(dependency) != null);
-    }
-
-    public static bool RequirementIsPartOfCollection<T>(this IServiceProvider serviceProvider, Requirement requirement)
-        where T : class
-    {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
-        ArgumentNullException.ThrowIfNull(requirement);
-
-        if (requirement.ActualType == null)
-        {
-            throw new InvalidOperationException(
-                $"{nameof(requirement)} must have the property {nameof(requirement.ActualType)} set");
-        }
-
-        var collection = serviceProvider.GetServices<T>().ToLookup(t => t.GetType());
-        return collection.Contains(requirement.ActualType);
     }
 }
