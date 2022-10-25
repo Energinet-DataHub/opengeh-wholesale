@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener;
 
 public class EnergySupplierChangedListenerEndpoint
 {
-    private const string FunctionName = nameof(MarketParticipantChangedListenerEndpoint);
+    private const string FunctionName = nameof(EnergySupplierChangedListenerEndpoint);
 
     private readonly EnergySupplierChangedDtoFactory _energySupplierChangedDtoFactory;
     private readonly IJsonSerializer _jsonSerializer;
