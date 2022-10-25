@@ -148,6 +148,7 @@ public class BatchFileManager : IBatchFileManager
     private Task<Stream> GetWriteStreamAsync(string fileName)
     {
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(fileName);
+        _logger.LogInformation($"GetWriteStreamAsync datalakefileclienpath:{dataLakeFileClient.Path}");
         return dataLakeFileClient.OpenWriteAsync(false);
     }
 }
