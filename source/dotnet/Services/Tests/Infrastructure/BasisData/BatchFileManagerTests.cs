@@ -61,7 +61,7 @@ public class BatchFileManagerTests
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object, null!);
 
         // Act
         var actual = await sut.GetResultFileStreamAsync(Guid.NewGuid(), new GridAreaCode("123"));
@@ -92,7 +92,7 @@ public class BatchFileManagerTests
             .ReturnsAsync(responseMock.Object);
         responseMock.Setup(res => res.Value).Returns(true);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object, null!);
 
         // Act and Assert
         await sut
@@ -116,7 +116,7 @@ public class BatchFileManagerTests
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
             .ReturnsAsync(responseMock.Object);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object, null!);
 
         // Act and Assert
         await sut
@@ -149,7 +149,7 @@ public class BatchFileManagerTests
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
             .ReturnsAsync(responseMock.Object);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object, null!);
 
         // Act and Assert
         await sut
@@ -273,7 +273,7 @@ public class BatchFileManagerTests
                     basisDataBuffer)),
             null!);
         dataLakeFileClientMock.Setup(x => x.ReadAsync()).ReturnsAsync(fileDownloadResponse);
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object, null!);
         var batch = new BatchBuilder().Build();
 
         // Act

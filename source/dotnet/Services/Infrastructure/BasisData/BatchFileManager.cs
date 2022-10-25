@@ -16,6 +16,7 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
@@ -25,11 +26,13 @@ public class BatchFileManager : IBatchFileManager
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
     private readonly IStreamZipper _streamZipper;
+    private readonly ILogger _logger;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper, ILogger<IBatchFileManager> logger)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _streamZipper = streamZipper;
+        _logger = logger;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         {
             GetResultDirectory,
@@ -63,8 +66,26 @@ public class BatchFileManager : IBatchFileManager
 
     public async Task<Stream> GetZippedBasisDataStreamAsync(Batch batch)
     {
-        var zipFileName = GetZipFileName(batch);
-        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(zipFileName);
+        const string directory = "results/zip";
+        var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
+        if (directoryClient == null)
+            throw new Exception("directoryClient was null when getting directory");
+        var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
+        if (!directoryExists.Value)
+            throw new Exception($"Calculation storage directory '{directory}' does not exist");
+        DataLakeFileClient dataLakeFileClient = null!;
+
+        await foreach (var pathItem in directoryClient.GetPathsAsync())
+        {
+            if (pathItem.Name == GetZipFileNameNoResultAndZip(batch))
+                dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
+        }
+
+        if (dataLakeFileClient == null)
+        {
+            throw new Exception($"dataLakeFileClient not for found for{GetZipFileNameNoResultAndZip(batch)}");
+        }
+
         var stream = (await dataLakeFileClient.ReadAsync().ConfigureAwait(false)).Value.Content;
         return stream;
     }
@@ -88,6 +109,8 @@ public class BatchFileManager : IBatchFileManager
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
 
     public static string GetZipFileName(Batch batch) => $"results/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
+
+    public static string GetZipFileNameNoResultAndZip(Batch batch) => $"batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
 
     private async Task<IEnumerable<(Stream FileStream, string EntryPath)>> GetBatchBasisFileStreamsAsync(Batch batch)
     {
@@ -142,6 +165,7 @@ public class BatchFileManager : IBatchFileManager
     private Task<Stream> GetWriteStreamAsync(string fileName)
     {
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(fileName);
+        _logger.LogInformation($"GetWriteStreamAsync datalakefileclienpath:{dataLakeFileClient.Path}");
         return dataLakeFileClient.OpenWriteAsync(false);
     }
 }

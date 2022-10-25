@@ -41,6 +41,7 @@ using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager;
@@ -149,9 +150,14 @@ public static class Program
         });
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<IBatchFileManager>(
-            provider => new BatchFileManager(
-                provider.GetRequiredService<DataLakeFileSystemClient>(),
-                provider.GetRequiredService<IStreamZipper>()));
+            provider =>
+            {
+                var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+                return new BatchFileManager(
+                    provider.GetRequiredService<DataLakeFileSystemClient>(),
+                    provider.GetRequiredService<IStreamZipper>(),
+                    loggerFactory.CreateLogger<IBatchFileManager>());
+            });
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)

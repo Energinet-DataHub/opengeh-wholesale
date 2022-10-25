@@ -37,6 +37,7 @@ using Energinet.DataHub.Wholesale.Sender.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Sender;
@@ -123,11 +124,17 @@ public static class Program
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
+        serviceCollection.AddSingleton(dataLakeFileSystemClient);
         serviceCollection.AddScoped<IStreamZipper>(_ => null!);
         serviceCollection.AddScoped<IBatchFileManager>(
-            provider => new BatchFileManager(
-                dataLakeFileSystemClient,
-                provider.GetService<IStreamZipper>()!));
+            provider =>
+            {
+                var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+                return new BatchFileManager(
+                    provider.GetRequiredService<DataLakeFileSystemClient>(),
+                    provider.GetRequiredService<IStreamZipper>(),
+                    loggerFactory.CreateLogger<IBatchFileManager>());
+            });
         serviceCollection.AddHttpClient();
     }
 
