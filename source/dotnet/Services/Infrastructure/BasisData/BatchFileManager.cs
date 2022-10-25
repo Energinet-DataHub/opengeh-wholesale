@@ -68,6 +68,8 @@ public class BatchFileManager : IBatchFileManager
     {
         const string directory = "results/zip";
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
+        if (directoryClient == null)
+            throw new Exception("directoryClient was null when getting directory");
         var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
         if (!directoryExists.Value)
             throw new Exception($"Calculation storage directory '{directory}' does not exist");
