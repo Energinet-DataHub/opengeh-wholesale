@@ -34,6 +34,7 @@ from package.calculator_job import internal_start as start_calculator
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 
+
 # Code snippet from https://joelmccune.com/python-dictionary-as-object/
 class DictObj:
     def __init__(self, in_dict: dict):
@@ -264,12 +265,15 @@ def test__result_file_path_matches_contract(
         f"{data_lake_path}/{worker_id}",
         f"results/batch_id={executed_batch_id}/grid_area=805/part-*.json",
     )
-    print(f"XXXXXXXXXXXX {expected_path_expression} - {actual_result_file}")
     assert re.match(expected_path_expression, actual_result_file)
 
 
 def test__creates_hour_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
+    spark,
+    test_data_job_parameters,
+    data_lake_path,
+    executed_calculation_job,
+    worker_id,
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -378,55 +382,76 @@ def test__creates_master_data_csv_per_grid_area(
     ), "Calculator job failed to write master basis data files for grid area 806"
 
 
-def test__master_basis_data_file_is_created(
+def test__master_basis_data_file_matches_contract(
     spark,
     test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
     executed_calculation_job,
+    calculation_file_paths_contract,
 ):
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Arrange
+    contract = calculation_file_paths_contract.master_basis_data_file
+    expected_path_expression = (
+        contract.directory_expression + "[^/]+" + contract.extension
+    )
 
-    # Assert: Relative path of result file must match expectation of .NET  (BathFileManager.GetMasterBasisDataDirectory())
-    # IMPORTANT: If the expected result path changes it probably requires .NET changes too
-    expected_result_path = f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id={executed_batch_id}/grid_area=805"
-    actual_result_file = find_first_file(expected_result_path, "part-*.csv")
-    assert actual_result_file is not None
+    # Act: Executed in fixture executed_calculation_job
+
+    # Assert
+    actual_file_path = find_first_file(
+        f"{data_lake_path}/{worker_id}/",
+        f"results/master-basis-data/batch_id={executed_batch_id}/grid_area=805/part-*.csv",
+    )
+    assert re.match(expected_path_expression, actual_file_path)
 
 
-def test__hourly_basis_data_file_is_created(
+def test__hourly_basis_data_file_matches_contract(
     spark,
     test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
     executed_calculation_job,
+    calculation_file_paths_contract,
 ):
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Arrange
+    contract = calculation_file_paths_contract.time_series_hour_basis_data_file
+    expected_path_expression = (
+        contract.directory_expression + "[^/]+" + contract.extension
+    )
 
-    # Assert: Relative path of result file must match expectation of .NET (BathFileManager.GetTimeSeriesHourBasisDataDirectory())
-    # IMPORTANT: If the expected result path changes it probably requires .NET changes too
-    expected_result_path = f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805"
-    actual_result_file = find_first_file(expected_result_path, "part-*.csv")
-    assert actual_result_file is not None
+    # Act: Executed in fixture executed_calculation_job
+
+    # Assert
+    actual_file_path = find_first_file(
+        f"{data_lake_path}/{worker_id}",
+        f"results/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805/part-*.csv",
+    )
+    assert re.match(expected_path_expression, actual_file_path)
 
 
-def test__quarterly_basis_data_file_is_created(
+def test__quarterly_basis_data_file_matches_contract(
     spark,
     test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
     executed_calculation_job,
+    calculation_file_paths_contract,
 ):
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Arrange
+    contract = calculation_file_paths_contract.time_series_quarter_basis_data_file
+    expected_path_expression = (
+        contract.directory_expression + "[^/]+" + contract.extension
+    )
 
-    # Assert: Relative path of result file must match expectation of .NET (BathFileManager.GetTimeSeriesQuarterBasisDataDirectory())
-    # IMPORTANT: If the expected result path changes it probably requires .NET changes too
-    expected_result_path = f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805"
-    actual_result_file = find_first_file(expected_result_path, "part-*.csv")
-    assert actual_result_file is not None
+    # Act: Executed in fixture executed_calculation_job
+
+    # Assert
+    actual_file_path = find_first_file(
+        f"{data_lake_path}/{worker_id}",
+        f"results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805/part-*.csv",
+    )
+    assert re.match(expected_path_expression, actual_file_path)
