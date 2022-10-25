@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import re
 import shutil
 import subprocess
 import pytest
@@ -26,9 +27,12 @@ from pyspark.sql.types import (
     IntegerType,
     LongType,
 )
+import yaml
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import internal_start as start_calculator
 
+
+executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 
 # Code snippet from https://joelmccune.com/python-dictionary-as-object/
 class DictObj:
@@ -55,7 +59,7 @@ def test_data_job_parameters(
             "integration_events_path": f"{data_lake_path}/{worker_id}/parquet_test_files/integration_events",
             "time_series_points_path": f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points",
             "process_results_path": f"{data_lake_path}/{worker_id}/results",
-            "batch_id": "1",
+            "batch_id": executed_batch_id,
             "batch_grid_areas": [805, 806],
             "batch_snapshot_datetime": timestamp_factory("2022-09-02T21:59:00.000Z"),
             "batch_period_start_datetime": timestamp_factory(
@@ -68,8 +72,12 @@ def test_data_job_parameters(
 
 
 @pytest.fixture(scope="session")
-def start_calc(spark, test_data_job_parameters):
-    print("test_calculator_job: start calculator")
+def executed_calculation_job(spark, test_data_job_parameters):
+    """Execute the calculator job.
+    This is the act part of a test in the arrange-act-assert paradigm.
+    This act is made as a session-scoped fixture because it is a slow process
+    and because lots of assertions can be made and split into seperate tests
+    without awaiting the execution in each test."""
     start_calculator(spark, test_data_job_parameters)
 
 
@@ -141,27 +149,37 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
 
 def test__result_is_generated_for_requested_grid_areas(
-    spark, test_data_job_parameters, data_lake_path, source_path, worker_id, start_calc
+    spark,
+    test_data_job_parameters,
+    data_lake_path,
+    source_path,
+    worker_id,
+    executed_calculation_job,
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
     result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=805"
     )
     result_806 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=806"
+        f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=806"
     )
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
 
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
-    spark, test_data_job_parameters, data_lake_path, source_path, start_calc, worker_id
+    spark,
+    test_data_job_parameters,
+    data_lake_path,
+    source_path,
+    executed_calculation_job,
+    worker_id,
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
     input_time_series_points = spark.read.parquet(
@@ -177,14 +195,19 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 
 
 def test__calculator_result_schema_must_match_contract_with_dotnet(
-    spark, test_data_job_parameters, data_lake_path, source_path, worker_id, start_calc
+    spark,
+    test_data_job_parameters,
+    data_lake_path,
+    source_path,
+    worker_id,
+    executed_calculation_job,
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
     result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=805"
     )
     assert_contract_matches_schema(
         f"{source_path}/contracts/calculator-result.json",
@@ -198,50 +221,62 @@ def test__quantity_is_with_precision_3(
     data_lake_path,
     find_first_file,
     worker_id,
-    start_calc,
+    executed_calculation_job,
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
     result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=805"
     )
     import re
 
     assert re.search(r"^\d+\.\d{3}$", result_805.first().quantity)
 
 
-def test__result_file_is_created(
+@pytest.fixture(scope="session")
+def calculation_file_paths_contract(source_path):
+    with open(f"{source_path}/contracts/calculation-file-paths.yml", "r") as stream:
+        return DictObj(yaml.safe_load(stream))
+
+
+def test__result_file_path_matches_contract(
     spark,
     test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
-    start_calc,
+    executed_calculation_job,
+    calculation_file_paths_contract,
 ):
-    # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
-
-    # Assert: Relative path of result file must match expectation of .NET (BathFileManager.GetResultDirectory())
-    # IMPORTANT: If the expected result path changes it probably requires .NET changes too
-    expected_result_path = (
-        f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=805"
+    # Arrange
+    contract = calculation_file_paths_contract.result_file
+    expected_path_expression = (
+        contract.directory_expression + "[^/]+" + contract.extension
     )
-    actual_result_file = find_first_file(expected_result_path, "part-*.json")
-    assert actual_result_file is not None
+
+    # Act: Executed in fixture executed_calculation_job
+
+    # Assert
+    actual_result_file = find_first_file(
+        f"{data_lake_path}/{worker_id}",
+        f"results/batch_id={executed_batch_id}/grid_area=805/part-*.json",
+    )
+    print(f"XXXXXXXXXXXX {expected_path_expression} - {actual_result_file}")
+    assert re.match(expected_path_expression, actual_result_file)
 
 
 def test__creates_hour_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
+    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-hour/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805"
     )
 
     assert actual.columns == [
@@ -253,14 +288,14 @@ def test__creates_hour_csv_with_expected_columns_names(
 
 
 def test__creates_quarter_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
+    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805"
     )
 
     assert actual.columns == [
@@ -272,18 +307,18 @@ def test__creates_quarter_csv_with_expected_columns_names(
 
 
 def test__creates_csv_per_grid_area(
-    spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
+    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805"
     )
 
     basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-quarter/grid_area=806"
+        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=806"
     )
 
     assert (
@@ -296,14 +331,14 @@ def test__creates_csv_per_grid_area(
 
 
 def test__master_data_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
+    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id=1/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id={executed_batch_id}/grid_area=805"
     )
 
     assert actual.columns == [
@@ -320,18 +355,18 @@ def test__master_data_csv_with_expected_columns_names(
 
 
 def test__creates_master_data_csv_per_grid_area(
-    spark, test_data_job_parameters, data_lake_path, start_calc, worker_id
+    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
     master_basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id=1/grid_area=805"
+        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id={executed_batch_id}/grid_area=805"
     )
 
     master_basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id=1/grid_area=806"
+        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id={executed_batch_id}/grid_area=806"
     )
 
     assert (
@@ -349,14 +384,14 @@ def test__master_basis_data_file_is_created(
     data_lake_path,
     find_first_file,
     worker_id,
-    start_calc,
+    executed_calculation_job,
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert: Relative path of result file must match expectation of .NET  (BathFileManager.GetMasterBasisDataDirectory())
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
-    expected_result_path = f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id=1/grid_area=805"
+    expected_result_path = f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id={executed_batch_id}/grid_area=805"
     actual_result_file = find_first_file(expected_result_path, "part-*.csv")
     assert actual_result_file is not None
 
@@ -367,14 +402,14 @@ def test__hourly_basis_data_file_is_created(
     data_lake_path,
     find_first_file,
     worker_id,
-    start_calc,
+    executed_calculation_job,
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert: Relative path of result file must match expectation of .NET (BathFileManager.GetTimeSeriesHourBasisDataDirectory())
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
-    expected_result_path = f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-hour/grid_area=805"
+    expected_result_path = f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805"
     actual_result_file = find_first_file(expected_result_path, "part-*.csv")
     assert actual_result_file is not None
 
@@ -385,13 +420,13 @@ def test__quarterly_basis_data_file_is_created(
     data_lake_path,
     find_first_file,
     worker_id,
-    start_calc,
+    executed_calculation_job,
 ):
     # Act
-    # we run the calculator once per session. See the fixture start_calc in top of this file
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert: Relative path of result file must match expectation of .NET (BathFileManager.GetTimeSeriesQuarterBasisDataDirectory())
     # IMPORTANT: If the expected result path changes it probably requires .NET changes too
-    expected_result_path = f"{data_lake_path}/{worker_id}/results/basis-data/batch_id=1/time-series-quarter/grid_area=805"
+    expected_result_path = f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805"
     actual_result_file = find_first_file(expected_result_path, "part-*.csv")
     assert actual_result_file is not None

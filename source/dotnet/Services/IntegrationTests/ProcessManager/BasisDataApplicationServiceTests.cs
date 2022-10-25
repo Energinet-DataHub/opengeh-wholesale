@@ -72,7 +72,7 @@ public sealed class BasisDataApplicationServiceTests
         var masterDataContent = File.ReadLines(Path.Combine(zipExtractDirectory, masterDataPath)).First();
         masterDataContent.Should().BeEquivalentTo(masterDataDir);
 
-        var (quarterDir, _, quarterPath) = BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
+        var (quarterDir, _, quarterPath) = BatchFileManager.GetTimeSeriesQuarterBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, quarterPath)).Should().BeTrue();
         var quarterContent = File.ReadLines(Path.Combine(zipExtractDirectory, quarterPath)).First();
         quarterContent.Should().BeEquivalentTo(quarterDir);

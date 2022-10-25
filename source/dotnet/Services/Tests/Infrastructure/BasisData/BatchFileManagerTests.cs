@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Text;
+using System.Text.RegularExpressions;
 using AutoFixture.Xunit2;
 using Azure;
 using Azure.Storage.Files.DataLake;
@@ -23,6 +24,7 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -213,21 +215,21 @@ public class BatchFileManagerTests
     }
 
     [Fact]
-    public static void GetQuarterlyBasisDataFileDir_Is_Correct()
+    public static async Task GetQuarterlyBasisDataFileSpecification_MatchesContract()
     {
-        // ##### IMPORTANT ######
-        // if the path from the BatchFileManager changes, change the path accordingly in calculator_job.py
-
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
-        const string expected = $"results/basis-data/batch_id={batchId}/time-series-quarter/grid_area={gridAreaCode}/";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.TimeSeriesQuarterBasisDataFile;
 
         // Act
-        var actual = BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual = BatchFileManager.GetTimeSeriesQuarterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
-        actual.Directory.Should().Be(expected);
+        actual.Extension.Should().Be(expected.Extension);
+        //new Regex(expected.DirectoryExpression, RegexOptions.ECMAScript).IsMatch(actual.Directory).Should().BeTrue();
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Theory]

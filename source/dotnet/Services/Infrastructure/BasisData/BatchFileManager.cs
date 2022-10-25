@@ -34,7 +34,7 @@ public class BatchFileManager : IBatchFileManager
         {
             GetResultDirectory,
             GetTimeSeriesHourBasisDataDirectory,
-            GetTimeSeriesQuarterBasisDataDirectory,
+            GetTimeSeriesQuarterBasisDataFileSpecification,
             GetMasterBasisDataDirectory,
         };
     }
@@ -78,7 +78,7 @@ public class BatchFileManager : IBatchFileManager
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT1H.csv");
 
-    public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesQuarterBasisDataDirectory(Guid batchId, GridAreaCode gridAreaCode)
+    public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesQuarterBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
         => ($"results/basis-data/batch_id={batchId}/time-series-quarter/grid_area={gridAreaCode.Code}/",
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT15M.csv");

@@ -75,7 +75,7 @@ public class ServiceCollectionConfigurator
                 {
                     BatchFileManager.GetResultDirectory,
                     BatchFileManager.GetTimeSeriesHourBasisDataDirectory,
-                    BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory,
+                    BatchFileManager.GetTimeSeriesQuarterBasisDataFileSpecification,
                     BatchFileManager.GetMasterBasisDataDirectory,
                 };
 
