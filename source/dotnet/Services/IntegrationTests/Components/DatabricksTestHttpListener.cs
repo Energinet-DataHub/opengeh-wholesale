@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Components;
 /// This class functions as a web server for Databricks REST API, mocking the calls.
 /// The API exposes a single CalculatorJob and allows for triggering runs using its job id.
 /// </summary>
-public sealed class DatabricksHttpListener : IDisposable
+public sealed class DatabricksTestHttpListener : IDisposable
 {
     // https://github.com/Azure/azure-databricks-client/blob/master/csharp/Microsoft.Azure.Databricks.Client/JobsApiClient.cs
     private const int JobId = 42;
@@ -33,7 +33,7 @@ public sealed class DatabricksHttpListener : IDisposable
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly List<RunIdentifier> _runs = new();
 
-    public DatabricksHttpListener(string prefix)
+    public DatabricksTestHttpListener(string prefix)
     {
         _listener = new HttpListener();
         _listener.Prefixes.Add(prefix);

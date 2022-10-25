@@ -14,13 +14,13 @@
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.Components
 {
-    public sealed class DatabricksManager : IAsyncDisposable
+    public sealed class DatabricksTestManager : IAsyncDisposable
     {
-        private readonly DatabricksHttpListener _listener;
+        private readonly DatabricksTestHttpListener _listener;
 
-        public DatabricksManager()
+        public DatabricksTestManager()
         {
-            _listener = new DatabricksHttpListener(DatabricksUrl);
+            _listener = new DatabricksTestHttpListener(DatabricksUrl);
         }
 
         public string DatabricksUrl { get; set; } = "http://localhost:8000/";

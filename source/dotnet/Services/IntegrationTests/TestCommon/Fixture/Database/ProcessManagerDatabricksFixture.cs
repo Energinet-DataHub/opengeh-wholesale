@@ -22,23 +22,23 @@ public sealed class ProcessManagerDatabricksFixture : IAsyncLifetime
 {
     public ProcessManagerDatabricksFixture()
     {
-        DatabricksManager = new DatabricksManager();
+        DatabricksTestManager = new DatabricksTestManager();
     }
 
-    public DatabricksManager DatabricksManager { get; }
+    public DatabricksTestManager DatabricksTestManager { get; }
 
     public Task InitializeAsync()
     {
-        DatabricksManager.BeginListen();
+        DatabricksTestManager.BeginListen();
 
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksManager.DatabricksUrl);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksManager.DatabricksToken);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
         return Task.CompletedTask;
     }
 
     public async Task DisposeAsync()
     {
-        await DatabricksManager.DisposeAsync();
+        await DatabricksTestManager.DisposeAsync();
     }
 }

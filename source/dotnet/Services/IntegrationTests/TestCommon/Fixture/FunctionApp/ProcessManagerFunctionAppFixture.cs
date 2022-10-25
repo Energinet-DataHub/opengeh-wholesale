@@ -43,10 +43,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
                 IntegrationTestConfiguration.ServiceBusConnectionString,
                 TestLogger);
 
-            DatabricksManager = new DatabricksManager();
+            DatabricksTestManager = new DatabricksTestManager();
         }
 
-        public DatabricksManager DatabricksManager { get; }
+        public DatabricksTestManager DatabricksTestManager { get; }
 
         public WholesaleDatabaseManager DatabaseManager { get; }
 
@@ -84,8 +84,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, DatabaseManager.ConnectionString);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksManager.DatabricksUrl);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksManager.DatabricksToken);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "processes");
@@ -97,7 +97,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
             AzuriteManager.StartAzurite();
 
             await DatabaseManager.CreateDatabaseAsync();
-            DatabricksManager.BeginListen();
+            DatabricksTestManager.BeginListen();
 
             var batchCompletedEventName = "batch-completed";
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, batchCompletedEventName);
