@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -52,6 +53,7 @@ public class Startup
 
         services.AddCommandStack(Configuration);
         services.AddApplicationInsightsTelemetry();
+        services.AddApplicationInsights();
 
         ConfigureHealthChecks(services);
     }
