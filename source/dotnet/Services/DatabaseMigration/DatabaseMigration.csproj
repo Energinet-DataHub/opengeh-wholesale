@@ -34,6 +34,8 @@ limitations under the License.
       <EmbeddedResource Include="Scripts\202209071400_Add_Batch_Period.sql" />
       <EmbeddedResource Include="Scripts\202209131440_Alter_Batch_Period.sql" />
       <EmbeddedResource Include="Scripts\202209191000_Add_Batch_Execution_Time.sql" />
+      <None Remove="Scripts\202210251400_Add_BatchHasBeenZipped.sql" />
+      <EmbeddedResource Include="Scripts\202210251400_Add_BatchHasBeenZipped.sql" />
     </ItemGroup>
 
     <ItemGroup>
