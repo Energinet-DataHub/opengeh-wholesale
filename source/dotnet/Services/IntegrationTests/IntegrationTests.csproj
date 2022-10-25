@@ -52,7 +52,6 @@ limitations under the License.
 
   <ItemGroup>
     <ProjectReference Include="..\DatabaseMigration\DatabaseMigration.csproj" />
-    <ProjectReference Include="..\DatabricksClientManager\DatabricksClientManager.csproj" />
     <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
     <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
     <ProjectReference Include="..\Sender\Sender.csproj" />
