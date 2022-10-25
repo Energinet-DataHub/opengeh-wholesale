@@ -69,7 +69,7 @@ public class BatchFileManager : IBatchFileManager
         _logger.LogInformation($"GetZippedBasisDataStreamAsync batchid:{batch.Id.ToString()}");
         var zipFileName = GetZipFileName(batch);
         _logger.LogInformation($"GetZippedBasisDataStreamAsync zipfileName:{zipFileName}");
-        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(zipFileName);
+        var dataLakeFileClient = await GetDataLakeFileClientAsync(zipFileName, ".zip").ConfigureAwait(false);
         _logger.LogInformation($"GetZippedBasisDataStreamAsync datalakefileclienpath:{dataLakeFileClient.Path}");
         var stream = (await dataLakeFileClient.ReadAsync().ConfigureAwait(false)).Value.Content;
         return stream;
