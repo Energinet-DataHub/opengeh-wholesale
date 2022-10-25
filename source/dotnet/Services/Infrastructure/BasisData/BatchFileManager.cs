@@ -28,7 +28,7 @@ public class BatchFileManager : IBatchFileManager
     private readonly IStreamZipper _streamZipper;
     private readonly ILogger _logger;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper, ILogger<BatchFileManager> logger)
+    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper, ILogger logger)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _streamZipper = streamZipper;
@@ -66,11 +66,11 @@ public class BatchFileManager : IBatchFileManager
 
     public async Task<Stream> GetZippedBasisDataStreamAsync(Batch batch)
     {
-        _logger.LogInformation(batch.Id.ToString());
+        _logger.LogInformation($"GetZippedBasisDataStreamAsync batchid:{batch.Id.ToString()}");
         var zipFileName = GetZipFileName(batch);
-        _logger.LogInformation(zipFileName);
+        _logger.LogInformation($"GetZippedBasisDataStreamAsync zipfileName:{zipFileName}");
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(zipFileName);
-        _logger.LogInformation(dataLakeFileClient.Path);
+        _logger.LogInformation($"GetZippedBasisDataStreamAsync datalakefileclienpath:{dataLakeFileClient.Path}");
         var stream = (await dataLakeFileClient.ReadAsync().ConfigureAwait(false)).Value.Content;
         return stream;
     }
