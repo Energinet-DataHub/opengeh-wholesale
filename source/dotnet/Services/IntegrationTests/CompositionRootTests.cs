@@ -43,7 +43,7 @@ public class CompositionRootTests
 
         return typeof(wapi.Program).Assembly.GetTypes()
             .Where(t => t.IsSubclassOf(typeof(ControllerBase)))
-            .Select(t => new object[] { new Requirement(t.Name, constructorDependencies(t), t) });
+            .Select(t => new object[] { new Requirement(t.Name, constructorDependencies(t)) });
     }
 
     #endregion

@@ -19,8 +19,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 /// </summary>
 /// <param name="Name">Friendly name for the requirement</param>
 /// <param name="DependentOn">All dependencies that must be resolved</param>
-/// <param name="ActualType">Actual type that is inspected e.g.: function, web api controller, mvc controller</param>
-public record Requirement(string Name, IEnumerable<Type> DependentOn, Type? ActualType = null)
+public record Requirement(string Name, IEnumerable<Type> DependentOn)
 {
     public override string ToString()
     {
