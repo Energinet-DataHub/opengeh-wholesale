@@ -17,7 +17,11 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 
-public static class ReflectionHelper
+/// <summary>
+/// The class provides delegates/functions that can assist
+/// when discovering types with the use of reflection.
+/// </summary>
+public static class ReflectionDelegates
 {
     private static readonly Type _functionAttribute = typeof(FunctionAttribute);
 

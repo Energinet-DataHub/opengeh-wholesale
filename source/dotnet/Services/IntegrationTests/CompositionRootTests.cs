@@ -39,7 +39,7 @@ public class CompositionRootTests
 
     public static IEnumerable<object[]> GetControllerRequirements()
     {
-        var constructorDependencies = ReflectionHelper.FindAllConstructorDependenciesForType();
+        var constructorDependencies = ReflectionDelegates.FindAllConstructorDependenciesForType();
 
         return typeof(wapi.Program).Assembly.GetTypes()
             .Where(t => t.IsSubclassOf(typeof(ControllerBase)))
@@ -86,9 +86,9 @@ public class CompositionRootTests
 
     private static IEnumerable<object[]> GetFunctionRequirements(Type targetType)
     {
-        var allTypes = ReflectionHelper.FindAllTypes();
-        var functionTypes = ReflectionHelper.FindAllFunctionTypes();
-        var constructorDependencies = ReflectionHelper.FindAllConstructorDependenciesForType();
+        var allTypes = ReflectionDelegates.FindAllTypes();
+        var functionTypes = ReflectionDelegates.FindAllFunctionTypes();
+        var constructorDependencies = ReflectionDelegates.FindAllConstructorDependenciesForType();
 
         return functionTypes(allTypes(targetType))
             .Select(f => new object[] { new Requirement(f.Name, constructorDependencies(f)) });
