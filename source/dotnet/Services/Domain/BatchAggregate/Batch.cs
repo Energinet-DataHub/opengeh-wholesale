@@ -43,6 +43,7 @@ public class Batch
 
         ExecutionTimeStart = _clock.GetCurrentInstant();
         ExecutionTimeEnd = null;
+        BatchHasBeenZipped = false;
     }
 
     /// <summary>
@@ -74,6 +75,8 @@ public class Batch
     public Instant PeriodStart { get; }
 
     public Instant PeriodEnd { get; }
+
+    public bool BatchHasBeenZipped { get; }
 
     public void MarkAsSubmitted(JobRunId jobRunId)
     {
