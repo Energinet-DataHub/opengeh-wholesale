@@ -361,8 +361,7 @@ def test__master_data_csv_with_expected_columns_names(
 def test__creates_master_data_csv_per_grid_area(
     spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 ):
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Executed in fixture executed_calculation_job
 
     # Assert
     master_basis_data_805 = spark.read.option("header", "true").csv(
