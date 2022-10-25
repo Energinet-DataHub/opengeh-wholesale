@@ -13,18 +13,14 @@
 // limitations under the License.
 
 using System.Text;
-using System.Text.RegularExpressions;
 using AutoFixture.Xunit2;
 using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -138,7 +134,7 @@ public class BatchFileManagerTests
         // Arrange
         const string pathWithUnknownExtension = "my_file.xxx";
         var pathItem = DataLakeModelFactory.PathItem(pathWithUnknownExtension, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
+        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
         var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
 
         dataLakeDirectoryClientMock
@@ -285,7 +281,7 @@ public class BatchFileManagerTests
     {
         var pathItem = DataLakeModelFactory
             .PathItem(path, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
+        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
         var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
         return asyncPageable;
     }
