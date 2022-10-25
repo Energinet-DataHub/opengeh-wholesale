@@ -23,7 +23,7 @@ using wapi = Energinet.DataHub.Wholesale.WebApi;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests;
 
-[Collection(nameof(SenderIntegrationTestHost))]
+[Collection(nameof(CompositionRootTests))]
 public class CompositionRootTests
 {
     #region Member data providers
