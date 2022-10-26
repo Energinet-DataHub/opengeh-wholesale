@@ -25,7 +25,7 @@ public sealed class SettlementMethodTests
     [Fact]
     public async Task EnumNamesAndValuesMatchContractWithCalculator()
     {
-        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.settlement-method.json");
+        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.metering-point-settlement-method.json");
 
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<SettlementMethod>(stream);
     }

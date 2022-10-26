@@ -32,9 +32,10 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
     }
 
     public static Task<ProcessManagerIntegrationTestHost> CreateAsync(
+        string databaseManagerConnectionString,
         Action<IServiceCollection>? serviceConfiguration = default)
     {
-        ConfigureEnvironmentVars();
+        ConfigureEnvironmentVars(databaseManagerConnectionString);
 
         var hostBuilder = Program
             .CreateHostBuilder()
@@ -58,7 +59,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         _processManagerHost.Dispose();
     }
 
-    private static void ConfigureEnvironmentVars()
+    private static void ConfigureEnvironmentVars(string databaseManagerConnectionString)
     {
         const string anyValue = "fake_value";
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, anyValue);
@@ -68,7 +69,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, "UseDevelopmentStorage=true");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, databaseManagerConnectionString);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, anyValue);
