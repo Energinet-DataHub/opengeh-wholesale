@@ -16,7 +16,14 @@ using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
-
+/// <summary>
+/// Wholesales internal representation of the data on the EnergySupplierChanged event exposed by
+/// </summary>
+/// <param name="AccountingpointId">Unique metering point identification</param>
+/// <param name="GsrnNumber">metering point identification</param>
+/// <param name="EnergySupplierGln">Unique Energy Supplier identification</param>
+/// <param name="EffectiveDate">Date which the change of supplier goes into effect</param>
+/// <param name="Id">Unique event identification</param>
 public sealed record EnergySupplierChangedDto(
         string AccountingpointId,
         string GsrnNumber,

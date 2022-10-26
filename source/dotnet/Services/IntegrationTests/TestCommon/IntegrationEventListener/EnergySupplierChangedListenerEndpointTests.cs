@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.FunctionApp;
 using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.IntegrationEventListener;
