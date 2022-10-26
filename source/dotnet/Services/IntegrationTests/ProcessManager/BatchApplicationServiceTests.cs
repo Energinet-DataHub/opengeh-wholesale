@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -31,11 +32,13 @@ public sealed class BatchApplicationServiceTests
 {
     private const long DummyJobId = 42;
     private const string DummyJobName = "CalculatorJob";
+    private readonly ProcessManagerDatabaseFixture _processManagerDatabaseFixture;
     private readonly Mock<IJobsWheelApi> _jobsApiMock = new Mock<IJobsWheelApi>();
     private readonly Mock<IDatabricksWheelClient> _databricksWheelClientMock = new Mock<IDatabricksWheelClient>();
 
-    public BatchApplicationServiceTests()
+    public BatchApplicationServiceTests(ProcessManagerDatabaseFixture processManagerDatabaseFixture)
     {
+        _processManagerDatabaseFixture = processManagerDatabaseFixture;
         var jobs = new List<Job>() { CreateJob(DummyJobId, DummyJobName) };
         _jobsApiMock.Setup(x => x.List(It.IsAny<CancellationToken>())).ReturnsAsync(jobs);
         _jobsApiMock.Setup(x => x.GetWheel(It.IsAny<long>(), It.IsAny<CancellationToken>()))
@@ -56,7 +59,7 @@ public sealed class BatchApplicationServiceTests
     public async Task When_RunIsPending_Then_BatchIsPending()
     {
         // Arrange
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
         await using var scope = host.BeginScope();
         var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
 
@@ -73,7 +76,7 @@ public sealed class BatchApplicationServiceTests
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
-        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
         await using var readScope = readHost.BeginScope();
         var repository = readScope.ServiceProvider.GetRequiredService<IBatchRepository>();
         // Assert: Verify that batch is now pending.
@@ -86,7 +89,7 @@ public sealed class BatchApplicationServiceTests
     public async Task When_RunIsRunning_Then_BatchIsExecuting()
     {
         // Arrange
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
         await using var scope = host.BeginScope();
         var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
 
@@ -103,7 +106,7 @@ public sealed class BatchApplicationServiceTests
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
-        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
         await using var readScope = readHost.BeginScope();
         var repository = readScope.ServiceProvider.GetRequiredService<IBatchRepository>();
         // Assert: Verify that batch is now executing.
@@ -116,7 +119,7 @@ public sealed class BatchApplicationServiceTests
     public async Task When_RunIsTerminated_Then_BatchIsCompleted()
     {
         // Arrange
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
         await using var scope = host.BeginScope();
         var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
 
@@ -133,7 +136,7 @@ public sealed class BatchApplicationServiceTests
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
-        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(ServiceCollection);
+        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
         await using var readScope = readHost.BeginScope();
         var repository = readScope.ServiceProvider.GetRequiredService<IBatchRepository>();
         // Assert: Verify that batch is now completed.
