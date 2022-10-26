@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 name: CD - Databricks test Docker image
 
 # The design of this workflow is inspired by: https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions
@@ -20,11 +21,13 @@ on:
       - main
     paths:
       - .docker/**
+      - .github/workflows/cd-docker-test-image.yml
   push:
     branches:
       - main
     paths:
       - .docker/**
+      - .github/workflows/cd-docker-test-image.yml
 
 env:
   REGISTRY: ghcr.io
@@ -36,6 +39,7 @@ env:
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
       packages: write
@@ -59,7 +63,7 @@ jobs:
         uses: ASzc/change-string-case-action@v2
         with:
           string: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      
+
       - name: Set tag environmental variable
         run: |
           if [[ ${{ env.IS_PULL_REQUEST_TRIGGERED }} == true ]]; then

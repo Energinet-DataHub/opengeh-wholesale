@@ -60,6 +60,10 @@ Read about the architecture [here](docs/architecture.md).
 
 ![Architecture!](docs/images/architecture.drawio.png)
 
+Event flows in the domain.
+
+![Events!](docs/images/events.drawio.png)
+
 Learn about the wholesale ubiquitous language [here](docs/ubiquitous-language.md).
 
 ## Databricks

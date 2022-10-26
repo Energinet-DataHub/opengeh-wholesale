@@ -38,6 +38,8 @@ def json_lines_reader():
 
 @pytest.fixture(scope="session")
 def find_first_file():
+    "The path of the first file matching the pattern."
+
     def f(path: str, pattern: str):
         os.chdir(path)
         for filePath in glob.glob(pattern):
