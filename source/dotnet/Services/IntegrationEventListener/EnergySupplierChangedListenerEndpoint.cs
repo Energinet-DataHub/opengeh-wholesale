@@ -41,10 +41,10 @@ public class EnergySupplierChangedListenerEndpoint
     [EventHubOutput(
         "%" + EnvironmentSettingNames.IntegrationEventsEventHubName + "%",
         Connection = EnvironmentSettingNames.IntegrationEventsEventHubConnectionString)]
-    public string? Run(
+    public string Run(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.IntegrationEventsTopicName + "%",
-            "%" + EnvironmentSettingNames.MarketParticipantChangedSubscriptionName + "%",
+            "%" + EnvironmentSettingNames.EnergySupplierChangedSubscriptionName + "%",
             Connection = EnvironmentSettingNames.IntegrationEventConnectionListenerString)]
         byte[] message)
     {

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
@@ -48,7 +49,7 @@ public sealed class EnergySupplierChangedListenerEndpointTests
         var energySupplierChanged = new EnergySupplierChanged
         {
             Id = Guid.NewGuid().ToString(),
-            EffectiveDate = Timestamp.FromDateTime(DateTime.UtcNow).ToString(),
+            EffectiveDate = "2022-07-04T08:05:30Z",
             GsrnNumber = Random.Shared.Next(1, 100000).ToString(),
             AccountingpointId = Random.Shared.Next(1, 100000).ToString(),
             EnergySupplierGln = Random.Shared.Next(1, 100000).ToString(),
