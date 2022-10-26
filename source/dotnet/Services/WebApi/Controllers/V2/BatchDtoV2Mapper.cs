@@ -27,6 +27,6 @@ public class BatchDtoV2Mapper : IBatchDtoV2Mapper
             batchDto.ExecutionTimeStart,
             batchDto.ExecutionTimeEnd,
             batchDto.ExecutionState,
-            batchDto.BatchHasBeenZipped);
+            batchDto.IsBasisDataDownloadAvailable);
     }
 }

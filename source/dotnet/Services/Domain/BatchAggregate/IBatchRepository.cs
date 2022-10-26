@@ -34,5 +34,5 @@ public interface IBatchRepository
 
     Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart);
 
-    Task UpdateBatchHasBeenZippedToTrueAsync(Guid batchId);
+    Task UpdateIsBasisDataDownloadAvailableAsync(Guid batchId);
 }

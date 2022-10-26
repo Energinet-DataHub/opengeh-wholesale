@@ -63,10 +63,10 @@ public class BatchRepository : IBatchRepository
             .ConfigureAwait(false);
     }
 
-    public async Task UpdateBatchHasBeenZippedToTrueAsync(Guid batchId)
+    public async Task UpdateIsBasisDataDownloadAvailableAsync(Guid batchId)
     {
         var batch = _context.Batches.Single(b => b.Id == batchId);
-        batch.BatchHasBeenZipped = true;
+        batch.IsBasisDataDownloadAvailable = true;
         await _context.SaveChangesAsync().ConfigureAwait(false);
     }
 

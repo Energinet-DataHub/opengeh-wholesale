@@ -28,7 +28,7 @@ public class BatchDtoMapper : IBatchDtoMapper
             batch.ExecutionTimeStart?.ToDateTimeOffset() ?? null,
             batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
             MapState(batch.ExecutionState),
-            batch.BatchHasBeenZipped);
+            batch.IsBasisDataDownloadAvailable);
     }
 
     private static BatchState MapState(BatchExecutionState state)
