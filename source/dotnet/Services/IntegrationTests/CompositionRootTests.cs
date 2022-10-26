@@ -61,7 +61,7 @@ public class CompositionRootTests
     [MemberData(nameof(ProcessManagerFunctions))]
     public async Task ProcessManagerFunctions_can_resolve_dependencies_for(Requirement requirement)
     {
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync();
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync("foo");
         await using var scope = host.BeginScope();
         Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
     }

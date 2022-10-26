@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
@@ -33,6 +34,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 [Collection("ProcessManagerIntegrationTest")]
 public sealed class BasisDataApplicationServiceTests
 {
+    private readonly ProcessManagerDatabaseFixture _processManagerDatabaseFixture;
+
+    public BasisDataApplicationServiceTests(ProcessManagerDatabaseFixture processManagerDatabaseFixture)
+    {
+        _processManagerDatabaseFixture = processManagerDatabaseFixture;
+    }
+
     [Theory]
     [InlineAutoMoqData]
     public async Task When_BatchIsCompleted_Then_CalculationFilesAreZipped(BatchCompletedEventDto batchCompletedEvent)
@@ -42,7 +50,7 @@ public sealed class BasisDataApplicationServiceTests
         var serviceCollectionConfigurator = new ServiceCollectionConfigurator();
         var zipFileName = Path.GetTempFileName();
 
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(collection =>
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, collection =>
             serviceCollectionConfigurator
                 .WithBatchFileManagerForBatch(batch, zipFileName)
                 .Configure(collection));
