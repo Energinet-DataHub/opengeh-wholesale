@@ -15,4 +15,5 @@
 
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start():
-    pass
+    print("Migrations job starting...")
+    print("Migrations job ending...")
