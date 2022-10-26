@@ -55,7 +55,6 @@ public class BatchControllerTests :
     }
 
     [Theory]
-    [InlineData("/v1/batch")]
     [InlineData("/v2/batch")]
     public async Task CreateAsync_WhenCalled_AlwaysReturnsOk(string baseUrl)
     {
@@ -76,7 +75,6 @@ public class BatchControllerTests :
     }
 
     [Theory]
-    [InlineData("/v1/batch")]
     [InlineData("/v2/batch")]
     public async Task SearchAsync_WhenCalled_AlwaysReturnsOk(string baseUrl)
     {
