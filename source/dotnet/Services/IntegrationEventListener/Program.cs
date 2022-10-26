@@ -76,6 +76,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
             serviceCollection.AddScoped<MeteringPointCreatedDtoFactory>();
             serviceCollection.AddScoped<MeteringPointConnectedDtoFactory>();
             serviceCollection.AddScoped<GridAreaUpdatedDtoFactory>();
+            serviceCollection.AddScoped<EnergySupplierChangedDtoFactory>();
         }
 
         private static void HealthCheck(IServiceCollection serviceCollection)

@@ -64,6 +64,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
 
         public ServiceBusReceiver MarketParticipantChangedDeadLetterReceiver { get; private set; } = null!;
 
+        public ServiceBusReceiver EnergySupplierChangedDeadLetterReceiver { get; private set; } = null!;
+
         public EventHubResourceProvider EventHubResourceProvider { get; }
 
         private AzuriteManager AzuriteManager { get; }
@@ -128,6 +130,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
                 .AddSubscription("market-participant-changed")
                 .AddMessageTypeFilter("GridAreaUpdatedIntegrationEvent")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
+                    // Energy supplier changed subscription
+                .AddSubscription("energy-supplier-changed")
+                .AddMessageTypeFilter("EnergySupplierChanged")
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.EnergySupplierChangedSubscriptionName)
                 .CreateAsync();
 
             MeteringPointCreatedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
@@ -143,6 +149,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
             MarketParticipantChangedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName),
+                    new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
+
+            EnergySupplierChangedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName),
+                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.EnergySupplierChangedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
         }
 
