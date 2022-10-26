@@ -33,6 +33,7 @@ public class BasisDataApplicationService : IBasisDataApplicationService
     {
         var batch = await _batchRepository.GetAsync(batchCompletedEvent.BatchId).ConfigureAwait(false);
         await _batchFileManager.CreateBasisDataZipAsync(batch).ConfigureAwait(false);
+        await _batchRepository.UpdateBatchHasBeenZippedToTrueAsync(batch.Id).ConfigureAwait(false);
     }
 
     public async Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId)

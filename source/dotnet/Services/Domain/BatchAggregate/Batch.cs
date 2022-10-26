@@ -76,7 +76,7 @@ public class Batch
 
     public Instant PeriodEnd { get; }
 
-    public bool BatchHasBeenZipped { get; }
+    public bool BatchHasBeenZipped { get; set; }
 
     public void MarkAsSubmitted(JobRunId jobRunId)
     {
