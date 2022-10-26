@@ -63,13 +63,6 @@ public class BatchRepository : IBatchRepository
             .ConfigureAwait(false);
     }
 
-    public async Task UpdateIsBasisDataDownloadAvailableAsync(Guid batchId)
-    {
-        var batch = _context.Batches.Single(b => b.Id == batchId);
-        batch.IsBasisDataDownloadAvailable = true;
-        await _context.SaveChangesAsync().ConfigureAwait(false);
-    }
-
     private async Task<List<Batch>> GetByStateAsync(BatchExecutionState state)
     {
         return await _context

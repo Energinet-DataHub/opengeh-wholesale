@@ -33,6 +33,4 @@ public interface IBatchRepository
     Task<List<Batch>> GetCompletedAsync();
 
     Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart);
-
-    Task UpdateIsBasisDataDownloadAvailableAsync(Guid batchId);
 }
