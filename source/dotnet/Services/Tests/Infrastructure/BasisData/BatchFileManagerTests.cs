@@ -18,9 +18,7 @@ using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
@@ -136,7 +134,7 @@ public class BatchFileManagerTests
         // Arrange
         const string pathWithUnknownExtension = "my_file.xxx";
         var pathItem = DataLakeModelFactory.PathItem(pathWithUnknownExtension, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
+        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
         var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
 
         dataLakeDirectoryClientMock
@@ -159,75 +157,71 @@ public class BatchFileManagerTests
     }
 
     [Fact]
-    public static void GetResultFileDir_Path_Is_Correct()
+    public static async Task GetResultFileSpecification_MatchesContract()
     {
-        // ##### IMPORTANT ######
-        // if the path from the filemanager changes, change the path accordingly in calculator_job.py
-
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
-        const string expected = $"results/batch_id={batchId}/grid_area={gridAreaCode}/";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = BatchFileManager.GetResultDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual = BatchFileManager.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
-        actual.Directory.Should().Be(expected);
+        actual.Extension.Should().Be(expected.Extension);
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Fact]
-    public static void GetMasterBasisDataFileDir_Is_Correct()
+    public static async Task GetMasterBasisDataFileSpecification_MatchesContract()
     {
-        // ##### IMPORTANT ######
-        // if the path from the BatchFileManager changes, change the path accordingly in calculator_job.py
-
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
-        const string expected = $"results/master-basis-data/batch_id={batchId}/grid_area={gridAreaCode}/";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.MasterBasisDataFile;
 
         // Act
-        var actual = BatchFileManager.GetMasterBasisDataDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual = BatchFileManager.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
-        actual.Directory.Should().Be(expected);
+        actual.Extension.Should().Be(expected.Extension);
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Fact]
-    public static void GetHourlyBasisDataFileDir_Is_Correct()
+    public static async Task GetTimeSeriesHourBasisDataFileSpecification_MatchesContract()
     {
-        // ##### IMPORTANT ######
-        // if the path from the BatchFileManager changes, change the path accordingly in calculator_job.py
-
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
-        const string expected = $"results/basis-data/batch_id={batchId}/time-series-hour/grid_area={gridAreaCode}/";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.TimeSeriesHourBasisDataFile;
 
         // Act
-        var actual = BatchFileManager.GetTimeSeriesHourBasisDataDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual = BatchFileManager.GetTimeSeriesHourBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
-        actual.Directory.Should().Be(expected);
+        actual.Extension.Should().Be(expected.Extension);
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Fact]
-    public static void GetQuarterlyBasisDataFileDir_Is_Correct()
+    public static async Task GetTimeSeriesQuarterBasisDataFileSpecification_MatchesContract()
     {
-        // ##### IMPORTANT ######
-        // if the path from the BatchFileManager changes, change the path accordingly in calculator_job.py
-
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
-        const string expected = $"results/basis-data/batch_id={batchId}/time-series-quarter/grid_area={gridAreaCode}/";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.TimeSeriesQuarterBasisDataFile;
 
         // Act
-        var actual = BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual = BatchFileManager.GetTimeSeriesQuarterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
-        actual.Directory.Should().Be(expected);
+        actual.Extension.Should().Be(expected.Extension);
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Theory]
@@ -287,7 +281,7 @@ public class BatchFileManagerTests
     {
         var pathItem = DataLakeModelFactory
             .PathItem(path, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
+        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
         var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
         return asyncPageable;
     }

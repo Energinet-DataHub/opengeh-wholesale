@@ -96,7 +96,7 @@ def test__stored_time_matches_persister(grid_area_df_factory, source_path):
     cached_integration_events_df = grid_area_df_factory()
 
     expected_stored_time_name = read_contract(
-        f"{source_path}/contracts/events/grid-area-updated.json"
+        f"{source_path}/contracts/market-participant-domain/grid-area-updated.json"
     )["storedTimeName"]
 
     assert expected_stored_time_name in cached_integration_events_df.columns
@@ -109,7 +109,7 @@ def test__when_input_data_matches_contract__returns_expected_row(
 
     # Assert: Contract matches schema
     assert_contract_matches_schema(
-        f"{source_path}/contracts/events/grid-area-updated.json",
+        f"{source_path}/contracts/market-participant-domain/grid-area-updated.json",
         grid_area_updated_event_schema,
     )
     test_data_schema = (
@@ -136,7 +136,7 @@ def test__when_using_same_message_type_as_ingestor__returns_correct_grid_area_da
 ):
     # Arrange
     message_type = get_message_type(
-        f"{source_path}/contracts/events/grid-area-updated.json"
+        f"{source_path}/contracts/market-participant-domain/grid-area-updated.json"
     )
     cached_integration_events_df = grid_area_df_factory(message_type=message_type)
 

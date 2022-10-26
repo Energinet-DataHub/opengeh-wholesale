@@ -196,7 +196,7 @@ def test__stored_time_of_metering_point_created_matches_persister(
     cached_integration_events_df = metering_point_created_df_factory()
 
     expected_stored_time_name = read_contract(
-        f"{source_path}/contracts/events/metering-point-created.json"
+        f"{source_path}/contracts/metering-point-domain/metering-point-created.json"
     )["storedTimeName"]
 
     assert expected_stored_time_name in cached_integration_events_df.columns
@@ -208,7 +208,7 @@ def test__stored_time_of_metering_point_connected_matches_persister(
     cached_integration_events_df = metering_point_connected_df_factory()
 
     expected_stored_time_name = read_contract(
-        f"{source_path}/contracts/events/metering-point-connected.json"
+        f"{source_path}/contracts/metering-point-domain/metering-point-connected.json"
     )["storedTimeName"]
 
     assert expected_stored_time_name in cached_integration_events_df.columns
@@ -216,14 +216,14 @@ def test__stored_time_of_metering_point_connected_matches_persister(
 
 def test__metering_point_created_schema_matches_contract(source_path):
     assert_contract_matches_schema(
-        f"{source_path}/contracts/events/metering-point-created.json",
+        f"{source_path}/contracts/metering-point-domain/metering-point-created.json",
         metering_point_created_event_schema,
     )
 
 
 def test__metering_point_connected_schema_matches_contract(source_path):
     assert_contract_matches_schema(
-        f"{source_path}/contracts/events/metering-point-connected.json",
+        f"{source_path}/contracts/metering-point-domain/metering-point-connected.json",
         metering_point_connected_event_schema,
     )
 
@@ -234,7 +234,7 @@ def test__metering_point_created_message_type__matches_contract(
     source_path,
 ):
     contract_message_type = get_message_type(
-        f"{source_path}/contracts/events/metering-point-created.json"
+        f"{source_path}/contracts/metering-point-domain/metering-point-created.json"
     )
 
     assert metering_point_created_message_type == contract_message_type
@@ -246,7 +246,7 @@ def test__metering_point_connected_message_type__matches_contract(
     source_path,
 ):
     contract_message_type = get_message_type(
-        f"{source_path}/contracts/events/metering-point-connected.json"
+        f"{source_path}/contracts/metering-point-domain/metering-point-connected.json"
     )
 
     assert metering_point_connected_message_type == contract_message_type

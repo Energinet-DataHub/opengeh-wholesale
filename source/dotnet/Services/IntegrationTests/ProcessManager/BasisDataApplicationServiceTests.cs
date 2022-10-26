@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
@@ -30,9 +31,16 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
-[Collection("ProcessManagerIntegrationTest")]
+[Collection(nameof(ProcessManagerIntegrationTestHost))]
 public sealed class BasisDataApplicationServiceTests
 {
+    private readonly ProcessManagerDatabaseFixture _processManagerDatabaseFixture;
+
+    public BasisDataApplicationServiceTests(ProcessManagerDatabaseFixture processManagerDatabaseFixture)
+    {
+        _processManagerDatabaseFixture = processManagerDatabaseFixture;
+    }
+
     [Theory]
     [InlineAutoMoqData]
     public async Task When_BatchIsCompleted_Then_CalculationFilesAreZipped(BatchCompletedEventDto batchCompletedEvent)
@@ -42,7 +50,7 @@ public sealed class BasisDataApplicationServiceTests
         var serviceCollectionConfigurator = new ServiceCollectionConfigurator();
         var zipFileName = Path.GetTempFileName();
 
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(collection =>
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, collection =>
             serviceCollectionConfigurator
                 .WithBatchFileManagerForBatch(batch, zipFileName)
                 .Configure(collection));
@@ -58,22 +66,22 @@ public sealed class BasisDataApplicationServiceTests
         var zipExtractDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         ZipFile.ExtractToDirectory(zipFileName, zipExtractDirectory);
 
-        var (resultDir, _, resultPath) = BatchFileManager.GetResultDirectory(batch.Id, batch.GridAreaCodes.Single());
+        var (resultDir, _, resultPath) = BatchFileManager.GetResultFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, resultPath)).Should().BeTrue();
         var resultContent = File.ReadLines(Path.Combine(zipExtractDirectory, resultPath)).First();
         resultContent.Should().BeEquivalentTo(resultDir);
 
-        var (masterDataDir, _, masterDataPath) = BatchFileManager.GetMasterBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
+        var (masterDataDir, _, masterDataPath) = BatchFileManager.GetMasterBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, masterDataPath)).Should().BeTrue();
         var masterDataContent = File.ReadLines(Path.Combine(zipExtractDirectory, masterDataPath)).First();
         masterDataContent.Should().BeEquivalentTo(masterDataDir);
 
-        var (quarterDir, _, quarterPath) = BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
+        var (quarterDir, _, quarterPath) = BatchFileManager.GetTimeSeriesQuarterBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, quarterPath)).Should().BeTrue();
         var quarterContent = File.ReadLines(Path.Combine(zipExtractDirectory, quarterPath)).First();
         quarterContent.Should().BeEquivalentTo(quarterDir);
 
-        var (hourDir, _, hourPath) = BatchFileManager.GetTimeSeriesHourBasisDataDirectory(batch.Id, batch.GridAreaCodes.Single());
+        var (hourDir, _, hourPath) = BatchFileManager.GetTimeSeriesHourBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, hourPath)).Should().BeTrue();
         var hourContent = File.ReadLines(Path.Combine(zipExtractDirectory, hourPath)).First();
         hourContent.Should().BeEquivalentTo(hourDir);
