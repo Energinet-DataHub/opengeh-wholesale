@@ -130,6 +130,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
                 .AddSubscription("market-participant-changed")
                 .AddMessageTypeFilter("GridAreaUpdatedIntegrationEvent")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
+                    // Energy supplier changed subscription
+                .AddSubscription("energy-supplier-changed")
+                .AddMessageTypeFilter("EnergySupplierChanged")
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.EnergySupplierChangedSubscriptionName)
                 .CreateAsync();
 
             MeteringPointCreatedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
