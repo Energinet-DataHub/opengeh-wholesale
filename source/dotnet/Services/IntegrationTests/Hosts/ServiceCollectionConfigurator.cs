@@ -73,10 +73,10 @@ public class ServiceCollectionConfigurator
             var fileDescriptorProviders =
                 new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
                 {
-                    BatchFileManager.GetResultDirectory,
-                    BatchFileManager.GetTimeSeriesHourBasisDataDirectory,
-                    BatchFileManager.GetTimeSeriesQuarterBasisDataDirectory,
-                    BatchFileManager.GetMasterBasisDataDirectory,
+                    BatchFileManager.GetResultFileSpecification,
+                    BatchFileManager.GetTimeSeriesHourBasisDataFileSpecification,
+                    BatchFileManager.GetTimeSeriesQuarterBasisDataFileSpecification,
+                    BatchFileManager.GetMasterBasisDataFileSpecification,
                 };
 
             // Mock each basis data files for the process
