@@ -110,7 +110,7 @@ def test_calculator_job_accepts_parameters_from_process_manager(
 
     # Arrange
     process_manager_parameters = _get_process_manager_parameters(
-        f"{source_path}/contracts/calculation-job-parameters-reference.txt"
+        f"{source_path}/contracts/internal/calculation-job-parameters-reference.txt"
     )
 
     python_parameters = [
@@ -171,7 +171,7 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
     # the time series points contract from the time-series domain (in the same test), then we can infer that the
     # calculator works with the format of the data published from the time-series domain.
     assert_contract_matches_schema(
-        f"{source_path}/contracts/events/published-time-series-points.json",
+        f"{source_path}/contracts/time-series-domain/time-series-points.json",
         input_time_series_points.schema,
     )
 
@@ -187,7 +187,7 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
         f"{data_lake_path}/{worker_id}/results/batch_id=1/grid_area=805"
     )
     assert_contract_matches_schema(
-        f"{source_path}/contracts/calculator-result.json",
+        f"{source_path}/contracts/internal/calculator-result.json",
         result_805.schema,
     )
 
