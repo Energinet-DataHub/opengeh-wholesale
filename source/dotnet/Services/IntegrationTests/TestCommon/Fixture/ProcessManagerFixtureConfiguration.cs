@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Xunit;
 
@@ -20,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
 /// <summary>
 /// Fixture configuration used for integration tests running without TestCommon function app.
 /// </summary>
-[CollectionDefinition("ProcessManagerIntegrationTest")]
+[CollectionDefinition(nameof(ProcessManagerIntegrationTestHost))]
 public sealed class ProcessManagerFixtureConfiguration :
     ICollectionFixture<ProcessManagerDatabaseFixture>,
     ICollectionFixture<ProcessManagerDatabricksFixture>
