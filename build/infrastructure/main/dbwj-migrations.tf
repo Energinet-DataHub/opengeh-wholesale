@@ -19,7 +19,7 @@ resource "databricks_job" "migrations_job" {
 
   task {
     task_key = "migrations_job_${uuid()}"
-    max_retries = 2
+    max_retries = 1
 
     new_cluster {
       spark_version           = data.databricks_spark_version.latest_lts.id
