@@ -243,6 +243,14 @@ def calculation_file_paths_contract(source_path):
         return DictObj(yaml.safe_load(stream))
 
 
+def create_file_path_expression(directory_expression, extension):
+    """Create file path regular expression from a directory expression
+    and a file extension.
+    The remaining base file name can be one or more characters except for forward slash ("/").
+    """
+    return f"{directory_expression}[^/]+{extension}"
+
+
 def test__result_file_path_matches_contract(
     spark,
     test_data_job_parameters,
@@ -254,8 +262,9 @@ def test__result_file_path_matches_contract(
 ):
     # Arrange
     contract = calculation_file_paths_contract.result_file
-    expected_path_expression = (
-        contract.directory_expression + "[^/]+" + contract.extension
+    expected_path_expression = create_file_path_expression(
+        contract.directory_expression,
+        contract.extension,
     )
 
     # Act: Executed in fixture executed_calculation_job
@@ -392,8 +401,9 @@ def test__master_basis_data_file_matches_contract(
 ):
     # Arrange
     contract = calculation_file_paths_contract.master_basis_data_file
-    expected_path_expression = (
-        contract.directory_expression + "[^/]+" + contract.extension
+    expected_path_expression = create_file_path_expression(
+        contract.directory_expression,
+        contract.extension,
     )
 
     # Act: Executed in fixture executed_calculation_job
@@ -417,8 +427,9 @@ def test__hourly_basis_data_file_matches_contract(
 ):
     # Arrange
     contract = calculation_file_paths_contract.time_series_hour_basis_data_file
-    expected_path_expression = (
-        contract.directory_expression + "[^/]+" + contract.extension
+    expected_path_expression = create_file_path_expression(
+        contract.directory_expression,
+        contract.extension,
     )
 
     # Act: Executed in fixture executed_calculation_job
@@ -442,8 +453,9 @@ def test__quarterly_basis_data_file_matches_contract(
 ):
     # Arrange
     contract = calculation_file_paths_contract.time_series_quarter_basis_data_file
-    expected_path_expression = (
-        contract.directory_expression + "[^/]+" + contract.extension
+    expected_path_expression = create_file_path_expression(
+        contract.directory_expression,
+        contract.extension,
     )
 
     # Act: Executed in fixture executed_calculation_job
