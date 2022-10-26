@@ -48,11 +48,11 @@ public sealed class EnergySupplierChangedListenerEndpointTests
         Fixture.IntegrationEventsTopic.SenderClient;
 
     protected override ServiceBusReceiver IntegrationEventDeadLetterReceiver =>
-        Fixture.MarketParticipantChangedDeadLetterReceiver;
+        Fixture.EnergySupplierChangedDeadLetterReceiver;
 
     protected override byte[] CreateIntegrationEventData()
     {
-        var meteringPointConnected = new EnergySupplierChanged
+        var energySupplierChanged = new EnergySupplierChanged
         {
             Id = Guid.NewGuid().ToString(),
             EffectiveDate = Timestamp.FromDateTime(DateTime.UtcNow).ToString(),
@@ -60,6 +60,6 @@ public sealed class EnergySupplierChangedListenerEndpointTests
             AccountingpointId = Random.Shared.Next(1, 100000).ToString(),
             EnergySupplierGln = Random.Shared.Next(1, 100000).ToString(),
         };
-        return meteringPointConnected.ToByteArray();
+        return energySupplierChanged.ToByteArray();
     }
 }
