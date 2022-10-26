@@ -2,7 +2,7 @@
 
 ## Version 2.2.0
 
-Added `IsBasisDataDownloadAvailable` a boolean that 
+Added `IsBasisDataDownloadAvailable` a `boolean` that indicates if basis data is available for download.
 
 ## Version 2.1.0
 
