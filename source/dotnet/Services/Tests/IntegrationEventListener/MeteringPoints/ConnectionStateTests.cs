@@ -25,7 +25,7 @@ public sealed class ConnectionStateTests
     [Fact]
     public async Task EnumNamesAndValuesMatchContractWithCalculator()
     {
-        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.connection-state.json");
+        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MeteringPoints.metering-point-connection-state.json");
 
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<ConnectionState>(stream);
     }
