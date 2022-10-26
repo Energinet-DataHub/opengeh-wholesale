@@ -17,7 +17,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
 /// <summary>
-/// Wholesales internal representation of the data on the EnergySupplierChanged event exposed by
+/// Wholesales internal representation of the data on the EnergySupplierChanged event exposed by the market participant domain
 /// </summary>
 /// <param name="AccountingpointId">Unique metering point identification</param>
 /// <param name="GsrnNumber">metering point identification</param>
