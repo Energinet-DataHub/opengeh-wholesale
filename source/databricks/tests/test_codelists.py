@@ -26,36 +26,40 @@ from tests.contract_utils import assert_codelist_matches_contract
 
 def test_connection_state_is_subset_of_contract(source_path):
     assert_codelist_matches_contract(
-        ConnectionState, f"{source_path}/contracts/enums/connection-state.json"
+        ConnectionState,
+        f"{source_path}/contracts/metering-point-domain/metering-point-connection-state.json",
     )
 
 
 def test_metering_point_type_is_subset_of_contract(source_path):
     assert_codelist_matches_contract(
-        MeteringPointType, f"{source_path}/contracts/enums/metering-point-type.json"
+        MeteringPointType,
+        f"{source_path}/contracts/metering-point-domain/metering-point-type.json",
     )
 
 
 def test_settlement_method_is_subset_of_contract(source_path):
     assert_codelist_matches_contract(
-        SettlementMethod, f"{source_path}/contracts/enums/settlement-method.json"
+        SettlementMethod,
+        f"{source_path}/contracts/metering-point-domain/metering-point-settlement-method.json",
     )
 
 
 def test_quality_is_subset_of_contract(source_path):
     assert_codelist_matches_contract(
-        Quality, f"{source_path}/contracts/enums/quality.json"
+        Quality, f"{source_path}/contracts/internal/quality.json"
     )
 
 
 def test_timeseries_quality_enum_equals_timeseries_contract(source_path):
     assert_codelist_matches_contract(
-        TimeSeriesQuality, f"{source_path}/contracts/enums/timeseries-quality.json"
+        TimeSeriesQuality,
+        f"{source_path}/contracts/time-series-domain/time-series-quality.json",
     )
 
 
 def test_resolution_is_subset_of_contract(source_path):
     assert_codelist_matches_contract(
         TimeSeriesResolution,
-        f"{source_path}/contracts/enums/time-series-resolution.json",
+        f"{source_path}/contracts/time-series-domain/time-series-resolution.json",
     )
