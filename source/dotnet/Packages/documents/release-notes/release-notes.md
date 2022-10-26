@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 2.2.0
+
+Added `IsBasisDataDownloadAvailable` a `boolean` that indicates if basis data is available for download.
+
 ## Version 2.1.0
 
 Added `GetZippedBasisDataStreamAsync` that makes it possible to get the basis data for a specific batch as a stream.
