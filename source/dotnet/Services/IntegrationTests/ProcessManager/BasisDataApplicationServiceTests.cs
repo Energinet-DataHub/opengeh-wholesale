@@ -31,7 +31,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
-[Collection("ProcessManagerIntegrationTest")]
+[Collection(nameof(ProcessManagerIntegrationTestHost))]
 public sealed class BasisDataApplicationServiceTests
 {
     private readonly ProcessManagerDatabaseFixture _processManagerDatabaseFixture;
