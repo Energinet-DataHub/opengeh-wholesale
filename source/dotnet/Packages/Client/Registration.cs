@@ -32,7 +32,6 @@ public static class Registration
         Uri wholesaleBaseUri,
         Func<IServiceProvider, string> authorizationHeaderProvider)
     {
-        int i = 10;
         if (serviceCollection.All(x => x.ServiceType != typeof(IHttpClientFactory)))
             serviceCollection.AddHttpClient();
 
