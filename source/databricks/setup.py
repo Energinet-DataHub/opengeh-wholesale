@@ -25,6 +25,7 @@ setup(
         "ConfigArgParse==1.5.3",
         "pyspark==3.3.0",
         "azure-storage-blob==12.7.1",
+        "databricks-cli==0.17.3",
     ],
     entry_points={
         "console_scripts": [
