@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "databricks_job" "calculator_job" {
-  name = "CalculatorJob"
-  max_concurrent_runs = 100
+resource "databricks_job" "migrations_job" {
+  name = "MigrationsJob"
+  max_concurrent_runs = 1
   always_running = false
 
   task {
-    task_key = "calculator_job_${uuid()}"
-    max_retries = 0
+    task_key = "migrations_job_${uuid()}"
+    max_retries = 1
 
     new_cluster {
       spark_version           = data.databricks_spark_version.latest_lts.id
@@ -37,14 +37,12 @@ resource "databricks_job" "calculator_job" {
     python_wheel_task {
       package_name = "package"
       # The entry point is defined in setup.py
-      entry_point = "start_calculator"
+      entry_point = "begin_migration"
       parameters  = [
           "--data-storage-account-name=${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}",
           "--data-storage-account-key=${data.azurerm_key_vault_secret.kvs_st_data_lake_primary_access_key.value}",
           "--integration-events-path=abfss://${local.INTERGRATION_EVENTS_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events",
-          "--time-series-points-path=abfss://timeseries-data@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/time-series-points",
           "--process-results-path=abfss://${local.CALCULATION_STORAGE_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/results",
-          "--time-zone=${local.TIME_ZONE}",
           "--log-level=information"
       ]
     }
