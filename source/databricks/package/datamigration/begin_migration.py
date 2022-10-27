@@ -47,8 +47,8 @@ def _get_valid_args_or_throw():
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--integration-events-path", type=str, required=True)
     p.add("--process-results-path", type=str, required=True)
-    p.add("--databricks_host", type=str, required=True)
-    p.add("--databricks_toen", type=str, required=True)
+    p.add("--databricks-host", type=str, required=True)
+    p.add("--databricks-token", type=str, required=True)
 
     p.add(
         "--log-level",
