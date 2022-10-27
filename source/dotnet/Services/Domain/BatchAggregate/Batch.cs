@@ -43,6 +43,7 @@ public class Batch
 
         ExecutionTimeStart = _clock.GetCurrentInstant();
         ExecutionTimeEnd = null;
+        IsBasisDataDownloadAvailable = false;
     }
 
     /// <summary>
@@ -74,6 +75,8 @@ public class Batch
     public Instant PeriodStart { get; }
 
     public Instant PeriodEnd { get; }
+
+    public bool IsBasisDataDownloadAvailable { get; set; }
 
     public void MarkAsSubmitted(JobRunId jobRunId)
     {

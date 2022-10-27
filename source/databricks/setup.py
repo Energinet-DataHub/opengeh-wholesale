@@ -30,6 +30,7 @@ setup(
         "console_scripts": [
             "start_stream = package.integration_events_persister_streaming:start",
             "start_calculator = package.calculator_job:start",
+            "begin_migration = package.datamigration.begin_migration:start",
         ]
     },
 )

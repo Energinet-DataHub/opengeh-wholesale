@@ -21,6 +21,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
 public class MeteringPointConnectedDtoFactory
 {
+    private const string MessageType = "MeteringPointConnected";
+
     private readonly ICorrelationContext _correlationContext;
     private readonly IIntegrationEventContext _integrationEventContext;
 
@@ -43,7 +45,7 @@ public class MeteringPointConnectedDtoFactory
             meteringPointConnected.GsrnNumber,
             meteringPointConnected.EffectiveDate.ToInstant(),
             _correlationContext.Id,
-            eventMetadata.MessageType,
+            MessageType,
             eventMetadata.OperationTimestamp);
     }
 }

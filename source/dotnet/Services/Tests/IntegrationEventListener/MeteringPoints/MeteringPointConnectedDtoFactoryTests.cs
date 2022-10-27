@@ -58,13 +58,12 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
 
             // Assert
             actual.CorrelationId.Should().Be(correlationId.ToString());
-            actual.MessageType.Should().Be(integrationEventMetadata.MessageType);
             actual.OperationTime.Should().Be(integrationEventMetadata.OperationTimestamp);
         }
 
         [Theory]
         [InlineAutoMoqData]
-        public void Create_WhenCalled_ShouldMapToMeteringPointConnectedEventWithCorrectValues(
+        public void Create_WhenCalled_ShouldMapCorrectValues(
             Mock<ICorrelationContext> correlationContext,
             Mock<IIntegrationEventContext> integrationEventContext,
             MeteringPointConnected meteringPointConnectedEvent,
@@ -72,6 +71,8 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
             Guid correlationId)
         {
             // Arrange
+            const string expectedMessageType = "MeteringPointConnected";
+
             correlationContext
                 .Setup(x => x.Id)
                 .Returns(correlationId.ToString());
@@ -92,6 +93,9 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
             actual.GsrnNumber.Should().Be(meteringPointConnectedEvent.GsrnNumber);
             actual.MeteringPointId.Should().Be(meteringPointConnectedEvent.MeteringpointId);
             actual.EffectiveDate.Should().Be(meteringPointConnectedEvent.EffectiveDate.ToInstant());
+            actual.CorrelationId.Should().Be(correlationId.ToString());
+            actual.MessageType.Should().Be(expectedMessageType);
+            actual.OperationTime.Should().Be(integrationEventMetadata.OperationTimestamp);
         }
 
         [Theory]

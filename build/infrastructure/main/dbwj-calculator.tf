@@ -36,6 +36,7 @@ resource "databricks_job" "calculator_job" {
 
     python_wheel_task {
       package_name = "package"
+      # The entry point is defined in setup.py
       entry_point = "start_calculator"
       parameters  = [
           "--data-storage-account-name=${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}",
