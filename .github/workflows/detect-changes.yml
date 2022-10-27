@@ -53,19 +53,16 @@ jobs:
           infrastructure:
             - '.github/workflows/cd.yml'
             - '.github/workflows/ci.yml'
-            - '.github/workflows/detect-changes.yml'
             - 'build/**'
           databricks:
             - '.github/workflows/cd.yml'
             - '.github/workflows/ci.yml'
-            - '.github/workflows/detect-changes.yml'
             - '.github/actions/python-*/**'
             - 'source/databricks/**'
             - 'source/contracts/**'
           dotnet:
             - '.github/workflows/cd.yml'
             - '.github/workflows/ci.yml'
-            - '.github/workflows/detect-changes.yml'
             - '.github/actions/dotnet-*/**'
             - 'source/dotnet/!(Packages/**)/**'
             - 'source/contracts/**'
