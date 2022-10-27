@@ -11,8 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-# Further the method must remain parameterless because it will be called from the entry point when deployed.
-def start():
-    pass
