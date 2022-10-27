@@ -13,6 +13,7 @@
     "METERING_POINT_CREATED_SUBSCRIPTION_NAME": "metering-point-created",
     "METERING_POINT_CONNECTED_SUBSCRIPTION_NAME": "metering-point-connected",
     "MARKET_PARTICIPANT_CHANGED_SUBSCRIPTION_NAME": "market-participant-changed",
+    "ENERGY_SUPPLIER_CHANGED_SUBSCRIPTION_NAME": "energy-supplier-changed",
 
     "EVENT_HUB_NAME": "masterdataevents"
   }

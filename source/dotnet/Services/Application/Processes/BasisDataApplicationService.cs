@@ -22,17 +22,21 @@ public class BasisDataApplicationService : IBasisDataApplicationService
 {
     private readonly IBatchRepository _batchRepository;
     private readonly IBatchFileManager _batchFileManager;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public BasisDataApplicationService(IBatchRepository batchRepository, IBatchFileManager batchFileManager)
+    public BasisDataApplicationService(IBatchRepository batchRepository, IBatchFileManager batchFileManager, IUnitOfWork unitOfWork)
     {
         _batchRepository = batchRepository;
         _batchFileManager = batchFileManager;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task ZipBasisDataAsync(BatchCompletedEventDto batchCompletedEvent)
     {
         var batch = await _batchRepository.GetAsync(batchCompletedEvent.BatchId).ConfigureAwait(false);
         await _batchFileManager.CreateBasisDataZipAsync(batch).ConfigureAwait(false);
+        batch.IsBasisDataDownloadAvailable = true;
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     public async Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId)

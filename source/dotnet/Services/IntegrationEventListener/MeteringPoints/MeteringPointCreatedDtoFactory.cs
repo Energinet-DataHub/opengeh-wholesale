@@ -22,6 +22,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 
 public class MeteringPointCreatedDtoFactory
 {
+    private const string MessageType = "MeteringPointCreated";
     private readonly ICorrelationContext _correlationContext;
     private readonly IIntegrationEventContext _integrationEventContext;
 
@@ -56,7 +57,7 @@ public class MeteringPointCreatedDtoFactory
             _correlationContext.Id,
             meteringPointCreated.FromGridAreaCode,
             meteringPointCreated.ToGridAreaCode,
-            eventMetadata.MessageType,
+            MessageType,
             eventMetadata.OperationTimestamp);
     }
 
