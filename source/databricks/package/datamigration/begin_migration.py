@@ -14,6 +14,7 @@
 import configargparse
 
 from datamigration import stop_databricks_jobs, get_api_client
+from package.args_helper import valid_log_level
 from package import (
     log,
     debug,
@@ -56,7 +57,7 @@ def _get_valid_args_or_throw():
 
     p.add(
         "--log-level",
-        type=_valid_log_level,
+        type=valid_log_level,
         help="debug|information",
     )
 
@@ -66,11 +67,3 @@ def _get_valid_args_or_throw():
         raise Exception(f"Unknown args: {unknown_args_text}")
 
     return args
-
-
-def _valid_log_level(s):
-    if s in ["information", "debug"]:
-        return str(s)
-    else:
-        msg = "loglevel is not valid"
-        raise configargparse.ArgumentTypeError(msg)
