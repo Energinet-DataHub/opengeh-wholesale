@@ -13,7 +13,7 @@
 # limitations under the License.
 import configargparse
 
-from datamigration import stop_databricks_jobs, get_api_client
+from .job_handler import stop_databricks_jobs, get_api_client
 from package.args_helper import valid_log_level
 from package import (
     log,
