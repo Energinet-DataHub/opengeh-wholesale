@@ -14,12 +14,17 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
+using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using Energinet.DataHub.MarketParticipant.Integration.Model.Dtos;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
 using Moq;
+using NodaTime;
+using NodaTime.Text;
 using Xunit;
 using Xunit.Categories;
 
@@ -30,22 +35,44 @@ public class EnergySupplierChangedDtoFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task MessageTypeValue_MatchesContract_WithCalculator(
-        GridAreaUpdatedIntegrationEvent anyGridAreaUpdatedIntegrationEvent,
-        IntegrationEventMetadata anyMetadata,
+    public void Create_WhenCalled_ShouldMapCorrectValues(
+        string accountingpointId,
+        string gsrnNumber,
+        string energySupplierGln,
+        string id,
+        string correlationContextCorrelationId,
+        IntegrationEventMetadata metadata,
         [Frozen] Mock<IIntegrationEventContext> integrationEventContext,
-        GridAreaUpdatedDtoFactory sut)
+        [Frozen] Mock<ICorrelationContext> correlationContext,
+        EnergySupplierChangedDtoFactory sut)
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream("IntegrationEventListener.MarketParticipant.grid-area-updated.json");
-        var expectedMessageType = await ContractComplianceTestHelper.GetRequiredMessageTypeAsync(stream);
+        const string expectedMessageType = "EnergySupplierChanged";
 
-        integrationEventContext.Setup(context => context.ReadMetadata()).Returns(anyMetadata);
+        integrationEventContext.Setup(context => context.ReadMetadata()).Returns(metadata);
+        correlationContext.Setup(context => context.Id).Returns(correlationContextCorrelationId);
+        var expectedEffectiveDate = "2022-07-04T08:05:30Z";
+        var energySupplierEvent = new EnergySupplierChanged
+        {
+            AccountingpointId = accountingpointId,
+            GsrnNumber = gsrnNumber,
+            EffectiveDate = expectedEffectiveDate,
+            EnergySupplierGln = energySupplierGln,
+            Id = id,
+        };
 
         // Act
-        var actual = sut.Create(anyGridAreaUpdatedIntegrationEvent);
+        var actual = sut.Create(energySupplierEvent);
 
         // Assert
+        actual.Should().NotContainNullsOrEmptyEnumerables();
+        actual.AccountingpointId.Should().Be(accountingpointId);
+        actual.GsrnNumber.Should().Be(gsrnNumber);
+        actual.EnergySupplierGln.Should().Be(energySupplierGln);
+        actual.Id.Should().Be(id);
+        actual.EffectiveDate.Should().Be(InstantPattern.General.Parse(expectedEffectiveDate).Value);
+        actual.CorrelationId.Should().Be(correlationContextCorrelationId);
         actual.MessageType.Should().Be(expectedMessageType);
+        actual.OperationTime.Should().Be(metadata.OperationTimestamp);
     }
 }

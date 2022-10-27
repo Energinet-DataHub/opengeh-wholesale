@@ -91,13 +91,12 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
 
             // Assert
             actual.CorrelationId.Should().Be(correlationId.ToString());
-            actual.MessageType.Should().Be(integrationEventMetadata.MessageType);
             actual.OperationTime.Should().Be(integrationEventMetadata.OperationTimestamp);
         }
 
         [Theory]
         [InlineAutoMoqData]
-        public void MeteringPointCreatedIntegrationInboundMapper_WhenCalled_ShouldMapToMeteringPointCreatedEventWithCorrectValues(
+        public void Create_WhenCalled_ShouldMapCorrectValues(
             Mock<ICorrelationContext> correlationContext,
             Mock<IIntegrationEventContext> integrationEventContext,
             MeteringPointCreated meteringPointCreatedEvent,
@@ -105,6 +104,8 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
             Guid correlationId)
         {
             // Arrange
+            const string expectedMessageType = "MeteringPointCreated";
+
             correlationContext
                 .Setup(x => x.Id)
                 .Returns(correlationId.ToString());
@@ -137,6 +138,9 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
             actual.MeteringPointId.Should().Be(meteringPointCreatedEvent.MeteringPointId);
             actual.FromGridAreaCode.Should().Be(meteringPointCreatedEvent.FromGridAreaCode);
             actual.ToGridAreaCode.Should().Be(meteringPointCreatedEvent.ToGridAreaCode);
+            actual.CorrelationId.Should().Be(correlationId.ToString());
+            actual.MessageType.Should().Be(expectedMessageType);
+            actual.OperationTime.Should().Be(integrationEventMetadata.OperationTimestamp);
         }
 
         [Theory]
