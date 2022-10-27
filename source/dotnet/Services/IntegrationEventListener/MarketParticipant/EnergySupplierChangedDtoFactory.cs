@@ -21,6 +21,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant
 {
     public class EnergySupplierChangedDtoFactory
     {
+        private const string MessageType = "EnergySupplierChanged";
+
         private readonly ICorrelationContext _correlationContext;
         private readonly IIntegrationEventContext _integrationEventContext;
 
@@ -45,7 +47,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant
                 InstantPattern.General.Parse(energySupplierChanged.EffectiveDate).Value,
                 energySupplierChanged.Id,
                 _correlationContext.Id,
-                eventMetadata.MessageType,
+                MessageType,
                 eventMetadata.OperationTimestamp);
         }
     }

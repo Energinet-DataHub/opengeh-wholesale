@@ -24,6 +24,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant
 /// <param name="EnergySupplierGln">Unique Energy Supplier identification</param>
 /// <param name="EffectiveDate">Date which the change of supplier goes into effect</param>
 /// <param name="Id">Unique event identification</param>
+/// <param name="CorrelationId">Unique id for the call</param>
+/// <param name="MessageType">The type of message the dto represents</param>
+/// <param name="OperationTime">The point in time when the sending domain published the event</param>
 public sealed record EnergySupplierChangedDto(
         string AccountingpointId,
         string GsrnNumber,

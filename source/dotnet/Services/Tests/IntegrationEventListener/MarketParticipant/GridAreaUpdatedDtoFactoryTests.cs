@@ -14,6 +14,7 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.MarketParticipant.Integration.Model.Dtos;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
@@ -51,19 +52,24 @@ public class GridAreaUpdatedDtoFactoryTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void When_CreateIsCalledWithGridAreaUpdatedEvent_CorrectGridAreaUpdate(
+    public void Create_Map_Values_Correct(
         Guid id,
         Guid gridAreaId,
         string name,
         string code,
         PriceAreaCode priceAreaCode,
         Guid gridAreaLinkId,
+        string correlationContextCorrelationId,
         IntegrationEventMetadata metadata,
         [Frozen] Mock<IIntegrationEventContext> integrationEventContext,
+        [Frozen] Mock<ICorrelationContext> correlationContext,
         GridAreaUpdatedDtoFactory sut)
     {
         // Arrange
+        const string expectedMessageType = "GridAreaUpdated";
+
         integrationEventContext.Setup(context => context.ReadMetadata()).Returns(metadata);
+        correlationContext.Setup(context => context.Id).Returns(correlationContextCorrelationId);
         var energySupplierEvent = new GridAreaUpdatedIntegrationEvent(id, gridAreaId, name, code, priceAreaCode, gridAreaLinkId);
 
         // Act
@@ -73,8 +79,8 @@ public class GridAreaUpdatedDtoFactoryTests
         actual.GridAreaCode.Should().Be(code);
         actual.GridAreaId.Should().Be(gridAreaId);
         actual.GridAreaLinkId.Should().Be(gridAreaLinkId);
-        actual.CorrelationId.Should().Be(metadata.OperationCorrelationId);
-        actual.MessageType.Should().Be(metadata.MessageType);
+        actual.CorrelationId.Should().Be(correlationContextCorrelationId);
+        actual.MessageType.Should().Be(expectedMessageType);
         actual.OperationTime.Should().Be(metadata.OperationTimestamp);
     }
 }
