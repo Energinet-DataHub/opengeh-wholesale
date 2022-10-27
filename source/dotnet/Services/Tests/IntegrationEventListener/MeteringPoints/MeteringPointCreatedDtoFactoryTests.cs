@@ -235,7 +235,7 @@ namespace Energinet.DataHub.Wholesale.Tests.IntegrationEventListener.MeteringPoi
         [InlineData(mpTypes.MeteringPointType.MptTotalConsumption, MeteringPointType.TotalConsumption)]
         [InlineData(mpTypes.MeteringPointType.MptVeproduction, MeteringPointType.VeProduction)]
         [InlineData(mpTypes.MeteringPointType.MptWholesaleServices, MeteringPointType.WholesaleService)]
-        public void Create_WhenCalled_ShouldMapToMeteringPointConnectedEventWithCorrectValues(
+        public void MapMeteringPointType_WhenCalled_ShouldMapCorrectly(
             mpTypes.MeteringPointType protoMeteringType,
             MeteringPointType expectedMeteringPointType)
         {
