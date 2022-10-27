@@ -19,15 +19,14 @@ from databricks_cli.runs.api import RunsApi
 from databricks_cli.sdk import JobsService
 
 
-def _get_api_client(args):
+def get_api_client(host, token):
     return ApiClient(
-        host=args.databricsk_host,  # "https://adb-5870161604877074.14.azuredatabricks.net",
-        token=args.databricks_token,  # "the token",
+        host=host,  # example: "https://adb-5870161604877074.14.azuredatabricks.net",
+        token=token,  # the databricks token,
     )
 
 
-def stop_databricks_jobs(args, job_names_to_stop):
-    api_client = ApiClient(args)
+def stop_databricks_jobs(api_client, job_names_to_stop):
     jobService = JobsService(api_client)
     jobs_api = JobsApi(api_client)
 
@@ -50,8 +49,7 @@ def stop_databricks_jobs(args, job_names_to_stop):
         time.sleep(1)
 
 
-def start_databricks_jobs(args, jobs_to_start):
-    api_client = ApiClient(args)
+def start_databricks_jobs(api_client, jobs_to_start):
     jobService = JobsService(api_client)
     jobs_api = JobsApi(api_client)
 

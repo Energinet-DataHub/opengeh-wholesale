@@ -15,9 +15,9 @@
 
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 import configargparse
-from databricks_cli.sdk.api_client import ApiClient
+from datamigration import start_databricks_jobs, get_api_client
+from package.args_helper import valid_log_level
 
-from datamigration import start_databricks_jobs
 from package import (
     log,
     debug,
@@ -31,10 +31,8 @@ def start():
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    api_client = ApiClient(
-        host=args.databricks_host,  # "https://adb-5870161604877074.14.azuredatabricks.net"
-        token=args.databricks_token,  # "the token",
-    )
+    api_client = get_api_client(args.databricks_host, args.token)
+
     jobs_to_start = [
         "IntegrationEventsPersisterStreamingJob",
         "persister_streaming_job",
@@ -59,7 +57,7 @@ def _get_valid_args_or_throw():
 
     p.add(
         "--log-level",
-        type=_valid_log_level,
+        type=valid_log_level,
         help="debug|information",
     )
 
@@ -69,11 +67,3 @@ def _get_valid_args_or_throw():
         raise Exception(f"Unknown args: {unknown_args_text}")
 
     return args
-
-
-def _valid_log_level(s):
-    if s in ["information", "debug"]:
-        return str(s)
-    else:
-        msg = "loglevel is not valid"
-        raise configargparse.ArgumentTypeError(msg)

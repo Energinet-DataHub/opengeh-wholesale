@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import configargparse
-from databricks_cli.sdk.api_client import ApiClient
 
-from datamigration import stop_databricks_jobs
+from datamigration import stop_databricks_jobs, get_api_client
 from package import (
     log,
     debug,
@@ -28,10 +27,8 @@ def start():
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    api_client = ApiClient(
-        host=args.databricks_host,  # "https://adb-5870161604877074.14.azuredatabricks.net"
-        token=args.databricks_token,  # "the token",
-    )
+    api_client = get_api_client(args.databricks_host, args.token)
+
     jobs_to_stop = [
         "CalculatorJob",
         "IntegrationEventsPersisterStreamingJob",

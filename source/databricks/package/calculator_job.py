@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
 import sys
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
-import ast
+from package.args_helper import valid_date, valid_list, valid_log_level
 
 # Required when executing in a subprocess from pytest (without using wheel)
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
@@ -31,32 +30,6 @@ from package import (
 )
 
 import configargparse
-
-
-def _valid_date(s):
-    """See https://stackoverflow.com/questions/25470844/specify-date-format-for-python-argparse-input-arguments"""
-    try:
-        return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
-    except ValueError:
-        msg = "not a valid date: {0!r}".format(s)
-        raise configargparse.ArgumentTypeError(msg)
-
-
-def _valid_list(s):
-    """See https://stackoverflow.com/questions/25470844/specify-date-format-for-python-argparse-input-arguments"""
-    try:
-        return ast.literal_eval(s)
-    except ValueError:
-        msg = "not a valid grid area list"
-        raise configargparse.ArgumentTypeError(msg)
-
-
-def _valid_log_level(s):
-    if s in ["information", "debug"]:
-        return str(s)
-    else:
-        msg = "loglevel is not valid"
-        raise configargparse.ArgumentTypeError(msg)
 
 
 def _get_valid_args_or_throw():
@@ -75,13 +48,13 @@ def _get_valid_args_or_throw():
 
     # Run parameters
     p.add("--batch-id", type=str, required=True)
-    p.add("--batch-snapshot-datetime", type=_valid_date, required=True)
-    p.add("--batch-grid-areas", type=_valid_list, required=True)
-    p.add("--batch-period-start-datetime", type=_valid_date, required=True)
-    p.add("--batch-period-end-datetime", type=_valid_date, required=True)
+    p.add("--batch-snapshot-datetime", type=valid_date, required=True)
+    p.add("--batch-grid-areas", type=valid_list, required=True)
+    p.add("--batch-period-start-datetime", type=valid_date, required=True)
+    p.add("--batch-period-end-datetime", type=valid_date, required=True)
     p.add(
         "--log-level",
-        type=_valid_log_level,
+        type=valid_log_level,
         help="debug|information",
     )
 
