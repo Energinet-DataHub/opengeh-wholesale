@@ -50,3 +50,16 @@ module "sbs_int_events_grid_area_updated" {
     }
   }
 }
+
+module "sbs_int_events_energy_supplier_changed" {
+  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
+  name                = "energy-supplier-changed"
+  project_name        = var.domain_name_short
+  topic_id            = data.azurerm_key_vault_secret.sbt_integration_events_id.value
+  max_delivery_count  = 10
+  correlation_filter  = {
+    properties     = {
+      "messageType" = "EnergySupplierChanged"
+    }
+  }
+}

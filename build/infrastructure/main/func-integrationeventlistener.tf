@@ -42,6 +42,7 @@ module "func_integrationeventlistener" {
     METERING_POINT_CREATED_SUBSCRIPTION_NAME              = module.sbs_int_events_metering_point_created.name
     METERING_POINT_CONNECTED_SUBSCRIPTION_NAME            = module.sbs_int_events_metering_point_connected.name
     MARKET_PARTICIPANT_CHANGED_SUBSCRIPTION_NAME          = module.sbs_int_events_grid_area_updated.name
+    ENERGY_SUPPLIER_CHANGED_SUBSCRIPTION_NAME             = module.sbs_int_events_energy_supplier_changed.name
   }
 
   tags                                  = azurerm_resource_group.this.tags

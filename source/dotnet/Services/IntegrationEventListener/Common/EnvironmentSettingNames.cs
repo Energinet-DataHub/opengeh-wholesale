@@ -21,6 +21,7 @@ public static class EnvironmentSettingNames
 {
     public const string AzureWebJobsStorage = "AzureWebJobsStorage";
     public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
+    public const string EnergySupplierChangedSubscriptionName = "ENERGY_SUPPLIER_CHANGED_SUBSCRIPTION_NAME";
     public const string IntegrationEventConnectionListenerString = "INTEGRATIONEVENT_LISTENER_CONNECTION_STRING";
     public const string IntegrationEventConnectionManagerString = "INTEGRATIONEVENT_MANAGER_CONNECTION_STRING";
     public const string IntegrationEventsTopicName = "INTEGRATION_EVENTS_TOPIC_NAME";
