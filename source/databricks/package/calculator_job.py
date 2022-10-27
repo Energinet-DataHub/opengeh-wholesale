@@ -16,7 +16,6 @@ import sys
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
-from package.args_helper import valid_date, valid_list, valid_log_level
 
 # Required when executing in a subprocess from pytest (without using wheel)
 sys.path.append(r"/workspaces/opengeh-wholesale/source/databricks")
@@ -28,6 +27,7 @@ from package import (
     debug,
     db_logging,
 )
+from package.args_helper import valid_date, valid_list, valid_log_level
 
 import configargparse
 
