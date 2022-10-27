@@ -61,6 +61,52 @@ def grid_area_df(spark):
 
 
 @pytest.fixture
+def energy_supplier_changed_df_factory(spark):
+    def factory(
+        accounting_point_id=metering_point_id,
+        gsrn_number=gsrn_number,
+        energy_supplier_gln="energy_supplier_gln",
+        effective_date=TimeSeriesResolution.hour.value,
+        id=1,
+        correlation_id="correlation_id",
+        message_type=MeteringPointType.production.value,
+        operation_time=TimeSeriesResolution.hour.value,
+    ):
+        row = {
+            "AccountingpointId": accounting_point_id,
+            "GsrnNumber": gsrn_number,
+            "EnergySupplierGln": energy_supplier_gln,
+            "EffectiveDate": effective_date,
+            "Id": id,
+            "CorrelationId": correlation_id,
+            "MessageType": message_type,
+            "OperationTime": operation_time,
+        }
+
+        return (
+            spark.createDataFrame([row])
+            .withColumn(
+                "body",
+                to_json(
+                    struct(
+                        col("AccountingpointId"),
+                        col("GsrnNumber"),
+                        col("EnergySupplierGln"),
+                        col("EffectiveDate"),
+                        col("Id"),
+                        col("CorrelationId"),
+                        col("MessageType"),
+                        col("OperationTime"),
+                    )
+                ),
+            )
+            .select("storedTime", "body")
+        )
+
+    return factory
+
+
+@pytest.fixture
 def metering_point_created_df_factory(spark):
     def factory(
         stored_time=first_of_june,
@@ -510,6 +556,7 @@ def test__duplicate_created_events_do_not_affect_amount_of_periods(
 
 def test__only_created_events_results_in_no_periods(
     metering_point_created_df_factory,
+    energy_supplier_changed_df_factory,
     grid_area_df,
 ):
     # Arrange
@@ -520,7 +567,11 @@ def test__only_created_events_results_in_no_periods(
 
     # Act
     actual_df = _get_metering_point_periods_df(
-        integration_events_df, grid_area_df, first_of_june, third_of_june
+        integration_events_df,
+        energy_supplier_changed_df_factory,
+        grid_area_df,
+        first_of_june,
+        third_of_june,
     )
 
     # Assert
