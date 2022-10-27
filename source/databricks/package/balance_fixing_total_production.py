@@ -100,6 +100,7 @@ def calculate_balance_fixing_total_production(
 
     metering_point_period_df = _get_metering_point_periods_df(
         cached_integration_events_df,
+        energy_supplier_changed_df,
         grid_area_df,
         period_start_datetime,
         period_end_datetime,
@@ -235,22 +236,13 @@ def _get_energy_supplier_changed_df(
             "OperationTime",
         ]
     )
-    window = Window.partitionBy("AccountingpointId").orderBy("EffectiveDate")
 
-    energy_supplier_changed_periods_df = (
-        energy_supplier_changed_df.withColumn(
-            "toEffectiveDate",
-            lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
-        )
-        .where(col("EffectiveDate") <= period_end_datetime)
-        .where(col("toEffectiveDate") >= period_end_datetime)
-        .where(col("MeteringPointType") == MeteringPointType.production.value)
-    )
-    return energy_supplier_changed_periods_df
+    return energy_supplier_changed_df
 
 
 def _get_metering_point_periods_df(
     cached_integration_events_df,
+    energy_supplier_changed_df,
     grid_area_df,
     period_start_datetime,
     period_end_datetime,
@@ -296,6 +288,7 @@ def _get_metering_point_periods_df(
             "SettlementMethod",
             "FromGridAreaCode",
             "ToGridAreaCode",
+            "AccountingpointId",
         ]
     )
     debug(
@@ -350,6 +343,12 @@ def _get_metering_point_periods_df(
             "ToGridAreaCode",
             coalesce(col("ToGridAreaCode"), last("ToGridAreaCode", True).over(window)),
         )
+        .withColumn(
+            "AccountingpointId",
+            coalesce(
+                col("AccountingpointId"), last("AccountingpointId", True).over(window)
+            ),
+        )
         .where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
@@ -369,6 +368,7 @@ def _get_metering_point_periods_df(
         metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
         "inner",
     ).select(
+        "MeteringPointId",
         "GsrnNumber",
         "GridAreaCode",
         "EffectiveDate",
@@ -386,6 +386,22 @@ def _get_metering_point_periods_df(
             col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
         ),
     )
+
+    metering_point_periods_df = metering_point_periods_df.join(
+        energy_supplier_changed_df, "MeteringPointId" == "AccountingpointId"
+    ).select(
+        "GsrnNumber",
+        "GridAreaCode",
+        "EffectiveDate",
+        "toEffectiveDate",
+        "MeteringPointType",
+        "SettlementMethod",
+        "FromGridAreaCode",
+        "ToGridAreaCode",
+        "Resolution",
+        "EnergySupplierGln",
+    )
+
     return metering_point_periods_df
 
 
