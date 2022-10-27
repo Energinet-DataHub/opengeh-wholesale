@@ -30,12 +30,7 @@ def start():
 
     api_client = get_api_client(args.databricks_host, args.token)
 
-    jobs_to_stop = [
-        "CalculatorJob",
-        "IntegrationEventsPersisterStreamingJob",
-        "persister_streaming_job",
-        "publisher_streaming_job",
-    ]
+    jobs_to_stop = ["CalculatorJob", "IntegrationEventsPersisterStreamingJob"]
     stop_databricks_jobs(api_client, jobs_to_stop)
 
     # start migration
