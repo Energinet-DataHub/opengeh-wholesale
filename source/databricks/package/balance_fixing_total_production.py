@@ -58,6 +58,7 @@ from package.codelists import (
 from package.schemas import (
     grid_area_updated_event_schema,
     metering_point_generic_event_schema,
+    energy_supplier_changed_event_schema,
 )
 from package.db_logging import debug
 from datetime import datetime, timedelta, date
@@ -66,6 +67,7 @@ from pytz import timezone
 import pytz
 from decimal import Decimal
 
+energy_supplier_changed_message_type = "EnergySupplierChanged"
 metering_point_created_message_type = "MeteringPointCreated"
 metering_point_connected_message_type = "MeteringPointConnected"
 
@@ -91,6 +93,10 @@ def calculate_balance_fixing_total_production(
     )
 
     grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df)
+
+    energy_supplier_changed_df = _get_energy_supplier_changed_df(
+        cached_integration_events_df, period_start_datetime, period_end_datetime
+    )
 
     metering_point_period_df = _get_metering_point_periods_df(
         cached_integration_events_df,
@@ -193,6 +199,54 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
 
     debug("Grid areas", grid_area_df.orderBy(col("GridAreaCode")))
     return grid_area_df
+
+
+def _get_energy_supplier_changed_df(
+    cached_integration_events_df, period_start_datetime, period_end_datetime
+) -> DataFrame:
+    energy_supplier_changed_df = (
+        cached_integration_events_df.withColumn(
+            "body", from_json(col("body"), energy_supplier_changed_event_schema)
+        )
+        .where(
+            col("body.MessageType").isin(
+                energy_supplier_changed_message_type,
+            )
+        )
+        .select(
+            "body.AccountingpointId",
+            "body.GsrnNumber",
+            "body.EnergySupplierGln",
+            "body.EffectiveDate",
+            "body.Id",
+            "body.CorrelationId",
+            "body.MessageType",
+            "body.OperationTime",
+        )
+    ).dropDuplicates(
+        [
+            "AccountingpointId",
+            "GsrnNumber",
+            "EnergySupplierGln",
+            "EffectiveDate",
+            "Id",
+            "CorrelationId",
+            "MessageType",
+            "OperationTime",
+        ]
+    )
+    window = Window.partitionBy("AccountingpointId").orderBy("EffectiveDate")
+
+    energy_supplier_changed_periods_df = (
+        energy_supplier_changed_df.withColumn(
+            "toEffectiveDate",
+            lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
+        )
+        .where(col("EffectiveDate") <= period_end_datetime)
+        .where(col("toEffectiveDate") >= period_end_datetime)
+        .where(col("MeteringPointType") == MeteringPointType.production.value)
+    )
+    return energy_supplier_changed_periods_df
 
 
 def _get_metering_point_periods_df(
