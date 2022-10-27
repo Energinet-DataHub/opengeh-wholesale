@@ -67,5 +67,5 @@ jobs:
             - '.github/workflows/ci.yml'
             - '.github/workflows/detect-changes.yml'
             - '.github/actions/dotnet-*/**'
-            - 'source/dotnet/**'
+            - 'source/dotnet/!(Packages/**)/**'
             - 'source/contracts/**'
