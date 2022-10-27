@@ -48,4 +48,33 @@ public class GridAreaUpdatedDtoFactoryTests
         // Assert
         actual.MessageType.Should().Be(expectedMessageType);
     }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void When_CreateIsCalledWithGridAreaUpdatedEvent_CorrectGridAreaUpdate(
+        Guid id,
+        Guid gridAreaId,
+        string name,
+        string code,
+        PriceAreaCode priceAreaCode,
+        Guid gridAreaLinkId,
+        IntegrationEventMetadata metadata,
+        [Frozen] Mock<IIntegrationEventContext> integrationEventContext,
+        GridAreaUpdatedDtoFactory sut)
+    {
+        // Arrange
+        integrationEventContext.Setup(context => context.ReadMetadata()).Returns(metadata);
+        var energySupplierEvent = new GridAreaUpdatedIntegrationEvent(id, gridAreaId, name, code, priceAreaCode, gridAreaLinkId);
+
+        // Act
+        var actual = sut.Create(energySupplierEvent);
+
+        // Assert
+        actual.GridAreaCode.Should().Be(code);
+        actual.GridAreaId.Should().Be(gridAreaId);
+        actual.GridAreaLinkId.Should().Be(gridAreaLinkId);
+        actual.CorrelationId.Should().Be(metadata.OperationCorrelationId);
+        actual.MessageType.Should().Be(metadata.MessageType);
+        actual.OperationTime.Should().Be(metadata.OperationTimestamp);
+    }
 }
