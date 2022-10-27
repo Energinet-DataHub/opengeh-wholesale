@@ -16,6 +16,7 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
 using Energinet.DataHub.MarketParticipant.Integration.Model.Dtos;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
@@ -52,7 +53,7 @@ public class GridAreaUpdatedDtoFactoryTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Create_Map_Values_Correct(
+    public void Create_WhenCalled_ShouldMapCorrectValues(
         Guid id,
         Guid gridAreaId,
         string name,
@@ -76,6 +77,7 @@ public class GridAreaUpdatedDtoFactoryTests
         var actual = sut.Create(energySupplierEvent);
 
         // Assert
+        actual.Should().NotContainNullsOrEmptyEnumerables();
         actual.GridAreaCode.Should().Be(code);
         actual.GridAreaId.Should().Be(gridAreaId);
         actual.GridAreaLinkId.Should().Be(gridAreaLinkId);

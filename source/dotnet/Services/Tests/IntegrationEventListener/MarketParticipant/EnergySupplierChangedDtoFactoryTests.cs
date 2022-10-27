@@ -16,6 +16,7 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
 using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using Energinet.DataHub.MarketParticipant.Integration.Model.Dtos;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
@@ -34,7 +35,7 @@ public class EnergySupplierChangedDtoFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public void Create_Map_Values_Correct(
+    public void Create_WhenCalled_ShouldMapCorrectValues(
         string accountingpointId,
         string gsrnNumber,
         string energySupplierGln,
@@ -64,6 +65,7 @@ public class EnergySupplierChangedDtoFactoryTests
         var actual = sut.Create(energySupplierEvent);
 
         // Assert
+        actual.Should().NotContainNullsOrEmptyEnumerables();
         actual.AccountingpointId.Should().Be(accountingpointId);
         actual.GsrnNumber.Should().Be(gsrnNumber);
         actual.EnergySupplierGln.Should().Be(energySupplierGln);
