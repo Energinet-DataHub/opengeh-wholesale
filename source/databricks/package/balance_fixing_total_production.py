@@ -58,7 +58,6 @@ from package.codelists import (
 from package.schemas import (
     grid_area_updated_event_schema,
     metering_point_generic_event_schema,
-    energy_supplier_changed_event_schema,
 )
 from package.db_logging import debug
 from datetime import datetime, timedelta, date
