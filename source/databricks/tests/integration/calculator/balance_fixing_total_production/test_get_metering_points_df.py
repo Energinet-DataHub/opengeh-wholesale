@@ -63,6 +63,7 @@ def grid_area_df(spark):
 @pytest.fixture
 def energy_supplier_changed_df_factory(spark):
     def factory(
+        stored_time=first_of_june,
         accounting_point_id=metering_point_id,
         gsrn_number=gsrn_number,
         energy_supplier_gln="energy_supplier_gln",
@@ -73,6 +74,7 @@ def energy_supplier_changed_df_factory(spark):
         operation_time=first_of_june,
     ):
         row = {
+            "storedTime": stored_time,
             "AccountingpointId": accounting_point_id,
             "GsrnNumber": gsrn_number,
             "EnergySupplierGln": energy_supplier_gln,
@@ -83,20 +85,25 @@ def energy_supplier_changed_df_factory(spark):
             "OperationTime": operation_time,
         }
 
-        return spark.createDataFrame([row]).withColumn(
-            "body",
-            to_json(
-                struct(
-                    col("AccountingpointId"),
-                    col("GsrnNumber"),
-                    col("EnergySupplierGln"),
-                    col("EffectiveDate"),
-                    col("Id"),
-                    col("CorrelationId"),
-                    col("MessageType"),
-                    col("OperationTime"),
-                )
-            ),
+        return (
+            spark.createDataFrame([row])
+            .withColumn(
+                "body",
+                to_json(
+                    struct(
+                        col("storedTime"),
+                        col("AccountingpointId"),
+                        col("GsrnNumber"),
+                        col("EnergySupplierGln"),
+                        col("EffectiveDate"),
+                        col("Id"),
+                        col("CorrelationId"),
+                        col("MessageType"),
+                        col("OperationTime"),
+                    )
+                ),
+            )
+            .select("storedTime", "body")
         )
 
     return factory
@@ -560,12 +567,13 @@ def test__only_created_events_results_in_no_periods(
     energy_supplier_changed_df = energy_supplier_changed_df_factory()
 
     # duplicate 'created' events are added to the dataframe
-    integration_events_df = created_events_df.union(created_events_df)
+    integration_events_df = created_events_df.union(created_events_df).union(
+        energy_supplier_changed_df
+    )
 
     # Act
     actual_df = _get_metering_point_periods_df(
         integration_events_df,
-        energy_supplier_changed_df,
         grid_area_df,
         first_of_june,
         third_of_june,

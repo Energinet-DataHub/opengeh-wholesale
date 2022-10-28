@@ -202,47 +202,8 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
     return grid_area_df
 
 
-def _get_energy_supplier_changed_df(
-    cached_integration_events_df, period_start_datetime, period_end_datetime
-) -> DataFrame:
-    energy_supplier_changed_df = (
-        cached_integration_events_df.withColumn(
-            "body", from_json(col("body"), energy_supplier_changed_event_schema)
-        )
-        .where(
-            col("body.MessageType").isin(
-                energy_supplier_changed_message_type,
-            )
-        )
-        .select(
-            "body.MeteringPointId",
-            "body.GsrnNumber",
-            "body.EnergySupplierGln",
-            "body.EffectiveDate",
-            "body.Id",
-            "body.CorrelationId",
-            "body.MessageType",
-            "body.OperationTime",
-        )
-    ).dropDuplicates(
-        [
-            "MeteringPointId",
-            "GsrnNumber",
-            "EnergySupplierGln",
-            "EffectiveDate",
-            "Id",
-            "CorrelationId",
-            "MessageType",
-            "OperationTime",
-        ]
-    )
-
-    return energy_supplier_changed_df
-
-
 def _get_metering_point_periods_df(
     cached_integration_events_df,
-    energy_supplier_changed_df,
     grid_area_df,
     period_start_datetime,
     period_end_datetime,
@@ -254,6 +215,7 @@ def _get_metering_point_periods_df(
             col("body.MessageType").isin(
                 metering_point_created_message_type,
                 metering_point_connected_message_type,
+                energy_supplier_changed_message_type,
             )
         )
         # If new properties to the Meteringpoints are added
@@ -273,6 +235,7 @@ def _get_metering_point_periods_df(
             "body.SettlementMethod",
             "body.FromGridAreaCode",
             "body.ToGridAreaCode",
+            "body.EnergySupplierGln",
         )
     ).dropDuplicates(
         [
@@ -288,6 +251,7 @@ def _get_metering_point_periods_df(
             "SettlementMethod",
             "FromGridAreaCode",
             "ToGridAreaCode",
+            "EnergySupplierGln",
         ]
     )
     debug(
@@ -342,6 +306,13 @@ def _get_metering_point_periods_df(
             "ToGridAreaCode",
             coalesce(col("ToGridAreaCode"), last("ToGridAreaCode", True).over(window)),
         )
+        .withColumn(
+            "EnergySupplierGln",
+            coalesce(
+                col("EnergySupplierGln"), last("EnergySupplierGln", True).over(window)
+            ),
+        )
+        .where(col("EnergySupplierGln").isNotNull())
         .where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
@@ -371,6 +342,7 @@ def _get_metering_point_periods_df(
         "FromGridAreaCode",
         "ToGridAreaCode",
         "Resolution",
+        "EnergySupplierGln",
     )
 
     debug(
