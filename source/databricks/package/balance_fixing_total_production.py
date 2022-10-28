@@ -288,7 +288,6 @@ def _get_metering_point_periods_df(
             "SettlementMethod",
             "FromGridAreaCode",
             "ToGridAreaCode",
-            "AccountingpointId",
         ]
     )
     debug(
@@ -297,6 +296,8 @@ def _get_metering_point_periods_df(
     )
 
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
+
+    metering_point_events_df.show()
 
     metering_point_periods_df = (
         metering_point_events_df.withColumn(
@@ -342,12 +343,6 @@ def _get_metering_point_periods_df(
         .withColumn(
             "ToGridAreaCode",
             coalesce(col("ToGridAreaCode"), last("ToGridAreaCode", True).over(window)),
-        )
-        .withColumn(
-            "AccountingpointId",
-            coalesce(
-                col("AccountingpointId"), last("AccountingpointId", True).over(window)
-            ),
         )
         .where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
