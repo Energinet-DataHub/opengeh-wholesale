@@ -215,7 +215,7 @@ def _get_energy_supplier_changed_df(
             )
         )
         .select(
-            "body.AccountingpointId",
+            "body.MeteringPointId",
             "body.GsrnNumber",
             "body.EnergySupplierGln",
             "body.EffectiveDate",
@@ -226,7 +226,7 @@ def _get_energy_supplier_changed_df(
         )
     ).dropDuplicates(
         [
-            "AccountingpointId",
+            "MeteringPointId",
             "GsrnNumber",
             "EnergySupplierGln",
             "EffectiveDate",
@@ -378,21 +378,6 @@ def _get_metering_point_periods_df(
         metering_point_periods_df.orderBy(
             col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
         ),
-    )
-
-    metering_point_periods_df = metering_point_periods_df.join(
-        energy_supplier_changed_df, "MeteringPointId" == "AccountingpointId"
-    ).select(
-        "GsrnNumber",
-        "GridAreaCode",
-        "EffectiveDate",
-        "toEffectiveDate",
-        "MeteringPointType",
-        "SettlementMethod",
-        "FromGridAreaCode",
-        "ToGridAreaCode",
-        "Resolution",
-        "EnergySupplierGln",
     )
 
     return metering_point_periods_df
