@@ -66,7 +66,7 @@ public class EnergySupplierChangedDtoFactoryTests
 
         // Assert
         actual.Should().NotContainNullsOrEmptyEnumerables();
-        actual.AccountingpointId.Should().Be(accountingpointId);
+        actual.MeteringPointId.Should().Be(accountingpointId);
         actual.GsrnNumber.Should().Be(gsrnNumber);
         actual.EnergySupplierGln.Should().Be(energySupplierGln);
         actual.Id.Should().Be(id);
