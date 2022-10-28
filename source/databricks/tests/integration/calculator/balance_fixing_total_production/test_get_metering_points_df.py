@@ -64,18 +64,18 @@ def grid_area_df(spark):
 def energy_supplier_changed_df_factory(spark):
     def factory(
         stored_time=first_of_june,
-        accounting_point_id=metering_point_id,
+        metering_point_id=metering_point_id,
         gsrn_number=gsrn_number,
         energy_supplier_gln="the_energy_supplier_gln",
         effective_date=first_of_june,
         id=1,
         correlation_id="correlation_id",
-        message_type=MeteringPointType.production.value,
+        message_type="EnergySupplierChanged",
         operation_time=first_of_june,
     ):
         row = {
             "storedTime": stored_time,
-            "AccountingpointId": accounting_point_id,
+            "MeteringPointId": metering_point_id,
             "GsrnNumber": gsrn_number,
             "EnergySupplierGln": energy_supplier_gln,
             "EffectiveDate": effective_date,
@@ -92,7 +92,7 @@ def energy_supplier_changed_df_factory(spark):
                 to_json(
                     struct(
                         col("storedTime"),
-                        col("AccountingpointId"),
+                        col("MeteringPointId"),
                         col("GsrnNumber"),
                         col("EnergySupplierGln"),
                         col("EffectiveDate"),
@@ -313,6 +313,7 @@ def test__metering_point_connected_message_type__matches_contract(
 def test__when_correct_message_types__returns_row(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
+    energy_supplier_changed_df_factory,
     grid_area_df,
     created_message_type,
     connected_message_type,
@@ -325,7 +326,10 @@ def test__when_correct_message_types__returns_row(
     connected_events_df = metering_point_connected_df_factory(
         message_type=connected_message_type
     )
-    integration_events_df = created_events_df.union(connected_events_df)
+    energy_supplier_changed_df = energy_supplier_changed_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df).union(
+        energy_supplier_changed_df
+    )
 
     # Act
     actual_df = _get_metering_point_periods_df(
@@ -347,6 +351,7 @@ def test__when_correct_message_types__returns_row(
 def test__when_metering_point_type_is_production__metering_point_is_included(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
+    energy_supplier_changed_df_factory,
     grid_area_df,
     metering_point_type,
     expected_is_included,
@@ -356,7 +361,10 @@ def test__when_metering_point_type_is_production__metering_point_is_included(
         metering_point_type=metering_point_type
     )
     connected_events_df = metering_point_connected_df_factory()
-    integration_events_df = created_events_df.union(connected_events_df)
+    energy_supplier_changed_df = energy_supplier_changed_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df).union(
+        energy_supplier_changed_df
+    )
 
     # Act
     actual_df = _get_metering_point_periods_df(
@@ -369,12 +377,18 @@ def test__when_metering_point_type_is_production__metering_point_is_included(
 
 
 def test__gsrn_code_value(
-    metering_point_created_df_factory, metering_point_connected_df_factory, grid_area_df
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    energy_supplier_changed_df_factory,
+    grid_area_df,
 ):
     # Arrange
     created_events_df = metering_point_created_df_factory()
     connected_events_df = metering_point_connected_df_factory()
-    integration_events_df = created_events_df.union(connected_events_df)
+    energy_supplier_changed_df = energy_supplier_changed_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df).union(
+        energy_supplier_changed_df
+    )
 
     # Act
     actual_df = _get_metering_point_periods_df(
@@ -386,12 +400,18 @@ def test__gsrn_code_value(
 
 
 def test__grid_area_code(
-    metering_point_created_df_factory, metering_point_connected_df_factory, grid_area_df
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    energy_supplier_changed_df_factory,
+    grid_area_df,
 ):
     # Arrange
     created_events_df = metering_point_created_df_factory()
     connected_events_df = metering_point_connected_df_factory()
-    integration_events_df = created_events_df.union(connected_events_df)
+    energy_supplier_changed_df = energy_supplier_changed_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df).union(
+        energy_supplier_changed_df
+    )
 
     # Act
     actual_df = _get_metering_point_periods_df(
@@ -403,7 +423,10 @@ def test__grid_area_code(
 
 
 def test__effective_date__matches_effective_date_of_connected_event(
-    metering_point_created_df_factory, metering_point_connected_df_factory, grid_area_df
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    energy_supplier_changed_df_factory,
+    grid_area_df,
 ):
     # Arrange
     effective_date_of_connected_event = second_of_june + timedelta(seconds=1)
@@ -412,7 +435,10 @@ def test__effective_date__matches_effective_date_of_connected_event(
     connected_events_df = metering_point_connected_df_factory(
         effective_date=effective_date_of_connected_event
     )
-    integration_events_df = created_events_df.union(connected_events_df)
+    energy_supplier_changed_df = energy_supplier_changed_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df).union(
+        energy_supplier_changed_df
+    )
 
     # Act
     actual_df = _get_metering_point_periods_df(
@@ -424,7 +450,10 @@ def test__effective_date__matches_effective_date_of_connected_event(
 
 
 def test__to_effective_date__is_in_the_far_future(
-    metering_point_created_df_factory, metering_point_connected_df_factory, grid_area_df
+    metering_point_created_df_factory,
+    metering_point_connected_df_factory,
+    grid_area_df,
+    energy_supplier_changed_df_factory,
 ):
     """toEffectiveDate can only be "far future" as only connected metering points
     are included and no further events are currently supported."""
@@ -432,7 +461,10 @@ def test__to_effective_date__is_in_the_far_future(
     # Arrange
     created_events_df = metering_point_created_df_factory()
     connected_events_df = metering_point_connected_df_factory()
-    integration_events_df = created_events_df.union(connected_events_df)
+    energy_supplier_changed_df = energy_supplier_changed_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df).union(
+        energy_supplier_changed_df
+    )
 
     # Act
     actual_df = _get_metering_point_periods_df(
@@ -454,6 +486,7 @@ def test__to_effective_date__is_in_the_far_future(
 def test__when_effective_date_less_than_or_equal_to_period_end__row_is_included(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
+    energy_supplier_changed_df_factory,
     grid_area_df,
     effective_date,
     period_end_date,
@@ -464,7 +497,10 @@ def test__when_effective_date_less_than_or_equal_to_period_end__row_is_included(
     connected_events_df = metering_point_connected_df_factory(
         effective_date=effective_date
     )
-    integration_events_df = created_events_df.union(connected_events_df)
+    energy_supplier_changed_df = energy_supplier_changed_df_factory()
+    integration_events_df = created_events_df.union(connected_events_df).union(
+        energy_supplier_changed_df
+    )
 
     # Act
     actual_df = _get_metering_point_periods_df(
@@ -486,6 +522,7 @@ def test__when_effective_date_less_than_or_equal_to_period_end__row_is_included(
 def test__metering_points_are_periodized_by_effective_date(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
+    energy_supplier_changed_df_factory,
     grid_area_df,
     created_effective_date,
     connected_effective_date,
@@ -498,7 +535,10 @@ def test__metering_points_are_periodized_by_effective_date(
     connected_events_df = metering_point_connected_df_factory(
         effective_date=connected_effective_date
     )
-    integration_events_df = connected_events_df.union(created_events_df)
+    energy_supplier_changed_df = energy_supplier_changed_df_factory()
+    integration_events_df = connected_events_df.union(created_events_df).union(
+        energy_supplier_changed_df
+    )
 
     # Act
     actual_df = _get_metering_point_periods_df(
@@ -512,6 +552,7 @@ def test__metering_points_are_periodized_by_effective_date(
 def test__duplicate_connected_events_do_not_affect_amount_of_periods(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
+    energy_supplier_changed_df_factory,
     grid_area_df,
 ):
     # Arrange
@@ -519,9 +560,12 @@ def test__duplicate_connected_events_do_not_affect_amount_of_periods(
     connected_events_df = metering_point_connected_df_factory(
         operation_time=second_of_june
     )
+    energy_supplier_changed_df = energy_supplier_changed_df_factory()
     # Duplicate 'connected' events are added to the dataframe
-    integration_events_df = created_events_df.union(connected_events_df).union(
-        connected_events_df
+    integration_events_df = (
+        created_events_df.union(connected_events_df)
+        .union(connected_events_df)
+        .union(energy_supplier_changed_df)
     )
 
     # Act
@@ -536,6 +580,7 @@ def test__duplicate_connected_events_do_not_affect_amount_of_periods(
 def test__duplicate_created_events_do_not_affect_amount_of_periods(
     metering_point_created_df_factory,
     metering_point_connected_df_factory,
+    energy_supplier_changed_df_factory,
     grid_area_df,
 ):
     # Arrange
@@ -543,9 +588,12 @@ def test__duplicate_created_events_do_not_affect_amount_of_periods(
     connected_events_df = metering_point_connected_df_factory(
         operation_time=second_of_june
     )
+    energy_supplier_changed_df = energy_supplier_changed_df_factory()
     # duplicate 'created' events are added to the dataframe
-    integration_events_df = created_events_df.union(created_events_df).union(
-        connected_events_df
+    integration_events_df = (
+        created_events_df.union(created_events_df)
+        .union(connected_events_df)
+        .union(energy_supplier_changed_df)
     )
 
     # Act
