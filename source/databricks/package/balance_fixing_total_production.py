@@ -94,13 +94,8 @@ def calculate_balance_fixing_total_production(
 
     grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df)
 
-    energy_supplier_changed_df = _get_energy_supplier_changed_df(
-        cached_integration_events_df, period_start_datetime, period_end_datetime
-    )
-
     metering_point_period_df = _get_metering_point_periods_df(
         cached_integration_events_df,
-        energy_supplier_changed_df,
         grid_area_df,
         period_start_datetime,
         period_end_datetime,
