@@ -297,8 +297,6 @@ def _get_metering_point_periods_df(
 
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
 
-    metering_point_events_df.show()
-
     metering_point_periods_df = (
         metering_point_events_df.withColumn(
             "toEffectiveDate",
