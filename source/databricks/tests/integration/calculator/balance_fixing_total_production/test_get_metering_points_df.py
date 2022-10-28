@@ -66,7 +66,7 @@ def energy_supplier_changed_df_factory(spark):
         stored_time=first_of_june,
         accounting_point_id=metering_point_id,
         gsrn_number=gsrn_number,
-        energy_supplier_gln="energy_supplier_gln",
+        energy_supplier_gln="the_energy_supplier_gln",
         effective_date=first_of_june,
         id=1,
         correlation_id="correlation_id",

@@ -36,5 +36,6 @@ metering_point_generic_event_schema = StructType(
         StructField("OperationTime", TimestampType(), True),
         StructField("FromGridAreaCode", StringType(), True),
         StructField("ToGridAreaCode", StringType(), True),
+        StructField("EnergySupplierGln", StringType(), True),
     ]
 )
