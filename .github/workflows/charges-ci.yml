@@ -30,7 +30,6 @@ jobs:
   #
 
   infrastructure_ci_build:
-    if: ${{ needs.changes.outputs.infrastructure == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@8.23.0
     with:
       TERRAFORM_WORKING_DIRECTORY: './charges/terraform/main'
