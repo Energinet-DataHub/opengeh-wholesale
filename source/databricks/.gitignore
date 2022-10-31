@@ -1,6 +1,7 @@
 # Exclude directory created by wheel creation
 package.egg-info
 dist
+build
 
 # Exclude files and directory created by codecov
 htmlcov
