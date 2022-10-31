@@ -254,7 +254,6 @@ def _get_metering_point_periods_df(
     )
 
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
-    metering_point_events_df.show()
     metering_point_periods_df = (
         metering_point_events_df.withColumn(
             "toEffectiveDate",
@@ -312,16 +311,13 @@ def _get_metering_point_periods_df(
             col("ConnectionState") == ConnectionState.connected.value
         )  # Only aggregate when metering points is connected
         .where(col("MeteringPointType") == MeteringPointType.production.value)
+        .where(col("EnergySupplierGln").isNotNull())
+        # Only aggregate when metering points have a energy supplier
     )
-    metering_point_periods_df.show()
     debug(
         "Metering point events before join with grid areas",
         metering_point_periods_df.orderBy(col("storedTime").desc()),
     )
-    metering_point_periods_df = metering_point_periods_df.where(
-        col("EnergySupplierGln").isNotNull()
-    )
-    metering_point_periods_df.show()
     # Only include metering points in the selected grid areas
     metering_point_periods_df = metering_point_periods_df.join(
         grid_area_df,
