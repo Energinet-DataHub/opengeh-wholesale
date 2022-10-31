@@ -56,7 +56,7 @@ jobs:
     if: ${{ needs.changes.outputs.databricks == 'true' }}
     uses:  Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v8
     with:
-      OPERATING_SYSTEM: 'dh3-ubuntu-22.04-4core'
+      OPERATING_SYSTEM: 'dh3-ubuntu-20.04-4core'
       PYHTON_VERSION: '3.9.7'
       ARCHITECTURE: 'x64'
       WHEEL_WORKING_DIRECTORY: './source/databricks'
@@ -66,7 +66,7 @@ jobs:
     if: ${{ needs.changes.outputs.databricks == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v8
     with:
-      OPERATING_SYSTEM: 'dh3-ubuntu-22.04-4core'
+      OPERATING_SYSTEM: 'dh3-ubuntu-20.04-4core'
       PATH_STATIC_CHECKS: './source/databricks'
       # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
