@@ -151,8 +151,13 @@ jobs:
       dotnet_ci_test_tests
     ]
     if: |
-      always() &&
-      !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled')
+      always()
     steps:
-      - run: echo "${{ toJSON(needs) }}"
+      - name: Verify if merge is allowed
+        run: |
+          echo "${{ toJSON(needs) }}"
+
+          if [[ ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }} = true ]]; then
+              echo "Failed"
+              exit 1
+          fi

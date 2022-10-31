@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant
 /// <summary>
 /// Wholesales internal representation of the data on the EnergySupplierChanged event exposed by the market participant domain
 /// </summary>
-/// <param name="AccountingpointId">Unique metering point identification</param>
+/// <param name="MeteringPointId">Unique metering point identification (AccountingpointId from MarketParticipant domain)</param>
 /// <param name="GsrnNumber">metering point identification</param>
 /// <param name="EnergySupplierGln">Unique Energy Supplier identification</param>
 /// <param name="EffectiveDate">Date which the change of supplier goes into effect</param>
@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant
 /// <param name="MessageType">The type of message the dto represents</param>
 /// <param name="OperationTime">The point in time when the sending domain published the event</param>
 public sealed record EnergySupplierChangedDto(
-        string AccountingpointId,
+        string MeteringPointId,
         string GsrnNumber,
         string EnergySupplierGln,
         Instant EffectiveDate,
