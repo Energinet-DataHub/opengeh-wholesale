@@ -42,7 +42,6 @@ def _get_valid_args_or_throw():
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
-    # Infrastructure settings
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--wholesale-container-name", type=str, required=True)
