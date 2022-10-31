@@ -14,7 +14,7 @@
 name: CD
 
 on:
-  push:
+  pull_request:
     branches:
       - main
     paths:
@@ -36,20 +36,20 @@ jobs:
   # Dispatch deployment request
   #
 
-  dispatch_deploment_event:
-    runs-on: ubuntu-latest
-    needs: infrastructure_promote_prerelease,
-    steps:
-      - run: echo "${{ toJSON(needs) }}"
+  # dispatch_deploment_event:
+  #   runs-on: ubuntu-latest
+  #   needs: infrastructure_promote_prerelease,
+  #   steps:
+  #     - run: echo "${{ toJSON(needs) }}"
 
-      - name: Find associated pull request
-        uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v8
-        id: find_pull_request
+  #     - name: Find associated pull request
+  #       uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v8
+  #       id: find_pull_request
 
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.PAT_TOKEN }}
-          repository: '${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}'
-          event-type: 'geh-charges-deployment-request-infrastructure'
-          client-payload: '{"pr": "${{ steps.find_pull_request.outputs.pull_request_number }}"}'
+  #     - name: Repository Dispatch
+  #       uses: peter-evans/repository-dispatch@v2
+  #       with:
+  #         token: ${{ secrets.PAT_TOKEN }}
+  #         repository: '${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}'
+  #         event-type: 'geh-charges-deployment-request-infrastructure'
+  #         client-payload: '{"pr": "${{ steps.find_pull_request.outputs.pull_request_number }}", "infrastructure_deploy": "${{ needs.changes.outputs.infrastructure }}"}'
