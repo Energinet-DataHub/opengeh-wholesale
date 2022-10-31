@@ -26,18 +26,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import DefaultAzureCredential
+from azure.storage.filedatalake import DataLakeServiceClient
 import csv
 import configargparse
+from io import StringIO
 from os.path import isfile, join
-import os
-from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
-from azure.storage.filedatalake import DataLakeServiceClient
-import pandas as pd
-from io import BytesIO
-from csv import reader
-
-# from package import log, db_logging
 
 
 def _get_valid_args_or_throw():
@@ -47,10 +41,9 @@ def _get_valid_args_or_throw():
     )
 
     # Infrastructure settings
-    p.add(
-        "--wholesale-container-url", type=str, required=True
-    )  # "https://stdatalakesharedresu001.blob.core.windows.net/processes"
+    p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
+    p.add("--wholesale-container-name", type=str, required=True)
 
     args, unknown_args = p.parse_known_args()
     if len(unknown_args):
@@ -63,91 +56,48 @@ def _get_valid_args_or_throw():
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start():
     args = _get_valid_args_or_throw()
-    # log(f"Job arguments: {str(args)}")
-    # db_logging.loglevel = args.log_level
-    # if args.only_validate_args:
-    #     exit(0)
 
-    # read file from blob
+    committed_migrations = read_migration_state_from_container(
+        args.data_storage_account_name,
+        args.data_storage_account_key,
+        args.wholesale_container_name,
+    )
 
-    if not isfile(migration_state_file):
-        raise Exception(f"No migration state file found: {migration_state_file}")
-
-    with open(migration_state_file) as f:
-        completed_migrations = [row.split()[0] for row in f]
-
-    print(f"Committed migrations: {completed_migrations}")
+    if committed_migrations:
+        print("Committed migrations:")
+        print(committed_migrations)
+    else:
+        print("No committed migrations")
 
     uncommitted_migrations_count = 0
+
     # This format is fixed as it is being used by external tools
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
 
 
-def read_migration_state_from_container_1():
+def read_migration_state_from_container(
+    storage_account_name: str, storage_account_key: str, container_name: str
+) -> list[str]:
     try:
-        container_url = (
-            "https://stdatalakesharedresu001.blob.core.windows.net/processes"
-        )
-        key = "pb7Vx/b/aCMKcbp/sMpEZvrgCI/VKyf7kT91fVCTQGQMIPuZJZN6BczyCKM6UT+yJ3cRkKdMGdNy+AStkoiMcw=="
-
-        container_client = ContainerClient.from_container_url(container_url, key)
-
-        blob_client = container_client.get_blob_client("migration_state.csv")
-        snapshot_blob = blob_client.create_snapshot()
-
-        # Get the snapshot ID
-        print(snapshot_blob.get("snapshot"))
-        #   print("\nListing blobs...")
-
-        #   # List the blobs in the container
-        #   blob_list = container_client.list_blobs()
-        #   for blob in blob_list:
-        #      print("\t" + blob.name)
-
-        #  migration_state_file = join(args.process_results_path, "migration_state.csv")
-    except Exception as ex:
-        print("Exception:")
-        print(ex)
-
-
-def read_migration_state_from_container():
-    try:
-        container_url = (
-            "https://stdatalakesharedresu001.blob.core.windows.net/processes"
-        )
-        key = "pb7Vx/b/aCMKcbp/sMpEZvrgCI/VKyf7kT91fVCTQGQMIPuZJZN6BczyCKM6UT+yJ3cRkKdMGdNy+AStkoiMcw=="
-
         datalake_service_client = DataLakeServiceClient(
-            "https://stdatalakesharedresu001.dfs.core.windows.net", key
+            storage_account_name, storage_account_key
         )
-        file_system_client = datalake_service_client.get_file_system_client("processes")
-        #        path_list = file_system_client.get_paths()
-        #       for path in path_list:
-        #          print(path.name + "\n")
+        file_system_client = datalake_service_client.get_file_system_client(
+            container_name
+        )
         file_client = file_system_client.get_file_client("migration_state.csv")
         download = file_client.download_file()
-        # print(download.readall())
+        bytes_data = download.readall()
+        string_data = StringIO(bytes_data.decode())
+        read_file = csv.reader(string_data, dialect="excel")
+        completed_migrations = [row[0] for row in read_file]
 
-        # csv_content = download.readall()
-        # data = pd.read_csv(StringIO(csv_content))
+        return completed_migrations
 
-        # csv_file = pd.read_csv(BytesIO(download.readall()))
-
-        with BytesIO(download.readall()) as input_file:
-            csv_reader = reader(input_file, delimiter=",", quotechar='"')
-            for row in csv_reader:
-                print(row)
-
-        # data = pd.read_csv(download.readall())
-        # reader = csv.reader(download.readall())
-        # file_path = open(file_client, "r")
-        # file_contents = file_path.read()
-
-        #  migration_state_file = join(args.process_results_path, "migration_state.csv")
     except Exception as ex:
         print("Exception:")
         print(ex)
 
 
 if __name__ == "__main__":
-    read_migration_state_from_container()
+    start()
