@@ -33,10 +33,12 @@ import configargparse
 from io import StringIO
 from os.path import isfile, join
 
+MIGRATION_STATE_FILE_NAME = "migration_state.csv"
+
 
 def _get_valid_args_or_throw():
     p = configargparse.ArgParser(
-        description="Performs domain calculations for submitted batches",
+        description="Returns number of uncommitted data migrations",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
@@ -85,7 +87,7 @@ def read_migration_state_from_container(
         file_system_client = datalake_service_client.get_file_system_client(
             container_name
         )
-        file_client = file_system_client.get_file_client("migration_state.csv")
+        file_client = file_system_client.get_file_client(MIGRATION_STATE_FILE_NAME)
         download = file_client.download_file()
         bytes_data = download.readall()
         string_data = StringIO(bytes_data.decode())
@@ -97,6 +99,8 @@ def read_migration_state_from_container(
     except Exception as ex:
         print("Exception:")
         print(ex)
+
+    return None
 
 
 if __name__ == "__main__":
