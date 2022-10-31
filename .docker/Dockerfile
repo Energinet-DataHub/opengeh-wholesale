@@ -28,10 +28,14 @@ RUN apt-get update; \
 # Install spark packages with mamba 
 RUN mamba install --quiet --yes --satisfied-skip-solve \
     'pyarrow=2.0.*' 'rope=0.18.*' 'pytest=7.1.*' 'configargparse=1.2.3'  \
-    'coverage=6.3.*' 'azure-storage-blob=12.8.*' 'pytest-mock=3.7.*'
+    'coverage=6.3.*' 'azure-storage-blob=12.8.*' 'pytest-mock=3.7.*' \
+    'virtualenv=20.*'
 
 # Install python packages used in pyspark development 
-RUN pip --no-cache-dir install pyspelling azure-eventhub azure-storage-file-datalake coverage-threshold ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli
+RUN pip --no-cache-dir install pyspelling azure-eventhub azure-storage-file-datalake coverage-threshold \
+    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli \
+    build
+
 # Below will make everything in the directory owned by the group ${NB_GID}
 RUN fix-permissions "${CONDA_DIR}"
 
@@ -44,3 +48,6 @@ ENV PATH=$SPARK_HOME/bin:$HADOOP_HOME/bin:$PATH \
 # Dynamically downloading spark dependencies. This is done to safe time in the build pipeline so that we don't need to download on every build.
 RUN spark-shell -conf spark-defaults.conf
 
+# Make $HOME owned by the root, which is the user used in the container
+# This is needed for e.g. commands that create files or folders in $HOME
+RUN sudo chown -R root:users $HOME
