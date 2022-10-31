@@ -56,7 +56,7 @@ jobs:
     if: ${{ needs.changes.outputs.databricks == 'true' }}
     uses:  Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v8
     with:
-      OPERATING_SYSTEM: 'dh3-ubuntu-20.04-8core'
+      OPERATING_SYSTEM: 'dh3-ubuntu-20.04-16core'
       PYHTON_VERSION: '3.9.7'
       ARCHITECTURE: 'x64'
       WHEEL_WORKING_DIRECTORY: './source/databricks'
@@ -66,7 +66,7 @@ jobs:
     if: ${{ needs.changes.outputs.databricks == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v8
     with:
-      OPERATING_SYSTEM: 'dh3-ubuntu-20.04-8core'
+      OPERATING_SYSTEM: 'dh3-ubuntu-20.04-16core'
       PATH_STATIC_CHECKS: './source/databricks'
       # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
@@ -82,7 +82,7 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v8
     with:
-      OPERATING_SYSTEM: 'dh3-ubuntu-22.04-4core'
+      OPERATING_SYSTEM: 'dh3-ubuntu-20.04-16core'
       SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
 
   # Run tests in 'IntegrationTests.dll' within the namespace 'IntegrationEventListener'
@@ -91,7 +91,7 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
     with:
-      OPERATING_SYSTEM: 'dh3-windows-2022-8cores'
+      OPERATING_SYSTEM: 'dh3-windows-2022-16cores'
       TESTS_DLL_FILE_PATH: '\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       TESTS_FILTER_EXPRESSION: 'FullyQualifiedName~IntegrationEventListener'
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
@@ -112,7 +112,7 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
     with:
-      OPERATING_SYSTEM: 'dh3-windows-2022-8cores'
+      OPERATING_SYSTEM: 'dh3-windows-2022-16cores'
       TESTS_DLL_FILE_PATH: '\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       TESTS_FILTER_EXPRESSION: 'FullyQualifiedName!~IntegrationEventListener'
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
@@ -133,7 +133,7 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci-test.yml@v8
     with:
-      OPERATING_SYSTEM: 'dh3-windows-2022-8cores'
+      OPERATING_SYSTEM: 'dh3-windows-2022-16cores'
       TESTS_DLL_FILE_PATH: '\source\dotnet\Services\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 8
 
