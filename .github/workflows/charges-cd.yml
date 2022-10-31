@@ -17,51 +17,20 @@ on:
   push:
     branches:
       - main
+    paths:
+      - charges/**
+      - .github/workflows/charges-ci.yml
+      - .github/workflows/charges-cd.yml
 
 jobs:
-  #
-  # Detect changes to start relevant jobs
-  #
-
-  changes:
-    uses: ./.github/workflows/detect-changes.yml
-
   #
   # CD Infrastructure
   #
 
   infrastructure_promote_prerelease:
-    needs: changes
-    if: ${{ needs.changes.outputs.infrastructure == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v8
     with:
-      RELEASE_NAME_PREFIX: infrastructure
-
-  #
-  # CD .NET
-  #
-
-  dotnet_update_coverage_report:
-    needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v8
-    with:
-      SOLUTION_FILE_PATH: 'source/GreenEnergyHub.Charges/GreenEnergyHub.Charges.sln'
-      USE_AZURE_FUNCTIONS_TOOLS: true
-      ENVIRONMENT: AzureAuth
-    secrets:
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
-      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
-      AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
-
-  dotnet_promote_prerelease:
-    needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v8
-    with:
-      RELEASE_NAME_PREFIX: dotnet
+      RELEASE_NAME_PREFIX: charges_infrastructure
 
   #
   # Dispatch deployment request
@@ -69,22 +38,7 @@ jobs:
 
   dispatch_deploment_event:
     runs-on: ubuntu-latest
-    needs: [
-      # Necessary to be able to use its outputs in the dispatch event
-      changes,
-      # Infrastructure
-      infrastructure_promote_prerelease,
-      # .NET
-      dotnet_promote_prerelease,
-    ]
-    if: |
-      always() &&
-      !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled') &&
-      !(
-        needs.infrastructure_promote_prerelease.result == 'skipped' &&
-        needs.dotnet_promote_prerelease.result == 'skipped'
-      )
+    needs: infrastructure_promote_prerelease,
     steps:
       - run: echo "${{ toJSON(needs) }}"
 
@@ -97,5 +51,5 @@ jobs:
         with:
           token: ${{ secrets.PAT_TOKEN }}
           repository: '${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}'
-          event-type: 'geh-charges-deployment-request-domain'
-          client-payload: '{"pr": "${{ steps.find_pull_request.outputs.pull_request_number }}", "infrastructure_deploy": "${{ needs.changes.outputs.infrastructure }}", "dotnet_deploy": "${{ needs.changes.outputs.dotnet }}"}'
+          event-type: 'geh-charges-deployment-request-infrastructure'
+          client-payload: '{"pr": "${{ steps.find_pull_request.outputs.pull_request_number }}"}'
