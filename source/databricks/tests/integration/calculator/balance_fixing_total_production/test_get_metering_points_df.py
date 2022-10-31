@@ -24,6 +24,7 @@ from package.schemas import (
     metering_point_created_event_schema,
     metering_point_connected_event_schema,
     metering_point_generic_event_schema,
+    energy_supplier_changed_event_schema,
 )
 from package.codelists import (
     ConnectionState,
@@ -673,3 +674,10 @@ def test__only_meteringpoints_that_have_a_energy_supplier_are_returned(
     assert actual_df.count() > 0
     actual = actual_df.filter(col("GsrnNumber") == second_gsrn_number)
     assert actual.count() == 0
+
+
+def test__energy_supplier_changed_event_matches_contract(source_path):
+    assert_contract_matches_schema(
+        f"{source_path}/contracts/market-participant-domain/energy-supplier-changed.json",
+        energy_supplier_changed_event_schema,
+    )

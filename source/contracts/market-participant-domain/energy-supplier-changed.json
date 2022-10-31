@@ -1,0 +1,38 @@
+{
+  "storedTimeName": "storedTime",
+  "fields": [
+    {
+      "name": "AccountingpointId",
+      "type": "string"
+    },
+    {
+      "name": "GsrnNumber",
+      "type": "string"
+    },
+    {
+      "name": "EnergySupplierGln",
+      "type": "string"
+    },
+    {
+      "name": "EffectiveDate",
+      "type": "timestamp"
+    },
+    {
+      "name": "Id",
+      "type": "string"
+    },
+    {
+      "name": "CorrelationId",
+      "type": "string"
+    },
+    {
+      "name": "MessageType",
+      "type": "string",
+      "value": "EnergySupplierChanged"
+    },
+    {
+      "name": "OperationTime",
+      "type": "timestamp"
+    }
+  ]
+}
