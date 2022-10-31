@@ -68,7 +68,7 @@ def energy_supplier_changed_df_factory(spark):
         gsrn_number=gsrn_number,
         energy_supplier_gln="the_energy_supplier_gln",
         effective_date=first_of_june,
-        id=1,
+        id="energy_supplier_changed_event_id",
         correlation_id="correlation_id",
         message_type="EnergySupplierChanged",
         operation_time=first_of_june,
@@ -120,6 +120,7 @@ def metering_point_created_df_factory(spark):
         effective_date=first_of_june,
         metering_point_type=MeteringPointType.production.value,
         resolution=TimeSeriesResolution.hour.value,
+        metering_point_id=metering_point_id,
     ):
         row = {
             "storedTime": stored_time,
@@ -630,3 +631,45 @@ def test__only_created_events_results_in_no_periods(
     # Assert
     # Periods are only established after they are connected
     assert actual_df.count() == 0
+
+
+def test__only_meteringpoints_that_have_a_energy_supplier_are_returned(
+    metering_point_created_df_factory,
+    energy_supplier_changed_df_factory,
+    metering_point_connected_df_factory,
+    grid_area_df,
+):
+    # Arrange
+    second_metering_point_id = "the-second-metering-point-id"
+    second_gsrn_number = "second-gsrn-number"
+    second_metering_point_created_events_df = metering_point_created_df_factory(
+        metering_point_id=second_metering_point_id, gsrn_number=second_gsrn_number
+    )
+    energy_supplier_changed_df = energy_supplier_changed_df_factory(
+        metering_point_id=metering_point_id
+    )
+    second_connected_event = metering_point_connected_df_factory(
+        metering_point_id=second_metering_point_id, gsrn_number=second_gsrn_number
+    )
+
+    created_events_df = metering_point_created_df_factory()
+
+    integration_events_df = (
+        created_events_df.union(second_metering_point_created_events_df)
+        .union(energy_supplier_changed_df)
+        .union(metering_point_connected_df_factory())
+        .union(second_connected_event)
+    )
+
+    # Act
+    actual_df = _get_metering_point_periods_df(
+        integration_events_df,
+        grid_area_df,
+        first_of_june,
+        third_of_june,
+    )
+
+    # Assert
+    assert actual_df.count() > 0
+    actual = actual_df.filter(col("GsrnNumber") == second_gsrn_number)
+    assert actual.count() == 0
