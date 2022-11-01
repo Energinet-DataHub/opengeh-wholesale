@@ -30,7 +30,7 @@ jobs:
   #
 
   infrastructure_ci_build:
-    uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@8.23.0
+    uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v8
     with:
       TERRAFORM_WORKING_DIRECTORY: './charges/terraform/main'
       TERRAFORM_VERSION: '1.2.2'
