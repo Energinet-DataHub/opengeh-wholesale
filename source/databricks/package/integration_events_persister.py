@@ -12,18 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     year,
     month,
     dayofmonth,
     col,
-    from_json,
     current_timestamp,
 )
-from package.db_logging import log, debug
+from package.db_logging import log
 
 
 def _persist(events_df, integration_events_path):
