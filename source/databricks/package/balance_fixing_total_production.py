@@ -465,7 +465,7 @@ def _get_master_basis_data(metering_point_df):
         col("FromGridAreaCode").alias("FROMGRIDAREA"),
         col("TYPEOFMP"),
         col("SettlementMethod").alias("SETTLEMENTMETHOD"),
-        col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
+        col("EnergySupplierGln").alias(("ENERGYSUPPLIERID")),
     )
 
 
