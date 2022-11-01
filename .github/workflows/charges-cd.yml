@@ -38,7 +38,7 @@ jobs:
 
   dispatch_deploment_event:
     runs-on: ubuntu-latest
-    needs: infrastructure_promote_prerelease,
+    needs: infrastructure_promote_prerelease
     steps:
       - name: Find associated pull request
         uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v8
