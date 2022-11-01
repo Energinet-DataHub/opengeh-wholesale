@@ -53,9 +53,9 @@ from package.db_logging import debug
 from datetime import timedelta
 from decimal import Decimal
 
-energy_supplier_changed_message_type = "EnergySupplierChanged"
-metering_point_created_message_type = "MeteringPointCreated"
-metering_point_connected_message_type = "MeteringPointConnected"
+ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE = "EnergySupplierChanged"
+METERING_POINT_CREATED_MESSAGE_TYPE = "MeteringPointCreated"
+METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
@@ -193,9 +193,9 @@ def _get_metering_point_periods_df(
             "body", from_json(col("body"), metering_point_generic_event_schema)
         ).where(
             col("body.MessageType").isin(
-                metering_point_created_message_type,
-                metering_point_connected_message_type,
-                energy_supplier_changed_message_type,
+                METERING_POINT_CREATED_MESSAGE_TYPE,
+                METERING_POINT_CONNECTED_MESSAGE_TYPE,
+                ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
             )
         )
         # If new properties to the Meteringpoints are added
@@ -252,10 +252,10 @@ def _get_metering_point_periods_df(
         .withColumn(
             "ConnectionState",
             when(
-                col("MessageType") == metering_point_created_message_type,
+                col("MessageType") == METERING_POINT_CREATED_MESSAGE_TYPE,
                 lit(ConnectionState.new.value),
             ).when(
-                col("MessageType") == metering_point_connected_message_type,
+                col("MessageType") == METERING_POINT_CONNECTED_MESSAGE_TYPE,
                 lit(ConnectionState.connected.value),
             ),
         )
