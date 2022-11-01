@@ -14,6 +14,14 @@
 
 import pytest
 import subprocess
+import unittest
+from unittest.mock import patch, Mock, MagicMock
+import mock
+from package.datamigration import _read_migration_state_from_file_system
+from package.datamigration.uncommitted_migrations_count import (
+    experiment,
+    _get_file_system_client,
+)
 
 
 def test_uncommitted_migrations_count_when_invoked_with_incorrect_parameters_fails(
@@ -30,3 +38,106 @@ def test_uncommitted_migrations_count_when_invoked_with_incorrect_parameters_fai
     assert (
         exit_code != 0
     ), "Expected to return non-zero exit code when invoked with bad arguments"
+
+
+@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
+def test__get_file_system_client__calls_service_client_with_container_name(
+    mock_data_lake_service_client,
+):
+
+    # Arrange
+    dummy_storage_account_name = "my_storage"
+    dummy_storage_key = "my_storage"
+    dummy_container_name = "my_container"
+
+    # Act
+    _get_file_system_client(
+        dummy_storage_account_name, dummy_storage_key, dummy_container_name
+    )
+
+    # Assert
+    mock_data_lake_service_client.return_value.get_file_system_client.assert_called_once_with(
+        dummy_container_name
+    )
+
+
+@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
+def test__DDD(
+    mock_data_lake_service_client,
+):
+    # Arrange
+    mock_file_system_client = Mock()
+    mock_file_client = Mock()
+    mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
+
+    # Act
+    _read_migration_state_from_file_system(mock_file_system_client)
+
+    # Assert
+    mock_file_client.download_file.assert_called()
+
+
+# def test_MMMMM():
+#     # Create a mock to return for MyClass.
+#     m = MagicMock()
+#     # Patch my_method's return value.
+#     m.get_file_system_client = Mock(return_value=None)
+
+#     # Patch MyClass. Here, we could use autospec=True for more
+#     # complex classes.
+#     with patch(
+#         "package.datamigration.uncommitted_migrations_count.DataLakeServiceClient",
+#         return_value=m,
+#     ) as p:
+#         value = experiment()
+
+#     assert value == "dummy"
+
+
+# @patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
+# def test_uncommitted_migration_KKKK(mock_data_lake_service_client):
+#     mock_data_lake_service_client.return_value.get_file_system_client.return_value = (
+#         None
+#     )
+#     assert experiment() == "2"
+
+
+# @patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
+# def test_uncommitted_migration_AAAAA(mock_data_lake_service_client):
+#     experiment()
+#     mock_data_lake_service_client.return_value.get_file_system_client.assert_called_once_with(
+#         ""
+#     )
+
+
+# @patch("package.datamigration.uncommitted_migrations_count.path")
+# def test_uncommitted_migration_BBBB(path_mock):
+#     path_mock.isfile.return_value = True
+#     assert experiment() == "dummy"
+
+
+# @patch("package.datamigration.uncommitted_migrations_count.os")
+# def test_uncommitted_migration_XXXXXXXXXX(os_mock):
+#     os_mock.getcwd.return_value = "dummy1"
+#     assert experiment() == "dummy"
+
+
+# @patch("package.datamigration.uncommitted_migrations_count.os")
+# def test_uncommitted_migration_YYYYYYY(os_mock):
+#     os_mock.path.isfile.return_value = True
+#     assert experiment() == "dummy"
+
+
+# # @patch("package.datamigration.uncommitted_migrations_count.os")
+# # def test_uncommitted_migration_XXXXXXXXXX(os_mock):
+# #     os_mock.getcwd.return_value = "dummy"
+# #     assert experiment() == "dummy"
+
+
+# # class RmTestCase(unittest.TestCase):
+# #     def test_uncommitted_migration_XXXXXXXXXX(self):
+# #         with patch("package.datamigration.uncommitted_migrations_count.os") as my_mock:
+# #             my_mock.getcwd.return_value = "dummy1"
+# #             assert experiment() == "dummy"
+
+# #         # my_mock.assert_called_with("file")
