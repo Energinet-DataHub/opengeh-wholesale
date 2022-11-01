@@ -110,5 +110,5 @@ jobs:
         with:
           token: ${{ secrets.PAT_TOKEN }}
           repository: '${{ secrets.ENVIRONMENT_REPOSITORY_PATH }}'
-          event-type: 'opengeh-wholesale-deployment-request-domain'
+          event-type: 'wholesale-deployment-request-domain'
           client-payload: '{"domain_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}", "databricks_deploy": "${{ needs.changes.outputs.databricks }}", "dotnet_deploy": "${{ needs.changes.outputs.dotnet }}"}'
