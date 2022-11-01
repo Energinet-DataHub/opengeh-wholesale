@@ -28,7 +28,7 @@ def start():
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    api_client = get_api_client(args.databricks_host, args.token)
+    api_client = get_api_client(args.databricks_host, args.databricks_token)
 
     jobs_to_stop = ["CalculatorJob", "IntegrationEventsPersisterStreamingJob"]
     stop_databricks_jobs(api_client, jobs_to_stop)
