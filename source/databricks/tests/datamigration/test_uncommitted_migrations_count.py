@@ -66,33 +66,20 @@ def test__get_file_system_client__calls_service_client_with_container_name(
 
 
 @patch("package.datamigration.uncommitted_migrations_count._download_file")
-def test__AAA(
-    mock_download_file,
-):
-    # Arrange
-    mock_download_file.return_value = b""
-
-    # Act
-    _down("", "", "")
-
-    # Assert
-
-
-@patch("package.datamigration.uncommitted_migrations_count._download_file")
 def test__download_committed_migrations__returns_correct_items(
     mock_download_file,
 ):
     # Arrange
     migration_name_1 = "my_migration1"
     migration_name_2 = "my_migration2"
-    csv_string = "{0}\r\n{1}\r\n".format(migration_name_1, migration_name_2)
+    csv_string = f"{migration_name_1}\r\n{migration_name_2}\r\n"
     mock_download_file.return_value = str.encode(csv_string)
 
     # Act
     migrations = _download_committed_migrations("", "", "")
 
     # Assert
-    assert migrations[0] == migration_name_1
+    assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
 
 
 @patch("package.datamigration.uncommitted_migrations_count._download_file")
@@ -103,7 +90,21 @@ def test__download_committed_migrations__when_empty_file__returns_empty_list(
     mock_download_file.return_value = b""
 
     # Act
-    migrations = _download_committed_migrations("", "", "")
+    migrations = _internal_start("", "", "")
+
+    # Assert
+    assert len(migrations) == 0
+
+
+@patch("package.datamigration.uncommitted_migrations_count._download_file")
+def test__internal_start__(
+    mock_download_file,
+):
+    # Arrange
+    mock_download_file.return_value = b""
+
+    # Act
+    migrations = _internal_start("", "", "")
 
     # Assert
     assert len(migrations) == 0
