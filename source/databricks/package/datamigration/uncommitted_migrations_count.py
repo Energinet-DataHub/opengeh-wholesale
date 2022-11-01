@@ -31,9 +31,7 @@ from azure.storage.filedatalake import DataLakeServiceClient
 import csv
 import configargparse
 from io import StringIO
-import os
 from os.path import isfile, join
-from os import path
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
@@ -83,48 +81,64 @@ def _download_file(
     return downloaded_bytes
 
 
-# def _download_file(file_system_client, filename: str) -> bytes:
-#     file_system_client = _get_file_system_client(
-#         data_storage_account_name,
-#         data_storage_account_key,
-#         wholesale_container_name,
-#     )
-
-
 def _read_csv(bytes_data: bytes):
     string_data = StringIO(bytes_data.decode())
     return csv.reader(string_data, dialect="excel")
 
 
-# This method must remain parameterless because it will be called from the entry point when deployed.
-def start():
+def _download_committed_migrations(
+    storage_account_name: str, storage_account_key: str, container_name: str
+) -> list[str]:
+
+    downloaded_bytes = _download_file(
+        storage_account_name,
+        storage_account_key,
+        container_name,
+        MIGRATION_STATE_FILE_NAME,
+    )
+
+    csv_reader = _read_csv(downloaded_bytes)
+
+    committed_migrations = [row[0] for row in csv_reader]
+
+    return committed_migrations
+
+
+def _get_all_migrations() -> list[str]:
+    return []
+
+
+def _internal_start(
+    storage_account_name: str, storage_account_key: str, container_name: str
+):
+
+    committed_migrations = _download_committed_migrations(
+        storage_account_name, storage_account_key, container_name
+    )
+
+    # all_migrations = _get_all_migrations()
+
+    if committed_migrations:
+        print("Committed migrations:")
+        print(committed_migrations)
+    else:
+        print("No committed migrations")
+
     uncommitted_migrations_count = 0
-    try:
-        args = _get_valid_args_or_throw()
-
-        downloaded_bytes = _download_file(
-            args.data_storage_account_name,
-            args.data_storage_account_key,
-            args.wholesale_container_name,
-            MIGRATION_STATE_FILE_NAME,
-        )
-
-        csv_reader = _read_csv(downloaded_bytes)
-
-        committed_migrations = [row[0] for row in csv_reader]
-
-        if committed_migrations:
-            print("Committed migrations:")
-            print(committed_migrations)
-        else:
-            print("No committed migrations")
-
-    except Exception as ex:
-        print("Exception:")
-        print(ex)
 
     # This format is fixed as it is being used by external tools
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
+
+
+# This method must remain parameterless because it will be called from the entry point when deployed.
+def start():
+    args = _get_valid_args_or_throw()
+
+    _internal_start(
+        args.data_storage_account_name,
+        args.data_storage_account_key,
+        args.wholesale_container_name,
+    )
 
 
 if __name__ == "__main__":

@@ -17,10 +17,14 @@ import subprocess
 import unittest
 from unittest.mock import patch, Mock, MagicMock
 import mock
+
+# import package.datamigration.uncommitted_migrations_count
+
 from package.datamigration.uncommitted_migrations_count import (
     _get_file_system_client,
     _download_file,
-    start,
+    _download_committed_migrations,
+    _internal_start,
 )
 
 
@@ -61,6 +65,50 @@ def test__get_file_system_client__calls_service_client_with_container_name(
     )
 
 
+@patch("package.datamigration.uncommitted_migrations_count._download_file")
+def test__AAA(
+    mock_download_file,
+):
+    # Arrange
+    mock_download_file.return_value = b""
+
+    # Act
+    _down("", "", "")
+
+    # Assert
+
+
+@patch("package.datamigration.uncommitted_migrations_count._download_file")
+def test__download_committed_migrations__returns_correct_items(
+    mock_download_file,
+):
+    # Arrange
+    migration_name_1 = "my_migration1"
+    migration_name_2 = "my_migration2"
+    csv_string = "{0}\r\n{1}\r\n".format(migration_name_1, migration_name_2)
+    mock_download_file.return_value = str.encode(csv_string)
+
+    # Act
+    migrations = _download_committed_migrations("", "", "")
+
+    # Assert
+    assert migrations[0] == migration_name_1
+
+
+@patch("package.datamigration.uncommitted_migrations_count._download_file")
+def test__download_committed_migrations__when_empty_file__returns_empty_list(
+    mock_download_file,
+):
+    # Arrange
+    mock_download_file.return_value = b""
+
+    # Act
+    migrations = _download_committed_migrations("", "", "")
+
+    # Assert
+    assert len(migrations) == 0
+
+
 @patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
 def test__QQQ(
     mock_data_lake_service_client,
@@ -69,25 +117,12 @@ def test__QQQ(
     mock_file_system_client = Mock()
     mock_file_client = Mock()
     mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
+    mock_download = Mock()
+    mock_file_client.download_file = Mock(return_value=mock_download)
+    mock_download.readall = Mock(return_value=None)
 
     # Act
-    start()
-
-    # Assert
-    mock_file_client.download_file.assert_called()
-
-
-@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
-def test__DDD(
-    mock_data_lake_service_client,
-):
-    # Arrange
-    mock_file_system_client = Mock()
-    mock_file_client = Mock()
-    mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
-
-    # Act
-    _read_migration_state_from_file_system(mock_file_system_client)
+    _internal_start("", "", "")
 
     # Assert
     mock_file_client.download_file.assert_called()
