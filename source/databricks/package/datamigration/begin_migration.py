@@ -23,7 +23,7 @@ from package import (
 
 
 def start():
-    log("Migrations job starting...")
+    log("Migration job starting...")
     args = _get_valid_args_or_throw()
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
