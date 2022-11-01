@@ -15,10 +15,7 @@
 from pyspark.sql import DataFrame
 
 from pyspark.sql.functions import (
-    date_format,
-    udf,
     concat,
-    struct,
     first,
     array,
     array_contains,
@@ -35,15 +32,9 @@ from pyspark.sql.functions import (
     last,
     coalesce,
     explode,
-    collect_list,
     sum,
 )
 from pyspark.sql.types import (
-    IntegerType,
-    StructField,
-    StringType,
-    TimestampType,
-    StructType,
     DecimalType,
 )
 from pyspark.sql.window import Window
@@ -51,7 +42,6 @@ from package.codelists import (
     ConnectionState,
     MeteringPointType,
     Quality,
-    TimeSeriesResolution,
     TimeSeriesQuality,
     MeteringPointResolution,
 )
@@ -60,10 +50,7 @@ from package.schemas import (
     metering_point_generic_event_schema,
 )
 from package.db_logging import debug
-from datetime import datetime, timedelta, date
-import time
-from pytz import timezone
-import pytz
+from datetime import timedelta
 from decimal import Decimal
 
 energy_supplier_changed_message_type = "EnergySupplierChanged"
@@ -74,7 +61,6 @@ metering_point_connected_message_type = "MeteringPointConnected"
 def calculate_balance_fixing_total_production(
     raw_integration_events_df,
     raw_time_series_points_df,
-    batch_id,
     batch_grid_areas_df,
     batch_snapshot_datetime,
     period_start_datetime,
