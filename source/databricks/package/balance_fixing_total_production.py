@@ -450,8 +450,24 @@ def _get_enriched_time_series_points_df(
     return enriched_points_for_each_metering_point_df
 
 
-def _get_master_basis_data(metering_point_df):
+def _get_master_basis_data(
+    metering_point_df, period_start_datetime, period_end_datetime
+):
     productionType = MeteringPointType.production.value
+
+    metering_point_df = metering_point_df.withColumn(
+        "EffectiveDate",
+        when(
+            col("EffectiveDate") < period_start_datetime, period_start_datetime
+        ).otherwise(col("EffectiveDate")),
+    )
+
+    metering_point_df = metering_point_df.withColumn(
+        "toEffectiveDate",
+        when(
+            col("toEffectiveDate") > period_end_datetime, period_end_datetime
+        ).otherwise(col("toEffectiveDate")),
+    )
 
     return metering_point_df.withColumn(
         "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
