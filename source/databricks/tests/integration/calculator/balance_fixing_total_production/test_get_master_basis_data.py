@@ -47,6 +47,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         to_grid_area_code="some-to-grid-area-code",
         settlement_method="some-settlement-method",
         resolution=MeteringPointResolution.hour.value,
+        energy_supplier_id="some-energy-supplier-id",
     ):
         row = {
             "GsrnNumber": gsrn_number,
@@ -58,6 +59,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
             "ToGridAreaCode": to_grid_area_code,
             "SettlementMethod": settlement_method,
             "Resolution": resolution,
+            "EnergySupplierId": energy_supplier_id,
         }
         return spark.createDataFrame([row])
 
@@ -118,6 +120,7 @@ def test__columns_have_expected_values(
     expected_from_grid_area_code = "some-from-grid-area-code"
     expected_to_grid_area_code = "some-to-grid-area-code"
     expected_settlement_method = "some-settlement-method"
+    expected_energy_supplier_id = "the-energy-supplier-id"
 
     metering_point_period_df = metering_point_period_df_factory(
         gsrn_number=expected_gsrn_number,
@@ -128,12 +131,13 @@ def test__columns_have_expected_values(
         from_grid_area_code=expected_from_grid_area_code,
         to_grid_area_code=expected_to_grid_area_code,
         settlement_method=expected_settlement_method,
+        energy_supplier_id=expected_energy_supplier_id,
     )
 
-    master_basis_data = _get_master_basis_data(metering_point_period_df)
+    master_basis_data_df = _get_master_basis_data(metering_point_period_df)
 
     # Assert
-    actual = master_basis_data.first()
+    actual = master_basis_data_df.first()
 
     assert actual.GridAreaCode == expected_grid_area_code
     assert actual.METERINGPOINTID == expected_gsrn_number
@@ -144,7 +148,7 @@ def test__columns_have_expected_values(
     assert actual.FROMGRIDAREA == expected_from_grid_area_code
     assert actual.TYPEOFMP == expected_meteringpoint_type
     assert actual.SETTLEMENTMETHOD == expected_settlement_method
-    assert actual.ENERGYSUPPLIERID == ""
+    assert actual.ENERGYSUPPLIERID == expected_energy_supplier_id
 
 
 def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
