@@ -44,7 +44,7 @@ resource "databricks_job" "migrations_job" {
           "--integration-events-path=abfss://${local.INTERGRATION_EVENTS_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events",
           "--process-results-path=abfss://${local.CALCULATION_STORAGE_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/results",
           "--databricks-host=https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}",
-          "--databricks-token=@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)",
+          "--databricks-token=${data.azurerm_key_vault_secret.dbw_databricks_workspace_token.value}",
           "--log-level=information"
       ]
     }
