@@ -65,53 +65,63 @@ def _get_file_system_client(
     return datalake_service_client.get_file_system_client(container_name)
 
 
-def _download_file(file_system_client, filename: str) -> bytes:
-    file_client = file_system_client.get_file_client()
+def _download_file(
+    data_storage_account_name: str,
+    data_storage_account_key: str,
+    container_name: str,
+    file_name: str,
+) -> bytes:
+    file_system_client = _get_file_system_client(
+        data_storage_account_name,
+        data_storage_account_key,
+        container_name,
+    )
+
+    file_client = file_system_client.get_file_client(file_name)
     download = file_client.download_file()
     downloaded_bytes = download.readall()
     return downloaded_bytes
 
 
-def _bytes_to_csv(bytes: bytes):
-    string_data = StringIO(bytes.decode())
+# def _download_file(file_system_client, filename: str) -> bytes:
+#     file_system_client = _get_file_system_client(
+#         data_storage_account_name,
+#         data_storage_account_key,
+#         wholesale_container_name,
+#     )
+
+
+def _read_csv(bytes_data: bytes):
+    string_data = StringIO(bytes_data.decode())
     return csv.reader(string_data, dialect="excel")
-
-
-def _get_committed_migrations(csv_reader) -> list[str]:
-    try:
-        completed_migrations = [row[0] for row in csv_reader]
-        return completed_migrations
-
-    except Exception as ex:
-        print("Exception:")
-        print(ex)
-
-    return None
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def start():
-    args = _get_valid_args_or_throw()
-
-    file_system_client = _get_file_system_client(
-        args.data_storage_account_name,
-        args.data_storage_account_key,
-        args.wholesale_container_name,
-    )
-
-    downloaded_bytes = _download_file(file_system_client, MIGRATION_STATE_FILE_NAME)
-
-    csv_reader = _bytes_to_csv(downloaded_bytes)
-
-    committed_migrations = _get_committed_migrations(csv_reader)
-
-    if committed_migrations:
-        print("Committed migrations:")
-        print(committed_migrations)
-    else:
-        print("No committed migrations")
-
     uncommitted_migrations_count = 0
+    try:
+        args = _get_valid_args_or_throw()
+
+        downloaded_bytes = _download_file(
+            args.data_storage_account_name,
+            args.data_storage_account_key,
+            args.wholesale_container_name,
+            MIGRATION_STATE_FILE_NAME,
+        )
+
+        csv_reader = _read_csv(downloaded_bytes)
+
+        committed_migrations = [row[0] for row in csv_reader]
+
+        if committed_migrations:
+            print("Committed migrations:")
+            print(committed_migrations)
+        else:
+            print("No committed migrations")
+
+    except Exception as ex:
+        print("Exception:")
+        print(ex)
 
     # This format is fixed as it is being used by external tools
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")

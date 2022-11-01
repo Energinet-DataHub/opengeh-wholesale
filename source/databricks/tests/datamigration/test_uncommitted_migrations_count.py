@@ -19,6 +19,8 @@ from unittest.mock import patch, Mock, MagicMock
 import mock
 from package.datamigration.uncommitted_migrations_count import (
     _get_file_system_client,
+    _download_file,
+    start,
 )
 
 
@@ -60,7 +62,71 @@ def test__get_file_system_client__calls_service_client_with_container_name(
 
 
 @patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
+def test__QQQ(
+    mock_data_lake_service_client,
+):
+    # Arrange
+    mock_file_system_client = Mock()
+    mock_file_client = Mock()
+    mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
+
+    # Act
+    start()
+
+    # Assert
+    mock_file_client.download_file.assert_called()
+
+
+@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
 def test__DDD(
+    mock_data_lake_service_client,
+):
+    # Arrange
+    mock_file_system_client = Mock()
+    mock_file_client = Mock()
+    mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
+
+    # Act
+    _read_migration_state_from_file_system(mock_file_system_client)
+
+    # Assert
+    mock_file_client.download_file.assert_called()
+
+
+@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
+def test__download_csv__(
+    mock_data_lake_service_client,
+):
+    # Arrange
+    mock_file_system_client = Mock()
+    mock_file_client = Mock()
+    mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
+
+    # Act
+    _read_migration_state_from_file_system(mock_file_system_client)
+
+    # Assert
+    mock_file_client.download_file.assert_called()
+
+
+@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
+def test__get_committed_migrations__(
+    mock_data_lake_service_client,
+):
+    # Arrange
+    mock_file_system_client = Mock()
+    mock_file_client = Mock()
+    mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
+
+    # Act
+    _read_migration_state_from_file_system(mock_file_system_client)
+
+    # Assert
+    mock_file_client.download_file.assert_called()
+
+
+@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
+def test__start__(
     mock_data_lake_service_client,
 ):
     # Arrange
