@@ -17,9 +17,9 @@ from datetime import datetime, timedelta
 import pytest
 from package.balance_fixing_total_production import (
     _get_metering_point_periods_df,
-    metering_point_created_message_type,
-    metering_point_connected_message_type,
-    energy_supplier_changed_message_type,
+    METERING_POINT_CREATED_MESSAGE_TYPE,
+    METERING_POINT_CONNECTED_MESSAGE_TYPE,
+    ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
 )
 from package.schemas import (
     metering_point_created_event_schema,
@@ -72,7 +72,7 @@ def energy_supplier_changed_df_factory(spark):
         effective_date=first_of_june,
         id="energy_supplier_changed_event_id",
         correlation_id="correlation_id",
-        message_type=energy_supplier_changed_message_type,
+        message_type=ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
         operation_time=first_of_june,
     ):
         row = {
@@ -115,7 +115,7 @@ def energy_supplier_changed_df_factory(spark):
 def metering_point_created_df_factory(spark):
     def factory(
         stored_time=first_of_june,
-        message_type=metering_point_created_message_type,
+        message_type=METERING_POINT_CREATED_MESSAGE_TYPE,
         operation_time=first_of_june,
         grid_area_link_id=grid_area_link_id,
         gsrn_number=gsrn_number,
@@ -176,7 +176,7 @@ def metering_point_created_df_factory(spark):
 def metering_point_connected_df_factory(spark):
     def factory(
         stored_time=second_of_june,
-        message_type=metering_point_connected_message_type,
+        message_type=METERING_POINT_CONNECTED_MESSAGE_TYPE,
         operation_time=second_of_june,
         grid_area_link_id=grid_area_link_id,
         gsrn_number=gsrn_number,
@@ -289,7 +289,7 @@ def test__metering_point_created_message_type__matches_contract(
         f"{source_path}/contracts/metering-point-domain/metering-point-created.json"
     )
 
-    assert metering_point_created_message_type == contract_message_type
+    assert METERING_POINT_CREATED_MESSAGE_TYPE == contract_message_type
 
 
 def test__metering_point_connected_message_type__matches_contract(
@@ -301,7 +301,7 @@ def test__metering_point_connected_message_type__matches_contract(
         f"{source_path}/contracts/metering-point-domain/metering-point-connected.json"
     )
 
-    assert metering_point_connected_message_type == contract_message_type
+    assert METERING_POINT_CONNECTED_MESSAGE_TYPE == contract_message_type
 
 
 @pytest.mark.parametrize(
@@ -691,4 +691,4 @@ def test__energy_supplier_changed_message_type__matches_contract(
         f"{source_path}/contracts/market-participant-domain/energy-supplier-changed.json"
     )
 
-    assert energy_supplier_changed_message_type == contract_message_type
+    assert ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE == contract_message_type
