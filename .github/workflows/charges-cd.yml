@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-name: CD
+name: Charges Infrastructure CD
 
 on:
   push:
@@ -40,8 +40,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: infrastructure_promote_prerelease,
     steps:
-      - run: echo "${{ toJSON(needs) }}"
-
       - name: Find associated pull request
         uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v8
         id: find_pull_request
