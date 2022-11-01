@@ -108,7 +108,7 @@ def _get_all_migrations() -> list[str]:
     return []
 
 
-def _internal_start(
+def _get_uncommitted_migrations_count(
     storage_account_name: str, storage_account_key: str, container_name: str
 ):
 
@@ -116,29 +116,33 @@ def _internal_start(
         storage_account_name, storage_account_key, container_name
     )
 
-    # all_migrations = _get_all_migrations()
-
     if committed_migrations:
         print("Committed migrations:")
         print(committed_migrations)
     else:
         print("No committed migrations")
 
-    uncommitted_migrations_count = 0
+    all_migrations = _get_all_migrations()
 
-    # This format is fixed as it is being used by external tools
-    print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
+    uncommitted_migrations = [
+        m for m in all_migrations if m not in committed_migrations
+    ]
+
+    return len(uncommitted_migrations)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def start():
     args = _get_valid_args_or_throw()
 
-    _internal_start(
+    uncommitted_migrations_count = _get_uncommitted_migrations_count(
         args.data_storage_account_name,
         args.data_storage_account_key,
         args.wholesale_container_name,
     )
+
+    # This format is fixed as it is being used by external tools
+    print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
 
 
 if __name__ == "__main__":

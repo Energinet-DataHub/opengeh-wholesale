@@ -24,7 +24,8 @@ from package.datamigration.uncommitted_migrations_count import (
     _get_file_system_client,
     _download_file,
     _download_committed_migrations,
-    _internal_start,
+    _get_all_migrations,
+    _get_uncommitted_migrations_count,
 )
 
 
@@ -90,154 +91,53 @@ def test__download_committed_migrations__when_empty_file__returns_empty_list(
     mock_download_file.return_value = b""
 
     # Act
-    migrations = _internal_start("", "", "")
+    migrations = _download_committed_migrations("", "", "")
 
     # Assert
     assert len(migrations) == 0
 
 
-@patch("package.datamigration.uncommitted_migrations_count._download_file")
-def test__internal_start__(
-    mock_download_file,
+@patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
+@patch(
+    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
+)
+def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_zero(
+    mock_download_committed_migrations, mock_get_all_migrations
 ):
     # Arrange
-    mock_download_file.return_value = b""
+    migration_name_1 = "my_migration1"
+    migration_name_2 = "my_migration2"
+    mock_download_committed_migrations.return_value = [
+        migration_name_1,
+        migration_name_2,
+    ]
+    mock_get_all_migrations.return_value = [migration_name_1, migration_name_2]
 
     # Act
-    migrations = _internal_start("", "", "")
+    count = _get_uncommitted_migrations_count("", "", "")
 
     # Assert
-    assert len(migrations) == 0
+    assert count == 0
 
 
-@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
-def test__QQQ(
-    mock_data_lake_service_client,
+@patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
+@patch(
+    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
+)
+def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_one(
+    mock_download_committed_migrations, mock_get_all_migrations
 ):
     # Arrange
-    mock_file_system_client = Mock()
-    mock_file_client = Mock()
-    mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
-    mock_download = Mock()
-    mock_file_client.download_file = Mock(return_value=mock_download)
-    mock_download.readall = Mock(return_value=None)
+    migration_name_1 = "my_migration1"
+    migration_name_2 = "my_migration2"
+    mock_download_committed_migrations.return_value = [migration_name_1]
+    mock_get_all_migrations.return_value = [
+        migration_name_1,
+        migration_name_2,
+    ]
 
     # Act
-    _internal_start("", "", "")
+    count = _get_uncommitted_migrations_count("", "", "")
 
     # Assert
-    mock_file_client.download_file.assert_called()
-
-
-@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
-def test__download_csv__(
-    mock_data_lake_service_client,
-):
-    # Arrange
-    mock_file_system_client = Mock()
-    mock_file_client = Mock()
-    mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
-
-    # Act
-    _read_migration_state_from_file_system(mock_file_system_client)
-
-    # Assert
-    mock_file_client.download_file.assert_called()
-
-
-@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
-def test__get_committed_migrations__(
-    mock_data_lake_service_client,
-):
-    # Arrange
-    mock_file_system_client = Mock()
-    mock_file_client = Mock()
-    mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
-
-    # Act
-    _read_migration_state_from_file_system(mock_file_system_client)
-
-    # Assert
-    mock_file_client.download_file.assert_called()
-
-
-@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
-def test__start__(
-    mock_data_lake_service_client,
-):
-    # Arrange
-    mock_file_system_client = Mock()
-    mock_file_client = Mock()
-    mock_file_system_client.get_file_client = Mock(return_value=mock_file_client)
-
-    # Act
-    _read_migration_state_from_file_system(mock_file_system_client)
-
-    # Assert
-    mock_file_client.download_file.assert_called()
-
-
-# def test_MMMMM():
-#     # Create a mock to return for MyClass.
-#     m = MagicMock()
-#     # Patch my_method's return value.
-#     m.get_file_system_client = Mock(return_value=None)
-
-#     # Patch MyClass. Here, we could use autospec=True for more
-#     # complex classes.
-#     with patch(
-#         "package.datamigration.uncommitted_migrations_count.DataLakeServiceClient",
-#         return_value=m,
-#     ) as p:
-#         value = experiment()
-
-#     assert value == "dummy"
-
-
-# @patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
-# def test_uncommitted_migration_KKKK(mock_data_lake_service_client):
-#     mock_data_lake_service_client.return_value.get_file_system_client.return_value = (
-#         None
-#     )
-#     assert experiment() == "2"
-
-
-# @patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
-# def test_uncommitted_migration_AAAAA(mock_data_lake_service_client):
-#     experiment()
-#     mock_data_lake_service_client.return_value.get_file_system_client.assert_called_once_with(
-#         ""
-#     )
-
-
-# @patch("package.datamigration.uncommitted_migrations_count.path")
-# def test_uncommitted_migration_BBBB(path_mock):
-#     path_mock.isfile.return_value = True
-#     assert experiment() == "dummy"
-
-
-# @patch("package.datamigration.uncommitted_migrations_count.os")
-# def test_uncommitted_migration_XXXXXXXXXX(os_mock):
-#     os_mock.getcwd.return_value = "dummy1"
-#     assert experiment() == "dummy"
-
-
-# @patch("package.datamigration.uncommitted_migrations_count.os")
-# def test_uncommitted_migration_YYYYYYY(os_mock):
-#     os_mock.path.isfile.return_value = True
-#     assert experiment() == "dummy"
-
-
-# # @patch("package.datamigration.uncommitted_migrations_count.os")
-# # def test_uncommitted_migration_XXXXXXXXXX(os_mock):
-# #     os_mock.getcwd.return_value = "dummy"
-# #     assert experiment() == "dummy"
-
-
-# # class RmTestCase(unittest.TestCase):
-# #     def test_uncommitted_migration_XXXXXXXXXX(self):
-# #         with patch("package.datamigration.uncommitted_migrations_count.os") as my_mock:
-# #             my_mock.getcwd.return_value = "dummy1"
-# #             assert experiment() == "dummy"
-
-# #         # my_mock.assert_called_with("file")
+    assert count == 1
