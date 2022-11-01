@@ -66,6 +66,7 @@ from pytz import timezone
 import pytz
 from decimal import Decimal
 
+energy_supplier_changed_message_type = "EnergySupplierChanged"
 metering_point_created_message_type = "MeteringPointCreated"
 metering_point_connected_message_type = "MeteringPointConnected"
 
@@ -208,6 +209,7 @@ def _get_metering_point_periods_df(
             col("body.MessageType").isin(
                 metering_point_created_message_type,
                 metering_point_connected_message_type,
+                energy_supplier_changed_message_type,
             )
         )
         # If new properties to the Meteringpoints are added
@@ -227,6 +229,7 @@ def _get_metering_point_periods_df(
             "body.SettlementMethod",
             "body.FromGridAreaCode",
             "body.ToGridAreaCode",
+            "body.EnergySupplierGln",
         )
     ).dropDuplicates(
         [
@@ -242,6 +245,7 @@ def _get_metering_point_periods_df(
             "SettlementMethod",
             "FromGridAreaCode",
             "ToGridAreaCode",
+            "EnergySupplierGln",
         ]
     )
     debug(
@@ -250,7 +254,6 @@ def _get_metering_point_periods_df(
     )
 
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
-
     metering_point_periods_df = (
         metering_point_events_df.withColumn(
             "toEffectiveDate",
@@ -296,19 +299,25 @@ def _get_metering_point_periods_df(
             "ToGridAreaCode",
             coalesce(col("ToGridAreaCode"), last("ToGridAreaCode", True).over(window)),
         )
+        .withColumn(
+            "EnergySupplierGln",
+            coalesce(
+                col("EnergySupplierGln"), last("EnergySupplierGln", True).over(window)
+            ),
+        )
         .where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
             col("ConnectionState") == ConnectionState.connected.value
         )  # Only aggregate when metering points is connected
         .where(col("MeteringPointType") == MeteringPointType.production.value)
+        .where(col("EnergySupplierGln").isNotNull())
+        # Only aggregate when metering points have a energy supplier
     )
-
     debug(
         "Metering point events before join with grid areas",
         metering_point_periods_df.orderBy(col("storedTime").desc()),
     )
-
     # Only include metering points in the selected grid areas
     metering_point_periods_df = metering_point_periods_df.join(
         grid_area_df,
@@ -324,6 +333,7 @@ def _get_metering_point_periods_df(
         "FromGridAreaCode",
         "ToGridAreaCode",
         "Resolution",
+        "EnergySupplierGln",
     )
 
     debug(
@@ -332,6 +342,7 @@ def _get_metering_point_periods_df(
             col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
         ),
     )
+
     return metering_point_periods_df
 
 
