@@ -36,7 +36,7 @@ def stop_databricks_jobs(api_client, job_names_to_stop):
 
     # stop all runs for the jobs that should be stopped
     for job_name in job_names_to_stop:
-        log(f"stopping ${job_name_to_stop}")
+        log(f"stopping ${job_name}")
         jobService.cancel_all_runs(job_list_with_ids[job_name])
 
     # wait until all runs has stoped
