@@ -17,9 +17,7 @@ import subprocess
 import unittest
 from unittest.mock import patch, Mock, MagicMock
 import mock
-from package.datamigration import _read_migration_state_from_file_system
 from package.datamigration.uncommitted_migrations_count import (
-    experiment,
     _get_file_system_client,
 )
 

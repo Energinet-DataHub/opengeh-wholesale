@@ -38,15 +38,6 @@ from os import path
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
 
-def experiment():
-    datalake_service_client = DataLakeServiceClient("", "")
-    return datalake_service_client.get_file_system_client("1")
-    # cwd = path.isfile("")
-    # print(cwd)
-    # print("hej")
-    # return cwd
-
-
 def _get_valid_args_or_throw():
     p = configargparse.ArgParser(
         description="Returns number of uncommitted data migrations",

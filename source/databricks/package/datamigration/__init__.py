@@ -13,6 +13,5 @@
 # limitations under the License.
 
 from .uncommitted_migrations_count import (
-    experiment,
-    _read_migration_state_from_file_system,
+    _get_file_system_client,
 )
