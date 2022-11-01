@@ -15,6 +15,6 @@
 
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start():
-    uncommitted_migrations_count=0
+    uncommitted_migrations_count = 0
     # This format is fixed as it is being used by external tools
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
