@@ -137,7 +137,6 @@ def internal_start(spark: SparkSession, args):
     ) = calculate_balance_fixing_total_production(
         raw_integration_events_df,
         raw_time_series_points_df,
-        args.batch_id,
         batch_grid_areas_df,
         args.batch_snapshot_datetime,
         args.batch_period_start_datetime,

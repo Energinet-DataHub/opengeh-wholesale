@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package import integration_events_persister, initialize_spark, log, debug
+from package import integration_events_persister, initialize_spark, log
 import configargparse
 
 
