@@ -19,6 +19,7 @@ from package.balance_fixing_total_production import (
     _get_metering_point_periods_df,
     metering_point_created_message_type,
     metering_point_connected_message_type,
+    energy_supplier_changed_message_type,
 )
 from package.schemas import (
     metering_point_created_event_schema,
@@ -71,7 +72,7 @@ def energy_supplier_changed_df_factory(spark):
         effective_date=first_of_june,
         id="energy_supplier_changed_event_id",
         correlation_id="correlation_id",
-        message_type="EnergySupplierChanged",
+        message_type=energy_supplier_changed_message_type,
         operation_time=first_of_june,
     ):
         row = {
@@ -681,3 +682,13 @@ def test__energy_supplier_changed_event_matches_contract(source_path):
         f"{source_path}/contracts/market-participant-domain/energy-supplier-changed.json",
         energy_supplier_changed_event_schema,
     )
+
+
+def test__energy_supplier_changed_message_type__matches_contract(
+    source_path,
+):
+    contract_message_type = get_message_type(
+        f"{source_path}/contracts/market-participant-domain/energy-supplier-changed.json"
+    )
+
+    assert energy_supplier_changed_message_type == contract_message_type
