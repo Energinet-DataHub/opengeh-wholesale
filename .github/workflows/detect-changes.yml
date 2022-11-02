@@ -23,8 +23,6 @@ name: Detect changes
 on:
   workflow_call:
     outputs:
-      infrastructure:
-        value: ${{ jobs.changes.outputs.infrastructure }}
       databricks:
         value: ${{ jobs.changes.outputs.databricks }}
       dotnet:
@@ -36,7 +34,6 @@ jobs:
     runs-on: ubuntu-latest
     # Set job outputs to values from filter step
     outputs:
-      infrastructure: ${{ steps.filter.outputs.infrastructure }}
       databricks: ${{ steps.filter.outputs.databricks }}
       dotnet: ${{ steps.filter.outputs.dotnet }}
     steps:
@@ -50,11 +47,6 @@ jobs:
       id: filter
       with:
         filters: |
-          infrastructure:
-            - '.github/workflows/cd.yml'
-            - '.github/workflows/ci.yml'
-            - '.github/workflows/detect-changes.yml'
-            - 'build/**'
           databricks:
             - '.github/workflows/cd.yml'
             - '.github/workflows/ci.yml'
