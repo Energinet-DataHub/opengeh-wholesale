@@ -16,7 +16,7 @@ import subprocess
 
 
 def test__entry_point_uncommitted_migrations_count__returns_0(installed_package):
-    exit_code = subprocess.call(["uncommitted_migrations_count"])
+    exit_code = subprocess.call(["uncommitted_migrations_count", "-h"])
     assert exit_code == 0
 
 
