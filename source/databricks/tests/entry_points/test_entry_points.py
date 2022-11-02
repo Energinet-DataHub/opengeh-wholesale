@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .spark_initializor import initialize_spark
-from .integration_events_persister import integration_events_persister
-from .balance_fixing_total_production import calculate_balance_fixing_total_production
-from .db_logging import log, debug, loglevel
-from .args_helper import valid_date, valid_list, valid_log_level
+import subprocess
+
+
+def test__entry_point_uncommitted_migrations_count__returns_0(installed_package):
+    exit_code = subprocess.call(["uncommitted_migrations_count"])
+    assert exit_code == 0
