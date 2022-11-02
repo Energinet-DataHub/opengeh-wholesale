@@ -179,7 +179,7 @@ def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
     assert master_basis_data.count() == expected_number_of_metering_points
 
 
-def test__effective_date_must_not_be_behind_than_period_start(
+def test__effective_date_must_not_be_earlier_than_period_start(
     metering_point_period_df_factory, timestamp_factory
 ):
     expected_vaild_from = "2022-06-09T12:09:15.000Z"
@@ -196,7 +196,7 @@ def test__effective_date_must_not_be_behind_than_period_start(
     assert actual.VALIDFROM == expected_vaild_from
 
 
-def test__to_effective_date_must_not_be_over_period_end(
+def test__to_effective_date_must_not_be_after_period_end(
     metering_point_period_df_factory, timestamp_factory
 ):
     expected_vaild_to = "2022-06-010T12:09:15.000Z"
