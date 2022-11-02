@@ -34,8 +34,8 @@ from pyspark.sql.types import (
     StructType,
 )
 
-period_start = "2022-06-08T12:09:15.000Z"
-period_end = "2022-06-010T12:09:15.000Z"
+period_start = "2022-06-08T12:22:00.000Z"
+period_end = "2022-06-010T12:22:00.000Z"
 
 
 @pytest.fixture(scope="module")
@@ -43,7 +43,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     def factory(
         gsrn_number="the-gsrn-number",
         grid_area_code="some-grid-area-code",
-        effective_date: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
+        effective_date: datetime = timestamp_factory("2022-06-08T22:00:00.000Z"),
         to_effective_date: datetime = timestamp_factory("2022-06-10T22:00:00.000Z"),
         meteringpoint_type=MeteringPointType.production.value,
         from_grid_area_code="some-from-grid-area-code",
@@ -120,8 +120,8 @@ def test__columns_have_expected_values(
 ):
     expected_gsrn_number = "the-gsrn-number"
     expected_grid_area_code = "some-grid-area-code"
-    expected_effective_date = timestamp_factory("2022-06-08T12:09:15.000Z")
-    expected_to_effective_date = timestamp_factory("2022-06-10T09:15:00.000Z")
+    expected_effective_date = timestamp_factory("2022-06-08T22:00:00.000Z")
+    expected_to_effective_date = timestamp_factory("2022-06-09T22:00:00.000Z")
     expected_meteringpoint_type = "E18"
     expected_from_grid_area_code = "some-from-grid-area-code"
     expected_to_grid_area_code = "some-to-grid-area-code"
