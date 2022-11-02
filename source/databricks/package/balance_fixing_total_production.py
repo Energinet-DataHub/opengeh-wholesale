@@ -101,7 +101,9 @@ def calculate_balance_fixing_total_production(
         enriched_time_series_point_df, time_zone
     )
 
-    master_basis_data_df = _get_master_basis_data(metering_point_period_df)
+    master_basis_data_df = _get_master_basis_data(
+        metering_point_period_df, period_start_datetime, period_end_datetime
+    )
 
     result_df = _get_result_df(enriched_time_series_point_df)
 
