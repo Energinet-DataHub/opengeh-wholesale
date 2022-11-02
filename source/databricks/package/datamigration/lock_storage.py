@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-output ms_wholesale_connection_string {
-  description = "Connection string of the wholesale database created in the shared server"
-  value       = local.DB_CONNECTION_STRING_SQL_AUTH
-  sensitive   = true
-}
+
+def lock():
+    pass
+
+
+def unlock():
+    pass

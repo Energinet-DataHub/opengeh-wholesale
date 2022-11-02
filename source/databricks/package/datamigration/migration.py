@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-data "databricks_spark_version" "latest_lts" {
-  long_term_support = true
-}
+
+# Further the method must remain parameterless because it will be called from the entry point when deployed.
+
+
+def migrate_data_lake():
+    pass
