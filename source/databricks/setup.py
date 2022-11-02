@@ -35,7 +35,7 @@ setup(
             "unlock_storage = package.datamigration.lock_storage:unlock",
             "stop_db_jobs = package.datamigration.jobs:stop_db_jobs",
             "start_db_jobs = package.datamigration.jobs:start_db_jobs",
-            "start_migrations = package.datamigration.migration:start_migrations",
+            "migrate_data_lake = package.datamigration.migration:migrate_data_lake",
             "uncommitted_migrations_count = package.datamigration.uncommitted_migrations_count:start",
         ]
     },

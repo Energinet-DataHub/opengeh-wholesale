@@ -76,6 +76,6 @@ def test__entry_point_unlock_storage_exists(installed_package):
     assert exit_code == 0
 
 
-def test__entry_point_start_migrations_exists(installed_package):
-    exit_code = subprocess.call(["start_migrations"])
+def test__entry_point_migrate_data_lake_exists(installed_package):
+    exit_code = subprocess.call(["migrate_data_lake"])
     assert exit_code == 0
