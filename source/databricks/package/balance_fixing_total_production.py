@@ -101,7 +101,9 @@ def calculate_balance_fixing_total_production(
         enriched_time_series_point_df, time_zone
     )
 
-    master_basis_data_df = _get_master_basis_data(metering_point_period_df)
+    master_basis_data_df = _get_master_basis_data(
+        metering_point_period_df, period_start_datetime, period_end_datetime
+    )
 
     result_df = _get_result_df(enriched_time_series_point_df)
 
@@ -450,22 +452,38 @@ def _get_enriched_time_series_points_df(
     return enriched_points_for_each_metering_point_df
 
 
-def _get_master_basis_data(metering_point_df):
+def _get_master_basis_data(
+    metering_point_df, period_start_datetime, period_end_datetime
+):
     productionType = MeteringPointType.production.value
-
-    return metering_point_df.withColumn(
-        "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
-    ).select(
-        col("GridAreaCode"),  # column is only used for partitioning
-        col("GsrnNumber").alias("METERINGPOINTID"),
-        col("EffectiveDate").alias("VALIDFROM"),
-        col("toEffectiveDate").alias("VALIDTO"),
-        col("GridAreaCode").alias("GRIDAREA"),
-        col("ToGridAreaCode").alias("TOGRIDAREA"),
-        col("FromGridAreaCode").alias("FROMGRIDAREA"),
-        col("TYPEOFMP"),
-        col("SettlementMethod").alias("SETTLEMENTMETHOD"),
-        col("EnergySupplierGln").alias(("ENERGYSUPPLIERID")),
+    return (
+        metering_point_df.withColumn(
+            "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
+        )
+        .withColumn(
+            "EffectiveDate",
+            when(
+                col("EffectiveDate") < period_start_datetime, period_start_datetime
+            ).otherwise(col("EffectiveDate")),
+        )
+        .withColumn(
+            "toEffectiveDate",
+            when(
+                col("toEffectiveDate") > period_end_datetime, period_end_datetime
+            ).otherwise(col("toEffectiveDate")),
+        )
+        .select(
+            col("GridAreaCode"),  # column is only used for partitioning
+            col("GsrnNumber").alias("METERINGPOINTID"),
+            col("EffectiveDate").alias("VALIDFROM"),
+            col("toEffectiveDate").alias("VALIDTO"),
+            col("GridAreaCode").alias("GRIDAREA"),
+            col("ToGridAreaCode").alias("TOGRIDAREA"),
+            col("FromGridAreaCode").alias("FROMGRIDAREA"),
+            col("TYPEOFMP"),
+            col("SettlementMethod").alias("SETTLEMENTMETHOD"),
+            col("EnergySupplierGln").alias(("ENERGYSUPPLIERID")),
+        )
     )
 
 
