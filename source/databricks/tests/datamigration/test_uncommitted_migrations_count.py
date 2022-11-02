@@ -91,27 +91,6 @@ def test__get_file_system_client__calls_service_client_with_container_name(
     )
 
 
-@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
-def test__download_file__(
-    mock_data_lake_service_client,
-):
-
-    # Arrange
-    dummy_storage_account_name = "my_storage"
-    dummy_storage_key = "my_storage"
-    dummy_container_name = "my_container"
-
-    # Act
-    _get_file_system_client(
-        dummy_storage_account_name, dummy_storage_key, dummy_container_name
-    )
-
-    # Assert
-    # mock_data_lake_service_client.return_value.get_file_system_client.assert_called_once_with(
-    #     dummy_container_name
-    # )
-
-
 @patch("package.datamigration.uncommitted_migrations_count._download_file")
 def test__download_committed_migrations__returns_correct_items(
     mock_download_file,
