@@ -15,10 +15,7 @@
 from pyspark.sql import DataFrame
 
 from pyspark.sql.functions import (
-    date_format,
-    udf,
     concat,
-    struct,
     first,
     array,
     array_contains,
@@ -35,15 +32,9 @@ from pyspark.sql.functions import (
     last,
     coalesce,
     explode,
-    collect_list,
     sum,
 )
 from pyspark.sql.types import (
-    IntegerType,
-    StructField,
-    StringType,
-    TimestampType,
-    StructType,
     DecimalType,
 )
 from pyspark.sql.window import Window
@@ -51,7 +42,6 @@ from package.codelists import (
     ConnectionState,
     MeteringPointType,
     Quality,
-    TimeSeriesResolution,
     TimeSeriesQuality,
     MeteringPointResolution,
 )
@@ -60,20 +50,17 @@ from package.schemas import (
     metering_point_generic_event_schema,
 )
 from package.db_logging import debug
-from datetime import datetime, timedelta, date
-import time
-from pytz import timezone
-import pytz
+from datetime import timedelta
 from decimal import Decimal
 
-metering_point_created_message_type = "MeteringPointCreated"
-metering_point_connected_message_type = "MeteringPointConnected"
+ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE = "EnergySupplierChanged"
+METERING_POINT_CREATED_MESSAGE_TYPE = "MeteringPointCreated"
+METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
     raw_integration_events_df,
     raw_time_series_points_df,
-    batch_id,
     batch_grid_areas_df,
     batch_snapshot_datetime,
     period_start_datetime,
@@ -206,8 +193,9 @@ def _get_metering_point_periods_df(
             "body", from_json(col("body"), metering_point_generic_event_schema)
         ).where(
             col("body.MessageType").isin(
-                metering_point_created_message_type,
-                metering_point_connected_message_type,
+                METERING_POINT_CREATED_MESSAGE_TYPE,
+                METERING_POINT_CONNECTED_MESSAGE_TYPE,
+                ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
             )
         )
         # If new properties to the Meteringpoints are added
@@ -227,6 +215,7 @@ def _get_metering_point_periods_df(
             "body.SettlementMethod",
             "body.FromGridAreaCode",
             "body.ToGridAreaCode",
+            "body.EnergySupplierGln",
         )
     ).dropDuplicates(
         [
@@ -242,6 +231,7 @@ def _get_metering_point_periods_df(
             "SettlementMethod",
             "FromGridAreaCode",
             "ToGridAreaCode",
+            "EnergySupplierGln",
         ]
     )
     debug(
@@ -250,7 +240,6 @@ def _get_metering_point_periods_df(
     )
 
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
-
     metering_point_periods_df = (
         metering_point_events_df.withColumn(
             "toEffectiveDate",
@@ -263,10 +252,10 @@ def _get_metering_point_periods_df(
         .withColumn(
             "ConnectionState",
             when(
-                col("MessageType") == metering_point_created_message_type,
+                col("MessageType") == METERING_POINT_CREATED_MESSAGE_TYPE,
                 lit(ConnectionState.new.value),
             ).when(
-                col("MessageType") == metering_point_connected_message_type,
+                col("MessageType") == METERING_POINT_CONNECTED_MESSAGE_TYPE,
                 lit(ConnectionState.connected.value),
             ),
         )
@@ -296,19 +285,25 @@ def _get_metering_point_periods_df(
             "ToGridAreaCode",
             coalesce(col("ToGridAreaCode"), last("ToGridAreaCode", True).over(window)),
         )
+        .withColumn(
+            "EnergySupplierGln",
+            coalesce(
+                col("EnergySupplierGln"), last("EnergySupplierGln", True).over(window)
+            ),
+        )
         .where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
             col("ConnectionState") == ConnectionState.connected.value
         )  # Only aggregate when metering points is connected
         .where(col("MeteringPointType") == MeteringPointType.production.value)
+        .where(col("EnergySupplierGln").isNotNull())
+        # Only aggregate when metering points have a energy supplier
     )
-
     debug(
         "Metering point events before join with grid areas",
         metering_point_periods_df.orderBy(col("storedTime").desc()),
     )
-
     # Only include metering points in the selected grid areas
     metering_point_periods_df = metering_point_periods_df.join(
         grid_area_df,
@@ -324,6 +319,7 @@ def _get_metering_point_periods_df(
         "FromGridAreaCode",
         "ToGridAreaCode",
         "Resolution",
+        "EnergySupplierGln",
     )
 
     debug(
@@ -332,6 +328,7 @@ def _get_metering_point_periods_df(
             col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
         ),
     )
+
     return metering_point_periods_df
 
 
@@ -456,21 +453,19 @@ def _get_enriched_time_series_points_df(
 def _get_master_basis_data(metering_point_df):
     productionType = MeteringPointType.production.value
 
-    return (
-        metering_point_df.withColumn("ENERGYSUPPLIERID", lit(""))
-        .withColumn("TYPEOFMP", when(col("MeteringPointType") == productionType, "E18"))
-        .select(
-            col("GridAreaCode"),  # column is only used for partitioning
-            col("GsrnNumber").alias("METERINGPOINTID"),
-            col("EffectiveDate").alias("VALIDFROM"),
-            col("toEffectiveDate").alias("VALIDTO"),
-            col("GridAreaCode").alias("GRIDAREA"),
-            col("ToGridAreaCode").alias("TOGRIDAREA"),
-            col("FromGridAreaCode").alias("FROMGRIDAREA"),
-            col("TYPEOFMP"),
-            col("SettlementMethod").alias("SETTLEMENTMETHOD"),
-            col("ENERGYSUPPLIERID"),  # column is soley there for completness
-        )
+    return metering_point_df.withColumn(
+        "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
+    ).select(
+        col("GridAreaCode"),  # column is only used for partitioning
+        col("GsrnNumber").alias("METERINGPOINTID"),
+        col("EffectiveDate").alias("VALIDFROM"),
+        col("toEffectiveDate").alias("VALIDTO"),
+        col("GridAreaCode").alias("GRIDAREA"),
+        col("ToGridAreaCode").alias("TOGRIDAREA"),
+        col("FromGridAreaCode").alias("FROMGRIDAREA"),
+        col("TYPEOFMP"),
+        col("SettlementMethod").alias("SETTLEMENTMETHOD"),
+        col("EnergySupplierGln").alias(("ENERGYSUPPLIERID")),
     )
 
 
