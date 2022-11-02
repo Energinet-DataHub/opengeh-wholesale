@@ -32,7 +32,7 @@ RUN mamba install --quiet --yes --satisfied-skip-solve \
     'virtualenv=20.*'
 
 # Install python packages used in pyspark development 
-RUN pip --no-cache-dir install pyspelling azure-eventhub azure-storage-file-datalake coverage-threshold \
+RUN pip --no-cache-dir install pyspelling azure-eventhub azure-identity azure-storage-file-datalake coverage-threshold \
     ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli \
     build
 
