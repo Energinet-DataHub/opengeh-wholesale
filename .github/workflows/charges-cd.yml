@@ -28,7 +28,7 @@ jobs:
   #
 
   infrastructure_promote_prerelease:
-    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v8
+    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v9
     with:
       RELEASE_NAME_PREFIX: charges_infrastructure
 
@@ -41,7 +41,7 @@ jobs:
     needs: infrastructure_promote_prerelease
     steps:
       - name: Find associated pull request
-        uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v8
+        uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v9
         id: find_pull_request
 
       - name: Repository Dispatch
@@ -49,5 +49,5 @@ jobs:
         with:
           token: ${{ secrets.PAT_TOKEN }}
           repository: '${{ secrets.DEPLOYMENT_REPOSITORY_PATH }}'
-          event-type: 'geh-charges-deployment-request-infrastructure'
+          event-type: 'charges-deployment-request-infrastructure'
           client-payload: '{"infrastructure_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}"}'
