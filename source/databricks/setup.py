@@ -31,7 +31,11 @@ setup(
         "console_scripts": [
             "start_stream = package.integration_events_persister_streaming:start",
             "start_calculator = package.calculator_job:start",
-            "begin_migration = package.datamigration.begin_migration:start",
+            "lock_storage = package.datamigration.lock_storage:lock",
+            "unlock_storage = package.datamigration.lock_storage:unlock",
+            "stop_db_jobs = package.datamigration.jobs:stop_db_jobs",
+            "start_db_jobs = package.datamigration.jobs:start_db_jobs",
+            "start_migrations = package.datamigration.migration:start_migrations",
             "uncommitted_migrations_count = package.datamigration.uncommitted_migrations_count:start",
         ]
     },

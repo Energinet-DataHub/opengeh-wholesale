@@ -13,7 +13,7 @@
 # limitations under the License.
 import configargparse
 
-from .job_handler import stop_databricks_jobs, get_api_client
+from .job_handler import stop_databricks_jobs, start_databricks_jobs, get_api_client
 from package.args_helper import valid_log_level
 from package import (
     log,
@@ -22,8 +22,8 @@ from package import (
 )
 
 
-def start():
-    log("Migration job starting...")
+def stop_db_jobs():
+    log("Stoping_db_jobs...")
     args = _get_valid_args_or_throw()
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
@@ -33,7 +33,16 @@ def start():
     jobs_to_stop = ["CalculatorJob", "IntegrationEventsPersisterStreamingJob"]
     stop_databricks_jobs(api_client, jobs_to_stop)
 
-    # start migration
+
+def start_db_jobs():
+    args = _get_valid_args_or_throw()
+    log(f"Job arguments: {str(args)}")
+    db_logging.loglevel = args.log_level
+
+    api_client = get_api_client(args.databricks_host, args.databricks_token)
+
+    jobs_to_start = ["IntegrationEventsPersisterStreamingJob"]
+    start_databricks_jobs(api_client, jobs_to_start)
 
 
 def _get_valid_args_or_throw():
