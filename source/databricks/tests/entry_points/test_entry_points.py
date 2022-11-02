@@ -24,14 +24,6 @@ def test__entry_point_stop_jobs_exists(installed_package):
     exit_code = subprocess.call(
         [
             "stop_db_jobs",
-            "--data-storage-account-name",
-            "foo",
-            "--data-storage-account-key",
-            "foo",
-            "--integration-events-path",
-            "foo",
-            "--process-results-path",
-            "foo",
             "--databricks-host",
             "foo",
             "--databricks-token",
@@ -47,14 +39,6 @@ def test__entry_point_start_jobs_exists(installed_package):
     exit_code = subprocess.call(
         [
             "start_db_jobs",
-            "--data-storage-account-name",
-            "foo",
-            "--data-storage-account-key",
-            "foo",
-            "--integration-events-path",
-            "foo",
-            "--process-results-path",
-            "foo",
             "--databricks-host",
             "foo",
             "--databricks-token",
