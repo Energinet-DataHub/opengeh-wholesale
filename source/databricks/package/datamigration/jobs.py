@@ -25,6 +25,9 @@ from package import (
 def stop_db_jobs():
     log("Stoping_db_jobs...")
     args = _get_valid_args_or_throw()
+    if args.only_validate_args:
+        exit(0)
+
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
@@ -37,6 +40,9 @@ def stop_db_jobs():
 def start_db_jobs():
     args = _get_valid_args_or_throw()
     log(f"Job arguments: {str(args)}")
+    if args.only_validate_args:
+        exit(0)
+
     db_logging.loglevel = args.log_level
 
     api_client = get_api_client(args.databricks_host, args.databricks_token)
@@ -63,6 +69,13 @@ def _get_valid_args_or_throw():
         "--log-level",
         type=valid_log_level,
         help="debug|information",
+    )
+    p.add(
+        "--only-validate-args",
+        type=bool,
+        required=False,
+        default=False,
+        help="Instruct the job to exit after validating input arguments.",
     )
 
     args, unknown_args = p.parse_known_args()

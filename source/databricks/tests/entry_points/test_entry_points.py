@@ -18,3 +18,64 @@ import subprocess
 def test__entry_point_uncommitted_migrations_count__returns_0(installed_package):
     exit_code = subprocess.call(["uncommitted_migrations_count"])
     assert exit_code == 0
+
+
+def test__entry_point_stop_jobs_exists(installed_package):
+    exit_code = subprocess.call(
+        [
+            "stop_db_jobs",
+            "--data-storage-account-name",
+            "foo",
+            "--data-storage-account-key",
+            "foo",
+            "--integration-events-path",
+            "foo",
+            "--process-results-path",
+            "foo",
+            "--databricks-host",
+            "foo",
+            "--databricks-token",
+            "foo",
+            "--only-validate-args",
+            "1",
+        ]
+    )
+    assert exit_code == 0
+
+
+def test__entry_point_start_jobs_exists(installed_package):
+    exit_code = subprocess.call(
+        [
+            "start_db_jobs",
+            "--data-storage-account-name",
+            "foo",
+            "--data-storage-account-key",
+            "foo",
+            "--integration-events-path",
+            "foo",
+            "--process-results-path",
+            "foo",
+            "--databricks-host",
+            "foo",
+            "--databricks-token",
+            "foo",
+            "--only-validate-args",
+            "1",
+        ]
+    )
+    assert exit_code == 0
+
+
+def test__entry_point_lock_storage_exists(installed_package):
+    exit_code = subprocess.call(["lock_storage"])
+    assert exit_code == 0
+
+
+def test__entry_point_unlock_storage_exists(installed_package):
+    exit_code = subprocess.call(["unlock_storage"])
+    assert exit_code == 0
+
+
+def test__entry_point_start_migrations_exists(installed_package):
+    exit_code = subprocess.call(["start_migrations"])
+    assert exit_code == 0

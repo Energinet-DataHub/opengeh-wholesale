@@ -13,9 +13,9 @@
 # limitations under the License.
 
 
-def lock_storage():
+def lock():
     pass
 
 
-def unlock_storage():
+def unlock():
     pass
