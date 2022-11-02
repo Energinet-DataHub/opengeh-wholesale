@@ -26,7 +26,7 @@ setup(
         "pyspark==3.3.0",
         "azure-identity==1.11.0",
         "azure-storage-file-datalake==12.9.1",
-        "azure-storage-blob==12.7.1",
+        "azure-storage-blob==12.14.1",
         "databricks-cli==0.17.3",
     ],
     entry_points={
