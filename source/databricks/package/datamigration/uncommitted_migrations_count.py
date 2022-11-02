@@ -27,7 +27,7 @@
 # limitations under the License.
 
 from azure.identity import DefaultAzureCredential
-from azure.storage.filedatalake import DataLakeServiceClient
+from azure.storage.filedatalake import DataLakeServiceClient, FileSystemClient
 import csv
 import configargparse
 from io import StringIO
@@ -45,6 +45,13 @@ def _get_valid_args_or_throw():
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--wholesale-container-name", type=str, required=True)
+    p.add(
+        "--only-validate-args",
+        type=bool,
+        required=False,
+        default=False,
+        help="Instruct the script to exit after validating input arguments.",
+    )
 
     args, unknown_args = p.parse_known_args()
     if len(unknown_args):
@@ -56,7 +63,7 @@ def _get_valid_args_or_throw():
 
 def _get_file_system_client(
     storage_account_name: str, storage_account_key: str, container_name: str
-):
+) -> FileSystemClient:
     datalake_service_client = DataLakeServiceClient(
         storage_account_name, storage_account_key
     )
@@ -89,6 +96,7 @@ def _read_csv(bytes_data: bytes):
 def _download_committed_migrations(
     storage_account_name: str, storage_account_key: str, container_name: str
 ) -> list[str]:
+    """Download file with migration state from datalake and return a list of aldready committed migrations"""
 
     downloaded_bytes = _download_file(
         storage_account_name,
@@ -110,17 +118,12 @@ def _get_all_migrations() -> list[str]:
 
 def _get_uncommitted_migrations_count(
     storage_account_name: str, storage_account_key: str, container_name: str
-):
+) -> int:
+    """Get the number of migrations that have not yet been committed"""
 
     committed_migrations = _download_committed_migrations(
         storage_account_name, storage_account_key, container_name
     )
-
-    if committed_migrations:
-        print("Committed migrations:")
-        print(committed_migrations)
-    else:
-        print("No committed migrations")
 
     all_migrations = _get_all_migrations()
 
@@ -134,6 +137,8 @@ def _get_uncommitted_migrations_count(
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def start():
     args = _get_valid_args_or_throw()
+    if args.only_validate_args:
+        exit(0)
 
     uncommitted_migrations_count = _get_uncommitted_migrations_count(
         args.data_storage_account_name,

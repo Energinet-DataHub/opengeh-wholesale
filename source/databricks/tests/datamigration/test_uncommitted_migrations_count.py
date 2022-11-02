@@ -16,9 +16,8 @@ import pytest
 import subprocess
 import unittest
 from unittest.mock import patch, Mock, MagicMock
-import mock
 
-# import package.datamigration.uncommitted_migrations_count
+# import mock
 
 from package.datamigration.uncommitted_migrations_count import (
     _get_file_system_client,
@@ -29,9 +28,10 @@ from package.datamigration.uncommitted_migrations_count import (
 )
 
 
-def test_uncommitted_migrations_count_when_invoked_with_incorrect_parameters_fails(
+def test__uncommitted_migrations_count__when_invoked_with_incorrect_parameters__fails(
     databricks_path,
 ):
+    # Act
     exit_code = subprocess.call(
         [
             "python",
@@ -40,9 +40,34 @@ def test_uncommitted_migrations_count_when_invoked_with_incorrect_parameters_fai
         ]
     )
 
+    # Assert
     assert (
         exit_code != 0
     ), "Expected to return non-zero exit code when invoked with bad arguments"
+
+
+def test__uncommitted_migrations_count__when_invoked_with_correct_parameters__succeeds(
+    databricks_path,
+):
+    # Arrange
+    python_parameters = [
+        "python",
+        f"{databricks_path}/package/datamigration/uncommitted_migrations_count.py",
+        "--data-storage-account-name",
+        "foo",
+        "--data-storage-account-key",
+        "foo",
+        "--wholesale-container-name",
+        "foo",
+        "--only-validate-args",
+        "1",
+    ]
+
+    # Act
+    exit_code = subprocess.call(python_parameters)
+
+    # Assert
+    assert exit_code == 0, "Failed to accept provided input arguments"
 
 
 @patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
@@ -64,6 +89,27 @@ def test__get_file_system_client__calls_service_client_with_container_name(
     mock_data_lake_service_client.return_value.get_file_system_client.assert_called_once_with(
         dummy_container_name
     )
+
+
+@patch("package.datamigration.uncommitted_migrations_count.DataLakeServiceClient")
+def test__download_file__(
+    mock_data_lake_service_client,
+):
+
+    # Arrange
+    dummy_storage_account_name = "my_storage"
+    dummy_storage_key = "my_storage"
+    dummy_container_name = "my_container"
+
+    # Act
+    _get_file_system_client(
+        dummy_storage_account_name, dummy_storage_key, dummy_container_name
+    )
+
+    # Assert
+    # mock_data_lake_service_client.return_value.get_file_system_client.assert_called_once_with(
+    #     dummy_container_name
+    # )
 
 
 @patch("package.datamigration.uncommitted_migrations_count._download_file")
