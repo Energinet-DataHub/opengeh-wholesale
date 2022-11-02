@@ -69,7 +69,6 @@ def metering_point_period_df_factory(spark, timestamp_factory):
 def test__get_master_basis_data_has_expected_columns(
     metering_point_period_df_factory, timestamp_factory
 ):
-
     metering_point_period_df = metering_point_period_df_factory().union(
         metering_point_period_df_factory(
             effective_date=timestamp_factory("2022-06-10T22:00:00.000Z"),
@@ -167,3 +166,37 @@ def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
 
     # Assert
     assert master_basis_data.count() == expected_number_of_metering_points
+
+
+def test__effective_date_must_not_be_behind_than_period_start(
+    metering_point_period_df_factory, timestamp_factory
+):
+    expected_vaild_from = "2022-06-09T12:09:15.000Z"
+    metering_point_period_df = metering_point_period_df_factory(gsrn_number="1")
+
+    master_basis_data = _get_master_basis_data(
+        metering_point_period_df,
+        expected_vaild_from,
+        "2022-06-010T12:09:15.000Z",
+    )
+
+    # Assert
+    actual = master_basis_data.first()
+    assert actual.VALIDFROM == expected_vaild_from
+
+
+def test__to_effective_date_must_not_be_over_period_end(
+    metering_point_period_df_factory, timestamp_factory
+):
+    expected_vaild_to = "2022-06-010T12:09:15.000Z"
+    metering_point_period_df = metering_point_period_df_factory(gsrn_number="1")
+
+    master_basis_data = _get_master_basis_data(
+        metering_point_period_df,
+        "2022-06-09T12:09:15.000Z",
+        expected_vaild_to,
+    )
+
+    # Assert
+    actual = master_basis_data.first()
+    assert actual.VALIDTO == expected_vaild_to

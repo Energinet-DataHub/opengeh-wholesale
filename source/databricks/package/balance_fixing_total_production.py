@@ -454,34 +454,34 @@ def _get_master_basis_data(
     metering_point_df, period_start_datetime, period_end_datetime
 ):
     productionType = MeteringPointType.production.value
-
-    metering_point_df = metering_point_df.withColumn(
-        "EffectiveDate",
-        when(
-            col("EffectiveDate") < period_start_datetime, period_start_datetime
-        ).otherwise(col("EffectiveDate")),
-    )
-
-    metering_point_df = metering_point_df.withColumn(
-        "toEffectiveDate",
-        when(
-            col("toEffectiveDate") > period_end_datetime, period_end_datetime
-        ).otherwise(col("toEffectiveDate")),
-    )
-
-    return metering_point_df.withColumn(
-        "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
-    ).select(
-        col("GridAreaCode"),  # column is only used for partitioning
-        col("GsrnNumber").alias("METERINGPOINTID"),
-        col("EffectiveDate").alias("VALIDFROM"),
-        col("toEffectiveDate").alias("VALIDTO"),
-        col("GridAreaCode").alias("GRIDAREA"),
-        col("ToGridAreaCode").alias("TOGRIDAREA"),
-        col("FromGridAreaCode").alias("FROMGRIDAREA"),
-        col("TYPEOFMP"),
-        col("SettlementMethod").alias("SETTLEMENTMETHOD"),
-        col("EnergySupplierGln").alias(("ENERGYSUPPLIERID")),
+    return (
+        metering_point_df.withColumn(
+            "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
+        )
+        .withColumn(
+            "EffectiveDate",
+            when(
+                col("EffectiveDate") < period_start_datetime, period_start_datetime
+            ).otherwise(col("EffectiveDate")),
+        )
+        .withColumn(
+            "toEffectiveDate",
+            when(
+                col("toEffectiveDate") > period_end_datetime, period_end_datetime
+            ).otherwise(col("toEffectiveDate")),
+        )
+        .select(
+            col("GridAreaCode"),  # column is only used for partitioning
+            col("GsrnNumber").alias("METERINGPOINTID"),
+            col("EffectiveDate").alias("VALIDFROM"),
+            col("toEffectiveDate").alias("VALIDTO"),
+            col("GridAreaCode").alias("GRIDAREA"),
+            col("ToGridAreaCode").alias("TOGRIDAREA"),
+            col("FromGridAreaCode").alias("FROMGRIDAREA"),
+            col("TYPEOFMP"),
+            col("SettlementMethod").alias("SETTLEMENTMETHOD"),
+            col("EnergySupplierGln").alias(("ENERGYSUPPLIERID")),
+        )
     )
 
 
