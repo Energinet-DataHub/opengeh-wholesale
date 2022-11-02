@@ -13,29 +13,21 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
-    IntegerType,
     StructField,
     StringType,
     TimestampType,
     StructType,
 )
 
-# Generic schema for all metering point events. Requires all metering point schemas to be a subset of this schema.
-metering_point_generic_event_schema = StructType(
+energy_supplier_changed_event_schema = StructType(
     [
+        StructField("AccountingpointId", StringType(), True),
         StructField("GsrnNumber", StringType(), True),
-        StructField("GridAreaLinkId", StringType(), True),
-        StructField("ConnectionState", IntegerType(), True),
+        StructField("EnergySupplierGln", StringType(), True),
         StructField("EffectiveDate", TimestampType(), True),
-        StructField("MeteringPointType", IntegerType(), True),
-        StructField("MeteringPointId", StringType(), True),
-        StructField("Resolution", IntegerType(), True),
+        StructField("Id", StringType(), True),
         StructField("MessageType", StringType(), True),
-        StructField("SettlementMethod", IntegerType(), True),
         StructField("CorrelationId", StringType(), True),
         StructField("OperationTime", TimestampType(), True),
-        StructField("FromGridAreaCode", StringType(), True),
-        StructField("ToGridAreaCode", StringType(), True),
-        StructField("EnergySupplierGln", StringType(), True),
     ]
 )

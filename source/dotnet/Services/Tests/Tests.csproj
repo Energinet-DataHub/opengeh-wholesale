@@ -109,4 +109,10 @@ limitations under the License.
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\contracts\market-participant-domain\energy-supplier-changed.json">
+      <Link>IntegrationEventListener\MarketParticipant\energy-supplier-changed.json</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
