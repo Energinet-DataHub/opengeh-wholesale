@@ -59,4 +59,4 @@ def download_csv(
     )
 
     string_data = StringIO(downloaded_bytes.decode())
-    csv.reader(string_data, dialect="excel")
+    return csv.reader(string_data, dialect="excel")

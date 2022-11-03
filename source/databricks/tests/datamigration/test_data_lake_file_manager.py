@@ -20,9 +20,8 @@ from unittest.mock import patch, Mock
 from package.datamigration.data_lake_file_manager import (
     _get_file_system_client,
     download_file,
+    download_csv,
 )
-
-# from package.datamigration.uncommitted_migrations_count import bar
 
 
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
@@ -46,31 +45,33 @@ def test__get_file_system_client__calls_service_client_with_container_name(
     )
 
 
-# @patch("package.datamigration.data_lake_file_manager.download_csv")
-# def test__download_committed_migrations__returns_correct_items(mock_download_csv):
-#     # Arrange
-#     migration_name_1 = "my_migration1"
-#     migration_name_2 = "my_migration2"
-#     mock_download_csv.return_value = iter(
-#         [[migration_name_1], [migration_name_1]]
-#     )  # download_csv returns an iterator
+@patch("package.datamigration.data_lake_file_manager.download_file")
+def test__download_csv__returned_reader_has_all_items(mock_download_file):
 
-#     # Act
-#     migrations = _download_committed_migrations("", "", "")
+    # Arrange
+    row0 = ["c_00", "c_01", "c_02"]
+    row1 = ["c_10", "c_11", "c_12"]
+    csv_string = f"{row0[0]},{row0[1]},{row0[2]}\r\n{row1[0]},{row1[1]},{row1[2]}\r\n"
+    mock_download_file.return_value = str.encode(csv_string)
 
-#     # Assert
-#     assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
+    # Act
+    csv_reader = download_csv("", "", "", "")
+
+    # Assert
+    assert row0 == next(csv_reader)
+    assert row1 == next(csv_reader)
 
 
-# @patch("package.datamigration.data_lake_file_manager.download_csv")
-# def test__download_committed_migrations__when_no_migrations__returns_empty_list(
-#     mock_download_csv,
-# ):
-#     # Arrange
-#     mock_download_csv.return_value = iter([])
+@patch("package.datamigration.data_lake_file_manager.download_file")
+def test__download_csv__when_empty_file__return_empty_content_in_reader(
+    mock_download_file,
+):
 
-#     # Act
-#     migrations = _download_committed_migrations("", "", "")
+    # Arrange
+    mock_download_file.return_value = b""
 
-#     # Assert
-#     assert len(migrations) == 0
+    # Act
+    csv_reader = download_csv("", "", "", "")
+
+    # Assert
+    assert csv_reader.line_num == 0
