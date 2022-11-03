@@ -14,7 +14,7 @@
 
 import configargparse
 from os.path import isfile, join
-from .data_lake_file_manager import download_csv
+from package.datamigration.data_lake_file_manager import download_csv
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
