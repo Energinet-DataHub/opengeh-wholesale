@@ -22,7 +22,6 @@ from package.datamigration.uncommitted_migrations_count import (
     _get_all_migrations,
     _get_uncommitted_migrations_count,
 )
-from package.datamigration.data_lake_file_manager import download_csv
 
 
 def test__uncommitted_migrations_count__when_invoked_with_incorrect_parameters__fails(
