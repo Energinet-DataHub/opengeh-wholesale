@@ -5,6 +5,7 @@ This repository contains all infrastructure as code (IaC) for the DataHub 3 syst
 All Terraform code is organized in the following folder hierarchy:
 
 - Charges domain: [charges/terraform](./charges/terraform/)
+- Timeseries domain: [timeseries/terraform](./timeseries/terraform/)
 - Wholesale domain: [wholesale/terraform](./wholesale/terraform/)
 - ...
 
