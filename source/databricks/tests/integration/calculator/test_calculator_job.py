@@ -29,7 +29,7 @@ from pyspark.sql.types import (
 )
 import yaml
 from tests.contract_utils import assert_contract_matches_schema
-from package.calculator_job import internal_start as start_calculator
+from package.calculator_job import _get_valid_args_or_throw, _start_calculator
 
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -79,7 +79,7 @@ def executed_calculation_job(spark, test_data_job_parameters):
     This act is made as a session-scoped fixture because it is a slow process
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
-    start_calculator(spark, test_data_job_parameters)
+    _start_calculator(spark, test_data_job_parameters)
 
 
 def _get_process_manager_parameters(filename):
@@ -96,17 +96,12 @@ def _get_process_manager_parameters(filename):
 def test_calculator_job_when_invoked_with_incorrect_parameters_fails(
     integration_tests_path, databricks_path
 ):
-    exit_code = subprocess.call(
-        [
-            "python",
-            f"{databricks_path}/package/calculator_job.py",
-            "--unexpected-arg",
-        ]
-    )
+    # Act
+    with pytest.raises(SystemExit) as excinfo:
+        _get_valid_args_or_throw("--unexpected-arg")
 
-    assert (
-        exit_code != 0
-    ), "Calculator job should return non-zero exit when invoked with bad arguments"
+    # Assert
+    assert excinfo.value.code == 2
 
 
 def test_calculator_job_accepts_parameters_from_process_manager(
@@ -122,9 +117,7 @@ def test_calculator_job_accepts_parameters_from_process_manager(
         f"{source_path}/contracts/internal/calculation-job-parameters-reference.txt"
     )
 
-    python_parameters = [
-        "python",
-        f"{databricks_path}/package/calculator_job.py",
+    command_line_args = [
         "--data-storage-account-name",
         "foo",
         "--data-storage-account-key",
@@ -135,18 +128,13 @@ def test_calculator_job_accepts_parameters_from_process_manager(
         "foo",
         "--process-results-path",
         "foo",
-        "--only-validate-args",
-        "1",
         "--time-zone",
         "Europe/Copenhagen",
     ]
-    python_parameters.extend(process_manager_parameters)
+    command_line_args.extend(process_manager_parameters)
 
-    # Act
-    exit_code = subprocess.call(python_parameters)
-
-    # Assert
-    assert exit_code == 0, "Calculator job failed to accept provided input arguments"
+    # Act and Assert
+    _get_valid_args_or_throw(command_line_args)
 
 
 def test__result_is_generated_for_requested_grid_areas(
