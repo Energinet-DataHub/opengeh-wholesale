@@ -24,46 +24,46 @@ from package.datamigration.uncommitted_migrations_count import (
 )
 
 
-def test__uncommitted_migrations_count__when_invoked_with_incorrect_parameters__fails(
-    databricks_path,
-):
-    # Act
-    exit_code = subprocess.call(
-        [
-            "python",
-            f"{databricks_path}/package/datamigration/uncommitted_migrations_count.py",
-            "--unexpected-arg",
-        ]
-    )
+# def test__uncommitted_migrations_count__when_invoked_with_incorrect_parameters__fails(
+#     databricks_path,
+# ):
+#     # Act
+#     exit_code = subprocess.call(
+#         [
+#             "python",
+#             "uncommitted_migrations_count",
+#             "--unexpected-arg",
+#         ]
+#     )
 
-    # Assert
-    assert (
-        exit_code != 0
-    ), "Expected to return non-zero exit code when invoked with bad arguments"
+#     # Assert
+#     assert (
+#         exit_code != 0
+#     ), "Expected to return non-zero exit code when invoked with bad arguments"
 
 
-def test__uncommitted_migrations_count__when_invoked_with_correct_parameters__succeeds(
-    databricks_path,
-):
-    # Arrange
-    python_parameters = [
-        "python",
-        f"{databricks_path}/package/datamigration/uncommitted_migrations_count.py",
-        "--data-storage-account-name",
-        "foo",
-        "--data-storage-account-key",
-        "foo",
-        "--wholesale-container-name",
-        "foo",
-        "--only-validate-args",
-        "1",
-    ]
+# def test__uncommitted_migrations_count__when_invoked_with_correct_parameters__succeeds(
+#     databricks_path,
+# ):
+#     # Arrange
+#     python_parameters = [
+#         "python",
+#         f"{databricks_path}/package/datamigration/uncommitted_migrations_count.py",
+#         "--data-storage-account-name",
+#         "foo",
+#         "--data-storage-account-key",
+#         "foo",
+#         "--wholesale-container-name",
+#         "foo",
+#         "--only-validate-args",
+#         "1",
+#     ]
 
-    # Act
-    exit_code = subprocess.call(python_parameters)
+#     # Act
+#     exit_code = subprocess.call(python_parameters)
 
-    # Assert
-    assert exit_code == 0, "Failed to accept provided input arguments"
+#     # Assert
+#     assert exit_code == 0, "Failed to accept provided input arguments"
 
 
 @patch("package.datamigration.uncommitted_migrations_count.download_csv")
