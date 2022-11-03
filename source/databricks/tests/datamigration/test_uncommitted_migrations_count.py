@@ -15,9 +15,10 @@
 import pytest
 import subprocess
 import unittest
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch
 
 from package.datamigration.uncommitted_migrations_count import (
+    _get_valid_args_or_throw,
     _download_committed_migrations,
     _get_all_migrations,
     _get_uncommitted_migrations_count,
@@ -28,42 +29,28 @@ def test__uncommitted_migrations_count__when_invoked_with_incorrect_parameters__
     databricks_path,
 ):
     # Act
-    exit_code = subprocess.call(
-        [
-            "python",
-            f"{databricks_path}/package/datamigration/uncommitted_migrations_count.py",
-            "--unexpected-arg",
-        ]
-    )
+    with pytest.raises(SystemExit) as excinfo:
+        _get_valid_args_or_throw("--unexpected-arg")
 
     # Assert
-    assert (
-        exit_code != 0
-    ), "Expected to return non-zero exit code when invoked with bad arguments"
+    assert excinfo.value.code == 2
 
 
 def test__uncommitted_migrations_count__when_invoked_with_correct_parameters__succeeds(
     databricks_path,
 ):
     # Arrange
-    python_parameters = [
-        "python",
-        f"{databricks_path}/package/datamigration/uncommitted_migrations_count.py",
+    command_line_args = [
         "--data-storage-account-name",
         "foo",
         "--data-storage-account-key",
         "foo",
         "--wholesale-container-name",
         "foo",
-        "--only-validate-args",
-        "1",
     ]
 
-    # Act
-    exit_code = subprocess.call(python_parameters)
-
-    # Assert
-    assert exit_code == 0, "Failed to accept provided input arguments"
+    # Act and Assert
+    _get_valid_args_or_throw(command_line_args)
 
 
 @patch("package.datamigration.uncommitted_migrations_count.download_csv")

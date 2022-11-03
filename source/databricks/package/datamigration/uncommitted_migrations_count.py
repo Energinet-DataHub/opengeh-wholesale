@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 import configargparse
 from os.path import isfile, join
-from package.datamigration.data_lake_file_manager import download_csv
+from .data_lake_file_manager import download_csv
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
 
-def _get_valid_args_or_throw():
+def _get_valid_args_or_throw(command_line_args: list[str]):
     p = configargparse.ArgParser(
         description="Returns number of uncommitted data migrations",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -28,20 +29,13 @@ def _get_valid_args_or_throw():
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--wholesale-container-name", type=str, required=True)
-    p.add(
-        "--only-validate-args",
-        type=bool,
-        required=False,
-        default=False,
-        help="Instruct the script to exit after validating input arguments.",
-    )
 
-    args, unknown_args = p.parse_known_args()
+    known_args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
         unknown_args_text = ", ".join(unknown_args)
         raise Exception(f"Unknown args: {unknown_args_text}")
 
-    return args
+    return known_args
 
 
 def _download_committed_migrations(
@@ -82,11 +76,8 @@ def _get_uncommitted_migrations_count(
     return len(uncommitted_migrations)
 
 
-# This method must remain parameterless because it will be called from the entry point when deployed.
-def start():
-    args = _get_valid_args_or_throw()
-    if args.only_validate_args:
-        exit(0)
+def _start_internal(command_line_args: list[str]):
+    args = _get_valid_args_or_throw(command_line_args)
 
     uncommitted_migrations_count = _get_uncommitted_migrations_count(
         args.data_storage_account_name,
@@ -98,5 +89,6 @@ def start():
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
 
 
-if __name__ == "__main__":
-    start()
+# This method must remain parameterless because it will be called from the entry point when deployed.
+def start():
+    _start_internal(sys.argv[1:])
