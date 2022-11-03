@@ -14,8 +14,7 @@
 
 import configargparse
 from os.path import isfile, join
-
-# from package.datamigration.data_lake_file_manager import download_csv
+from package.datamigration.data_lake_file_manager import download_csv
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
@@ -97,10 +96,6 @@ def start():
 
     # This format is fixed as it is being used by external tools
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
-
-
-def bar():
-    return "not mocked"
 
 
 if __name__ == "__main__":

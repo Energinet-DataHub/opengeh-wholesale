@@ -16,7 +16,6 @@ from azure.identity import DefaultAzureCredential
 from azure.storage.filedatalake import DataLakeServiceClient, FileSystemClient
 from io import StringIO
 import csv
-from package.datamigration.uncommitted_migrations_count import bar
 
 
 def _get_file_system_client(
@@ -52,17 +51,12 @@ def download_csv(
     container_name: str,
     file_name: str,
 ):
-    # downloaded_bytes = download_file(
-    #     data_storage_account_name,
-    #     data_storage_account_key,
-    #     container_name,
-    #     file_name,
-    # )
+    downloaded_bytes = download_file(
+        data_storage_account_name,
+        data_storage_account_key,
+        container_name,
+        file_name,
+    )
 
-    # string_data = StringIO(downloaded_bytes.decode())
-    # csv.reader(string_data, dialect="excel")
-    return [["not mocked"]]
-
-
-def foo():
-    return bar()
+    string_data = StringIO(downloaded_bytes.decode())
+    csv.reader(string_data, dialect="excel")

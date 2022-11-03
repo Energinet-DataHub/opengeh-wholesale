@@ -24,8 +24,6 @@ from package.datamigration.uncommitted_migrations_count import (
 )
 from package.datamigration.data_lake_file_manager import download_csv
 
-# from package.datamigration.data_lake_file_manager import download_csv, foo
-
 
 def test__uncommitted_migrations_count__when_invoked_with_incorrect_parameters__fails(
     databricks_path,
@@ -69,36 +67,31 @@ def test__uncommitted_migrations_count__when_invoked_with_correct_parameters__su
     assert exit_code == 0, "Failed to accept provided input arguments"
 
 
+@patch("package.datamigration.uncommitted_migrations_count.download_csv")
 def test__download_committed_migrations__returns_correct_items(
-    # mock_obj,
+    mock_download_csv,
 ):
     # Arrange
-    # migration_name_1 = "my_migration1"
-    # migration_name_2 = "my_migration2"
-    # mock_download_csv.return_value = [
-    #     [migration_name_1],
-    #     [migration_name_2],
-    # ]
-    with patch("package.datamigration.data_lake_file_manager.download_csv") as mock_obj:
-        mock_obj.return_value = [["mocked"]]
+    migration_name_1 = "my_migration1"
+    migration_name_2 = "my_migration2"
+    mock_download_csv.return_value = [
+        [migration_name_1],
+        [migration_name_2],
+    ]
 
-        # Act
-        # migrations = _download_committed_migrations("", "", "")
-
-    assert False
+    # Act
+    migrations = _download_committed_migrations("", "", "")
 
     # Assert
+    assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
 
 
-# assert migrations[0] == migration_name_1
-# assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
-
-
-@patch("package.datamigration.data_lake_file_manager1.download_csv")
+@patch("package.datamigration.uncommitted_migrations_count.download_csv")
 def test__download_committed_migrations__when_empty_file__returns_empty_list(
     mock_download_csv,
 ):
     # Arrange
+    mock_download_csv.return_value = []
 
     # Act
     migrations = _download_committed_migrations("", "", "")
@@ -111,15 +104,15 @@ def test__download_committed_migrations__when_empty_file__returns_empty_list(
 @patch(
     "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
 )
-def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_zero(
+def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     mock_download_committed_migrations, mock_get_all_migrations
 ):
     # Arrange
     migration_name_1 = "my_migration1"
     migration_name_2 = "my_migration2"
     mock_download_committed_migrations.return_value = [
-        [migration_name_1],
-        [migration_name_2],
+        migration_name_1,
+        migration_name_2,
     ]
     mock_get_all_migrations.return_value = [migration_name_1, migration_name_2]
 
@@ -134,7 +127,7 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_ze
 @patch(
     "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
 )
-def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_one(
+def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
     mock_download_committed_migrations, mock_get_all_migrations
 ):
     # Arrange

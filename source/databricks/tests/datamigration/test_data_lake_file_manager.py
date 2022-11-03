@@ -20,7 +20,6 @@ from unittest.mock import patch, Mock
 from package.datamigration.data_lake_file_manager import (
     _get_file_system_client,
     download_file,
-    foo,
 )
 
 # from package.datamigration.uncommitted_migrations_count import bar
@@ -75,25 +74,3 @@ def test__get_file_system_client__calls_service_client_with_container_name(
 
 #     # Assert
 #     assert len(migrations) == 0
-
-
-def test__XXX(
-    # mock_obj,
-):
-    # Arrange
-    # migration_name_1 = "my_migration1"
-    # migration_name_2 = "my_migration2"
-    # mock_download_csv.return_value = [
-    #     [migration_name_1],
-    #     [migration_name_2],
-    # ]
-    with patch("package.datamigration.uncommitted_migrations_count.bar") as mock_obj:
-        mock_obj.return_value = "mocked"
-
-        # Act
-        # migrations = _download_committed_migrations("", "", "")
-        # bar = download_csv("", "", "", "")
-        # bar = _download_committed_migrations("", "", "")
-        print(foo())
-
-    assert False
