@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pytest
-import subprocess
 import unittest
 from unittest.mock import patch
 

@@ -76,7 +76,7 @@ def _get_uncommitted_migrations_count(
     return len(uncommitted_migrations)
 
 
-def _start_internal(command_line_args: list[str]):
+def _start(command_line_args: list[str]):
     args = _get_valid_args_or_throw(command_line_args)
 
     uncommitted_migrations_count = _get_uncommitted_migrations_count(
@@ -91,4 +91,4 @@ def _start_internal(command_line_args: list[str]):
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def start():
-    _start_internal(sys.argv[1:])
+    _start(sys.argv[1:])
