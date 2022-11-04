@@ -24,12 +24,7 @@ def test__entry_point_stop_jobs_exists(installed_package):
     exit_code = subprocess.call(
         [
             "stop_db_jobs",
-            "--databricks-host",
-            "foo",
-            "--databricks-token",
-            "foo",
-            "--only-validate-args",
-            "1",
+            "-h",
         ]
     )
     assert exit_code == 0
@@ -39,12 +34,7 @@ def test__entry_point_start_jobs_exists(installed_package):
     exit_code = subprocess.call(
         [
             "start_db_jobs",
-            "--databricks-host",
-            "foo",
-            "--databricks-token",
-            "foo",
-            "--only-validate-args",
-            "1",
+            "-h",
         ]
     )
     assert exit_code == 0
