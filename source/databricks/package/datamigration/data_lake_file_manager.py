@@ -60,3 +60,35 @@ def download_csv(
 
     string_data = StringIO(downloaded_bytes.decode())
     return csv.reader(string_data, dialect="excel")
+
+
+def create_file(
+    data_storage_account_name: str,
+    data_storage_account_key: str,
+    container_name: str,
+    file_name: str,
+):
+    file_system_client = _get_file_system_client(
+        data_storage_account_name,
+        data_storage_account_key,
+        container_name,
+    )
+
+    file_client = file_system_client.get_file_client(file_name)
+    file_client.create_file()
+
+
+def delete_file(
+    data_storage_account_name: str,
+    data_storage_account_key: str,
+    container_name: str,
+    file_name: str,
+):
+    file_system_client = _get_file_system_client(
+        data_storage_account_name,
+        data_storage_account_key,
+        container_name,
+    )
+
+    file_client = file_system_client.get_file_client(file_name)
+    file_client.delete_file()
