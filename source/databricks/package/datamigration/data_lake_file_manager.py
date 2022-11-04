@@ -83,7 +83,7 @@ def delete_file(
     data_storage_account_key: str,
     container_name: str,
     file_name: str,
-):
+) -> None:
     file_system_client = _get_file_system_client(
         data_storage_account_name,
         data_storage_account_key,
