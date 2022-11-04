@@ -12,15 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from io import StringIO
 import pytest
 import unittest
 from unittest.mock import patch
 
 from package.datamigration.uncommitted_migrations_count import (
+    download_committed_migrations,
+)
+
+from package.datamigration.uncommitted_migrations_count import (
     _get_valid_args_or_throw,
-    _download_committed_migrations,
     _get_all_migrations,
-    _get_uncommitted_migrations_count,
+    get_uncommitted_migrations,
 )
 
 
@@ -52,44 +56,11 @@ def test__uncommitted_migrations_count__when_invoked_with_correct_parameters__su
     _get_valid_args_or_throw(command_line_args)
 
 
-@patch("package.datamigration.uncommitted_migrations_count.download_csv")
-def test__download_committed_migrations__returns_correct_items(
-    mock_download_csv,
-):
-    # Arrange
-    migration_name_1 = "my_migration1"
-    migration_name_2 = "my_migration2"
-    mock_download_csv.return_value = [
-        [migration_name_1],
-        [migration_name_2],
-    ]
-
-    # Act
-    migrations = _download_committed_migrations("", "", "")
-
-    # Assert
-    assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
-
-
-@patch("package.datamigration.uncommitted_migrations_count.download_csv")
-def test__download_committed_migrations__when_empty_file__returns_empty_list(
-    mock_download_csv,
-):
-    # Arrange
-    mock_download_csv.return_value = []
-
-    # Act
-    migrations = _download_committed_migrations("", "", "")
-
-    # Assert
-    assert len(migrations) == 0
-
-
 @patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
 @patch(
-    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
+    "package.datamigration.uncommitted_migrations_count.download_committed_migrations"
 )
-def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
+def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_empty_list(
     mock_download_committed_migrations, mock_get_all_migrations
 ):
     # Arrange
@@ -102,15 +73,15 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     mock_get_all_migrations.return_value = [migration_name_1, migration_name_2]
 
     # Act
-    count = _get_uncommitted_migrations_count("", "", "")
+    migrations = get_uncommitted_migrations("", "", "")
 
     # Assert
-    assert count == 0
+    assert len(migrations) == 0
 
 
 @patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
 @patch(
-    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
+    "package.datamigration.uncommitted_migrations_count.download_committed_migrations"
 )
 def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
     mock_download_committed_migrations, mock_get_all_migrations
@@ -125,7 +96,23 @@ def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1
     ]
 
     # Act
-    count = _get_uncommitted_migrations_count("", "", "")
+    migrations = get_uncommitted_migrations("", "", "")
 
     # Assert
-    assert count == 1
+    assert len(migrations) == 1
+
+
+@patch("package.datamigration.uncommitted_migrations_count.open")
+def test__get_all_migrations__(mock_open):
+    # Arrange
+    expected_migration_names = ["mig1", "mig2"]
+    csv_string = (
+        f"{expected_migration_names[0]},foo\r\n{expected_migration_names[1]},bar"
+    )
+    mock_open.return_value = StringIO(csv_string)
+
+    # Act
+    migrations = _get_all_migrations()
+
+    # Assert
+    assert expected_migration_names == migrations

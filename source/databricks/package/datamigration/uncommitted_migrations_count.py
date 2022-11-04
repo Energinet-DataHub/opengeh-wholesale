@@ -12,12 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import csv
 import sys
 import configargparse
-from os.path import isfile, join
-from .data_lake_file_manager import download_csv
+from os import path
+from .committed_migrations import download_committed_migrations
 
-MIGRATION_STATE_FILE_NAME = "migration_state.csv"
+MIGRATION_SCRIPTS_FOLDER_NAME = "migration_scripts"
+ALL_MIGRATIONS_FILE_NAME = "migrations.csv"
+
+
+def _get_migration_scripts_path():
+    path.join(path.dirname(__file__), MIGRATION_SCRIPTS_FOLDER_NAME)
+
+
+def _get_all_migrations_file_name():
+    return path.join(_get_migration_scripts_path, ALL_MIGRATIONS_FILE_NAME)
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
@@ -38,32 +48,38 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return known_args
 
 
-def _download_committed_migrations(
+def _get_all_migrations() -> list[str]:
+    """Get names of all the migrations. i.e., those that are required for the datalake to be up-to-date"""
+
+    all_migrations_file_name = _get_all_migrations_file_name
+    with open(all_migrations_file_name, newline="") as csvfile:
+        reader = csv.reader(csvfile, dialect="excel")
+        all_migration_names = [row[0] for row in reader]
+
+    return all_migration_names
+
+
+def _print_count(command_line_args: list[str]):
+    args = _get_valid_args_or_throw(command_line_args)
+
+    uncommitted_migrations = get_uncommitted_migrations(
+        args.data_storage_account_name,
+        args.data_storage_account_key,
+        args.wholesale_container_name,
+    )
+
+    uncommitted_migrations_count = len(uncommitted_migrations)
+
+    # This format is fixed as it is being used by external tools
+    print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
+
+
+def get_uncommitted_migrations(
     storage_account_name: str, storage_account_key: str, container_name: str
 ) -> list[str]:
-    """Download file with migration state from datalake and return a list of aldready committed migrations"""
+    """Get list of migrations that have not yet been committed"""
 
-    csv_reader = download_csv(
-        storage_account_name,
-        storage_account_key,
-        container_name,
-        MIGRATION_STATE_FILE_NAME,
-    )
-    committed_migrations = [row[0] for row in csv_reader]
-
-    return committed_migrations
-
-
-def _get_all_migrations() -> list[str]:
-    return []
-
-
-def _get_uncommitted_migrations_count(
-    storage_account_name: str, storage_account_key: str, container_name: str
-) -> int:
-    """Get the number of migrations that have not yet been committed"""
-
-    committed_migrations = _download_committed_migrations(
+    committed_migrations = download_committed_migrations(
         storage_account_name, storage_account_key, container_name
     )
 
@@ -73,22 +89,9 @@ def _get_uncommitted_migrations_count(
         m for m in all_migrations if m not in committed_migrations
     ]
 
-    return len(uncommitted_migrations)
-
-
-def _start(command_line_args: list[str]):
-    args = _get_valid_args_or_throw(command_line_args)
-
-    uncommitted_migrations_count = _get_uncommitted_migrations_count(
-        args.data_storage_account_name,
-        args.data_storage_account_key,
-        args.wholesale_container_name,
-    )
-
-    # This format is fixed as it is being used by external tools
-    print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
+    return uncommitted_migrations
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
-def start():
-    _start(sys.argv[1:])
+def print_count():
+    print_count(sys.argv[1:])
