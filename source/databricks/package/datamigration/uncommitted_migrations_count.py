@@ -12,13 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from azure.identity import DefaultAzureCredential
-from azure.storage.filedatalake import DataLakeServiceClient, FileSystemClient
-import csv
-import configargparse
 import sys
-from io import StringIO
+import configargparse
 from os.path import isfile, join
+from .data_lake_file_manager import download_csv
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
@@ -33,44 +30,12 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--wholesale-container-name", type=str, required=True)
 
-    args, unknown_args = p.parse_known_args(args=command_line_args)
+    known_args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
         unknown_args_text = ", ".join(unknown_args)
         raise Exception(f"Unknown args: {unknown_args_text}")
 
-    return args
-
-
-def _get_file_system_client(
-    storage_account_name: str, storage_account_key: str, container_name: str
-) -> FileSystemClient:
-    datalake_service_client = DataLakeServiceClient(
-        storage_account_name, storage_account_key
-    )
-    return datalake_service_client.get_file_system_client(container_name)
-
-
-def _download_file(
-    data_storage_account_name: str,
-    data_storage_account_key: str,
-    container_name: str,
-    file_name: str,
-) -> bytes:
-    file_system_client = _get_file_system_client(
-        data_storage_account_name,
-        data_storage_account_key,
-        container_name,
-    )
-
-    file_client = file_system_client.get_file_client(file_name)
-    download = file_client.download_file()
-    downloaded_bytes = download.readall()
-    return downloaded_bytes
-
-
-def _read_csv(bytes_data: bytes):
-    string_data = StringIO(bytes_data.decode())
-    return csv.reader(string_data, dialect="excel")
+    return known_args
 
 
 def _download_committed_migrations(
@@ -78,15 +43,12 @@ def _download_committed_migrations(
 ) -> list[str]:
     """Download file with migration state from datalake and return a list of aldready committed migrations"""
 
-    downloaded_bytes = _download_file(
+    csv_reader = download_csv(
         storage_account_name,
         storage_account_key,
         container_name,
         MIGRATION_STATE_FILE_NAME,
     )
-
-    csv_reader = _read_csv(downloaded_bytes)
-
     committed_migrations = [row[0] for row in csv_reader]
 
     return committed_migrations
