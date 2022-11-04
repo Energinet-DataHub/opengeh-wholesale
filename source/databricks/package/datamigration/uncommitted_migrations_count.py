@@ -31,13 +31,6 @@ def _get_valid_args_or_throw():
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--wholesale-container-name", type=str, required=True)
-    p.add(
-        "--only-validate-args",
-        type=bool,
-        required=False,
-        default=False,
-        help="Instruct the script to exit after validating input arguments.",
-    )
 
     args, unknown_args = p.parse_known_args()
     if len(unknown_args):
@@ -123,8 +116,6 @@ def _get_uncommitted_migrations_count(
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def start():
     args = _get_valid_args_or_throw()
-    if args.only_validate_args:
-        exit(0)
 
     uncommitted_migrations_count = _get_uncommitted_migrations_count(
         args.data_storage_account_name,
