@@ -18,77 +18,27 @@ from io import StringIO
 import csv
 
 
-def _get_file_system_client(
-    storage_account_name: str, storage_account_key: str, container_name: str
-) -> FileSystemClient:
-    datalake_service_client = DataLakeServiceClient(
-        storage_account_name, storage_account_key
-    )
-    return datalake_service_client.get_file_system_client(container_name)
+class Data_lake_file_manager:
+    def __init__(self, data_storage_account_name, data_storage_account_key, container_name,):
+        self.file_system_client = DataLakeServiceClient(
+            data_storage_account_name, data_storage_account_key
+        ).get_file_system_client(container_name)
 
+    def download_file(self, file_name: str) -> bytes:
+        file_client = self.file_system_client.get_file_client(file_name)
+        download = file_client.download_file()
+        downloaded_bytes = download.readall()
+        return downloaded_bytes
 
-def download_file(
-    data_storage_account_name: str,
-    data_storage_account_key: str,
-    container_name: str,
-    file_name: str,
-) -> bytes:
-    file_system_client = _get_file_system_client(
-        data_storage_account_name,
-        data_storage_account_key,
-        container_name,
-    )
+    def download_csv(self, file_name: str):
+        downloaded_bytes = self.download_file(file_name)
+        string_data = StringIO(downloaded_bytes.decode())
+        return csv.reader(string_data, dialect="excel")
 
-    file_client = file_system_client.get_file_client(file_name)
-    download = file_client.download_file()
-    downloaded_bytes = download.readall()
-    return downloaded_bytes
+    def create_file(self, file_name: str):
+        file_client = self.file_system_client.get_file_client(file_name)
+        file_client.create_file()
 
-
-def download_csv(
-    data_storage_account_name: str,
-    data_storage_account_key: str,
-    container_name: str,
-    file_name: str,
-):
-    downloaded_bytes = download_file(
-        data_storage_account_name,
-        data_storage_account_key,
-        container_name,
-        file_name,
-    )
-
-    string_data = StringIO(downloaded_bytes.decode())
-    return csv.reader(string_data, dialect="excel")
-
-
-def create_file(
-    data_storage_account_name: str,
-    data_storage_account_key: str,
-    container_name: str,
-    file_name: str,
-):
-    file_system_client = _get_file_system_client(
-        data_storage_account_name,
-        data_storage_account_key,
-        container_name,
-    )
-
-    file_client = file_system_client.get_file_client(file_name)
-    file_client.create_file()
-
-
-def delete_file(
-    data_storage_account_name: str,
-    data_storage_account_key: str,
-    container_name: str,
-    file_name: str,
-) -> None:
-    file_system_client = _get_file_system_client(
-        data_storage_account_name,
-        data_storage_account_key,
-        container_name,
-    )
-
-    file_client = file_system_client.get_file_client(file_name)
-    file_client.delete_file()
+    def delete_file(self, file_name: str):
+        file_client = self.file_system_client.get_file_client(file_name)
+        file_client.delete_file()

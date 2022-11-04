@@ -11,34 +11,37 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .uncommitted_migrations_count import create_file, delete_file
+from .data_lake_file_manager import Data_lake_file_manager
 import configargparse
 from package import log
 
 
-def lock():
+def lock() -> None:
     args = _get_valid_args_or_throw()
     if args.only_validate_args:
         exit(0)
-
-    create_file(
+    file_manager = Data_lake_file_manager(
         args.data_storage_account_name,
         args.data_storage_account_key,
         args.wholesale_container_name,
+    )
+    file_manager.create_file(
         "DATALAKE_IS_LOCKED"
     )
     log("created lock file: DATALAKE_IS_LOCKED")
 
 
-def unlock():
+def unlock() -> None:
     args = _get_valid_args_or_throw()
     if args.only_validate_args:
         exit(0)
 
-    create_file(
+    file_manager = Data_lake_file_manager(
         args.data_storage_account_name,
         args.data_storage_account_key,
         args.wholesale_container_name,
+    )
+    file_manager.delete_file(
         "DATALAKE_IS_LOCKED"
     )
     log("deleted lock file: DATALAKE_IS_LOCKED")
