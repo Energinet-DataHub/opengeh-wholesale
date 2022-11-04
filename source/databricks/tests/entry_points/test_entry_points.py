@@ -15,41 +15,41 @@
 import subprocess
 
 
-def test__entry_point_uncommitted_migrations_count__returns_0(installed_package):
+def test__entry_point__start_stream__returns_0(installed_package):
+    exit_code = subprocess.call(["start_stream", "-h"])
+    assert exit_code == 0
+
+
+def test__entry_point__start_calculator__returns_0(installed_package):
+    exit_code = subprocess.call(["start_calculator", "-h"])
+    assert exit_code == 0
+
+
+def test__entry_point__uncommitted_migrations_count__returns_0(installed_package):
     exit_code = subprocess.call(["uncommitted_migrations_count", "-h"])
     assert exit_code == 0
 
 
-def test__entry_point_stop_jobs_exists(installed_package):
-    exit_code = subprocess.call(
-        [
-            "stop_db_jobs",
-            "-h",
-        ]
-    )
+def test__entry_point__stop_db_jobs__returns_0(installed_package):
+    exit_code = subprocess.call(["stop_db_jobs", "-h"])
     assert exit_code == 0
 
 
-def test__entry_point_start_jobs_exists(installed_package):
-    exit_code = subprocess.call(
-        [
-            "start_db_jobs",
-            "-h",
-        ]
-    )
+def test__entry_point__start_db_jobs__returns_0(installed_package):
+    exit_code = subprocess.call(["start_db_jobs", "-h"])
     assert exit_code == 0
 
 
-def test__entry_point_lock_storage_exists(installed_package):
-    exit_code = subprocess.call(["lock_storage"])
+def test__entry_point__lock_storage__returns_0(installed_package):
+    exit_code = subprocess.call(["lock_storage", "-h"])
     assert exit_code == 0
 
 
-def test__entry_point_unlock_storage_exists(installed_package):
-    exit_code = subprocess.call(["unlock_storage"])
+def test__entry_point__unlock_storage__returns_0(installed_package):
+    exit_code = subprocess.call(["unlock_storage", "-h"])
     assert exit_code == 0
 
 
-def test__entry_point_migrate_data_lake_exists(installed_package):
-    exit_code = subprocess.call(["migrate_data_lake"])
+def test__entry_point__migrate_data_lake__returns_0(installed_package):
+    exit_code = subprocess.call(["migrate_data_lake", "-h"])
     assert exit_code == 0
