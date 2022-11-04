@@ -75,4 +75,3 @@ def test__download_csv__when_empty_file__return_empty_content_in_reader(
 
     # Assert
     assert csv_reader.line_num == 0
-
