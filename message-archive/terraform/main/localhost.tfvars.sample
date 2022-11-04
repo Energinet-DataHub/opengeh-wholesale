@@ -1,0 +1,7 @@
+subscription_id=""
+resource_group_name=""
+environment_short=""
+environment_instance=""
+domain_name_short=""
+shared_resources_keyvault_name=""
+shared_resources_resource_group_name=""

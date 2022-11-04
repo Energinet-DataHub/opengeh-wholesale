@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Wholesale Infrastructure CD
+name: Message Archive Infrastructure CD
 
 on:
   push:
     branches:
       - main
     paths:
-      - wholesale/**
-      - .github/workflows/wholesale-ci.yml
-      - .github/workflows/wholesale-cd.yml
+      - message-archive/**
+      - .github/workflows/message-archive-ci.yml
+      - .github/workflows/message-archive-cd.yml
 
 jobs:
   #
@@ -31,7 +31,7 @@ jobs:
   infrastructure_promote_prerelease:
     uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v9
     with:
-      RELEASE_NAME_PREFIX: wholesale_infrastructure
+      RELEASE_NAME_PREFIX: message_archive_infrastructure
 
   #
   # Dispatch deployment request
@@ -50,5 +50,5 @@ jobs:
         with:
           token: ${{ secrets.PAT_TOKEN }}
           repository: '${{ secrets.DEPLOYMENT_REPOSITORY_PATH }}'
-          event-type: 'wholesale-deployment-request-infrastructure'
+          event-type: 'message-archive-deployment-request-infrastructure'
           client-payload: '{"infrastructure_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}"}'

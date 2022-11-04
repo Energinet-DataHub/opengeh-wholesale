@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Wholesale Infrastructure CI
+name: Message Archive Infrastructure CI
 
 on:
   pull_request:
     branches:
       - main
     paths:
-      - wholesale/**
-      - .github/workflows/wholesale-ci.yml
-      - .github/workflows/wholesale-cd.yml
+      - message-archive/**
+      - .github/workflows/message-archive-ci.yml
+      - .github/workflows/message-archive-cd.yml
 
 jobs:
   #
@@ -31,7 +31,7 @@ jobs:
   infrastructure_ci:
     uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v9
     with:
-      TERRAFORM_WORKING_DIRECTORY: './wholesale/terraform/main'
+      TERRAFORM_WORKING_DIRECTORY: './message-archive/terraform/main'
       TERRAFORM_VERSION: '1.2.2'
-      RELEASE_NAME_PREFIX: 'wholesale_infrastructure'
-      INFRASTRUCTURE_PATH: './wholesale/terraform'
+      RELEASE_NAME_PREFIX: 'message_archive_infrastructure'
+      INFRASTRUCTURE_PATH: './message-archive/terraform'
