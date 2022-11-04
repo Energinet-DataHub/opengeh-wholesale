@@ -49,14 +49,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
 
 
 def _get_all_migrations() -> list[str]:
-    """Get names of all the migrations. i.e., those that are required for the datalake to be up-to-date"""
-
-    all_migrations_file_name = _get_all_migrations_file_name
-    with open(all_migrations_file_name, newline="") as csvfile:
-        reader = csv.reader(csvfile, dialect="excel")
-        all_migration_names = [row[0] for row in reader]
-
-    return all_migration_names
+    return []
 
 
 def _print_count(command_line_args: list[str]):
@@ -94,4 +87,4 @@ def get_uncommitted_migrations(
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def print_count():
-    print_count(sys.argv[1:])
+    _print_count(sys.argv[1:])

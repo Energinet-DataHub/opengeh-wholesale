@@ -38,7 +38,7 @@ setup(
             "stop_db_jobs = package.datamigration.jobs:stop_db_jobs",
             "start_db_jobs = package.datamigration.jobs:start_db_jobs",
             "migrate_data_lake = package.datamigration.migration:migrate_data_lake",
-            "uncommitted_migrations_count = package.datamigration.uncommitted_migrations_count:start",
+            "uncommitted_migrations_count = package.datamigration.uncommitted_migrations:print_count",
         ]
     },
 )

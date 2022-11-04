@@ -17,18 +17,18 @@ import pytest
 import unittest
 from unittest.mock import patch
 
-from package.datamigration.uncommitted_migrations_count import (
+from package.datamigration.committed_migrations import (
     download_committed_migrations,
 )
 
-from package.datamigration.uncommitted_migrations_count import (
+from package.datamigration.uncommitted_migrations import (
     _get_valid_args_or_throw,
     _get_all_migrations,
     get_uncommitted_migrations,
 )
 
 
-def test__uncommitted_migrations_count__when_invoked_with_incorrect_parameters__fails(
+def test__uncommitted_print_count__when_invoked_with_incorrect_parameters__fails(
     databricks_path,
 ):
     # Act
@@ -39,7 +39,7 @@ def test__uncommitted_migrations_count__when_invoked_with_incorrect_parameters__
     assert excinfo.value.code == 2
 
 
-def test__uncommitted_migrations_count__when_invoked_with_correct_parameters__succeeds(
+def test__print_count__when_invoked_with_correct_parameters__succeeds(
     databricks_path,
 ):
     # Arrange
@@ -56,11 +56,9 @@ def test__uncommitted_migrations_count__when_invoked_with_correct_parameters__su
     _get_valid_args_or_throw(command_line_args)
 
 
-@patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
-@patch(
-    "package.datamigration.uncommitted_migrations_count.download_committed_migrations"
-)
-def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_empty_list(
+@patch("package.datamigration.uncommitted_migrations._get_all_migrations")
+@patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
+def test__get_uncommitted_migrations__when_no_migration_needed__returns_empty_list(
     mock_download_committed_migrations, mock_get_all_migrations
 ):
     # Arrange
@@ -79,11 +77,9 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_em
     assert len(migrations) == 0
 
 
-@patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
-@patch(
-    "package.datamigration.uncommitted_migrations_count.download_committed_migrations"
-)
-def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
+@patch("package.datamigration.uncommitted_migrations._get_all_migrations")
+@patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
+def test__get_uncommitted_migrations__when_one_migration_needed__returns_1(
     mock_download_committed_migrations, mock_get_all_migrations
 ):
     # Arrange
@@ -100,19 +96,3 @@ def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1
 
     # Assert
     assert len(migrations) == 1
-
-
-@patch("package.datamigration.uncommitted_migrations_count.open")
-def test__get_all_migrations__(mock_open):
-    # Arrange
-    expected_migration_names = ["mig1", "mig2"]
-    csv_string = (
-        f"{expected_migration_names[0]},foo\r\n{expected_migration_names[1]},bar"
-    )
-    mock_open.return_value = StringIO(csv_string)
-
-    # Act
-    migrations = _get_all_migrations()
-
-    # Assert
-    assert expected_migration_names == migrations
