@@ -24,9 +24,9 @@ from package.datamigration.uncommitted_migrations_count import (
 )
 
 
-dummy_storage_account_name = "my_storage"
-dummy_storage_key = "my_storage"
-dummy_container_name = "my_container"
+DUMMY_STORAGE_ACCOUNT_NAME = "my_storage"
+DUMMY_STORAGE_KEY = "my_storage"
+DUMMY_CONTAINER_NAME = "my_container"
 
 
 def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails(
@@ -73,7 +73,7 @@ def test__download_committed_migrations__returns_correct_items(
         [migration_name_2],
     ]
     file_manager = Data_lake_file_manager(
-        dummy_storage_account_name, dummy_storage_key, dummy_container_name
+        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 
     # Act
@@ -95,7 +95,7 @@ def test__download_committed_migrations__when_empty_file__returns_empty_list(
     mock_download_csv.return_value = []
 
     file_manager = Data_lake_file_manager(
-        dummy_storage_account_name, dummy_storage_key, dummy_container_name
+        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 
     # Act
@@ -125,7 +125,7 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     mock_get_all_migrations.return_value = [migration_name_1, migration_name_2]
 
     file_manager = Data_lake_file_manager(
-        dummy_storage_account_name, dummy_storage_key, dummy_container_name
+        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 
     # Act
@@ -155,7 +155,7 @@ def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1
     ]
 
     file_manager = Data_lake_file_manager(
-        dummy_storage_account_name, dummy_storage_key, dummy_container_name
+        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 
     # Act

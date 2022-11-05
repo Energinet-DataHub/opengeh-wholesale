@@ -18,9 +18,6 @@ from package import log
 
 _LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"
 
-struct DataLakeContainerInfo {
-    data_storage_account_name
-}
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
     p = configargparse.ArgParser(
@@ -41,7 +38,8 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
 
 
 def _lock(command_line_args: list[str]) -> None:
-   
+    args = _get_valid_args_or_throw(sys.argv[1:])
+
     file_manager = Data_lake_file_manager(
         args.data_storage_account_name,
         args.data_storage_account_key,
@@ -52,7 +50,8 @@ def _lock(command_line_args: list[str]) -> None:
 
 
 def _unlock(command_line_args: list[str]) -> None:
-   
+    args = _get_valid_args_or_throw(sys.argv[1:])
+
     file_manager = Data_lake_file_manager(
         args.data_storage_account_name,
         args.data_storage_account_key,
@@ -63,10 +62,8 @@ def _unlock(command_line_args: list[str]) -> None:
 
 
 def lock():
-     args = _get_valid_args_or_throw(sys.argv[1:])
     _lock()
 
 
 def unlock():
-    args = _get_valid_args_or_throw(sys.argv[1:])
     _unlock()

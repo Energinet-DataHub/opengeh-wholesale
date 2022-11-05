@@ -19,9 +19,9 @@ from unittest.mock import patch, Mock
 
 from package.datamigration.data_lake_file_manager import Data_lake_file_manager
 
-dummy_storage_account_name = "my_storage"
-dummy_storage_key = "my_storage"
-dummy_container_name = "my_container"
+DUMMY_STORAGE_ACCOUNT_NAME = "my_storage"
+DUMMY_STORAGE_KEY = "my_storage"
+DUMMY_CONTAINER_NAME = "my_container"
 
 
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
@@ -30,17 +30,23 @@ def test__get_file_system_client__calls_service_client_with_container_name(
 ):
 
     # Act
-    Data_lake_file_manager(dummy_storage_account_name, dummy_storage_key, dummy_container_name)
+    Data_lake_file_manager(
+        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
+    )
 
     # Assert
     mock_data_lake_service_client.return_value.get_file_system_client.assert_called_once_with(
-        dummy_container_name
+        DUMMY_CONTAINER_NAME
     )
 
 
-@patch("package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_file")
+@patch(
+    "package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_file"
+)
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
-def test__download_csv__returned_reader_has_all_items(mock_data_lake_service_client, mock_download_file):
+def test__download_csv__returned_reader_has_all_items(
+    mock_data_lake_service_client, mock_download_file
+):
 
     # Arrange
     row0 = ["c_00", "c_01", "c_02"]
@@ -48,7 +54,9 @@ def test__download_csv__returned_reader_has_all_items(mock_data_lake_service_cli
     csv_string = f"{row0[0]},{row0[1]},{row0[2]}\r\n{row1[0]},{row1[1]},{row1[2]}\r\n"
     mock_download_file.return_value = str.encode(csv_string)
 
-    file_manager = Data_lake_file_manager(dummy_storage_account_name, dummy_storage_key, dummy_container_name)
+    file_manager = Data_lake_file_manager(
+        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
+    )
 
     # Act
     csv_reader = file_manager.download_csv("filename")
@@ -58,7 +66,9 @@ def test__download_csv__returned_reader_has_all_items(mock_data_lake_service_cli
     assert row1 == next(csv_reader)
 
 
-@patch("package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_file")
+@patch(
+    "package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_file"
+)
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__download_csv__when_empty_file__return_empty_content_in_reader(
     mock_data_lake_service_client, mock_download_file
@@ -66,7 +76,9 @@ def test__download_csv__when_empty_file__return_empty_content_in_reader(
 
     # Arrange
     mock_download_file.return_value = b""
-    file_manager = Data_lake_file_manager(dummy_storage_account_name, dummy_storage_key, dummy_container_name)
+    file_manager = Data_lake_file_manager(
+        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
+    )
 
     # Act
     csv_reader = file_manager.download_csv("")
