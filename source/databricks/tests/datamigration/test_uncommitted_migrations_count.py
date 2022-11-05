@@ -29,7 +29,7 @@ dummy_storage_key = "my_storage"
 dummy_container_name = "my_container"
 
 
-def test__uncommitted_migrations_count__when_invoked_with_incorrect_parameters__fails(
+def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails(
     databricks_path,
 ):
     # Act
@@ -40,7 +40,7 @@ def test__uncommitted_migrations_count__when_invoked_with_incorrect_parameters__
     assert excinfo.value.code == 2
 
 
-def test__uncommitted_migrations_count__when_invoked_with_correct_parameters__succeeds(
+def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeeds(
     databricks_path,
 ):
     # Arrange
@@ -57,10 +57,13 @@ def test__uncommitted_migrations_count__when_invoked_with_correct_parameters__su
     _get_valid_args_or_throw(command_line_args)
 
 
-@patch("package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_csv")
+@patch(
+    "package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_csv"
+)
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__download_committed_migrations__returns_correct_items(
-    mock_data_lake_service_client, mock_download_csv,
+    mock_data_lake_service_client,
+    mock_download_csv,
 ):
     # Arrange
     migration_name_1 = "my_migration1"
@@ -69,7 +72,9 @@ def test__download_committed_migrations__returns_correct_items(
         [migration_name_1],
         [migration_name_2],
     ]
-    file_manager = Data_lake_file_manager(dummy_storage_account_name, dummy_storage_key, dummy_container_name)
+    file_manager = Data_lake_file_manager(
+        dummy_storage_account_name, dummy_storage_key, dummy_container_name
+    )
 
     # Act
     migrations = _download_committed_migrations(file_manager)
@@ -78,15 +83,20 @@ def test__download_committed_migrations__returns_correct_items(
     assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
 
 
-@patch("package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_csv")
+@patch(
+    "package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_csv"
+)
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__download_committed_migrations__when_empty_file__returns_empty_list(
-    mock_data_lake_service_client, mock_download_csv,
+    mock_data_lake_service_client,
+    mock_download_csv,
 ):
     # Arrange
     mock_download_csv.return_value = []
 
-    file_manager = Data_lake_file_manager(dummy_storage_account_name, dummy_storage_key, dummy_container_name)
+    file_manager = Data_lake_file_manager(
+        dummy_storage_account_name, dummy_storage_key, dummy_container_name
+    )
 
     # Act
     migrations = _download_committed_migrations(file_manager)
@@ -96,10 +106,14 @@ def test__download_committed_migrations__when_empty_file__returns_empty_list(
 
 
 @patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
-@patch("package.datamigration.uncommitted_migrations_count._download_committed_migrations")
+@patch(
+    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
+)
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
-    mock_data_lake_service_client, mock_download_committed_migrations, mock_get_all_migrations
+    mock_data_lake_service_client,
+    mock_download_committed_migrations,
+    mock_get_all_migrations,
 ):
     # Arrange
     migration_name_1 = "my_migration1"
@@ -110,7 +124,9 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     ]
     mock_get_all_migrations.return_value = [migration_name_1, migration_name_2]
 
-    file_manager = Data_lake_file_manager(dummy_storage_account_name, dummy_storage_key, dummy_container_name)
+    file_manager = Data_lake_file_manager(
+        dummy_storage_account_name, dummy_storage_key, dummy_container_name
+    )
 
     # Act
     count = _get_uncommitted_migrations_count(file_manager)
@@ -120,10 +136,14 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
 
 
 @patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
-@patch("package.datamigration.uncommitted_migrations_count._download_committed_migrations")
+@patch(
+    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
+)
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
-    mock_data_lake_service_client, mock_download_committed_migrations, mock_get_all_migrations
+    mock_data_lake_service_client,
+    mock_download_committed_migrations,
+    mock_get_all_migrations,
 ):
     # Arrange
     migration_name_1 = "my_migration1"
@@ -134,7 +154,9 @@ def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1
         migration_name_2,
     ]
 
-    file_manager = Data_lake_file_manager(dummy_storage_account_name, dummy_storage_key, dummy_container_name)
+    file_manager = Data_lake_file_manager(
+        dummy_storage_account_name, dummy_storage_key, dummy_container_name
+    )
 
     # Act
     count = _get_uncommitted_migrations_count(file_manager)

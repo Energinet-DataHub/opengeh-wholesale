@@ -93,7 +93,7 @@ def _get_process_manager_parameters(filename):
         )
 
 
-def test_calculator_job_when_invoked_with_incorrect_parameters_fails(
+def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
     integration_tests_path, databricks_path
 ):
     # Act
@@ -104,7 +104,7 @@ def test_calculator_job_when_invoked_with_incorrect_parameters_fails(
     assert excinfo.value.code == 2
 
 
-def test_calculator_job_accepts_parameters_from_process_manager(
+def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
     data_lake_path, source_path, databricks_path
 ):
     """

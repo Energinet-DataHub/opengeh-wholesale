@@ -11,43 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import sys
 from .data_lake_file_manager import Data_lake_file_manager
 import configargparse
 from package import log
 
+_LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"
 
-def lock() -> None:
-    args = _get_valid_args_or_throw()
-    if args.only_validate_args:
-        exit(0)
-    file_manager = Data_lake_file_manager(
-        args.data_storage_account_name,
-        args.data_storage_account_key,
-        args.wholesale_container_name,
-    )
-    file_manager.create_file(
-        "DATALAKE_IS_LOCKED"
-    )
-    log("created lock file: DATALAKE_IS_LOCKED")
+struct DataLakeContainerInfo {
+    data_storage_account_name
+}
 
-
-def unlock() -> None:
-    args = _get_valid_args_or_throw()
-    if args.only_validate_args:
-        exit(0)
-
-    file_manager = Data_lake_file_manager(
-        args.data_storage_account_name,
-        args.data_storage_account_key,
-        args.wholesale_container_name,
-    )
-    file_manager.delete_file(
-        "DATALAKE_IS_LOCKED"
-    )
-    log("deleted lock file: DATALAKE_IS_LOCKED")
-
-
-def _get_valid_args_or_throw():
+def _get_valid_args_or_throw(command_line_args: list[str]):
     p = configargparse.ArgParser(
         description="Returns number of uncommitted data migrations",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -56,13 +31,6 @@ def _get_valid_args_or_throw():
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--wholesale-container-name", type=str, required=True)
-    p.add(
-        "--only-validate-args",
-        type=bool,
-        required=False,
-        default=False,
-        help="Instruct the script to exit after validating input arguments.",
-    )
 
     args, unknown_args = p.parse_known_args()
     if len(unknown_args):
@@ -70,3 +38,35 @@ def _get_valid_args_or_throw():
         raise Exception(f"Unknown args: {unknown_args_text}")
 
     return args
+
+
+def _lock(command_line_args: list[str]) -> None:
+   
+    file_manager = Data_lake_file_manager(
+        args.data_storage_account_name,
+        args.data_storage_account_key,
+        args.wholesale_container_name,
+    )
+    file_manager.create_file(_LOCK_FILE_NAME)
+    log(f"created lock file: {_LOCK_FILE_NAME}")
+
+
+def _unlock(command_line_args: list[str]) -> None:
+   
+    file_manager = Data_lake_file_manager(
+        args.data_storage_account_name,
+        args.data_storage_account_key,
+        args.wholesale_container_name,
+    )
+    file_manager.delete_file(_LOCK_FILE_NAME)
+    log(f"deleted lock file: {_LOCK_FILE_NAME}")
+
+
+def lock():
+     args = _get_valid_args_or_throw(sys.argv[1:])
+    _lock()
+
+
+def unlock():
+    args = _get_valid_args_or_throw(sys.argv[1:])
+    _unlock()
