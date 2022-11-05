@@ -21,7 +21,7 @@ _LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
     p = configargparse.ArgParser(
-        description="Returns number of uncommitted data migrations",
+        description="Locks/unlocks the storage of the specified container",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
@@ -29,7 +29,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--wholesale-container-name", type=str, required=True)
 
-    args, unknown_args = p.parse_known_args()
+    args, unknown_args = p.parse_known_args(command_line_args)
     if len(unknown_args):
         unknown_args_text = ", ".join(unknown_args)
         raise Exception(f"Unknown args: {unknown_args_text}")
@@ -37,21 +37,19 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def _lock(command_line_args: list[str]) -> None:
-    args = _get_valid_args_or_throw(sys.argv[1:])
+def _lock(args: list[str]) -> None:
 
     file_manager = Data_lake_file_manager(
         args.data_storage_account_name,
         args.data_storage_account_key,
         args.wholesale_container_name,
     )
+
     file_manager.create_file(_LOCK_FILE_NAME)
     log(f"created lock file: {_LOCK_FILE_NAME}")
 
 
-def _unlock(command_line_args: list[str]) -> None:
-    args = _get_valid_args_or_throw(sys.argv[1:])
-
+def _unlock(args: list[str]) -> None:
     file_manager = Data_lake_file_manager(
         args.data_storage_account_name,
         args.data_storage_account_key,
@@ -62,8 +60,10 @@ def _unlock(command_line_args: list[str]) -> None:
 
 
 def lock():
-    _lock()
+    args = _get_valid_args_or_throw(sys.argv[1:])
+    _lock(args)
 
 
 def unlock():
-    _unlock()
+    args = _get_valid_args_or_throw(sys.argv[1:])
+    _unlock(args)

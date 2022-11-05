@@ -29,9 +29,7 @@ DUMMY_STORAGE_KEY = "my_storage"
 DUMMY_CONTAINER_NAME = "my_container"
 
 
-def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails(
-    databricks_path,
-):
+def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails():
     # Act
     with pytest.raises(SystemExit) as excinfo:
         _get_valid_args_or_throw("--unexpected-arg")
@@ -40,9 +38,7 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails
     assert excinfo.value.code == 2
 
 
-def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeeds(
-    databricks_path,
-):
+def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeeds():
     # Arrange
     command_line_args = [
         "--data-storage-account-name",

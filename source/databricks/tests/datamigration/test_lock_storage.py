@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pytest
-import subprocess
 import unittest
 from unittest.mock import patch
 from package.datamigration.lock_storage import (
@@ -24,9 +23,7 @@ from package.datamigration.lock_storage import (
 )
 
 
-def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails(
-    databricks_path,
-):
+def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails():
     # Act
     with pytest.raises(SystemExit) as excinfo:
         _get_valid_args_or_throw("--unexpected-arg")
@@ -35,9 +32,7 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails
     assert excinfo.value.code == 2
 
 
-def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeeds(
-    databricks_path,
-):
+def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeeds():
     # Arrange
     command_line_args = [
         "--data-storage-account-name",
@@ -52,4 +47,17 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
     _get_valid_args_or_throw(command_line_args)
 
 
-def test__lock__
+@patch("package.datamigration.lock_storage.Data_lake_file_manager")
+@patch("package.datamigration.lock_storage._get_valid_args_or_throw")
+def test__lock__(mock_arg_parser, mock_file_manager):
+
+    # Arrange
+    mock_arg_parser.returns_value(["my_name", "my_key", "my_container"])
+
+    # Act
+    lock()
+
+    # Assert
+    # mock_file_manager.create_file.assert_called_with(_LOCK_FILE_NAME)
+    # mock_file_manager.create_file.assert_called_once()
+    mock_arg_parser.assert_called_once()
