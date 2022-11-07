@@ -47,8 +47,8 @@ public class BatchDtoMapper : IBatchDtoMapper
         };
     }
 
-    private static IEnumerable<BatchGridAreaDto> MapGridAreas(IReadOnlyCollection<GridAreaCode> gridAreaCodes)
+    private static BatchGridAreaDto[] MapGridAreas(IReadOnlyCollection<GridAreaCode> gridAreaCodes)
     {
-        return gridAreaCodes.Select(gridArea => new BatchGridAreaDto(gridArea.Code)).ToList();
+        return gridAreaCodes.Select(gridArea => new BatchGridAreaDto(gridArea.Code)).ToArray();
     }
 }
