@@ -18,17 +18,6 @@ import configargparse
 from os import path
 from .committed_migrations import download_committed_migrations
 
-MIGRATION_SCRIPTS_FOLDER_NAME = "migration_scripts"
-ALL_MIGRATIONS_FILE_NAME = "migrations.csv"
-
-
-def _get_migration_scripts_path():
-    path.join(path.dirname(__file__), MIGRATION_SCRIPTS_FOLDER_NAME)
-
-
-def _get_all_migrations_file_name():
-    return path.join(_get_migration_scripts_path, ALL_MIGRATIONS_FILE_NAME)
-
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
     p = configargparse.ArgParser(
