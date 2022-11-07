@@ -72,6 +72,9 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchDtoV2.cs">
       <Link>Dtos\BatchDtoV2.cs</Link>
     </Compile>
+    <Compile Include="..\..\Contracts\BatchGridAreaDto.cs">
+      <Link>Dtos\BatchGridAreaDto.cs</Link>
+    </Compile>
     <Compile Include="..\..\Contracts\BatchRequestDto.cs">
       <Link>Dtos\BatchRequestDto.cs</Link>
     </Compile>

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
@@ -28,7 +29,8 @@ public class BatchDtoMapper : IBatchDtoMapper
             batch.ExecutionTimeStart?.ToDateTimeOffset() ?? null,
             batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
             MapState(batch.ExecutionState),
-            batch.IsBasisDataDownloadAvailable);
+            batch.IsBasisDataDownloadAvailable,
+            MapGridAreas(batch.GridAreaCodes));
     }
 
     private static BatchState MapState(BatchExecutionState state)
@@ -43,5 +45,10 @@ public class BatchDtoMapper : IBatchDtoMapper
             BatchExecutionState.Failed => BatchState.Failed,
             _ => throw new ArgumentOutOfRangeException(nameof(state)),
         };
+    }
+
+    private static IEnumerable<BatchGridAreaDto> MapGridAreas(IReadOnlyCollection<GridAreaCode> gridAreaCodes)
+    {
+        return gridAreaCodes.Select(gridArea => new BatchGridAreaDto(gridArea.Code)).ToList();
     }
 }
