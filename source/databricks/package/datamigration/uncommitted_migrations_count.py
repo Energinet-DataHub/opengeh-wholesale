@@ -15,7 +15,7 @@
 import sys
 import configargparse
 from os.path import isfile, join
-from .data_lake_file_manager import download_csv
+from .data_lake_file_manager import DataLakeFileManager
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
@@ -38,15 +38,10 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return known_args
 
 
-def _download_committed_migrations(
-    storage_account_name: str, storage_account_key: str, container_name: str
-) -> list[str]:
+def _download_committed_migrations(file_manager: DataLakeFileManager) -> list[str]:
     """Download file with migration state from datalake and return a list of aldready committed migrations"""
 
-    csv_reader = download_csv(
-        storage_account_name,
-        storage_account_key,
-        container_name,
+    csv_reader = file_manager.download_csv(
         MIGRATION_STATE_FILE_NAME,
     )
     committed_migrations = [row[0] for row in csv_reader]
@@ -58,14 +53,10 @@ def _get_all_migrations() -> list[str]:
     return []
 
 
-def _get_uncommitted_migrations_count(
-    storage_account_name: str, storage_account_key: str, container_name: str
-) -> int:
+def _get_uncommitted_migrations_count(file_manager: DataLakeFileManager) -> int:
     """Get the number of migrations that have not yet been committed"""
 
-    committed_migrations = _download_committed_migrations(
-        storage_account_name, storage_account_key, container_name
-    )
+    committed_migrations = _download_committed_migrations(file_manager)
 
     all_migrations = _get_all_migrations()
 
@@ -79,11 +70,12 @@ def _get_uncommitted_migrations_count(
 def _start(command_line_args: list[str]):
     args = _get_valid_args_or_throw(command_line_args)
 
-    uncommitted_migrations_count = _get_uncommitted_migrations_count(
+    file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
         args.wholesale_container_name,
     )
+    uncommitted_migrations_count = _get_uncommitted_migrations_count(file_manager)
 
     # This format is fixed as it is being used by external tools
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
