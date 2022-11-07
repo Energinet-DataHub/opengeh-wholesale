@@ -16,11 +16,11 @@ import pytest
 import unittest
 from unittest.mock import patch
 from package.datamigration.data_lake_file_manager import DataLakeFileManager
-from package.datamigration.uncommitted_migrations_count import (
+
+from package.datamigration.uncommitted_migrations import (
     _get_valid_args_or_throw,
-    _download_committed_migrations,
     _get_all_migrations,
-    _get_uncommitted_migrations_count,
+    get_uncommitted_migrations,
 )
 
 
@@ -53,54 +53,8 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
     _get_valid_args_or_throw(command_line_args)
 
 
-@patch("package.datamigration.data_lake_file_manager.DataLakeFileManager.download_csv")
-@patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
-def test__download_committed_migrations__returns_correct_items(
-    mock_data_lake_service_client,
-    mock_download_csv,
-):
-    # Arrange
-    migration_name_1 = "my_migration1"
-    migration_name_2 = "my_migration2"
-    mock_download_csv.return_value = [
-        [migration_name_1],
-        [migration_name_2],
-    ]
-    file_manager = DataLakeFileManager(
-        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
-    )
-
-    # Act
-    migrations = _download_committed_migrations(file_manager)
-
-    # Assert
-    assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
-
-
-@patch("package.datamigration.data_lake_file_manager.DataLakeFileManager.download_csv")
-@patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
-def test__download_committed_migrations__when_empty_file__returns_empty_list(
-    mock_data_lake_service_client,
-    mock_download_csv,
-):
-    # Arrange
-    mock_download_csv.return_value = []
-
-    file_manager = DataLakeFileManager(
-        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
-    )
-
-    # Act
-    migrations = _download_committed_migrations(file_manager)
-
-    # Assert
-    assert len(migrations) == 0
-
-
-@patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
-@patch(
-    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
-)
+@patch("package.datamigration.uncommitted_migrations._get_all_migrations")
+@patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     mock_data_lake_service_client,
@@ -121,16 +75,14 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     )
 
     # Act
-    count = _get_uncommitted_migrations_count(file_manager)
+    migrations = get_uncommitted_migrations(file_manager)
 
     # Assert
-    assert count == 0
+    assert len(migrations) == 0
 
 
-@patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
-@patch(
-    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
-)
+@patch("package.datamigration.uncommitted_migrations._get_all_migrations")
+@patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
     mock_data_lake_service_client,
@@ -151,7 +103,7 @@ def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1
     )
 
     # Act
-    count = _get_uncommitted_migrations_count(file_manager)
+    migrations = get_uncommitted_migrations(file_manager)
 
     # Assert
-    assert count == 1
+    assert len(migrations) == 1

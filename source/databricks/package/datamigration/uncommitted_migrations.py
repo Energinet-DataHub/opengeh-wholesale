@@ -14,13 +14,15 @@
 
 import sys
 import configargparse
+from configargparse import argparse
 from os.path import isfile, join
 from .data_lake_file_manager import DataLakeFileManager
+from .committed_migrations import download_committed_migrations
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]):
+def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
         description="Returns number of uncommitted data migrations",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -38,36 +40,11 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return known_args
 
 
-def _download_committed_migrations(file_manager: DataLakeFileManager) -> list[str]:
-    """Download file with migration state from datalake and return a list of aldready committed migrations"""
-
-    csv_reader = file_manager.download_csv(
-        MIGRATION_STATE_FILE_NAME,
-    )
-    committed_migrations = [row[0] for row in csv_reader]
-
-    return committed_migrations
-
-
 def _get_all_migrations() -> list[str]:
     return []
 
 
-def _get_uncommitted_migrations_count(file_manager: DataLakeFileManager) -> int:
-    """Get the number of migrations that have not yet been committed"""
-
-    committed_migrations = _download_committed_migrations(file_manager)
-
-    all_migrations = _get_all_migrations()
-
-    uncommitted_migrations = [
-        m for m in all_migrations if m not in committed_migrations
-    ]
-
-    return len(uncommitted_migrations)
-
-
-def _start(command_line_args: list[str]):
+def _print_count(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
 
     file_manager = DataLakeFileManager(
@@ -75,12 +52,29 @@ def _start(command_line_args: list[str]):
         args.data_storage_account_key,
         args.wholesale_container_name,
     )
-    uncommitted_migrations_count = _get_uncommitted_migrations_count(file_manager)
+
+    uncommitted_migrations = get_uncommitted_migrations(file_manager)
+
+    uncommitted_migrations_count = len(uncommitted_migrations)
 
     # This format is fixed as it is being used by external tools
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
 
 
+def get_uncommitted_migrations(file_manager: DataLakeFileManager) -> list[str]:
+    """Get list of migrations that have not yet been committed"""
+
+    committed_migrations = download_committed_migrations(file_manager)
+
+    all_migrations = _get_all_migrations()
+
+    uncommitted_migrations = [
+        m for m in all_migrations if m not in committed_migrations
+    ]
+
+    return uncommitted_migrations
+
+
 # This method must remain parameterless because it will be called from the entry point when deployed.
-def start():
-    _start(sys.argv[1:])
+def print_count() -> None:
+    _print_count(sys.argv[1:])
