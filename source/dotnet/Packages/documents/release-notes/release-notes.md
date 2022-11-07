@@ -2,7 +2,7 @@
 
 ## Version 2.3.0
 
-Added `IEnumerable<BatchGridAreaDto> BatchGridAreas`
+Added `BatchGridAreaDto[] BatchGridAreas` to `BatchDtoV2`
 
 ## Version 2.2.0
 
