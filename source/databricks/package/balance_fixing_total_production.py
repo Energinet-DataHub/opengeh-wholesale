@@ -263,7 +263,9 @@ def _get_metering_point_periods_df(
             )
             .when(
                 col("MessageType") == ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
-                lit(ConnectionState.connected.value),
+                coalesce(
+                    col("ConnectionState"), last("ConnectionState", True).over(window)
+                ),
             ),
         )
         .withColumn(
