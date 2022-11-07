@@ -12,9 +12,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
+import configargparse
+from package import log
+import importlib
+from .data_lake_file_manager import DataLakeFileManager
+from .uncommitted_migrations import get_uncommitted_migrations
 
-# Further the method must remain parameterless because it will be called from the entry point when deployed.
+
+def _get_valid_args_or_throw(command_line_args: list[str]):
+    p = configargparse.ArgParser(
+        description="Apply uncommitted migations",
+        formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    p.add("--data-storage-account-name", type=str, required=True)
+    p.add("--data-storage-account-key", type=str, required=True)
+    p.add("--wholesale-container-name", type=str, required=True)
+
+    args, unknown_args = p.parse_known_args(command_line_args)
+    if len(unknown_args):
+        unknown_args_text = ", ".join(unknown_args)
+        raise Exception(f"Unknown args: {unknown_args_text}")
+
+    return args
 
 
-def migrate_data_lake():
-    pass
+def _migrate_data_lake(command_line_args: list[str]) -> None:
+    args = _get_valid_args_or_throw(command_line_args)
+
+    file_manager = DataLakeFileManager(
+        args.data_storage_account_name,
+        args.data_storage_account_key,
+        args.wholesale_container_name,
+    )
+
+    uncommitted_migrations = get_uncommitted_migrations(file_manager)
+    for name in uncommitted_migrations:
+        migration = importlib.import_module(
+            "package.datamigration.migration_scripts." + name
+        )
+        # migration.apply(spark)
+
+
+# This method must remain parameterless because it will be called from the entry point when deployed.
+def migrate_data_lake() -> None:
+    _migrate_data_lake(sys.argv[1:])
