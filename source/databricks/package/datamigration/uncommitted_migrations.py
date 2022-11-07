@@ -14,6 +14,7 @@
 
 import sys
 import configargparse
+from configargparse import argparse
 from os.path import isfile, join
 from .data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
@@ -21,7 +22,7 @@ from .committed_migrations import download_committed_migrations
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]):
+def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
         description="Returns number of uncommitted data migrations",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -43,7 +44,7 @@ def _get_all_migrations() -> list[str]:
     return []
 
 
-def _print_count(command_line_args: list[str]):
+def _print_count(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
 
     file_manager = DataLakeFileManager(
@@ -75,5 +76,5 @@ def get_uncommitted_migrations(file_manager: DataLakeFileManager) -> list[str]:
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
-def print_count():
+def print_count() -> None:
     _print_count(sys.argv[1:])
