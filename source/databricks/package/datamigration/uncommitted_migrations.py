@@ -16,6 +16,7 @@ import sys
 import configargparse
 from os.path import isfile, join
 from .data_lake_file_manager import DataLakeFileManager
+from .committed_migrations import download_committed_migrations
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
@@ -51,20 +52,18 @@ def _print_count(command_line_args: list[str]):
         args.wholesale_container_name,
     )
 
+    uncommitted_migrations = get_uncommitted_migrations(file_manager)
+
     uncommitted_migrations_count = len(uncommitted_migrations)
 
     # This format is fixed as it is being used by external tools
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
 
 
-def get_uncommitted_migrations(
-    storage_account_name: str, storage_account_key: str, container_name: str
-) -> list[str]:
+def get_uncommitted_migrations(file_manager: DataLakeFileManager) -> list[str]:
     """Get list of migrations that have not yet been committed"""
 
-    committed_migrations = download_committed_migrations(
-        storage_account_name, storage_account_key, container_name
-    )
+    committed_migrations = download_committed_migrations(file_manager)
 
     all_migrations = _get_all_migrations()
 

@@ -16,9 +16,6 @@ import pytest
 import unittest
 from unittest.mock import patch
 from package.datamigration.data_lake_file_manager import DataLakeFileManager
-from package.datamigration.committed_migrations import (
-    download_committed_migrations,
-)
 
 from package.datamigration.uncommitted_migrations import (
     _get_valid_args_or_throw,
@@ -56,10 +53,8 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
     _get_valid_args_or_throw(command_line_args)
 
 
-@patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
-@patch(
-    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
-)
+@patch("package.datamigration.uncommitted_migrations._get_all_migrations")
+@patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     mock_data_lake_service_client,
@@ -80,16 +75,14 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     )
 
     # Act
-    count = _get_uncommitted_migrations_count(file_manager)
+    migrations = get_uncommitted_migrations(file_manager)
 
     # Assert
-    assert count == 0
+    assert len(migrations) == 0
 
 
-@patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
-@patch(
-    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
-)
+@patch("package.datamigration.uncommitted_migrations._get_all_migrations")
+@patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
     mock_data_lake_service_client,
@@ -110,7 +103,7 @@ def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1
     )
 
     # Act
-    count = _get_uncommitted_migrations_count(file_manager)
+    migrations = get_uncommitted_migrations(file_manager)
 
     # Assert
-    assert count == 1
+    assert len(migrations) == 1

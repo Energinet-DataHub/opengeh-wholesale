@@ -18,35 +18,35 @@ from unittest.mock import patch
 from package.datamigration.committed_migrations import download_committed_migrations
 
 
-@patch("package.datamigration.committed_migrations.download_csv")
+@patch("package.datamigration.committed_migrations.DataLakeFileManager")
 def test__download_committed_migrations__returns_correct_items(
-    mock_download_csv,
+    mock_file_manager,
 ):
     # Arrange
     migration_name_1 = "my_migration1"
     migration_name_2 = "my_migration2"
-    mock_download_csv.return_value = [
+    mock_file_manager.download_csv.return_value = [
         [migration_name_1],
         [migration_name_2],
     ]
 
     # Act
-    migrations = download_committed_migrations("", "", "")
+    migrations = download_committed_migrations(mock_file_manager)
 
     # Assert
     assert migrations[0] == migration_name_1
     assert migrations[1] == migration_name_2
 
 
-@patch("package.datamigration.committed_migrations.download_csv")
+@patch("package.datamigration.committed_migrations.DataLakeFileManager")
 def test__download_committed_migrations__when_empty_file__returns_empty_list(
-    mock_download_csv,
+    mock_file_manager,
 ):
     # Arrange
-    mock_download_csv.return_value = []
+    mock_file_manager.download_csv.return_value = []
 
     # Act
-    migrations = download_committed_migrations("", "", "")
+    migrations = download_committed_migrations(mock_file_manager)
 
     # Assert
     assert len(migrations) == 0

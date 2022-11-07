@@ -12,22 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .data_lake_file_manager import download_csv
+from .data_lake_file_manager import DataLakeFileManager
 
 COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
 
 
 def download_committed_migrations(
-    storage_account_name: str, storage_account_key: str, container_name: str
+    file_manager: DataLakeFileManager
 ) -> list[str]:
     """Download file with migration state from datalake and return a list of already committed migrations"""
 
-    csv_reader = download_csv(
-        storage_account_name,
-        storage_account_key,
-        container_name,
-        COMMITTED_MIGRATIONS_FILE_NAME,
-    )
+    csv_reader = file_manager.download_csv(COMMITTED_MIGRATIONS_FILE_NAME)
     committed_migrations = [row[0] for row in csv_reader]
 
     return committed_migrations
