@@ -33,6 +33,9 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Contracts\BatchGridAreaDto.cs">
+      <Link>Batches\BatchGridAreaDto.cs</Link>
+    </Compile>
     <Compile Include="..\..\Contracts\BatchRequestDto.cs">
       <Link>Batches\BatchRequestDto.cs</Link>
     </Compile>
