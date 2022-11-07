@@ -47,7 +47,7 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
     _get_valid_args_or_throw(command_line_args)
 
 
-@patch("package.datamigration.lock_storage.Data_lake_file_manager")
+@patch("package.datamigration.lock_storage.DataLakeFileManager")
 @patch("package.datamigration.lock_storage._get_valid_args_or_throw")
 def test__lock__create_file_called_with_correct_name(
     mock_arg_parser, mock_file_manager
@@ -65,7 +65,7 @@ def test__lock__create_file_called_with_correct_name(
     mock_create_file.assert_called_once_with(_LOCK_FILE_NAME)
 
 
-@patch("package.datamigration.lock_storage.Data_lake_file_manager")
+@patch("package.datamigration.lock_storage.DataLakeFileManager")
 @patch("package.datamigration.lock_storage._get_valid_args_or_throw")
 def test__lock__delete_file_called_with_correct_name(
     mock_arg_parser, mock_file_manager

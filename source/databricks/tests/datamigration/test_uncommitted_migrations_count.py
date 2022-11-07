@@ -15,7 +15,7 @@
 import pytest
 import unittest
 from unittest.mock import patch
-from package.datamigration.data_lake_file_manager import Data_lake_file_manager
+from package.datamigration.data_lake_file_manager import DataLakeFileManager
 from package.datamigration.uncommitted_migrations_count import (
     _get_valid_args_or_throw,
     _download_committed_migrations,
@@ -53,9 +53,7 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
     _get_valid_args_or_throw(command_line_args)
 
 
-@patch(
-    "package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_csv"
-)
+@patch("package.datamigration.data_lake_file_manager.DataLakeFileManager.download_csv")
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__download_committed_migrations__returns_correct_items(
     mock_data_lake_service_client,
@@ -68,7 +66,7 @@ def test__download_committed_migrations__returns_correct_items(
         [migration_name_1],
         [migration_name_2],
     ]
-    file_manager = Data_lake_file_manager(
+    file_manager = DataLakeFileManager(
         DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 
@@ -79,9 +77,7 @@ def test__download_committed_migrations__returns_correct_items(
     assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
 
 
-@patch(
-    "package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_csv"
-)
+@patch("package.datamigration.data_lake_file_manager.DataLakeFileManager.download_csv")
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__download_committed_migrations__when_empty_file__returns_empty_list(
     mock_data_lake_service_client,
@@ -90,7 +86,7 @@ def test__download_committed_migrations__when_empty_file__returns_empty_list(
     # Arrange
     mock_download_csv.return_value = []
 
-    file_manager = Data_lake_file_manager(
+    file_manager = DataLakeFileManager(
         DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 
@@ -120,7 +116,7 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     ]
     mock_get_all_migrations.return_value = [migration_name_1, migration_name_2]
 
-    file_manager = Data_lake_file_manager(
+    file_manager = DataLakeFileManager(
         DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 
@@ -150,7 +146,7 @@ def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1
         migration_name_2,
     ]
 
-    file_manager = Data_lake_file_manager(
+    file_manager = DataLakeFileManager(
         DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 

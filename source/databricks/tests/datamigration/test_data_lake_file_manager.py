@@ -17,7 +17,7 @@ import subprocess
 import unittest
 from unittest.mock import patch, Mock
 
-from package.datamigration.data_lake_file_manager import Data_lake_file_manager
+from package.datamigration.data_lake_file_manager import DataLakeFileManager
 
 DUMMY_STORAGE_ACCOUNT_NAME = "my_storage"
 DUMMY_STORAGE_KEY = "my_storage"
@@ -30,7 +30,7 @@ def test__get_file_system_client__calls_service_client_with_container_name(
 ):
 
     # Act
-    Data_lake_file_manager(
+    DataLakeFileManager(
         DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 
@@ -40,9 +40,7 @@ def test__get_file_system_client__calls_service_client_with_container_name(
     )
 
 
-@patch(
-    "package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_file"
-)
+@patch("package.datamigration.data_lake_file_manager.DataLakeFileManager.download_file")
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__download_csv__returned_reader_has_all_items(
     mock_data_lake_service_client, mock_download_file
@@ -54,7 +52,7 @@ def test__download_csv__returned_reader_has_all_items(
     csv_string = f"{row0[0]},{row0[1]},{row0[2]}\r\n{row1[0]},{row1[1]},{row1[2]}\r\n"
     mock_download_file.return_value = str.encode(csv_string)
 
-    file_manager = Data_lake_file_manager(
+    file_manager = DataLakeFileManager(
         DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 
@@ -66,9 +64,7 @@ def test__download_csv__returned_reader_has_all_items(
     assert row1 == next(csv_reader)
 
 
-@patch(
-    "package.datamigration.data_lake_file_manager.Data_lake_file_manager.download_file"
-)
+@patch("package.datamigration.data_lake_file_manager.DataLakeFileManager.download_file")
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__download_csv__when_empty_file__return_empty_content_in_reader(
     mock_data_lake_service_client, mock_download_file
@@ -76,7 +72,7 @@ def test__download_csv__when_empty_file__return_empty_content_in_reader(
 
     # Arrange
     mock_download_file.return_value = b""
-    file_manager = Data_lake_file_manager(
+    file_manager = DataLakeFileManager(
         DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
     )
 

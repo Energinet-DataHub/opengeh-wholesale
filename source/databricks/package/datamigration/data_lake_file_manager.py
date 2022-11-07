@@ -18,8 +18,13 @@ from io import StringIO
 import csv
 
 
-class Data_lake_file_manager:
-    def __init__(self, data_storage_account_name: str, data_storage_account_key: str, container_name: str):
+class DataLakeFileManager:
+    def __init__(
+        self,
+        data_storage_account_name: str,
+        data_storage_account_key: str,
+        container_name: str,
+    ):
         self.file_system_client = DataLakeServiceClient(
             data_storage_account_name, data_storage_account_key
         ).get_file_system_client(container_name)

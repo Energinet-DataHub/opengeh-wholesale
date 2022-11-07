@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
-from .data_lake_file_manager import Data_lake_file_manager
+from .data_lake_file_manager import DataLakeFileManager
 import configargparse
 from package import log
 
@@ -39,7 +39,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
 
 def _lock(args: list[str]) -> None:
 
-    file_manager = Data_lake_file_manager(
+    file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
         args.wholesale_container_name,
@@ -50,7 +50,7 @@ def _lock(args: list[str]) -> None:
 
 
 def _unlock(args: list[str]) -> None:
-    file_manager = Data_lake_file_manager(
+    file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
         args.wholesale_container_name,
