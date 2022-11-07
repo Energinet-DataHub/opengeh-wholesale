@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 2.3.0
+
+Added `IEnumerable<BatchGridAreaDto> BatchGridAreas`
+
 ## Version 2.2.0
 
 Added `IsBasisDataDownloadAvailable` a `boolean` that indicates if basis data is available for download.
