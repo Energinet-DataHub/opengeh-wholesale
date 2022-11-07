@@ -34,8 +34,7 @@ def test__download_committed_migrations__returns_correct_items(
     migrations = download_committed_migrations(mock_file_manager)
 
     # Assert
-    assert migrations[0] == migration_name_1
-    assert migrations[1] == migration_name_2
+    assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
