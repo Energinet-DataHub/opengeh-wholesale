@@ -9,6 +9,7 @@ All Terraform code is organized in the following folder hierarchy:
 - Message Archive domain: [message-archive/terraform](./message-archive/terraform/)
 - Timeseries domain: [timeseries/terraform](./timeseries/terraform/)
 - Wholesale domain: [wholesale/terraform](./wholesale/terraform/)
+- Watt domain: [watt/terraform](./watt/terraform/)
 - ...
 
 Two GitHub workflows (`<domain-name>-ci.yml` and `<domain-name>-cd.yml`) are related to each domain's infrastructure configuration. These workflows are in the `.github/workflows`-folder.
