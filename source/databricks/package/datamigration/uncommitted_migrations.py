@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import csv
 import sys
 import configargparse
-from os import path
-from .committed_migrations import download_committed_migrations
+from os.path import isfile, join
+from .data_lake_file_manager import DataLakeFileManager
+
+MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
@@ -44,7 +45,7 @@ def _get_all_migrations() -> list[str]:
 def _print_count(command_line_args: list[str]):
     args = _get_valid_args_or_throw(command_line_args)
 
-    uncommitted_migrations = get_uncommitted_migrations(
+    file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
         args.wholesale_container_name,

@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from io import StringIO
 import pytest
 import unittest
 from unittest.mock import patch
-
+from package.datamigration.data_lake_file_manager import DataLakeFileManager
 from package.datamigration.committed_migrations import (
     download_committed_migrations,
 )
@@ -28,9 +27,12 @@ from package.datamigration.uncommitted_migrations import (
 )
 
 
-def test__uncommitted_print_count__when_invoked_with_incorrect_parameters__fails(
-    databricks_path,
-):
+DUMMY_STORAGE_ACCOUNT_NAME = "my_storage"
+DUMMY_STORAGE_KEY = "my_storage"
+DUMMY_CONTAINER_NAME = "my_container"
+
+
+def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails():
     # Act
     with pytest.raises(SystemExit) as excinfo:
         _get_valid_args_or_throw("--unexpected-arg")
@@ -39,9 +41,7 @@ def test__uncommitted_print_count__when_invoked_with_incorrect_parameters__fails
     assert excinfo.value.code == 2
 
 
-def test__print_count__when_invoked_with_correct_parameters__succeeds(
-    databricks_path,
-):
+def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeeds():
     # Arrange
     command_line_args = [
         "--data-storage-account-name",
@@ -56,10 +56,15 @@ def test__print_count__when_invoked_with_correct_parameters__succeeds(
     _get_valid_args_or_throw(command_line_args)
 
 
-@patch("package.datamigration.uncommitted_migrations._get_all_migrations")
-@patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
-def test__get_uncommitted_migrations__when_no_migration_needed__returns_empty_list(
-    mock_download_committed_migrations, mock_get_all_migrations
+@patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
+@patch(
+    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
+)
+@patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
+def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
+    mock_data_lake_service_client,
+    mock_download_committed_migrations,
+    mock_get_all_migrations,
 ):
     # Arrange
     migration_name_1 = "my_migration1"
@@ -70,17 +75,26 @@ def test__get_uncommitted_migrations__when_no_migration_needed__returns_empty_li
     ]
     mock_get_all_migrations.return_value = [migration_name_1, migration_name_2]
 
+    file_manager = DataLakeFileManager(
+        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
+    )
+
     # Act
-    migrations = get_uncommitted_migrations("", "", "")
+    count = _get_uncommitted_migrations_count(file_manager)
 
     # Assert
-    assert len(migrations) == 0
+    assert count == 0
 
 
-@patch("package.datamigration.uncommitted_migrations._get_all_migrations")
-@patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
-def test__get_uncommitted_migrations__when_one_migration_needed__returns_1(
-    mock_download_committed_migrations, mock_get_all_migrations
+@patch("package.datamigration.uncommitted_migrations_count._get_all_migrations")
+@patch(
+    "package.datamigration.uncommitted_migrations_count._download_committed_migrations"
+)
+@patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
+def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
+    mock_data_lake_service_client,
+    mock_download_committed_migrations,
+    mock_get_all_migrations,
 ):
     # Arrange
     migration_name_1 = "my_migration1"
@@ -91,8 +105,12 @@ def test__get_uncommitted_migrations__when_one_migration_needed__returns_1(
         migration_name_2,
     ]
 
+    file_manager = DataLakeFileManager(
+        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
+    )
+
     # Act
-    migrations = get_uncommitted_migrations("", "", "")
+    count = _get_uncommitted_migrations_count(file_manager)
 
     # Assert
-    assert len(migrations) == 1
+    assert count == 1
