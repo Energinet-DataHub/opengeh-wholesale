@@ -256,9 +256,15 @@ def _get_metering_point_periods_df(
             when(
                 col("MessageType") == METERING_POINT_CREATED_MESSAGE_TYPE,
                 lit(ConnectionState.new.value),
-            ).when(
+            )
+            .when(
                 col("MessageType") == METERING_POINT_CONNECTED_MESSAGE_TYPE,
                 lit(ConnectionState.connected.value),
+            )
+            .otherwise(
+                coalesce(
+                    col("ConnectionState"), last("ConnectionState", True).over(window)
+                ),
             ),
         )
         .withColumn(

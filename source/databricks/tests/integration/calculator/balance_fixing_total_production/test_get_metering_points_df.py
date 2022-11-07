@@ -65,15 +65,15 @@ def grid_area_df(spark):
 @pytest.fixture
 def energy_supplier_changed_df_factory(spark):
     def factory(
-        stored_time=first_of_june,
+        stored_time=second_of_june,
         metering_point_id=metering_point_id,
         gsrn_number=gsrn_number,
         energy_supplier_gln="the_energy_supplier_gln",
-        effective_date=first_of_june,
+        effective_date=second_of_june,
         id="energy_supplier_changed_event_id",
         correlation_id="correlation_id",
         message_type=ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
-        operation_time=first_of_june,
+        operation_time=second_of_june,
     ):
         row = {
             "storedTime": stored_time,
@@ -175,12 +175,12 @@ def metering_point_created_df_factory(spark):
 @pytest.fixture
 def metering_point_connected_df_factory(spark):
     def factory(
-        stored_time=second_of_june,
+        stored_time=third_of_june,
         message_type=METERING_POINT_CONNECTED_MESSAGE_TYPE,
-        operation_time=second_of_june,
+        operation_time=third_of_june,
         grid_area_link_id=grid_area_link_id,
         gsrn_number=gsrn_number,
-        effective_date=second_of_june,
+        effective_date=third_of_june,
         metering_point_id=metering_point_id,
     ):
         row = [
@@ -305,12 +305,38 @@ def test__metering_point_connected_message_type__matches_contract(
 
 
 @pytest.mark.parametrize(
-    "created_message_type,connected_message_type,expected",
+    "created_message_type,connected_message_type,ennergysupplier_message_type,expected",
     [
-        ("MeteringPointCreated", "MeteringPointConnected", True),
-        ("BadCreatedMessageType", "MeteringPointConnected", False),
-        ("MeteringPointCreated", "BadConnectedMessageType", False),
-        ("BadCreatedMessageType", "BadConnectedMessageType", False),
+        (
+            "MeteringPointCreated",
+            "MeteringPointConnected",
+            "EnergySupplierChanged",
+            True,
+        ),
+        (
+            "BadCreatedMessageType",
+            "MeteringPointConnected",
+            "EnergySupplierChanged",
+            False,
+        ),
+        (
+            "MeteringPointCreated",
+            "BadConnectedMessageType",
+            "EnergySupplierChanged",
+            False,
+        ),
+        (
+            "MeteringPointCreated",
+            "MeteringPointConnected",
+            "BadEnergySupplierChanged",
+            False,
+        ),
+        (
+            "BadCreatedMessageType",
+            "BadConnectedMessageType",
+            "BadEnergySupplierChanged",
+            False,
+        ),
     ],
 )
 def test__when_correct_message_types__returns_row(
@@ -320,6 +346,7 @@ def test__when_correct_message_types__returns_row(
     grid_area_df,
     created_message_type,
     connected_message_type,
+    ennergysupplier_message_type,
     expected,
 ):
     # Arrange
@@ -329,7 +356,9 @@ def test__when_correct_message_types__returns_row(
     connected_events_df = metering_point_connected_df_factory(
         message_type=connected_message_type
     )
-    energy_supplier_changed_df = energy_supplier_changed_df_factory()
+    energy_supplier_changed_df = energy_supplier_changed_df_factory(
+        message_type=ennergysupplier_message_type
+    )
     integration_events_df = created_events_df.union(connected_events_df).union(
         energy_supplier_changed_df
     )
@@ -338,7 +367,6 @@ def test__when_correct_message_types__returns_row(
     actual_df = _get_metering_point_periods_df(
         integration_events_df, grid_area_df, second_of_june, third_of_june
     )
-
     # Assert
     assert (actual_df.count() == 1) == expected
 
@@ -471,9 +499,8 @@ def test__to_effective_date__is_in_the_far_future(
 
     # Act
     actual_df = _get_metering_point_periods_df(
-        integration_events_df, grid_area_df, second_of_june, third_of_june
+        integration_events_df, grid_area_df, first_of_june, third_of_june
     )
-
     # Assert
     assert actual_df.first().toEffectiveDate > the_far_future
 
