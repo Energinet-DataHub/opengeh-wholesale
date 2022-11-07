@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 /// <summary>
 /// An immutable batch.
 /// </summary>
-public sealed record BatchDtoV1(long? BatchNumber, DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeOffset? ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchState ExecutionState);
+public sealed record BatchGridAreaDto(string GridAreaCode);
