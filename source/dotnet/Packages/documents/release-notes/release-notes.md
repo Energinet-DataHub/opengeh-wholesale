@@ -2,7 +2,7 @@
 
 ## Version 2.3.0
 
-Added `BatchGridAreaDto[] BatchGridAreas` to `BatchDtoV2`
+Added `BatchGridAreaDto[] BatchGridAreas` to `BatchDtoV2`. `BatchGridAreaDto` represents a grid area in the batch.
 
 ## Version 2.2.0
 
