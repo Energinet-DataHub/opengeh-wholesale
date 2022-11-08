@@ -44,7 +44,7 @@ def _apply_migrations(uncommitted_migrations: list[str]) -> None:
         migration = importlib.import_module(
             "package.datamigration.migration_scripts." + name
         )
-        migration.apply()
+        migration.apply(spark)
 
 
 def _migrate_data_lake(command_line_args: list[str]) -> None:
@@ -55,6 +55,7 @@ def _migrate_data_lake(command_line_args: list[str]) -> None:
         args.data_storage_account_key,
         args.wholesale_container_name,
     )
+
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
     _apply_migrations(uncommitted_migrations)
