@@ -240,7 +240,6 @@ def _get_metering_point_periods_df(
         "Metering point created and connected events without duplicates",
         metering_point_events_df.orderBy(col("storedTime").desc()),
     )
-
     window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
     metering_point_periods_df = (
         metering_point_events_df.withColumn(
@@ -256,15 +255,15 @@ def _get_metering_point_periods_df(
             when(
                 col("MessageType") == METERING_POINT_CREATED_MESSAGE_TYPE,
                 lit(ConnectionState.new.value),
-            )
-            .when(
+            ).when(
                 col("MessageType") == METERING_POINT_CONNECTED_MESSAGE_TYPE,
                 lit(ConnectionState.connected.value),
-            )
-            .otherwise(
-                coalesce(
-                    col("ConnectionState"), last("ConnectionState", True).over(window)
-                ),
+            ),
+        )
+        .withColumn(
+            "ConnectionState",
+            coalesce(
+                col("ConnectionState"), last("ConnectionState", True).over(window)
             ),
         )
         .withColumn(
