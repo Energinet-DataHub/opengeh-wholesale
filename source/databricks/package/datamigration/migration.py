@@ -38,6 +38,15 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
+def _apply_migrations(uncommitted_migrations: list[str]) -> None:
+
+    for name in uncommitted_migrations:
+        migration = importlib.import_module(
+            "package.datamigration.migration_scripts." + name
+        )
+        migration.apply()
+
+
 def _migrate_data_lake(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
 
@@ -48,11 +57,7 @@ def _migrate_data_lake(command_line_args: list[str]) -> None:
     )
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
-    for name in uncommitted_migrations:
-        migration = importlib.import_module(
-            "package.datamigration.migration_scripts." + name
-        )
-        # migration.apply(spark)
+    _apply_migrations(uncommitted_migrations)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
