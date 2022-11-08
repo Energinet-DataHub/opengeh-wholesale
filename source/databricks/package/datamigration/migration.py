@@ -14,8 +14,9 @@
 
 import sys
 import configargparse
-from package import log, initialize_spark
 import importlib
+from pyspark.sql.session import SparkSession
+from package import log, initialize_spark
 from .data_lake_file_manager import DataLakeFileManager
 from .uncommitted_migrations import get_uncommitted_migrations
 
@@ -38,7 +39,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def _apply_migrations(spark, uncommitted_migrations: list[str]) -> None:
+def _apply_migrations(spark: SparkSession, uncommitted_migrations: list[str]) -> None:
 
     for name in uncommitted_migrations:
         migration = importlib.import_module(

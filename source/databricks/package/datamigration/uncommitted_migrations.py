@@ -49,13 +49,15 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 
 def _get_all_migrations() -> list[str]:
     all_migration_scripts_paths = listdir(_get_migration_scripts_path())
-    all_migrations = []
-    for full_path in all_migration_scripts_paths:
-        filename = path.basename(full_path)
-        script_name = path.splitext(filename)[0]
-        all_migrations.append(script_name)
+    file_names = [path.basename(p) for p in all_migration_scripts_paths]
+    print(file_names)
+    script_names = []
+    for file_name in file_names:
+        name, extention = path.splitext(file_name)
+        if extention == ".py":
+            script_names.append(name)
 
-    return all_migrations
+    return script_names
 
 
 def _print_count(command_line_args: list[str]) -> None:
