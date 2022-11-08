@@ -117,28 +117,6 @@ sudo apt-get update
 sudo apt-get install -y powershell
 
 ##################################
-# Install Python 3.10
-##################################
-
-# Apparently this happened to be quite cumbersome.
-# These are the steps that fixed various problems.
-# Some hints where found here:
-# https://discuss.python.org/t/unable-to-upgrade-python-3-8-10-to-3-10-solved/15753/6
-
-# Python 3.10 can be used with the command
-# > python3.10
-# And pip can be used with the command
-# > python3.10 -m pip
-
-sudo apt-get update
-sudo apt-get install software-properties-common -y
-sudo add-apt-repository ppa:deadsnakes/ppa -y
-sudo apt-get install python3.10 -y
-
-sudo apt-get install python3.10-venv -y
-python3.10 -m ensurepip --upgrade
-
-##################################
 # Install other dependencies
 ##################################
 
