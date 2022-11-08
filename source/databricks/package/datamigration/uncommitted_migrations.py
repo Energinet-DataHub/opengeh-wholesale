@@ -15,11 +15,18 @@
 import sys
 import configargparse
 from configargparse import argparse
+from os import path, listdir
 from os.path import isfile, join
 from .data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
+MIGRATION_SCRIPTS_FOLDER_NAME = "migration_scripts"
+
+
+def _get_migration_scripts_path() -> str:
+    dirname = path.dirname(__file__)
+    return path.join(dirname, MIGRATION_SCRIPTS_FOLDER_NAME)
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -41,7 +48,16 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 
 
 def _get_all_migrations() -> list[str]:
-    return []
+    all_migration_scripts_paths = listdir(_get_migration_scripts_path())
+    file_names = [path.basename(p) for p in all_migration_scripts_paths]
+    print(file_names)
+    script_names = []
+    for file_name in file_names:
+        name, extention = path.splitext(file_name)
+        if extention == ".py":
+            script_names.append(name)
+
+    return script_names
 
 
 def _print_count(command_line_args: list[str]) -> None:
