@@ -572,9 +572,8 @@ def test__metering_points_are_periodized_by_effective_date(
 
     # Act
     actual_df = _get_metering_point_periods_df(
-        integration_events_df, grid_area_df, second_of_june, third_of_june
+        integration_events_df, grid_area_df, third_of_june, third_of_june
     )
-
     # Assert
     assert (actual_df.count() == 1) == expected
 
