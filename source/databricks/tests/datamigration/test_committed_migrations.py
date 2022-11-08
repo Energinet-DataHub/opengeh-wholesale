@@ -16,8 +16,9 @@ import pytest
 from unittest.mock import patch
 
 from package.datamigration.committed_migrations import (
-    download_committed_migrations,
     COMMITTED_MIGRATIONS_FILE_NAME,
+    download_committed_migrations,
+    upload_committed_migration,
 )
 
 
@@ -85,3 +86,34 @@ def test__download_committed_migrations__when_migration_state_file_exists__do_no
 
     # Assert
     mock_file_manager.create_file.assert_not_called()
+
+
+@patch("package.datamigration.committed_migrations.DataLakeFileManager")
+def test__upload_committed_migration__when_unexpected_columns_in_csv__raise_exception(
+    mock_file_manager,
+):
+    # Arrange
+    mock_file_manager.download_csv.return_value = [["aaa", "bbb"], [["ccc"], ["ddd"]]]
+    migration_name = "my_migration"
+
+    # Act and Assert
+    with pytest.raises(Exception):
+        upload_committed_migration(mock_file_manager, migration_name)
+
+
+@patch("package.datamigration.committed_migrations.DataLakeFileManager")
+def test__upload_committed_migration__(
+    mock_file_manager,
+):
+    # Arrange
+    mock_file_manager.download_csv.return_value = iter([["aaa"], ["bbb"]])
+    migration_name = "ccc"
+    expected_csv_row = f"{migration_name},\r\n"
+
+    # Act
+    upload_committed_migration(mock_file_manager, migration_name)
+
+    # Assert
+    mock_file_manager.append_data.assert_called_once_with(
+        COMMITTED_MIGRATIONS_FILE_NAME, expected_csv_row
+    )
