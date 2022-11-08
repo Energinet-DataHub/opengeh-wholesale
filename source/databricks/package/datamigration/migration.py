@@ -14,7 +14,7 @@
 
 import sys
 import configargparse
-from package import log
+from package import log, initialize_spark
 import importlib
 from .data_lake_file_manager import DataLakeFileManager
 from .uncommitted_migrations import get_uncommitted_migrations
@@ -38,7 +38,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def _apply_migrations(uncommitted_migrations: list[str]) -> None:
+def _apply_migrations(spark, uncommitted_migrations: list[str]) -> None:
 
     for name in uncommitted_migrations:
         migration = importlib.import_module(
@@ -50,15 +50,18 @@ def _apply_migrations(uncommitted_migrations: list[str]) -> None:
 def _migrate_data_lake(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
 
+    spark = initialize_spark(
+        args.data_storage_account_name,
+        args.data_storage_account_key,
+    )
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
         args.wholesale_container_name,
     )
 
-
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
-    _apply_migrations(uncommitted_migrations)
+    _apply_migrations(spark, uncommitted_migrations)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
