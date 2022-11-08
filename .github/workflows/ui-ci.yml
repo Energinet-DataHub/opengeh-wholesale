@@ -19,9 +19,9 @@ on:
     branches:
       - main
     paths:
-      - dh-ui/**
-      - .github/workflows/dh-ui-ci.yml
-      - .github/workflows/dh-ui-cd.yml
+      - ui/**
+      - .github/workflows/ui-ci.yml
+      - .github/workflows/ui-cd.yml
 
 jobs:
   #
@@ -31,7 +31,7 @@ jobs:
   infrastructure_ci:
     uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v9
     with:
-      TERRAFORM_WORKING_DIRECTORY: './dh-ui/terraform/main'
+      TERRAFORM_WORKING_DIRECTORY: './ui/terraform/main'
       TERRAFORM_VERSION: '1.2.2'
-      RELEASE_NAME_PREFIX: 'dh_ui_infrastructure'
-      INFRASTRUCTURE_PATH: './dh-ui/terraform'
+      RELEASE_NAME_PREFIX: 'ui_infrastructure'
+      INFRASTRUCTURE_PATH: './ui/terraform'
