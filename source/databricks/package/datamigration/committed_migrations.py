@@ -24,16 +24,26 @@ def download_committed_migrations(file_manager: DataLakeFileManager) -> list[str
 
     csv_reader = file_manager.download_csv(COMMITTED_MIGRATIONS_FILE_NAME)
     committed_migrations = [row[0] for row in csv_reader]
+
     return committed_migrations
 
 
-def upload_committed_migration(file_manager: DataLakeFileManager):
+def upload_committed_migration(
+    file_manager: DataLakeFileManager, migration_name: str
+) -> None:
     """Upload file with migration state from datalake and return a list of already committed migrations"""
 
     _create_migration_file_if_not_existing(file_manager)
 
-    print("upload_committed_migration is not implemented yet")
-
+       csv_reader = file_manager.download_csv(COMMITTED_MIGRATIONS_FILE_NAME)
+       number_of_columns = len(next(csv_reader))
+       expected_number_of_columns = 1
+       if number_of_columns != expected_number_of_columns:
+           raise Exception(
+               f"Unexpected number of columns in {COMMITTED_MIGRATIONS_FILE_NAME}. Expected: {expected_number_of_columns}. Actual: {number_of_columns}"
+           )
+csv_row = f"{migration_name},\r\n"
+    file_manager.append_data(COMMITTED_MIGRATIONS_FILE_NAME, csv_row)
 
 def _create_migration_file_if_not_existing(file_manager: DataLakeFileManager):
 
