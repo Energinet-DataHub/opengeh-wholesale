@@ -17,7 +17,7 @@ import configargparse
 import importlib
 from pyspark.sql.session import SparkSession
 from package import log, initialize_spark
-from package.datamigration.data_lake_file_manager import DataLakeFileManager
+from .data_lake_file_manager import DataLakeFileManager
 from .uncommitted_migrations import get_uncommitted_migrations
 from .committed_migrations import upload_committed_migration
 
