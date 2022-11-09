@@ -102,7 +102,7 @@ def test__upload_committed_migration__when_unexpected_columns_in_csv__raise_exce
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
-def test__upload_committed_migration__(
+def test__upload_committed_migration__append_data_is_called_with_correct_string(
     mock_file_manager,
 ):
     # Arrange

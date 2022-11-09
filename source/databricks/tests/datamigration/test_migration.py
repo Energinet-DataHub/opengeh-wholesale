@@ -14,12 +14,16 @@
 
 from io import StringIO
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 from package.datamigration.migration import _apply_migrations, _get_valid_args_or_throw
 
 from package.datamigration.uncommitted_migrations import (
     _get_all_migrations,
+)
+
+from package.datamigration.committed_migrations import (
+    upload_committed_migration,
 )
 
 
@@ -59,12 +63,31 @@ def test___apply_migrations__when_script_not_found__raise_exception(
         _apply_migrations(mock_spark, [unexpected_module])
 
 
+@patch("package.datamigration.migration.upload_committed_migration")
+@patch("package.datamigration.migration.DataLakeFileManager")
 @patch("package.datamigration.migration.SparkSession")
 def test___apply_migrations__all_migrations_can_be_imported(
-    mock_spark,
+    mock_spark, mock_file_manager, mock_upload_migration
 ):
     # Arrange
     all_migrations = _get_all_migrations()
 
     # Act and Assert (if the module cannot be imported or if the signature is incorrect, an exception will be raise)
-    _apply_migrations(mock_spark, all_migrations)
+    _apply_migrations(mock_spark, mock_file_manager, all_migrations)
+
+
+@patch("package.datamigration.migration.upload_committed_migration")
+@patch("package.datamigration.migration.DataLakeFileManager")
+@patch("package.datamigration.migration.SparkSession")
+def test___apply_migrations__upload_called_with_correct_name(
+    mock_spark, mock_file_manager, mock_committed_migration
+):
+    # Arrange
+    all_migrations = _get_all_migrations()
+
+    # Act
+    _apply_migrations(mock_spark, mock_file_manager, all_migrations)
+
+    # Assert
+    for name in all_migrations:
+        mock_committed_migration.assert_called_once_with(mock_file_manager, name)
