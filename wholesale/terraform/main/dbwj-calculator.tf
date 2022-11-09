@@ -25,7 +25,7 @@ resource "databricks_job" "calculator_job" {
       spark_version           = data.databricks_spark_version.latest_lts.id
       node_type_id            = "Standard_DS4_v2"
       autoscale {
-        min_workers = 1
+        min_workers = 4
         max_workers = 8
       }
     }
