@@ -38,7 +38,7 @@ def test__download_committed_migrations__returns_correct_items(
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
-def test__download_committed_migrations__when_empty_file__returns_empty_list(
+def test___download_committed_migrations__when_empty_file__returns_empty_list(
     mock_file_manager,
 ):
     # Arrange
