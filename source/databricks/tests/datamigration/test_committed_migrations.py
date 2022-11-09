@@ -15,7 +15,10 @@
 import pytest
 from unittest.mock import patch
 
-from package.datamigration.committed_migrations import download_committed_migrations
+from package.datamigration.committed_migrations import (
+    download_committed_migrations,
+    COMMITTED_MIGRATIONS_FILE_NAME,
+)
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
@@ -50,3 +53,35 @@ def test__download_committed_migrations__when_empty_file__returns_empty_list(
 
     # Assert
     assert len(migrations) == 0
+
+
+@patch("package.datamigration.committed_migrations.DataLakeFileManager")
+def test__download_committed_migrations__when_migration_state_file_do_not_exist__create_file(
+    mock_file_manager,
+):
+    # Arrange
+    mock_file_manager.download_csv.return_value = []
+    mock_file_manager.file_exists.return_value = False
+
+    # Act
+    download_committed_migrations(mock_file_manager)
+
+    # Assert
+    mock_file_manager.create_file.assert_called_once_with(
+        COMMITTED_MIGRATIONS_FILE_NAME
+    )
+
+
+@patch("package.datamigration.committed_migrations.DataLakeFileManager")
+def test__download_committed_migrations__when_migration_state_file_exists__do_not_create_file(
+    mock_file_manager,
+):
+    # Arrange
+    mock_file_manager.download_csv.return_value = []
+    mock_file_manager.file_exists.return_value = True
+
+    # Act
+    download_committed_migrations(mock_file_manager)
+
+    # Assert
+    mock_file_manager.create_file.assert_not_called()

@@ -17,20 +17,25 @@ from .data_lake_file_manager import DataLakeFileManager
 COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
 
 
-def download_committed_migrations(
-    file_manager: DataLakeFileManager
-) -> list[str]:
+def download_committed_migrations(file_manager: DataLakeFileManager) -> list[str]:
     """Download file with migration state from datalake and return a list of already committed migrations"""
+
+    _create_migration_file_if_not_existing(file_manager)
 
     csv_reader = file_manager.download_csv(COMMITTED_MIGRATIONS_FILE_NAME)
     committed_migrations = [row[0] for row in csv_reader]
-
     return committed_migrations
 
 
-def upload_committed_migration(
-    storage_account_name: str, storage_account_key: str, container_name: str
-):
+def upload_committed_migration(file_manager: DataLakeFileManager):
     """Upload file with migration state from datalake and return a list of already committed migrations"""
 
-    raise NotImplementedError()
+    _create_migration_file_if_not_existing(file_manager)
+
+    print("upload_committed_migration is not implemented yet")
+
+
+def _create_migration_file_if_not_existing(file_manager: DataLakeFileManager):
+
+    if not file_manager.file_exists(COMMITTED_MIGRATIONS_FILE_NAME):
+        file_manager.create_file(COMMITTED_MIGRATIONS_FILE_NAME)
