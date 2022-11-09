@@ -18,6 +18,7 @@ using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
@@ -85,7 +86,7 @@ public class BatchFileManagerTests
         dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
             .Returns(dataLakeDirectoryClientMock.Object);
         dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(It.IsAny<string>()))
-                    .Returns((Func<DataLakeFileClient>)null!);
+            .Returns((Func<DataLakeFileClient>)null!);
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
             .ReturnsAsync(responseMock.Object);
         responseMock.Setup(res => res.Value).Returns(true);
@@ -133,7 +134,15 @@ public class BatchFileManagerTests
     {
         // Arrange
         const string pathWithUnknownExtension = "my_file.xxx";
-        var pathItem = DataLakeModelFactory.PathItem(pathWithUnknownExtension, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
+        var pathItem = DataLakeModelFactory.PathItem(
+            pathWithUnknownExtension,
+            false,
+            DateTimeOffset.Now,
+            ETag.All,
+            1,
+            "owner",
+            "group",
+            "permissions");
         var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
         var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
 
@@ -183,7 +192,8 @@ public class BatchFileManagerTests
         var expected = calculationFilePathsContract.MasterBasisDataFile;
 
         // Act
-        var actual = BatchFileManager.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual =
+            BatchFileManager.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -200,7 +210,10 @@ public class BatchFileManagerTests
         var expected = calculationFilePathsContract.TimeSeriesHourBasisDataFile;
 
         // Act
-        var actual = BatchFileManager.GetTimeSeriesHourBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual =
+            BatchFileManager.GetTimeSeriesHourBasisDataFileSpecification(
+                new Guid(batchId),
+                new GridAreaCode(gridAreaCode));
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -217,7 +230,10 @@ public class BatchFileManagerTests
         var expected = calculationFilePathsContract.TimeSeriesQuarterBasisDataFile;
 
         // Act
-        var actual = BatchFileManager.GetTimeSeriesQuarterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual =
+            BatchFileManager.GetTimeSeriesQuarterBasisDataFileSpecification(
+                new Guid(batchId),
+                new GridAreaCode(gridAreaCode));
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -256,7 +272,7 @@ public class BatchFileManagerTests
                     anyStringValue,
                     anyStringValue,
                     anyStringValue,
-                    new Uri("https://stuff.com"),
+                    new Uri("https://notarealadresszxc.com"),
                     CopyStatus.Success,
                     DataLakeLeaseDuration.Fixed,
                     DataLakeLeaseState.Available,
@@ -271,10 +287,42 @@ public class BatchFileManagerTests
         var batch = new BatchBuilder().Build();
 
         // Act
-        var actual = await new StreamReader(await sut.GetZippedBasisDataStreamAsync(batch).ConfigureAwait(false)).ReadLineAsync();
+        var actual = await new StreamReader(await sut.GetZippedBasisDataStreamAsync(batch).ConfigureAwait(false))
+            .ReadLineAsync();
 
         // Assert
         actual.Should().Be("test");
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task CreateBasisDataZipAsync_CreatesZipFile_WhenDataDirectoryIsNotFound(
+        [Frozen] Mock<IStreamZipper> streamZipperMock,
+        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
+        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
+        [Frozen] Mock<Response<bool>> responseMock)
+    {
+        // Arrange
+        var completedBatch = new BatchBuilder().Build();
+        var stream = new Mock<Stream>();
+        responseMock.Setup(res => res.Value).Returns(false);
+        dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
+            .Returns(dataLakeDirectoryClientMock.Object);
+
+        dataLakeDirectoryClientMock.Setup(x => x.ExistsAsync(default)).ReturnsAsync(responseMock.Object);
+
+        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(It.IsAny<string>()))
+            .Returns(dataLakeFileClientMock.Object);
+
+        dataLakeFileClientMock
+            .Setup(x => x.OpenWriteAsync(default, null, default))
+            .ReturnsAsync(stream.Object);
+
+        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+
+        // Act & Assert
+        await sut.Invoking(s => s.CreateBasisDataZipAsync(completedBatch)).Should().NotThrowAsync();
     }
 
     private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
