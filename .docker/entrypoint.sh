@@ -29,7 +29,7 @@ export PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python
 #pip install coverage-threshold
 
 pytest -vs test_spark_init.py
-coverage run --branch -m pytest -n 2 .
+coverage run --branch -m pytest -n auto .
 # Create data for threshold evaluation
 coverage json
 # Create human reader friendly HTML report
