@@ -29,10 +29,6 @@ class DataLakeFileManager:
             data_storage_account_name, data_storage_account_key
         ).get_file_system_client(container_name)
 
-    def file_exists(self, file_name: str) -> bool:
-        file_client = self.file_system_client.get_file_client(file_name)
-        return file_client.exists()
-
     def download_file(self, file_name: str) -> bytes:
         file_client = self.file_system_client.get_file_client(file_name)
         download = file_client.download_file()

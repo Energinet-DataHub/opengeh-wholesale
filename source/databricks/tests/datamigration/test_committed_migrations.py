@@ -61,7 +61,7 @@ def test__download_committed_migrations__when_migration_state_file_do_not_exist_
 ):
     # Arrange
     mock_file_manager.download_csv.return_value = []
-    mock_file_manager.file_exists.return_value = False
+    mock_file_manager.exists_file.return_value = False
 
     # Act
     download_committed_migrations(mock_file_manager)
@@ -78,7 +78,7 @@ def test__download_committed_migrations__when_migration_state_file_exists__do_no
 ):
     # Arrange
     mock_file_manager.download_csv.return_value = []
-    mock_file_manager.file_exists.return_value = True
+    mock_file_manager.exists_file.return_value = True
 
     # Act
     download_committed_migrations(mock_file_manager)

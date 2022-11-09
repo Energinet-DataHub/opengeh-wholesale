@@ -37,5 +37,5 @@ def upload_committed_migration(file_manager: DataLakeFileManager):
 
 def _create_migration_file_if_not_existing(file_manager: DataLakeFileManager):
 
-    if not file_manager.file_exists(COMMITTED_MIGRATIONS_FILE_NAME):
+    if not file_manager.exists_file(COMMITTED_MIGRATIONS_FILE_NAME):
         file_manager.create_file(COMMITTED_MIGRATIONS_FILE_NAME)
