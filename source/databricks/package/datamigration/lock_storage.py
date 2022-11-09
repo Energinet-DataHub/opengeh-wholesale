@@ -59,6 +59,15 @@ def _unlock(args: list[str]) -> None:
     log(f"deleted lock file: {_LOCK_FILE_NAME}")
 
 
+def _islocked() -> bool:
+    file_manager = DataLakeFileManager(
+        args.data_storage_account_name,
+        args.data_storage_account_key,
+        args.wholesale_container_name,
+    )
+    return file_manager.exists_file(_LOCK_FILE_NAME)
+
+
 def lock():
     args = _get_valid_args_or_throw(sys.argv[1:])
     _lock(args)
@@ -67,3 +76,8 @@ def lock():
 def unlock():
     args = _get_valid_args_or_throw(sys.argv[1:])
     _unlock(args)
+
+
+def islocked() -> bool:
+    args = _get_valid_args_or_throw(sys.argv[1:])
+    return _islocked(args)

@@ -51,3 +51,7 @@ class DataLakeFileManager:
     def delete_file(self, file_name: str) -> None:
         file_client = self.file_system_client.get_file_client(file_name)
         file_client.delete_file()
+
+    def exists_file(self, file_name: str) -> bool:
+        file_client = self.file_system_client.eget_file_client(file_name)
+        return file_client.exists()

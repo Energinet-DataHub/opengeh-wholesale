@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from package import integration_events_persister, initialize_spark, log
+from package.datamigration import islocked
 import configargparse
 
 
@@ -29,6 +30,10 @@ def start():
 
     args, unknown_args = p.parse_known_args()
     log(f"Job arguments: {str(args)}")
+
+    if islocked():
+        log("Exiting because storage is locked due to data migrations running.")
+        exit(1)
 
     spark = initialize_spark(
         args.data_storage_account_name, args.data_storage_account_key
