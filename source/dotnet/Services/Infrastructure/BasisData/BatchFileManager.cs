@@ -110,6 +110,7 @@ public class BatchFileManager : IBatchFileManager
         {
             var (directory, extension, entryPath) = fileIdentifierProvider(batchId, gridAreaCode);
             var processDataFile = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
+            if (processDataFile == null) continue;
             var response = await processDataFile.ReadAsync().ConfigureAwait(false);
             processDataFilesUrls.Add((response.Value.Content, entryPath));
         }
@@ -122,13 +123,13 @@ public class BatchFileManager : IBatchFileManager
     /// </summary>
     /// <param name="directory"></param>
     /// <param name="extension"></param>
-    /// <returns>The first file with matching file extension.</returns>
-    private async Task<DataLakeFileClient> GetDataLakeFileClientAsync(string directory, string extension)
+    /// <returns>The first file with matching file extension. If no directory was found, return null</returns>
+    private async Task<DataLakeFileClient?> GetDataLakeFileClientAsync(string directory, string extension)
     {
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
         var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
         if (!directoryExists.Value)
-            throw new Exception($"Calculation storage directory '{directory}' does not exist");
+            return null;
 
         await foreach (var pathItem in directoryClient.GetPathsAsync())
         {
