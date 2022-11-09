@@ -35,3 +35,5 @@ jobs:
       TERRAFORM_VERSION: '1.2.2'
       RELEASE_NAME_PREFIX: 'metering_point_infrastructure'
       INFRASTRUCTURE_PATH: './metering-point/terraform'
+    secrets:
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

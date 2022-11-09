@@ -35,3 +35,5 @@ jobs:
       TERRAFORM_VERSION: '1.2.2'
       RELEASE_NAME_PREFIX: 'post_office_infrastructure'
       INFRASTRUCTURE_PATH: './post-office/terraform'
+    secrets:
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

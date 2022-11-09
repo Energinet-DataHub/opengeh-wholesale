@@ -35,3 +35,5 @@ jobs:
       TERRAFORM_VERSION: '1.2.2'
       RELEASE_NAME_PREFIX: 'market_roles_infrastructure'
       INFRASTRUCTURE_PATH: './market-roles/terraform'
+    secrets:
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

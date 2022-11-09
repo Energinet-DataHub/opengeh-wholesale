@@ -37,3 +37,5 @@ jobs:
       INFRASTRUCTURE_PATH: './shared-resources/terraform/infrastructure'
       ADDITIONAL_INFRASTRUCTURE_PATH: './shared-resources/terraform/landingzone'
       RELEASE_NAME_PREFIX: 'shared_resources_infrastructure'
+    secrets:
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

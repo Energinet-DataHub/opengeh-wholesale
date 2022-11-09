@@ -35,3 +35,5 @@ jobs:
       TERRAFORM_VERSION: '1.2.4'
       RELEASE_NAME_PREFIX: 'watt_infrastructure'
       INFRASTRUCTURE_PATH: './watt/terraform'
+    secrets:
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

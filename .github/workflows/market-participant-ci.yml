@@ -34,3 +34,5 @@ jobs:
       TERRAFORM_VERSION: '1.2.2'
       RELEASE_NAME_PREFIX: 'market_participant_infrastructure'
       INFRASTRUCTURE_PATH: './market-participant/terraform'
+    secrets:
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
