@@ -14,7 +14,7 @@
 
 from io import StringIO
 import pytest
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 from package.datamigration.migration import _apply_migrations, _get_valid_args_or_throw
 
