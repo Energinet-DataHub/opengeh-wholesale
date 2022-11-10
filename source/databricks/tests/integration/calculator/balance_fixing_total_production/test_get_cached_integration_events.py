@@ -15,13 +15,9 @@
 
 from datetime import datetime, timedelta
 import pytest
-from types import SimpleNamespace
-from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import (
     _get_cached_integration_events,
 )
-from pyspark.sql import DataFrame
-from pyspark.sql.functions import col
 
 
 # Factory defaults
@@ -42,7 +38,6 @@ def integration_events_df_factory(spark):
 
 def test__raw_events_with_stored_time_of_after_snapshot_time_is_not_included_in_cacheched_integration_events(
     integration_events_df_factory,
-    source_path,
 ):
     events_df_first_of_june = integration_events_df_factory(stored_time=first_of_june)
     events_df_second_of_june = integration_events_df_factory(stored_time=second_of_june)
