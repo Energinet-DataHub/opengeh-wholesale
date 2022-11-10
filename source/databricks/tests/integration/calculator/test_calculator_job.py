@@ -12,10 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import re
-import shutil
-import subprocess
 import pytest
 import yaml
 from tests.contract_utils import assert_contract_matches_schema
