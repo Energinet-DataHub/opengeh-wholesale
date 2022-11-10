@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pytest
-import unittest
 from unittest.mock import patch, Mock
 from package.datamigration.lock_storage import (
     _LOCK_FILE_NAME,

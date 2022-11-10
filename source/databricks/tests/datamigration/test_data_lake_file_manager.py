@@ -12,10 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-import subprocess
-import unittest
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 from package.datamigration.data_lake_file_manager import DataLakeFileManager
 
@@ -43,7 +40,7 @@ def test__get_file_system_client__calls_service_client_with_container_name(
 @patch("package.datamigration.data_lake_file_manager.DataLakeFileManager.download_file")
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__download_csv__returned_reader_has_all_items(
-    mock_data_lake_service_client, mock_download_file
+    mock_download_file
 ):
 
     # Arrange
@@ -67,7 +64,7 @@ def test__download_csv__returned_reader_has_all_items(
 @patch("package.datamigration.data_lake_file_manager.DataLakeFileManager.download_file")
 @patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__download_csv__when_empty_file__return_empty_content_in_reader(
-    mock_data_lake_service_client, mock_download_file
+    mock_download_file
 ):
 
     # Arrange

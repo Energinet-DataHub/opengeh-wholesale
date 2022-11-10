@@ -15,7 +15,6 @@
 import time
 from databricks_cli.sdk.api_client import ApiClient
 from databricks_cli.jobs.api import JobsApi
-from databricks_cli.runs.api import RunsApi
 from databricks_cli.sdk import JobsService
 from package import log
 
