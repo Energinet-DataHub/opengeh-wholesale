@@ -19,15 +19,9 @@ from datetime import datetime
 from package.balance_fixing_total_production import (
     _get_enriched_time_series_points_df,
 )
-from tests.contract_utils import (
-    assert_contract_matches_schema,
-    read_contract,
-    get_message_type,
-)
 
 from package.codelists import (
     TimeSeriesResolution,
-    TimeSeriesQuality,
     MeteringPointResolution,
 )
 from pyspark.sql.functions import col
