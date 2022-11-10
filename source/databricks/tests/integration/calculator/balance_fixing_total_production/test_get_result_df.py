@@ -12,16 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime, timedelta
-import os
-import shutil
 import pytest
-import json
 from package.codelists import MeteringPointResolution, TimeSeriesQuality, Quality
 from decimal import Decimal
-from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_result_df
-from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, sum, lit
 from pyspark.sql.types import DecimalType
 
