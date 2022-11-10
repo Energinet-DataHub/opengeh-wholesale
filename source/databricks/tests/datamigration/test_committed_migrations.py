@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import pytest
+import csv
 from unittest.mock import patch
+from io import StringIO
 
 from package.datamigration.committed_migrations import (
     COMMITTED_MIGRATIONS_FILE_NAME,
@@ -57,15 +59,15 @@ def test__download_committed_migrations__when_empty_file__returns_empty_list(
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
-def test__download_committed_migrations__when_migration_state_file_do_not_exist__create_file(
+def test__upload_committed_migration__when_migration_state_file_do_not_exist__create_file(
     mock_file_manager,
 ):
     # Arrange
-    mock_file_manager.download_csv.return_value = []
     mock_file_manager.file_exists.return_value = False
+    mock_file_manager.download_csv.return_value = create_csv_reader_with_data("")
 
     # Act
-    download_committed_migrations(mock_file_manager)
+    upload_committed_migration(mock_file_manager, "dummy")
 
     # Assert
     mock_file_manager.create_file.assert_called_once_with(
@@ -74,15 +76,16 @@ def test__download_committed_migrations__when_migration_state_file_do_not_exist_
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
-def test__download_committed_migrations__when_migration_state_file_exists__do_not_create_file(
+def test__upload_committed_migrations__when_migration_state_file_exists__do_not_create_file(
     mock_file_manager,
 ):
     # Arrange
-    mock_file_manager.download_csv.return_value = []
     mock_file_manager.file_exists.return_value = True
+    string_data = "aaa"
+    mock_file_manager.download_csv.return_value = create_csv_reader_with_data(string_data)
 
     # Act
-    download_committed_migrations(mock_file_manager)
+    upload_committed_migration(mock_file_manager, "dummy")
 
     # Assert
     mock_file_manager.create_file.assert_not_called()
@@ -93,22 +96,39 @@ def test__upload_committed_migration__when_unexpected_columns_in_csv__raise_exce
     mock_file_manager,
 ):
     # Arrange
-    mock_file_manager.download_csv.return_value = [["aaa", "bbb"], [["ccc"], ["ddd"]]]
+    mock_file_manager.file_exists.return_value = True
+    string_data = "aaa,bbb\r\nccc,ddd"
+    mock_file_manager.download_csv.return_value = create_csv_reader_with_data(string_data)
     migration_name = "my_migration"
 
     # Act and Assert
     with pytest.raises(Exception):
         upload_committed_migration(mock_file_manager, migration_name)
 
-
+@patch("package.datamigration.committed_migrations.DataLakeFileManager")
+def test__upload_committed_migration__when_file_is_emty__dont_try_downloading_csv(
+    mock_file_manager,
+):
+    # Arrange
+    mock_file_manager.file_exists.return_value = True
+    mock_file_manager.get_file_size.return_value = 0
+    
+    # Act
+    upload_committed_migration(mock_file_manager, "my_migration")
+    
+    mock_file_manager.download_csv.assert_not_called()
+    
+        
+        
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
 def test__upload_committed_migration__append_data_is_called_with_correct_string(
     mock_file_manager,
 ):
     # Arrange
-    mock_file_manager.download_csv.return_value = iter([["aaa"], ["bbb"]])
+    string_data = "aaa\r\n"
+    mock_file_manager.download_csv.return_value = create_csv_reader_with_data(string_data)
     migration_name = "ccc"
-    expected_csv_row = f"{migration_name},\r\n"
+    expected_csv_row = f"{migration_name}\r\n"
 
     # Act
     upload_committed_migration(mock_file_manager, migration_name)
@@ -117,3 +137,8 @@ def test__upload_committed_migration__append_data_is_called_with_correct_string(
     mock_file_manager.append_data.assert_called_once_with(
         COMMITTED_MIGRATIONS_FILE_NAME, expected_csv_row
     )
+
+def create_csv_reader_with_data(string_data: str) -> None:
+    text_stream = StringIO(string_data)
+    return csv.reader(text_stream, dialect="excel")
+    
