@@ -44,6 +44,7 @@ resource "databricks_job" "calculator_job" {
           "--integration-events-path=abfss://${local.INTERGRATION_EVENTS_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events",
           "--time-series-points-path=abfss://timeseries-data@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/time-series-points",
           "--process-results-path=abfss://${local.CALCULATION_STORAGE_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/results",
+          "--storage-container-path=abfss://${local.STORAGE_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/",
           "--time-zone=${local.TIME_ZONE}",
           "--log-level=information"
       ]
