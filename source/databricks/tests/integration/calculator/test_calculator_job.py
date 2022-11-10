@@ -36,9 +36,7 @@ class DictObj:
 
 
 @pytest.fixture(scope="session")
-def test_data_job_parameters(
-    test_data, databricks_path, data_lake_path, timestamp_factory, worker_id
-):
+def test_data_job_parameters(data_lake_path, timestamp_factory, worker_id):
     "test_data parameter ensures that the corresponding test data has been created when using these corresponding job parameters"
     return DictObj(
         {
@@ -80,9 +78,7 @@ def _get_process_manager_parameters(filename):
         )
 
 
-def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
-    integration_tests_path, databricks_path
-):
+def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails():
     # Act
     with pytest.raises(SystemExit) as excinfo:
         _get_valid_args_or_throw("--unexpected-arg")
