@@ -12,22 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import re
-import shutil
-import subprocess
 import pytest
-from pyspark.sql.functions import col
-from pyspark.sql.types import (
-    DecimalType,
-    StructType,
-    StructField,
-    StringType,
-    TimestampType,
-    IntegerType,
-    LongType,
-)
-
 import yaml
 
 from tests.contract_utils import assert_contract_matches_schema
@@ -51,7 +37,11 @@ class DictObj:
 
 
 @pytest.fixture(scope="session")
-def test_data_job_parameters(data_lake_path, timestamp_factory, worker_id):
+def test_data_job_parameters(
+    data_lake_path,
+    timestamp_factory,
+    worker_id
+):
     "test_data parameter ensures that the corresponding test data has been created when using these corresponding job parameters"
     return DictObj(
         {
@@ -270,7 +260,9 @@ def test__creates_hour_csv_with_expected_columns_names(
 
 
 def test__creates_quarter_csv_with_expected_columns_names(
-    spark, data_lake_path, worker_id
+    spark,
+    data_lake_path,
+    worker_id
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -288,7 +280,11 @@ def test__creates_quarter_csv_with_expected_columns_names(
     ]
 
 
-def test__creates_csv_per_grid_area(spark, data_lake_path, worker_id):
+def test__creates_csv_per_grid_area(
+    spark,
+    data_lake_path,
+    worker_id
+):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
@@ -310,7 +306,11 @@ def test__creates_csv_per_grid_area(spark, data_lake_path, worker_id):
     ), "Calculator job failed to write basis data files for grid area 806"
 
 
-def test__master_data_csv_with_expected_columns_names(spark, data_lake_path, worker_id):
+def test__master_data_csv_with_expected_columns_names(
+    spark,
+    data_lake_path,
+    worker_id
+):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
@@ -332,7 +332,11 @@ def test__master_data_csv_with_expected_columns_names(spark, data_lake_path, wor
     ]
 
 
-def test__creates_master_data_csv_per_grid_area(spark, data_lake_path, worker_id):
+def test__creates_master_data_csv_per_grid_area(
+    spark,
+    data_lake_path,
+    worker_id
+):
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
