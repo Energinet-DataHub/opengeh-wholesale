@@ -46,7 +46,7 @@ class DataLakeFileManager:
         file_client.append_data(data, offset=filesize_previous, length=len(data))
         file_client.flush_data(filesize_previous + len(data))
 
-    def get_file_size(self, file_name: str, data: str) -> None:
+    def get_file_size(self, file_name: str) -> None:
         file_client = self.file_system_client.get_file_client(file_name)
         return file_client.get_file_properties().size
 
