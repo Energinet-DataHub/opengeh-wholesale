@@ -12,27 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime, timedelta, tzinfo, date
-from pytz import timezone
-import pytz
-import os
-import shutil
 import pytest
-import json
 from package.codelists import MeteringPointType, MeteringPointResolution
-from decimal import Decimal
-from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_master_basis_data
-from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, sum, lit
-from functools import reduce
-from operator import add
-from pyspark.sql.types import (
-    StructField,
-    StringType,
-    TimestampType,
-    StructType,
-)
+from datetime import datetime
 
 period_start = "2022-06-08T12:22:00.000Z"
 period_end = "2022-06-010T12:22:00.000Z"
