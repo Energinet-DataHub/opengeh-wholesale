@@ -17,16 +17,6 @@ import re
 import shutil
 import subprocess
 import pytest
-from pyspark.sql.functions import col
-from pyspark.sql.types import (
-    DecimalType,
-    StructType,
-    StructField,
-    StringType,
-    TimestampType,
-    IntegerType,
-    LongType,
-)
 import yaml
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator
