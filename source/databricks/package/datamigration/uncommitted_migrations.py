@@ -50,7 +50,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 def _get_all_migrations() -> list[str]:
     all_migration_scripts_paths = listdir(_get_migration_scripts_path())
     file_names = [path.basename(p) for p in all_migration_scripts_paths]
-    print(file_names)
     script_names = []
     for file_name in file_names:
         name, extention = path.splitext(file_name)
