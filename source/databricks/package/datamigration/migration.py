@@ -19,6 +19,7 @@ from pyspark.sql.session import SparkSession
 from package import log, initialize_spark
 from .data_lake_file_manager import DataLakeFileManager
 from .uncommitted_migrations import get_uncommitted_migrations
+from .committed_migrations import upload_committed_migration
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
@@ -39,13 +40,18 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def _apply_migrations(spark: SparkSession, uncommitted_migrations: list[str]) -> None:
+def _apply_migrations(
+    spark: SparkSession,
+    file_manager: DataLakeFileManager,
+    uncommitted_migrations: list[str],
+) -> None:
 
     for name in uncommitted_migrations:
         migration = importlib.import_module(
             "package.datamigration.migration_scripts." + name
         )
         migration.apply(spark)
+        upload_committed_migration(file_manager, name)
 
 
 def _migrate_data_lake(command_line_args: list[str]) -> None:
@@ -62,7 +68,7 @@ def _migrate_data_lake(command_line_args: list[str]) -> None:
     )
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
-    _apply_migrations(spark, uncommitted_migrations)
+    _apply_migrations(spark, file_manager, uncommitted_migrations)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.

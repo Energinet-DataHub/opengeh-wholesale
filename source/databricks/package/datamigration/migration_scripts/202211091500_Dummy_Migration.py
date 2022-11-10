@@ -16,4 +16,4 @@ from pyspark.sql import SparkSession
 
 
 def apply(spark: SparkSession):
-    print("This migration script is not implemented yet")
+    print("Applying dummy migration")
