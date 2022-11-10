@@ -91,9 +91,7 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
     assert excinfo.value.code == 2
 
 
-def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
-    data_lake_path, source_path, databricks_path
-):
+def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(source_path):
     """
     This test works in tandem with a .NET test ensuring that the calculator job accepts
     the arguments that are provided by the calling process manager.
@@ -126,11 +124,8 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 
 def test__result_is_generated_for_requested_grid_areas(
     spark,
-    test_data_job_parameters,
     data_lake_path,
-    source_path,
     worker_id,
-    executed_calculation_job,
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
