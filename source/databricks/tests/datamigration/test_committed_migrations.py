@@ -40,8 +40,7 @@ def test__download_committed_migrations__returns_correct_items(
     migrations = download_committed_migrations(mock_file_manager)
 
     # Assert
-    assert migrations[0] == migration_name_1
-    assert migrations[1] == migration_name_2
+    assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
@@ -82,7 +81,9 @@ def test__upload_committed_migrations__when_migration_state_file_exists__do_not_
     # Arrange
     mock_file_manager.file_exists.return_value = True
     string_data = "aaa"
-    mock_file_manager.download_csv.return_value = create_csv_reader_with_data(string_data)
+    mock_file_manager.download_csv.return_value = create_csv_reader_with_data(
+        string_data
+    )
 
     # Act
     upload_committed_migration(mock_file_manager, "dummy")
@@ -98,12 +99,15 @@ def test__upload_committed_migration__when_unexpected_columns_in_csv__raise_exce
     # Arrange
     mock_file_manager.file_exists.return_value = True
     string_data = "aaa,bbb\r\nccc,ddd"
-    mock_file_manager.download_csv.return_value = create_csv_reader_with_data(string_data)
+    mock_file_manager.download_csv.return_value = create_csv_reader_with_data(
+        string_data
+    )
     migration_name = "my_migration"
 
     # Act and Assert
     with pytest.raises(Exception):
         upload_committed_migration(mock_file_manager, migration_name)
+
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
 def test__upload_committed_migration__when_file_is_emty__dont_try_downloading_csv(
@@ -112,21 +116,23 @@ def test__upload_committed_migration__when_file_is_emty__dont_try_downloading_cs
     # Arrange
     mock_file_manager.file_exists.return_value = True
     mock_file_manager.get_file_size.return_value = 0
-    
+
     # Act
     upload_committed_migration(mock_file_manager, "my_migration")
-    
+
+    # Assert
     mock_file_manager.download_csv.assert_not_called()
-    
-        
-        
+
+
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
 def test__upload_committed_migration__append_data_is_called_with_correct_string(
     mock_file_manager,
 ):
     # Arrange
     string_data = "aaa\r\n"
-    mock_file_manager.download_csv.return_value = create_csv_reader_with_data(string_data)
+    mock_file_manager.download_csv.return_value = create_csv_reader_with_data(
+        string_data
+    )
     migration_name = "ccc"
     expected_csv_row = f"{migration_name}\r\n"
 
@@ -138,7 +144,7 @@ def test__upload_committed_migration__append_data_is_called_with_correct_string(
         COMMITTED_MIGRATIONS_FILE_NAME, expected_csv_row
     )
 
+
 def create_csv_reader_with_data(string_data: str) -> None:
     text_stream = StringIO(string_data)
     return csv.reader(text_stream, dialect="excel")
-    
