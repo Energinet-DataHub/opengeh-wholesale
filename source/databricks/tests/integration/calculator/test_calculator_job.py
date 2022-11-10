@@ -35,7 +35,7 @@ from package.calculator_job import _get_valid_args_or_throw, _start_calculator
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 
 
-# Code snippet from https://joelmccune.com/python-dictionary-as-object/
+# Code snippet test from https://joelmccune.com/python-dictionary-as-object/
 class DictObj:
     def __init__(self, in_dict: dict):
         assert isinstance(in_dict, dict)
