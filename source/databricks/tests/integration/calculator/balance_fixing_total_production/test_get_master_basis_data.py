@@ -15,6 +15,7 @@
 import pytest
 from package.codelists import MeteringPointType, MeteringPointResolution
 from package.balance_fixing_total_production import _get_master_basis_data
+from datetime import datetime
 
 period_start = "2022-06-08T12:22:00.000Z"
 period_end = "2022-06-010T12:22:00.000Z"
