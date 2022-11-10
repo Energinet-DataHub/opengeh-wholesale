@@ -12,10 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import re
+import shutil
+import subprocess
 import pytest
+from pyspark.sql.functions import col
+from pyspark.sql.types import (
+    DecimalType,
+    StructType,
+    StructField,
+    StringType,
+    TimestampType,
+    IntegerType,
+    LongType,
+)
 import yaml
-
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator
 
@@ -38,9 +50,7 @@ class DictObj:
 
 @pytest.fixture(scope="session")
 def test_data_job_parameters(
-    data_lake_path,
-    timestamp_factory,
-    worker_id
+    test_data, databricks_path, data_lake_path, timestamp_factory, worker_id
 ):
     "test_data parameter ensures that the corresponding test data has been created when using these corresponding job parameters"
     return DictObj(
@@ -83,7 +93,9 @@ def _get_process_manager_parameters(filename):
         )
 
 
-def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails():
+def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
+    integration_tests_path, databricks_path
+):
     # Act
     with pytest.raises(SystemExit) as excinfo:
         _get_valid_args_or_throw("--unexpected-arg")
@@ -92,7 +104,9 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
     assert excinfo.value.code == 2
 
 
-def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(source_path):
+def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
+    data_lake_path, source_path, databricks_path
+):
     """
     This test works in tandem with a .NET test ensuring that the calculator job accepts
     the arguments that are provided by the calling process manager.
@@ -125,8 +139,11 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(sourc
 
 def test__result_is_generated_for_requested_grid_areas(
     spark,
+    test_data_job_parameters,
     data_lake_path,
+    source_path,
     worker_id,
+    executed_calculation_job,
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -144,8 +161,10 @@ def test__result_is_generated_for_requested_grid_areas(
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
     spark,
+    test_data_job_parameters,
     data_lake_path,
     source_path,
+    executed_calculation_job,
     worker_id,
 ):
     # Act
@@ -166,9 +185,11 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 
 def test__calculator_result_schema_must_match_contract_with_dotnet(
     spark,
+    test_data_job_parameters,
     data_lake_path,
     source_path,
     worker_id,
+    executed_calculation_job,
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -185,8 +206,11 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 
 def test__quantity_is_with_precision_3(
     spark,
+    test_data_job_parameters,
     data_lake_path,
+    find_first_file,
     worker_id,
+    executed_calculation_job,
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -216,9 +240,12 @@ def create_file_path_expression(directory_expression, extension):
 
 
 def test__result_file_path_matches_contract(
+    spark,
+    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
+    executed_calculation_job,
     calculation_file_paths_contract,
 ):
     # Arrange
@@ -240,7 +267,9 @@ def test__result_file_path_matches_contract(
 
 def test__creates_hour_csv_with_expected_columns_names(
     spark,
+    test_data_job_parameters,
     data_lake_path,
+    executed_calculation_job,
     worker_id,
 ):
     # Act
@@ -260,9 +289,7 @@ def test__creates_hour_csv_with_expected_columns_names(
 
 
 def test__creates_quarter_csv_with_expected_columns_names(
-    spark,
-    data_lake_path,
-    worker_id
+    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -281,9 +308,7 @@ def test__creates_quarter_csv_with_expected_columns_names(
 
 
 def test__creates_csv_per_grid_area(
-    spark,
-    data_lake_path,
-    worker_id
+    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -307,9 +332,7 @@ def test__creates_csv_per_grid_area(
 
 
 def test__master_data_csv_with_expected_columns_names(
-    spark,
-    data_lake_path,
-    worker_id
+    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -333,9 +356,7 @@ def test__master_data_csv_with_expected_columns_names(
 
 
 def test__creates_master_data_csv_per_grid_area(
-    spark,
-    data_lake_path,
-    worker_id
+    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act: Executed in fixture executed_calculation_job
 
@@ -358,9 +379,12 @@ def test__creates_master_data_csv_per_grid_area(
 
 
 def test__master_basis_data_file_matches_contract(
+    spark,
+    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
+    executed_calculation_job,
     calculation_file_paths_contract,
 ):
     # Arrange
@@ -381,9 +405,12 @@ def test__master_basis_data_file_matches_contract(
 
 
 def test__hourly_basis_data_file_matches_contract(
+    spark,
+    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
+    executed_calculation_job,
     calculation_file_paths_contract,
 ):
     # Arrange
@@ -404,9 +431,12 @@ def test__hourly_basis_data_file_matches_contract(
 
 
 def test__quarterly_basis_data_file_matches_contract(
+    spark,
+    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
+    executed_calculation_job,
     calculation_file_paths_contract,
 ):
     # Arrange
