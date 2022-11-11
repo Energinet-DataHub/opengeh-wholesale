@@ -12,10 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-import subprocess
-import unittest
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 from package.datamigration.data_lake_file_manager import DataLakeFileManager
 
