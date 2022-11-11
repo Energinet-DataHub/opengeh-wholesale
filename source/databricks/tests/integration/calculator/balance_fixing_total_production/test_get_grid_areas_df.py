@@ -14,14 +14,9 @@
 
 
 from datetime import datetime, timedelta
-import os
-import shutil
 import pytest
-import json
-from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import _get_grid_areas_df
 from package.schemas import grid_area_updated_event_schema
-from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, struct, to_json, from_json
 from tests.contract_utils import (
     assert_contract_matches_schema,

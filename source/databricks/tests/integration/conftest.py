@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pytest
-import os
 from pyspark.sql import SparkSession
 
 

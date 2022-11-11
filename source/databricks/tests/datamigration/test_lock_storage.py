@@ -54,7 +54,6 @@ def test__lock__create_file_called_with_correct_name(
 ):
 
     # Arrange
-    mock_arg_parser.returns_value(["my_name", "my_key", "my_container"])
     mock_create_file = Mock()
     mock_file_manager.return_value.create_file = mock_create_file
 
@@ -72,7 +71,6 @@ def test__lock__delete_file_called_with_correct_name(
 ):
 
     # Arrange
-    mock_arg_parser.returns_value(["my_name", "my_key", "my_container"])
     mock_delete_file = Mock()
     mock_file_manager.return_value.delete_file = mock_delete_file
 

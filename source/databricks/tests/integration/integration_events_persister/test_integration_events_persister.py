@@ -20,7 +20,7 @@ from tests.integration.utils import streaming_job_asserter
 
 
 @pytest.fixture(scope="session")
-def integration_events_persister_tester(spark, databricks_path, data_lake_path):
+def integration_events_persister_tester(spark, data_lake_path):
     event_hub_streaming_simulation_path = (
         f"{data_lake_path}/../integration_events_persister/test_files"
     )

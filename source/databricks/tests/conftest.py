@@ -18,7 +18,6 @@ defined in the geh_stream directory in our tests.
 
 import os
 import pytest
-from pyspark import SparkConf
 from pyspark.sql import SparkSession
 from datetime import datetime
 
