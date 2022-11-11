@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 module "mssql_database_application_access" {
-  source                  = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=7.1.0"
+  source                  = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=v9"
 
   sql_server_name         = data.azurerm_mssql_server.mssqlsrv.name
   database_name           = module.mssqldb_marketroles.name
@@ -20,8 +21,7 @@ module "mssql_database_application_access" {
                               module.func_actor_sync.name,
                               module.func_receiver.name,
                               module.func_processing.name,
-                            ]
-
+                            ] 
   depends_on              = [
                               module.func_actor_sync.name,
                               module.func_receiver.name,
