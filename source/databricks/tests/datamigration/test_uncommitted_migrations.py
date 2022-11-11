@@ -54,6 +54,7 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
 
 @patch("package.datamigration.uncommitted_migrations._get_all_migrations")
 @patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
+@patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     mock_download_committed_migrations,
     mock_get_all_migrations,
@@ -80,6 +81,7 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
 
 @patch("package.datamigration.uncommitted_migrations._get_all_migrations")
 @patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
+@patch("package.datamigration.data_lake_file_manager.DataLakeServiceClient")
 def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
     mock_download_committed_migrations,
     mock_get_all_migrations,
