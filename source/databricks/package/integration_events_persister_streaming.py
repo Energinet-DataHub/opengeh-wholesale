@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package import integration_events_persister, initialize_spark, log
+import sys
+from package import integration_events_persister, initialize_spark, log, db_logging
 from package.datamigration import islocked
 import configargparse
 
 
-def start():
+def _get_valid_args_or_throw(command_line_args: list[str]):
     p = configargparse.ArgParser(
         description="Integration events stream ingestor",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -28,12 +29,22 @@ def start():
     p.add("--integration-events-path", type=str, required=True)
     p.add("--integration-events-checkpoint-path", type=str, required=True)
 
-    args, unknown_args = p.parse_known_args()
+    args, unknown_args = p.parse_known_args(args=command_line_args)
+    if len(unknown_args):
+        unknown_args_text = ", ".join(unknown_args)
+        raise Exception(f"Unknown args: {unknown_args_text}")
+
+    return args
+
+
+def _start(command_line_args: list[str]):
+    args = _get_valid_args_or_throw(command_line_args)
     log(f"Job arguments: {str(args)}")
+    db_logging.loglevel = args.log_level
 
     if islocked():
         log("Exiting because storage is locked due to data migrations running.")
-        exit(1)
+        sys.exit(3)
 
     spark = initialize_spark(
         args.data_storage_account_name, args.data_storage_account_key
@@ -55,3 +66,9 @@ def start():
         args.integration_events_path,
         args.integration_events_checkpoint_path,
     )
+
+
+# The start() method should only have its name updated in correspondence with the wheels entry point for it.
+# Further the method must remain parameterless because it will be called from the entry point when deployed.
+def start():
+    _start(sys.argv[1:])

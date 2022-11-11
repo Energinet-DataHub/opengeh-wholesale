@@ -21,6 +21,7 @@ import pytest
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
 from datetime import datetime
+import subprocess
 
 
 @pytest.fixture(scope="session")
@@ -92,3 +93,45 @@ def timestamp_factory():
         return datetime.strptime(date_time_string, date_time_formatting_string)
 
     return factory
+
+
+@pytest.fixture(scope="session")
+def virtual_environment() -> None:
+    """Fixture ensuring execution in a virtual environment.
+    Uses `virtualenv` instead of conda environments due to problems
+    activating the virtual environment from pytest."""
+
+    # Create and activate the virtual environment
+    subprocess.call(["virtualenv", ".wholesale-pytest"])
+    subprocess.call(
+        "source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash"
+    )
+
+    yield None
+
+    # Deactivate virtual environment upon test suite tear down
+    subprocess.call("deactivate", shell=True, executable="/bin/bash")
+
+
+@pytest.fixture(scope="session")
+def installed_package(virtual_environment, databricks_path) -> None:
+    "Ensures that the wholesale package is installed (after building it)."
+
+    # Build the package wheel
+    os.chdir(databricks_path)
+    subprocess.call("python -m build --wheel", shell=True, executable="/bin/bash")
+
+    # Uninstall the package in case it was left by a cancelled test suite
+    subprocess.call(
+        "pip uninstall -y package",
+        shell=True,
+        executable="/bin/bash",
+    )
+
+    # Intall wheel, which will also create console scripts for invoking
+    # the entry points of the package
+    subprocess.call(
+        f"pip install {databricks_path}/dist/package-1.0-py3-none-any.whl",
+        shell=True,
+        executable="/bin/bash",
+    )

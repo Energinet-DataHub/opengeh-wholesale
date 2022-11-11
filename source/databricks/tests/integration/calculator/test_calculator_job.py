@@ -17,6 +17,7 @@ import re
 import shutil
 import subprocess
 import pytest
+from unittest.mock import patch, Mock
 from pyspark.sql.functions import col
 from pyspark.sql.types import (
     DecimalType,
@@ -454,3 +455,18 @@ def test__quarterly_basis_data_file_matches_contract(
         f"results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
+
+
+@patch("package.calculator_job._get_valid_args_or_throw")
+@patch("package.datamigration.lock_storage.islocked")
+def test__when_data_lake_is_locked__return_exit_code_1(mock_islocked, mock_args_parser):
+    # Arrange
+    mock_islocked.returns_value(True)
+    mock_args_parser.returns_value(None)
+
+    # Act
+    with pytest.raises(SystemExit) as excinfo:
+        start([])
+
+    # Assert
+    assert excinfo.value.code == 3
