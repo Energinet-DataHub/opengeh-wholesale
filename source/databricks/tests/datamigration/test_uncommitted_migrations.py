@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pytest
-import unittest
 from unittest.mock import patch
 from package.datamigration.data_lake_file_manager import DataLakeFileManager
 
