@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Data.SqlClient;
+
 namespace Energinet.DataHub.Wholesale.DatabaseMigration
 {
     internal static class Program
@@ -21,6 +23,8 @@ namespace Energinet.DataHub.Wholesale.DatabaseMigration
             var connectionString =
                 args.FirstOrDefault()
                 ?? "Server=localhost;Database=Wholesale;Trusted_Connection=True;";
+
+            SqlAuthenticationProvider.SetProvider(SqlAuthenticationMethod.ActiveDirectoryInteractive, new SqlAppAuthenticationProvider());
 
             var result = Upgrader.DatabaseUpgrade(connectionString);
 
