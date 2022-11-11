@@ -16,7 +16,6 @@ import sys
 import configargparse
 from configargparse import argparse
 from os import path, listdir
-from os.path import isfile, join
 from .data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
 
