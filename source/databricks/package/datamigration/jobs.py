@@ -17,7 +17,6 @@ from .job_handler import stop_databricks_jobs, start_databricks_jobs, get_api_cl
 from package.args_helper import valid_log_level
 from package import (
     log,
-    debug,
     db_logging,
 )
 

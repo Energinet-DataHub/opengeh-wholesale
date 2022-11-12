@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import shutil
 import pytest
 from pyspark.sql import SparkSession
 
@@ -21,12 +19,7 @@ from pyspark.sql.types import (
     StructType,
     StructField,
     StringType,
-    DecimalType,
-    IntegerType,
     TimestampType,
-    BooleanType,
-    BinaryType,
-    LongType,
 )
 
 time_series_received_schema = StructType(

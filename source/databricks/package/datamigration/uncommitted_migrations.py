@@ -16,7 +16,6 @@ import sys
 import configargparse
 from configargparse import argparse
 from os import path, listdir
-from os.path import isfile, join
 from .data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
 
@@ -50,7 +49,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 def _get_all_migrations() -> list[str]:
     all_migration_scripts_paths = listdir(_get_migration_scripts_path())
     file_names = [path.basename(p) for p in all_migration_scripts_paths]
-    print(file_names)
     script_names = []
     for file_name in file_names:
         name, extention = path.splitext(file_name)

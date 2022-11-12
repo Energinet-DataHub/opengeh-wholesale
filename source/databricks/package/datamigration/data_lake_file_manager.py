@@ -35,6 +35,17 @@ class DataLakeFileManager:
         downloaded_bytes = download.readall()
         return downloaded_bytes
 
+    def append_data(self, file_name: str, data: str) -> None:
+        file_client = self.file_system_client.get_file_client(file_name)
+        file_client.get_file_properties().size
+        filesize_previous = file_client.get_file_properties().size
+        file_client.append_data(data, offset=filesize_previous, length=len(data))
+        file_client.flush_data(filesize_previous + len(data))
+
+    def get_file_size(self, file_name: str) -> None:
+        file_client = self.file_system_client.get_file_client(file_name)
+        return file_client.get_file_properties().size
+
     def download_csv(self, file_name: str) -> bytes:
         downloaded_bytes = self.download_file(file_name)
         string_data = StringIO(downloaded_bytes.decode())
