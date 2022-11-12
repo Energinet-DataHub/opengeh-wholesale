@@ -15,14 +15,12 @@
 import os
 import shutil
 import pytest
-import subprocess
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, MagicMock
 from package import integration_events_persister
 from package.integration_events_persister_streaming import (
     start,
     _get_valid_args_or_throw,
 )
-from package.datamigration.lock_storage import _lock
 from tests.integration.utils import streaming_job_asserter
 
 
@@ -43,14 +41,14 @@ def integration_events_persister_tester(spark, databricks_path, data_lake_path):
     if os.path.exists(integration_events_checkpoint_path):
         shutil.rmtree(integration_events_checkpoint_path)
 
-    streamingDF = (
+    streaming_df = (
         spark.readStream.option("startingOffsets", "earliest")
         .format("json")
         .load(event_hub_streaming_simulation_path)
     )
 
     return integration_events_persister(
-        streamingDF,
+        streaming_df,
         integration_events_path,
         integration_events_checkpoint_path,
     )
@@ -101,11 +99,10 @@ def test__get_valid_args_or_throw__when_missing_args__raises_exception(
 
 
 @patch("package.integration_events_persister_streaming._get_valid_args_or_throw")
-@patch("package.datamigration.lock_storage.islocked")
+@patch("package.integration_events_persister_streaming.islocked")
 def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked, mock_args_parser):
     # Arrange
-    mock_islocked.returns_value(True)
-    mock_args_parser.returns_value(None)
+    mock_islocked.return_value = True
 
     # Act
     with pytest.raises(SystemExit) as excinfo:
