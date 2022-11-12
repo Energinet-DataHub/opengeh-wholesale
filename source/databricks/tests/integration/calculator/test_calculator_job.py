@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import re
+from unittest.mock import patch
+
 import pytest
 import yaml
 from tests.contract_utils import assert_contract_matches_schema
