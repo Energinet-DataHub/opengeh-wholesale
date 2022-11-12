@@ -12,26 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime, timedelta, tzinfo, date
-from pytz import timezone
-import pytz
-import os
-import shutil
+from datetime import timedelta
 import pytest
-import json
 from package.codelists import MeteringPointResolution, MeteringPointType
 from decimal import Decimal
-from package import calculate_balance_fixing_total_production
 from package.balance_fixing_total_production import (
     _get_time_series_basis_data,
-    _get_enriched_time_series_points_df,
 )
-from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, sum, lit
-from functools import reduce
-from operator import add
+from pyspark.sql.functions import lit
 from pyspark.sql.types import (
-    IntegerType,
     StructField,
     StringType,
     TimestampType,
