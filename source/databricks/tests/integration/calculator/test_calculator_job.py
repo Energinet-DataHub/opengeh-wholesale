@@ -13,10 +13,12 @@
 # limitations under the License.
 
 import re
+from unittest.mock import patch
+
 import pytest
 import yaml
 from tests.contract_utils import assert_contract_matches_schema
-from package.calculator_job import _get_valid_args_or_throw, _start_calculator
+from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
 
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -443,3 +445,17 @@ def test__quarterly_basis_data_file_matches_contract(
         f"results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
+
+
+@patch("package.calculator_job._get_valid_args_or_throw")
+@patch("package.calculator_job.islocked")
+def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked, mock_args_parser):
+    # Arrange
+    mock_islocked.return_value = True
+
+    # Act
+    with pytest.raises(SystemExit) as excinfo:
+        start()
+
+    # Assert
+    assert excinfo.value.code == 3
