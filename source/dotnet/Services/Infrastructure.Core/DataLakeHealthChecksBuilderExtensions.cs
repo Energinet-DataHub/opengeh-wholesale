@@ -16,7 +16,7 @@ using Azure.Storage.Files.DataLake;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Wholesale.Sender.Monitor
+namespace Energinet.DataHub.Wholesale.Infrastructure.Core
 {
     public static class DataLakeHealthChecksBuilderExtensions
     {

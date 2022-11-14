@@ -188,6 +188,9 @@ public static class Program
                 name: "BatchCompletedSubscriptionZipBasisData")
             .AddDatabricksCheck(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl),
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken));
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken))
+            .AddDataLakeCheck(
+                EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
+                EnvironmentSettingNames.CalculationStorageContainerName.Val());
     }
 }
