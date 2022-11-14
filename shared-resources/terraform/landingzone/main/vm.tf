@@ -16,7 +16,6 @@ locals {
   deployagent_count = 3
 }
 
-
 module "snet_deployagent" {
   source                = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/subnet?ref=7.0.0"
   name                  = "deployagents"

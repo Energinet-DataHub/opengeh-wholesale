@@ -14,8 +14,8 @@
 
 ###################################################################
 #
-# Install GitHub runner and other software dependencies
-# necessary for running our deployments
+# Install GitHub runner and other software dependencies necessary
+# for running our deployments.
 #
 # Parameters:
 #   $1: GitHub runner regitration token
@@ -23,6 +23,105 @@
 #
 ###################################################################
 
+##################################
+#
+# Set shell options
+# https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
+#
+##################################
+
+# Exit immediately if a pipeline (command, list of commands, compound command)
+# returns a non-zero status.
+set -e
+
+##################################
+#
+# Setup Python, a Python virtual environment manager and
+# python packages necessary for running Wholesale deployments.
+#
+# Preinstalled Python versions
+# ----------------------------
+# The current Ubuntu 18.04 image comes with:
+#  - Python 2.7.17
+#  - Python 3.6.9
+#
+# Most relevant tools
+# -------------------
+# 'python'
+#   If not used with 'pyenv' it will use Python 2.x
+# 'python3'
+#   If not used with 'pyenv' it will use Python 3.x
+# 'pip'
+#   A package installer for Python.
+# 'pyenv'
+#   A virtual environment manager for Python.
+#   See https://realpython.com/intro-to-pyenv/
+#
+# Concept
+# -------
+# To use Databricks CLI (commands) in deployments we need the
+# package 'databricks-cli' which must be installed by 'pip' using
+# Python 2.7.17 (the system version).
+#
+# To be able to use Python versions in isolation in deployments
+# we install 'pyenv' so we can shift between 'system' and any
+# specific Python version per deployment.
+#
+# To allow deployments to use other versions of Python we must
+# install these versions.
+#
+# In deployment we then use 'pyenv' to create virtual environments
+# using these Python versions.
+#
+# IMPORTANT: Ensure to delete any created environments after use
+# in the deployment.
+#
+##################################
+
+#
+# Python 2.x ('python')
+#
+
+# Test 'python' version
+python --version
+
+# Install 'pip' for 'python'
+sudo apt-get update
+sudo apt-get install -y python-pip
+
+# Install 'databricks-cli' for 'python' (the system version)
+pip install --upgrade databricks-cli
+
+#
+# Python virtual environments
+#
+
+# Install 'pyenv' build dependencies
+sudo apt-get update
+sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
+  libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \
+  libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl
+
+# Install 'pyenv'
+# See https://realpython.com/intro-to-pyenv/#installing-pyenv
+# or https://kolibri-dev.readthedocs.io/en/develop/howtos/installing_pyenv.html
+
+curl https://pyenv.run | bash
+
+# The output of the command tells us to add certain lines to our startup files for terminal sessions.
+# This will add 'pyenv' to path and initialize 'pyenv/pyenv-virtualenv' auto completion:
+#  - ~/.bashrc for interactive shells and ~./profile for login shells
+echo 'export PYENV_ROOT="$HOME/.pyenv"' | tee -a ~/.bashrc ~/.profile
+echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' | tee -a ~/.bashrc ~/.profile
+echo 'eval "$(pyenv init -)"' | tee -a ~/.bashrc ~/.profile
+echo 'eval "$(pyenv virtualenv-init -)"' | tee -a ~/.bashrc ~/.profile
+#  - For current shell session
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+pyenv install 3.9.7 # The version used by Wholesale wheel
 
 ##################################
 # Install Docker
@@ -61,7 +160,8 @@ sudo apt-get install -y \
 # See https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
 #
 
-sudo groupadd docker
+# COMMENTED because we get error: "groupadd: group 'docker' already exists"
+### sudo groupadd docker
 sudo usermod -aG docker $USER
 # IMPORTANT: GitHub runner service must be started AFTER this step for it to work
 
@@ -83,11 +183,12 @@ rm packages-microsoft-prod.deb
 # See https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#how-to-install-other-versions
 #
 
-# .NET SDK 5.0
-sudo apt-get update; \
-  sudo apt-get install -y apt-transport-https && \
-  sudo apt-get update && \
-  sudo apt-get install -y dotnet-sdk-5.0
+# COMMENTED because we don't expect we need .NET 5.0 anymore
+### # .NET SDK 5.0
+### sudo apt-get update; \
+###   sudo apt-get install -y apt-transport-https && \
+###   sudo apt-get update && \
+###   sudo apt-get install -y dotnet-sdk-5.0
 
 # .NET SDK 6.0
 sudo apt-get update; \
@@ -143,19 +244,6 @@ sudo apt-get install unzip
 sudo apt-get install -y jq
 
 #
-# Install pip
-#
-
-sudo apt install -y python-pip
-
-#
-# Install Databricks CLI on machine
-#
-
-pip install --upgrade databricks-cli
-
-
-#
 # Install Homebrew, reference: https://docs.brew.sh/Homebrew-on-Linux
 #
 NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -179,13 +267,13 @@ brew install fetch
 mkdir actions-runner && cd actions-runner
 
 # Download the latest runner package
-curl -o actions-runner-linux-x64-2.285.1.tar.gz -L https://github.com/actions/runner/releases/download/v2.285.1/actions-runner-linux-x64-2.285.1.tar.gz
+curl -o actions-runner-linux-x64-2.299.1.tar.gz -L https://github.com/actions/runner/releases/download/v2.299.1/actions-runner-linux-x64-2.299.1.tar.gz
 
 # Validate the hash
-echo '5fd98e1009ed13783d17cc73f13ea9a55f21b45ced915ed610d00668b165d3b2  actions-runner-linux-x64-2.285.1.tar.gz' | shasum -a 256 -c
+echo '147c14700c6cb997421b9a239c012197f11ea9854cd901ee88ead6fe73a72c74  actions-runner-linux-x64-2.299.1.tar.gz' | shasum -a 256 -c
 
 # Extract the installer
-tar xzf ./actions-runner-linux-x64-2.285.1.tar.gz
+tar xzf ./actions-runner-linux-x64-2.299.1.tar.gz
 
 #
 # Configure
