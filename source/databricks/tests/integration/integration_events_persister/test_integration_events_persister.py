@@ -15,7 +15,12 @@
 import os
 import shutil
 import pytest
+from unittest.mock import patch, Mock, MagicMock
 from package import integration_events_persister
+from package.integration_events_persister_streaming import (
+    start,
+    _get_valid_args_or_throw,
+)
 from tests.integration.utils import streaming_job_asserter
 
 
@@ -36,14 +41,14 @@ def integration_events_persister_tester(spark, data_lake_path):
     if os.path.exists(integration_events_checkpoint_path):
         shutil.rmtree(integration_events_checkpoint_path)
 
-    streamingDF = (
+    streaming_df = (
         spark.readStream.option("startingOffsets", "earliest")
         .format("json")
         .load(event_hub_streaming_simulation_path)
     )
 
     return integration_events_persister(
-        streamingDF,
+        streaming_df,
         integration_events_path,
         integration_events_checkpoint_path,
     )
@@ -59,3 +64,49 @@ async def test_process_json(parquet_reader, integration_events_persister_tester)
         integration_events_persister_tester, verification_function
     )
     assert succeeded, "No data was stored in Delta table"
+
+
+valid_command_line_args = [
+    "--data-storage-account-name",
+    "any-account-name",
+    "--data-storage-account-key",
+    "any-key",
+    "--event-hub-connectionstring",
+    "any-connection-string",
+    "--integration-events-path",
+    "any-path",
+    "--integration-events-checkpoint-path",
+    "any-checkpoint-path",
+]
+
+
+def test__get_valid_args_or_throw__accepts_correct_parameters(
+    data_lake_path, source_path, databricks_path
+):
+    # Act and Assert
+    _get_valid_args_or_throw(valid_command_line_args)
+
+
+def test__get_valid_args_or_throw__when_missing_args__raises_exception(
+    data_lake_path, source_path, databricks_path
+):
+    # Act
+    with pytest.raises(SystemExit) as excinfo:
+        _get_valid_args_or_throw([])
+
+    # Assert
+    assert excinfo.value.code == 2
+
+
+@patch("package.integration_events_persister_streaming._get_valid_args_or_throw")
+@patch("package.integration_events_persister_streaming.islocked")
+def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked, mock_args_parser):
+    # Arrange
+    mock_islocked.return_value = True
+
+    # Act
+    with pytest.raises(SystemExit) as excinfo:
+        start()
+
+    # Assert
+    assert excinfo.value.code == 3
