@@ -26,6 +26,7 @@ namespace Energinet.DataHub.Wholesale.DatabaseMigration
 
             SqlAuthenticationProvider.SetProvider(SqlAuthenticationMethod.ActiveDirectoryInteractive, new SqlAppAuthenticationProvider());
 
+            Console.WriteLine($"Performing upgrade on {connectionString}");
             var result = Upgrader.DatabaseUpgrade(connectionString);
 
             if (!result.Successful)
