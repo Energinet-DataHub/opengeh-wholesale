@@ -49,7 +49,7 @@ public class HealthCheckEndpointTests : FunctionAppTestBase<ProcessManagerFuncti
         actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
     }
 
-    [Fact]
+    [Fact(Skip = "There is currently no way to test DataLake containers.")]
     public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
     {
         // Arrange
