@@ -59,6 +59,7 @@ METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
+    static_metering_points_df,
     raw_integration_events_df,
     raw_time_series_points_df,
     batch_grid_areas_df,
@@ -85,6 +86,8 @@ def calculate_balance_fixing_total_production(
         period_start_datetime,
         period_end_datetime,
     )
+    metering_point_period_df.printSchema()
+    static_metering_points_df.printSchema()
 
     _check_all_grid_areas_have_metering_points(
         batch_grid_areas_df, metering_point_period_df
@@ -182,6 +185,51 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
 
     debug("Grid areas", grid_area_df.orderBy(col("GridAreaCode")))
     return grid_area_df
+
+def _get_metering_point_periods_from_static_datasource_df(
+    static_metering_points_df, grid_area_df,
+    period_start_datetime,
+    period_end_datetime,
+) -> DataFrame:
+    metering_point_periods_df = (static_metering_points_df.where(col("EffectiveDate") <= period_end_datetime)
+        .where(col("toEffectiveDate") >= period_start_datetime)
+        .where(
+            col("ConnectionState") == ConnectionState.connected.value
+        )  # Only aggregate when metering points is connected
+        .where(col("MeteringPointType") == MeteringPointType.production.value)
+        .where(col("EnergySupplierGln").isNotNull())
+        # Only aggregate when metering points have a energy supplier
+    )
+    debug(
+        "Metering point events before join with grid areas",
+        metering_point_periods_df.orderBy(col("storedTime").desc()),
+    )
+    # Only include metering points in the selected grid areas
+    metering_point_periods_df = metering_point_periods_df.join(
+        grid_area_df,
+        metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
+        "inner",
+    ).select(
+        "GsrnNumber",
+        "GridAreaCode",
+        "EffectiveDate",
+        "toEffectiveDate",
+        "MeteringPointType",
+        "SettlementMethod",
+        "FromGridAreaCode",
+        "ToGridAreaCode",
+        "Resolution",
+        "EnergySupplierGln",
+    )
+
+    debug(
+        "Metering point periods",
+        metering_point_periods_df.orderBy(
+            col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
+        ),
+    )
+
+    return metering_point_periods_df
 
 
 def _get_metering_point_periods_df(
@@ -298,7 +346,26 @@ def _get_metering_point_periods_df(
                 col("EnergySupplierGln"), last("EnergySupplierGln", True).over(window)
             ),
         )
-        .where(col("EffectiveDate") <= period_end_datetime)
+    )
+    metering_point_period_df.
+    
+    .select(
+        "MeteringPointId",
+        "MeteringPointType",
+        "SettlementMethod",
+        "GridArea",
+        "ConnectionState",
+        "Resolution",
+        "InGridArea",
+        "OutGridArea",
+        "ParentMeteringPointId",
+        "FromDate",
+        "ToDate",
+        "NumberOfTimeseries",
+        "EnergyQuantity"
+    ).write.option("header", "true").csv("staticmeteringpoints")
+    
+    metering_point_periods_df = (metering_point_periods_df.where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
             col("ConnectionState") == ConnectionState.connected.value

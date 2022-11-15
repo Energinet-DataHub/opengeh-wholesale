@@ -39,6 +39,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--integration-events-path", type=str, required=True)
+    p.add("--static_metering_points_path", type=str, required=True)
     p.add("--time-series-points-path", type=str, required=True)
     p.add("--process-results-path", type=str, required=True)
     p.add("--storage-container-path", type=str, required=True)
@@ -90,6 +91,7 @@ def _start_calculator(spark: SparkSession, args):
     raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
         args.time_series_points_path
     )
+    static_metering_points_df = spark.read.option("header", "true").csv(args.static_metering_points_path)
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
 
@@ -98,6 +100,7 @@ def _start_calculator(spark: SparkSession, args):
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing_total_production(
+        static_metering_points_df,
         raw_integration_events_df,
         raw_time_series_points_df,
         batch_grid_areas_df,
