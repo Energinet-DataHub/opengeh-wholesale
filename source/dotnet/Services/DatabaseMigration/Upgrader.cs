@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Reflection;
-using DbUp;
 using DbUp.Reboot;
 using DbUp.Reboot.Engine;
 
