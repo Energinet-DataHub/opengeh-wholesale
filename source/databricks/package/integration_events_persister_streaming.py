@@ -26,6 +26,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     )
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
+    p.add("--wholesale-container-name", type=str, required=True)
     p.add("--event-hub-connectionstring", type=str, required=True)
     p.add("--integration-events-path", type=str, required=True)
     p.add("--integration-events-checkpoint-path", type=str, required=True)
@@ -44,7 +45,11 @@ def _start(command_line_args: list[str]):
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    if islocked():
+    if islocked(
+        args.data_storage_account_name,
+        args.data_storage_account_key,
+        args.wholesale_container_name,
+    ):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 

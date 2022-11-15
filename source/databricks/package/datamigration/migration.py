@@ -20,6 +20,7 @@ from package import log, initialize_spark
 from .data_lake_file_manager import DataLakeFileManager
 from .uncommitted_migrations import get_uncommitted_migrations
 from .committed_migrations import upload_committed_migration
+from package.args_helper import valid_log_level
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
@@ -31,6 +32,11 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--wholesale-container-name", type=str, required=True)
+    p.add(
+        "--log-level",
+        type=valid_log_level,
+        help="debug|information",
+    )
 
     args, unknown_args = p.parse_known_args(command_line_args)
     if len(unknown_args):
