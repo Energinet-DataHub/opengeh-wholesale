@@ -77,6 +77,8 @@ valid_command_line_args = [
     "any-path",
     "--integration-events-checkpoint-path",
     "any-checkpoint-path",
+    "--log-level",
+    "information",
 ]
 
 
