@@ -14,6 +14,7 @@
 
 import sys
 from package import integration_events_persister, initialize_spark, log, db_logging
+from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
 import configargparse
 
@@ -28,6 +29,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     p.add("--event-hub-connectionstring", type=str, required=True)
     p.add("--integration-events-path", type=str, required=True)
     p.add("--integration-events-checkpoint-path", type=str, required=True)
+    p.add("--log-level", type=valid_log_level, help="debug|information", required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
