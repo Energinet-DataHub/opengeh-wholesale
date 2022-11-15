@@ -91,7 +91,8 @@ def _start_calculator(spark: SparkSession, args):
     raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
         args.time_series_points_path
     )
-    static_metering_points_df = spark.read.option("header", "true").csv(args.static_metering_points_path)
+    static_metering_points_df = raw_integration_events_df
+    # spark.read.option("header", "true").csv(args.static_metering_points_path)
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
 
