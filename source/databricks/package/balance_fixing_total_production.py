@@ -186,12 +186,14 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
     debug("Grid areas", grid_area_df.orderBy(col("GridAreaCode")))
     return grid_area_df
 
+
 def _get_metering_point_periods_from_static_datasource_df(
     static_metering_points_df, grid_area_df,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-    metering_point_periods_df = (static_metering_points_df.where(col("EffectiveDate") <= period_end_datetime)
+    metering_point_periods_df = (
+        static_metering_points_df.where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
             col("ConnectionState") == ConnectionState.connected.value
@@ -347,13 +349,15 @@ def _get_metering_point_periods_df(
             ),
         )
     )
-    metering_point_period_df.
-    
-    .select(
+
+    metering_point_periods_df.withColumnRename(
+        col("GridAreaLinkId"), "GridArea"
+    ).withColumn("InGridArea", "NULL").withColumn("OutGridArea", "NULL").withColumn(
+        "ParentMeteringPointId", "NULL"
+    ).select(
         "MeteringPointId",
         "MeteringPointType",
-        "SettlementMethod",
-        "GridArea",
+        "SettlementMethoGridAa",
         "ConnectionState",
         "Resolution",
         "InGridArea",
@@ -361,11 +365,14 @@ def _get_metering_point_periods_df(
         "ParentMeteringPointId",
         "FromDate",
         "ToDate",
-        "NumberOfTimeseries",
-        "EnergyQuantity"
-    ).write.option("header", "true").csv("staticmeteringpoints")
-    
-    metering_point_periods_df = (metering_point_periods_df.where(col("EffectiveDate") <= period_end_datetime)
+    ).write.option(
+        "header", "true"
+    ).csv(
+        "staticmeteringpoints"
+    )
+
+    metering_point_periods_df = (
+        metering_point_periods_df.where(col("EffectiveDate") <= period_end_datetime)
         .where(col("toEffectiveDate") >= period_start_datetime)
         .where(
             col("ConnectionState") == ConnectionState.connected.value
