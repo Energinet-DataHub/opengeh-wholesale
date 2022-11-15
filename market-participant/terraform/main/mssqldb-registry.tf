@@ -17,18 +17,20 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_market_participant" {
-  source                      = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v9"
+  source                              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v9"
 
-  name                        = "registry"
-  project_name                = var.domain_name_short
-  environment_short           = var.environment_short
-  environment_instance        = var.environment_instance
-  server_id                   = data.azurerm_mssql_server.mssqlsrv.id
-  log_analytics_workspace_id  = data.azurerm_key_vault_secret.log_shared_id.value
-  sql_server_name             = data.azurerm_mssql_server.mssqlsrv.name
-  elastic_pool_id             = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
+  name                                = "registry"
+  project_name                        = var.domain_name_short
+  environment_short                   = var.environment_short
+  environment_instance                = var.environment_instance
+  server_id                           = data.azurerm_mssql_server.mssqlsrv.id
+  log_analytics_workspace_id          = data.azurerm_key_vault_secret.log_shared_id.value
+  sql_server_name                     = data.azurerm_mssql_server.mssqlsrv.name
+  elastic_pool_id                     = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
+  monitor_alerts_action_group_id      = data.azurerm_key_vault_secret.primary_action_group_id.value
+  monitor_alerts_resource_group_name  = azurerm_resource_group.this.name
 
-  tags                        = azurerm_resource_group.this.tags
+  tags                                = azurerm_resource_group.this.tags
 }
 
 module "kvs_sql_ms_market_participant_database_name" {
