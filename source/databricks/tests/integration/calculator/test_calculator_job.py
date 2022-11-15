@@ -39,7 +39,12 @@ class DictObj:
 
 @pytest.fixture(scope="session")
 def test_data_job_parameters(
-    test_data, databricks_path, data_lake_path, timestamp_factory, worker_id
+    test_data,
+    databricks_path,
+    data_lake_path,
+    timestamp_factory,
+    worker_id,
+    json_test_files,
 ):
     "test_data parameter ensures that the corresponding test data has been created when using these corresponding job parameters"
     return DictObj(
@@ -47,7 +52,7 @@ def test_data_job_parameters(
             "data_storage_account_name": "foo",
             "data_storage_account_key": "foo",
             "integration_events_path": f"{data_lake_path}/{worker_id}/parquet_test_files/integration_events",
-            "static_metering_points_path": f"{data_lake_path}/{worker_id}/parquet_test_files/static_metering_points_path",
+            "static_metering_points_path": f"{json_test_files}/MeteringPointPeriods.csv",
             "time_series_points_path": f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points",
             "process_results_path": f"{data_lake_path}/{worker_id}/results",
             "batch_id": executed_batch_id,
