@@ -35,6 +35,7 @@ module "func_functionhost" {
     LOCAL_TIMEZONENAME                                                      = "Europe/Copenhagen"
     CURRENCY                                                                = "DKK"
     CHARGE_DB_CONNECTION_STRING                                             = local.MS_CHARGE_DB_CONNECTION_STRING
+    APPLICATIONINSIGHTS_CONNECTION_STRING                                   = data.azurerm_key_vault_secret.appi_shared_connection_string.value
     DOMAINEVENT_SENDER_CONNECTION_STRING                                    = data.azurerm_key_vault_secret.sb_domain_relay_send_connection_string.value
     DOMAINEVENT_MANAGER_CONNECTION_STRING                                   = data.azurerm_key_vault_secret.sb_domain_relay_manage_connection_string.value
     DOMAINEVENT_LISTENER_CONNECTION_STRING                                  = data.azurerm_key_vault_secret.sb_domain_relay_listen_connection_string.value
