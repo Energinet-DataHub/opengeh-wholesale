@@ -56,7 +56,6 @@ module "func_sender" {
     # Data Lake
     CALCULATION_STORAGE_CONNECTION_STRING                        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
     CALCULATION_STORAGE_CONTAINER_NAME                           = local.CALCULATION_STORAGE_CONTAINER_NAME
-    STORAGE_CONTAINER_NAME                                       = local.STORAGE_CONTAINER_NAME
   }
 
   tags                                  = azurerm_resource_group.this.tags

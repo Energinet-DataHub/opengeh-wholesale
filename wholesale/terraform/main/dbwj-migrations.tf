@@ -37,15 +37,10 @@ resource "databricks_job" "migrations_job" {
     python_wheel_task {
       package_name = "package"
       # The entry point is defined in setup.py
-      entry_point = "begin_migration"
+      entry_point = "migrate_data_lake"
       parameters  = [
           "--data-storage-account-name=${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}",
           "--data-storage-account-key=${data.azurerm_key_vault_secret.kvs_st_data_lake_primary_access_key.value}",
-          "--integration-events-path=abfss://${local.INTERGRATION_EVENTS_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/events",
-          "--process-results-path=abfss://${local.CALCULATION_STORAGE_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/results",
-          "--storage-container-path=abfss://${local.STORAGE_CONTAINER_NAME}@${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net/",
-          "--databricks-host=https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}",
-          "--databricks-token=${data.azurerm_key_vault_secret.dbw_databricks_workspace_token.value}",
           "--log-level=information"
       ]
     }

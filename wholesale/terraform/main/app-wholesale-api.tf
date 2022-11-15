@@ -34,7 +34,6 @@ module "app_wholesale_api" {
     FRONTEND_SERVICE_APP_ID                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)",
     CALCULATION_STORAGE_CONNECTION_STRING   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)",
     CALCULATION_STORAGE_CONTAINER_NAME      = local.CALCULATION_STORAGE_CONTAINER_NAME
-    STORAGE_CONTAINER_NAME                  = local.STORAGE_CONTAINER_NAME
   }
 
   connection_strings                        = [

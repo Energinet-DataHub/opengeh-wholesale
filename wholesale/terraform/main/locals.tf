@@ -13,9 +13,6 @@
 # limitations under the License.
 
 locals {
-    # Data Lake gen 2 container to contain the wholesale data outside SQL databases
-    STORAGE_CONTAINER_NAME                                             = "wholesale"
-
     CALCULATION_STORAGE_CONTAINER_NAME                                 = "processes"
 
     # Service Bus domain event subscriptions
