@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import configargparse
 import sys
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
@@ -25,8 +26,7 @@ from package import (
     db_logging,
 )
 from package.args_helper import valid_date, valid_list, valid_log_level
-
-import configargparse
+from package.datamigration import islocked
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
@@ -50,11 +50,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     p.add("--batch-grid-areas", type=valid_list, required=True)
     p.add("--batch-period-start-datetime", type=valid_date, required=True)
     p.add("--batch-period-end-datetime", type=valid_date, required=True)
-    p.add(
-        "--log-level",
-        type=valid_log_level,
-        help="debug|information",
-    )
+    p.add("--log-level", type=valid_log_level, help="debug|information", required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
@@ -153,6 +149,10 @@ def _start(command_line_args: list[str]):
     args = _get_valid_args_or_throw(command_line_args)
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
+
+    if islocked():
+        log("Exiting because storage is locked due to data migrations running.")
+        exit(3)
 
     spark = initialize_spark(
         args.data_storage_account_name, args.data_storage_account_key
