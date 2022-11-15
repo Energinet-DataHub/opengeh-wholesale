@@ -13,6 +13,18 @@
 # limitations under the License.
 output ms_metering_point_connection_string {
   description = "Connection string of the metering point database created in the shared server"
-  value       = local.MS_METERING_POINT_CONNECTION_STRING_SQL_AUTH
+  value       = local.MS_METERING_POINT_CONNECTION_STRING
   sensitive   = true
+}
+
+output "ms_metering_point_database_name" {
+  description = "Database name in the shared sql server"
+  value = module.mssqldb_meteringpoint.name
+  sensitive = true  
+}
+
+output "ms_metering_point_database_server" {
+  description = "Database server instance hosting the Meteringpoint database"
+  value = data.azurerm_key_vault_secret.mssql_data_url.value
+  sensitive = true  
 }
