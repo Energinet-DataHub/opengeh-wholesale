@@ -39,8 +39,6 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
         "foo",
         "--data-storage-account-key",
         "foo",
-        "--wholesale-container-name",
-        "foo",
     ]
 
     # Act and Assert
