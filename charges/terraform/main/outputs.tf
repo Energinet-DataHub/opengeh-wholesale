@@ -13,6 +13,18 @@
 # limitations under the License.
 output ms_charges_connection_string {
   description = "Connection string of the charges database created in the shared server"
-  value       = local.MS_CHARGE_DB_CONNECTION_STRING_SQL_AUTH
+  value       = local.MS_CHARGE_DB_CONNECTION_STRING
   sensitive   = true
+}
+
+output "ms_charges_database_name" {
+  description = "Database name in the shared sql server"
+  value = module.mssqldb_charges.name
+  sensitive = true  
+}
+
+output "ms_charges_database_server" {
+  description = "Database server instance hosting the Charges database"
+  value = data.azurerm_key_vault_secret.mssql_data_url.value
+  sensitive = true  
 }
