@@ -18,6 +18,10 @@ from io import StringIO
 import csv
 
 
+def get_storage_account_url(storage_account_name: str) -> str:
+    return f"https://{storage_account_name}.dfs.core.windows.net"
+
+
 class DataLakeFileManager:
     def __init__(
         self,
@@ -25,8 +29,9 @@ class DataLakeFileManager:
         data_storage_account_key: str,
         container_name: str,
     ):
+        data_storage_account_url = get_storage_account_url(data_storage_account_name)
         self.file_system_client = DataLakeServiceClient(
-            data_storage_account_name, data_storage_account_key
+            data_storage_account_url, data_storage_account_key
         ).get_file_system_client(container_name)
 
     def download_file(self, file_name: str) -> bytes:
