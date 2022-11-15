@@ -20,6 +20,9 @@ COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
 def download_committed_migrations(file_manager: DataLakeFileManager) -> list[str]:
     """Download file with migration state from datalake and return a list of already committed migrations"""
 
+    if not file_manager.exists_file(COMMITTED_MIGRATIONS_FILE_NAME):
+        return []
+
     csv_reader = file_manager.download_csv(COMMITTED_MIGRATIONS_FILE_NAME)
     committed_migrations = [row[0] for row in csv_reader]
     return committed_migrations
