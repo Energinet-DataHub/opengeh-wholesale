@@ -35,6 +35,7 @@ from pyspark.sql.functions import (
     sum,
 )
 from pyspark.sql.types import (
+    StringType,
     DecimalType,
 )
 from pyspark.sql.window import Window
@@ -86,6 +87,7 @@ def calculate_balance_fixing_total_production(
         period_start_datetime,
         period_end_datetime,
     )
+
     metering_point_period_df.printSchema()
     static_metering_points_df.printSchema()
 
@@ -188,7 +190,8 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
 
 
 def _get_metering_point_periods_from_static_datasource_df(
-    static_metering_points_df, grid_area_df,
+    static_metering_points_df,
+    grid_area_df,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
@@ -350,26 +353,53 @@ def _get_metering_point_periods_df(
         )
     )
 
-    metering_point_periods_df.withColumnRename(
-        col("GridAreaLinkId"), "GridArea"
-    ).withColumn("InGridArea", "NULL").withColumn("OutGridArea", "NULL").withColumn(
-        "ParentMeteringPointId", "NULL"
-    ).select(
-        "MeteringPointId",
-        "MeteringPointType",
-        "SettlementMethoGridAa",
-        "ConnectionState",
-        "Resolution",
-        "InGridArea",
-        "OutGridArea",
-        "ParentMeteringPointId",
-        "FromDate",
-        "ToDate",
-    ).write.option(
-        "header", "true"
-    ).csv(
-        "staticmeteringpoints"
-    )
+    # metering_point_periods_df.withColumnRenamed(
+    #     "GridAreaLinkId", "GridArea"
+    # ).withColumnRenamed("FromGridAreaCode", "InGridArea").withColumnRenamed(
+    #     "ToGridAreaCode", "OutGridArea"
+    # ).withColumnRenamed(
+    #     "toEffectiveDate", "ToDate"
+    # ).withColumnRenamed(
+    #     "EffectiveDate", "FromDate"
+    # ).withColumn(
+    #     "ParentMeteringPointId", lit(None).cast(StringType())
+    # ).withColumn(
+    #     "MeteringMethod", lit(None).cast(StringType())
+    # ).withColumn(
+    #     "NetSettlementGroup", lit(None).cast(StringType())
+    # ).withColumn(
+    #     "ParentMeteringPointId", lit(None).cast(StringType())
+    # ).withColumn(
+    #     "Unit", lit(None).cast(StringType())
+    # ).withColumn(
+    #     "Product", lit(None).cast(StringType())
+    # ).withColumn(
+    #     "NumberOfTimeseries", lit(None).cast(StringType())
+    # ).withColumn(
+    #     "EnergyQuantity", lit(None).cast(StringType())
+    # ).select(
+    #     "MeteringPointId",
+    #     "MeteringPointType",
+    #     "SettlementMethod",
+    #     "GridArea",
+    #     "ConnectionState",
+    #     "Resolution",
+    #     "InGridArea",
+    #     "OutGridArea",
+    #     "MeteringMethod",
+    #     "NetSettlementGroup",
+    #     "ParentMeteringPointId",
+    #     "Unit",
+    #     "Product",
+    #     "FromDate",
+    #     "ToDate",
+    #     "NumberOfTimeseries",
+    #     "EnergyQuantity",
+    # ).write.option(
+    #     "header", "true"
+    # ).csv(
+    #     "staticmeteringpoints1"
+    # )
 
     metering_point_periods_df = (
         metering_point_periods_df.where(col("EffectiveDate") <= period_end_datetime)
