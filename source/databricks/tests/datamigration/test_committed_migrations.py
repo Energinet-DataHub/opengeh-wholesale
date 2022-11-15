@@ -25,6 +25,21 @@ from package.datamigration.committed_migrations import (
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
+def test__download_committed_migrations__when_file_does_not_exist__returns_empty_list(
+    mock_file_manager,
+):
+    # Arrange
+    mock_file_manager.exists_file.return_value = False
+
+    # Act
+    migrations = download_committed_migrations(mock_file_manager)
+
+    # Assert
+    mock_file_manager.download_csv.assert_not_called()
+    assert len(migrations) == 0
+
+
+@patch("package.datamigration.committed_migrations.DataLakeFileManager")
 def test__download_committed_migrations__returns_correct_items(
     mock_file_manager,
 ):
@@ -110,7 +125,7 @@ def test__upload_committed_migration__when_unexpected_columns_in_csv__raise_exce
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
-def test__upload_committed_migration__when_file_is_emty__dont_try_downloading_csv(
+def test__upload_committed_migration__when_file_is_empty__dont_try_downloading_csv(
     mock_file_manager,
 ):
     # Arrange
