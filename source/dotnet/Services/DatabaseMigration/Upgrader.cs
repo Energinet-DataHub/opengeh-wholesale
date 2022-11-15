@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.Reflection;
-using DbUp;
-using DbUp.Engine;
+using DbUp.Reboot;
+using DbUp.Reboot.Engine;
 
 namespace Energinet.DataHub.Wholesale.DatabaseMigration
 {
