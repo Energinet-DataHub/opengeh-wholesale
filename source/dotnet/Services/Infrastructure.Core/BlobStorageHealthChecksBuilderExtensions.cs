@@ -12,31 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Files.DataLake;
+using Azure.Storage.Blobs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Core
 {
-    public static class DataLakeHealthChecksBuilderExtensions
+    public static class BlobStorageHealthChecksBuilderExtensions
     {
-        public static IHealthChecksBuilder AddDataLakeFileSystemCheck(this IHealthChecksBuilder builder, string connectionString, string token)
+        public static IHealthChecksBuilder AddBlobStorageContainerCheck(this IHealthChecksBuilder builder, string connectionString, string containerName)
         {
-            return builder.AddAsyncCheck("DataLakeFileSystem", async () =>
+            return builder.AddAsyncCheck("BlobStorageContainer", async () =>
             {
-                var client = new DataLakeFileSystemClient(connectionString, token);
+                var client = new BlobServiceClient(connectionString);
                 try
                 {
-                    var pathPageable = client.GetPathsAsync().ConfigureAwait(false);
+                    var containersPageable = client.GetBlobContainersAsync();
 
-                    // A check to see if contents can be enumerated.
-                    // No actual files are required to be present.
-                    await foreach (var unused in pathPageable)
+                    await foreach (var blobContainerItem in containersPageable)
                     {
-                        break;
+                        if (blobContainerItem.Name == containerName)
+                            return HealthCheckResult.Healthy();
                     }
 
-                    return HealthCheckResult.Healthy();
+                    return HealthCheckResult.Unhealthy();
                 }
                 catch (Exception)
                 {

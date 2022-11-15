@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
@@ -61,6 +62,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "processes");
+
+            // Create storage container - ought to be a Data Lake file system
+            var blobContainerClient = new BlobContainerClient(
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+
+            if (!await blobContainerClient.ExistsAsync())
+                await blobContainerClient.CreateAsync();
         }
 
         /// <inheritdoc/>

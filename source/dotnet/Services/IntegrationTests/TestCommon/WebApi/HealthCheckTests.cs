@@ -64,7 +64,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
             actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
         }
 
-        [Fact(Skip = "There is currently no way to test DataLake containers.")]
+        [Fact]
         public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
         {
             // Act
