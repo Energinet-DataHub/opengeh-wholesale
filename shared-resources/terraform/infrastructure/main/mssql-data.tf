@@ -25,6 +25,7 @@ module "mssql_data" {
   sql_version                     = "12.0"
   resource_group_name             = azurerm_resource_group.this.name
   location                        = azurerm_resource_group.this.location
+  monitor_alerts_action_group_id  = module.ag_primary.id
 
   administrator_login             = local.mssqlServerAdminName
   administrator_login_password    = random_password.mssql_administrator_login_password.result
