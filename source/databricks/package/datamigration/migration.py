@@ -17,6 +17,8 @@ import configargparse
 import importlib
 from pyspark.sql.session import SparkSession
 from package import log, initialize_spark
+from package.args_helper import valid_log_level
+from package.infrastructure import WHOLESALE_CONTAINER_NAME
 from .data_lake_file_manager import DataLakeFileManager
 from .uncommitted_migrations import get_uncommitted_migrations
 from .committed_migrations import upload_committed_migration
@@ -30,7 +32,11 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
 
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--wholesale-container-name", type=str, required=True)
+    p.add(
+        "--log-level",
+        type=valid_log_level,
+        help="debug|information",
+    )
 
     args, unknown_args = p.parse_known_args(command_line_args)
     if len(unknown_args):
@@ -64,7 +70,7 @@ def _migrate_data_lake(command_line_args: list[str]) -> None:
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
-        args.wholesale_container_name,
+        WHOLESALE_CONTAINER_NAME,
     )
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
