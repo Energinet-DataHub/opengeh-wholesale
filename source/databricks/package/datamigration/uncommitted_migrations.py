@@ -16,8 +16,10 @@ import sys
 import configargparse
 from configargparse import argparse
 from os import path, listdir
+from package.infrastructure import WHOLESALE_CONTAINER_NAME
 from .data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
+
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 MIGRATION_SCRIPTS_FOLDER_NAME = "migration_scripts"
@@ -36,7 +38,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--wholesale-container-name", type=str, required=True)
 
     known_args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
@@ -52,7 +53,7 @@ def _get_all_migrations() -> list[str]:
     script_names = []
     for file_name in file_names:
         name, extention = path.splitext(file_name)
-        if extention == ".py":
+        if extention == ".py" and name != "__init__":
             script_names.append(name)
 
     return script_names
@@ -64,7 +65,7 @@ def _print_count(command_line_args: list[str]) -> None:
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
-        args.wholesale_container_name,
+        WHOLESALE_CONTAINER_NAME,
     )
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)

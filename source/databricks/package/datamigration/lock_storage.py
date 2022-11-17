@@ -15,6 +15,7 @@ import sys
 from .data_lake_file_manager import DataLakeFileManager
 import configargparse
 from package import log
+from package.infrastructure import WHOLESALE_CONTAINER_NAME
 
 _LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"
 
@@ -27,7 +28,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
 
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--wholesale-container-name", type=str, required=True)
 
     args, unknown_args = p.parse_known_args(command_line_args)
     if len(unknown_args):
@@ -42,7 +42,7 @@ def _lock(args: list[str]) -> None:
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
-        args.wholesale_container_name,
+        WHOLESALE_CONTAINER_NAME,
     )
 
     file_manager.create_file(_LOCK_FILE_NAME)
@@ -53,31 +53,28 @@ def _unlock(args: list[str]) -> None:
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
-        args.wholesale_container_name,
+        WHOLESALE_CONTAINER_NAME,
     )
     file_manager.delete_file(_LOCK_FILE_NAME)
     log(f"deleted lock file: {_LOCK_FILE_NAME}")
 
 
-def _islocked(args: list[str]) -> bool:
+def islocked(storage_account_name: str, storage_account_key: str) -> bool:
     file_manager = DataLakeFileManager(
-        args.data_storage_account_name,
-        args.data_storage_account_key,
-        args.wholesale_container_name,
+        storage_account_name,
+        storage_account_key,
+        WHOLESALE_CONTAINER_NAME,
     )
     return file_manager.exists_file(_LOCK_FILE_NAME)
 
 
+# This method must remain parameterless because it will be called from the entry point when deployed.
 def lock():
     args = _get_valid_args_or_throw(sys.argv[1:])
     _lock(args)
 
 
+# This method must remain parameterless because it will be called from the entry point when deployed.
 def unlock():
     args = _get_valid_args_or_throw(sys.argv[1:])
     _unlock(args)
-
-
-def islocked() -> bool:
-    args = _get_valid_args_or_throw(sys.argv[1:])
-    return _islocked(args)

@@ -125,10 +125,10 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
         "foo",
         "--process-results-path",
         "foo",
-        "--storage-container-path",
-        "foo",
         "--time-zone",
         "Europe/Copenhagen",
+        "--log-level",
+        "information",
     ]
     command_line_args.extend(process_manager_parameters)
 
