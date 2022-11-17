@@ -27,11 +27,13 @@ def get_api_client(host, token):
 
 
 def stop_databricks_jobs(api_client, job_names_to_stop):
-    log("Inside stop_databricks_jobs")
     jobService = JobsService(api_client)
-    log("jobService")
     jobs_api = JobsApi(api_client)
     log("jobs_api")
+
+    jobs_list2 = jobs_api.list_jobs()
+    log("jobs_list2")
+    log(jobs_list2)
 
     jobs_list = jobs_api.list_jobs()["jobs"]  # get all information about all jobs
     log("jobs_list")
