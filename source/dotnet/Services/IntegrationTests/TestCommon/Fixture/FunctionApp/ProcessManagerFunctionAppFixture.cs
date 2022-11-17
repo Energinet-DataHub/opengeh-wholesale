@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics;
+using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -131,6 +132,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
             var sendDataAvailableWhenProcessCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
             await sendDataAvailableWhenProcessCompletedListener.AddTopicSubscriptionListenerAsync(DomainEventsTopic.Name, sendDataAvailableWhenProcessCompletedSubscriptionName);
             SendDataAvailableWhenProcessCompletedListener = new ServiceBusTestListener(sendDataAvailableWhenProcessCompletedListener);
+
+            // Create storage container - ought to be a Data Lake file system
+            var blobContainerClient = new BlobContainerClient(
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+
+            if (!await blobContainerClient.ExistsAsync())
+                await blobContainerClient.CreateAsync();
         }
 
         /// <inheritdoc/>

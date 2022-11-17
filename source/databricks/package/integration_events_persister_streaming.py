@@ -44,9 +44,10 @@ def _start(command_line_args: list[str]):
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    if islocked(args.data_storage_account_name, args.data_storage_account_key):
-        log("Exiting because storage is locked due to data migrations running.")
-        sys.exit(3)
+    # TODO: toggle comments below when islocked functionality works
+    # if islocked(args.data_storage_account_name, args.data_storage_account_key):
+    #     log("Exiting because storage is locked due to data migrations running.")
+    #     sys.exit(3)
 
     spark = initialize_spark(
         args.data_storage_account_name, args.data_storage_account_key
