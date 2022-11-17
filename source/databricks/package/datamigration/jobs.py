@@ -22,12 +22,10 @@ from package import (
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
-    log("start get_valid_args_or_throw")
     p = configargparse.ArgParser(
         description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
-    log("end get_valid_args_or_throw")
 
     # Infrastructure settings
     p.add("--databricks-host", type=str, required=True)
@@ -53,9 +51,9 @@ def _stop_db_jobs(command_line_args: list[str]):
 
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
-    log("---api-client---start")
+
     api_client = get_api_client(args.databricks_host, args.databricks_token)
-    log("---api-client---end")
+
     jobs_to_stop = ["CalculatorJob", "IntegrationEventsPersisterStreamingJob"]
     log("job to stop")
     stop_databricks_jobs(api_client, jobs_to_stop)
