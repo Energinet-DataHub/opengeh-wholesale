@@ -40,7 +40,6 @@ from tests.contract_utils import (
     read_contract,
     get_message_type,
 )
-import os
 
 # Factory defaults
 grid_area_code = "805"
@@ -719,28 +718,3 @@ def test__energy_supplier_changed_message_type__matches_contract(
     )
 
     assert ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE == contract_message_type
-
-
-def test_that_static_metering_points_works(
-    databricks_path,
-    spark,
-    grid_area_df,
-):
-    metering_points_periods_df = spark.read.option("header", "true").csv(
-        f"{databricks_path}/package/datasources/MeteringPoints.csv"
-    )
-    market_roles_periods_df = spark.read.option("header", "true").csv(
-        f"{databricks_path}/package/datasources/MarketRolesPeriods.csv"
-    )
-    period_start_datetime = datetime.strptime("01/01/2018 00:00", "%d/%m/%Y %H:%M")
-    period_end_datetime = datetime.strptime("01/03/2018 22:00", "%d/%m/%Y %H:%M")
-
-    actual = _get_metering_point_periods_from_static_datasource_df(
-        metering_points_periods_df,
-        market_roles_periods_df,
-        grid_area_df,
-        period_start_datetime,
-        period_end_datetime,
-    )
-
-    assert actual.count() > 1
