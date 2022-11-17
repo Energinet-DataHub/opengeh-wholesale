@@ -57,6 +57,7 @@ module "func_functionhost" {
     CHARGE_INFORMATION_OPERATIONS_ACCEPTED_PUBLISH_SUBSCRIPTION_NAME        = module.sbtsub-charges-info-operations-accepted-publish.name
     CHARGE_INFORMATION_OPERATIONS_ACCEPTED_SUBSCRIPTION_NAME                = module.sbtsub-charges-info-operations-accepted.name
     CHARGE_INFORMATION_OPERATIONS_ACCEPTED_PERSIST_MESSAGE_SUBSCRIPTION_NAME= module.sbtsub-charges-info-operations-accepted-persist.name
+    CHARGE_INFORMATION_OPERATIONS_ACCEPTED_PERSIST_HISTORY_SUBSCRIPTION_NAME= module.sbtsub-charges-info-operations-accepted-persist-hi.name
     CHARGE_INFORMATION_OPERATIONS_REJECTED_SUBSCRIPTION_NAME                = module.sbtsub-charges-info-operations-rejected.name
 
     CHARGE_PRICE_COMMAND_RECEIVED_SUBSCRIPTION_NAME                         = module.sbtsub-charges-price-command-received.name

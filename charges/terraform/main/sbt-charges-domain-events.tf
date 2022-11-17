@@ -74,6 +74,17 @@ module "sbtsub-charges-info-operations-accepted-persist" {
   }
 }
 
+module "sbtsub-charges-info-operations-accepted-persist-hi" {
+  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
+  name                = "info-operations-accepted-persist-hi"
+  project_name        = var.domain_name_short
+  topic_id            = module.sbt_charges_domain_events.id
+  max_delivery_count  = 1
+  correlation_filter  = {
+    label = "ChargeInformationOperationsAcceptedEvent"
+  }
+}
+
 module "sbtsub-charges-info-operations-rejected" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
   name                = "info-operations-rejected"
