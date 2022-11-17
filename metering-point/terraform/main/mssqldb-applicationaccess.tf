@@ -18,7 +18,6 @@ module "mssql_database_application_access" {
   database_name           = module.mssqldb_meteringpoint.name
   application_hosts_names = [
                               module.app_webapi.name,
-                              module.func_actor_sync.name,
                               module.func_ingestion.name,
                               module.func_localmessagehub.name,
                               module.func_outbox.name,
@@ -27,7 +26,6 @@ module "mssql_database_application_access" {
 
   depends_on              = [
                               module.app_webapi.name,
-                              module.func_actor_sync.name,
                               module.func_ingestion.name,
                               module.func_localmessagehub.name,
                               module.func_outbox.name,

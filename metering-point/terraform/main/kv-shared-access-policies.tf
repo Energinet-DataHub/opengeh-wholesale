@@ -32,13 +32,6 @@ module "kv_shared_access_policy_func_outbox" {
   app_identity              = module.func_outbox.identity.0
 }
 
-module "kv_shared_access_policy_func_actor_sync" {
-  source                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-access-policy?ref=6.1.0"
-
-  key_vault_id              = data.azurerm_key_vault.kv_shared_resources.id
-  app_identity              = module.func_actor_sync.identity.0
-}
-
 module "kv_shared_access_policy_func_processing" {
   source                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-access-policy?ref=6.1.0"
 

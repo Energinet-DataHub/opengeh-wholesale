@@ -18,12 +18,10 @@ module "mssql_database_application_access" {
   sql_server_name         = data.azurerm_mssql_server.mssqlsrv.name
   database_name           = module.mssqldb_marketroles.name
   application_hosts_names = [
-                              module.func_actor_sync.name,
                               module.func_receiver.name,
                               module.func_processing.name,
                             ] 
   depends_on              = [
-                              module.func_actor_sync.name,
                               module.func_receiver.name,
                               module.func_processing.name,
                             ]
