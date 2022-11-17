@@ -34,6 +34,8 @@ module "app_webapi" {
     FRONTEND_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)",
     FRONTEND_SERVICE_APP_ID = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)",
     LOCAL_TIMEZONENAME = "Europe/Copenhagen",
+    DOMAIN_EVENTS_TOPIC_NAME = "sbt-charges-domain-events",
+    INTEGRATIONEVENT_SENDER_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
   }
 
   connection_strings = [
