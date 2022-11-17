@@ -16,13 +16,13 @@ using Azure.Storage.Files.DataLake;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Wholesale.Sender.Monitor
+namespace Energinet.DataHub.Wholesale.Infrastructure.Core
 {
     public static class DataLakeHealthChecksBuilderExtensions
     {
-        public static IHealthChecksBuilder AddDataLakeCheck(this IHealthChecksBuilder builder, string connectionString, string token)
+        public static IHealthChecksBuilder AddDataLakeFileSystemCheck(this IHealthChecksBuilder builder, string connectionString, string token)
         {
-            return builder.AddAsyncCheck("DataLake", async () =>
+            return builder.AddAsyncCheck("DataLakeFileSystem", async () =>
             {
                 var client = new DataLakeFileSystemClient(connectionString, token);
                 try
