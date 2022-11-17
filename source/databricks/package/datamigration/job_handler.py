@@ -30,10 +30,9 @@ def stop_databricks_jobs(api_client, job_names_to_stop):
     jobService = JobsService(api_client)
     jobs_api = JobsApi(api_client)
     log("jobs_api")
-
-    jobs_list2 = jobs_api.list_jobs()
-    log("jobs_list2")
-    log(jobs_list2)
+    t = jobs_api.get_job("744282615575704")
+    log("job_get2")
+    log(t)
 
     jobs_list = jobs_api.list_jobs()["jobs"]  # get all information about all jobs
     log("jobs_list")
