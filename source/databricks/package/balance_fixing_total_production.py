@@ -189,8 +189,6 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
     return grid_area_df
 
 
-# MeteringPointId,MeteringPointType,SettlementMethod,GridArea,ConnectionState,Resolution,InGridArea,OutGridArea,MeteringMethod,NetSettlementGroup,ParentMeteringPointId,Unit,Product,FromDate,ToDate,NumberOfTimeseries,EnergyQuantity
-# EnergySupplierId,MeteringPointId,FromDate,ToDate,grid area,
 def _get_metering_point_periods_from_static_datasource_df(
     static_metering_points_df,
     static_market_roles_periods_df,
@@ -204,24 +202,16 @@ def _get_metering_point_periods_from_static_datasource_df(
         "inner",
     )
 
-    # metering_points_in_grid_area.show()
-
     metering_point_periods_df = (
         metering_points_in_grid_area.where(col("FromDate") <= period_end_datetime)
         .where(col("ToDate") >= period_start_datetime)
-        .where(
-            col("ConnectionState") == "E22"
-        )  # Only aggregate when metering points is connected
-        .where(col("MeteringPointType") == "E18")
+        .where(col("ConnectionState") == "E22")  # Connected
+        .where(col("MeteringPointType") == "E18")  # Production
     )
 
     market_roles_periods_df = static_market_roles_periods_df.where(
         col("FromDate") <= period_end_datetime
     ).where(col("ToDate") >= period_start_datetime)
-
-    # metering_point_periods_df.show()
-
-    # market_roles_periods_df.show()
 
     metering_point_periods_with_energy_supplier = metering_point_periods_df.join(
         market_roles_periods_df,
@@ -229,7 +219,7 @@ def _get_metering_point_periods_from_static_datasource_df(
         == market_roles_periods_df["MeteringPointId"],
         "left",
     ).select(
-        metering_point_periods_df["MeteringPointId"],
+        metering_point_periods_df["MeteringPointId"].alias("GsrnNumber"),
         "GridAreaCode",
         metering_point_periods_df["FromDate"],
         metering_point_periods_df["ToDate"],
@@ -240,7 +230,6 @@ def _get_metering_point_periods_from_static_datasource_df(
         "Resolution",
         market_roles_periods_df["EnergySupplierId"].alias("EnergySupplierGln"),
     )
-    metering_point_periods_with_energy_supplier.show()
 
     debug(
         "Metering point events before join with grid areas",
