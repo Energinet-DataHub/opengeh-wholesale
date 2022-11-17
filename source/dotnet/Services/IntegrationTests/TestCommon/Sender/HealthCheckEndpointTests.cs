@@ -33,7 +33,7 @@ public class HealthCheckEndpointTests : FunctionAppTestBase<SenderFunctionAppFix
     {
     }
 
-    [Fact(Skip = "There is currently no way to test DataLake containers.")]
+    [Fact]
     public async Task When_RequestLivenessStatus_Then_ResponseIsOkAndHealthy()
     {
         // Arrange
@@ -49,7 +49,7 @@ public class HealthCheckEndpointTests : FunctionAppTestBase<SenderFunctionAppFix
         actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
     }
 
-    [Fact(Skip = "There is currently no way to test DataLake containers.")]
+    [Fact]
     public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
     {
         // Arrange

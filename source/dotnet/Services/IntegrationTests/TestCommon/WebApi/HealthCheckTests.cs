@@ -67,7 +67,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
         [Fact]
         public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
         {
-            // Arrange + Act
+            // Act
             var actualResponse = await _client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
 
             // Assert
