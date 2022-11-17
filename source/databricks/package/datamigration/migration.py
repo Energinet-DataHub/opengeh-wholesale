@@ -26,7 +26,7 @@ from .committed_migrations import upload_committed_migration
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
     p = configargparse.ArgParser(
-        description="Apply uncommitted migations",
+        description="Apply uncommitted migrations",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 

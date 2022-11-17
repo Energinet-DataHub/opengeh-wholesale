@@ -21,6 +21,7 @@ setup(
     long_description_content_type="text/markdown",
     license="MIT",
     packages=find_packages(),
+    include_package_data=True,  # Include files listed in MANIFEST.in
     install_requires=[
         "ConfigArgParse==1.5.3",
         "pyspark==3.3.0",
