@@ -22,6 +22,7 @@ from package import (
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
+    log("Inside get_valid_args_or_throw")
     p = configargparse.ArgParser(
         description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
