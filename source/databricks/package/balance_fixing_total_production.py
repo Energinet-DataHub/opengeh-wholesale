@@ -189,52 +189,72 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
     return grid_area_df
 
 
+# MeteringPointId,MeteringPointType,SettlementMethod,GridArea,ConnectionState,Resolution,InGridArea,OutGridArea,MeteringMethod,NetSettlementGroup,ParentMeteringPointId,Unit,Product,FromDate,ToDate,NumberOfTimeseries,EnergyQuantity
+# EnergySupplierId,MeteringPointId,FromDate,ToDate,grid area,
 def _get_metering_point_periods_from_static_datasource_df(
     static_metering_points_df,
+    static_market_roles_periods_df,
     grid_area_df,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-    metering_point_periods_df = (
-        static_metering_points_df.where(col("EffectiveDate") <= period_end_datetime)
-        .where(col("toEffectiveDate") >= period_start_datetime)
-        .where(
-            col("ConnectionState") == ConnectionState.connected.value
-        )  # Only aggregate when metering points is connected
-        .where(col("MeteringPointType") == MeteringPointType.production.value)
-        .where(col("EnergySupplierGln").isNotNull())
-        # Only aggregate when metering points have a energy supplier
-    )
-    debug(
-        "Metering point events before join with grid areas",
-        metering_point_periods_df.orderBy(col("storedTime").desc()),
-    )
-    # Only include metering points in the selected grid areas
-    metering_point_periods_df = metering_point_periods_df.join(
+    metering_points_in_grid_area = static_metering_points_df.join(
         grid_area_df,
-        metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
+        static_metering_points_df["GridArea"] == grid_area_df["GridAreaCode"],
         "inner",
+    )
+
+    # metering_points_in_grid_area.show()
+
+    metering_point_periods_df = (
+        metering_points_in_grid_area.where(col("FromDate") <= period_end_datetime)
+        .where(col("ToDate") >= period_start_datetime)
+        .where(
+            col("ConnectionState") == "E22"
+        )  # Only aggregate when metering points is connected
+        .where(col("MeteringPointType") == "E18")
+    )
+
+    market_roles_periods_df = static_market_roles_periods_df.where(
+        col("FromDate") <= period_end_datetime
+    ).where(col("ToDate") >= period_start_datetime)
+
+    # metering_point_periods_df.show()
+
+    # market_roles_periods_df.show()
+
+    metering_point_periods_with_energy_supplier = metering_point_periods_df.join(
+        market_roles_periods_df,
+        metering_point_periods_df["MeteringPointId"]
+        == market_roles_periods_df["MeteringPointId"],
+        "left",
     ).select(
-        "GsrnNumber",
+        metering_point_periods_df["MeteringPointId"],
         "GridAreaCode",
-        "EffectiveDate",
-        "toEffectiveDate",
+        metering_point_periods_df["FromDate"],
+        metering_point_periods_df["ToDate"],
         "MeteringPointType",
         "SettlementMethod",
-        "FromGridAreaCode",
-        "ToGridAreaCode",
+        metering_point_periods_df["InGridArea"].alias("FromGridAreaCode"),
+        metering_point_periods_df["OutGridArea"].alias("ToGridAreaCode"),
         "Resolution",
-        "EnergySupplierGln",
+        market_roles_periods_df["EnergySupplierId"].alias("EnergySupplierGln"),
+    )
+    metering_point_periods_with_energy_supplier.show()
+
+    debug(
+        "Metering point events before join with grid areas",
+        metering_point_periods_df.orderBy(col("FromDate").desc()),
     )
 
     debug(
         "Metering point periods",
         metering_point_periods_df.orderBy(
-            col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
+            col("GridAreaCode"), col("MeteringPointId"), col("FromDate")
         ),
     )
 
-    return metering_point_periods_df
+    return metering_point_periods_with_energy_supplier
 
 
 def _get_metering_point_periods_df(
@@ -352,54 +372,6 @@ def _get_metering_point_periods_df(
             ),
         )
     )
-
-    # metering_point_periods_df.withColumnRenamed(
-    #     "GridAreaLinkId", "GridArea"
-    # ).withColumnRenamed("FromGridAreaCode", "InGridArea").withColumnRenamed(
-    #     "ToGridAreaCode", "OutGridArea"
-    # ).withColumnRenamed(
-    #     "toEffectiveDate", "ToDate"
-    # ).withColumnRenamed(
-    #     "EffectiveDate", "FromDate"
-    # ).withColumn(
-    #     "ParentMeteringPointId", lit(None).cast(StringType())
-    # ).withColumn(
-    #     "MeteringMethod", lit(None).cast(StringType())
-    # ).withColumn(
-    #     "NetSettlementGroup", lit(None).cast(StringType())
-    # ).withColumn(
-    #     "ParentMeteringPointId", lit(None).cast(StringType())
-    # ).withColumn(
-    #     "Unit", lit(None).cast(StringType())
-    # ).withColumn(
-    #     "Product", lit(None).cast(StringType())
-    # ).withColumn(
-    #     "NumberOfTimeseries", lit(None).cast(StringType())
-    # ).withColumn(
-    #     "EnergyQuantity", lit(None).cast(StringType())
-    # ).select(
-    #     "MeteringPointId",
-    #     "MeteringPointType",
-    #     "SettlementMethod",
-    #     "GridArea",
-    #     "ConnectionState",
-    #     "Resolution",
-    #     "InGridArea",
-    #     "OutGridArea",
-    #     "MeteringMethod",
-    #     "NetSettlementGroup",
-    #     "ParentMeteringPointId",
-    #     "Unit",
-    #     "Product",
-    #     "FromDate",
-    #     "ToDate",
-    #     "NumberOfTimeseries",
-    #     "EnergyQuantity",
-    # ).write.option(
-    #     "header", "true"
-    # ).csv(
-    #     "staticmeteringpoints1"
-    # )
 
     metering_point_periods_df = (
         metering_point_periods_df.where(col("EffectiveDate") <= period_end_datetime)
