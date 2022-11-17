@@ -119,7 +119,7 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
         "foo",
         "--integration-events-path",
         "foo",
-        "--static_metering_points_path",
+        "--static-metering-points-path",
         "foo",
         "--time-series-points-path",
         "foo",

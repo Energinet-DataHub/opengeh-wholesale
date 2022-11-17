@@ -39,4 +39,3 @@ def initialize_spark(
         )
 
     return SparkSession.builder.config(conf=spark_conf).getOrCreate()
-1
