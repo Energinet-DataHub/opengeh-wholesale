@@ -18,6 +18,7 @@ import pytest
 from package.balance_fixing_total_production import (
     _get_metering_point_periods_from_static_datasource_df,
 )
+from pyspark.sql.functions import col
 import os
 
 
@@ -57,4 +58,8 @@ def test_metering_points_have_energy_supplier(
         period_end_datetime,
     )
 
-    assert actual.count() > 1
+    actual_mps_without_energy_supplier = actual.filter(
+        col("EnergySupplierGln").isNull()
+    )
+
+    assert actual_mps_without_energy_supplier.count() == 0
