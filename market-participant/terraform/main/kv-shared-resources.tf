@@ -21,16 +21,6 @@ data "azurerm_key_vault_secret" "appi_shared_instrumentation_key" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "mssql_data_admin_name" {
-  name         = "mssql-data-admin-user-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "mssql_data_admin_password" {
-  name         = "mssql-data-admin-user-password"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "mssql_data_url" {
   name         = "mssql-data-url"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
