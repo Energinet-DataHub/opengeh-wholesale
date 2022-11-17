@@ -61,6 +61,7 @@ METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
 
 def calculate_balance_fixing_total_production(
     static_metering_points_df,
+    static_market_roles_df,
     raw_integration_events_df,
     raw_time_series_points_df,
     batch_grid_areas_df,
@@ -81,15 +82,20 @@ def calculate_balance_fixing_total_production(
 
     grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df)
 
-    metering_point_period_df = _get_metering_point_periods_df(
-        cached_integration_events_df,
+    # metering_point_period_df = _get_metering_point_periods_df(
+    #     cached_integration_events_df,
+    #     grid_area_df,
+    #     period_start_datetime,
+    #     period_end_datetime,
+    # )
+
+    metering_point_period_df = _get_metering_point_periods_from_static_datasource_df(
+        static_metering_points_df,
+        static_market_roles_df,
         grid_area_df,
         period_start_datetime,
         period_end_datetime,
     )
-
-    metering_point_period_df.printSchema()
-    static_metering_points_df.printSchema()
 
     _check_all_grid_areas_have_metering_points(
         batch_grid_areas_df, metering_point_period_df
@@ -123,7 +129,7 @@ def _check_all_grid_areas_have_metering_points(
     distinct_grid_areas_rows_df = metering_point_period_df.select(
         "GridAreaCode"
     ).distinct()
-
+    distinct_grid_areas_rows_df.show()
     grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
         distinct_grid_areas_rows_df, "GridAreaCode", "leftanti"
     )
@@ -196,11 +202,13 @@ def _get_metering_point_periods_from_static_datasource_df(
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
+    # static_market_roles_periods_df.show()
     metering_points_in_grid_area = static_metering_points_df.join(
         grid_area_df,
         static_metering_points_df["GridArea"] == grid_area_df["GridAreaCode"],
         "inner",
     )
+    # metering_points_in_grid_area.show()
 
     metering_point_periods_df = (
         metering_points_in_grid_area.where(col("FromDate") <= period_end_datetime)
@@ -208,11 +216,11 @@ def _get_metering_point_periods_from_static_datasource_df(
         .where(col("ConnectionState") == "E22")  # Connected
         .where(col("MeteringPointType") == "E18")  # Production
     )
-
+    # metering_point_periods_df.show()
     market_roles_periods_df = static_market_roles_periods_df.where(
         col("FromDate") <= period_end_datetime
     ).where(col("ToDate") >= period_start_datetime)
-
+    # market_roles_periods_df.show()
     metering_point_periods_with_energy_supplier = metering_point_periods_df.join(
         market_roles_periods_df,
         metering_point_periods_df["MeteringPointId"]
@@ -221,8 +229,8 @@ def _get_metering_point_periods_from_static_datasource_df(
     ).select(
         metering_point_periods_df["MeteringPointId"].alias("GsrnNumber"),
         "GridAreaCode",
-        metering_point_periods_df["FromDate"],
-        metering_point_periods_df["ToDate"],
+        metering_point_periods_df["FromDate"].alias("EffectiveDate"),
+        metering_point_periods_df["ToDate"].alias("toEffectiveDate"),
         "MeteringPointType",
         "SettlementMethod",
         metering_point_periods_df["InGridArea"].alias("FromGridAreaCode"),
