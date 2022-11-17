@@ -22,7 +22,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "wholesale_calculator_job
   
   data_source_id            = data.azurerm_key_vault_secret.log_shared_id.value
   description               = "One or more calculation jobs has failed"
-  enabled                   = true
+  # Currently disabled as some failures are expected and we don't want false alerts
+  # Besides, the batch overview page in the front-end shows failed status
+  enabled                   = false
   query                     = <<-QUERY
   DatabricksJobs 
 | where OperationName == "Microsoft.Databricks/jobs/runFailed"
