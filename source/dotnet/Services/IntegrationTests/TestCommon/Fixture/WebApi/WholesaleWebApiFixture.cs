@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Storage.Blobs;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
@@ -22,10 +24,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
 {
     public class WholesaleWebApiFixture : WebApiFixture
     {
-        public AuthorizationConfiguration AuthorizationConfiguration { get; }
-
         public WholesaleWebApiFixture()
         {
+            AzuriteManager = new AzuriteManager();
             DatabaseManager = new WholesaleDatabaseManager();
             AuthorizationConfiguration = new AuthorizationConfiguration(
                 "u002",
@@ -33,7 +34,11 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
                 "AZURE_SECRETS_KEYVAULT_URL");
         }
 
+        public AuthorizationConfiguration AuthorizationConfiguration { get; }
+
         public WholesaleDatabaseManager DatabaseManager { get; }
+
+        private AzuriteManager AzuriteManager { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureEnvironment()
@@ -43,6 +48,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
         /// <inheritdoc/>
         protected override async Task OnInitializeWebApiDependenciesAsync(IConfiguration localSettingsSnapshot)
         {
+            AzuriteManager.StartAzurite();
             await DatabaseManager.CreateDatabaseAsync();
 
             // Overwrites the setting so the Web Api app uses the database we have control of in the test
@@ -56,11 +62,20 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "processes");
+
+            // Create storage container - ought to be a Data Lake file system
+            var blobContainerClient = new BlobContainerClient(
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+
+            if (!await blobContainerClient.ExistsAsync())
+                await blobContainerClient.CreateAsync();
         }
 
         /// <inheritdoc/>
         protected override Task OnDisposeWebApiDependenciesAsync()
         {
+            AzuriteManager.Dispose();
             return DatabaseManager.DeleteDatabaseAsync();
         }
     }
