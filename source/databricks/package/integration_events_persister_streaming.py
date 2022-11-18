@@ -17,7 +17,7 @@ from package import integration_events_persister, initialize_spark, log, db_logg
 from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
 import configargparse
-from azure.storage.filedatalake import DataLakeServiceClient
+from azure.storage.filedatalake import DataLakeServiceClient, DataLakeFileClient
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
@@ -128,7 +128,7 @@ def exists(file_client: DataLakeFileClient):
     try:
         file_client.get_file_properties()
         return True
-    except ResourceNotFoundError:
+    except Exception:
         return False
 
 
