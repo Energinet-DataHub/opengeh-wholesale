@@ -42,10 +42,10 @@ def grid_area_df(spark):
 #     grid_area_df,
 # ):
 #     metering_points_periods_df = spark.read.option("header", "true").csv(
-#         f"{databricks_path}/package/datasources/MeteringPointsPeriods.csv"
+#         f"{databricks_path}/tests/integration/test_files/MeteringPointsPeriods.csv"
 #     )
 #     market_roles_periods_df = spark.read.option("header", "true").csv(
-#         f"{databricks_path}/package/datasources/MarketRolesPeriods.csv"
+#         f"{databricks_path}/tests/integration/test_files/MarketRolesPeriods.csv"
 #     )
 #     period_start_datetime = datetime.strptime("01/01/2018 00:00", "%d/%m/%Y %H:%M")
 #     period_end_datetime = datetime.strptime("01/03/2018 22:00", "%d/%m/%Y %H:%M")
