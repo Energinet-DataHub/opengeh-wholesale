@@ -100,18 +100,8 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contracts" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\..\..\contracts\calculation-file-paths.yml">
       <Link>Infrastructure\BasisData\calculation-file-paths.yml</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\..\contracts\market-participant-domain\energy-supplier-changed.json">
-      <Link>IntegrationEventListener\MarketParticipant\energy-supplier-changed.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 
