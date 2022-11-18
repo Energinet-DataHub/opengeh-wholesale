@@ -58,13 +58,16 @@ def _start(command_line_args: list[str]):
     # except Exception:
     #     log("Exception occured in 'islocked' (processes).")
 
-    create_file_and_check_existance(
+
+
+      create_file_and_check_existance(
+          args.data_storage_account_name, args.data_storage_account_key
+          )
+            spark = initialize_spark(
         args.data_storage_account_name, args.data_storage_account_key
     )
 
-    spark = initialize_spark(
-        args.data_storage_account_name, args.data_storage_account_key
-    )
+
 
     input_configuration = {}
     input_configuration[
@@ -84,8 +87,7 @@ def _start(command_line_args: list[str]):
     )
 
 
-def create_file_and_check_existance(
-    data_storage_account_name, data_storage_account_key
+def create_file_and_check_existance(data_storage_account_name, data_storage_account_key
 ):
     data_storage_account_url = (
         f"https://{data_storage_account_name}.dfs.core.windows.net"
@@ -106,16 +108,31 @@ def create_file_and_check_existance(
     file_system_client = service_client.get_file_system_client(file_system_name)
 
     file_name = "my_file.txt"
-    file_client = file_system_client.create_file(file_name)
+    file_client = file_system_client.get_file_client(file_name)
+
+    file_exists = exists(file_client)
+
+    log(f"file_exists={file_exists}")
+
+    file_exists_new = file_system_client.create_file(file_name)
 
     log("File created")
 
-    file_client = file_system_client.get_file_client(file_name)
-    file_client.create_file()
+    file_exists = exists(file_exists_new)
 
-    file_exists = file_client.exists()
     log(f"file_exists={file_exists}")
 
+
+#     file_exists = file_client.exists()
+#     log(f"file_exists={file_exists}")
+
+
+def exists(file_client: DataLakeFileClient):
+    try:
+        file_client.get_file_properties()
+        return True
+    except ResourceNotFoundError:
+        return False
 
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
