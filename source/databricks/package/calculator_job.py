@@ -159,7 +159,7 @@ def _start(command_line_args: list[str]):
             args.data_storage_account_name, args.data_storage_account_key
         )
         log(f"islocked={is_locked}")
-    except:
+    except Exception:
         log("Exception occured in 'islocked'.")
 
     spark = initialize_spark(
