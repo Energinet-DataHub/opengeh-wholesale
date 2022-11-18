@@ -63,7 +63,7 @@ def islocked(storage_account_name: str, storage_account_key: str) -> bool:
     file_manager = DataLakeFileManager(
         storage_account_name,
         storage_account_key,
-        WHOLESALE_CONTAINER_NAME,
+        "processes",
     )
     return file_manager.exists_file(_LOCK_FILE_NAME)
 
