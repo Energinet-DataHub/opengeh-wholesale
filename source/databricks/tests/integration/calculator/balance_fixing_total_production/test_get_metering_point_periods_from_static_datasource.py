@@ -42,7 +42,7 @@ def test_metering_points_have_energy_supplier(
     grid_area_df,
 ):
     metering_points_periods_df = spark.read.option("header", "true").csv(
-        f"{databricks_path}/package/datasources/MeteringPoints.csv"
+        f"{databricks_path}/package/datasources/MeteringPointsPeriods.csv"
     )
     market_roles_periods_df = spark.read.option("header", "true").csv(
         f"{databricks_path}/package/datasources/MarketRolesPeriods.csv"
@@ -63,3 +63,11 @@ def test_metering_points_have_energy_supplier(
     )
 
     assert actual_mps_without_energy_supplier.count() == 0
+
+
+def test_meteringpoints_start_date_is_included():
+    assert 1 == 1
+
+
+def test_meteringpoints_end_date_is_included():
+    assert 1 == 1

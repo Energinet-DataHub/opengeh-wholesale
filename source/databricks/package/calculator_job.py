@@ -39,8 +39,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--integration-events-path", type=str, required=True)
-    p.add("--static-metering-points-path", type=str, required=True)
-    p.add("--static-market-roles-path", type=str, required=True)
+    p.add("--wholesale-container-path", type=str, required=True)
     p.add("--time-series-points-path", type=str, required=True)
     p.add("--process-results-path", type=str, required=True)
     p.add("--time-zone", type=str, required=True)
@@ -88,11 +87,11 @@ def _start_calculator(spark: SparkSession, args):
         args.time_series_points_path
     )
     static_metering_points_df = spark.read.option("header", "true").csv(
-        args.static_metering_points_path
+        f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
     )
 
     static_market_roles_df = spark.read.option("header", "true").csv(
-        args.static_market_roles_path
+        f"{args.wholesale_container_path}/MarketRolesPeriods.csv"
     )
 
     static_market_roles_df.show()

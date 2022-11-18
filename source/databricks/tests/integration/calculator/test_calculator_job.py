@@ -52,8 +52,7 @@ def test_data_job_parameters(
             "data_storage_account_name": "foo",
             "data_storage_account_key": "foo",
             "integration_events_path": f"{data_lake_path}/{worker_id}/parquet_test_files/integration_events",
-            "static_metering_points_path": f"{json_test_files}/MeteringPoints.csv",
-            "static_market_roles_path": f"{json_test_files}/MarketRolesPeriods.csv",
+            "wholesale_container_path": f"{json_test_files}",
             "time_series_points_path": f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points",
             "process_results_path": f"{data_lake_path}/{worker_id}/results",
             "batch_id": executed_batch_id,
@@ -120,10 +119,6 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
         "foo",
         "--integration-events-path",
         "foo",
-        "--static-metering-points-path",
-        "foo",
-        "--static-market-roles-path",
-        "foo",
         "--time-series-points-path",
         "foo",
         "--process-results-path",
@@ -132,6 +127,8 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
         "Europe/Copenhagen",
         "--log-level",
         "information",
+        "--wholesale-container-path",
+        "foo",
     ]
     command_line_args.extend(process_manager_parameters)
 
