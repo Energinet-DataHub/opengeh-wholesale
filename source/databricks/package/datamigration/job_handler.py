@@ -29,12 +29,10 @@ def get_api_client(host, token):
 def stop_databricks_jobs(api_client, job_names_to_stop):
     jobService = JobsService(api_client)
     jobs_api = JobsApi(api_client)
-    log("jobs_api")
 
     jobs_list = jobs_api.list_jobs()["jobs"]  # get all information about all jobs
-    log("jobs_list")
+
     job_list_with_ids = _get_job_ids(jobs_list)  # dict key: job_name and value: job_id
-    log("jobs_list_with_ids")
 
     # stop all runs for the jobs that should be stopped
     for job_name in job_names_to_stop:
