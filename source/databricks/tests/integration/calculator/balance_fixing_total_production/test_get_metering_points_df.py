@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 import pytest
 from package.balance_fixing_total_production import (
     _get_metering_point_periods_df,
-    _get_metering_point_periods_from_static_datasource_df,
+    _get_raw_basis_data_df,
     METERING_POINT_CREATED_MESSAGE_TYPE,
     METERING_POINT_CONNECTED_MESSAGE_TYPE,
     ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
@@ -281,7 +281,6 @@ def test__metering_point_connected_schema_matches_contract(source_path):
 
 
 def test__metering_point_created_message_type__matches_contract(
-    metering_point_created_df_factory,
     grid_area_df,
     source_path,
 ):
