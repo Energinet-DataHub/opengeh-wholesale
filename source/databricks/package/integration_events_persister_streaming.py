@@ -58,16 +58,13 @@ def _start(command_line_args: list[str]):
     # except Exception:
     #     log("Exception occured in 'islocked' (processes).")
 
-
-
-      create_file_and_check_existance(
-          args.data_storage_account_name, args.data_storage_account_key
-          )
-            spark = initialize_spark(
+    create_file_and_check_existance(
         args.data_storage_account_name, args.data_storage_account_key
     )
 
-
+    spark = initialize_spark(
+        args.data_storage_account_name, args.data_storage_account_key
+    )
 
     input_configuration = {}
     input_configuration[
@@ -87,7 +84,8 @@ def _start(command_line_args: list[str]):
     )
 
 
-def create_file_and_check_existance(data_storage_account_name, data_storage_account_key
+def create_file_and_check_existance(
+    data_storage_account_name, data_storage_account_key
 ):
     data_storage_account_url = (
         f"https://{data_storage_account_name}.dfs.core.windows.net"
@@ -99,11 +97,10 @@ def create_file_and_check_existance(data_storage_account_name, data_storage_acco
         data_storage_account_url, data_storage_account_key
     )
 
-#     file_system = service_client.get_file_system_client(file_system_name)
-
-#     # we get an exception here
-#     file_system_found = file_system.exists()
-#     log(f"file_system_found={file_system_found}")
+    #     file_system = service_client.get_file_system_client(file_system_name)
+    #     # we get an exception here
+    #     file_system_found = file_system.exists()
+    #     log(f"file_system_found={file_system_found}")
 
     file_system_client = service_client.get_file_system_client(file_system_name)
 
@@ -133,6 +130,7 @@ def exists(file_client: DataLakeFileClient):
         return True
     except ResourceNotFoundError:
         return False
+
 
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
