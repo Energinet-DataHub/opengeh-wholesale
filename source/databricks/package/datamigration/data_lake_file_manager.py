@@ -12,14 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from azure.identity import DefaultAzureCredential
-from azure.storage.filedatalake import DataLakeServiceClient, FileSystemClient
-from io import StringIO
 import csv
+from io import StringIO
 
-
-def get_storage_account_url(storage_account_name: str) -> str:
-    return f"https://{storage_account_name}.dfs.core.windows.net"
+from azure.storage.filedatalake import DataLakeServiceClient
+from package import infrastructure
 
 
 class DataLakeFileManager:
@@ -29,7 +26,9 @@ class DataLakeFileManager:
         data_storage_account_key: str,
         container_name: str,
     ):
-        data_storage_account_url = get_storage_account_url(data_storage_account_name)
+        data_storage_account_url = infrastructure.get_storage_account_url(
+            data_storage_account_name
+        )
         self.file_system_client = DataLakeServiceClient(
             data_storage_account_url, data_storage_account_key
         ).get_file_system_client(container_name)
