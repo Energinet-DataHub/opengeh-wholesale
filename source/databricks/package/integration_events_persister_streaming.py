@@ -97,7 +97,7 @@ def create_file_and_check_existance(
         data_storage_account_url, data_storage_account_key
     )
 
-    file_system = service_client.get_file_system_client(file_system_name)
+#     file_system = service_client.get_file_system_client(file_system_name)
 
 #     # we get an exception here
 #     file_system_found = file_system.exists()
