@@ -85,6 +85,15 @@ def _start_calculator(spark: SparkSession, args):
     raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
         args.time_series_points_path
     )
+    static_metering_points_df = spark.read.option("header", "true").csv(
+        "package/datasources/MeteringPoints.csv"
+    )
+
+    static_market_roles_df = spark.read.option("header", "true").csv(
+        "package/datasources/MarketRolesPeriods.csv"
+    )
+
+    static_market_roles_df.show()
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
 
@@ -93,6 +102,8 @@ def _start_calculator(spark: SparkSession, args):
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing_total_production(
+        static_metering_points_df,
+        static_market_roles_df,
         raw_integration_events_df,
         raw_time_series_points_df,
         batch_grid_areas_df,
@@ -164,4 +175,7 @@ def _start(command_line_args: list[str]):
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start():
+    # with open("package/datasources/MarketRolesPeriods.csv") as f:
+    #     print(f.read())
+
     _start(sys.argv[1:])

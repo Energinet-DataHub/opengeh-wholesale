@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 import pytest
 from package.balance_fixing_total_production import (
     _get_metering_point_periods_df,
+    _get_metering_point_periods_from_static_datasource_df,
     METERING_POINT_CREATED_MESSAGE_TYPE,
     METERING_POINT_CONNECTED_MESSAGE_TYPE,
     ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
@@ -39,7 +40,6 @@ from tests.contract_utils import (
     read_contract,
     get_message_type,
 )
-
 
 # Factory defaults
 grid_area_code = "805"
