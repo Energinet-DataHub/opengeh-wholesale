@@ -28,7 +28,7 @@
 		},
 		"python.formatting.provider": "black",
 		"python.defaultInterpreterPath": "/opt/conda/bin/python",
-		"python.languageServer": "Pylance",
+		"python.languageServer": "Jedi",
 		"markdownlint.config": {
 			"MD007": {
 				"indent": 4

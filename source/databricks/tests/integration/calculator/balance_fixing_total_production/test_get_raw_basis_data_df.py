@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytest
 from package.balance_fixing_total_production import (
     _get_master_basis_data_df,
@@ -25,6 +24,17 @@ import os
 # Factory defaults
 grid_area_code = "805"
 grid_area_link_id = "the-grid-area-link-id"
+gsrn_number = "the-gsrn-number"
+metering_point_id = "the-metering-point-id"
+energy_supplier_id = "the-energy-supplier-id"
+metering_point_type = "E18"
+settlement_method = "D01"
+connection_state = "E22"
+resolution = "PT1H"
+metering_method = "D01"
+first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
+second_of_june = first_of_june + timedelta(days=1)
+third_of_june = first_of_june + timedelta(days=2)
 
 
 @pytest.fixture
@@ -34,6 +44,77 @@ def grid_area_df(spark):
         "GridAreaLinkId": grid_area_link_id,
     }
     return spark.createDataFrame([row])
+
+
+@pytest.fixture(scope="module")
+def market_roles_period_df_factory(spark, timestamp_factory):
+    def factory(
+        EnergySupplierId="1",
+        MeteringPointId=metering_point_id,
+        FromDate=first_of_june,
+        ToDate=third_of_june,
+        GridArea=grid_area_code,
+    ):
+        df = [
+            {
+                "EnergySupplierId": EnergySupplierId,
+                "MeteringPointId": MeteringPointId,
+                "FromDate": FromDate,
+                "ToDate": ToDate,
+                "GridArea": GridArea,
+            }
+        ]
+        return spark.createDataFrame(df)
+
+    return factory
+
+
+@pytest.fixture(scope="module")
+def metering_points_periods_df_factory(spark, timestamp_factory):
+    def factory(
+        MeteringPointId=metering_point_id,
+        MeteringPointType=metering_point_type,
+        SettlementMethod=settlement_method,
+        GridArea=grid_area_code,
+        ConnectionState=connection_state,
+        Resolution=resolution,
+        InGridArea="some-in-gride-area",
+        OutGridArea="some-out-gride-area",
+        MeteringMethod=metering_method,
+        NetSettlementGroup=0,
+        ParentMeteringPointId="some-parent-metering-point-id",
+        Unit="KWH",
+        Product=1,
+        FromDate=first_of_june,
+        ToDate=third_of_june,
+        NumberOfTimeseries="1",
+        EnergyQuantity="1",
+    ):
+
+        df = [
+            {
+                "MeteringPointId": MeteringPointId,
+                "MeteringPointType": MeteringPointType,
+                "SettlementMethod": SettlementMethod,
+                "GridArea": GridArea,
+                "ConnectionState": ConnectionState,
+                "Resolution": Resolution,
+                "InGridArea": InGridArea,
+                "OutGridArea": OutGridArea,
+                "MeteringMethod": MeteringMethod,
+                "NetSettlementGroup": NetSettlementGroup,
+                "ParentMeteringPointId": ParentMeteringPointId,
+                "Unit": Unit,
+                "Product": Product,
+                "FromDate": FromDate,
+                "ToDate": ToDate,
+                "NumberOfTimeseries": NumberOfTimeseries,
+                "EnergyQuantity": EnergyQuantity,
+            }
+        ]
+        return spark.createDataFrame(df)
+
+    return factory
 
 
 # def test_metering_points_have_energy_supplier(
@@ -65,8 +146,20 @@ def grid_area_df(spark):
 #     assert actual_mps_without_energy_supplier.count() == 0
 
 
-def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period():
-    pass
+def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
+    grid_area_df, market_roles_period_df_factory, metering_points_periods_df_factory
+):
+    metering_points_periods_df = metering_points_periods_df_factory()
+    market_roles_periods_df = market_roles_period_df_factory()
+
+    master_basis_data = _get_master_basis_data_df(
+        metering_points_periods_df,
+        market_roles_periods_df,
+        grid_area_df,
+        first_of_june,
+        second_of_june,
+    )
+    assert master_basis_data.count() == 1
 
 
 # What about market participant periods outside the selected period?
