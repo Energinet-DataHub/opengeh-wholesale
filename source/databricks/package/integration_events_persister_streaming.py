@@ -103,7 +103,7 @@ def create_file_and_check_existance(
 #     file_system_found = file_system.exists()
 #     log(f"file_system_found={file_system_found}")
 
-    file_system_client = service_client.get_file_system_client("processes")
+    file_system_client = service_client.get_file_system_client(file_system_name)
 
     file_name = "my_file.txt"
     file_client = file_system_client.create_file(file_name)
