@@ -17,6 +17,7 @@ from package import integration_events_persister, initialize_spark, log, db_logg
 from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
 import configargparse
+from azure.storage.filedatalake import DataLakeServiceClient
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
@@ -49,21 +50,17 @@ def _start(command_line_args: list[str]):
     #     log("Exiting because storage is locked due to data migrations running.")
     #     sys.exit(3)
 
-    try:
-        is_locked = islocked(
-            args.data_storage_account_name, args.data_storage_account_key, "processes"
-        )
-        log(f"processes: islocked={is_locked}")
-    except Exception:
-        log("Exception occured in 'islocked' (processes).")
+    # try:
+    #     is_locked = islocked(
+    #         args.data_storage_account_name, args.data_storage_account_key, "processes"
+    #     )
+    #     log(f"processes: islocked={is_locked}")
+    # except Exception:
+    #     log("Exception occured in 'islocked' (processes).")
 
-    try:
-        is_locked = islocked(
-            args.data_storage_account_name, args.data_storage_account_key, "wholesale"
-        )
-        log(f"wholesale: islocked={is_locked}")
-    except Exception:
-        log("Exception occured in 'islocked' (wholesale).")
+    create_file_and_check_existance(
+        args.data_storage_account_name, args.data_storage_account_key
+    )
 
     spark = initialize_spark(
         args.data_storage_account_name, args.data_storage_account_key
@@ -85,6 +82,38 @@ def _start(command_line_args: list[str]):
         args.integration_events_path,
         args.integration_events_checkpoint_path,
     )
+
+
+def create_file_and_check_existance(
+    data_storage_account_name, data_storage_account_key
+):
+    data_storage_account_url = (
+        f"https://{data_storage_account_name}.dfs.core.windows.net"
+    )
+
+    file_system_name = "processes"
+
+    service_client = DataLakeServiceClient(
+        data_storage_account_url, data_storage_account_key
+    )
+
+    file_system = service_client.get_file_system_client(file_system_name)
+
+    file_system_found = file_system.exists()
+    log(f"file_system_found={file_system_found}")
+
+    file_system_client = service_client.get_file_system_client("processes")
+
+    file_name = "my_file.txt"
+    file_client = file_system_client.create_file(file_name)
+
+    log("File created")
+
+    file_client = file_system_client.get_file_client(file_name)
+    file_client.create_file()
+
+    file_exists = file_client.exists()
+    log(f"file_exists={file_exists}")
 
 
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
