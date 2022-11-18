@@ -117,11 +117,9 @@ def calculate_balance_fixing_total_production(
 
 
 def _check_all_grid_areas_have_metering_points(
-    batch_grid_areas_df, metering_point_period_df
+    batch_grid_areas_df, master_basis_data_df
 ):
-    distinct_grid_areas_rows_df = metering_point_period_df.select(
-        "GridAreaCode"
-    ).distinct()
+    distinct_grid_areas_rows_df = master_basis_data_df.select("GridAreaCode").distinct()
     distinct_grid_areas_rows_df.show()
     grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
         distinct_grid_areas_rows_df, "GridAreaCode", "leftanti"
@@ -406,7 +404,7 @@ def _get_metering_point_periods_df(
 
 def _get_enriched_time_series_points_df(
     time_series_points,
-    metering_point_period_df,
+    master_basis_data_df,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
@@ -415,10 +413,10 @@ def _get_enriched_time_series_points_df(
         col("time") >= period_start_datetime
     ).where(col("time") < period_end_datetime)
 
-    quarterly_mp_df = metering_point_period_df.where(
+    quarterly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.quarterly.value
     )
-    hourly_mp_df = metering_point_period_df.where(
+    hourly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.hour.value
     )
 
@@ -486,8 +484,8 @@ def _get_enriched_time_series_points_df(
         timeseries_df, ["GsrnNumber", "time"], "left"
     )
 
-    # the metering_point_period_df is allready used once when creating the empty_points_for_each_metering_point_df
-    # rejoining metering_point_period_df with empty_points_for_each_metering_point_df requires the GsrNumber and
+    # the master_basis_data_df is allready used once when creating the empty_points_for_each_metering_point_df
+    # rejoining master_basis_data_df with empty_points_for_each_metering_point_df requires the GsrNumber and
     # Resolution column must be renamed for the select to be succesfull.
     points_for_each_metering_point_df = (
         points_for_each_metering_point_df.withColumnRenamed(
@@ -496,9 +494,9 @@ def _get_enriched_time_series_points_df(
     )
 
     enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
-        metering_point_period_df,
+        master_basis_data_df,
         (
-            metering_point_period_df["GsrnNumber"]
+            master_basis_data_df["GsrnNumber"]
             == points_for_each_metering_point_df["pfemp_GsrnNumber"]
         )
         & (points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
@@ -506,9 +504,9 @@ def _get_enriched_time_series_points_df(
         "left",
     ).select(
         "GridAreaCode",
-        metering_point_period_df["GsrnNumber"],
+        master_basis_data_df["GsrnNumber"],
         "MeteringPointType",
-        metering_point_period_df["Resolution"],
+        master_basis_data_df["Resolution"],
         "time",
         "Quantity",
         "Quality",
