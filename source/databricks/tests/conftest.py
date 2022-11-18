@@ -24,7 +24,10 @@ import subprocess
 
 
 @pytest.fixture(scope="session")
-def spark() -> SparkSession:
+def spark(databricks_path) -> SparkSession:
+    os.chdir(
+        databricks_path
+    )  # to ensure that when reading the static data sources we have the correct working directory
     return (
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
         .config("spark.ui.showConsoleProgress", "false")

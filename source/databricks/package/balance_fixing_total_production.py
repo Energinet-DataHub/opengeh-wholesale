@@ -212,7 +212,9 @@ def _get_metering_point_periods_from_static_datasource_df(
 
     metering_point_periods_df = (
         metering_points_in_grid_area.where(col("FromDate") <= period_end_datetime)
-        .where(col("ToDate") >= period_start_datetime)
+        .where(
+            col("ToDate") >= period_start_datetime
+        )  # check på på om både start og slut er med
         .where(col("ConnectionState") == "E22")  # Connected
         .where(col("MeteringPointType") == "E18")  # Production
     )

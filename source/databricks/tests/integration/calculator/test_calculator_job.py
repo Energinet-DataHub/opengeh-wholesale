@@ -19,6 +19,7 @@ import pytest
 import yaml
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
+import os
 
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -155,28 +156,28 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 #     assert result_806.count() >= 1, "Calculator job failed to write files"
 
 
-def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
-    spark,
-    test_data_job_parameters,
-    data_lake_path,
-    source_path,
-    executed_calculation_job,
-    worker_id,
-):
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+# def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
+#     spark,
+#     test_data_job_parameters,
+#     data_lake_path,
+#     source_path,
+#     executed_calculation_job,
+#     worker_id,
+# ):
+#     # Act
+#     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
-    # Assert
-    input_time_series_points = spark.read.parquet(
-        f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points"
-    )
-    # When asserting both that the calculator creates output and it does it with input data that matches
-    # the time series points contract from the time-series domain (in the same test), then we can infer that the
-    # calculator works with the format of the data published from the time-series domain.
-    assert_contract_matches_schema(
-        f"{source_path}/contracts/time-series-domain/time-series-points.json",
-        input_time_series_points.schema,
-    )
+#     # Assert
+#     input_time_series_points = spark.read.parquet(
+#         f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points"
+#     )
+#     # When asserting both that the calculator creates output and it does it with input data that matches
+#     # the time series points contract from the time-series domain (in the same test), then we can infer that the
+#     # calculator works with the format of the data published from the time-series domain.
+#     assert_contract_matches_schema(
+#         f"{source_path}/contracts/time-series-domain/time-series-points.json",
+#         input_time_series_points.schema,
+#     )
 
 
 # def test__calculator_result_schema_must_match_contract_with_dotnet(
