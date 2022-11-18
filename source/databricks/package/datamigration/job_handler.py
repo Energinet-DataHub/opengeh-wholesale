@@ -63,6 +63,18 @@ def start_databricks_jobs(api_client, jobs_to_start):
         jobService.run_now(job_id)
 
 
+def data_lake_migration(api_client, migration_job):
+    jobService = JobsService(api_client)
+    jobs_api = JobsApi(api_client)
+
+    jobs_list = jobs_api.list_jobs()["jobs"]
+    job_list_with_ids = _get_job_ids(jobs_list)
+
+    for job_name in migration_job:
+        job_id = job_list_with_ids[job_name]
+        jobService.run_now(job_id)
+
+
 def _get_job_ids(jobs_list):
     jobs_dict = {}
     for job in jobs_list:

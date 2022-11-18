@@ -55,9 +55,7 @@ def _stop_db_jobs(command_line_args: list[str]):
     api_client = get_api_client(args.databricks_host, args.databricks_token)
 
     jobs_to_stop = ["CalculatorJob", "IntegrationEventsPersisterStreamingJob"]
-    log("job to stop")
     stop_databricks_jobs(api_client, jobs_to_stop)
-    log("stop_databricks_jobs")
 
 
 def _start_db_jobs(command_line_args: list[str]):
