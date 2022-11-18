@@ -14,6 +14,7 @@
 
 from pyspark import SparkConf
 from pyspark.sql.session import SparkSession
+from package import log
 
 
 def initialize_spark(
@@ -22,6 +23,7 @@ def initialize_spark(
     shared_storage_account_name=None,
     shared_storage_account_key=None,
 ) -> SparkSession:
+    log("inside initialize_spark")
     # Set spark config with storage account names/keys and the session timezone so that datetimes are displayed consistently (in UTC)
     spark_conf = (
         SparkConf(loadDefaults=True)
@@ -32,10 +34,12 @@ def initialize_spark(
         .set("spark.sql.session.timeZone", "UTC")
         .set("spark.databricks.io.cache.enabled", "True")
     )
+    log("spark_conf")
     if shared_storage_account_name is not None:
+        log("shared_storage_account_name if")
         spark_conf.set(
             f"fs.azure.account.key.{shared_storage_account_name}.dfs.core.windows.net",
             shared_storage_account_key,
         )
-
+    log("shared_storage_account_name")
     return SparkSession.builder.config(conf=spark_conf).getOrCreate()
