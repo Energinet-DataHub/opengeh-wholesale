@@ -492,7 +492,9 @@ def _get_enriched_time_series_points_df(
             "GsrnNumber", "pfemp_GsrnNumber"
         ).withColumnRenamed("Resolution", "pfemp_Resolution")
     )
-
+    metering_point_period_df = metering_point_period_df.withColumnRenamed(
+        "Resolution", "newResolution"
+    )
     enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
         master_basis_data_df,
         (
@@ -506,7 +508,7 @@ def _get_enriched_time_series_points_df(
         "GridAreaCode",
         master_basis_data_df["GsrnNumber"],
         "MeteringPointType",
-        master_basis_data_df["Resolution"],
+        master_basis_data_df["newResolution"].alias("Resolution"),
         "time",
         "Quantity",
         "Quality",
