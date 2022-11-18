@@ -59,11 +59,13 @@ def _unlock(args: list[str]) -> None:
     log(f"deleted lock file: {_LOCK_FILE_NAME}")
 
 
-def islocked(storage_account_name: str, storage_account_key: str) -> bool:
+def islocked(
+    storage_account_name: str, storage_account_key: str, container_name: str
+) -> bool:
     file_manager = DataLakeFileManager(
         storage_account_name,
         storage_account_key,
-        "processes",
+        container_name,
     )
     return file_manager.exists_file(_LOCK_FILE_NAME)
 
