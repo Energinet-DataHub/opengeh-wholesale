@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 import pytest
 from package.balance_fixing_total_production import (
     _get_metering_point_periods_df,
-    _get_raw_basis_data_df,
+    _get_master_basis_data_df,
     METERING_POINT_CREATED_MESSAGE_TYPE,
     METERING_POINT_CONNECTED_MESSAGE_TYPE,
     ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,

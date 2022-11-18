@@ -60,10 +60,10 @@ METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
-    metering_points_df,
-    market_roles_df,
+    metering_points_periods_df,
+    market_roles_periods_df,
     raw_integration_events_df,
-    raw_time_series_points_df,
+    all_time_series_points_df,
     batch_grid_areas_df,
     batch_snapshot_datetime,
     period_start_datetime,
@@ -76,25 +76,27 @@ def calculate_balance_fixing_total_production(
         raw_integration_events_df, batch_snapshot_datetime
     )
 
-    time_series_points = _get_time_series_points(
-        raw_time_series_points_df, batch_snapshot_datetime
+    time_series_points_df = _get_time_series_points_df(
+        all_time_series_points_df, batch_snapshot_datetime
     )
 
     grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df)
 
-    raw_basis_data_df = _get_raw_basis_data_df(
-        metering_points_df,
-        market_roles_df,
+    master_basis_data_df = _get_master_basis_data_df(
+        metering_points_periods_df,
+        market_roles_periods_df,
         grid_area_df,
         period_start_datetime,
         period_end_datetime,
     )
 
-    _check_all_grid_areas_have_metering_points(batch_grid_areas_df, raw_basis_data_df)
+    _check_all_grid_areas_have_metering_points(
+        batch_grid_areas_df, master_basis_data_df
+    )
 
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
-        time_series_points,
-        raw_basis_data_df,
+        time_series_points_df,
+        master_basis_data_df,
         period_start_datetime,
         period_end_datetime,
     )
@@ -103,15 +105,15 @@ def calculate_balance_fixing_total_production(
         enriched_time_series_point_df, time_zone
     )
 
-    master_basis_data_df = _get_master_basis_data(
-        raw_basis_data_df, period_start_datetime, period_end_datetime
+    output_master_basis_data_df = _get_output_master_basis_data_df(
+        master_basis_data_df, period_start_datetime, period_end_datetime
     )
 
     result_df = _get_result_df(enriched_time_series_point_df)
 
     cached_integration_events_df.unpersist()
 
-    return (result_df, time_series_basis_data_df, master_basis_data_df)
+    return (result_df, time_series_basis_data_df, output_master_basis_data_df)
 
 
 def _check_all_grid_areas_have_metering_points(
@@ -148,10 +150,10 @@ def _get_cached_integration_events(
     )
 
 
-def _get_time_series_points(
-    raw_time_series_points_df, batch_snapshot_datetime
+def _get_time_series_points_df(
+    all_time_series_points_df, batch_snapshot_datetime
 ) -> DataFrame:
-    return raw_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
+    return all_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
 
 
 def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> DataFrame:
@@ -186,16 +188,16 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
     return grid_area_df
 
 
-def _get_raw_basis_data_df(
-    metering_points_df,
+def _get_master_basis_data_df(
+    metering_points_periods_df,
     market_roles_periods_df,
     grid_area_df,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
-    metering_points_in_grid_area = metering_points_df.join(
+    metering_points_in_grid_area = metering_points_periods_df.join(
         grid_area_df,
-        metering_points_df["GridArea"] == grid_area_df["GridAreaCode"],
+        metering_points_periods_df["GridArea"] == grid_area_df["GridAreaCode"],
         "inner",
     )
 
@@ -210,7 +212,7 @@ def _get_raw_basis_data_df(
         col("FromDate") <= period_end_datetime
     ).where(col("ToDate") >= period_start_datetime)
 
-    metering_point_periods_with_energy_supplier = metering_point_periods_df.join(
+    master_basis_data_df = metering_point_periods_df.join(
         market_roles_periods_df,
         metering_point_periods_df["MeteringPointId"]
         == market_roles_periods_df["MeteringPointId"],
@@ -240,7 +242,7 @@ def _get_raw_basis_data_df(
         ),
     )
 
-    return metering_point_periods_with_energy_supplier
+    return master_basis_data_df
 
 
 # TODO: Unused. Remove
@@ -520,7 +522,8 @@ def _get_enriched_time_series_points_df(
     return enriched_points_for_each_metering_point_df
 
 
-def _get_master_basis_data(
+# Consider moving out of balance fixing as this is not related to the calculation
+def _get_output_master_basis_data_df(
     metering_point_df, period_start_datetime, period_end_datetime
 ):
     productionType = MeteringPointType.production.value

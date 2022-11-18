@@ -16,7 +16,7 @@
 from datetime import datetime
 import pytest
 from package.balance_fixing_total_production import (
-    _get_raw_basis_data_df,
+    _get_master_basis_data_df,
 )
 from pyspark.sql.functions import col
 import os
@@ -50,7 +50,7 @@ def grid_area_df(spark):
 #     period_start_datetime = datetime.strptime("01/01/2018 00:00", "%d/%m/%Y %H:%M")
 #     period_end_datetime = datetime.strptime("01/03/2018 22:00", "%d/%m/%Y %H:%M")
 
-#     actual = _get_raw_basis_data_df(
+#     actual = _get_master_basis_data_df(
 #         metering_points_periods_df,
 #         market_roles_periods_df,
 #         grid_area_df,

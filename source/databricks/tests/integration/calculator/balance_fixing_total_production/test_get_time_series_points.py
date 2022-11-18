@@ -17,7 +17,7 @@ import pytest
 from decimal import Decimal
 from datetime import datetime, timedelta
 from package.balance_fixing_total_production import (
-    _get_time_series_points,
+    _get_time_series_points_df,
 )
 
 first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
@@ -64,11 +64,11 @@ def test__raw_time_series_points_with_stored_time_of_after_snapshot_time_is_not_
     ).union(time_series_points_third_of_june)
 
     # assert only timeseriespoints from first of june and before is returned when snapshot time is first of june
-    assert _get_time_series_points(time_series_points, first_of_june).count() == 1
+    assert _get_time_series_points_df(time_series_points, first_of_june).count() == 1
     # assert only timeseriespoints from second of june and before is returned when snapshot time is second of june
-    assert _get_time_series_points(time_series_points, second_of_june).count() == 2
+    assert _get_time_series_points_df(time_series_points, second_of_june).count() == 2
     # assert only timeseriespoints from third of june and before is returned when snapshot time is third of june
-    assert _get_time_series_points(time_series_points, third_of_june).count() == 3
+    assert _get_time_series_points_df(time_series_points, third_of_june).count() == 3
 
 
 def test__raw_time_series_points_only_return_point_with_newest_registraiondate_for_same_time_and_gsrn_nuber(
@@ -85,8 +85,8 @@ def test__raw_time_series_points_only_return_point_with_newest_registraiondate_f
     ).union(time_series_points_third_of_june)
 
     # assert only timeseriespoints from first of june and before is returned when snapshot time is first of june
-    assert _get_time_series_points(time_series_points, first_of_june).count() == 1
+    assert _get_time_series_points_df(time_series_points, first_of_june).count() == 1
     # assert only timeseriespoints from second of june and before is returned when snapshot time is second of june
-    assert _get_time_series_points(time_series_points, second_of_june).count() == 2
+    assert _get_time_series_points_df(time_series_points, second_of_june).count() == 2
     # assert only timeseriespoints from third of june and before is returned when snapshot time is third of june
-    assert _get_time_series_points(time_series_points, third_of_june).count() == 3
+    assert _get_time_series_points_df(time_series_points, third_of_june).count() == 3
