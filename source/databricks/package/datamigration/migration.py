@@ -25,8 +25,8 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
+    p.add("--databricks-host", type=str, required=True)
+    p.add("--databricks-token", type=str, required=True)
     p.add(
         "--log-level",
         type=valid_log_level,
