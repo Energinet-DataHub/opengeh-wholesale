@@ -61,22 +61,25 @@ def _apply_migrations(
 
 
 def _migrate_data_lake(command_line_args: list[str]) -> None:
+    log("_migrate_data_lake")
     args = _get_valid_args_or_throw(command_line_args)
-
+    log("_get_valid_args_or_throw")
     spark = initialize_spark(
         args.data_storage_account_name,
         args.data_storage_account_key,
     )
+    log("initialize_spark")
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
         WHOLESALE_CONTAINER_NAME,
     )
-    log("_migrate_data_lake")
+    log("file_manager")
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
     _apply_migrations(spark, file_manager, uncommitted_migrations)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake() -> None:
+    log("migrate_data_lake")
     _migrate_data_lake(sys.argv[1:])
