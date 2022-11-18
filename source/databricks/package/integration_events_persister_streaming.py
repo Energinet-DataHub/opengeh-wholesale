@@ -99,8 +99,9 @@ def create_file_and_check_existance(
 
     file_system = service_client.get_file_system_client(file_system_name)
 
-    file_system_found = file_system.exists()
-    log(f"file_system_found={file_system_found}")
+#     # we get an exception here
+#     file_system_found = file_system.exists()
+#     log(f"file_system_found={file_system_found}")
 
     file_system_client = service_client.get_file_system_client("processes")
 
