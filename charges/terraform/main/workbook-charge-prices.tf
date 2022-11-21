@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-data "template_file" "workbook_charges_template" {
-  template = file("${path.module}/workbook-charges-template.json")
+data "template_file" "workbook_charge_prices_template" {
+  template = file("${path.module}/workbook-charge-prices-template.json")
   vars = {
-    workbook_display_name     = "Charges - Stamdataopdatering SLI"
-    workbook_id               = "67d32b14-3f26-4840-a1cc-c47ca4d052de"
+    workbook_display_name     = "Charge - Prices (D08) SLI"
+    workbook_id               = "2dca65fb-4587-4916-ac30-25eb1ab022ce"
     resouce_group_name        = azurerm_resource_group.this.name
     subscription_id           = data.azurerm_subscription.this.subscription_id
     application_insight_name  = data.azurerm_key_vault_secret.appi_shared_name.value
@@ -23,9 +23,9 @@ data "template_file" "workbook_charges_template" {
   }
 }
 
-resource "azurerm_resource_group_template_deployment" "workbook_charges" {
+resource "azurerm_resource_group_template_deployment" "workbook_charge_prices" {
   name                  = "workbook-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   resource_group_name   = azurerm_resource_group.this.name
-  template_content      = data.template_file.workbook_charges_template.rendered
+  template_content      = data.template_file.workbook_charge_prices_template.rendered
   deployment_mode       = "Incremental"
 }
