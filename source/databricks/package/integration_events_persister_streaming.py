@@ -18,6 +18,7 @@ from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
 import configargparse
 from azure.storage.filedatalake import DataLakeServiceClient, DataLakeFileClient
+from azure.storage.blob import BlobServiceClient
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
@@ -102,9 +103,13 @@ def create_file_and_check_existance(
     #     file_system_found = file_system.exists()
     #     log(f"file_system_found={file_system_found}")
 
-    file_system_client = service_client.get_file_system_client(file_system_name)
-    file_system_found = file_system_client.exists()
-    log(f"file_system_found={file_system_found}")
+    ###########################
+    blob_service_client = BlobServiceClient(
+        account_url=data_storage_account_url, account_key=data_storage_account_key
+    )
+    container_client = blob_service_client.get_container_client(file_system_name)
+    blob_container_exists = container_client.exists()
+    log(f"blob_container_exists={blob_container_exists}")
 
 
 #     file_name = "my_file.txt"
