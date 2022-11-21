@@ -31,7 +31,6 @@ def stop_databricks_jobs(api_client, job_names_to_stop):
     jobs_api = JobsApi(api_client)
 
     jobs_list = jobs_api.list_jobs()["jobs"]  # get all information about all jobs
-
     job_list_with_ids = _get_job_ids(jobs_list)  # dict key: job_name and value: job_id
 
     # stop all runs for the jobs that should be stopped

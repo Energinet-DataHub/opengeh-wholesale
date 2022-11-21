@@ -42,9 +42,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
 
 
 def _migrate_data_lake(command_line_args: list[str]) -> None:
-    log("_migrate_data_lake")
     args = _get_valid_args_or_throw(command_line_args)
-    log("_get_valid_args_or_throw")
     db_logging.loglevel = args.log_level
 
     api_client = get_api_client(args.databricks_host, args.databricks_token)
@@ -54,5 +52,4 @@ def _migrate_data_lake(command_line_args: list[str]) -> None:
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake() -> None:
-    log("migrate_data_lake")
     _migrate_data_lake(sys.argv[1:])
