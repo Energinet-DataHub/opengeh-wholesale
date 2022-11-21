@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using iel = Energinet.DataHub.Wholesale.IntegrationEventListener;
 using pm = Energinet.DataHub.Wholesale.ProcessManager;
-using snd = Energinet.DataHub.Wholesale.Sender;
 using wapi = Energinet.DataHub.Wholesale.WebApi;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests;
@@ -27,9 +26,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests;
 public class CompositionRootTests
 {
     #region Member data providers
-
-    public static IEnumerable<object[]> SenderIntegrationFunctions()
-        => GetFunctionRequirements(typeof(snd.Program));
 
     public static IEnumerable<object[]> ProcessManagerFunctions()
         => GetFunctionRequirements(typeof(pm.Program));
@@ -47,15 +43,6 @@ public class CompositionRootTests
     }
 
     #endregion
-
-    [Theory]
-    [MemberData(nameof(SenderIntegrationFunctions))]
-    public async Task SenderIntegrationFunctions_can_resolve_dependencies_for(Requirement requirement)
-    {
-        using var host = await SenderIntegrationTestHost.CreateAsync();
-        await using var scope = host.BeginScope();
-        Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
-    }
 
     [Theory]
     [MemberData(nameof(ProcessManagerFunctions))]

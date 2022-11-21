@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.MessageHub.Client.Factories;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 using Energinet.DataHub.Wholesale.IntegrationTests.Mock;

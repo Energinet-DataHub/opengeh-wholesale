@@ -34,7 +34,6 @@ limitations under the License.
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
     <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
-    <ProjectReference Include="..\Sender\Sender.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
   </ItemGroup>
 
@@ -100,18 +99,8 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contracts" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="..\..\..\contracts\calculation-file-paths.yml">
       <Link>Infrastructure\BasisData\calculation-file-paths.yml</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\..\contracts\market-participant-domain\energy-supplier-changed.json">
-      <Link>IntegrationEventListener\MarketParticipant\energy-supplier-changed.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 
