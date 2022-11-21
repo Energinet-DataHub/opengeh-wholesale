@@ -17,13 +17,11 @@ module "mssql_database_application_access" {
   sql_server_name         = data.azurerm_mssql_server.mssqlsrv.name
   database_name           = module.mssqldb_wholesale.name
   application_hosts_names = [
-                              module.func_sender.name,
                               module.func_processmanager.name,
                               module.app_wholesale_api.name,
                             ]
 
   depends_on              = [
-                              module.func_sender.name,
                               module.func_processmanager.name,
                               module.app_wholesale_api.name,
                             ]

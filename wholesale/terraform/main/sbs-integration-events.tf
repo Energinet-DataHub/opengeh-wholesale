@@ -12,32 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "sbs_int_events_metering_point_created" {
-  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
-  name                = "metering-point-created"
-  project_name        = var.domain_name_short
-  topic_id            = data.azurerm_key_vault_secret.sbt_integration_events_id.value
-  max_delivery_count  = 10
-  correlation_filter  = {
-    properties     = {
-      "messageType" = "MeteringPointCreated"
-    }
-  }
-}
-
-module "sbs_int_events_metering_point_connected" {
-  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
-  name                = "metering-point-connected"
-  project_name        = var.domain_name_short
-  topic_id            = data.azurerm_key_vault_secret.sbt_integration_events_id.value
-  max_delivery_count  = 10
-  correlation_filter  = {
-    properties     = {
-      "messageType" = "MeteringPointConnected"
-    }
-  }
-}
-
 module "sbs_int_events_grid_area_updated" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
   name                = "grid-area-updated"
@@ -47,19 +21,6 @@ module "sbs_int_events_grid_area_updated" {
   correlation_filter  = {
     properties     = {
       "messageType" = "GridAreaUpdatedIntegrationEvent"
-    }
-  }
-}
-
-module "sbs_int_events_energy_supplier_changed" {
-  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
-  name                = "energy-supplier-changed"
-  project_name        = var.domain_name_short
-  topic_id            = data.azurerm_key_vault_secret.sbt_integration_events_id.value
-  max_delivery_count  = 10
-  correlation_filter  = {
-    properties     = {
-      "messageType" = "EnergySupplierChanged"
     }
   }
 }
