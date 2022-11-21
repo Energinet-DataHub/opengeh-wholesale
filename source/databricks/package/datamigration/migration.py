@@ -14,14 +14,9 @@
 
 import sys
 import configargparse
-import importlib
-from pyspark.sql.session import SparkSession
-from package import log, initialize_spark
+from .job_handler import data_lake_migration, get_api_client
+from package import log, db_logging
 from package.args_helper import valid_log_level
-from package.infrastructure import WHOLESALE_CONTAINER_NAME
-from .data_lake_file_manager import DataLakeFileManager
-from .uncommitted_migrations import get_uncommitted_migrations
-from .committed_migrations import upload_committed_migration
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]):
@@ -30,8 +25,8 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
+    p.add("--databricks-host", type=str, required=True)
+    p.add("--databricks-token", type=str, required=True)
     p.add(
         "--log-level",
         type=valid_log_level,
@@ -46,35 +41,13 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def _apply_migrations(
-    spark: SparkSession,
-    file_manager: DataLakeFileManager,
-    uncommitted_migrations: list[str],
-) -> None:
-
-    for name in uncommitted_migrations:
-        migration = importlib.import_module(
-            "package.datamigration.migration_scripts." + name
-        )
-        migration.apply(spark)
-        upload_committed_migration(file_manager, name)
-
-
 def _migrate_data_lake(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
+    db_logging.loglevel = args.log_level
 
-    spark = initialize_spark(
-        args.data_storage_account_name,
-        args.data_storage_account_key,
-    )
-    file_manager = DataLakeFileManager(
-        args.data_storage_account_name,
-        args.data_storage_account_key,
-        WHOLESALE_CONTAINER_NAME,
-    )
-
-    uncommitted_migrations = get_uncommitted_migrations(file_manager)
-    _apply_migrations(spark, file_manager, uncommitted_migrations)
+    api_client = get_api_client(args.databricks_host, args.databricks_token)
+    migration_job = ["MigrationsJob"]
+    data_lake_migration(api_client, migration_job)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
