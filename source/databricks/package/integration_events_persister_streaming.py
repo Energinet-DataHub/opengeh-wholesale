@@ -103,28 +103,31 @@ def create_file_and_check_existance(
     #     log(f"file_system_found={file_system_found}")
 
     file_system_client = service_client.get_file_system_client(file_system_name)
-
-    file_name = "my_file.txt"
-    file_client = file_system_client.get_file_client(file_name)
-
-    file_exists = exists(file_client)
-
-    log(f"file_exists={file_exists}")
-
-    file_exists_new = file_system_client.create_file(file_name)
-
-    log("File created")
-
-    file_exists = exists(file_exists_new)
-
-    log(f"file_exists={file_exists}")
+    file_system_found = file_system_client.exists()
+    log(f"file_system_found={file_system_found}")
 
 
-#     file_exists = file_client.exists()
+#     file_name = "my_file.txt"
+#     # file_client = file_system_client.get_file_client(file_name)
+
+#     # file_exists = exists(file_client)
+
+#     # log(f"file_exists={file_exists}")
+
+#     file_exists_new = file_system_client.create_file(file_name)
+
+#     log("File created")
+
+#     file_exists = exists_hack(file_exists_new)
+
 #     log(f"file_exists={file_exists}")
 
 
-def exists(file_client: DataLakeFileClient):
+# #     file_exists = file_client.exists()
+#     log(f"file_exists={file_exists}")
+
+
+def exists_hack(file_client: DataLakeFileClient):
     try:
         file_client.get_file_properties()
         return True
