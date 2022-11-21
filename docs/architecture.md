@@ -5,7 +5,7 @@
 In general DataHub is build as a .NET Azure cloud based b2b system.
 The wholesale domain, however, crunches huge amounts of data and so the decision has been made to base those crunching parts on the [Databricks Lakehouse Platform](https://databricks.com/).
 
-Data stored in parquet (possibly in Delta Tables) cannot be read synchronously.
+Data stored in parquet (possibly in Delta Tables) cannot be read synchronously. (UPDATE: This is not correct)
 This implies an impedance mismatch between the requirements of the use cases of the interactive web-based users and the inner workings of the domain.
 This is key to understand some of the architectural design decisions.
 
