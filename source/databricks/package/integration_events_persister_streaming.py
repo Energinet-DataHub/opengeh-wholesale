@@ -94,9 +94,9 @@ def create_file_and_check_existance(
 
     file_system_name = "processes"
 
-    service_client = DataLakeServiceClient(
-        data_storage_account_url, data_storage_account_key
-    )
+    # service_client = DataLakeServiceClient(
+    #     data_storage_account_url, data_storage_account_key
+    # )
 
     #     file_system = service_client.get_file_system_client(file_system_name)
     #     # we get an exception here
