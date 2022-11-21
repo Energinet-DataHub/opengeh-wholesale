@@ -39,7 +39,7 @@ module "func_functionhost" {
     DOMAINEVENT_SENDER_CONNECTION_STRING                                    = data.azurerm_key_vault_secret.sb_domain_relay_send_connection_string.value
     DOMAINEVENT_MANAGER_CONNECTION_STRING                                   = data.azurerm_key_vault_secret.sb_domain_relay_manage_connection_string.value
     DOMAINEVENT_LISTENER_CONNECTION_STRING                                  = data.azurerm_key_vault_secret.sb_domain_relay_listen_connection_string.value
-    
+
     # Topics
     DOMAIN_EVENTS_TOPIC_NAME                                                = "sbt-charges-domain-events"
     CHARGE_CREATED_TOPIC_NAME                                               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-charge-created-name)"
