@@ -244,15 +244,16 @@ def _get_master_basis_data_df(
             ),
         )
     )
-    master_basis_data_df.select(
-        metering_point_periods_df["FromDate"].alias("metering_From"),
-        metering_point_periods_df["ToDate"].alias("metering_To"),
-        market_roles_periods_df["EnergySupplierId"],
-        market_roles_periods_df["FromDate"].alias("market_From"),
-        market_roles_periods_df["ToDate"].alias("market_To"),
-        "EffectiveDate",
-        "toEffectiveDate",
-    ).show()
+    # this should be removed (is just keept for debuging)
+    # master_basis_data_df.select(
+    #    metering_point_periods_df["FromDate"].alias("metering_From"),
+    #    metering_point_periods_df["ToDate"].alias("metering_To"),
+    #    market_roles_periods_df["EnergySupplierId"],
+    #    market_roles_periods_df["FromDate"].alias("market_From"),
+    #    market_roles_periods_df["ToDate"].alias("market_To"),
+    #    "EffectiveDate",
+    #    "toEffectiveDate",
+    # ).show()
     master_basis_data_df = master_basis_data_df.select(
         metering_point_periods_df["MeteringPointId"].alias("GsrnNumber"),
         "GridAreaCode",
