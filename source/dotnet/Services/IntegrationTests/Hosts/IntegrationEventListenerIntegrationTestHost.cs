@@ -65,8 +65,6 @@ public sealed class IntegrationEventListenerIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionListenerString, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionManagerString, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsTopicName, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsEventHubName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsEventHubConnectionString, anyValue);

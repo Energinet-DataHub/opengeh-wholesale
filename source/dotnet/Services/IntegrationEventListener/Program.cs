@@ -85,8 +85,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
 
             var serviceBusConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventConnectionManagerString);
             var integrationEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
-            var meteringPointCreatedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName);
-            var meteringPointConnectedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName);
             var marketParticipantConnectedSubscriptionName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName);
 
             serviceCollection
@@ -96,16 +94,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
                     integrationEventsEventHubConnectionString,
                     integrationEventsEventHubName,
                     name: "IntegrationEventsEventHubExists")
-                .AddAzureServiceBusSubscription(
-                    serviceBusConnectionString,
-                    integrationEventsTopicName,
-                    meteringPointCreatedSubscriptionName,
-                    name: "MeteringPointCreatedSubscriptionExists")
-                .AddAzureServiceBusSubscription(
-                    serviceBusConnectionString,
-                    integrationEventsTopicName,
-                    meteringPointConnectedSubscriptionName,
-                    name: "MeteringPointConnectedSubscriptionExists")
                 .AddAzureServiceBusSubscription(
                     serviceBusConnectionString,
                     integrationEventsTopicName,
