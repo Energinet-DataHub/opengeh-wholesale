@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.MessageHub.Client.Factories;
 using Energinet.DataHub.Wholesale.IntegrationEventListener;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 using Energinet.DataHub.Wholesale.IntegrationTests.Mock;
@@ -66,8 +65,6 @@ public sealed class IntegrationEventListenerIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionListenerString, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventConnectionManagerString, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsTopicName, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsEventHubName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsEventHubConnectionString, anyValue);

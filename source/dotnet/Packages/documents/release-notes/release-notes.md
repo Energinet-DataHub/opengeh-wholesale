@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 3.0.0
+
+Rename `BatchGridAreaDto[] BatchGridAreas` to `GridAreaDto[] GridAreas`.
+
 ## Version 2.3.0
 
 Added `BatchGridAreaDto[] BatchGridAreas` to `BatchDtoV2`. `BatchGridAreaDto` represents a grid area in the batch.
