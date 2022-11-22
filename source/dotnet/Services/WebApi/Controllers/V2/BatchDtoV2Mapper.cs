@@ -28,6 +28,6 @@ public class BatchDtoV2Mapper : IBatchDtoV2Mapper
             batchDto.ExecutionTimeEnd,
             batchDto.ExecutionState,
             batchDto.IsBasisDataDownloadAvailable,
-            batchDto.BatchGridAreas);
+            batchDto.GridAreas);
     }
 }

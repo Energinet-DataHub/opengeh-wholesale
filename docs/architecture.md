@@ -5,7 +5,7 @@
 In general DataHub is build as a .NET Azure cloud based b2b system.
 The wholesale domain, however, crunches huge amounts of data and so the decision has been made to base those crunching parts on the [Databricks Lakehouse Platform](https://databricks.com/).
 
-Data stored in parquet (possibly in Delta Tables) cannot be read synchronously.
+Data stored in parquet (possibly in Delta Tables) cannot be read synchronously. (UPDATE: This is not correct)
 This implies an impedance mismatch between the requirements of the use cases of the interactive web-based users and the inner workings of the domain.
 This is key to understand some of the architectural design decisions.
 
@@ -27,7 +27,7 @@ the state of time series points as they were at a certain point in time.
 
 ### `integration-event-listener`
 
-Subscribes to integration events of interest from other domains, extracts the content from the [Protocol Buffers](https://developers.google.com/protocol-buffers) (protobuf) encoded messages.
+Subscribes to integration events of interest from the market participant domain, extracts the content from the [Protocol Buffers](https://developers.google.com/protocol-buffers) (protobuf) encoded messages.
 The purpose is the protobuf decoding, which happens to be much simpler to do in .NET rather than in python.
 
 ### `job-manager`
@@ -40,18 +40,6 @@ The manager continuously monitors the Databricks jobs in order to (1) update the
 (2) publish job completed events to `completed-jobs`.
 
 Details: The manager provides the output path of the results to the `calculator` and adds the path to job in the SQL table.
-
-### `result-sender`
-
-Sends result to actors when aggregation job is complete.
-
-As per integration design by the MessageHub domain the sender creates the necessary CIM XML RSM-014 documents
-and sends the path to the `DataAvailable` component of the MessageHub domain.
-This in turn enables the actors to peek and dequeue the messages.
-
-### `e-sett-result-sender`
-
-Subscribes to job completed events and sends results to [eSett](https://www.esett.com/) for Nordic imbalance settlement.
 
 ## Selected Use Cases
 

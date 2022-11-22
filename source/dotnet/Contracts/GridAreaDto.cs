@@ -12,11 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Sender.Infrastructure.Persistence.Processes;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-namespace Energinet.DataHub.Wholesale.Sender.Infrastructure.Services;
-
-public interface ICalculatedResultReader
-{
-    Task<BalanceFixingResultDto> ReadResultAsync(Process process);
-}
+public sealed record GridAreaDto(string GridAreaCode);
