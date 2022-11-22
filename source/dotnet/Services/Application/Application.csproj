@@ -36,6 +36,9 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchGridAreaDto.cs">
       <Link>Batches\BatchGridAreaDto.cs</Link>
     </Compile>
+    <Compile Include="..\..\Contracts\BatchGridAreaStepsDto.cs">
+      <Link>Batches\BatchGridAreaStepsDto.cs</Link>
+    </Compile>
     <Compile Include="..\..\Contracts\BatchRequestDto.cs">
       <Link>Batches\BatchRequestDto.cs</Link>
     </Compile>
