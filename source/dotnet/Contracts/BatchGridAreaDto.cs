@@ -16,25 +16,8 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public sealed record BatchGridAreaProcessDto(
+public sealed record BatchGridAreaDto(
     BatchState State,
     string Type,
-    string GridAreaCode,
+    GridAreaDto GridArea,
     ProcessDto[] Processes);
-
-public sealed record ProcessDto(
-    string Number,
-    ProcessMetaDataDto[] ProcessMetaDataDto);
-
-public sealed record ProcessMetaDataDto(
-    string MeteringPointType, // enum
-    Instant CalculationPeriodStart,
-    Instant CalculationPeriodEnd,
-    decimal Sum,
-    decimal Min,
-    decimal Max,
-    TimeSeriesPointDto[] TimeSeries);
-
-public sealed record TimeSeriesPointDto(
-    Instant Time,
-    decimal Value);
