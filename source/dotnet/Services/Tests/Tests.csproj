@@ -72,24 +72,6 @@ limitations under the License.
     <EmbeddedResource Include="..\..\..\contracts\market-participant-domain\grid-area-updated.json">
       <Link>IntegrationEventListener\MarketParticipant\grid-area-updated.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\contracts\metering-point-domain\metering-point-connected.json">
-      <Link>IntegrationEventListener\MeteringPoints\metering-point-connected.json</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\contracts\metering-point-domain\metering-point-created.json">
-      <Link>IntegrationEventListener\MeteringPoints\metering-point-created.json</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\contracts\metering-point-domain\metering-point-connection-state.json">
-      <Link>IntegrationEventListener\MeteringPoints\metering-point-connection-state.json</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\contracts\metering-point-domain\metering-point-type.json">
-      <Link>IntegrationEventListener\MeteringPoints\metering-point-type.json</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\contracts\metering-point-domain\metering-point-settlement-method.json">
-      <Link>IntegrationEventListener\MeteringPoints\metering-point-settlement-method.json</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\contracts\metering-point-domain\metering-point-resolution.json">
-      <Link>IntegrationEventListener\MeteringPoints\metering-point-resolution.json</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\contracts\internal\calculator-result.json">
       <Link>Sender\Infrastructure\Calculator\calculator-result.json</Link>
     </EmbeddedResource>
