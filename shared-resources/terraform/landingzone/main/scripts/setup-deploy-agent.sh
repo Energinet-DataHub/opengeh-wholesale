@@ -218,6 +218,13 @@ sudo apt-get update
 sudo apt-get install -y powershell
 
 ##################################
+# Install Powershell Modules
+##################################
+
+# Notice use of call operator `&`. See https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_pwsh?view=powershell-7.2#-command---c
+sudo pwsh -Command "& {Install-Module sqlserver -Force}"
+
+##################################
 # Install other dependencies
 ##################################
 
