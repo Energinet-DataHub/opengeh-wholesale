@@ -54,7 +54,6 @@ limitations under the License.
     <ProjectReference Include="..\DatabaseMigration\DatabaseMigration.csproj" />
     <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
     <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
-    <ProjectReference Include="..\Sender\Sender.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
     <ProjectReference Include="..\WebApi\WebApi.csproj" />
   </ItemGroup>

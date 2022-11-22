@@ -24,7 +24,6 @@ using Energinet.DataHub.MarketParticipant.Integration.Model.Parsers;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Common;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.MarketParticipant;
-using Energinet.DataHub.Wholesale.IntegrationEventListener.MeteringPoints;
 using Energinet.DataHub.Wholesale.IntegrationEventListener.Monitor;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -73,10 +72,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventListener
 
         private static void Host(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddScoped<MeteringPointCreatedDtoFactory>();
-            serviceCollection.AddScoped<MeteringPointConnectedDtoFactory>();
             serviceCollection.AddScoped<GridAreaUpdatedDtoFactory>();
-            serviceCollection.AddScoped<EnergySupplierChangedDtoFactory>();
         }
 
         private static void HealthCheck(IServiceCollection serviceCollection)
