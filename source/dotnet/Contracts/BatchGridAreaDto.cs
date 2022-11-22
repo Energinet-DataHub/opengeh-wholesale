@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public sealed record BatchGridAreaDto(
     BatchState State,
-    string Type,
+    WholesaleProcessType Type,
     GridAreaDto GridArea,
     ProcessDto[] Processes);
