@@ -18,4 +18,4 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public sealed record TimeSeriesPointDto(
     Instant Time,
-    decimal Value);
+    decimal Quantity);

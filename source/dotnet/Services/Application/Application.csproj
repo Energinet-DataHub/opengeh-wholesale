@@ -33,9 +33,6 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Contracts\BatchGridAreaDto.cs">
-      <Link>Batches\BatchGridAreaDto.cs</Link>
-    </Compile>
     <Compile Include="..\..\Contracts\BatchRequestDto.cs">
       <Link>Batches\BatchRequestDto.cs</Link>
     </Compile>
@@ -51,8 +48,11 @@ limitations under the License.
     <Compile Include="..\..\Contracts\ProcessDto.cs">
       <Link>Batches\ProcessDto.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\ProcessMetaDataDto.cs">
-      <Link>Batches\ProcessMetaDataDto.cs</Link>
+    <Compile Include="..\..\Contracts\ProcessStepDto.cs">
+      <Link>Batches\ProcessStepDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepMetaDataDto.cs">
+      <Link>Batches\ProcessStepMetaDataDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\TimeSeriesPointDto.cs">
       <Link>Batches\TimeSeriesPointDto.cs</Link>

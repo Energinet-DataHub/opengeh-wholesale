@@ -82,7 +82,7 @@ public class BatchController : ControllerBase
     /// </summary>
     /// <param name="batchId">Batch number</param>
     /// <param name="gridAreaCode">Grid area code</param>
-    /// <returns><see cref="BatchGridAreaDto"/></returns>
+    /// <returns><see cref="ProcessDto"/></returns>
     [HttpGet("GetSteps")]
     [MapToApiVersion(Version)]
     public Task<IActionResult> GetStepsAsync([FromBody] string batchId, string gridAreaCode)
