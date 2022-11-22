@@ -17,4 +17,4 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 /// <summary>
 /// An immutable batch.
 /// </summary>
-public sealed record BatchGridAreaDto(string GridAreaCode);
+public sealed record GridAreaDto(string GridAreaCode);
