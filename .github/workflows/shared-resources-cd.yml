@@ -41,12 +41,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: infrastructure_promote_prerelease
     steps:
-      # TODO: Remove after test
-      - name: Failure
-        shell: bash
-        run: |
-          exit 1
-
       - name: Find associated pull request
         uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v9
         id: find_pull_request
