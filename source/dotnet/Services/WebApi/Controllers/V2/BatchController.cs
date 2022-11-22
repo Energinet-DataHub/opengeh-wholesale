@@ -76,4 +76,17 @@ public class BatchController : ControllerBase
         var stream = await _basisDataApplicationService.GetZippedBasisDataStreamAsync(batchId).ConfigureAwait(false);
         return Ok(stream);
     }
+
+    /// <summary>
+    /// Get the steps for a specific batch id and grid area code
+    /// </summary>
+    /// <param name="batchId">Batch number</param>
+    /// <param name="gridAreaCode">Grid area code</param>
+    /// <returns>BatchGridAreaStepsDto</returns>
+    [HttpGet("GetSteps")]
+    [MapToApiVersion(Version)]
+    public Task<IActionResult> GetStepsAsync([FromBody] string batchId, string gridAreaCode)
+    {
+        return Task.FromResult<IActionResult>(Ok(null));
+    }
 }
