@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Net.Http.Json;
-using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Contracts;
 
 namespace Energinet.DataHub.Wholesale.Client;
 

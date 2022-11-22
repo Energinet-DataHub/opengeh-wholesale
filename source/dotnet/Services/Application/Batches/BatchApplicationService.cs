@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.JobRunner;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using NodaTime;
