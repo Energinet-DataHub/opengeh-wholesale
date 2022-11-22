@@ -15,5 +15,5 @@
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public sealed record ProcessDto(
-    string Number,
+    string StepNumber,
     ProcessMetaDataDto[] ProcessMetaDataDto);
