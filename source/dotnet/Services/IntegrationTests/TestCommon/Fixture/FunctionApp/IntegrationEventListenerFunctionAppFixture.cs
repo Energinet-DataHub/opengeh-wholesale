@@ -58,13 +58,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
 
         public TopicResource IntegrationEventsTopic { get; private set; } = null!;
 
-        public ServiceBusReceiver MeteringPointCreatedDeadLetterReceiver { get; private set; } = null!;
-
-        public ServiceBusReceiver MeteringPointConnectedDeadLetterReceiver { get; private set; } = null!;
-
         public ServiceBusReceiver MarketParticipantChangedDeadLetterReceiver { get; private set; } = null!;
-
-        public ServiceBusReceiver EnergySupplierChangedDeadLetterReceiver { get; private set; } = null!;
 
         public EventHubResourceProvider EventHubResourceProvider { get; }
 
@@ -118,42 +112,15 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
                     // Topic
                 .BuildTopic("integration-events")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.IntegrationEventsTopicName)
-                    // Metering point created subscription
-                .AddSubscription("metering-point-created")
-                .AddMessageTypeFilter("MeteringPointCreated")
-                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName)
-                    // Metering point connected subscription
-                .AddSubscription("metering-point-connected")
-                .AddMessageTypeFilter("MeteringPointConnected")
-                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName)
                     // Grid area updated subscription
                 .AddSubscription("market-participant-changed")
                 .AddMessageTypeFilter("GridAreaUpdatedIntegrationEvent")
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName)
-                    // Energy supplier changed subscription
-                .AddSubscription("energy-supplier-changed")
-                .AddMessageTypeFilter("EnergySupplierChanged")
-                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.EnergySupplierChangedSubscriptionName)
                 .CreateAsync();
-
-            MeteringPointCreatedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
-                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName),
-                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointCreatedSubscriptionName),
-                    new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
-
-            MeteringPointConnectedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
-                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName),
-                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MeteringPointConnectedSubscriptionName),
-                    new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
 
             MarketParticipantChangedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName),
                     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.MarketParticipantChangedSubscriptionName),
-                    new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
-
-            EnergySupplierChangedDeadLetterReceiver = ServiceBusClient.CreateReceiver(
-                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName),
-                    EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.EnergySupplierChangedSubscriptionName),
                     new ServiceBusReceiverOptions { SubQueue = SubQueue.DeadLetter });
         }
 
