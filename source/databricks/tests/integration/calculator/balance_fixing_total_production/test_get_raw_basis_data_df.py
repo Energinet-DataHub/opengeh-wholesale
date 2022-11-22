@@ -32,9 +32,16 @@ settlement_method = "D01"
 connection_state = "E22"
 resolution = "PT1H"
 metering_method = "D01"
-first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
-second_of_june = first_of_june + timedelta(days=1)
-third_of_june = first_of_june + timedelta(days=2)
+june_1th = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
+june_2th = june_1th + timedelta(days=1)
+june_3th = june_1th + timedelta(days=2)
+june_4th = june_1th + timedelta(days=3)
+june_5th = june_1th + timedelta(days=4)
+june_6th = june_1th + timedelta(days=5)
+june_7th = june_1th + timedelta(days=6)
+june_8th = june_1th + timedelta(days=7)
+june_9th = june_1th + timedelta(days=8)
+june_10th = june_1th + timedelta(days=9)
 
 
 @pytest.fixture
@@ -51,20 +58,42 @@ def market_roles_period_df_factory(spark, timestamp_factory):
     def factory(
         EnergySupplierId="1",
         MeteringPointId=metering_point_id,
-        FromDate=first_of_june,
-        ToDate=third_of_june,
+        FromDate=june_1th,
+        ToDate=june_3th,
         GridArea=grid_area_code,
+        periods=None,
     ):
-        df = [
-            {
-                "EnergySupplierId": EnergySupplierId,
-                "MeteringPointId": MeteringPointId,
-                "FromDate": FromDate,
-                "ToDate": ToDate,
-                "GridArea": GridArea,
-            }
-        ]
-        return spark.createDataFrame(df)
+        df_array = []
+        if periods:
+            for period in periods:
+                df_array.append(
+                    {
+                        "EnergySupplierId": period["EnergySupplierId"]
+                        if ("EnergySupplierId" in period)
+                        else EnergySupplierId,
+                        "MeteringPointId": period["MeteringPointId"]
+                        if ("MeteringPointId" in period)
+                        else MeteringPointId,
+                        "FromDate": period["FromDate"]
+                        if ("FromDate" in period)
+                        else FromDate,
+                        "ToDate": period["ToDate"] if ("ToDate" in period) else ToDate,
+                        "GridArea": period["GridArea"]
+                        if ("GridArea" in period)
+                        else GridArea,
+                    }
+                )
+        else:
+            df_array.append(
+                {
+                    "EnergySupplierId": EnergySupplierId,
+                    "MeteringPointId": MeteringPointId,
+                    "FromDate": FromDate,
+                    "ToDate": ToDate,
+                    "GridArea": GridArea,
+                }
+            )
+        return spark.createDataFrame(df_array)
 
     return factory
 
@@ -85,34 +114,90 @@ def metering_points_periods_df_factory(spark, timestamp_factory):
         ParentMeteringPointId="some-parent-metering-point-id",
         Unit="KWH",
         Product=1,
-        FromDate=first_of_june,
-        ToDate=third_of_june,
+        FromDate=june_1th,
+        ToDate=june_3th,
         NumberOfTimeseries="1",
         EnergyQuantity="1",
+        periods=None,
     ):
-
-        df = [
-            {
-                "MeteringPointId": MeteringPointId,
-                "MeteringPointType": MeteringPointType,
-                "SettlementMethod": SettlementMethod,
-                "GridArea": GridArea,
-                "ConnectionState": ConnectionState,
-                "Resolution": Resolution,
-                "InGridArea": InGridArea,
-                "OutGridArea": OutGridArea,
-                "MeteringMethod": MeteringMethod,
-                "NetSettlementGroup": NetSettlementGroup,
-                "ParentMeteringPointId": ParentMeteringPointId,
-                "Unit": Unit,
-                "Product": Product,
-                "FromDate": FromDate,
-                "ToDate": ToDate,
-                "NumberOfTimeseries": NumberOfTimeseries,
-                "EnergyQuantity": EnergyQuantity,
-            }
-        ]
-        return spark.createDataFrame(df)
+        # "EnergySupplierId": period["EnergySupplierId"] if ("EnergySupplierId" in period) else EnergySupplierId,
+        df_array = []
+        if periods:
+            for period in periods:
+                df_array.append(
+                    {
+                        "MeteringPointId": period["MeteringPointId"]
+                        if ("MeteringPointId" in period)
+                        else MeteringPointId,
+                        "MeteringPointType": period["MeteringPointType"]
+                        if ("MeteringPointType" in period)
+                        else MeteringPointType,
+                        "SettlementMethod": period["SettlementMethod"]
+                        if ("SettlementMethod" in period)
+                        else SettlementMethod,
+                        "GridArea": period["GridArea"]
+                        if ("GridArea" in period)
+                        else GridArea,
+                        "ConnectionState": period["ConnectionState"]
+                        if ("ConnectionState" in period)
+                        else ConnectionState,
+                        "Resolution": period["Resolution"]
+                        if ("Resolution" in period)
+                        else Resolution,
+                        "InGridArea": period["InGridArea"]
+                        if ("InGridArea" in period)
+                        else InGridArea,
+                        "OutGridArea": period["OutGridArea"]
+                        if ("OutGridArea" in period)
+                        else OutGridArea,
+                        "MeteringMethod": period["MeteringMethod"]
+                        if ("MeteringMethod" in period)
+                        else MeteringMethod,
+                        "NetSettlementGroup": period["NetSettlementGroup"]
+                        if ("NetSettlementGroup" in period)
+                        else NetSettlementGroup,
+                        "ParentMeteringPointId": period["ParentMeteringPointId"]
+                        if ("ParentMeteringPointId" in period)
+                        else ParentMeteringPointId,
+                        "Unit": period["Unit"] if ("Unit" in period) else Unit,
+                        "Product": period["Product"]
+                        if ("Product" in period)
+                        else Product,
+                        "FromDate": period["FromDate"]
+                        if ("FromDate" in period)
+                        else FromDate,
+                        "ToDate": period["ToDate"] if ("ToDate" in period) else ToDate,
+                        "NumberOfTimeseries": period["NumberOfTimeseries"]
+                        if ("NumberOfTimeseries" in period)
+                        else NumberOfTimeseries,
+                        "EnergyQuantity": period["EnergyQuantity"]
+                        if ("EnergyQuantity" in period)
+                        else EnergyQuantity,
+                    }
+                )
+        else:
+            df_array.append(
+                {
+                    "MeteringPointId": MeteringPointId,
+                    "MeteringPointType": MeteringPointType,
+                    "SettlementMethod": SettlementMethod,
+                    "GridArea": GridArea,
+                    "ConnectionState": ConnectionState,
+                    "Resolution": Resolution,
+                    "InGridArea": InGridArea,
+                    "OutGridArea": OutGridArea,
+                    "MeteringMethod": MeteringMethod,
+                    "NetSettlementGroup": NetSettlementGroup,
+                    "ParentMeteringPointId": ParentMeteringPointId,
+                    "Unit": Unit,
+                    "Product": Product,
+                    "FromDate": FromDate,
+                    "ToDate": ToDate,
+                    "NumberOfTimeseries": NumberOfTimeseries,
+                    "EnergyQuantity": EnergyQuantity,
+                }
+            )
+        return spark.createDataFrame(df_array)
 
     return factory
 
@@ -152,25 +237,122 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
     metering_points_periods_df = metering_points_periods_df_factory()
     market_roles_periods_df = market_roles_period_df_factory()
 
-    master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = _get_master_basis_data_df(
         metering_points_periods_df,
         market_roles_periods_df,
         grid_area_df,
-        first_of_june,
-        second_of_june,
+        june_1th,
+        june_2th,
     )
-    assert master_basis_data.count() == 1
+    assert raw_master_basis_data.count() == 1
 
 
 # What about market participant periods outside the selected period?
-def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with_expected_energy_supplier_and_dates():
-    pass
+def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with_expected_energy_supplier_and_dates(
+    grid_area_df, market_roles_period_df_factory, metering_points_periods_df_factory
+):
+    metering_points_periods_df = metering_points_periods_df_factory()
+    market_roles_periods_df = market_roles_period_df_factory(
+        periods=[
+            {"FromDate": june_1th, "ToDate": june_2th},
+            {"FromDate": june_2th, "ToDate": june_3th, "EnergySupplierId": "2"},
+        ]
+    )
+    raw_master_basis_data = _get_master_basis_data_df(
+        metering_points_periods_df,
+        market_roles_periods_df,
+        grid_area_df,
+        june_1th,
+        june_3th,
+    )
+    period_with_energy_suplier_1 = raw_master_basis_data.where(
+        (col("EnergySupplierGln") == 1)
+        & (col("EffectiveDate") == june_1th)
+        & (col("toEffectiveDate") == june_2th)
+    )
+
+    period_with_energy_suplier_2 = raw_master_basis_data.where(
+        (col("EnergySupplierGln") == 2)
+        & (col("EffectiveDate") == june_2th)
+        & (col("toEffectiveDate") == june_3th)
+    )
+
+    assert period_with_energy_suplier_1.count() == 1
+    assert period_with_energy_suplier_2.count() == 1
 
 
 # Both periodized energy supplier and metering point
 # Test combinations with 0, 1 and 2 periods
-def test__returns_expected_periods():
-    pass
+@pytest.mark.parametrize(
+    "market_roles_periods, metering_points_periods, expected_periods",
+    [
+        (
+            [
+                {"FromDate": june_1th, "ToDate": june_3th, "EnergySupplierId": "1"},
+                {"FromDate": june_3th, "ToDate": june_6th, "EnergySupplierId": "2"},
+                {"FromDate": june_6th, "ToDate": june_10th, "EnergySupplierId": "3"},
+            ],
+            [
+                {"FromDate": june_2th, "ToDate": june_5th},
+                {"FromDate": june_5th, "ToDate": june_7th},
+            ],
+            [
+                {
+                    "EffectiveDate": june_2th,
+                    "toEffectiveDate": june_3th,
+                    "EnergySupplierGln": "1",
+                },
+                {
+                    "EffectiveDate": june_3th,
+                    "toEffectiveDate": june_5th,
+                    "EnergySupplierGln": "2",
+                },
+                {
+                    "EffectiveDate": june_5th,
+                    "toEffectiveDate": june_6th,
+                    "EnergySupplierGln": "2",
+                },
+                {
+                    "EffectiveDate": june_6th,
+                    "toEffectiveDate": june_7th,
+                    "EnergySupplierGln": "3",
+                },
+            ],
+        ),
+    ],
+)
+def test__returns_expected_periods(
+    market_roles_periods,
+    metering_points_periods,
+    expected_periods,
+    grid_area_df,
+    market_roles_period_df_factory,
+    metering_points_periods_df_factory,
+):
+
+    metering_points_periods_df = metering_points_periods_df_factory(
+        periods=metering_points_periods
+    )
+    market_roles_periods_df = market_roles_period_df_factory(
+        periods=market_roles_periods
+    )
+
+    raw_master_basis_data = _get_master_basis_data_df(
+        metering_points_periods_df,
+        market_roles_periods_df,
+        grid_area_df,
+        june_2th,
+        june_7th,
+    )
+
+    assert raw_master_basis_data.count() == len(expected_periods)
+    for expected_period in expected_periods:
+        period = raw_master_basis_data.where(
+            (col("EnergySupplierGln") == expected_period["EnergySupplierGln"])
+            & (col("EffectiveDate") == expected_period["EffectiveDate"])
+            & (col("toEffectiveDate") == expected_period["toEffectiveDate"])
+        )
+        assert period.count() == 1
 
 
 def test__when_connection_state_is_E22__returns_metering_point_period():
