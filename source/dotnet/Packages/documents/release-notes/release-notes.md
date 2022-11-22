@@ -2,7 +2,7 @@
 
 ## Version 3.0.1
 
-Changed namespaces for files placed in `\Contracts` to better reflect they are placed in contracts, and not in `\Application`
+Changed namespace for files placed in `\Contracts` to better reflect they are placed in contracts, and not in `\Application`
 
 ## Version 3.0.0
 
