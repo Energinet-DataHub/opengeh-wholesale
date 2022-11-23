@@ -14,8 +14,7 @@
 
 using System.Net;
 using System.Net.Http.Json;
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
 using FluentAssertions;
 using Xunit;
