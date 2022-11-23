@@ -31,7 +31,7 @@ jobs:
   infrastructure_promote_prerelease:
     uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v9
     with:
-      RELEASE_NAME_PREFIX: 'shared_resources_infrastructure'
+      RELEASE_NAME_PREFIX: shared_resources_infrastructure
 
   #
   # Dispatch deployment request
@@ -65,7 +65,7 @@ jobs:
     if: |
       always() &&
       contains(needs.*.result, 'failure')
-    uses: Energinet-DataHub/.github/.github/workflows/notify-team.yml@9.1.0 # TODO: Update ref to v9 after test
+    uses: Energinet-DataHub/.github/.github/workflows/notify-team.yml@v9
     with:
       TEAM_NAME: 'TheOutlaws'
       SUBJECT: 'Deployment dispatch failed: Infrastructure - Shared Resources'
