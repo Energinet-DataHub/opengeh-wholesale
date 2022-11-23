@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
-
 namespace Energinet.DataHub.Wholesale.Contracts;
 
 public sealed record ProcessDto(
