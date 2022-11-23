@@ -455,15 +455,13 @@ def test__master_basis_data_file_matches_contract(
 #     assert re.match(expected_path_expression, actual_file_path)
 
 
-# @patch("package.calculator_job._get_valid_args_or_throw")
-# @patch("package.calculator_job.islocked")
-# def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked, mock_args_parser):
-#     # Arrange
-#     mock_islocked.return_value = True
-
-#     # Act
-#     with pytest.raises(SystemExit) as excinfo:
-#         start()
-
-#     # Assert
-#     assert excinfo.value.code == 3
+@patch("package.calculator_job._get_valid_args_or_throw")
+@patch("package.calculator_job.islocked")
+def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked, mock_args_parser):
+    # Arrange
+    mock_islocked.return_value = True
+    # Act
+    with pytest.raises(SystemExit) as excinfo:
+        start()
+    # Assert
+    assert excinfo.value.code == 3
