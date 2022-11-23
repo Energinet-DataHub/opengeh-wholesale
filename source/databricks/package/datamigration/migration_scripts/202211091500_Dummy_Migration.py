@@ -15,5 +15,5 @@
 from pyspark.sql import SparkSession
 
 
-def apply(storage_account_name: str, storage_account_key: str, spark: SparkSession):
+def apply(storage_account_url: str, storage_account_key: str, spark: SparkSession):
     print("Applying dummy migration")

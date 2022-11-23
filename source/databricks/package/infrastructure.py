@@ -15,3 +15,7 @@
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
+
+
+def get_storage_account_url(storage_account_name: str) -> str:
+    return f"https://{storage_account_name}.dfs.core.windows.net"

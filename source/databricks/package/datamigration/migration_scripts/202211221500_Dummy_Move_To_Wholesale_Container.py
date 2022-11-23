@@ -17,10 +17,9 @@ from pyspark.sql import SparkSession
 
 
 def apply(
-    storage_account_name: str, storage_account_key: str, spark: SparkSession
+    storage_account_url: str, storage_account_key: str, spark: SparkSession
 ) -> None:
 
-    storage_account_url = storage_account_name
     source_container = "processes"
     source_directory = "my_test_dir"
     destination_container = "wholesale"
