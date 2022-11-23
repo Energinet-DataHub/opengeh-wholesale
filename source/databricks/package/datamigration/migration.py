@@ -47,6 +47,8 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
 
 
 def _apply_migrations(
+    storage_account_name: str,
+    storage_account_key: str,
     spark: SparkSession,
     file_manager: DataLakeFileManager,
     uncommitted_migrations: list[str],
@@ -56,7 +58,7 @@ def _apply_migrations(
         migration = importlib.import_module(
             "package.datamigration.migration_scripts." + name
         )
-        migration.apply(spark)
+        migration.apply(storage_account_name, storage_account_key, spark)
         upload_committed_migration(file_manager, name)
 
 
@@ -74,7 +76,14 @@ def _migrate_data_lake(command_line_args: list[str]) -> None:
     )
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
-    _apply_migrations(spark, file_manager, uncommitted_migrations)
+
+    _apply_migrations(
+        args.data_storage_account_name,
+        args.data_storage_account_key,
+        spark,
+        file_manager,
+        uncommitted_migrations,
+    )
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
