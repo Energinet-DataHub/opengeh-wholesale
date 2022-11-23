@@ -221,38 +221,49 @@ def _get_master_basis_data_df(
             )
             & (
                 market_roles_periods_df["FromDate"]
-                <= metering_point_periods_df["ToDate"]
+                < metering_point_periods_df["ToDate"]
             )
             & (
                 metering_point_periods_df["FromDate"]
-                <= market_roles_periods_df["ToDate"]
+                < market_roles_periods_df["ToDate"]
             ),
             "left",
         )
-        # market from <=meteringTo
-        # metering from <= marketto
         .withColumn(
             "EffectiveDate",
             greatest(
                 metering_point_periods_df["FromDate"],
                 market_roles_periods_df["FromDate"],
             ),
-        ).withColumn(
+        )
+        .withColumn(
             "toEffectiveDate",
             least(
                 metering_point_periods_df["ToDate"], market_roles_periods_df["ToDate"]
             ),
         )
+        .withColumn(
+            "EffectiveDate",
+            when(
+                col("EffectiveDate") < period_start_datetime, period_start_datetime
+            ).otherwise(col("EffectiveDate")),
+        )
+        .withColumn(
+            "toEffectiveDate",
+            when(
+                col("toEffectiveDate") > period_end_datetime, period_end_datetime
+            ).otherwise(col("toEffectiveDate")),
+        )
     )
     # this should be removed (is just keept for debuging)
     # master_basis_data_df.select(
-    #    metering_point_periods_df["FromDate"].alias("metering_From"),
-    #    metering_point_periods_df["ToDate"].alias("metering_To"),
-    #    market_roles_periods_df["EnergySupplierId"],
-    #    market_roles_periods_df["FromDate"].alias("market_From"),
-    #    market_roles_periods_df["ToDate"].alias("market_To"),
-    #    "EffectiveDate",
-    #    "toEffectiveDate",
+    #     metering_point_periods_df["FromDate"].alias("metering_From"),
+    #     metering_point_periods_df["ToDate"].alias("metering_To"),
+    #     market_roles_periods_df["EnergySupplierId"],
+    #     market_roles_periods_df["FromDate"].alias("market_From"),
+    #     market_roles_periods_df["ToDate"].alias("market_To"),
+    #     "EffectiveDate",
+    #     "toEffectiveDate",
     # ).show()
     master_basis_data_df = master_basis_data_df.select(
         metering_point_periods_df["MeteringPointId"].alias("GsrnNumber"),
@@ -266,7 +277,6 @@ def _get_master_basis_data_df(
         "Resolution",
         market_roles_periods_df["EnergySupplierId"].alias("EnergySupplierGln"),
     )
-    master_basis_data_df.show()
     debug(
         "Metering point events before join with grid areas",
         metering_point_periods_df.orderBy(col("FromDate").desc()),
@@ -278,7 +288,6 @@ def _get_master_basis_data_df(
             col("GridAreaCode"), col("MeteringPointId"), col("FromDate")
         ),
     )
-
     return master_basis_data_df
 
 
