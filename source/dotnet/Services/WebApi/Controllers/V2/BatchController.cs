@@ -77,48 +77,4 @@ public class BatchController : ControllerBase
         var stream = await _basisDataApplicationService.GetZippedBasisDataStreamAsync(batchId).ConfigureAwait(false);
         return Ok(stream);
     }
-
-    /// <summary>
-    /// Get the steps for a specific batch id and grid area code
-    /// </summary>
-    /// <param name="batchId">Batch number</param>
-    /// <param name="gridAreaCode">Grid area code</param>
-    /// <returns><see cref="ProcessDto"/></returns>
-    [HttpGet("GetProcess")]
-    [MapToApiVersion(Version)]
-    public Task<IActionResult> GetProcessAsync([FromBody] string batchId, string gridAreaCode)
-    {
-        var process = new ProcessDto(
-            BatchState.Completed,
-            WholesaleProcessType.BalanceFixing,
-            new GridAreaDto("123"),
-            new ProcessStepDto[]
-            {
-                new(25),
-            });
-        return Task.FromResult<IActionResult>(Ok(process));
-    }
-
-    /// <summary>
-    /// Get the steps for a specific batch id and grid area code
-    /// </summary>
-    /// <param name="batchId">Batch number</param>
-    /// <param name="gridAreaCode">Grid area code</param>
-    /// <param name="stepNumber">Step number</param>
-    /// <returns><see cref="ProcessStepResultDto"/></returns>
-    [HttpGet("GetProcessStepResult")]
-    [MapToApiVersion(Version)]
-    public Task<IActionResult> GetProcessStepResultAsync([FromBody] string batchId, string gridAreaCode, int stepNumber)
-    {
-        var n = stepNumber;
-        var processStepResult = new ProcessStepResultDto(
-            MeteringPointType.Production,
-            new DateTimeOffset(DateTime.Now),
-            new DateTimeOffset(DateTime.Now),
-            new decimal(1.1),
-            new decimal(1.1),
-            new decimal(1.1),
-            new TimeSeriesPointDto[] { new TimeSeriesPointDto(new DateTimeOffset(DateTime.Now), new decimal(1.1)) });
-        return Task.FromResult<IActionResult>(Ok(processStepResult));
-    }
 }
