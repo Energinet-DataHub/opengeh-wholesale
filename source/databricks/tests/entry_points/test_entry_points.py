@@ -30,16 +30,6 @@ def test__entry_point__uncommitted_migrations_count__returns_0(installed_package
     assert exit_code == 0
 
 
-def test__entry_point__stop_db_jobs__returns_0(installed_package):
-    exit_code = subprocess.call(["stop_db_jobs", "-h"])
-    assert exit_code == 0
-
-
-def test__entry_point__start_db_jobs__returns_0(installed_package):
-    exit_code = subprocess.call(["start_db_jobs", "-h"])
-    assert exit_code == 0
-
-
 def test__entry_point__lock_storage__returns_0(installed_package):
     exit_code = subprocess.call(["lock_storage", "-h"])
     assert exit_code == 0
