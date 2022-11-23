@@ -62,11 +62,11 @@ METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
-    metering_points_periods_df,
-    market_roles_periods_df,
-    raw_integration_events_df,
-    all_time_series_points_df,
-    batch_grid_areas_df,
+    metering_points_periods_df: DataFrame,
+    market_roles_periods_df: DataFrame,
+    raw_integration_events_df: DataFrame,
+    all_time_series_points_df: DataFrame,
+    batch_grid_areas_df: DataFrame,
     batch_snapshot_datetime,
     period_start_datetime,
     period_end_datetime,
@@ -189,9 +189,9 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
 
 
 def _get_master_basis_data_df(
-    metering_points_periods_df,
-    market_roles_periods_df,
-    grid_area_df,
+    metering_points_periods_df: DataFrame,
+    market_roles_periods_df: DataFrame,
+    grid_area_df: DataFrame,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:
@@ -293,8 +293,8 @@ def _get_master_basis_data_df(
 
 # TODO: Unused. Remove
 def _get_metering_point_periods_df(
-    cached_integration_events_df,
-    grid_area_df,
+    cached_integration_events_df: DataFrame,
+    grid_area_df: DataFrame,
     period_start_datetime,
     period_end_datetime,
 ) -> DataFrame:

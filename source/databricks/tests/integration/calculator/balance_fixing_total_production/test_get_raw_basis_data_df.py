@@ -203,7 +203,9 @@ def metering_points_periods_df_factory(spark) -> Callable[[], DataFrame]:
 
 
 def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
-    grid_area_df, market_roles_period_df_factory, metering_points_periods_df_factory
+    grid_area_df: DataFrame,
+    market_roles_period_df_factory: Callable[[], DataFrame],
+    metering_points_periods_df_factory: Callable[[], DataFrame],
 ):
     metering_points_periods_df = metering_points_periods_df_factory()
     market_roles_periods_df = market_roles_period_df_factory()
@@ -220,7 +222,9 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
 
 # What about market participant periods outside the selected period?
 def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with_expected_energy_supplier_and_dates(
-    grid_area_df, market_roles_period_df_factory, metering_points_periods_df_factory
+    grid_area_df: DataFrame,
+    market_roles_period_df_factory: Callable[[], DataFrame],
+    metering_points_periods_df_factory: Callable[[], DataFrame],
 ):
     metering_points_periods_df = metering_points_periods_df_factory()
     metering_points_periods_df
