@@ -77,7 +77,7 @@ def test__upload_committed_migration__when_migration_state_file_do_not_exist__cr
     mock_file_manager,
 ):
     # Arrange
-    mock_file_manager.file_exists.return_value = False
+    mock_file_manager.exists_file.return_value = False
     mock_file_manager.download_csv.return_value = create_csv_reader_with_data("")
 
     # Act
@@ -94,7 +94,7 @@ def test__upload_committed_migrations__when_migration_state_file_exists__do_not_
     mock_file_manager,
 ):
     # Arrange
-    mock_file_manager.file_exists.return_value = True
+    mock_file_manager.exists_file.return_value = True
     string_data = "aaa"
     mock_file_manager.download_csv.return_value = create_csv_reader_with_data(
         string_data
@@ -112,7 +112,7 @@ def test__upload_committed_migration__when_unexpected_columns_in_csv__raise_exce
     mock_file_manager,
 ):
     # Arrange
-    mock_file_manager.file_exists.return_value = True
+    mock_file_manager.exists_file.return_value = True
     string_data = "aaa,bbb\r\nccc,ddd"
     mock_file_manager.download_csv.return_value = create_csv_reader_with_data(
         string_data
@@ -129,7 +129,7 @@ def test__upload_committed_migration__when_file_is_empty__dont_try_downloading_c
     mock_file_manager,
 ):
     # Arrange
-    mock_file_manager.file_exists.return_value = True
+    mock_file_manager.exists_file.return_value = True
     mock_file_manager.get_file_size.return_value = 0
 
     # Act
