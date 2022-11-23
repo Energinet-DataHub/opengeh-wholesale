@@ -120,7 +120,7 @@ jobs:
   dispatch_failed:
     needs: [
       databricks_promote_prerelease,
-      dotnet_promote_prerelease
+      dotnet_promote_prerelease,
       dispatch_deploment_event,
     ]
     if: |
