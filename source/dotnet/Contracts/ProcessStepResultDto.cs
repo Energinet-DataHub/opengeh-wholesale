@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
-
-public sealed record ProcessStepMetaDataDto(
+public sealed record ProcessStepResultDto(
     MeteringPointType MeteringPointType,
-    Instant CalculationPeriodStart,
-    Instant CalculationPeriodEnd,
+    DateTimeOffset CalculationPeriodStart,
+    DateTimeOffset CalculationPeriodEnd,
     decimal Sum,
     decimal Min,
     decimal Max,

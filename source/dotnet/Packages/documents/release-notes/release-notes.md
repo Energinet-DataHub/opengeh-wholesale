@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 3.1.0
+
+Added `ProcessDto`, `ProcessSteopDto`, `ProcessStepResultDto`, `TimeSeriesPointDto` and `MeteringPointType` to help navigation and presentation of results.
+
 ## Version 3.0.1
 
 Changed `namespace` for files placed in `\Contracts` to better reflect they are placed in contracts, and not in `\Application`.

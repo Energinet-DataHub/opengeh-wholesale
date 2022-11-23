@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
-
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Contracts;
 
 public sealed record TimeSeriesPointDto(
-    Instant Time,
+    DateTimeOffset Time,
     decimal Quantity);
