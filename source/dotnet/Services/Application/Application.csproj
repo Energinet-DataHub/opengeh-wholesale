@@ -54,11 +54,11 @@ limitations under the License.
     <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
       <Link>Batches\ProcessStepResultDto.cs</Link>
     </Compile>
+    <Compile Include="..\..\Contracts\ProcessType.cs">
+      <Link>Processes\ProcessType.cs</Link>
+    </Compile>
     <Compile Include="..\..\Contracts\TimeSeriesPointDto.cs">
       <Link>Batches\TimeSeriesPointDto.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\WholesaleProcessType.cs">
-      <Link>Processes\WholesaleProcessType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Batches\BatchState.cs</Link>

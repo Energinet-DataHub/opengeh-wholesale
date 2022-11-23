@@ -17,10 +17,10 @@ namespace Energinet.DataHub.Wholesale.Contracts;
 /// <summary>
 /// Defines the wholesale process type
 /// </summary>
-public enum WholesaleProcessType
+public enum ProcessType
 {
     /// <summary>
     /// Balance fixing
     /// </summary>
-    BalanceFixing,
+    BalanceFixing = 0,
 }
