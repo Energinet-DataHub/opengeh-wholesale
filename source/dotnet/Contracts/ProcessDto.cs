@@ -20,4 +20,4 @@ public sealed record ProcessDto(
     BatchState State,
     WholesaleProcessType Type,
     GridAreaDto GridArea,
-    ProcessStepDto[] Processes);
+    ProcessStepDto[] ProcessSteps);
