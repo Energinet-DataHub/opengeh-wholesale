@@ -33,7 +33,7 @@ def upload_committed_migration(
 ) -> None:
     """Upload file with migration state from datalake and return a list of already committed migrations"""
 
-    if not file_manager.file_exists(COMMITTED_MIGRATIONS_FILE_NAME):
+    if not file_manager.exists_file(COMMITTED_MIGRATIONS_FILE_NAME):
         file_manager.create_file(COMMITTED_MIGRATIONS_FILE_NAME)
     else:
         _validate_number_of_columns_in_csv(file_manager)
