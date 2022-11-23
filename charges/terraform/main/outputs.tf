@@ -13,7 +13,7 @@
 # limitations under the License.
 output ms_charges_connection_string {
   description = "Connection string of the charges database created in the shared server"
-  value       = local.MS_CHARGE_DB_CONNECTION_STRING
+  value       = local.MS_CHARGE_DB_CONNECTION_STRING_SQL_AUTH
   sensitive   = true
 }
 

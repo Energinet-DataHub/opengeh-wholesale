@@ -14,7 +14,7 @@
 
 output ms_wholesale_connection_string {
   description = "Connection string of the wholesale database created in the shared server"
-  value       = local.DB_CONNECTION_STRING
+  value       = local.DB_CONNECTION_STRING_SQL_AUTH
   sensitive   = true
 }
 

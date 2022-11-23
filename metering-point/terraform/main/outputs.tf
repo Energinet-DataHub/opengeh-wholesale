@@ -13,7 +13,7 @@
 # limitations under the License.
 output ms_metering_point_connection_string {
   description = "Connection string of the metering point database created in the shared server"
-  value       = local.MS_METERING_POINT_CONNECTION_STRING
+  value       = local.MS_METERING_POINT_CONNECTION_STRING_SQL_AUTH
   sensitive   = true
 }
 

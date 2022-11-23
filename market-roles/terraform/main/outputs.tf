@@ -13,7 +13,7 @@
 # limitations under the License.
 output ms_marketroles_connection_string {
   description = "Connectionstring to the database in the shared sql server"
-  value = local.MS_MARKETROLES_CONNECTION_STRING 
+  value = local.MS_MARKETROLES_CONNECTION_STRING_SQL_AUTH 
   sensitive = true
 }
 
