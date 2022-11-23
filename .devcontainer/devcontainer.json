@@ -16,7 +16,8 @@
 		"Gruntfuggly.todo-tree",
 		"DavidAnson.vscode-markdownlint",
 		"kevinglasson.cornflakes-linter",
-		"KevinRose.vsc-python-indent"
+		"KevinRose.vsc-python-indent",
+		"sonarsource.sonarlint-vscode"
 	],
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
