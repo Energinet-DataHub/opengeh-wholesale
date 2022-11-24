@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 3.2.0
+
+Added a new `BatchController.GetBatchAsync(batchId)` which returns a single batch
+
 ## Version 3.1.0
 
 Added `ProcessDto`, `ProcessSteopDto`, `ProcessStepResultDto`, `TimeSeriesPointDto`, `ProcessStep` and `MeteringPointType` to help navigation and presentation of results.
