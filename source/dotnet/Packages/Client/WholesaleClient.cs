@@ -61,4 +61,15 @@ public class WholesaleClient : IWholesaleClient
             throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
         return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
     }
+
+    public async Task<BatchDtoV2?> GetBatchAsync(Guid batchId)
+    {
+        var response = await _httpClient.GetAsync($"v2/Batch?batchId={batchId}").ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
+
+        var batch = await response.Content.ReadFromJsonAsync<BatchDtoV2>().ConfigureAwait(false);
+        return batch;
+    }
 }

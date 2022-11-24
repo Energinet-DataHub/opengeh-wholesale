@@ -45,11 +45,12 @@ public class BatchController : ControllerBase
     /// </summary>
     /// <returns>Always 200 OK</returns>
     [HttpPost]
+    [Produces("text/plain")]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> CreateAsync([FromBody] BatchRequestDto batchRequestDto)
     {
-        await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
-        return Ok();
+        var batchId = await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
+        return Ok(batchId.ToString());
     }
 
     /// <summary>
@@ -76,5 +77,18 @@ public class BatchController : ControllerBase
     {
         var stream = await _basisDataApplicationService.GetZippedBasisDataStreamAsync(batchId).ConfigureAwait(false);
         return Ok(stream);
+    }
+
+    /// <summary>
+    /// Returns a batch matching <paramref name="batchId"/>
+    /// </summary>
+    /// <param name="batchId">BatchId</param>
+    [HttpGet]
+    [MapToApiVersion(Version)]
+    public async Task<IActionResult> GetAsync(Guid batchId)
+    {
+        var batchDto = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
+        var batchDtoV2 = _batchDtoV2Mapper.Map(batchDto);
+        return Ok(batchDtoV2);
     }
 }
