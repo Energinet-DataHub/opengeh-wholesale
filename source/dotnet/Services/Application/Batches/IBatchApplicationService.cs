@@ -22,6 +22,8 @@ public interface IBatchApplicationService
     /// <summary>
     /// Create a new batch with state <see cref="BatchExecutionState.Created"/>.
     /// </summary>
+    /// <param name="batchRequestDto"></param>
+    /// <returns>the batchId</returns>
     Task<Guid> CreateAsync(BatchRequestDto batchRequestDto);
 
     /// <summary>
