@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+namespace Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
-
-// Is this the "same" kind of process as a batch's process?
-public interface IProcessApplicationService
+public enum ProcessStepType
 {
-    Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent);
+    AggregateProductionPerGridArea = 25,
 }
