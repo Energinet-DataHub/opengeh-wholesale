@@ -60,6 +60,7 @@ public class BatchApplicationService : IBatchApplicationService
             _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
         };
         var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);
+        // After we create the batch, we can create the corresponding process in the database (ProcessApplicationService.Create()?)
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
