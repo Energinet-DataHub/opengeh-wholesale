@@ -72,7 +72,7 @@ public sealed class BatchApplicationServiceTests
         const string gridAreaCode = "123";
 
         // Act
-        await target.CreateAsync(new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
+        await target.CreateAsync(new BatchRequestDto(ProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
@@ -102,7 +102,7 @@ public sealed class BatchApplicationServiceTests
         const string gridAreaCode = "456";
 
         // Act
-        await target.CreateAsync(new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
+        await target.CreateAsync(new BatchRequestDto(ProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
@@ -132,7 +132,7 @@ public sealed class BatchApplicationServiceTests
         const string gridAreaCode = "789";
 
         // Act
-        await target.CreateAsync(new BatchRequestDto(WholesaleProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
+        await target.CreateAsync(new BatchRequestDto(ProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 

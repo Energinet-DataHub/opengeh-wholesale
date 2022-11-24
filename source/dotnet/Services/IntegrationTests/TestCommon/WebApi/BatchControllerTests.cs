@@ -61,7 +61,7 @@ public class BatchControllerTests :
         var periodStart = DateTimeOffset.Now;
         var periodEnd = periodStart.AddHours(1);
         var batchRequest = new BatchRequestDto(
-            WholesaleProcessType.BalanceFixing,
+            ProcessType.BalanceFixing,
             new List<string> { "805" },
             periodStart,
             periodEnd);
