@@ -15,4 +15,4 @@
 namespace Energinet.DataHub.Wholesale.Contracts;
 
 public sealed record ProcessStepDto(
-    int Number);
+    ProcessStep Number);

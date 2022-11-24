@@ -45,6 +45,9 @@ limitations under the License.
     <Compile Include="..\..\Contracts\ProcessDto.cs">
       <Link>Batches\ProcessDto.cs</Link>
     </Compile>
+    <Compile Include="..\..\Contracts\ProcessStep.cs">
+      <Link>Batches\ProcessStep.cs</Link>
+    </Compile>
     <Compile Include="..\..\Contracts\ProcessStepDto.cs">
       <Link>Batches\ProcessStepDto.cs</Link>
     </Compile>

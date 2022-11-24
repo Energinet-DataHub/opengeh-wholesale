@@ -14,4 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts;
 
-public sealed record GridAreaDto(string GridAreaCode);
+public enum ProcessStep
+{
+    AggregateProductionPerGridArea = 25,
+}
