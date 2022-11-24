@@ -12,20 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
-
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Contracts;
 
 /// <summary>
-/// An immutable batch.
+/// TimeSeriesPoint
 /// </summary>
-public sealed record BatchDto(
-    long? RunId,
-    Guid BatchId,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    DateTimeOffset? ExecutionTimeStart,
-    DateTimeOffset? ExecutionTimeEnd,
-    BatchState ExecutionState,
-    bool IsBasisDataDownloadAvailable,
-    string[] GridAreaCodes);
+/// <param name="Time"></param>
+/// <param name="Quantity">Quantity should have a scale of 6</param>
+public sealed record TimeSeriesPointDto(
+    DateTimeOffset Time,
+    decimal Quantity);

@@ -31,7 +31,7 @@ public class BatchDtoMapper : IBatchDtoMapper
             batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
             MapState(batch.ExecutionState),
             batch.IsBasisDataDownloadAvailable,
-            MapGridAreas(batch.GridAreaCodes));
+            MapGridAreaCodes(batch.GridAreaCodes));
     }
 
     private static BatchState MapState(BatchExecutionState state)
@@ -48,8 +48,8 @@ public class BatchDtoMapper : IBatchDtoMapper
         };
     }
 
-    private static GridAreaDto[] MapGridAreas(IReadOnlyCollection<GridAreaCode> gridAreaCodes)
+    private static string[] MapGridAreaCodes(IReadOnlyCollection<GridAreaCode> gridAreaCodes)
     {
-        return gridAreaCodes.Select(gridArea => new GridAreaDto(gridArea.Code)).ToArray();
+        return gridAreaCodes.Select(gridArea => gridArea.Code).ToArray();
     }
 }
