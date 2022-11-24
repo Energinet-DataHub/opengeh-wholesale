@@ -2,7 +2,7 @@
 
 ## Version 3.1.0
 
-Added `ProcessDto`, `ProcessSteopDto`, `ProcessStepResultDto`, `TimeSeriesPointDto` and `MeteringPointType` to help navigation and presentation of results.
+Added `ProcessDto`, `ProcessSteopDto`, `ProcessStepResultDto`, `TimeSeriesPointDto`, `ProcessStep` and `MeteringPointType` to help navigation and presentation of results.
 
 ## Version 3.0.1
 
