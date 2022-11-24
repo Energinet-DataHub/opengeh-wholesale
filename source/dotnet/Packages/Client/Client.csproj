@@ -81,14 +81,14 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Model\BatchState.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\GridAreaDto.cs">
-      <Link>Dtos\GridAreaDto.cs</Link>
-    </Compile>
     <Compile Include="..\..\Contracts\MeteringPointType.cs">
       <Link>Model\MeteringPointType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessDto.cs">
       <Link>Dtos\ProcessDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStep.cs">
+      <Link>Model\ProcessStep.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepDto.cs">
       <Link>Dtos\ProcessStepDto.cs</Link>
