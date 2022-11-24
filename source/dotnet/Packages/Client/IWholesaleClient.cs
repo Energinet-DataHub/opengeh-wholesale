@@ -31,4 +31,6 @@ public interface IWholesaleClient
     Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(BatchSearchDto batchSearchDto);
 
     Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId);
+
+    Task<BatchDtoV2?> GetBatchAsync(Guid batchId);
 }
