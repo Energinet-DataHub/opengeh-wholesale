@@ -77,4 +77,17 @@ public class BatchController : ControllerBase
         var stream = await _basisDataApplicationService.GetZippedBasisDataStreamAsync(batchId).ConfigureAwait(false);
         return Ok(stream);
     }
+
+    /// <summary>
+    /// Returns a batch matching <paramref name="batchId"/>
+    /// </summary>
+    /// <param name="batchId">BatchId</param>
+    [HttpPost("Batch")]
+    [MapToApiVersion(Version)]
+    public async Task<IActionResult> GetAsync([FromBody] Guid batchId)
+    {
+        var batchDto = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
+        var batchDtoV2 = _batchDtoV2Mapper.Map(batchDto);
+        return Ok(batchDtoV2);
+    }
 }

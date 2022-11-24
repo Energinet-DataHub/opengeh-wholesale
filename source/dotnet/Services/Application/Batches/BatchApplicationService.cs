@@ -94,4 +94,10 @@ public class BatchApplicationService : IBatchApplicationService
             .ConfigureAwait(false);
         return batches.Select(_batchDtoMapper.Map);
     }
+
+    public async Task<BatchDto> GetAsync(Guid batchId)
+    {
+        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
+        return _batchDtoMapper.Map(batch);
+    }
 }

@@ -32,4 +32,6 @@ public interface IBatchApplicationService
     Task UpdateExecutionStateAsync();
 
     Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto);
+
+    Task<BatchDto> GetAsync(Guid batchId);
 }
