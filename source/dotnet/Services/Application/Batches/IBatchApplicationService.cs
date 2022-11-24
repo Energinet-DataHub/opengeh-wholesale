@@ -22,7 +22,7 @@ public interface IBatchApplicationService
     /// <summary>
     /// Create a new batch with state <see cref="BatchExecutionState.Created"/>.
     /// </summary>
-    Task CreateAsync(BatchRequestDto batchRequestDto);
+    Task<Guid> CreateAsync(BatchRequestDto batchRequestDto);
 
     /// <summary>
     /// Create and start all processes of batches with state <see cref="BatchExecutionState.Submitted"/>.

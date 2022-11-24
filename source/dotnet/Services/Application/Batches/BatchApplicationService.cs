@@ -52,7 +52,7 @@ public class BatchApplicationService : IBatchApplicationService
         _batchDtoMapper = batchDtoMapper;
     }
 
-    public async Task CreateAsync(BatchRequestDto batchRequestDto)
+    public async Task<Guid> CreateAsync(BatchRequestDto batchRequestDto)
     {
         var processType = batchRequestDto.ProcessType switch
         {
@@ -62,6 +62,7 @@ public class BatchApplicationService : IBatchApplicationService
         var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        return batch.Id;
     }
 
     public async Task StartSubmittingAsync()

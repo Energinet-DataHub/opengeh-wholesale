@@ -97,4 +97,27 @@ public class BatchControllerTests :
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
+
+    [Theory]
+    [InlineData("/v2/batch")]
+    public async Task GetAsync_WhenCalled_ReturnsOk(string baseUrl)
+    {
+        // Arrange
+        var periodStart = DateTimeOffset.Now;
+        var periodEnd = periodStart.AddHours(1);
+        var batchRequest = new BatchRequestDto(
+            ProcessType.BalanceFixing,
+            new List<string> { "805" },
+            periodStart,
+            periodEnd);
+        var responseCreateAsync = await _client.PostAsJsonAsync(baseUrl, batchRequest, CancellationToken.None);
+        var batchId = new Guid(await responseCreateAsync.Content.ReadAsStringAsync());
+
+        // Act
+        var batchUrl = $"{baseUrl}/Batch?batchId={batchId}";
+        var response = await _client.GetAsync(batchUrl);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 }
