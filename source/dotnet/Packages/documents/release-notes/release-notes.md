@@ -2,7 +2,7 @@
 
 ## Version 3.2.0
 
-Added a new `BatchController.GetBatchAsync` which returns a single batch
+Added a new `BatchController.GetBatchAsync(batchId)` which returns a single batch
 
 ## Version 3.1.0
 
