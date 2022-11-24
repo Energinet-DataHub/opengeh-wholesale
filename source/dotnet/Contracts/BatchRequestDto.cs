@@ -17,4 +17,4 @@ namespace Energinet.DataHub.Wholesale.Contracts;
 /// <summary>
 /// An immutable request to create a batch.
 /// </summary>
-public sealed record BatchRequestDto(WholesaleProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);
+public sealed record BatchRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);

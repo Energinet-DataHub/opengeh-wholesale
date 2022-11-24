@@ -39,11 +39,26 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchSearchDto.cs">
       <Link>Batches\BatchSearchDto.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\GridAreaDto.cs">
-      <Link>Batches\GridAreaDto.cs</Link>
+    <Compile Include="..\..\Contracts\MeteringPointType.cs">
+      <Link>Batches\MeteringPointType.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\WholesaleProcessType.cs">
-      <Link>Processes\WholesaleProcessType.cs</Link>
+    <Compile Include="..\..\Contracts\ProcessDto.cs">
+      <Link>Batches\ProcessDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepDto.cs">
+      <Link>Batches\ProcessStepDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
+      <Link>Batches\ProcessStepResultDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepType.cs">
+      <Link>Batches\ProcessStepType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessType.cs">
+      <Link>Processes\ProcessType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\TimeSeriesPointDto.cs">
+      <Link>Batches\TimeSeriesPointDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Batches\BatchState.cs</Link>

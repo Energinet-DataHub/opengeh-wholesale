@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using NodaTime;
+using ProcessType = Energinet.DataHub.Wholesale.Contracts.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
@@ -55,7 +56,7 @@ public class BatchApplicationService : IBatchApplicationService
     {
         var processType = batchRequestDto.ProcessType switch
         {
-            WholesaleProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            ProcessType.BalanceFixing => Domain.ProcessAggregate.ProcessType.BalanceFixing,
             _ => throw new NotImplementedException($"Process type '{batchRequestDto.ProcessType}' not supported."),
         };
         var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);

@@ -24,7 +24,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Client</PackageId>
-    <PackageVersion>3.0.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>3.1.1$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Client</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -81,11 +81,26 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Model\BatchState.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\GridAreaDto.cs">
-      <Link>Dtos\GridAreaDto.cs</Link>
+    <Compile Include="..\..\Contracts\MeteringPointType.cs">
+      <Link>Model\MeteringPointType.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\WholesaleProcessType.cs">
-      <Link>Model\WholesaleProcessType.cs</Link>
+    <Compile Include="..\..\Contracts\ProcessDto.cs">
+      <Link>Dtos\ProcessDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepDto.cs">
+      <Link>Dtos\ProcessStepDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
+      <Link>Dtos\ProcessStepResultDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepType.cs">
+      <Link>Model\ProcessStepType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessType.cs">
+      <Link>Model\ProcessType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\TimeSeriesPointDto.cs">
+      <Link>Dtos\TimeSeriesPointDto.cs</Link>
     </Compile>
   </ItemGroup>
 </Project>
