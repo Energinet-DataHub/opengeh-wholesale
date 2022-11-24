@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts;
 
-public enum ProcessStep
+public enum ProcessStepType
 {
     AggregateProductionPerGridArea = 25,
 }
