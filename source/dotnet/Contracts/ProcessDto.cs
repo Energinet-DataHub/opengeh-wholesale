@@ -17,5 +17,5 @@ namespace Energinet.DataHub.Wholesale.Contracts;
 public sealed record ProcessDto(
     BatchState State,
     ProcessType Type,
-    GridAreaDto GridArea,
+    string GridAreaCode,
     ProcessStepDto[] ProcessSteps);

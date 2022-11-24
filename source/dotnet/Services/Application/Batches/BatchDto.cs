@@ -28,4 +28,4 @@ public sealed record BatchDto(
     DateTimeOffset? ExecutionTimeEnd,
     BatchState ExecutionState,
     bool IsBasisDataDownloadAvailable,
-    GridAreaDto[] GridAreas);
+    string[] GridAreaCodes);
