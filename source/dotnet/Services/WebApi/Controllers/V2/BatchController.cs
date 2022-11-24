@@ -83,7 +83,7 @@ public class BatchController : ControllerBase
     /// Returns a batch matching <paramref name="batchId"/>
     /// </summary>
     /// <param name="batchId">BatchId</param>
-    [HttpGet("Batch")]
+    [HttpGet]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> GetAsync(Guid batchId)
     {

@@ -114,7 +114,7 @@ public class BatchControllerTests :
         var batchId = await responseCreateAsync.Content.ReadAsStringAsync();
 
         // Act
-        var batchUrl = $"{baseUrl}/Batch?batchId={batchId}";
+        var batchUrl = $"{baseUrl}?batchId={batchId}";
         var response = await _client.GetAsync(batchUrl);
 
         // Assert
