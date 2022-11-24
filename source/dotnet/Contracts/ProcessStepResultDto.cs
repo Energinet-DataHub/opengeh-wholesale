@@ -18,16 +18,12 @@ namespace Energinet.DataHub.Wholesale.Contracts;
 /// Result data from a specific step in a process
 /// </summary>
 /// <param name="MeteringPointType"></param>
-/// <param name="CalculationPeriodStart"></param>
-/// <param name="CalculationPeriodEnd"></param>
 /// <param name="Sum">Sum should have a scale of 6</param>
 /// <param name="Min">Min should have a scale of 6</param>
 /// <param name="Max">Max should have a scale of 6</param>
 /// <param name="TimeSeriesPoints"></param>
 public sealed record ProcessStepResultDto(
     MeteringPointType MeteringPointType,
-    DateTimeOffset CalculationPeriodStart,
-    DateTimeOffset CalculationPeriodEnd,
     decimal Sum,
     decimal Min,
     decimal Max,
