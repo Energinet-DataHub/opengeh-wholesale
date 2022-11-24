@@ -319,7 +319,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                 {"EDate": june_6th, "toEDate": june_7th, "ESGln": "3", "SetM": "D02"},
             ],
         ),
-        # when_connection_state_is_not_E22__returns_no period
+        # when_connection_state_is_not_E22_Or_E23__returns_no period
         (
             {"start": june_1th, "end": june_10th},
             [
@@ -336,13 +336,14 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                 {"FromDate": june_4th, "ToDate": june_5th, "ConnectionState": "D03"},
                 # connected
                 {"FromDate": june_5th, "ToDate": june_6th, "ConnectionState": "E22"},
-                # disconnected
+                # disconnected TODO: LRN den vi have inkluderet.
                 {"FromDate": june_6th, "ToDate": june_7th, "ConnectionState": "E23"},
             ],
             [
                 {"EDate": june_5th, "toEDate": june_6th, "ESGln": "2", "SetM": "D01"},
             ],
         ),
+        # when_periods_connection_state_is_closed_down_period_is_not_includded
     ],
 )
 def test__returns_expected_periods(
