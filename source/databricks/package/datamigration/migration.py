@@ -16,9 +16,9 @@ import sys
 import configargparse
 import importlib
 from pyspark.sql.session import SparkSession
-from package import log, initialize_spark
+from package import infrastructure, log, initialize_spark
 from package.args_helper import valid_log_level
-from package.infrastructure import WHOLESALE_CONTAINER_NAME
+from .migration_script_args import MigrationScriptArgs
 from .data_lake_file_manager import DataLakeFileManager
 from .uncommitted_migrations import get_uncommitted_migrations
 from .committed_migrations import upload_committed_migration
@@ -46,18 +46,13 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def _apply_migrations(
-    spark: SparkSession,
-    file_manager: DataLakeFileManager,
-    uncommitted_migrations: list[str],
-) -> None:
-
-    for name in uncommitted_migrations:
-        migration = importlib.import_module(
-            "package.datamigration.migration_scripts." + name
-        )
-        migration.apply(spark)
-        upload_committed_migration(file_manager, name)
+def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
+    migration = importlib.import_module(
+        "package.datamigration.migration_scripts." + migration_name
+    )
+    migration.apply(
+        migration_args,
+    )
 
 
 def _migrate_data_lake(command_line_args: list[str]) -> None:
@@ -70,11 +65,22 @@ def _migrate_data_lake(command_line_args: list[str]) -> None:
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
-        WHOLESALE_CONTAINER_NAME,
+        infrastructure.WHOLESALE_CONTAINER_NAME,
     )
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
-    _apply_migrations(spark, file_manager, uncommitted_migrations)
+
+    storage_account_url = infrastructure.get_storage_account_url(
+        args.data_storage_account_name
+    )
+
+    migration_args = MigrationScriptArgs(
+        args.data_storage_account_key, storage_account_url, spark
+    )
+
+    for name in uncommitted_migrations:
+        _apply_migration(migration_args, name)
+        upload_committed_migration(file_manager, name)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
