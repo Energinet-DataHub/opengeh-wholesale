@@ -42,6 +42,9 @@ from pyspark.sql.types import (
 )
 from pyspark.sql.window import Window
 from package.codelists import (
+    NewConnectionState,
+    NewMeteringPointType,
+    NewMeteringPointType,
     ConnectionState,
     MeteringPointType,
     Quality,
@@ -202,17 +205,18 @@ def _get_master_basis_data_df(
     )
 
     metering_point_periods_df = (
-        metering_points_in_grid_area.where(col("FromDate") <= period_end_datetime)
-        .where(col("ToDate") >= period_start_datetime)
+        metering_points_in_grid_area.where(col("FromDate") < period_end_datetime)
+        .where(col("ToDate") > period_start_datetime)
         .where(
-            (col("ConnectionState") == "E22") | (col("ConnectionState") == "E23")
-        )  # Connected or Disconnected
-        .where(col("MeteringPointType") == "E18")  # Production
+            (col("ConnectionState") == NewConnectionState.connected.value)
+            | (col("ConnectionState") == NewConnectionState.disconnected.value)
+        )
+        .where(col("MeteringPointType") == NewMeteringPointType.production.value)
     )
 
     market_roles_periods_df = market_roles_periods_df.where(
-        col("FromDate") <= period_end_datetime
-    ).where(col("ToDate") >= period_start_datetime)
+        col("FromDate") < period_end_datetime
+    ).where(col("ToDate") > period_start_datetime)
 
     master_basis_data_df = (
         metering_point_periods_df.join(
@@ -257,16 +261,18 @@ def _get_master_basis_data_df(
             ).otherwise(col("toEffectiveDate")),
         )
     )
+
     # this should be removed (is just keept for debuging)
-    # master_basis_data_df.select(
-    #     metering_point_periods_df["FromDate"].alias("metering_From"),
-    #     metering_point_periods_df["ToDate"].alias("metering_To"),
-    #     market_roles_periods_df["EnergySupplierId"],
-    #     market_roles_periods_df["FromDate"].alias("market_From"),
-    #     market_roles_periods_df["ToDate"].alias("market_To"),
-    #     "EffectiveDate",
-    #     "toEffectiveDate",
-    # ).show()
+    master_basis_data_df.select(
+        metering_point_periods_df["FromDate"].alias("metering_From"),
+        metering_point_periods_df["ToDate"].alias("metering_To"),
+        market_roles_periods_df["EnergySupplierId"],
+        market_roles_periods_df["FromDate"].alias("market_From"),
+        market_roles_periods_df["ToDate"].alias("market_To"),
+        "EffectiveDate",
+        "toEffectiveDate",
+    ).show()
+
     master_basis_data_df = master_basis_data_df.select(
         metering_point_periods_df["MeteringPointId"].alias("GsrnNumber"),
         "GridAreaCode",

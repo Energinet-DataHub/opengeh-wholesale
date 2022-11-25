@@ -17,6 +17,13 @@ import pytest
 from package.balance_fixing_total_production import (
     _get_master_basis_data_df,
 )
+from package.codelists import (
+    NewConnectionState,
+    NewMeteringPointType,
+    NewSettlementMethod,
+    NewMeteringPointResolution,
+)
+
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame
 import os
@@ -28,11 +35,10 @@ grid_area_link_id = "the-grid-area-link-id"
 gsrn_number = "the-gsrn-number"
 metering_point_id = "the-metering-point-id"
 energy_supplier_id = "the-energy-supplier-id"
-metering_point_type = "E18"
-settlement_method = "D01"
-connection_state = "E22"
-resolution = "PT1H"
-metering_method = "D01"
+metering_point_type = NewMeteringPointType.production.value
+settlement_method = NewSettlementMethod.flex.value
+connection_state = NewConnectionState.connected.value
+resolution = NewMeteringPointResolution.hour.value
 june_1th = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
 june_2th = june_1th + timedelta(days=1)
 june_3th = june_1th + timedelta(days=2)
@@ -110,11 +116,8 @@ def metering_points_periods_df_factory(spark) -> Callable[[], DataFrame]:
         Resolution=resolution,
         InGridArea="some-in-gride-area",
         OutGridArea="some-out-gride-area",
-        MeteringMethod=metering_method,
         NetSettlementGroup=0,
         ParentMeteringPointId="some-parent-metering-point-id",
-        Unit="KWH",
-        Product=1,
         FromDate=june_1th,
         ToDate=june_3th,
         NumberOfTimeseries="1",
@@ -150,19 +153,12 @@ def metering_points_periods_df_factory(spark) -> Callable[[], DataFrame]:
                         "OutGridArea": period["OutGridArea"]
                         if ("OutGridArea" in period)
                         else OutGridArea,
-                        "MeteringMethod": period["MeteringMethod"]
-                        if ("MeteringMethod" in period)
-                        else MeteringMethod,
                         "NetSettlementGroup": period["NetSettlementGroup"]
                         if ("NetSettlementGroup" in period)
                         else NetSettlementGroup,
                         "ParentMeteringPointId": period["ParentMeteringPointId"]
                         if ("ParentMeteringPointId" in period)
                         else ParentMeteringPointId,
-                        "Unit": period["Unit"] if ("Unit" in period) else Unit,
-                        "Product": period["Product"]
-                        if ("Product" in period)
-                        else Product,
                         "FromDate": period["FromDate"]
                         if ("FromDate" in period)
                         else FromDate,
@@ -186,11 +182,8 @@ def metering_points_periods_df_factory(spark) -> Callable[[], DataFrame]:
                     "Resolution": Resolution,
                     "InGridArea": InGridArea,
                     "OutGridArea": OutGridArea,
-                    "MeteringMethod": MeteringMethod,
                     "NetSettlementGroup": NetSettlementGroup,
                     "ParentMeteringPointId": ParentMeteringPointId,
-                    "Unit": Unit,
-                    "Product": Product,
                     "FromDate": FromDate,
                     "ToDate": ToDate,
                     "NumberOfTimeseries": NumberOfTimeseries,
@@ -227,7 +220,6 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
     metering_points_periods_df_factory: Callable[[], DataFrame],
 ):
     metering_points_periods_df = metering_points_periods_df_factory()
-    metering_points_periods_df
     market_roles_periods_df = market_roles_period_df_factory(
         periods=[
             {"FromDate": june_1th, "ToDate": june_2th},
@@ -275,10 +267,64 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                 {"FromDate": june_5th, "ToDate": june_7th},
             ],
             [
-                {"EDate": june_2th, "toEDate": june_3th, "ESGln": "1", "SetM": "D01"},
-                {"EDate": june_3th, "toEDate": june_5th, "ESGln": "2", "SetM": "D01"},
-                {"EDate": june_5th, "toEDate": june_6th, "ESGln": "2", "SetM": "D01"},
-                {"EDate": june_6th, "toEDate": june_7th, "ESGln": "3", "SetM": "D01"},
+                {
+                    "EffectiveDate": june_2th,
+                    "toEffectiveDate": june_3th,
+                    "EnergySupplierGln": "1",
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                },
+                {
+                    "EffectiveDate": june_3th,
+                    "toEffectiveDate": june_5th,
+                    "EnergySupplierGln": "2",
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                },
+                {
+                    "EffectiveDate": june_5th,
+                    "toEffectiveDate": june_6th,
+                    "EnergySupplierGln": "2",
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                },
+                {
+                    "EffectiveDate": june_6th,
+                    "toEffectiveDate": june_7th,
+                    "EnergySupplierGln": "3",
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                },
+            ],
+        ),
+        # When a market role period ends same day as batch period starts does return correct periods
+        (
+            {"start": june_2th, "end": june_7th},
+            [
+                {"FromDate": june_1th, "ToDate": june_2th, "EnergySupplierId": "1"},
+                {"FromDate": june_2th, "ToDate": june_7th, "EnergySupplierId": "2"},
+            ],
+            [{"FromDate": june_1th, "ToDate": june_7th}],
+            [
+                {
+                    "EffectiveDate": june_2th,
+                    "toEffectiveDate": june_7th,
+                    "EnergySupplierGln": "2",
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                }
+            ],
+        ),
+        # When a mettering point period ends same day as batch period starts does return correct periods
+        (
+            {"start": june_2th, "end": june_7th},
+            [{"FromDate": june_1th, "ToDate": june_7th, "EnergySupplierId": "1"}],
+            [
+                {"FromDate": june_1th, "ToDate": june_2th},
+                {"FromDate": june_2th, "ToDate": june_7th},
+            ],
+            [
+                {
+                    "EffectiveDate": june_2th,
+                    "toEffectiveDate": june_7th,
+                    "EnergySupplierGln": "1",
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                }
             ],
         ),
         # when there is no energy suplier within batch period there is no period
@@ -300,7 +346,14 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
             {"start": june_3th, "end": june_7th},
             [{"FromDate": june_1th, "ToDate": june_9th, "EnergySupplierId": "1"}],
             [{"FromDate": june_2th, "ToDate": june_10th}],
-            [{"EDate": june_3th, "toEDate": june_7th, "ESGln": "1", "SetM": "D01"}],
+            [
+                {
+                    "EffectiveDate": june_3th,
+                    "toEffectiveDate": june_7th,
+                    "EnergySupplierGln": "1",
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                }
+            ],
         ),
         # when meteringpoint and market roles change on same day returns corect periods
         (
@@ -311,15 +364,33 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                 {"FromDate": june_6th, "ToDate": june_10th, "EnergySupplierId": "3"},
             ],
             [
-                {"FromDate": june_5th, "ToDate": june_6th, "SettlementMethod": "D01"},
-                {"FromDate": june_6th, "ToDate": june_7th, "SettlementMethod": "D02"},
+                {
+                    "FromDate": june_5th,
+                    "ToDate": june_6th,
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                },
+                {
+                    "FromDate": june_6th,
+                    "ToDate": june_7th,
+                    "SettlementMethod": NewSettlementMethod.nonprofiled.value,
+                },
             ],
             [
-                {"EDate": june_5th, "toEDate": june_6th, "ESGln": "2", "SetM": "D01"},
-                {"EDate": june_6th, "toEDate": june_7th, "ESGln": "3", "SetM": "D02"},
+                {
+                    "EffectiveDate": june_5th,
+                    "toEffectiveDate": june_6th,
+                    "EnergySupplierGln": "2",
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                },
+                {
+                    "EffectiveDate": june_6th,
+                    "toEffectiveDate": june_7th,
+                    "EnergySupplierGln": "3",
+                    "SettlementMethod": NewSettlementMethod.nonprofiled.value,
+                },
             ],
         ),
-        # when_connection_state_is_not_E22_Or_E23__returns_no period
+        # Only_return_periods_when_connection_state_is_either_connected_or_disconected
         (
             {"start": june_1th, "end": june_10th},
             [
@@ -329,18 +400,49 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
             ],
             [
                 # not_used
-                {"FromDate": june_2th, "ToDate": june_3th, "ConnectionState": "D01"},
+                {
+                    "FromDate": june_2th,
+                    "ToDate": june_3th,
+                    "ConnectionState": NewConnectionState.not_used.value,
+                },
                 # closed_down
-                {"FromDate": june_3th, "ToDate": june_4th, "ConnectionState": "D02"},
+                {
+                    "FromDate": june_3th,
+                    "ToDate": june_4th,
+                    "ConnectionState": NewConnectionState.closed_down.value,
+                },
                 # new
-                {"FromDate": june_4th, "ToDate": june_5th, "ConnectionState": "D03"},
+                {
+                    "FromDate": june_4th,
+                    "ToDate": june_5th,
+                    "ConnectionState": NewConnectionState.new.value,
+                },
                 # connected
-                {"FromDate": june_5th, "ToDate": june_6th, "ConnectionState": "E22"},
+                {
+                    "FromDate": june_5th,
+                    "ToDate": june_6th,
+                    "ConnectionState": NewConnectionState.connected.value,
+                },
                 # disconnected TODO: LRN den vi have inkluderet.
-                {"FromDate": june_6th, "ToDate": june_7th, "ConnectionState": "E23"},
+                {
+                    "FromDate": june_6th,
+                    "ToDate": june_7th,
+                    "ConnectionState": NewConnectionState.disconnected.value,
+                },
             ],
             [
-                {"EDate": june_5th, "toEDate": june_6th, "ESGln": "2", "SetM": "D01"},
+                {
+                    "EffectiveDate": june_5th,
+                    "toEffectiveDate": june_6th,
+                    "EnergySupplierGln": "2",
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                },
+                {
+                    "EffectiveDate": june_6th,
+                    "toEffectiveDate": june_7th,
+                    "EnergySupplierGln": "3",
+                    "SettlementMethod": NewSettlementMethod.flex.value,
+                },
             ],
         ),
         # when_periods_connection_state_is_closed_down_period_is_not_includded
@@ -374,36 +476,19 @@ def test__returns_expected_periods(
     assert raw_master_basis_data.count() == len(expected_periods)
     for expected_period in expected_periods:
         period = raw_master_basis_data.where(
-            (col("EnergySupplierGln") == expected_period["ESGln"])
-            & (col("EffectiveDate") == expected_period["EDate"])
-            & (col("toEffectiveDate") == expected_period["toEDate"])
-            & (col("SettlementMethod") == expected_period["SetM"])
+            (col("EnergySupplierGln") == expected_period["EnergySupplierGln"])
+            & (col("EffectiveDate") == expected_period["EffectiveDate"])
+            & (col("toEffectiveDate") == expected_period["toEffectiveDate"])
+            & (col("SettlementMethod") == expected_period["SettlementMethod"])
         )
-
         assert period.count() == 1
-
-
-# these test is done in test__returns_expected_periods. So the can they be removed?
-# def test__when_connection_state_is_E22__returns_metering_point_period():
-#     pass
-#
-#
-# def test__when_connection_state_is_not_E22__returns_none():
-#     pass
-#
-# def test__when_in_period__returns_metering_point_period():
-#     # mp_start, mp_end):
-#     # <= and >= combinations
-#     # period_start = xx
-#     # period_end = xx
-#     pass
 
 
 def test__when_type_is_production__returns_metering_point_period(
     grid_area_df, market_roles_period_df_factory, metering_points_periods_df_factory
 ):
     metering_points_periods_df = metering_points_periods_df_factory(
-        MeteringPointType="E18"
+        MeteringPointType=NewMeteringPointType.production.value
     )
     market_roles_periods_df = market_roles_period_df_factory()
 
@@ -421,7 +506,7 @@ def test__when_type_is_not_E18__does_not_returns_metering_point_period(
     grid_area_df, market_roles_period_df_factory, metering_points_periods_df_factory
 ):
     metering_points_periods_df = metering_points_periods_df_factory(
-        MeteringPointType="E20"
+        MeteringPointType=NewMeteringPointType.consumption.value
     )
     market_roles_periods_df = market_roles_period_df_factory()
 

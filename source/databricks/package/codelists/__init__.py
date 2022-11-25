@@ -18,3 +18,8 @@ from .quality import Quality
 from .settlement_method import SettlementMethod
 from .time_series_quality import TimeSeriesQuality
 from .metering_point_resolution import MeteringPointResolution
+
+from .new_metering_point_type import NewMeteringPointType
+from .new_connection_state import NewConnectionState
+from .new_settlement_method import NewSettlementMethod
+from .new_metering_point_resolution import NewMeteringPointResolution
