@@ -47,12 +47,14 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
 
 
 def _apply_migrations(
-    storage_account_url: MigrationScriptArgs,
+    storage_account_name: str,
     storage_account_key: str,
     spark: SparkSession,
     file_manager: DataLakeFileManager,
     uncommitted_migrations: list[str],
 ) -> None:
+
+    storage_account_url = infrastructure.get_storage_account_url(storage_account_name)
 
     migration_args = MigrationScriptArgs(
         storage_account_key, storage_account_url, spark
@@ -63,7 +65,7 @@ def _apply_migrations(
             "package.datamigration.migration_scripts." + name
         )
         migration.apply(
-            spark=spark,
+            migration_args,
         )
         upload_committed_migration(file_manager, name)
 
@@ -83,12 +85,8 @@ def _migrate_data_lake(command_line_args: list[str]) -> None:
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
 
-    storage_account_url = infrastructure.get_storage_account_url(
-        args.data_storage_account_name
-    )
-
     _apply_migrations(
-        storage_account_url,
+        args.data_storage_account_name,
         args.data_storage_account_key,
         spark,
         file_manager,
