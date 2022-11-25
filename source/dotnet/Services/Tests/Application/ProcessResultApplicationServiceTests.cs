@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using Moq;
 using Xunit;
 using Xunit.Categories;
@@ -30,10 +31,7 @@ public class ProcessResultApplicationServiceTests
     {
         // Arrange
         var mock = new Mock<IBatchFileManager>();
-        var stream =
-            new FileStream(
-                "C:\\git\\opengeh-wholesale\\source\\dotnet\\Services\\Tests\\Application\\JsonNewLineStuff.json", FileMode.Open);
-
+        var stream = EmbeddedResources.GetStream("Application.JsonNewLineStuff.json");
         mock.Setup(x => x.GetResultFileStreamAsync(It.IsAny<Guid>(), It.IsAny<GridAreaCode>()))
             .ReturnsAsync(stream);
 
