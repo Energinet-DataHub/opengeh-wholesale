@@ -37,7 +37,7 @@ public class ProcessResultApplicationService : IProcessResultApplicationService
         var pointsDto = new List<TimeSeriesPointDto>();
         foreach (var point in points)
         {
-            pointsDto.Add(new TimeSeriesPointDto(DateTimeOffset.Now, decimal.Parse(point.Quantity)));
+            pointsDto.Add(new TimeSeriesPointDto(DateTimeOffset.Parse(point.Quarter_time), decimal.Parse(point.Quantity)));
         }
 
         return new ProcessStepResultDto(

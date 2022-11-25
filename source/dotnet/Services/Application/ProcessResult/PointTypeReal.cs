@@ -21,4 +21,6 @@ public class PointTypeReal
     public string Quantity { get; set; } = null!;
 
     public int Quality { get; set; }
+
+    public string Quarter_time { get; set; } = null!;
 }
