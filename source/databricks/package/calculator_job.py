@@ -86,11 +86,11 @@ def _start_calculator(spark: SparkSession, args):
     raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
         args.time_series_points_path
     )
-    static_metering_points_df = spark.read.option("header", "true").csv(
+    metering_points_periods_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
     )
 
-    static_market_roles_df = spark.read.option("header", "true").csv(
+    market_roles_periods_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/MarketRolesPeriods.csv"
     )
 
