@@ -42,9 +42,9 @@ public class ProcessResultApplicationService : IProcessResultApplicationService
 
         return new ProcessStepResultDto(
             MeteringPointType.Production,
-            decimal.Zero,
-            decimal.One,
-            decimal.One + decimal.One,
+            pointsDto.Sum(x => x.Quantity),
+            pointsDto.Min(x => x.Quantity),
+            pointsDto.Max(x => x.Quantity),
             pointsDto.ToArray());
     }
 

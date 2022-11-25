@@ -1,9 +1,9 @@
-{"quantity":"0.000","quality":2,"position":1,"quarter_time":"2022-05-15T22:00:00.000Z"}
-{"quantity":"0.000","quality":2,"position":2,"quarter_time":"2022-05-15T22:15:00.000Z"}
-{"quantity":"0.000","quality":2,"position":3,"quarter_time":"2022-05-15T22:30:00.000Z"}
-{"quantity":"0.000","quality":2,"position":4,"quarter_time":"2022-05-15T22:45:00.000Z"}
-{"quantity":"0.000","quality":2,"position":5,"quarter_time":"2022-05-15T23:00:00.000Z"}
-{"quantity":"0.000","quality":2,"position":6,"quarter_time":"2022-05-15T23:15:00.000Z"}
+{"quantity":"1.000","quality":2,"position":1,"quarter_time":"2022-05-15T22:00:00.000Z"}
+{"quantity":"2.000","quality":2,"position":2,"quarter_time":"2022-05-15T22:15:00.000Z"}
+{"quantity":"3.000","quality":2,"position":3,"quarter_time":"2022-05-15T22:30:00.000Z"}
+{"quantity":"4.000","quality":2,"position":4,"quarter_time":"2022-05-15T22:45:00.000Z"}
+{"quantity":"5.000","quality":2,"position":5,"quarter_time":"2022-05-15T23:00:00.000Z"}
+{"quantity":"6.000","quality":2,"position":6,"quarter_time":"2022-05-15T23:15:00.000Z"}
 {"quantity":"0.000","quality":2,"position":7,"quarter_time":"2022-05-15T23:30:00.000Z"}
 {"quantity":"0.000","quality":2,"position":8,"quarter_time":"2022-05-15T23:45:00.000Z"}
 {"quantity":"0.000","quality":2,"position":9,"quarter_time":"2022-05-16T00:00:00.000Z"}
@@ -45,10 +45,10 @@
 {"quantity":"0.000","quality":2,"position":45,"quarter_time":"2022-05-16T09:00:00.000Z"}
 {"quantity":"0.000","quality":2,"position":46,"quarter_time":"2022-05-16T09:15:00.000Z"}
 {"quantity":"0.000","quality":2,"position":47,"quarter_time":"2022-05-16T09:30:00.000Z"}
-{"quantity":"0.000","quality":2,"position":48,"quarter_time":"2022-05-16T09:45:00.000Z"}
+{"quantity":"0.999","quality":2,"position":48,"quarter_time":"2022-05-16T09:45:00.000Z"}
 {"quantity":"0.000","quality":2,"position":49,"quarter_time":"2022-05-16T10:00:00.000Z"}
 {"quantity":"0.000","quality":2,"position":50,"quarter_time":"2022-05-16T10:15:00.000Z"}
-{"quantity":"0.000","quality":2,"position":51,"quarter_time":"2022-05-16T10:30:00.000Z"}
+{"quantity":"0.123","quality":2,"position":51,"quarter_time":"2022-05-16T10:30:00.000Z"}
 {"quantity":"0.000","quality":2,"position":52,"quarter_time":"2022-05-16T10:45:00.000Z"}
 {"quantity":"0.000","quality":2,"position":53,"quarter_time":"2022-05-16T11:00:00.000Z"}
 {"quantity":"0.000","quality":2,"position":54,"quarter_time":"2022-05-16T11:15:00.000Z"}
@@ -67,7 +67,7 @@
 {"quantity":"0.000","quality":2,"position":67,"quarter_time":"2022-05-16T14:30:00.000Z"}
 {"quantity":"0.000","quality":2,"position":68,"quarter_time":"2022-05-16T14:45:00.000Z"}
 {"quantity":"0.000","quality":2,"position":69,"quarter_time":"2022-05-16T15:00:00.000Z"}
-{"quantity":"0.000","quality":2,"position":70,"quarter_time":"2022-05-16T15:15:00.000Z"}
+{"quantity":"0.001","quality":2,"position":70,"quarter_time":"2022-05-16T15:15:00.000Z"}
 {"quantity":"0.000","quality":2,"position":71,"quarter_time":"2022-05-16T15:30:00.000Z"}
 {"quantity":"0.000","quality":2,"position":72,"quarter_time":"2022-05-16T15:45:00.000Z"}
 {"quantity":"0.000","quality":2,"position":73,"quarter_time":"2022-05-16T16:00:00.000Z"}
@@ -85,7 +85,7 @@
 {"quantity":"0.000","quality":2,"position":85,"quarter_time":"2022-05-16T19:00:00.000Z"}
 {"quantity":"0.000","quality":2,"position":86,"quarter_time":"2022-05-16T19:15:00.000Z"}
 {"quantity":"0.000","quality":2,"position":87,"quarter_time":"2022-05-16T19:30:00.000Z"}
-{"quantity":"0.000","quality":2,"position":88,"quarter_time":"2022-05-16T19:45:00.000Z"}
+{"quantity":"88.000","quality":2,"position":88,"quarter_time":"2022-05-16T19:45:00.000Z"}
 {"quantity":"0.000","quality":2,"position":89,"quarter_time":"2022-05-16T20:00:00.000Z"}
 {"quantity":"0.000","quality":2,"position":90,"quarter_time":"2022-05-16T20:15:00.000Z"}
 {"quantity":"0.000","quality":2,"position":91,"quarter_time":"2022-05-16T20:30:00.000Z"}
@@ -93,4 +93,4 @@
 {"quantity":"0.000","quality":2,"position":93,"quarter_time":"2022-05-16T21:00:00.000Z"}
 {"quantity":"0.000","quality":2,"position":94,"quarter_time":"2022-05-16T21:15:00.000Z"}
 {"quantity":"0.000","quality":2,"position":95,"quarter_time":"2022-05-16T21:30:00.000Z"}
-{"quantity":"0.000","quality":2,"position":96,"quarter_time":"2022-05-16T21:45:00.000Z"}
+{"quantity":"96.001","quality":2,"position":96,"quarter_time":"2022-05-16T21:45:00.000Z"}
