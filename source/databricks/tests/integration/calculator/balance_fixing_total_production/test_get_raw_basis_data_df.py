@@ -106,7 +106,7 @@ def market_roles_period_df_factory(spark):
 
 
 @pytest.fixture(scope="module")
-def metering_points_periods_df_factory(spark) -> Callable[[], DataFrame]:
+def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
     def factory(
         MeteringPointId=metering_point_id,
         MeteringPointType=metering_point_type,
