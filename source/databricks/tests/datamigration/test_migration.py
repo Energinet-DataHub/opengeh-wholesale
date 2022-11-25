@@ -73,7 +73,7 @@ def test___apply_migrations__all_migrations_can_be_imported(
     all_migrations = _get_all_migrations()
 
     # Act and Assert (if the module cannot be imported or if the signature is incorrect, an exception will be raise)
-    _apply_uncommitted_migrations("", "", mock_spark, mock_file_manager, all_migrations)
+    _apply_uncommitted_migrations(mock_spark, mock_file_manager, all_migrations)
 
 
 @patch("package.datamigration.migration.upload_committed_migration")
@@ -86,7 +86,7 @@ def test___apply_migrations__upload_called_with_correct_name(
     all_migrations = _get_all_migrations()
 
     # Act
-    _apply_uncommitted_migrations("", "", mock_spark, mock_file_manager, all_migrations)
+    _apply_uncommitted_migrations(mock_spark, mock_file_manager, all_migrations)
 
     # Assert
     for name in all_migrations:
