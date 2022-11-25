@@ -48,16 +48,16 @@ public class ProcessResultApplicationService : IProcessResultApplicationService
             pointsDto.ToArray());
     }
 
-    private static async Task<List<PointTypeReal>> GetPointsFromJsonStreamAsync(Stream resultStream)
+    private static async Task<List<ProcessResultPoint>> GetPointsFromJsonStreamAsync(Stream resultStream)
     {
-        var list = new List<PointTypeReal>();
+        var list = new List<ProcessResultPoint>();
 
         var streamer = new StreamReader(resultStream);
 
         var nextline = await streamer.ReadLineAsync().ConfigureAwait(false);
         while (nextline != null)
         {
-            var dto = JsonSerializer.Deserialize<PointTypeReal>(nextline, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var dto = JsonSerializer.Deserialize<ProcessResultPoint>(nextline, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (dto != null)
                 list.Add(dto);
 
