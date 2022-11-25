@@ -31,7 +31,7 @@ public class ProcessResultApplicationServiceTests
     {
         // Arrange
         var mock = new Mock<IBatchFileManager>();
-        var stream = EmbeddedResources.GetStream("Application.JsonNewLineStuff.json");
+        var stream = EmbeddedResources.GetStream("Application.ProcessResult.json");
         mock.Setup(x => x.GetResultFileStreamAsync(It.IsAny<Guid>(), It.IsAny<GridAreaCode>()))
             .ReturnsAsync(stream);
 

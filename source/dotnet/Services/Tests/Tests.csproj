@@ -79,7 +79,7 @@ limitations under the License.
       <Link>Sender\Infrastructure\quality.json</Link>
     </EmbeddedResource>
     <None Remove="Application\JsonNewLineStuff.json" />
-    <EmbeddedResource Include="Application\JsonNewLineStuff.json" />
+    <EmbeddedResource Include="Application\ProcessResult.json" />
   </ItemGroup>
 
   <ItemGroup>
