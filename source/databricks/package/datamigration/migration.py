@@ -46,28 +46,13 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def _apply_migrations(
-    storage_account_name: str,
-    storage_account_key: str,
-    spark: SparkSession,
-    file_manager: DataLakeFileManager,
-    uncommitted_migrations: list[str],
-) -> None:
-
-    storage_account_url = infrastructure.get_storage_account_url(storage_account_name)
-
-    migration_args = MigrationScriptArgs(
-        storage_account_key, storage_account_url, spark
+def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
+    migration = importlib.import_module(
+        "package.datamigration.migration_scripts." + migration_name
     )
-
-    for name in uncommitted_migrations:
-        migration = importlib.import_module(
-            "package.datamigration.migration_scripts." + name
-        )
-        migration.apply(
-            migration_args,
-        )
-        upload_committed_migration(file_manager, name)
+    migration.apply(
+        migration_args,
+    )
 
 
 def _migrate_data_lake(command_line_args: list[str]) -> None:
@@ -85,13 +70,17 @@ def _migrate_data_lake(command_line_args: list[str]) -> None:
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
 
-    _apply_migrations(
-        args.data_storage_account_name,
-        args.data_storage_account_key,
-        spark,
-        file_manager,
-        uncommitted_migrations,
+    storage_account_url = infrastructure.get_storage_account_url(
+        args.data_storage_account_name
     )
+
+    migration_args = MigrationScriptArgs(
+        args.data_storage_account_key, storage_account_url, spark
+    )
+
+    for name in uncommitted_migrations:
+        _apply_migration(migration_args, name)
+        upload_committed_migration(file_manager, name)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
