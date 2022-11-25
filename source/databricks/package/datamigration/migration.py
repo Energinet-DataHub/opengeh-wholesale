@@ -16,9 +16,9 @@ import sys
 import configargparse
 import importlib
 from pyspark.sql.session import SparkSession
-from package import log, initialize_spark
+from package import infrastructure, log, initialize_spark
 from package.args_helper import valid_log_level
-from package import infrastructure
+from .migration_script_args import MigrationScriptArgs
 from .data_lake_file_manager import DataLakeFileManager
 from .uncommitted_migrations import get_uncommitted_migrations
 from .committed_migrations import upload_committed_migration
@@ -47,17 +47,24 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
 
 
 def _apply_migrations(
-    storage_account_url: str,
+    storage_account_url: MigrationScriptArgs,
     storage_account_key: str,
     spark: SparkSession,
     file_manager: DataLakeFileManager,
     uncommitted_migrations: list[str],
 ) -> None:
+
+    migration_args = MigrationScriptArgs(
+        storage_account_key, storage_account_url, spark
+    )
+
     for name in uncommitted_migrations:
         migration = importlib.import_module(
             "package.datamigration.migration_scripts." + name
         )
-        migration.apply(storage_account_url, storage_account_key, spark)
+        migration.apply(
+            spark=spark,
+        )
         upload_committed_migration(file_manager, name)
 
 

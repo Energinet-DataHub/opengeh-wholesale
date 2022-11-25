@@ -13,16 +13,28 @@
 # limitations under the License.
 
 from azure.storage.filedatalake import DataLakeDirectoryClient
-from pyspark.sql import SparkSession
+from migration_script_args import MigrationScriptArgs
+
+WHOLESALE_CONTAINER_NAME = "wholesale"
 
 
-def apply(
-    storage_account_url: str, storage_account_key: str, spark: SparkSession
+def apply(args: MigrationScriptArgs) -> None:
+
+    move_process_container_content_to_wholesale_container(
+        args.storage_account_url, args.storage_account_key
+    )
+
+    move_integration_events_container_content_to_wholesale_container(
+        args.storage_account_url, args.storage_account_key
+    )
+
+
+def move_process_container_content_to_wholesale_container(
+    storage_account_url: str, storage_account_key: str
 ) -> None:
 
     source_container = "processes"
-    source_directory = "my_test_dir"
-    destination_container = "wholesale"
+    source_directory = "results"
     destination_directory = source_directory
 
     move_directory(
@@ -30,7 +42,40 @@ def apply(
         storage_account_key,
         source_container,
         source_directory,
-        destination_container,
+        WHOLESALE_CONTAINER_NAME,
+        destination_directory,
+    )
+
+
+def move_integration_events_container_content_to_wholesale_container(
+    storage_account_url: str, storage_account_key: str
+) -> None:
+
+    source_container = "integration-events"
+
+    # move 'events' folder
+    source_directory = "events"
+    destination_directory = events_source_directory
+
+    move_directory(
+        storage_account_url,
+        storage_account_key,
+        source_container,
+        source_directory,
+        WHOLESALE_CONTAINER_NAME,
+        destination_directory,
+    )
+
+    # move 'events-checkpoint'
+    source_directory = "events-checkpoint"
+    destination_directory = source_directory
+
+    move_directory(
+        storage_account_url,
+        storage_account_key,
+        source_container,
+        source_directory,
+        WHOLESALE_CONTAINER_NAME,
         destination_directory,
     )
 

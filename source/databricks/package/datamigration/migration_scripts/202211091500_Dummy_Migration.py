@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import SparkSession
+from migration_script_args import MigrationScriptArgs
 
 
-def apply(storage_account_url: str, storage_account_key: str, spark: SparkSession):
+def apply(args: MigrationScriptArgs) -> None:
     print("Applying dummy migration")
