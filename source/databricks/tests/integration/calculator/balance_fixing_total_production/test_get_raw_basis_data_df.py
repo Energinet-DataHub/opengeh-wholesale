@@ -399,7 +399,7 @@ def test__returns_expected_periods(
 #     pass
 
 
-def test__when_type_is_E18__returns_metering_point_period(
+def test__when_type_is_production__returns_metering_point_period(
     grid_area_df, market_roles_period_df_factory, metering_points_periods_df_factory
 ):
     metering_points_periods_df = metering_points_periods_df_factory(
