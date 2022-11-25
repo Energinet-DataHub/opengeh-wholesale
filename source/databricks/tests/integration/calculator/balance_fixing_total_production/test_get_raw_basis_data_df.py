@@ -197,8 +197,8 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
 
 def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
     grid_area_df: DataFrame,
-    market_roles_period_df_factory: Callable[[], DataFrame],
-    metering_points_periods_df_factory: Callable[[], DataFrame],
+    market_roles_period_df_factory: Callable[..., DataFrame],
+    metering_points_periods_df_factory: Callable[..., DataFrame],
 ):
     metering_points_periods_df = metering_points_periods_df_factory()
     market_roles_periods_df = market_roles_period_df_factory()
