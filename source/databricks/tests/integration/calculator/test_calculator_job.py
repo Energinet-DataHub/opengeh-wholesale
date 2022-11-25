@@ -136,6 +136,7 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
     _get_valid_args_or_throw(command_line_args)
 
 
+# Test is disablet until all static datasources has been implementet
 # def test__result_is_generated_for_requested_grid_areas(
 #     spark,
 #     test_data_job_parameters,
@@ -182,6 +183,7 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
     )
 
 
+# Test is disablet until all static datasources has been implementet
 # def test__calculator_result_schema_must_match_contract_with_dotnet(
 #     spark,
 #     test_data_job_parameters,
@@ -202,7 +204,7 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 #         result_805.schema,
 #     )
 
-
+# Test is disablet until all static datasources has been implementet
 # def test__quantity_is_with_precision_3(
 #     spark,
 #     test_data_job_parameters,
@@ -238,6 +240,7 @@ def create_file_path_expression(directory_expression, extension):
     return f"{directory_expression}[^/]+{extension}"
 
 
+# Test is disablet until all static datasources has been implementet
 # def test__result_file_path_matches_contract(
 #     spark,
 #     test_data_job_parameters,
@@ -263,7 +266,7 @@ def create_file_path_expression(directory_expression, extension):
 #     )
 #     assert re.match(expected_path_expression, actual_result_file)
 
-
+# Test is disablet until all static datasources has been implementet
 # def test__creates_hour_csv_with_expected_columns_names(
 #     spark,
 #     test_data_job_parameters,
@@ -286,7 +289,7 @@ def create_file_path_expression(directory_expression, extension):
 #         *[f"ENERGYQUANTITY{i+1}" for i in range(24)],
 #     ]
 
-
+# Test is disablet until all static datasources has been implementet
 # def test__creates_quarter_csv_with_expected_columns_names(
 #     spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 # ):
@@ -305,7 +308,7 @@ def create_file_path_expression(directory_expression, extension):
 #         *[f"ENERGYQUANTITY{i+1}" for i in range(96)],
 #     ]
 
-
+# Test is disablet until all static datasources has been implementet
 # def test__creates_csv_per_grid_area(
 #     spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
 # ):
@@ -403,6 +406,7 @@ def test__master_basis_data_file_matches_contract(
     assert re.match(expected_path_expression, actual_file_path)
 
 
+# Test is disablet until all static datasources has been implementet
 # def test__hourly_basis_data_file_matches_contract(
 #     spark,
 #     test_data_job_parameters,
@@ -428,7 +432,7 @@ def test__master_basis_data_file_matches_contract(
 #     )
 #     assert re.match(expected_path_expression, actual_file_path)
 
-
+# Test is disablet until all static datasources has been implementet
 # def test__quarterly_basis_data_file_matches_contract(
 #     spark,
 #     test_data_job_parameters,
