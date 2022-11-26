@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from migration_script_args import MigrationScriptArgs
+from package.datamigration.migration_script_args import MigrationScriptArgs
 
 
 def apply(args: MigrationScriptArgs) -> None:

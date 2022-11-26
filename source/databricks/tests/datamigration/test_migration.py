@@ -13,16 +13,12 @@
 # limitations under the License.
 
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, ANY
 
-from package.datamigration.migration import _apply_migrations, _get_valid_args_or_throw
+from package.datamigration.migration import _migrate_data_lake, _get_valid_args_or_throw
 
 from package.datamigration.uncommitted_migrations import (
     _get_all_migrations,
-)
-
-from package.datamigration.committed_migrations import (
-    upload_committed_migration,
 )
 
 
@@ -48,43 +44,59 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
     _get_valid_args_or_throw(command_line_args)
 
 
-@patch("package.datamigration.migration.SparkSession")
-def test___apply_migrations__when_script_not_found__raise_exception(
+@patch("package.datamigration.migration.initialize_spark")
+@patch("package.datamigration.migration.DataLakeFileManager")
+@patch("package.datamigration.migration.get_uncommitted_migrations")
+@patch("package.datamigration.migration.upload_committed_migration")
+def test__migrate_datalake__when_script_not_found__raise_exception(
+    mock_upload_committed_migration,
+    mock_uncommitted_migrations,
+    mock_file_manager,
     mock_spark,
 ):
     # Arrange
-    unexpected_module = "not_a_module"
+    mock_uncommitted_migrations.return_value = ["not_a_module"]
 
     # Act and Assert
     with pytest.raises(Exception):
-        _apply_migrations(mock_spark, [unexpected_module])
+        _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
 
 
-@patch("package.datamigration.migration.upload_committed_migration")
+@patch("package.datamigration.migration.initialize_spark")
 @patch("package.datamigration.migration.DataLakeFileManager")
-@patch("package.datamigration.migration.SparkSession")
-def test___apply_migrations__all_migrations_can_be_imported(
-    mock_spark, mock_file_manager, mock_upload_migration
+@patch("package.datamigration.migration.get_uncommitted_migrations")
+@patch("package.datamigration.migration.upload_committed_migration")
+def test__migrate_datalake__all_migration_scripts_can_be_imported(
+    mock_upload_committed_migration,
+    mock_uncommitted_migrations,
+    mock_file_manager,
+    mock_spark,
 ):
     # Arrange
     all_migrations = _get_all_migrations()
+    mock_uncommitted_migrations.return_value = all_migrations
 
     # Act and Assert (if the module cannot be imported or if the signature is incorrect, an exception will be raise)
-    _apply_migrations(mock_spark, mock_file_manager, all_migrations)
+    _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
 
 
-@patch("package.datamigration.migration.upload_committed_migration")
+@patch("package.datamigration.migration.initialize_spark")
 @patch("package.datamigration.migration.DataLakeFileManager")
-@patch("package.datamigration.migration.SparkSession")
-def test___apply_migrations__upload_called_with_correct_name(
-    mock_spark, mock_file_manager, mock_committed_migration
+@patch("package.datamigration.migration.get_uncommitted_migrations")
+@patch("package.datamigration.migration.upload_committed_migration")
+def test__migrate_datalake__upload_called_with_correct_name(
+    mock_upload_committed_migration,
+    mock_uncommitted_migrations,
+    mock_file_manager,
+    mock_spark,
 ):
     # Arrange
     all_migrations = _get_all_migrations()
+    mock_uncommitted_migrations.return_value = all_migrations
 
     # Act
-    _apply_migrations(mock_spark, mock_file_manager, all_migrations)
+    _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
 
     # Assert
     for name in all_migrations:
-        mock_committed_migration.assert_called_once_with(mock_file_manager, name)
+        mock_upload_committed_migration.assert_called_once_with(ANY, name)
