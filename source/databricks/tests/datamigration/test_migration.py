@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import importlib
+import inspect
+from unittest.mock import ANY, patch, call
+
 import pytest
-from unittest.mock import patch, ANY
-
-from package.datamigration.migration import _migrate_data_lake, _get_valid_args_or_throw
-
-from package.datamigration.uncommitted_migrations import (
-    _get_all_migrations,
-)
+from package.datamigration.migration import _get_valid_args_or_throw, _migrate_data_lake
+from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.datamigration.uncommitted_migrations import _get_all_migrations
 
 
 def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails():
@@ -62,22 +62,19 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
         _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
 
 
-@patch("package.datamigration.migration.initialize_spark")
-@patch("package.datamigration.migration.DataLakeFileManager")
-@patch("package.datamigration.migration.get_uncommitted_migrations")
-@patch("package.datamigration.migration.upload_committed_migration")
-def test__migrate_datalake__all_migration_scripts_can_be_imported(
-    mock_upload_committed_migration,
-    mock_uncommitted_migrations,
-    mock_file_manager,
-    mock_spark,
-):
+def test__all_migrations_script_has_correct_signature():
+
     # Arrange
     all_migrations = _get_all_migrations()
-    mock_uncommitted_migrations.return_value = all_migrations
 
-    # Act and Assert (if the module cannot be imported or if the signature is incorrect, an exception will be raise)
-    _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
+    for migration_name in all_migrations:
+        migration = importlib.import_module(
+            "package.datamigration.migration_scripts." + migration_name
+        )
+        signature = inspect.signature(migration.apply)
+        assert len(signature.parameters) == 1
+        (parameter,) = signature.parameters.values()
+        assert parameter.annotation is MigrationScriptArgs
 
 
 @patch("package.datamigration.migration.initialize_spark")
@@ -93,10 +90,12 @@ def test__migrate_datalake__upload_called_with_correct_name(
     # Arrange
     all_migrations = _get_all_migrations()
     mock_uncommitted_migrations.return_value = all_migrations
+    calls = []
+    for name in all_migrations:
+        calls.append(call(ANY, name))
 
     # Act
     _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
 
     # Assert
-    for name in all_migrations:
-        mock_upload_committed_migration.assert_called_once_with(ANY, name)
+    mock_upload_committed_migration.assert_has_calls(calls)
