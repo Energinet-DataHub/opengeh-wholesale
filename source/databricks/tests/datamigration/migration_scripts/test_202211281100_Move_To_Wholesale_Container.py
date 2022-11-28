@@ -12,24 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import importlib
+from unittest.mock import ANY, call, patch
+
 import pytest
-from unittest.mock import patch, call, ANY
-
-from package.datamigration.migration_scripts._202211281100_Move_To_Wholesale_Container import (
-    apply,
-)
-
 from package.datamigration.migration_script_args import MigrationScriptArgs
 
 
 @patch(
-    "package.datamigration.migration_scripts._202211281100_Move_To_Wholesale_Container.DataLakeDirectoryClient"
+    "package.datamigration.migration_scripts.202211281100_Move_To_Wholesale_Container.DataLakeDirectoryClient"
 )
 def test__apply__directory_client_contructed_with_correct_arguments(
     mock_directory_client,
 ):
 
     # Arrange
+    sut = get_migration_script()
     migration_args = MigrationScriptArgs("", "", None)
     processes_container = "processes"
     events_container = "integration-events"
@@ -46,20 +44,21 @@ def test__apply__directory_client_contructed_with_correct_arguments(
     expected_calls = [result_call, event_call, events_checkpoint_call]
 
     # Act
-    apply(migration_args)
+    sut.apply(migration_args)
 
     # Assert
     mock_directory_client.assert_has_calls(expected_calls, any_order=True)
 
 
 @patch(
-    "package.datamigration.migration_scripts._202211281100_Move_To_Wholesale_Container.DataLakeDirectoryClient"
+    "package.datamigration.migration_scripts.202211281100_Move_To_Wholesale_Container.DataLakeDirectoryClient"
 )
 def test__apply__calls_rename_directory_with_correct_arguments(
     mock_directory_client,
 ):
 
     # Arrange
+    sut = get_migration_script()
     migration_args = MigrationScriptArgs("", "", None)
     mock_directory_client.return_value.exists.return_value = True
     expected_calls = [
@@ -69,25 +68,32 @@ def test__apply__calls_rename_directory_with_correct_arguments(
     ]
 
     # Act
-    apply(migration_args)
+    sut.apply(migration_args)
 
     # Assert
     mock_directory_client.return_value.rename_directory.assert_has_calls(expected_calls)
 
 
 @patch(
-    "package.datamigration.migration_scripts._202211281100_Move_To_Wholesale_Container.DataLakeDirectoryClient"
+    "package.datamigration.migration_scripts.202211281100_Move_To_Wholesale_Container.DataLakeDirectoryClient"
 )
 def test__apply__when_source_directory_not_exist__never_call_rename_directory(
     mock_directory_client,
 ):
 
     # Arrange
+    sut = get_migration_script()
     migration_args = MigrationScriptArgs("", "", None)
     mock_directory_client.return_value.exists.return_value = False
 
     # Act
-    apply(migration_args)
+    sut.apply(migration_args)
 
     # Assert
     mock_directory_client.return_value.rename_directory.assert_not_called()
+
+
+def get_migration_script():
+    return importlib.import_module(
+        "package.datamigration.migration_scripts.202211281100_Move_To_Wholesale_Container"
+    )
