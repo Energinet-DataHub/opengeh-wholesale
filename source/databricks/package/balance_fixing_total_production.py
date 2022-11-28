@@ -185,10 +185,10 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
 
 
 def _get_metering_point_periods_df(
-    cached_integration_events_df,
-    grid_area_df,
-    period_start_datetime,
-    period_end_datetime,
+    cached_integration_events_df: DataFrame,
+    grid_area_df: DataFrame,
+    period_start_datetime: str,
+    period_end_datetime: str,
 ) -> DataFrame:
     metering_point_events_df = (
         cached_integration_events_df.withColumn(
@@ -340,10 +340,10 @@ def _get_metering_point_periods_df(
 
 
 def _get_enriched_time_series_points_df(
-    time_series_points,
-    metering_point_period_df,
-    period_start_datetime,
-    period_end_datetime,
+    time_series_points: DataFrame,
+    metering_point_period_df: DataFrame,
+    period_start_datetime: str,
+    period_end_datetime: str,
 ) -> DataFrame:
 
     timeseries_df = time_series_points.where(
