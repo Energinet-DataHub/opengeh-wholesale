@@ -43,7 +43,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             };
 
             // Act
-            using var actualResponse = await httpClient.GetAsync("api/monitor/ready");
+            using var actualResponse = await httpClient.GetAsync("monitor/ready");
 
             // Assert
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
