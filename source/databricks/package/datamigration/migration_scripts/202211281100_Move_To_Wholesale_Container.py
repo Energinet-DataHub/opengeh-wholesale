@@ -106,38 +106,3 @@ def move_directory(
     directory_client.rename_directory(
         new_name=destination_container + "/" + destination_directory
     )
-
-
-# def _get_valid_args_or_throw(command_line_args: list[str]):
-#     p = configargparse.ArgParser(
-#         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
-#     )
-
-#     p.add("--data-storage-account-name", type=str, required=True)
-#     p.add("--data-storage-account-key", type=str, required=True)
-
-#     args, unknown_args = p.parse_known_args(command_line_args)
-#     if len(unknown_args):
-#         unknown_args_text = ", ".join(unknown_args)
-#         raise Exception(f"Unknown args: {unknown_args_text}")
-
-#     return args
-
-
-# if __name__ == "__main__":
-#     args = _get_valid_args_or_throw(sys.argv[1:])
-#     file_system_name = "processes"
-#     dir_name = "testdir2"
-#     directory_client = DataLakeDirectoryClient(
-#         args.data_storage_account_name,
-#         file_system_name,
-#         dir_name,
-#         args.data_storage_account_key,
-#     )
-
-#     destination_file_system_name = "wholesale"
-#     new_dir_name = "testdir3"
-#     print("Renaming the directory named '{}' to '{}'.".format(dir_name, new_dir_name))
-#     new_directory = directory_client.rename_directory(
-#         new_name=destination_file_system_name + "/" + new_dir_name
-#     )
