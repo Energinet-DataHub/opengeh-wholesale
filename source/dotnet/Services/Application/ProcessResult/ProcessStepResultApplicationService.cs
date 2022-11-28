@@ -19,11 +19,11 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
-public class ProcessResultApplicationService : IProcessResultApplicationService
+public class ProcessStepResultApplicationService : IProcessStepResultApplicationService
 {
     private readonly IBatchFileManager _batchFileManager;
 
-    public ProcessResultApplicationService(IBatchFileManager batchFileManager)
+    public ProcessStepResultApplicationService(IBatchFileManager batchFileManager)
     {
         _batchFileManager = batchFileManager;
     }

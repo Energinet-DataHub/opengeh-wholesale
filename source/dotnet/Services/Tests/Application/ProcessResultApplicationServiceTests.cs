@@ -87,14 +87,14 @@ public class ProcessResultApplicationServiceTests
         actual.Sum.Should().Be(actual.TimeSeriesPoints.Sum(x => x.Quantity));
     }
 
-    private static ProcessResultApplicationService ProcessResultApplicationService()
+    private static ProcessStepResultApplicationService ProcessResultApplicationService()
     {
         var mock = new Mock<IBatchFileManager>();
         var stream = EmbeddedResources.GetStream("Application.ProcessResult.json");
         mock.Setup(x => x.GetResultFileStreamAsync(It.IsAny<Guid>(), It.IsAny<GridAreaCode>()))
             .ReturnsAsync(stream);
 
-        var sut = new ProcessResultApplicationService(mock.Object);
+        var sut = new ProcessStepResultApplicationService(mock.Object);
         return sut;
     }
 }

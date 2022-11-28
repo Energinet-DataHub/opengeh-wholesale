@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
-public interface IProcessResultApplicationService
+public interface IProcessStepResultApplicationService
 {
     Task<ProcessStepResultDto> GetResultAsync(Guid batchId, string gridAreaCode, ProcessStepType processStepType);
 }

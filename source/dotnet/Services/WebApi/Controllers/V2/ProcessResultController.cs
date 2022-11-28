@@ -27,18 +27,18 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 public class ProcessResultController : ControllerBase
 {
     private const string Version = "2.0";
-    private readonly IProcessResultApplicationService _processResultApplicationService;
+    private readonly IProcessStepResultApplicationService _processStepResultApplicationService;
 
-    public ProcessResultController(IProcessResultApplicationService processResultApplicationService)
+    public ProcessResultController(IProcessStepResultApplicationService processStepResultApplicationService)
     {
-        _processResultApplicationService = processResultApplicationService;
+        _processStepResultApplicationService = processStepResultApplicationService;
     }
 
     [HttpGet]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> GetAsync(Guid batchId, string gridAreaCode, ProcessStepType processStepType)
     {
-        var resultDto = await _processResultApplicationService.GetResultAsync(batchId, gridAreaCode, processStepType).ConfigureAwait(false);
+        var resultDto = await _processStepResultApplicationService.GetResultAsync(batchId, gridAreaCode, processStepType).ConfigureAwait(false);
         return Ok(resultDto);
     }
 }

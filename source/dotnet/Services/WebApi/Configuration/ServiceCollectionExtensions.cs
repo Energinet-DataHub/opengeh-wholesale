@@ -102,6 +102,6 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobRunner>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobParametersFactory>(_ => null!); // Unused in the use cases of this app
-        services.AddScoped<IProcessResultApplicationService, ProcessResultApplicationService>();
+        services.AddScoped<IProcessStepResultApplicationService, ProcessStepResultApplicationService>();
     }
 }
