@@ -17,7 +17,7 @@ import ast
 import configargparse
 
 
-def valid_date(s):
+def valid_date(s: str) -> datetime:
     """See https://stackoverflow.com/questions/25470844/specify-date-format-for-python-argparse-input-arguments"""
     try:
         return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
@@ -26,7 +26,7 @@ def valid_date(s):
         raise configargparse.ArgumentTypeError(msg)
 
 
-def valid_list(s):
+def valid_list(s: str) -> list[str]:
     """See https://stackoverflow.com/questions/25470844/specify-date-format-for-python-argparse-input-arguments"""
     try:
         return ast.literal_eval(s)
@@ -35,7 +35,7 @@ def valid_list(s):
         raise configargparse.ArgumentTypeError(msg)
 
 
-def valid_log_level(s):
+def valid_log_level(s: str):
     if s in ["information", "debug"]:
         return str(s)
     else:
