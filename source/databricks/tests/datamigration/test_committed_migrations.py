@@ -29,13 +29,13 @@ def test__download_committed_migrations__when_file_does_not_exist__returns_empty
     mock_file_manager,
 ):
     # Arrange
-    mock_file_manager.exists_file.return_value = False
+    mock_file_manager.return_value.exists_file.return_value = False
 
     # Act
     migrations = download_committed_migrations(mock_file_manager)
 
     # Assert
-    mock_file_manager.download_csv.assert_not_called()
+    mock_file_manager.return_value.download_csv.assert_not_called()
     assert len(migrations) == 0
 
 
@@ -77,7 +77,7 @@ def test__upload_committed_migration__when_migration_state_file_do_not_exist__cr
     mock_file_manager,
 ):
     # Arrange
-    mock_file_manager.exists_file.return_value = False
+    mock_file_manager.return_value.exists_file.return_value = False
     mock_file_manager.download_csv.return_value = create_csv_reader_with_data("")
 
     # Act
@@ -104,7 +104,7 @@ def test__upload_committed_migrations__when_migration_state_file_exists__do_not_
     upload_committed_migration(mock_file_manager, "dummy")
 
     # Assert
-    mock_file_manager.create_file.assert_not_called()
+    mock_file_manager.return_value.create_file.assert_not_called()
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")
@@ -136,7 +136,7 @@ def test__upload_committed_migration__when_file_is_empty__dont_try_downloading_c
     upload_committed_migration(mock_file_manager, "my_migration")
 
     # Assert
-    mock_file_manager.download_csv.assert_not_called()
+    mock_file_manager.return_value.download_csv.assert_not_called()
 
 
 @patch("package.datamigration.committed_migrations.DataLakeFileManager")

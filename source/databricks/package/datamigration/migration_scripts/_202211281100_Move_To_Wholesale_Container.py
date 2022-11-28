@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from azure.storage.filedatalake import DataLakeDirectoryClient
-from migration_script_args import MigrationScriptArgs
+from package.datamigration.migration_script_args import MigrationScriptArgs
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
 
@@ -88,7 +88,6 @@ def move_directory(
     destination_container: str,
     destination_directory: str,
 ) -> None:
-
     directory_client = DataLakeDirectoryClient(
         storage_account_url,
         source_container,
