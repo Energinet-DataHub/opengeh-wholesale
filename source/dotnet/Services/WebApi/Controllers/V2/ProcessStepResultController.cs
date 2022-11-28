@@ -24,12 +24,12 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 [ApiController]
 [ApiVersion(Version)]
 [Route("v{version:apiVersion}/[controller]")]
-public class ProcessResultController : ControllerBase
+public class ProcessStepResultController : ControllerBase
 {
     private const string Version = "2.0";
     private readonly IProcessStepResultApplicationService _processStepResultApplicationService;
 
-    public ProcessResultController(IProcessStepResultApplicationService processStepResultApplicationService)
+    public ProcessStepResultController(IProcessStepResultApplicationService processStepResultApplicationService)
     {
         _processStepResultApplicationService = processStepResultApplicationService;
     }
