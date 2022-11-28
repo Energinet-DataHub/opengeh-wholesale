@@ -1,0 +1,9 @@
+﻿{
+  // Use this on developer machine to toggle tests while developing them.
+  // Should be set 'false' using an environment variable on the build agent, to run these after deployment.
+  "DOMAINFACT_SKIP": true,
+
+  // Domain specific variables used in tests.
+  // If necessary, settings can be overridden per environment in CD workflows.
+  "WEBAPI_BASEADDRESS": "<Wholesale Web API base address in live environment>"
+}
