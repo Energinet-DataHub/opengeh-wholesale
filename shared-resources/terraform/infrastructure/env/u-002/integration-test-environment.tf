@@ -128,9 +128,19 @@ resource "azurerm_key_vault_access_policy" "integration-test-kv-developer-ad-gro
   key_vault_id            = azurerm_key_vault.integration-test-kv.id
   tenant_id               = data.azurerm_client_config.this.tenant_id
   object_id               = var.developers_security_group_object_id
+
   secret_permissions      = [
     "Get",
     "List",
+  ]
+
+  key_permissions         = [
+    "Get",
+    "List",
+    "Update",
+    "Create",
+    "Delete",
+    "Sign",
   ]
 }
 
@@ -143,9 +153,19 @@ resource "azurerm_key_vault_access_policy" "integration-test-kv-ci-test-spn" {
   key_vault_id            = azurerm_key_vault.integration-test-kv.id
   tenant_id               = data.azurerm_client_config.this.tenant_id
   object_id               = var.spn_ci_object_id
+
   secret_permissions      = [
     "Get",
     "List",
+  ]
+
+  key_permissions         = [
+    "Get",
+    "List",
+    "Update",
+    "Create",
+    "Delete",
+    "Sign",
   ]
 }
 
