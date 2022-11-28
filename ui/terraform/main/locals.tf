@@ -12,6 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 locals {
-    ROLES_VALIDATION_ENABLED = true
-    INTERNAL_OPEN_ID_URL     = "https://app-webapi-${var.domain_name_short}-${var.environment_short}-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
+    INTERNAL_OPEN_ID_URL = ""
 }

@@ -11,7 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-locals {
-    ROLES_VALIDATION_ENABLED = true
-    INTERNAL_OPEN_ID_URL     = "https://app-webapi-${var.domain_name_short}-${var.environment_short}-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
+resource "azurerm_key_vault_key" "token_sign" {
+  name         = "token-sign"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+  key_type     = "RSA"
+  key_size     = 2048
+
+  key_opts = [
+    "sign",
+  ]
 }
