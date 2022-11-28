@@ -34,11 +34,9 @@ public class ProcessResultApplicationService : IProcessResultApplicationService
             .ConfigureAwait(false);
 
         var points = await GetPointsFromJsonStreamAsync(resultStream).ConfigureAwait(false);
-        var pointsDto = new List<TimeSeriesPointDto>();
-        foreach (var point in points)
-        {
-            pointsDto.Add(new TimeSeriesPointDto(DateTimeOffset.Parse(point.Quarter_time), decimal.Parse(point.Quantity)));
-        }
+
+        var pointsDto = points.Select(
+            point => new TimeSeriesPointDto(DateTimeOffset.Parse(point.Quarter_time), decimal.Parse(point.Quantity))).ToList();
 
         return new ProcessStepResultDto(
             MeteringPointType.Production,
