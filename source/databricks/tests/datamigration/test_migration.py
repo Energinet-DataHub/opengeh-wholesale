@@ -68,9 +68,12 @@ def test__all_migrations_script_has_correct_signature():
     all_migrations = _get_all_migrations()
 
     for migration_name in all_migrations:
+        # Act
         migration = importlib.import_module(
             "package.datamigration.migration_scripts." + migration_name
         )
+
+        # Assert
         signature = inspect.signature(migration.apply)
         assert len(signature.parameters) == 1
         (parameter,) = signature.parameters.values()

@@ -16,6 +16,13 @@ from pyspark.sql import SparkSession
 
 
 class MigrationScriptArgs:
+    """Input arguments for the data lake migration scripts.
+
+    This class is shared across all scripts. The signature
+    of existing scripts doesn't need to be updated when new
+    members are added to this class.
+    """
+
     def __init__(
         self,
         data_storage_account_url: str,
