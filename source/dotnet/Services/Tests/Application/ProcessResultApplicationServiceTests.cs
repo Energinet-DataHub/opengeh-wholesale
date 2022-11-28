@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
@@ -26,20 +27,74 @@ namespace Energinet.DataHub.Wholesale.Tests.Application;
 [UnitTest]
 public class ProcessResultApplicationServiceTests
 {
+    private const string GridAreaCode = "805";
+
     [Fact]
-    public async Task Do_the_testAsync()
+    public async Task GetResultAsync_WhenCalled_ReturnsProcessResultDtoFromJson()
     {
         // Arrange
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(Guid.NewGuid(), GridAreaCode, ProcessStepType.AggregateProductionPerGridArea);
+
+        actual.Should().NotBeNull();
+
+        actual.Max.Should().Be(actual.TimeSeriesPoints.Max(x => x.Quantity));
+        actual.Min.Should().Be(actual.TimeSeriesPoints.Min(x => x.Quantity));
+        actual.Sum.Should().Be(actual.TimeSeriesPoints.Sum(x => x.Quantity));
+    }
+
+    [Fact]
+    public async Task GetResultAsync_Max_IsMaxQuantity()
+    {
+        // Arrange
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(Guid.NewGuid(), GridAreaCode, ProcessStepType.AggregateProductionPerGridArea);
+
+        actual.Should().NotBeNull();
+
+        actual.Max.Should().Be(actual.TimeSeriesPoints.Max(x => x.Quantity));
+    }
+
+    [Fact]
+    public async Task GetResultAsync_Min_IsMinQuantity()
+    {
+        // Arrange
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(Guid.NewGuid(), GridAreaCode, ProcessStepType.AggregateProductionPerGridArea);
+
+        actual.Should().NotBeNull();
+
+        actual.Min.Should().Be(actual.TimeSeriesPoints.Min(x => x.Quantity));
+    }
+
+    [Fact]
+    public async Task GetResultAsync_Sum_IsSumQuantity()
+    {
+        // Arrange
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(Guid.NewGuid(), GridAreaCode, ProcessStepType.AggregateProductionPerGridArea);
+
+        actual.Should().NotBeNull();
+
+        actual.Sum.Should().Be(actual.TimeSeriesPoints.Sum(x => x.Quantity));
+    }
+
+    private static ProcessResultApplicationService ProcessResultApplicationService()
+    {
         var mock = new Mock<IBatchFileManager>();
         var stream = EmbeddedResources.GetStream("Application.ProcessResult.json");
         mock.Setup(x => x.GetResultFileStreamAsync(It.IsAny<Guid>(), It.IsAny<GridAreaCode>()))
             .ReturnsAsync(stream);
 
         var sut = new ProcessResultApplicationService(mock.Object);
-
-        // Act
-        var actual = await sut.GetResultAsync(Guid.NewGuid(), "805", ProcessStepType.AggregateProductionPerGridArea);
-
-        Assert.NotNull(actual);
+        return sut;
     }
 }
