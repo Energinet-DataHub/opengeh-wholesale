@@ -20,7 +20,7 @@ from package.infrastructure import WHOLESALE_CONTAINER_NAME
 _LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]):
+def _get_valid_args_or_throw(command_line_args: list[str]) -> list[str]:
     p = configargparse.ArgParser(
         description="Locks/unlocks the storage of the specified container",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -69,12 +69,12 @@ def islocked(storage_account_name: str, storage_account_key: str) -> bool:
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
-def lock():
+def lock() -> None:
     args = _get_valid_args_or_throw(sys.argv[1:])
     _lock(args)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
-def unlock():
+def unlock() -> None:
     args = _get_valid_args_or_throw(sys.argv[1:])
     _unlock(args)

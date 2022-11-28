@@ -18,7 +18,7 @@ from pyspark.sql import DataFrame
 loglevel = "information"
 
 
-def _log(level: str, message: str, df: DataFrame):
+def _log(level: str, message: str, df: DataFrame) -> None:
     print(f"============ {level} ============")
     # Frame 2 because: 1 is the calling function in this module, 2 is the caller of the functions in the module
     frame = stack()[2]
@@ -30,11 +30,11 @@ def _log(level: str, message: str, df: DataFrame):
     print("==============================")
 
 
-def log(message: str, df: DataFrame = None):
+def log(message: str, df: DataFrame = None) -> None:
     _log("LOG", message, df)
 
 
-def debug(message: str, df: DataFrame = None):
+def debug(message: str, df: DataFrame = None) -> None:
     if loglevel != "debug":
         return
     _log("DEBUG", message, df)

@@ -14,13 +14,14 @@
 
 from pyspark import SparkConf
 from pyspark.sql.session import SparkSession
+from typing import Optional
 
 
 def initialize_spark(
-    data_storage_account_name,
-    data_storage_account_key,
-    shared_storage_account_name=None,
-    shared_storage_account_key=None,
+    data_storage_account_name: str,
+    data_storage_account_key: str,
+    shared_storage_account_name: str = None,
+    shared_storage_account_key: str = None,
 ) -> SparkSession:
     # Set spark config with storage account names/keys and the session timezone so that datetimes are displayed consistently (in UTC)
     spark_conf = (

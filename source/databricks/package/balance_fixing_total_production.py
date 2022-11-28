@@ -50,7 +50,7 @@ from package.schemas import (
     metering_point_generic_event_schema,
 )
 from package.db_logging import debug
-from datetime import timedelta
+from datetime import timedelta, datetime
 from decimal import Decimal
 
 ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE = "EnergySupplierChanged"
@@ -59,15 +59,16 @@ METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
-    raw_integration_events_df,
-    raw_time_series_points_df,
-    batch_grid_areas_df,
-    batch_snapshot_datetime,
-    period_start_datetime,
-    period_end_datetime,
-    time_zone,
-) -> DataFrame:
+    raw_integration_events_df: DataFrame,
+    raw_time_series_points_df: DataFrame,
+    batch_grid_areas_df: DataFrame,
+    batch_snapshot_datetime: datetime,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+    time_zone: str,
+) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
     "Returns tuple (result_df, (time_series_quarter_basis_data_df, time_series_hour_basis_data_df))"
+    "TODO: is this correct?"
 
     cached_integration_events_df = _get_cached_integration_events(
         raw_integration_events_df, batch_snapshot_datetime
@@ -113,8 +114,8 @@ def calculate_balance_fixing_total_production(
 
 
 def _check_all_grid_areas_have_metering_points(
-    batch_grid_areas_df, metering_point_period_df
-):
+    batch_grid_areas_df: DataFrame, metering_point_period_df: DataFrame
+) -> None:
     distinct_grid_areas_rows_df = metering_point_period_df.select(
         "GridAreaCode"
     ).distinct()
@@ -137,7 +138,7 @@ def _check_all_grid_areas_have_metering_points(
 
 
 def _get_cached_integration_events(
-    raw_integration_events_df, batch_snapshot_datetime
+    raw_integration_events_df: DataFrame, batch_snapshot_datetime: datetime
 ) -> DataFrame:
     return (
         raw_integration_events_df.where(col("storedTime") <= batch_snapshot_datetime)
@@ -147,12 +148,14 @@ def _get_cached_integration_events(
 
 
 def _get_time_series_points(
-    raw_time_series_points_df, batch_snapshot_datetime
+    raw_time_series_points_df: DataFrame, batch_snapshot_datetime: datetime
 ) -> DataFrame:
     return raw_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
 
 
-def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> DataFrame:
+def _get_grid_areas_df(
+    cached_integration_events_df: DataFrame, batch_grid_areas_df: DataFrame
+) -> DataFrame:
     message_type = "GridAreaUpdated"  # Must correspond to the value stored by the integration event listener
 
     grid_area_events_df = (
@@ -187,8 +190,8 @@ def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> Dat
 def _get_metering_point_periods_df(
     cached_integration_events_df: DataFrame,
     grid_area_df: DataFrame,
-    period_start_datetime: str,
-    period_end_datetime: str,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
 ) -> DataFrame:
     metering_point_events_df = (
         cached_integration_events_df.withColumn(
@@ -342,8 +345,8 @@ def _get_metering_point_periods_df(
 def _get_enriched_time_series_points_df(
     time_series_points: DataFrame,
     metering_point_period_df: DataFrame,
-    period_start_datetime: str,
-    period_end_datetime: str,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
 ) -> DataFrame:
 
     timeseries_df = time_series_points.where(
@@ -458,8 +461,10 @@ def _get_enriched_time_series_points_df(
 
 
 def _get_master_basis_data(
-    metering_point_df, period_start_datetime, period_end_datetime
-):
+    metering_point_df: DataFrame,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+) -> DataFrame:
     productionType = MeteringPointType.production.value
     return (
         metering_point_df.withColumn(
@@ -492,7 +497,9 @@ def _get_master_basis_data(
     )
 
 
-def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
+def _get_time_series_basis_data(
+    enriched_time_series_point_df: DataFrame, time_zone: str
+) -> tuple[DataFrame, DataFrame]:
     "Returns tuple (time_series_quarter_basis_data, time_series_hour_basis_data)"
 
     time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
@@ -511,8 +518,10 @@ def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
 
 
 def _get_time_series_basis_data_by_resolution(
-    enriched_time_series_point_df, resolution, time_zone
-):
+    enriched_time_series_point_df: DataFrame,
+    resolution: int,
+    time_zone: str,
+) -> DataFrame:
     w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
 
     timeseries_basis_data_df = (
@@ -548,8 +557,8 @@ def _get_time_series_basis_data_by_resolution(
     return timeseries_basis_data_df
 
 
-def _get_sorted_quantity_columns(timeseries_basis_data):
-    def num_sort(col_name):
+def _get_sorted_quantity_columns(timeseries_basis_data: DataFrame) -> list[str]:
+    def num_sort(col_name: str) -> int:
         "Extracts the nuber in the string"
         import re
 
@@ -562,7 +571,7 @@ def _get_sorted_quantity_columns(timeseries_basis_data):
     return quantity_columns
 
 
-def _get_result_df(enriched_time_series_points_df) -> DataFrame:
+def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
     # Total production in batch grid areas with quarterly resolution per grid area
     result_df = (
         enriched_time_series_points_df.withColumn(

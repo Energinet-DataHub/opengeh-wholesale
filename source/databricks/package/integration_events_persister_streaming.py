@@ -19,7 +19,7 @@ from package.datamigration import islocked
 import configargparse
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]):
+def _get_valid_args_or_throw(command_line_args: list[str]) -> list[str]:
     p = configargparse.ArgParser(
         description="Integration events stream ingestor",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -39,7 +39,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def _start(command_line_args: list[str]):
+def _start(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
@@ -72,5 +72,5 @@ def _start(command_line_args: list[str]):
 
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
-def start():
+def start() -> None:
     _start(sys.argv[1:])

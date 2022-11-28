@@ -29,7 +29,7 @@ from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]):
+def _get_valid_args_or_throw(command_line_args: list[str]) -> list[str]:
     p = configargparse.ArgParser(
         description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -62,7 +62,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def write_basis_data_to_csv(data_df: DataFrame, path: str):
+def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
     (
         data_df.withColumnRenamed("GridAreaCode", "grid_area")
         .repartition("grid_area")
@@ -73,7 +73,7 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str):
     )
 
 
-def _start_calculator(spark: SparkSession, args):
+def _start_calculator(spark: SparkSession, args: list[str]) -> None:
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.
@@ -144,7 +144,7 @@ def get_batch_grid_areas_df(batch_grid_areas, spark):
     )
 
 
-def _start(command_line_args: list[str]):
+def _start(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
@@ -162,5 +162,5 @@ def _start(command_line_args: list[str]):
 
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
-def start():
+def start() -> None:
     _start(sys.argv[1:])
