@@ -34,7 +34,7 @@ def move_process_container_content_to_wholesale_container(
 ) -> None:
 
     source_container = "processes"
-    source_directory = "results"
+    source_directory = "dummy_results"
     destination_directory = source_directory
 
     move_directory(
@@ -54,7 +54,7 @@ def move_integration_events_container_content_to_wholesale_container(
     source_container = "integration-events"
 
     # move 'events' folder
-    source_directory = "events"
+    source_directory = "dummy_events"
     destination_directory = source_directory
 
     move_directory(
@@ -67,7 +67,7 @@ def move_integration_events_container_content_to_wholesale_container(
     )
 
     # move 'events-checkpoint'
-    source_directory = "events-checkpoint"
+    source_directory = "dummy_events-checkpoint"
     destination_directory = source_directory
 
     move_directory(
