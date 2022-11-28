@@ -36,13 +36,13 @@ public class ProcessResultApplicationServiceTests
         var sut = ProcessResultApplicationService();
 
         // Act
-        var actual = await sut.GetResultAsync(Guid.NewGuid(), GridAreaCode, ProcessStepType.AggregateProductionPerGridArea);
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
 
         actual.Should().NotBeNull();
-
-        actual.Max.Should().Be(actual.TimeSeriesPoints.Max(x => x.Quantity));
-        actual.Min.Should().Be(actual.TimeSeriesPoints.Min(x => x.Quantity));
-        actual.Sum.Should().Be(actual.TimeSeriesPoints.Sum(x => x.Quantity));
     }
 
     [Fact]
@@ -52,7 +52,11 @@ public class ProcessResultApplicationServiceTests
         var sut = ProcessResultApplicationService();
 
         // Act
-        var actual = await sut.GetResultAsync(Guid.NewGuid(), GridAreaCode, ProcessStepType.AggregateProductionPerGridArea);
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
 
         actual.Should().NotBeNull();
 
@@ -66,7 +70,11 @@ public class ProcessResultApplicationServiceTests
         var sut = ProcessResultApplicationService();
 
         // Act
-        var actual = await sut.GetResultAsync(Guid.NewGuid(), GridAreaCode, ProcessStepType.AggregateProductionPerGridArea);
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
 
         actual.Should().NotBeNull();
 
@@ -80,7 +88,11 @@ public class ProcessResultApplicationServiceTests
         var sut = ProcessResultApplicationService();
 
         // Act
-        var actual = await sut.GetResultAsync(Guid.NewGuid(), GridAreaCode, ProcessStepType.AggregateProductionPerGridArea);
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
 
         actual.Should().NotBeNull();
 

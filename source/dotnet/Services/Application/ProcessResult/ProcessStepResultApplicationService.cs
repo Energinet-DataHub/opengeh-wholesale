@@ -28,15 +28,20 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
         _batchFileManager = batchFileManager;
     }
 
-    public async Task<ProcessStepResultDto> GetResultAsync(Guid batchId, string gridAreaCode, ProcessStepType processStepType)
+    public async Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto)
     {
-        var resultStream = await _batchFileManager.GetResultFileStreamAsync(batchId, new GridAreaCode(gridAreaCode))
+        var resultStream = await _batchFileManager.GetResultFileStreamAsync(
+                processStepResultRequestDto.BatchId,
+                new GridAreaCode(processStepResultRequestDto.GridAreaCode))
             .ConfigureAwait(false);
 
         var points = await GetPointsFromJsonStreamAsync(resultStream).ConfigureAwait(false);
 
         var pointsDto = points.Select(
-            point => new TimeSeriesPointDto(DateTimeOffset.Parse(point.Quarter_time), decimal.Parse(point.Quantity))).ToList();
+                point => new TimeSeriesPointDto(
+                    DateTimeOffset.Parse(point.Quarter_time),
+                    decimal.Parse(point.Quantity)))
+            .ToList();
 
         return new ProcessStepResultDto(
             MeteringPointType.Production,
@@ -55,7 +60,9 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
         var nextline = await streamer.ReadLineAsync().ConfigureAwait(false);
         while (nextline != null)
         {
-            var dto = JsonSerializer.Deserialize<ProcessResultPoint>(nextline, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var dto = JsonSerializer.Deserialize<ProcessResultPoint>(
+                nextline,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (dto != null)
                 list.Add(dto);
 

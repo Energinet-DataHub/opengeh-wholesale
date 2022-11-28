@@ -12,11 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
-
-public interface IProcessStepResultApplicationService
-{
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
-}
+public sealed record ProcessStepResultRequestDto(Guid BatchId, string GridAreaCode, ProcessStepType ProcessStepResult);

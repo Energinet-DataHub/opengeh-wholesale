@@ -34,11 +34,11 @@ public class ProcessStepResultController : ControllerBase
         _processStepResultApplicationService = processStepResultApplicationService;
     }
 
-    [HttpGet]
+    [HttpPost]
     [MapToApiVersion(Version)]
-    public async Task<IActionResult> GetAsync(Guid batchId, string gridAreaCode, ProcessStepType processStepType)
+    public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDto processStepResultRequestDto)
     {
-        var resultDto = await _processStepResultApplicationService.GetResultAsync(batchId, gridAreaCode, processStepType).ConfigureAwait(false);
+        var resultDto = await _processStepResultApplicationService.GetResultAsync(processStepResultRequestDto).ConfigureAwait(false);
         return Ok(resultDto);
     }
 }
