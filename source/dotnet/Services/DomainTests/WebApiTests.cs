@@ -14,9 +14,10 @@
 
 using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
+using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
+using Microsoft.Identity.Client;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
 {
@@ -100,12 +101,35 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
             if (retrieveAccessToken)
             {
-                await Task.Delay(1000); // TODO: Refactor to retrieve valid access token using ROPC flow
-                var accessToken = "<insert access token here>";
+                var accessToken = await GetUserAccessTokenAsync();
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             }
 
             return httpClient;
+        }
+
+        /// <summary>
+        /// See also "Test the ROPC flow": https://learn.microsoft.com/en-us/azure/active-directory-b2c/add-ropc-policy?#test-the-ropc-flow
+        /// </summary>
+        private async Task<string> GetUserAccessTokenAsync()
+        {
+            var form = new MultipartFormDataContent
+            {
+                { new StringContent(Configuration.UserTokenConfiguration.Username), "username" },
+                { new StringContent(Configuration.UserTokenConfiguration.Password), "password" },
+                { new StringContent("password"), "grant_type" },
+                { new StringContent($"openid {Configuration.UserTokenConfiguration.FrontendAppId} offline_access"), "scope" },
+                { new StringContent(Configuration.UserTokenConfiguration.FrontendAppId), "client_id" },
+                { new StringContent("token id_token"), "response_type" },
+            };
+
+            using var httpClient = new HttpClient();
+
+            var httpResponse = await httpClient.PostAsync(Configuration.UserTokenConfiguration.RopcUrl, form);
+            httpResponse.EnsureSuccessStatusCode();
+
+            var tokenResult = await httpResponse.Content.ReadFromJsonAsync<AccessTokenResult>();
+            return tokenResult!.AccessToken;
         }
     }
 }
