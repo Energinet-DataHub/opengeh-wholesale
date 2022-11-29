@@ -62,7 +62,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         public async Task When_RequestWithoutAccessToken_Then_ResponseIsUnauthorized()
         {
             // Arrange
-            using var httpClient = await Fixture.CreateHttpClientAsync();
+            using var httpClient = new HttpClient
+            {
+                BaseAddress = Fixture.Configuration.WebApiBaseAddress,
+            };
             var request = new HttpRequestMessage(HttpMethod.Get, "v2/batch?batchId=1");
 
             // Act
@@ -76,14 +79,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         public async Task When_RequestingExistingBatchIdWithAccessToken_Then_ResponseIsOk()
         {
             // Arrange
-            using var httpClient = await Fixture.CreateHttpClientAsync(aquireAccessToken: true);
-            var request = new HttpRequestMessage(HttpMethod.Get, $"v2/batch?batchId={Fixture.Configuration.ExistingBatchId}");
 
             // Act
-            using var actualResponse = await httpClient.SendAsync(request);
+            var batchResult = await Fixture.WholesaleClient.GetBatchAsync(Fixture.Configuration.ExistingBatchId);
 
             // Assert
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            batchResult.Should().NotBeNull();
         }
     }
 }

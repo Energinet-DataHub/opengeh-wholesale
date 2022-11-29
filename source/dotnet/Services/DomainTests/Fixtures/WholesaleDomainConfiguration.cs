@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
             WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS"));
-            ExistingBatchId = Root.GetValue<string>("EXISTING_BATCHID");
+            ExistingBatchId = Root.GetValue<Guid>("EXISTING_BATCHID");
         }
 
         /// <summary>
@@ -44,6 +44,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// <summary>
         /// An existing batch id which can be used to call "batch" Web API in live environment.
         /// </summary>
-        public string ExistingBatchId { get; }
+        public Guid ExistingBatchId { get; }
     }
 }

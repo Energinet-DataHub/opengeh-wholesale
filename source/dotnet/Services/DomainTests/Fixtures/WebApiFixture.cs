@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net.Http.Headers;
+using Energinet.DataHub.Wholesale.Client;
+using Moq;
+using Xunit;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
@@ -20,41 +22,58 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// Support testing Wholesale Web API and reusing configuration and
     /// instances between tests.
     /// </summary>
-    public sealed class WebApiFixture : IDisposable
+    public sealed class WebApiFixture : IAsyncLifetime
     {
         public WebApiFixture()
         {
             Configuration = new WholesaleDomainConfiguration();
             UserAuthenticationClient = new B2CUserTokenAuthenticationClient(Configuration.UserTokenConfiguration);
+
+            // Initially mock client, and set it later when 'InitializeAsync' is called.
+            WholesaleClient = Mock.Of<IWholesaleClient>();
         }
 
         public WholesaleDomainConfiguration Configuration { get; }
 
+        /// <summary>
+        /// The actual client is not created until <see cref="IAsyncLifetime.InitializeAsync"/> has been called by xUnit.
+        /// </summary>
+        public IWholesaleClient WholesaleClient { get; private set; }
+
         private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
 
-        public void Dispose()
+        async Task IAsyncLifetime.InitializeAsync()
+        {
+            WholesaleClient = await CreateWholesaleClientAsync();
+        }
+
+        Task IAsyncLifetime.DisposeAsync()
         {
             UserAuthenticationClient.Dispose();
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
-        /// Create a http client for calling the Wholesale Web API.
-        /// If <paramref name="aquireAccessToken"/> is 'true' it will be prepared with an access token.
+        /// The current implementation of <see cref="WholesaleClient"/> is favored to
+        /// a usage scenario where the access token has already been retrieved or can
+        /// be retrieved synchronously.
+        /// However, in current tests we need to retrieve it asynchronously.
         /// </summary>
-        public async Task<HttpClient> CreateHttpClientAsync(bool aquireAccessToken = false)
+        private async Task<IWholesaleClient> CreateWholesaleClientAsync()
         {
-            var httpClient = new HttpClient
-            {
-                BaseAddress = Configuration.WebApiBaseAddress,
-            };
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            httpClientFactoryMock
+                .Setup(m => m.CreateClient(It.IsAny<string>()))
+                .Returns(new HttpClient());
 
-            if (aquireAccessToken)
-            {
-                var accessToken = await UserAuthenticationClient.AcquireAccessTokenAsync();
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            }
+            var accessToken = await UserAuthenticationClient.AcquireAccessTokenAsync();
 
-            return httpClient;
+            return new WholesaleClient(
+                new AuthorizedHttpClientFactory(
+                    httpClientFactoryMock.Object,
+                    () => $"Bearer {accessToken}"),
+                Configuration.WebApiBaseAddress);
         }
     }
 }
