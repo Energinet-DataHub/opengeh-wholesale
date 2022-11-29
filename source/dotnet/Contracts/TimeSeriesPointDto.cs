@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.Contracts;
 /// TimeSeriesPoint
 /// </summary>
 /// <param name="Time"></param>
-/// <param name="Quantity">Quantity should have a scale of 6</param>
+/// <param name="Quantity">Quantity should have a scale of 3</param>
 public sealed record TimeSeriesPointDto(
     DateTimeOffset Time,
     decimal Quantity);

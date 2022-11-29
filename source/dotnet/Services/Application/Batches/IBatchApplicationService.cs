@@ -22,7 +22,9 @@ public interface IBatchApplicationService
     /// <summary>
     /// Create a new batch with state <see cref="BatchExecutionState.Created"/>.
     /// </summary>
-    Task CreateAsync(BatchRequestDto batchRequestDto);
+    /// <param name="batchRequestDto"></param>
+    /// <returns>the batchId</returns>
+    Task<Guid> CreateAsync(BatchRequestDto batchRequestDto);
 
     /// <summary>
     /// Create and start all processes of batches with state <see cref="BatchExecutionState.Submitted"/>.
@@ -32,4 +34,6 @@ public interface IBatchApplicationService
     Task UpdateExecutionStateAsync();
 
     Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto);
+
+    Task<BatchDto> GetAsync(Guid batchId);
 }
