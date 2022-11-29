@@ -20,11 +20,12 @@ from pyspark.sql.types import (
 )
 
 """
-Schema for metering point
+Schema for metering point periods
 
 Data must be stored in a Delta table.
 The table holds all consumption, production, exchange, and child metering points.
-The table must be partitioned by `FromDate`.
+The table must be partitioned by `ToDate`: ToDate_Year/ToDate_Month/ToDate_Date.
+TODO explain why by to-date
 The table data must always contain updated periods.
 """
 metering_point_period_schema = StructType(
@@ -56,6 +57,9 @@ metering_point_period_schema = StructType(
         # The id of the parent metering point
         StructField("ParentMeteringPointId", StringType(), True),
         
+        # The unique actor id of the energy supplier (as provided by the market participant domain)
+        StructField("EnergySupplierId", StringType(), True),
+
         # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
         # The date is inclusive.
         StructField("FromDate", TimestampType(), True),
@@ -64,10 +68,7 @@ metering_point_period_schema = StructType(
         # The moment is exclusive.
         # The date of the last period is null.
         StructField("ToDate", TimestampType(), True),
-        
-        # The unique actor id of the energy supplier (as provided by the market participant domain)
-        StructField("EnergySupplierId", StringType(), True),
-        
+       
         # The year part of the `ToDate`. Used in partition.
         StructField("ToDate_Year", IntegerType(), True),
         
