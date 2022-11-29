@@ -85,6 +85,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
             // Assert
             batchResult.Should().NotBeNull();
+            batchResult!.BatchNumber.Should().Be(Fixture.Configuration.ExistingBatchId);
         }
     }
 }
