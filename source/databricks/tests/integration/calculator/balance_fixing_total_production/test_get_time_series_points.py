@@ -32,7 +32,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
     ):
         df = [
             {
-                "GsrnNumber": "the-gsrn-number",
+                "MeteringPointId": "the-gsrn-number",
                 "TransactionId": "1",
                 "Quantity": Decimal("1.1"),
                 "Quality": 3,

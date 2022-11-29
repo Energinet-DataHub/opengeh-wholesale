@@ -538,7 +538,7 @@ def test__metering_points_have_expected_columns(  # expected_column_name, expect
 
     assert (
         raw_master_basis_data.where(
-            (col("GsrnNumber") == metering_point_id)
+            (col("MeteringPointId") == metering_point_id)
             & (col("GridAreaCode") == grid_area_code)
             & (col("EffectiveDate") == june_1th)
             & (col("toEffectiveDate") == june_2th)
