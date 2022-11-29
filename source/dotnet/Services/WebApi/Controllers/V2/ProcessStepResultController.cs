@@ -18,9 +18,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 
-/// <summary>
-/// Handle process batches.
-/// </summary>
 [ApiController]
 [ApiVersion(Version)]
 [Route("v{version:apiVersion}/[controller]")]
