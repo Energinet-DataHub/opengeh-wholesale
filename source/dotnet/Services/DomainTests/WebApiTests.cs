@@ -82,14 +82,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
         /// </summary>
-        public class Given_Authorized : IClassFixture<WebApiFixture>
+        public class Given_Authorized : IClassFixture<AuthorizedClientFixture>
         {
-            public Given_Authorized(WebApiFixture fixture)
+            public Given_Authorized(AuthorizedClientFixture fixture)
             {
                 Fixture = fixture;
             }
 
-            private WebApiFixture Fixture { get; }
+            private AuthorizedClientFixture Fixture { get; }
 
             [DomainFact]
             public async Task When_RequestingExistingBatchId_Then_ResponseIsOk()

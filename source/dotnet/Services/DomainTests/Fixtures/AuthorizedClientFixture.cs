@@ -21,9 +21,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// <summary>
     /// Support testing Wholesale Web API using an authorized Wholesale client.
     /// </summary>
-    public sealed class WebApiFixture : IAsyncLifetime
+    public sealed class AuthorizedClientFixture : IAsyncLifetime
     {
-        public WebApiFixture()
+        public AuthorizedClientFixture()
         {
             Configuration = new WholesaleDomainConfiguration();
             UserAuthenticationClient = new B2CUserTokenAuthenticationClient(Configuration.UserTokenConfiguration);
