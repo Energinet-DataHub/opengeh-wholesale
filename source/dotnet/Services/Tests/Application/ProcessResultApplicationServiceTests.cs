@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
@@ -42,7 +43,7 @@ public class ProcessResultApplicationServiceTests
                 GridAreaCode,
                 ProcessStepType.AggregateProductionPerGridArea));
 
-        actual.Should().NotBeNull();
+        actual.Should().NotContainNullsOrEmptyEnumerables();
     }
 
     [Fact]
