@@ -30,17 +30,28 @@ metering_point_period_schema = StructType(
         StructField("MeteringPointId", StringType(), True),
         # "E17" | "E18" | "E20" | child?
         StructField("Type", StringType(), True),
+        # TODO "" | "" | ""
         StructField("SettlementMethod", StringType(), True),
-        StructField("GridArea", StringType(), True),
+        # 3 character grid area code uniquely identifying the grid area. All characters must be digits (0-9).
+        StructField("GridAreaCode", StringType(), True),
+        # TODO "" | "" | ""
         StructField("ConnectionState", StringType(), True),
         # "PT1H" | "PT15M"
         StructField("Resolution", StringType(), True),
-        StructField("InGridArea", StringType(), True),
-        StructField("OutGridArea", StringType(), True),
-        StructField("ParentMeteringPointID", StringType(), True),
-        # Or effective date?
-        StructField("FromDate", StringType(), True),
-        StructField("ToDate", StringType(), True),
+        # 3 character grid area code uniquely identifying the incoming grid area. All characters must be digits (0-9).
+        StructField("InGridAreaCode", StringType(), True),
+        # 3 character grid area code uniquely identifying the outgoing grid area. All characters must be digits (0-9).
+        StructField("OutGridAreaCode", StringType(), True),
+        # The metering point GSRN number that uniquely identifies the parent metering point
+        StructField("ParentMeteringPointId", StringType(), True),
+        # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
+        # The date is inclusive.
+        # TODO Or effective date?
+        StructField("FromDate", TimestampType(), True),
+        # The to-date of the period. The to-date must be the UTC time of the begining of a date in the given timezone/DST.
+        # The date is exclusive.
+        StructField("ToDate", TimestampType(), True),
+        # The unique actor id of the energy supplier.
         StructField("EnergySupplierId", StringType(), True),
         # The year part of the `ToDate`. Used in partition.
         StructField("ToDateYear", IntegerType(), True),
