@@ -15,9 +15,14 @@
 import sys
 
 import configargparse
-import infrastructure
-from package import db_logging, initialize_spark, integration_events_persister, log
-from package.args_helper import valid_date, valid_list, valid_log_level
+from package import (
+    db_logging,
+    infrastructure,
+    initialize_spark,
+    integration_events_persister,
+    log,
+)
+from package.args_helper import valid_log_level
 from package.datamigration import islocked
 
 

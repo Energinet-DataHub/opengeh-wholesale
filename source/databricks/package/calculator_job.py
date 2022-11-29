@@ -15,11 +15,11 @@
 import sys
 
 import configargparse
-import infrastructure
 from package import (
     calculate_balance_fixing_total_production,
     db_logging,
     debug,
+    infrastructure,
     initialize_spark,
     log,
 )
