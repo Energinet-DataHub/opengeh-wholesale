@@ -22,38 +22,34 @@ from pyspark.sql.types import (
 """
             col("TransactionId"),
             col("Period.Resolution"),
-            col("time"),
-            col("year"),
-            col("month"),
-            col("day"),
 """
 
 
-# Schema for time series point
+# Schema for time series points
 # Data must be stored in a Delta table.
 # The table must be partitioned by the observation time elements: year/month/date.
 # New data must be appended.
 time_series_point_schema = StructType(
     [
-        # The metering point GSRN number that uniquely identifies the metering point
+        # The GSRN that uniquely identifies the metering point
         StructField("MeteringPointId", StringType(), True),
+        # Measured energy amount
         StructField("Quantity", DecimalType(18,6), True),
-        # A02: Quantity missing (0-stilling)
-        # A03: for estimated
-        # A04: Measured
-        # A05: for incomplete values
+        # "A02": Quantity missing (reset)
+        # "A03": for estimated
+        # "A04": Measured
+        # "A05": for incomplete values
         StructField("Quality", StringType(), True),
         # The time when the energy was measured
-        # Operation time (the time when the power was consumed/produced/exchanged).
+        # Operation time (the time when the power was consumed/produced/exchanged)
         StructField("ObservationTime", TimestampType(), True),
-        # The year part of the 'time' field.
+        # The year part of the `ObservationTime`. Used in partition.
         StructField("ObservationYear", IntegerType(), True),
-        # The month part of the 'time' field.
+        # The month part of the `ObservationTime`. Used in partition.
         StructField("ObservationMonth", IntegerType(), True),
-        # The day part of the 'time' field.
+        # The date part of the `ObservationTime`. Used in partition.
         StructField("ObservationDate", IntegerType(), True),
         # The registration time as indicated by the MDR actor
-        # The registration date from the market document.
         StructField("RegistrationTime", TimestampType(), True),
     ]
 )
