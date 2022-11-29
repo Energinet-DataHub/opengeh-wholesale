@@ -15,5 +15,6 @@
   "USER": "<user identification part of user related key vault secrets; e.g. 'dh' for 'B2C-u001-dh-username'>'",
 
   // Domain specific variables used in tests.
-  "WEBAPI_BASEADDRESS": "<Wholesale Web API base address in live environment>"
+  "WEBAPI_BASEADDRESS": "<Wholesale Web API base address in live environment>",
+  "EXISTING_BATCHID": "<An existing batch id in live environment>"
 }
