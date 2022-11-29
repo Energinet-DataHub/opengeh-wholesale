@@ -55,7 +55,7 @@ from package.schemas import (
     metering_point_generic_event_schema,
 )
 from package.db_logging import debug
-from datetime import timedelta
+from datetime import timedelta, datetime
 from decimal import Decimal
 
 ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE = "EnergySupplierChanged"
@@ -194,8 +194,8 @@ def _get_master_basis_data_df(
     metering_points_periods_df: DataFrame,
     market_roles_periods_df: DataFrame,
     grid_area_df: DataFrame,
-    period_start_datetime,
-    period_end_datetime,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
 ) -> DataFrame:
     metering_points_in_grid_area = metering_points_periods_df.join(
         grid_area_df,
@@ -262,16 +262,16 @@ def _get_master_basis_data_df(
     )
 
     master_basis_data_df = master_basis_data_df.select(
-        metering_point_periods_df["MeteringPointId"].alias("GsrnNumber"),
+        metering_point_periods_df["MeteringPointId"],
         "GridAreaCode",
         "EffectiveDate",
         "toEffectiveDate",
         "MeteringPointType",
         "SettlementMethod",
-        metering_point_periods_df["InGridArea"].alias("FromGridAreaCode"),
-        metering_point_periods_df["OutGridArea"].alias("ToGridAreaCode"),
+        metering_point_periods_df["InGridArea"],
+        metering_point_periods_df["OutGridArea"],
         "Resolution",
-        market_roles_periods_df["EnergySupplierId"].alias("EnergySupplierGln"),
+        market_roles_periods_df["EnergySupplierId"],
     )
     debug(
         "Metering point events before join with grid areas",
@@ -285,165 +285,6 @@ def _get_master_basis_data_df(
         ),
     )
     return master_basis_data_df
-
-
-# TODO: Unused. Remove
-def _get_metering_point_periods_df(
-    cached_integration_events_df: DataFrame,
-    grid_area_df: DataFrame,
-    period_start_datetime,
-    period_end_datetime,
-) -> DataFrame:
-    metering_point_events_df = (
-        cached_integration_events_df.withColumn(
-            "body", from_json(col("body"), metering_point_generic_event_schema)
-        ).where(
-            col("body.MessageType").isin(
-                METERING_POINT_CREATED_MESSAGE_TYPE,
-                METERING_POINT_CONNECTED_MESSAGE_TYPE,
-                ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
-            )
-        )
-        # If new properties to the Meteringpoints are added
-        # Consider if they should be included in the 'dropDuplicates'
-        # To remove events that could have been received multiple times
-        .select(
-            "storedTime",
-            "body.MessageType",
-            "body.MeteringPointId",
-            "body.MeteringPointType",
-            "body.GsrnNumber",
-            "body.GridAreaLinkId",
-            "body.ConnectionState",
-            "body.EffectiveDate",
-            "body.Resolution",
-            "body.OperationTime",
-            "body.SettlementMethod",
-            "body.FromGridAreaCode",
-            "body.ToGridAreaCode",
-            "body.EnergySupplierGln",
-        )
-    ).dropDuplicates(
-        [
-            "MessageType",
-            "MeteringPointId",
-            "MeteringPointType",
-            "GsrnNumber",
-            "GridAreaLinkId",
-            "ConnectionState",
-            "EffectiveDate",
-            "Resolution",
-            "OperationTime",
-            "SettlementMethod",
-            "FromGridAreaCode",
-            "ToGridAreaCode",
-            "EnergySupplierGln",
-        ]
-    )
-    debug(
-        "Metering point created and connected events without duplicates",
-        metering_point_events_df.orderBy(col("storedTime").desc()),
-    )
-    window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
-    metering_point_periods_df = (
-        metering_point_events_df.withColumn(
-            "toEffectiveDate",
-            lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
-        )
-        .withColumn(
-            "GridAreaLinkId",
-            coalesce(col("GridAreaLinkId"), last("GridAreaLinkId", True).over(window)),
-        )
-        .withColumn(
-            "ConnectionState",
-            when(
-                col("MessageType") == METERING_POINT_CREATED_MESSAGE_TYPE,
-                lit(ConnectionState.new.value),
-            ).when(
-                col("MessageType") == METERING_POINT_CONNECTED_MESSAGE_TYPE,
-                lit(ConnectionState.connected.value),
-            ),
-        )
-        .withColumn(
-            "ConnectionState",
-            coalesce(
-                col("ConnectionState"), last("ConnectionState", True).over(window)
-            ),
-        )
-        .withColumn(
-            "MeteringPointType",
-            coalesce(
-                col("MeteringPointType"), last("MeteringPointType", True).over(window)
-            ),
-        )
-        .withColumn(
-            "Resolution",
-            coalesce(col("Resolution"), last("Resolution", True).over(window)),
-        )
-        .withColumn(
-            "SettlementMethod",
-            coalesce(
-                col("SettlementMethod"), last("SettlementMethod", True).over(window)
-            ),
-        )
-        .withColumn(
-            "FromGridAreaCode",
-            coalesce(
-                col("FromGridAreaCode"), last("FromGridAreaCode", True).over(window)
-            ),
-        )
-        .withColumn(
-            "ToGridAreaCode",
-            coalesce(col("ToGridAreaCode"), last("ToGridAreaCode", True).over(window)),
-        )
-        .withColumn(
-            "EnergySupplierGln",
-            coalesce(
-                col("EnergySupplierGln"), last("EnergySupplierGln", True).over(window)
-            ),
-        )
-    )
-
-    metering_point_periods_df = (
-        metering_point_periods_df.where(col("EffectiveDate") <= period_end_datetime)
-        .where(col("toEffectiveDate") >= period_start_datetime)
-        .where(
-            col("ConnectionState") == ConnectionState.connected.value
-        )  # Only aggregate when metering points is connected
-        .where(col("MeteringPointType") == MeteringPointType.production.value)
-        .where(col("EnergySupplierGln").isNotNull())
-        # Only aggregate when metering points have a energy supplier
-    )
-    debug(
-        "Metering point events before join with grid areas",
-        metering_point_periods_df.orderBy(col("storedTime").desc()),
-    )
-    # Only include metering points in the selected grid areas
-    metering_point_periods_df = metering_point_periods_df.join(
-        grid_area_df,
-        metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
-        "inner",
-    ).select(
-        "GsrnNumber",
-        "GridAreaCode",
-        "EffectiveDate",
-        "toEffectiveDate",
-        "MeteringPointType",
-        "SettlementMethod",
-        "FromGridAreaCode",
-        "ToGridAreaCode",
-        "Resolution",
-        "EnergySupplierGln",
-    )
-
-    debug(
-        "Metering point periods",
-        metering_point_periods_df.orderBy(
-            col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
-        ),
-    )
-
-    return metering_point_periods_df
 
 
 def _get_enriched_time_series_points_df(
@@ -586,15 +427,15 @@ def _get_output_master_basis_data_df(
         )
         .select(
             col("GridAreaCode"),  # column is only used for partitioning
-            col("GsrnNumber").alias("METERINGPOINTID"),
+            col("MeteringPointId").alias("METERINGPOINTID"),
             col("EffectiveDate").alias("VALIDFROM"),
             col("toEffectiveDate").alias("VALIDTO"),
             col("GridAreaCode").alias("GRIDAREA"),
-            col("ToGridAreaCode").alias("TOGRIDAREA"),
-            col("FromGridAreaCode").alias("FROMGRIDAREA"),
+            col("InGridArea").alias("TOGRIDAREA"),
+            col("OutGridArea").alias("FROMGRIDAREA"),
             col("TYPEOFMP"),
             col("SettlementMethod").alias("SETTLEMENTMETHOD"),
-            col("EnergySupplierGln").alias(("ENERGYSUPPLIERID")),
+            col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
         )
     )
 
