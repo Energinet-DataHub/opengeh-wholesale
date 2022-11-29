@@ -39,7 +39,8 @@ metering_point_type = NewMeteringPointType.production.value
 settlement_method = NewSettlementMethod.flex.value
 connection_state = NewConnectionState.connected.value
 resolution = NewMeteringPointResolution.hour.value
-june_1th = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
+date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%fZ"
+june_1th = datetime.strptime("2022-05-31T22:00:00.000Z", date_time_formatting_string)
 june_2th = june_1th + timedelta(days=1)
 june_3th = june_1th + timedelta(days=2)
 june_4th = june_1th + timedelta(days=3)
@@ -63,7 +64,7 @@ def grid_area_df(spark) -> DataFrame:
 @pytest.fixture(scope="module")
 def market_roles_period_df_factory(spark):
     def factory(
-        EnergySupplierId="1",
+        EnergySupplierId=energy_supplier_id,
         MeteringPointId=metering_point_id,
         FromDate=june_1th,
         ToDate=june_3th,
@@ -222,7 +223,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
     metering_points_periods_df = metering_points_periods_df_factory()
     market_roles_periods_df = market_roles_period_df_factory(
         periods=[
-            {"FromDate": june_1th, "ToDate": june_2th},
+            {"FromDate": june_1th, "ToDate": june_2th, "EnergySupplierId": "1"},
             {"FromDate": june_2th, "ToDate": june_3th, "EnergySupplierId": "2"},
         ]
     )
@@ -244,7 +245,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
         & (col("EffectiveDate") == june_2th)
         & (col("toEffectiveDate") == june_3th)
     )
-
+    raw_master_basis_data.show()
     assert period_with_energy_suplier_1.count() == 1
     assert period_with_energy_suplier_2.count() == 1
 
@@ -536,16 +537,18 @@ def test__metering_points_have_expected_columns(  # expected_column_name, expect
         june_2th,
     )
 
-    print(raw_master_basis_data.columns)
-    assert raw_master_basis_data.columns == [
-        "GsrnNumber",
-        "GridAreaCode",
-        "EffectiveDate",
-        "toEffectiveDate",
-        "MeteringPointType",
-        "SettlementMethod",
-        "FromGridAreaCode",
-        "ToGridAreaCode",
-        "Resolution",
-        "EnergySupplierGln",
-    ]
+    assert (
+        raw_master_basis_data.where(
+            (col("GsrnNumber") == metering_point_id)
+            & (col("GridAreaCode") == grid_area_code)
+            & (col("EffectiveDate") == june_1th)
+            & (col("toEffectiveDate") == june_2th)
+            & (col("MeteringPointType") == metering_point_type)
+            & (col("SettlementMethod") == settlement_method)
+            & (col("FromGridAreaCode") == "some-in-gride-area")
+            & (col("ToGridAreaCode") == "some-out-gride-area")
+            & (col("Resolution") == NewMeteringPointResolution.hour.value)
+            & (col("EnergySupplierGln") == energy_supplier_id)
+        ).count()
+        == 1
+    )
