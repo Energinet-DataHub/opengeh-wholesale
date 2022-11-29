@@ -33,4 +33,6 @@ public interface IWholesaleClient
     Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId);
 
     Task<BatchDtoV2?> GetBatchAsync(Guid batchId);
+
+    Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
 }

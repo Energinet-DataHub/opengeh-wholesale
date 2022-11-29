@@ -658,6 +658,7 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
             col("Quantity").cast(DecimalType(18, 3)),
             col("quality"),
             "position",
+            "quarter_time",
         )
     )
 
