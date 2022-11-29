@@ -60,12 +60,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public string FrontendAppId { get; }
 
         /// <summary>
-        /// The username of the user for whom we want to retrieve the user token.
+        /// The username of the user for whom we want to retrieve an access token.
         /// </summary>
         public string Username { get; }
 
         /// <summary>
-        /// The password of the user for whom we want to retrieve the user token.
+        /// The password of the user for whom we want to retrieve an access token.
         /// </summary>
         public string Password { get; }
 
