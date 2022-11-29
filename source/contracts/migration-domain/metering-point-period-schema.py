@@ -38,10 +38,10 @@ metering_point_period_schema = StructType(
         StructField("ConnectionState", StringType(), True),
         # "PT1H" | "PT15M"
         StructField("Resolution", StringType(), True),
-        # 3 character grid area code uniquely identifying the incoming grid area. All characters must be digits (0-9).
-        StructField("InGridAreaCode", StringType(), True),
-        # 3 character grid area code uniquely identifying the outgoing grid area. All characters must be digits (0-9).
-        StructField("OutGridAreaCode", StringType(), True),
+        # 3 character grid area code uniquely identifying the from-grid area. All characters must be digits (0-9).
+        StructField("FromGridAreaCode", StringType(), True),
+        # 3 character grid area code uniquely identifying the to-grid area. All characters must be digits (0-9).
+        StructField("ToGridAreaCode", StringType(), True),
         # The metering point GSRN number that uniquely identifies the parent metering point
         StructField("ParentMeteringPointId", StringType(), True),
         # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
