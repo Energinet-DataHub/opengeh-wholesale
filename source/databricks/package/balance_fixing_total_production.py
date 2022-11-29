@@ -549,7 +549,7 @@ def _get_enriched_time_series_points_df(
         "GridAreaCode",
         master_basis_data_df["GsrnNumber"],
         "MeteringPointType",
-        master_basis_data_df["newResolution"].alias("Resolution"),
+        master_basis_data_df["Resolution"].alias("Resolution"),
         "time",
         "Quantity",
         "Quality",

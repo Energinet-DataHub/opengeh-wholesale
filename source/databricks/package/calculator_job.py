@@ -94,8 +94,6 @@ def _start_calculator(spark: SparkSession, args):
         f"{args.wholesale_container_path}/MarketRolesPeriods.csv"
     )
 
-    static_market_roles_df.show()
-
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
 
     (
@@ -103,8 +101,8 @@ def _start_calculator(spark: SparkSession, args):
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing_total_production(
-        static_metering_points_df,
-        static_market_roles_df,
+        metering_points_periods_df,
+        market_roles_periods_df,
         raw_integration_events_df,
         raw_time_series_points_df,
         batch_grid_areas_df,
