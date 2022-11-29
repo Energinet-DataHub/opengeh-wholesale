@@ -43,7 +43,7 @@ def upload_committed_migration(
 
 
 def _validate_number_of_columns_in_csv(file_manager: DataLakeFileManager) -> None:
-    if file_manager.get_file_size(COMMITTED_MIGRATIONS_FILE_NAME) > 0:
+    if file_manager.get_file_size(COMMITTED_MIGRATIONS_FILE_NAME) == 0:
         return  # we must return because we can't iterate on the reader (it would raise an exception)
 
     csv_reader = file_manager.download_csv(COMMITTED_MIGRATIONS_FILE_NAME)
