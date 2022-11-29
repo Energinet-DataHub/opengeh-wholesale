@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
