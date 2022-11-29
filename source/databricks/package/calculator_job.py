@@ -23,8 +23,9 @@ from package import (
     initialize_spark,
     log,
 )
-from package.args_helper import valid_date, valid_list, valid_log_level
-from package.datamigration import islocked
+from .calculator_args import CalculatorArgs
+from .args_helper import valid_date, valid_list, valid_log_level
+from .datamigration import islocked
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
@@ -75,12 +76,12 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
     )
 
 
-def _start_calculator(spark: SparkSession, args: argparse.Namespace) -> None:
+def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.
     raw_integration_events_df = spark.read.option("mergeSchema", "true").parquet(
-        infrastructure.get_integration_events_path(args.data_storage_account_name)
+        args.integration_events_path
     )
 
     # Only points stored before the snapshot_datetime are needed.
@@ -111,23 +112,19 @@ def _start_calculator(spark: SparkSession, args: argparse.Namespace) -> None:
     debug("timeseries basis data df_quarter", timeseries_quarter_df)
     debug("master basis data", master_basis_data_df)
 
-    process_results_path = infrastructure.get_process_results_path(
-        args.data_storage_account_name
-    )
-
     write_basis_data_to_csv(
         timeseries_quarter_df,
-        f"{process_results_path}/basis-data/batch_id={args.batch_id}/time-series-quarter",
+        f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-quarter",
     )
 
     write_basis_data_to_csv(
         timeseries_hour_df,
-        f"{process_results_path}/basis-data/batch_id={args.batch_id}/time-series-hour",
+        f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-hour",
     )
 
     write_basis_data_to_csv(
         master_basis_data_df,
-        f"{process_results_path}/master-basis-data/batch_id={args.batch_id}",
+        f"{args.process_results_path}/master-basis-data/batch_id={args.batch_id}",
     )
 
     # First repartition to co-locate all rows for a grid area on a single executor.
@@ -140,7 +137,7 @@ def _start_calculator(spark: SparkSession, args: argparse.Namespace) -> None:
         .repartition("grid_area")
         .write.mode("overwrite")
         .partitionBy("grid_area")
-        .json(f"{process_results_path}/batch_id={args.batch_id}")
+        .json(f"{args.process_results_path}/batch_id={args.batch_id}")
     )
 
 
@@ -165,7 +162,25 @@ def _start(command_line_args: list[str]) -> None:
         args.data_storage_account_name, args.data_storage_account_key
     )
 
-    _start_calculator(spark, args)
+    calculator_args = CalculatorArgs(
+        data_storage_account_name=args.data_storage_account_name,
+        data_storage_account_key=args.data_storage_account_key,
+        integration_events_path=infrastructure.get_integration_events_path(
+            args.data_storage_account_name
+        ),
+        time_series_points_path=args.time_series_points_path,
+        process_results_path=infrastructure.get_process_results_path(
+            args.data_storage_account_name
+        ),
+        batch_id=args.batch_id,
+        batch_grid_areas=args.batch_grid_areas,
+        batch_snapshot_datetime=args.batch_snapshot_datetime,
+        batch_period_start_datetime=args.batch_period_start_datetime,
+        batch_period_end_datetime=args.batch_period_end_datetime,
+        time_zone=args.time_zone,
+    )
+
+    _start_calculator(spark, calculator_args)
 
 
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
