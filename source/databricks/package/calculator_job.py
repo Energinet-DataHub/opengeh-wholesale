@@ -74,7 +74,7 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
     )
 
 
-def _start_calculator(spark: SparkSession, args: Namespace) -> None:
+def _start_calculator(spark: SparkSession, args: argparse.Namespace) -> None:
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.

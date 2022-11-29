@@ -38,7 +38,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     return args
 
 
-def _lock(args: Namespace) -> None:
+def _lock(args: argparse.Namespace) -> None:
 
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
@@ -50,7 +50,7 @@ def _lock(args: Namespace) -> None:
     log(f"created lock file: {_LOCK_FILE_NAME}")
 
 
-def _unlock(args: Namespace) -> None:
+def _unlock(args: argparse.Namespace) -> None:
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
