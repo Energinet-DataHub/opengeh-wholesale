@@ -27,10 +27,10 @@ from package import (
 )
 from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
-from argparse import Namespace
+from configargparse import argparse
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]) -> Namespace:
+def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
         description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,

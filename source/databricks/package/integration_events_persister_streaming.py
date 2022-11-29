@@ -16,11 +16,11 @@ import sys
 from package import integration_events_persister, initialize_spark, log, db_logging
 from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
-from argparse import Namespace
+from configargparse import argparse
 import configargparse
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]) -> Namespace:
+def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
         description="Integration events stream ingestor",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,

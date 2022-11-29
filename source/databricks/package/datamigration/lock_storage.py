@@ -16,12 +16,12 @@ from .data_lake_file_manager import DataLakeFileManager
 import configargparse
 from package import log
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
-from argparse import Namespace
+from configargparse import argparse
 
 _LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]) -> Namespace:
+def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
         description="Locks/unlocks the storage of the specified container",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
