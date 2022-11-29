@@ -39,8 +39,8 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
 
         var pointsDto = points.Select(
                 point => new TimeSeriesPointDto(
-                    DateTimeOffset.Parse(point.Quarter_time),
-                    decimal.Parse(point.Quantity)))
+                    DateTimeOffset.Parse(point.quarter_time),
+                    decimal.Parse(point.quantity)))
             .ToList();
 
         return new ProcessStepResultDto(
