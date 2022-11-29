@@ -19,8 +19,7 @@ using Xunit;
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
     /// <summary>
-    /// Support testing Wholesale Web API and reusing configuration and
-    /// instances between tests.
+    /// Support testing Wholesale Web API using an authorized Wholesale client.
     /// </summary>
     public sealed class WebApiFixture : IAsyncLifetime
     {

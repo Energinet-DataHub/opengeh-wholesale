@@ -23,69 +23,86 @@ namespace Energinet.DataHub.Wholesale.DomainTests
     /// Contains tests where we operate at the level of a "domain", so basically what in some context has been named "domain tests".
     /// However, with the technique displayed here we perform these tests in a live environment.
     /// </summary>
-    public class WebApiTests : IClassFixture<WebApiFixture>
+    public class WebApiTests
     {
-        public WebApiTests(WebApiFixture fixture)
+        /// <summary>
+        /// These tests uses an unauthorized http client to perform requests.
+        /// </summary>
+        public class Given_Unauthorized : IClassFixture<WholesaleDomainConfiguration>
         {
-            Fixture = fixture;
-        }
+            public Given_Unauthorized(WholesaleDomainConfiguration configuration)
+            {
+                Configuration = configuration;
+                UnauthorizedHttpClient = new HttpClient
+                {
+                    BaseAddress = configuration.WebApiBaseAddress,
+                };
+            }
 
-        private WebApiFixture Fixture { get; }
+            private WholesaleDomainConfiguration Configuration { get; }
+
+            private HttpClient UnauthorizedHttpClient { get; }
+
+            /// <summary>
+            /// This is just to be able to verify everything works with regards to settings and executing the tests after deployment.
+            /// If needed, this test can be removed when the actual domain test has been implemented.
+            /// </summary>
+            [DomainFact]
+            public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
+            {
+                // Arrange
+
+                // Act
+                using var actualResponse = await UnauthorizedHttpClient.GetAsync("monitor/ready");
+
+                // Assert
+                actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+                var content = await actualResponse.Content.ReadAsStringAsync();
+                content.Should().Contain("Healthy");
+            }
+
+            /// <summary>
+            /// This shows our request will fail if we call Web API without a valid access token.
+            /// </summary>
+            [DomainFact]
+            public async Task When_RequestBatchId_Then_ResponseIsUnauthorized()
+            {
+                // Arrange
+                var request = new HttpRequestMessage(HttpMethod.Get, "v2/batch?batchId=1");
+
+                // Act
+                using var actualResponse = await UnauthorizedHttpClient.SendAsync(request);
+
+                // Assert
+                actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            }
+        }
 
         /// <summary>
-        /// This is just to be able to verify everything works with regards to settings and executing the tests after deployment.
-        /// If needed, this test can be removed when the actual domain test has been implemented.
+        /// These tests uses an authorized Wholesale client to perform requests.
         /// </summary>
-        [DomainFact]
-        public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
+        public class Given_Authorized : IClassFixture<WebApiFixture>
         {
-            // Arrange
-            using var httpClient = new HttpClient
+            public Given_Authorized(WebApiFixture fixture)
             {
-                BaseAddress = Fixture.Configuration.WebApiBaseAddress,
-            };
+                Fixture = fixture;
+            }
 
-            // Act
-            using var actualResponse = await httpClient.GetAsync("monitor/ready");
+            private WebApiFixture Fixture { get; }
 
-            // Assert
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var content = await actualResponse.Content.ReadAsStringAsync();
-            content.Should().Contain("Healthy");
-        }
-
-        /// <summary>
-        /// This shows our request will fail if we call Web API without a valid access token
-        /// </summary>
-        [DomainFact]
-        public async Task When_RequestWithoutAccessToken_Then_ResponseIsUnauthorized()
-        {
-            // Arrange
-            using var httpClient = new HttpClient
+            [DomainFact]
+            public async Task When_RequestingExistingBatchId_Then_ResponseIsOk()
             {
-                BaseAddress = Fixture.Configuration.WebApiBaseAddress,
-            };
-            var request = new HttpRequestMessage(HttpMethod.Get, "v2/batch?batchId=1");
+                // Arrange
 
-            // Act
-            using var actualResponse = await httpClient.SendAsync(request);
+                // Act
+                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(Fixture.Configuration.ExistingBatchId);
 
-            // Assert
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
-
-        [DomainFact]
-        public async Task When_RequestingExistingBatchIdWithAccessToken_Then_ResponseIsOk()
-        {
-            // Arrange
-
-            // Act
-            var batchResult = await Fixture.WholesaleClient.GetBatchAsync(Fixture.Configuration.ExistingBatchId);
-
-            // Assert
-            batchResult.Should().NotBeNull();
-            batchResult!.BatchNumber.Should().Be(Fixture.Configuration.ExistingBatchId);
+                // Assert
+                batchResult.Should().NotBeNull();
+                batchResult!.BatchNumber.Should().Be(Fixture.Configuration.ExistingBatchId);
+            }
         }
     }
 }
