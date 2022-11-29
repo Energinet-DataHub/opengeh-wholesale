@@ -27,10 +27,10 @@ from package import (
 )
 from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
-from typing import Any
+from argparse import Namespace
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]) -> Any:
+def _get_valid_args_or_throw(command_line_args: list[str]) -> Namespace:
     p = configargparse.ArgParser(
         description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -74,7 +74,7 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
     )
 
 
-def _start_calculator(spark: SparkSession, args: list[str]) -> None:
+def _start_calculator(spark: SparkSession, args: Namespace) -> None:
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.
