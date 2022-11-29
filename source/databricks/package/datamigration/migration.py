@@ -23,9 +23,10 @@ from .committed_migrations import upload_committed_migration
 from .data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
+from typing import Any
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]):
+def _get_valid_args_or_throw(command_line_args: list[str]) -> Any:
     p = configargparse.ArgParser(
         description="Apply uncommitted migations",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,

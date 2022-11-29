@@ -35,7 +35,7 @@ def valid_list(s: str) -> list[str]:
         raise configargparse.ArgumentTypeError(msg)
 
 
-def valid_log_level(s: str):
+def valid_log_level(s: str) -> str:
     if s in ["information", "debug"]:
         return str(s)
     else:

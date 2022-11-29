@@ -20,8 +20,8 @@ from typing import Optional
 def initialize_spark(
     data_storage_account_name: str,
     data_storage_account_key: str,
-    shared_storage_account_name: str = None,
-    shared_storage_account_key: str = None,
+    shared_storage_account_name: Optional[str] = None,
+    shared_storage_account_key: Optional[str] = None,
 ) -> SparkSession:
     # Set spark config with storage account names/keys and the session timezone so that datetimes are displayed consistently (in UTC)
     spark_conf = (
@@ -33,7 +33,10 @@ def initialize_spark(
         .set("spark.sql.session.timeZone", "UTC")
         .set("spark.databricks.io.cache.enabled", "True")
     )
-    if shared_storage_account_name is not None:
+    if (
+        shared_storage_account_name is not None
+        and shared_storage_account_key is not None
+    ):
         spark_conf.set(
             f"fs.azure.account.key.{shared_storage_account_name}.dfs.core.windows.net",
             shared_storage_account_key,

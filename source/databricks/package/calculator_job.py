@@ -27,9 +27,10 @@ from package import (
 )
 from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
+from typing import Any
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]) -> list[str]:
+def _get_valid_args_or_throw(command_line_args: list[str]) -> Any:
     p = configargparse.ArgParser(
         description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -138,7 +139,9 @@ def _start_calculator(spark: SparkSession, args: list[str]) -> None:
     )
 
 
-def get_batch_grid_areas_df(batch_grid_areas, spark):
+def get_batch_grid_areas_df(
+    batch_grid_areas: list[str], spark: SparkSession
+) -> DataFrame:
     return spark.createDataFrame(
         map(lambda x: Row(str(x)), batch_grid_areas), ["GridAreaCode"]
     )
