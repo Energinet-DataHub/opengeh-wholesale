@@ -544,7 +544,7 @@ def test__metering_points_have_expected_columns(  # expected_column_name, expect
             & (col("toEffectiveDate") == june_2th)
             & (col("MeteringPointType") == metering_point_type)
             & (col("SettlementMethod") == settlement_method)
-            & (col("FromGridAreaCode") == "some-in-gride-area")
+            & (col("FromGridArea") == "some-in-gride-area")
             & (col("ToGridAreaCode") == "some-out-gride-area")
             & (col("Resolution") == NewMeteringPointResolution.hour.value)
             & (col("EnergySupplierId") == energy_supplier_id)
