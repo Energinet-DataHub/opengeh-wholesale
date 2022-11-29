@@ -19,6 +19,9 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
+/// <summary>
+/// This class provides the ability to retrieve a calculated result for a given step for a batch.
+/// </summary>
 public class ProcessStepResultApplicationService : IProcessStepResultApplicationService
 {
     private readonly IBatchFileManager _batchFileManager;

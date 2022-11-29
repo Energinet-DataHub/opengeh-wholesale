@@ -16,6 +16,9 @@ using Energinet.DataHub.Wholesale.Contracts;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
+/// <summary>
+/// This class provides the ability to retrieve a calculated result for a given step for a batch.
+/// </summary>
 public interface IProcessStepResultApplicationService
 {
     Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
