@@ -24,28 +24,28 @@ period_end = "2022-06-010T12:22:00.000Z"
 @pytest.fixture(scope="module")
 def metering_point_period_df_factory(spark, timestamp_factory):
     def factory(
-        gsrn_number="the-gsrn-number",
-        grid_area_code="some-grid-area-code",
+        meteringpoint_id="the-metering-point",
+        grid_area_code="some-grid-area",
         effective_date: datetime = timestamp_factory("2022-06-08T22:00:00.000Z"),
         to_effective_date: datetime = timestamp_factory("2022-06-10T22:00:00.000Z"),
         meteringpoint_type=MeteringPointType.production.value,
-        from_grid_area_code="some-from-grid-area-code",
-        to_grid_area_code="some-to-grid-area-code",
+        from_grid_area="some-from-grid-area",
+        to_grid_area="some-to-grid-area",
         settlement_method="some-settlement-method",
         resolution=MeteringPointResolution.hour.value,
-        energy_supplier_gln="some-energy-supplier-gln",
+        energy_supplier_id="some-energy-supplier-id",
     ):
         row = {
-            "GsrnNumber": gsrn_number,
+            "MeteringPointId": meteringpoint_id,
             "GridAreaCode": grid_area_code,
             "MeteringPointType": meteringpoint_type,
             "EffectiveDate": effective_date,
             "toEffectiveDate": to_effective_date,
-            "FromGridAreaCode": from_grid_area_code,
-            "ToGridAreaCode": to_grid_area_code,
+            "FromGridArea": from_grid_area,
+            "ToGridArea": to_grid_area,
             "SettlementMethod": settlement_method,
             "Resolution": resolution,
-            "EnergySupplierGln": energy_supplier_gln,
+            "EnergySupplierID": energy_supplier_id,
         }
         return spark.createDataFrame([row])
 
@@ -85,9 +85,9 @@ def test__each_meteringpoint_has_a_row(
 ):
     expected_number_of_metering_points = 3
     metering_point_period_df = (
-        metering_point_period_df_factory(gsrn_number="1")
-        .union(metering_point_period_df_factory(gsrn_number="2"))
-        .union(metering_point_period_df_factory(gsrn_number="3"))
+        metering_point_period_df_factory(meteringpoint_id="1")
+        .union(metering_point_period_df_factory(meteringpoint_id="2"))
+        .union(metering_point_period_df_factory(meteringpoint_id="3"))
     )
 
     master_basis_data = _get_output_master_basis_data_df(
@@ -101,26 +101,26 @@ def test__each_meteringpoint_has_a_row(
 def test__columns_have_expected_values(
     metering_point_period_df_factory, timestamp_factory
 ):
-    expected_gsrn_number = "the-gsrn-number"
-    expected_grid_area_code = "some-grid-area-code"
+    expected_meteringpoint_id = "the-metering-point"
+    expected_grid_area_code = "some-grid-area"
     expected_effective_date = timestamp_factory("2022-06-08T22:00:00.000Z")
     expected_to_effective_date = timestamp_factory("2022-06-09T22:00:00.000Z")
     expected_meteringpoint_type = "E18"
-    expected_from_grid_area_code = "some-from-grid-area-code"
-    expected_to_grid_area_code = "some-to-grid-area-code"
+    expected_from_grid_area = "some-from-grid-area"
+    expected_to_grid_area = "some-to-grid-area"
     expected_settlement_method = "some-settlement-method"
-    expected_energy_supplier_gln = "the-energy-supplier-gln"
+    expected_energy_supplier_id = "the-energy-supplier-id"
 
     metering_point_period_df = metering_point_period_df_factory(
-        gsrn_number=expected_gsrn_number,
+        meteringpoint_id=expected_meteringpoint_id,
         grid_area_code=expected_grid_area_code,
         effective_date=expected_effective_date,
         to_effective_date=expected_to_effective_date,
         meteringpoint_type=MeteringPointType.production.value,
-        from_grid_area_code=expected_from_grid_area_code,
-        to_grid_area_code=expected_to_grid_area_code,
+        from_grid_area=expected_from_grid_area,
+        to_grid_area=expected_to_grid_area,
         settlement_method=expected_settlement_method,
-        energy_supplier_gln=expected_energy_supplier_gln,
+        energy_supplier_id=expected_energy_supplier_id,
     )
 
     master_basis_data_df = _get_output_master_basis_data_df(
@@ -131,15 +131,15 @@ def test__columns_have_expected_values(
     actual = master_basis_data_df.first()
 
     assert actual.GridAreaCode == expected_grid_area_code
-    assert actual.METERINGPOINTID == expected_gsrn_number
+    assert actual.METERINGPOINTID == expected_meteringpoint_id
     assert actual.VALIDFROM == str(expected_effective_date)
     assert actual.VALIDTO == str(expected_to_effective_date)
     assert actual.GRIDAREA == expected_grid_area_code
-    assert actual.TOGRIDAREA == expected_to_grid_area_code
-    assert actual.FROMGRIDAREA == expected_from_grid_area_code
+    assert actual.TOGRIDAREA == expected_to_grid_area
+    assert actual.FROMGRIDAREA == expected_from_grid_area
     assert actual.TYPEOFMP == expected_meteringpoint_type
     assert actual.SETTLEMENTMETHOD == expected_settlement_method
-    assert actual.ENERGYSUPPLIERID == expected_energy_supplier_gln
+    assert actual.ENERGYSUPPLIERID == expected_energy_supplier_id
 
 
 def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
@@ -147,10 +147,10 @@ def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
 ):
     expected_number_of_metering_points = 2
     metering_point_period_df = metering_point_period_df_factory(
-        gsrn_number="1", resolution=MeteringPointResolution.quarterly.value
+        meteringpoint_id="1", resolution=MeteringPointResolution.quarterly.value
     ).union(
         metering_point_period_df_factory(
-            gsrn_number="2", resolution=MeteringPointResolution.hour.value
+            meteringpoint_id="2", resolution=MeteringPointResolution.hour.value
         )
     )
 
@@ -166,7 +166,7 @@ def test__effective_date_must_not_be_earlier_than_period_start(
     metering_point_period_df_factory,
 ):
     expected_vaild_from = "2022-06-09T12:09:15.000Z"
-    metering_point_period_df = metering_point_period_df_factory(gsrn_number="1")
+    metering_point_period_df = metering_point_period_df_factory(meteringpoint_id="1")
 
     master_basis_data = _get_output_master_basis_data_df(
         metering_point_period_df,
@@ -183,7 +183,7 @@ def test__to_effective_date_must_not_be_after_period_end(
     metering_point_period_df_factory,
 ):
     expected_vaild_to = "2022-06-010T12:09:15.000Z"
-    metering_point_period_df = metering_point_period_df_factory(gsrn_number="1")
+    metering_point_period_df = metering_point_period_df_factory(meteringpoint_id="1")
 
     master_basis_data = _get_output_master_basis_data_df(
         metering_point_period_df,

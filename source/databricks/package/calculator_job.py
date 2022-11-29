@@ -83,8 +83,10 @@ def _start_calculator(spark: SparkSession, args):
     )
 
     # Only points stored before the snapshot_datetime are needed.
-    raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
-        args.time_series_points_path
+    raw_time_series_points_df = (
+        spark.read.option("mergeSchema", "true")
+        .parquet(args.time_series_points_path)
+        .withColumnRenamed("GsrnNumber", "MeteringPointId")
     )
     metering_points_periods_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"

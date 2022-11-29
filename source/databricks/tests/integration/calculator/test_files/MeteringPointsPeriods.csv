@@ -1,4 +1,4 @@
-MeteringPointId,MeteringPointType,SettlementMethod,GridArea,ConnectionState,Resolution,InGridArea,OutGridArea,MeteringMethod,NetSettlementGroup,ParentMeteringPointId,Unit,Product,FromDate,ToDate,NumberOfTimeseries,EnergyQuantity
+MeteringPointId,MeteringPointType,SettlementMethod,GridArea,ConnectionState,Resolution,FromGridArea,ToGridArea,MeteringMethod,NetSettlementGroup,ParentMeteringPointId,Unit,Product,FromDate,ToDate,NumberOfTimeseries,EnergyQuantity
 578710000000000103,E17,D01,805,E22,PT1H,NULL,NULL,D01,0,NULL,KWH,8716867000030,2018-01-01 00:00:00,2018-01-02 00:00:00,24,1.733
 578710000000000103,E17,E02,805,E22,PT1H,NULL,NULL,D01,0,NULL,KWH,8716867000030,2018-01-02 00:00:00,2018-01-03 00:00:00,24,1.733
 578710000000000104,E17,D01,805,E22,PT1H,NULL,NULL,D01,0,NULL,KWH,8716867000030,2018-01-01 00:00:00,2018-01-02 00:00:00,24,0.785

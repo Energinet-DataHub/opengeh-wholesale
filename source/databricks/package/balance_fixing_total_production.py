@@ -268,8 +268,8 @@ def _get_master_basis_data_df(
         "toEffectiveDate",
         "MeteringPointType",
         "SettlementMethod",
-        metering_point_periods_df["InGridArea"],
-        metering_point_periods_df["OutGridArea"],
+        metering_point_periods_df["ToGridArea"],
+        metering_point_periods_df["FromGridArea"],
         "Resolution",
         market_roles_periods_df["EnergySupplierId"],
     )
@@ -308,27 +308,27 @@ def _get_enriched_time_series_points_df(
     exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
 
     quarterly_times_df = (
-        quarterly_mp_df.select("GsrnNumber")
+        quarterly_mp_df.select("MeteringPointId")
         .distinct()
         .select(
-            "GsrnNumber",
+            "MeteringPointId",
             expr(
                 f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
             ).alias("quarter_times"),
         )
-        .select("GsrnNumber", explode("quarter_times").alias("time"))
+        .select("MeteringPointId", explode("quarter_times").alias("time"))
     )
 
     hourly_times_df = (
-        hourly_mp_df.select("GsrnNumber")
+        hourly_mp_df.select("MeteringPointId")
         .distinct()
         .select(
-            "GsrnNumber",
+            "MeteringPointId",
             expr(
                 f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 1 hour)"
             ).alias("times"),
         )
-        .select("GsrnNumber", explode("times").alias("time"))
+        .select("MeteringPointId", explode("times").alias("time"))
     )
 
     empty_points_for_each_metering_point_df = quarterly_times_df.union(hourly_times_df)
@@ -336,14 +336,14 @@ def _get_enriched_time_series_points_df(
     debug(
         "Time series points where time is within period",
         timeseries_df.orderBy(
-            col("GsrnNumber"),
+            col("MeteringPointId"),
             col("time"),
             col("storedTime").desc(),
         ),
     )
 
     # Only use latest registered points
-    window = Window.partitionBy("GsrnNumber", "time").orderBy(
+    window = Window.partitionBy("MeteringPointId", "time").orderBy(
         col("RegistrationDateTime").desc()
     )
     # If we end up with more than one point for the same Meteringpoint and "time".
@@ -355,18 +355,18 @@ def _get_enriched_time_series_points_df(
     debug(
         "Time series points with only latest points by registration date time",
         timeseries_df.orderBy(
-            col("GsrnNumber"),
+            col("MeteringPointId"),
             col("time"),
             col("storedTime").desc(),
         ),
     )
 
     timeseries_df = timeseries_df.select(
-        "GsrnNumber", "time", "Quantity", "Quality", "Resolution"
+        "MeteringPointId", "time", "Quantity", "Quality", "Resolution"
     )
 
     points_for_each_metering_point_df = empty_points_for_each_metering_point_df.join(
-        timeseries_df, ["GsrnNumber", "time"], "left"
+        timeseries_df, ["MeteringPointId", "time"], "left"
     )
 
     # the master_basis_data_df is allready used once when creating the empty_points_for_each_metering_point_df
@@ -374,23 +374,23 @@ def _get_enriched_time_series_points_df(
     # Resolution column must be renamed for the select to be succesfull.
     points_for_each_metering_point_df = (
         points_for_each_metering_point_df.withColumnRenamed(
-            "GsrnNumber", "pfemp_GsrnNumber"
+            "MeteringPointId", "pfemp_MeteringPointId"
         ).withColumnRenamed("Resolution", "pfemp_Resolution")
     )
     enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
         master_basis_data_df,
         (
-            master_basis_data_df["GsrnNumber"]
-            == points_for_each_metering_point_df["pfemp_GsrnNumber"]
+            master_basis_data_df["MeteringPointId"]
+            == points_for_each_metering_point_df["pfemp_MeteringPointId"]
         )
         & (points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
         & (points_for_each_metering_point_df["time"] < col("toEffectiveDate")),
         "left",
     ).select(
         "GridAreaCode",
-        master_basis_data_df["GsrnNumber"],
+        master_basis_data_df["MeteringPointId"],
         "MeteringPointType",
-        master_basis_data_df["Resolution"].alias("Resolution"),
+        master_basis_data_df["Resolution"],
         "time",
         "Quantity",
         "Quality",
@@ -398,7 +398,7 @@ def _get_enriched_time_series_points_df(
 
     debug(
         "Enriched time series points",
-        timeseries_df.orderBy(col("GsrnNumber"), col("time")),
+        timeseries_df.orderBy(col("MeteringPointId"), col("time")),
     )
 
     return enriched_points_for_each_metering_point_df
@@ -431,8 +431,8 @@ def _get_output_master_basis_data_df(
             col("EffectiveDate").alias("VALIDFROM"),
             col("toEffectiveDate").alias("VALIDTO"),
             col("GridAreaCode").alias("GRIDAREA"),
-            col("InGridArea").alias("TOGRIDAREA"),
-            col("OutGridArea").alias("FROMGRIDAREA"),
+            col("ToGridArea").alias("TOGRIDAREA"),
+            col("FromGridArea").alias("FROMGRIDAREA"),
             col("TYPEOFMP"),
             col("SettlementMethod").alias("SETTLEMENTMETHOD"),
             col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
@@ -461,7 +461,7 @@ def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
 def _get_time_series_basis_data_by_resolution(
     enriched_time_series_point_df, resolution, time_zone
 ):
-    w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
+    w = Window.partitionBy("MeteringPointId", "localDate").orderBy("time")
 
     timeseries_basis_data_df = (
         enriched_time_series_point_df.where(col("Resolution") == resolution)
@@ -469,7 +469,7 @@ def _get_time_series_basis_data_by_resolution(
         .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
         .withColumn("STARTDATETIME", first("time").over(w))
         .groupBy(
-            "gsrnNumber",
+            "MeteringPointId",
             "localDate",
             "STARTDATETIME",
             "GridAreaCode",
@@ -478,7 +478,7 @@ def _get_time_series_basis_data_by_resolution(
         )
         .pivot("position")
         .agg(first("Quantity"))
-        .withColumnRenamed("gsrnNumber", "METERINGPOINTID")
+        .withColumnRenamed("MeteringPointId", "METERINGPOINTID")
         .withColumn(
             "TYPEOFMP",
             when(col("MeteringPointType") == MeteringPointType.production.value, "E18"),

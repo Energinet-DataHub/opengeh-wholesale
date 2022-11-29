@@ -34,6 +34,6 @@ metering_point_created_event_schema = StructType(
         StructField("OperationTime", TimestampType(), True),
         StructField("CorrelationId", StringType(), True),
         StructField("FromGridAreaCode", StringType(), True),
-        StructField("ToGridAreaCode", StringType(), True),
+        StructField("ToGridArea", StringType(), True),
     ]
 )
