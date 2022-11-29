@@ -11,6 +11,10 @@
       {
         "name": "quality",
         "type": "long"
+      },
+      {
+        "name": "quarter_time",
+        "type": "string"
       }
     ]
   }
