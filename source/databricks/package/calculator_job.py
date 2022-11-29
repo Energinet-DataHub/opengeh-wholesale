@@ -12,21 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import configargparse
 import sys
-from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col
-from pyspark.sql.types import Row
 
+import configargparse
+import infrastructure
 from package import (
     calculate_balance_fixing_total_production,
+    db_logging,
+    debug,
     initialize_spark,
     log,
-    debug,
-    db_logging,
 )
 from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col
+from pyspark.sql.types import Row
 from configargparse import argparse
 
 
@@ -39,9 +40,9 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     # Infrastructure settings
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--integration-events-path", type=str, required=True)
+    p.add("--integration-events-path", type=str, required=False)
     p.add("--time-series-points-path", type=str, required=True)
-    p.add("--process-results-path", type=str, required=True)
+    p.add("--process-results-path", type=str, required=False)
     p.add("--time-zone", type=str, required=True)
 
     # Run parameters
@@ -79,7 +80,7 @@ def _start_calculator(spark: SparkSession, args: argparse.Namespace) -> None:
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.
     raw_integration_events_df = spark.read.option("mergeSchema", "true").parquet(
-        args.integration_events_path
+        infrastructure.get_integration_events_path(args.data_storage_account_name)
     )
 
     # Only points stored before the snapshot_datetime are needed.
@@ -110,19 +111,23 @@ def _start_calculator(spark: SparkSession, args: argparse.Namespace) -> None:
     debug("timeseries basis data df_quarter", timeseries_quarter_df)
     debug("master basis data", master_basis_data_df)
 
+    process_results_path = infrastructure.get_process_results_path(
+        args.data_storage_account_name
+    )
+
     write_basis_data_to_csv(
         timeseries_quarter_df,
-        f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-quarter",
+        f"{process_results_path}/basis-data/batch_id={args.batch_id}/time-series-quarter",
     )
 
     write_basis_data_to_csv(
         timeseries_hour_df,
-        f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-hour",
+        f"{process_results_path}/basis-data/batch_id={args.batch_id}/time-series-hour",
     )
 
     write_basis_data_to_csv(
         master_basis_data_df,
-        f"{args.process_results_path}/master-basis-data/batch_id={args.batch_id}",
+        f"{process_results_path}/master-basis-data/batch_id={args.batch_id}",
     )
 
     # First repartition to co-locate all rows for a grid area on a single executor.
@@ -135,7 +140,7 @@ def _start_calculator(spark: SparkSession, args: argparse.Namespace) -> None:
         .repartition("grid_area")
         .write.mode("overwrite")
         .partitionBy("grid_area")
-        .json(f"{args.process_results_path}/batch_id={args.batch_id}")
+        .json(f"{process_results_path}/batch_id={args.batch_id}")
     )
 
 

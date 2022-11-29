@@ -13,11 +13,12 @@
 # limitations under the License.
 
 import sys
-from package import integration_events_persister, initialize_spark, log, db_logging
+
+import configargparse
+import infrastructure
+from package import db_logging, initialize_spark, integration_events_persister, log
 from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
-from configargparse import argparse
-import configargparse
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -28,8 +29,8 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--event-hub-connectionstring", type=str, required=True)
-    p.add("--integration-events-path", type=str, required=True)
-    p.add("--integration-events-checkpoint-path", type=str, required=True)
+    p.add("--integration-events-path", type=str, required=False)
+    p.add("--integration-events-checkpoint-path", type=str, required=False)
     p.add("--log-level", type=valid_log_level, help="debug|information", required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
@@ -66,8 +67,10 @@ def _start(command_line_args: list[str]) -> None:
 
     integration_events_persister(
         streamingDF,
-        args.integration_events_path,
-        args.integration_events_checkpoint_path,
+        infrastructure.get_integration_events_path(args.data_storage_account_name),
+        infrastructure.get_integration_events_checkpoint_path(
+            args.data_storage_account_name
+        ),
     )
 
 
