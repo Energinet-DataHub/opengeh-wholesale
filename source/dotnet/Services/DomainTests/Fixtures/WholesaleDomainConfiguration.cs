@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration.B2C;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
@@ -26,8 +27,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     {
         public WholesaleDomainConfiguration()
         {
+            UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
             WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS"));
         }
+
+        /// <summary>
+        /// Settings necessary to retrieve a user token for authentication with Wholesale Web API in live environment.
+        /// </summary>
+        public B2CUserTokenConfiguration UserTokenConfiguration { get; }
 
         /// <summary>
         /// Base address setting for Wholesale Web API in live environment.

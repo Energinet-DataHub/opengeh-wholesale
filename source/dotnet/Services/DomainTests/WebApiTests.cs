@@ -33,8 +33,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
         private WholesaleDomainConfiguration Configuration { get; }
 
-        // This is just to be able to verify everything works with regards to settings and executing the tests after deployment.
-        // If needed, this test can be removed when the actual domain test has been implemented.
+        /// <summary>
+        /// This is just to be able to verify everything works with regards to settings and executing the tests after deployment.
+        /// If needed, this test can be removed when the actual domain test has been implemented.
+        /// </summary>
         [DomainFact]
         public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
         {
@@ -54,7 +56,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             content.Should().Contain("Healthy");
         }
 
-        // This shows our request will fail if we call Web API without a valid access token
+        /// <summary>
+        /// This shows our request will fail if we call Web API without a valid access token
+        /// </summary>
         [DomainFact]
         public async Task When_RequestWithoutAccessToken_Then_ResponseIsUnauthorized()
         {
