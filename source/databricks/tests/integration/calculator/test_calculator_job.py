@@ -130,7 +130,6 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 
 def test__result_is_generated_for_requested_grid_areas(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     source_path,
     worker_id,
@@ -152,7 +151,6 @@ def test__result_is_generated_for_requested_grid_areas(
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     source_path,
     executed_calculation_job,
@@ -176,7 +174,6 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 
 def test__calculator_result_schema_must_match_contract_with_dotnet(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     source_path,
     worker_id,
@@ -197,7 +194,6 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 
 def test__quantity_is_with_precision_3(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
@@ -232,7 +228,6 @@ def create_file_path_expression(directory_expression, extension):
 
 def test__result_file_path_matches_contract(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
@@ -371,7 +366,6 @@ def test__creates_master_data_csv_per_grid_area(
 
 def test__master_basis_data_file_matches_contract(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
@@ -397,7 +391,6 @@ def test__master_basis_data_file_matches_contract(
 
 def test__hourly_basis_data_file_matches_contract(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
