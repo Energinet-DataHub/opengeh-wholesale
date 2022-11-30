@@ -2,7 +2,7 @@
 
 ## Version 3.4.0
 
-Return batch ID as a Guid when calling `CreateBatch` 
+Return batch ID from `WholesaleClient.CreateBatch`
 
 ## Version 3.3.0
 
