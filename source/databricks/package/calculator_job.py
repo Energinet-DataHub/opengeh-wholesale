@@ -15,6 +15,7 @@
 import sys
 
 import configargparse
+from configargparse import argparse
 from package import (
     calculate_balance_fixing_total_production,
     db_logging,
@@ -23,13 +24,13 @@ from package import (
     initialize_spark,
     log,
 )
-from .calculator_args import CalculatorArgs
-from .args_helper import valid_date, valid_list, valid_log_level
-from .datamigration import islocked
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
-from configargparse import argparse
+
+from .args_helper import valid_date, valid_list, valid_log_level
+from .calculator_args import CalculatorArgs
+from .datamigration import islocked
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
