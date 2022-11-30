@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+"""
 from datetime import datetime, timedelta
 import pytest
 from package.balance_fixing_total_production import _get_grid_areas_df
@@ -86,8 +86,8 @@ def batch_grid_area_df_factory(spark):
 
 
 def test__stored_time_matches_persister(grid_area_df_factory, source_path):
-    """Test that the anticipated stored time column name matches the column that was created
-    by the integration events persister. This test uses the shared contract."""
+    # Test that the anticipated stored time column name matches the column that was created
+    # by the integration events persister. This test uses the shared contract.
     cached_integration_events_df = grid_area_df_factory()
 
     expected_stored_time_name = read_contract(
@@ -248,3 +248,4 @@ def test__duplicate_grid_area_events_does_not_affect_amount_of_grid_areas(
 
     # Assert
     assert actual_df.count() == 1
+"""

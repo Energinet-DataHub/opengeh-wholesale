@@ -56,11 +56,8 @@ print(june_1th)
 
 
 @pytest.fixture
-def grid_area_df(spark) -> DataFrame:
-    row = {
-        "GridAreaCode": grid_area_code,
-        "GridAreaLinkId": grid_area_link_id,
-    }
+def batch_grid_areas_df(spark) -> DataFrame:
+    row = {"GridAreaCode": grid_area_code}
     return spark.createDataFrame([row])
 
 
@@ -200,7 +197,7 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
 
 
 def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
-    grid_area_df: DataFrame,
+    batch_grid_areas_df: DataFrame,
     market_roles_period_df_factory: Callable[..., DataFrame],
     metering_points_periods_df_factory: Callable[..., DataFrame],
 ):
@@ -210,7 +207,7 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
     raw_master_basis_data = _get_master_basis_data_df(
         metering_points_periods_df,
         market_roles_periods_df,
-        grid_area_df,
+        batch_grid_areas_df,
         june_1th,
         june_2th,
     )
@@ -219,7 +216,7 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
 
 # What about market participant periods outside the selected period?
 def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with_expected_energy_supplier_and_dates(
-    grid_area_df: DataFrame,
+    batch_grid_areas_df: DataFrame,
     market_roles_period_df_factory: Callable[[], DataFrame],
     metering_points_periods_df_factory: Callable[[], DataFrame],
 ):
@@ -233,7 +230,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
     raw_master_basis_data = _get_master_basis_data_df(
         metering_points_periods_df,
         market_roles_periods_df,
-        grid_area_df,
+        batch_grid_areas_df,
         june_1th,
         june_3th,
     )
@@ -457,7 +454,7 @@ def test__returns_expected_periods(
     market_roles_periods,
     metering_points_periods,
     expected_periods,
-    grid_area_df,
+    batch_grid_areas_df,
     market_roles_period_df_factory,
     metering_points_periods_df_factory,
 ):
@@ -472,7 +469,7 @@ def test__returns_expected_periods(
     raw_master_basis_data = _get_master_basis_data_df(
         metering_points_periods_df,
         market_roles_periods_df,
-        grid_area_df,
+        batch_grid_areas_df,
         batch_period["start"],
         batch_period["end"],
     )
@@ -489,7 +486,9 @@ def test__returns_expected_periods(
 
 
 def test__when_type_is_production__returns_metering_point_period(
-    grid_area_df, market_roles_period_df_factory, metering_points_periods_df_factory
+    batch_grid_areas_df,
+    market_roles_period_df_factory,
+    metering_points_periods_df_factory,
 ):
     metering_points_periods_df = metering_points_periods_df_factory(
         MeteringPointType=NewMeteringPointType.production.value
@@ -499,7 +498,7 @@ def test__when_type_is_production__returns_metering_point_period(
     raw_master_basis_data = _get_master_basis_data_df(
         metering_points_periods_df,
         market_roles_periods_df,
-        grid_area_df,
+        batch_grid_areas_df,
         june_1th,
         june_2th,
     )
@@ -507,7 +506,9 @@ def test__when_type_is_production__returns_metering_point_period(
 
 
 def test__when_type_is_not_E18__does_not_returns_metering_point_period(
-    grid_area_df, market_roles_period_df_factory, metering_points_periods_df_factory
+    batch_grid_areas_df,
+    market_roles_period_df_factory,
+    metering_points_periods_df_factory,
 ):
     metering_points_periods_df = metering_points_periods_df_factory(
         MeteringPointType=NewMeteringPointType.consumption.value
@@ -517,7 +518,7 @@ def test__when_type_is_not_E18__does_not_returns_metering_point_period(
     raw_master_basis_data = _get_master_basis_data_df(
         metering_points_periods_df,
         market_roles_periods_df,
-        grid_area_df,
+        batch_grid_areas_df,
         june_1th,
         june_2th,
     )
@@ -525,7 +526,7 @@ def test__when_type_is_not_E18__does_not_returns_metering_point_period(
 
 
 def test__metering_points_have_expected_columns(  # expected_column_name, expected_value):
-    grid_area_df: DataFrame,
+    batch_grid_areas_df: DataFrame,
     market_roles_period_df_factory: Callable[[], DataFrame],
     metering_points_periods_df_factory: Callable[[], DataFrame],
 ):
@@ -535,7 +536,7 @@ def test__metering_points_have_expected_columns(  # expected_column_name, expect
     raw_master_basis_data = _get_master_basis_data_df(
         metering_points_periods_df,
         market_roles_periods_df,
-        grid_area_df,
+        batch_grid_areas_df,
         june_1th,
         june_2th,
     )
