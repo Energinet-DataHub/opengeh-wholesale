@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
 using Xunit;
@@ -102,6 +103,25 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 // Assert
                 batchResult.Should().NotBeNull();
                 batchResult!.BatchNumber.Should().Be(Fixture.Configuration.ExistingBatchId);
+            }
+
+            [DomainFact]
+            public async Task When_CreatingBatch_Then_BatchIsEventuallyExecuting()
+            {
+                // Arrange
+                var startDate = new DateTimeOffset(2022, 9, 1, 8, 6, 32, TimeSpan.Zero);
+                var endDate = new DateTimeOffset(2022, 9, 1, 8, 6, 32, TimeSpan.Zero);
+                var batchRequestDto = new BatchRequestDto(ProcessType.BalanceFixing, new List<string> { "805" }, startDate, endDate);
+
+                // Act
+                var batchId = await Fixture.WholesaleClient.CreateBatchAsync(batchRequestDto).ConfigureAwait(false);
+
+                // Assert
+                // TODO: poll until state is completed or failed. Timeout after 15 (?) minutes
+                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(batchId);
+
+                batchResult.Should().NotBeNull();
+                batchResult!.ExecutionState.Should().Be(BatchState.Executing);
             }
         }
     }
