@@ -13,6 +13,7 @@
 # limitations under the License.
 
 """
+This test is commented out as it is not needed anymore. but it is keept here until we have transisioned to using static datasources
 from datetime import datetime, timedelta
 import pytest
 from package.balance_fixing_total_production import _get_grid_areas_df
