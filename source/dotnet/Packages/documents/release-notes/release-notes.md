@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 3.4.0
+
+Return batch ID from `WholesaleClient.CreateBatchAsync()`
+
 ## Version 3.3.0
 
 Added a new `WholesaleClient.GetProcessStepResultAsync()` which returns a result for a step for a given batch grid area.
