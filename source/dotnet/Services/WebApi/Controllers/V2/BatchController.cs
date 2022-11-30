@@ -50,7 +50,7 @@ public class BatchController : ControllerBase
     public async Task<IActionResult> CreateAsync([FromBody] BatchRequestDto batchRequestDto)
     {
         var batchId = await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
-        return Ok(batchId.ToString());
+        return Ok(batchId);
     }
 
     /// <summary>

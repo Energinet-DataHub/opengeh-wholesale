@@ -26,7 +26,7 @@ public class WholesaleClient : IWholesaleClient
         _httpClient = httpClientFactory.CreateClient(wholesaleBaseUrl);
     }
 
-    public async Task<Guid?> CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto)
+    public async Task<Guid> CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto)
     {
         var response = await _httpClient
             .PostAsJsonAsync("v2/Batch", wholesaleBatchRequestDto)

@@ -23,7 +23,7 @@ public interface IWholesaleClient
     /// Returns the batch ID
     /// In case of errors an exception is thrown.
     /// </summary>
-    Task<Guid?> CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
+    Task<Guid> CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
 
     /// <summary>
     /// Returns batches matching the search criteria.
