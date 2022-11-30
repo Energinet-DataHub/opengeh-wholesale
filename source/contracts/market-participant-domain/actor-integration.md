@@ -34,7 +34,7 @@ The periods are not overlapping and have no gaps between. The last period will a
 
 ## Example Result:
 
-History for metering point with id `3433d1d4-2fb8-440d-ba78-f3aa9a8b49e1`. Since 1st of January 2019 it has the role "DDM". From 1st of September 2022 it has both the "DDM" and "MDR" role.
+History for actor with id `3433d1d4-2fb8-440d-ba78-f3aa9a8b49e1`. Since 1st of January 2019 it has the role "DDM". From 1st of September 2022 it has both the "DDM" and "MDR" role.
 
 ```json
 {
