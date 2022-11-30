@@ -13,17 +13,11 @@
 # limitations under the License.
 
 import sys
-
-import configargparse
-from package import (
-    db_logging,
-    infrastructure,
-    initialize_spark,
-    integration_events_persister,
-    log,
-)
-from package.args_helper import valid_log_level
+from package import  infrastructure, integration_events_persister, initialize_spark, log, db_logging
+from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
+from configargparse import argparse
+import configargparse
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
