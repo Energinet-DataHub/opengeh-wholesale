@@ -59,6 +59,7 @@ time_series_point_schema = StructType(
         
         # The registration time as specified by the MDR actor.
         # In DataHub 2 this is the creation date time.
+        # TODO Needed if we use snapshots?
         StructField("RegistrationTime", TimestampType(), False),
     ]
 )

@@ -85,6 +85,7 @@ metering_point_period_schema = StructType(
         # The unique GLN/EIC number of the balance responsible
         # Used in balance fixing and settlement.
         # Example: 8100000000109
+        # TODO Does this rather come from market participant domain?
         StructField("BalanceResponsibleId", StringType(), False),
 
         # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
