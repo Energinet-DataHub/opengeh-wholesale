@@ -16,11 +16,12 @@ from .data_lake_file_manager import DataLakeFileManager
 import configargparse
 from package import log
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
+from configargparse import argparse
 
 _LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]):
+def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
         description="Locks/unlocks the storage of the specified container",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -37,7 +38,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def _lock(args: list[str]) -> None:
+def _lock(args: argparse.Namespace) -> None:
 
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
@@ -49,7 +50,7 @@ def _lock(args: list[str]) -> None:
     log(f"created lock file: {_LOCK_FILE_NAME}")
 
 
-def _unlock(args: list[str]) -> None:
+def _unlock(args: argparse.Namespace) -> None:
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
@@ -69,12 +70,12 @@ def islocked(storage_account_name: str, storage_account_key: str) -> bool:
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
-def lock():
+def lock() -> None:
     args = _get_valid_args_or_throw(sys.argv[1:])
     _lock(args)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
-def unlock():
+def unlock() -> None:
     args = _get_valid_args_or_throw(sys.argv[1:])
     _unlock(args)
