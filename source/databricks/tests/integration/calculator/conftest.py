@@ -26,21 +26,23 @@ from pyspark.sql.types import (
     LongType,
 )
 from pyspark.sql.functions import col
+from typing import Callable
+from pyspark.sql import SparkSession
 
 
 @pytest.fixture(scope="session")
-def json_lines_reader():
-    def f(path: str):
+def json_lines_reader() -> Callable[[str], str]:
+    def f(path: str) -> str:
         return Path(path).read_text()
 
     return f
 
 
 @pytest.fixture(scope="session")
-def find_first_file():
+def find_first_file() -> Callable[[str, str], str]:
     "The path of the first file matching the pattern."
 
-    def f(path: str, pattern: str):
+    def f(path: str, pattern: str) -> str:
         os.chdir(path)
         for filePath in glob.glob(pattern):
             return filePath
@@ -50,7 +52,9 @@ def find_first_file():
 
 
 @pytest.fixture(scope="session")
-def test_data(spark, json_test_files, data_lake_path, worker_id):
+def test_data(
+    spark: SparkSession, json_test_files: str, data_lake_path: str, worker_id: str
+) -> None:
     # Reads integration_events json file into dataframe and writes it to parquet
     spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
         "body", col("body").cast("binary")

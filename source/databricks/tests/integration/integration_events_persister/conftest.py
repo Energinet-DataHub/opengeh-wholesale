@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import pytest
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
+from typing import Callable, Union
+from pyspark import RDD
 
 from pyspark.sql.types import (
     StructType,
@@ -21,6 +23,7 @@ from pyspark.sql.types import (
     StringType,
     TimestampType,
 )
+
 
 time_series_received_schema = StructType(
     [
@@ -31,11 +34,13 @@ time_series_received_schema = StructType(
 
 
 @pytest.fixture(scope="session")
-def parquet_reader(spark: SparkSession, data_lake_path: str):
-    def f(path: str):
+def parquet_reader(
+    spark: SparkSession, data_lake_path: str
+) -> Callable[[str], Union[DataFrame, RDD]]:
+    def f(path: str) -> Union[DataFrame, RDD]:
         data = spark.sparkContext.emptyRDD()
         try:
-            data = spark.read.format("parquet").load(f"{data_lake_path}/{path}")
+            return spark.read.format("parquet").load(f"{data_lake_path}/{path}")
         except Exception:
             pass
         return data
