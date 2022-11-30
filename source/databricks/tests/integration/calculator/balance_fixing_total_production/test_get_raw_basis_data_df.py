@@ -117,12 +117,9 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
         Resolution=resolution,
         FromGridArea="some-in-gride-area",
         ToGridArea="some-out-gride-area",
-        NetSettlementGroup=0,
         ParentMeteringPointId="some-parent-metering-point-id",
         FromDate=june_1th,
         ToDate=june_3th,
-        NumberOfTimeseries="1",
-        EnergyQuantity="1",
         periods=None,
     ) -> DataFrame:
         df_array = []
@@ -217,8 +214,8 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
 # What about market participant periods outside the selected period?
 def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with_expected_energy_supplier_and_dates(
     batch_grid_areas_df: DataFrame,
-    market_roles_period_df_factory: Callable[[], DataFrame],
-    metering_points_periods_df_factory: Callable[[], DataFrame],
+    market_roles_period_df_factory: Callable[..., DataFrame],
+    metering_points_periods_df_factory: Callable[..., DataFrame],
 ):
     metering_points_periods_df = metering_points_periods_df_factory()
     market_roles_periods_df = market_roles_period_df_factory(
@@ -424,7 +421,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                     "ToDate": june_6th,
                     "ConnectionState": NewConnectionState.connected.value,
                 },
-                # disconnected TODO: LRN den vi have inkluderet.
+                # disconnected
                 {
                     "FromDate": june_6th,
                     "ToDate": june_7th,
@@ -446,7 +443,6 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                 },
             ],
         ),
-        # when_periods_connection_state_is_closed_down_period_is_not_includded
     ],
 )
 def test__returns_expected_periods(
@@ -525,10 +521,10 @@ def test__when_type_is_not_E18__does_not_returns_metering_point_period(
     assert raw_master_basis_data.count() == 0
 
 
-def test__metering_points_have_expected_columns(  # expected_column_name, expected_value):
+def test__metering_points_have_expected_columns(
     batch_grid_areas_df: DataFrame,
-    market_roles_period_df_factory: Callable[[], DataFrame],
-    metering_points_periods_df_factory: Callable[[], DataFrame],
+    market_roles_period_df_factory: Callable[..., DataFrame],
+    metering_points_periods_df_factory: Callable[..., DataFrame],
 ):
     metering_points_periods_df = metering_points_periods_df_factory()
     market_roles_periods_df = market_roles_period_df_factory()

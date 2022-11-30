@@ -35,7 +35,7 @@ metering_point_generic_event_schema = StructType(
         StructField("CorrelationId", StringType(), True),
         StructField("OperationTime", TimestampType(), True),
         StructField("FromGridAreaCode", StringType(), True),
-        StructField("ToGridArea", StringType(), True),
+        StructField("ToGridAreaCode", StringType(), True),
         StructField("EnergySupplierGln", StringType(), True),
     ]
 )
