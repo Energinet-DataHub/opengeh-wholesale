@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
@@ -85,6 +86,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// </summary>
         public class Given_Authorized : IClassFixture<AuthorizedClientFixture>
         {
+            private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(15);
+            private static readonly TimeSpan DefaultDelay = TimeSpan.FromSeconds(30);
+
             public Given_Authorized(AuthorizedClientFixture fixture)
             {
                 Fixture = fixture;
@@ -117,11 +121,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 var batchId = await Fixture.WholesaleClient.CreateBatchAsync(batchRequestDto).ConfigureAwait(false);
 
                 // Assert
-                // TODO: poll until state is completed or failed. Timeout after 15 (?) minutes
-                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(batchId);
+                var isExecuting = await Awaiter.TryWaitUntilConditionAsync(
+                    async () =>
+                    {
+                        var batchResult = await Fixture.WholesaleClient.GetBatchAsync(batchId);
+                        return batchResult?.ExecutionState == BatchState.Executing;
+                    },
+                    DefaultTimeout,
+                    DefaultDelay);
 
-                batchResult.Should().NotBeNull();
-                batchResult!.ExecutionState.Should().Be(BatchState.Executing);
+                isExecuting.Should().BeTrue();
             }
         }
     }
