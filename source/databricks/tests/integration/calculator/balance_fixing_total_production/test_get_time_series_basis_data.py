@@ -40,7 +40,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
         resolution=MeteringPointResolution.quarterly.value,
         quantity=Decimal("1"),
         grid_area="805",
-        gsrn_number="the_gsrn_number",
+        metering_point_id="the_metering_point_id",
         metering_point_type=MeteringPointType.production.value,
         time="2022-06-08T22:00:00.000Z",
         number_of_points=1,
@@ -54,7 +54,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 StructField("GridAreaLinkId", StringType(), True),
                 StructField("time", TimestampType(), True),
                 StructField("Quantity", DecimalType(18, 3), True),
-                StructField("GsrnNumber", StringType(), True),
+                StructField("MeteringPointId", StringType(), True),
                 StructField("MeteringPointType", LongType(), True),
             ]
         )
@@ -70,7 +70,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                     "GridAreaLinkId": "GridAreaLinkId",
                     "time": time,
                     "Quantity": quantity + i,
-                    "GsrnNumber": gsrn_number,
+                    "MeteringPointId": metering_point_id,
                     "MeteringPointType": metering_point_type,
                 }
             )
@@ -184,13 +184,13 @@ def test__splits_single_metering_point_with_different_resolution_on_different_da
     enriched_time_series_factory,
 ):
     enriched_time_series_points_df = enriched_time_series_factory(
-        gsrn_number="the_gsrn_number",
+        metering_point_id="the_metering_point_id",
         time="2022-10-28T22:00:00.000Z",
         resolution=MeteringPointResolution.quarterly.value,
         number_of_points=96,
     ).union(
         enriched_time_series_factory(
-            gsrn_number="the_gsrn_number",
+            metering_point_id="the_metering_point_id",
             time="2022-10-29T22:00:00.000Z",
             resolution=MeteringPointResolution.hour.value,
             number_of_points=24,

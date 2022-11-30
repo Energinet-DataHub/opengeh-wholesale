@@ -35,7 +35,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
     ):
         df = [
             {
-                "GsrnNumber": "the-gsrn-number",
+                "MeteringPointId": "the-meteringpoint-id",
                 "TransactionId": "1",
                 "Quantity": Decimal("1.1"),
                 "Quality": 3,
@@ -62,7 +62,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     ):
         df = [
             {
-                "GsrnNumber": "the-gsrn-number",
+                "MeteringPointId": "the-meteringpoint-id",
                 "GridAreaCode": "805",
                 "MeteringPointType": "the_metering_point_type",
                 "EffectiveDate": effective_date,
@@ -93,7 +93,7 @@ def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_fact
     ):
         df = [
             {
-                "GsrnNumber": "the-gsrn-number",
+                "MeteringPointId": "the-meteringpoint-id",
                 "TransactionId": "1",
                 "Quantity": point_1_quantity,
                 "Quality": 3,
@@ -106,7 +106,7 @@ def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_fact
                 "day": 8,
             },
             {
-                "GsrnNumber": "the-gsrn-number",
+                "MeteringPointId": "the-meteringpoint-id",
                 "TransactionId": "1",
                 "Quantity": point_2_quantity,
                 "Quality": 3,
@@ -378,7 +378,7 @@ def test__df_is_not_empty_when_no_time_series_points(
 
     empty_raw_time_series_points = raw_time_series_points_factory(
         resolution=MeteringPointResolution.hour.value,
-    ).filter(col("GsrnNumber") == "")
+    ).filter(col("MeteringPointId") == "")
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.quarterly.value,
         effective_date=timestamp_factory(start_time),
@@ -456,7 +456,7 @@ def test__df_has_expected_row_count_according_to_dst(
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(period_start), resolution=resolution
-    ).filter(col("GsrnNumber") != "the-gsrn-number")
+    ).filter(col("MeteringPointId") != "the-meteringpoint-id")
 
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=timestamp_factory(period_start),
