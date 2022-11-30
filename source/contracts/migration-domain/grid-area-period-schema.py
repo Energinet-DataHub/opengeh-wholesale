@@ -33,11 +33,10 @@ The table data must always contain updated periods.
 """
 grid_area_period_schema = StructType(
     [
-        # TODO does DH2 have other unique ids for grid areas?
         # 3 character grid area code uniquely identifying the grid area. All characters must be digits (0-9).
         StructField("GridAreaCode", StringType(), True),
 
-        # The unique actor id of the energy supplier (as provided by the market participant domain)
+        # The unique actor id of the grid access provider (as provided by the market participant domain)
         StructField("GridAccessProviderId", StringType(), True),
 
         # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
