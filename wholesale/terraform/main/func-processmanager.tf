@@ -39,6 +39,8 @@ module "func_processmanager" {
 
     CALCULATION_STORAGE_CONNECTION_STRING                              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
     CALCULATION_STORAGE_CONTAINER_NAME                                 = local.CALCULATION_STORAGE_CONTAINER_NAME
+    STORAGE_CONNECTION_STRING                                          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
+    STORAGE_CONTAINER_NAME                                             = local.STORAGE_CONTAINER_NAME
 
     # Service bus
     SERVICE_BUS_SEND_CONNECTION_STRING                                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
