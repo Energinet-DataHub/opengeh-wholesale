@@ -20,9 +20,10 @@ public interface IWholesaleClient
 {
     /// <summary>
     /// Start processes by creating a batch request.
+    /// Returns the batch ID
     /// In case of errors an exception is thrown.
     /// </summary>
-    Task CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
+    Task<Guid?> CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
 
     /// <summary>
     /// Returns batches matching the search criteria.
