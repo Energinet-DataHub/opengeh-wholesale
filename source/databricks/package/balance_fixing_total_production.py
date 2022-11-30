@@ -407,7 +407,7 @@ def _get_enriched_time_series_points_df(
     return enriched_points_for_each_metering_point_df
 
 
-def _get_master_basis_data(
+def _get_output_master_basis_data_df(
     metering_point_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
