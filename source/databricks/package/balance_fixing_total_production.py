@@ -469,7 +469,7 @@ def _get_time_series_basis_data_by_resolution(
     resolution: int,
     time_zone: str,
 ) -> DataFrame:
-    w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
+    w = Window.partitionBy("MeteringPointId", "localDate").orderBy("time")
 
     timeseries_basis_data_df = (
         enriched_time_series_point_df.where(col("Resolution") == resolution)
