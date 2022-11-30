@@ -21,6 +21,7 @@ import pytest
 from pyspark.sql import SparkSession
 from datetime import datetime
 import subprocess
+from typing import Generator, Callable, Optional
 
 
 @pytest.fixture(scope="session")
@@ -45,7 +46,7 @@ def spark() -> SparkSession:
 
 
 @pytest.fixture(scope="session")
-def file_path_finder():
+def file_path_finder() -> Callable[[str], str]:
     """
     Returns the path of the file.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
@@ -53,14 +54,14 @@ def file_path_finder():
     file located directly in the integration tests folder.
     """
 
-    def finder(file):
+    def finder(file: str) -> str:
         return os.path.dirname(os.path.normpath(file))
 
     return finder
 
 
 @pytest.fixture(scope="session")
-def source_path(file_path_finder) -> str:
+def source_path(file_path_finder: Callable[[str], str]) -> str:
     """
     Returns the <repo-root>/source folder path.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
@@ -71,7 +72,7 @@ def source_path(file_path_finder) -> str:
 
 
 @pytest.fixture(scope="session")
-def databricks_path(source_path) -> str:
+def databricks_path(source_path: str) -> str:
     """
     Returns the source/databricks folder path.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
@@ -82,10 +83,10 @@ def databricks_path(source_path) -> str:
 
 
 @pytest.fixture(scope="session")
-def timestamp_factory():
+def timestamp_factory() -> Callable[[str], Optional[datetime]]:
     "Creates timestamp from utc string in correct format yyyy-mm-ddThh:mm:ss.nnnZ"
 
-    def factory(date_time_string: str) -> datetime:
+    def factory(date_time_string: str) -> Optional[datetime]:
         date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%fZ"
         if date_time_string is None:
             return None
@@ -95,7 +96,7 @@ def timestamp_factory():
 
 
 @pytest.fixture(scope="session")
-def virtual_environment() -> None:
+def virtual_environment() -> Generator:
     """Fixture ensuring execution in a virtual environment.
     Uses `virtualenv` instead of conda environments due to problems
     activating the virtual environment from pytest."""
@@ -113,7 +114,7 @@ def virtual_environment() -> None:
 
 
 @pytest.fixture(scope="session")
-def installed_package(virtual_environment, databricks_path) -> None:
+def installed_package(virtual_environment: Generator, databricks_path: str) -> None:
     "Ensures that the wholesale package is installed (after building it)."
 
     # Build the package wheel
