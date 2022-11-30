@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 import pytest
 from package.balance_fixing_total_production import (
     _get_master_basis_data_df,
@@ -38,8 +39,10 @@ metering_point_type = NewMeteringPointType.production.value
 settlement_method = NewSettlementMethod.flex.value
 connection_state = NewConnectionState.connected.value
 resolution = NewMeteringPointResolution.hour.value
-date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%fZ"
-june_1th = datetime.strptime("2022-05-31T22:00:00.000Z", date_time_formatting_string)
+date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%f"
+june_1th = datetime.strptime(
+    "2022-06-01T00:00:00.000", date_time_formatting_string
+).replace(tzinfo=ZoneInfo("Europe/Copenhagen"))
 june_2th = june_1th + timedelta(days=1)
 june_3th = june_1th + timedelta(days=2)
 june_4th = june_1th + timedelta(days=3)
@@ -49,6 +52,7 @@ june_7th = june_1th + timedelta(days=6)
 june_8th = june_1th + timedelta(days=7)
 june_9th = june_1th + timedelta(days=8)
 june_10th = june_1th + timedelta(days=9)
+print(june_1th)
 
 
 @pytest.fixture
