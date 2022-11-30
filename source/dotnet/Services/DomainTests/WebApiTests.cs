@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
@@ -109,12 +111,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 batchResult!.BatchNumber.Should().Be(Fixture.Configuration.ExistingBatchId);
             }
 
-            [DomainFact]
+            [DomainFact(Skip = "Enable when When_UsingRawHttpClientCreatingBatch_Then_BatchIsEventuallyExecuting is removed")]
             public async Task When_CreatingBatch_Then_BatchIsEventuallyExecuting()
             {
                 // Arrange
                 var startDate = new DateTimeOffset(2022, 9, 1, 8, 6, 32, TimeSpan.Zero);
-                var endDate = new DateTimeOffset(2022, 9, 1, 8, 6, 32, TimeSpan.Zero);
+                var endDate = new DateTimeOffset(2022, 9, 2, 8, 6, 32, TimeSpan.Zero);
                 var batchRequestDto = new BatchRequestDto(ProcessType.BalanceFixing, new List<string> { "805" }, startDate, endDate);
 
                 // Act
@@ -125,6 +127,41 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     async () =>
                     {
                         var batchResult = await Fixture.WholesaleClient.GetBatchAsync(batchId);
+                        return batchResult?.ExecutionState == BatchState.Executing;
+                    },
+                    DefaultTimeout,
+                    DefaultDelay);
+
+                isExecuting.Should().BeTrue();
+            }
+
+            // TODO: Remove when new WholesaleClient.CreateBatchAsync is released.
+            [DomainFact]
+            public async Task When_UsingRawHttpClientCreatingBatch_Then_BatchIsEventuallyExecuting()
+            {
+                // Arrange
+                var userAuthenticationClient = new B2CUserTokenAuthenticationClient(Fixture.Configuration.UserTokenConfiguration);
+                var token = await userAuthenticationClient.AcquireAccessTokenAsync();
+
+                var donutHttpClient = new HttpClient
+                {
+                    BaseAddress = Fixture.Configuration.WebApiBaseAddress,
+                };
+                donutHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var startDate = new DateTimeOffset(2022, 9, 1, 8, 6, 32, TimeSpan.Zero);
+                var endDate = new DateTimeOffset(2022, 9, 2, 8, 6, 32, TimeSpan.Zero);
+                var batchRequestDto = new BatchRequestDto(ProcessType.BalanceFixing, new List<string> { "805" }, startDate, endDate);
+
+                // Act
+                var actualResponse = await donutHttpClient.PostAsJsonAsync("v2/Batch", batchRequestDto);
+                var batchId = await actualResponse.Content.ReadAsStringAsync();
+
+                // Assert
+                var isExecuting = await Awaiter.TryWaitUntilConditionAsync(
+                    async () =>
+                    {
+                        var batchResult = await Fixture.WholesaleClient.GetBatchAsync(new Guid(batchId));
                         return batchResult?.ExecutionState == BatchState.Executing;
                     },
                     DefaultTimeout,
