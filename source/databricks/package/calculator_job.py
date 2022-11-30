@@ -93,7 +93,7 @@ def _start_calculator(spark: SparkSession, args):
     )
 
     market_roles_periods_df = spark.read.option("header", "true").csv(
-        f"{args.wholesale_container_path}/MarketRolesPeriods.csv"
+        f"{args.wholesale_container_path}/EnergySupplierPeriods.csv"
     )
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
