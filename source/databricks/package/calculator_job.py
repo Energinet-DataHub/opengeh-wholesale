@@ -41,10 +41,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     # Infrastructure settings
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--integration-events-path", type=str, required=True)
-    p.add("--wholesale-container-path", type=str, required=True)
     p.add("--time-series-points-path", type=str, required=True)
-    p.add("--process-results-path", type=str, required=False)
     p.add("--time-zone", type=str, required=True)
 
     # Run parameters
