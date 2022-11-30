@@ -23,7 +23,6 @@ Other consequense is that the contracts should not focus on all possible future 
 
 ## TODOs
 
-- provide examples for all columns
 - optimize storage by using smaller types?
 - SCMP+GLMP
 - EDI integration
