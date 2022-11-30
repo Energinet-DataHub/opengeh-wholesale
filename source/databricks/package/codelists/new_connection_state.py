@@ -11,15 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .time_series_resolution import TimeSeriesResolution
-from .metering_point_type import MeteringPointType
-from .connection_state import ConnectionState
-from .quality import Quality
-from .settlement_method import SettlementMethod
-from .time_series_quality import TimeSeriesQuality
-from .metering_point_resolution import MeteringPointResolution
 
-from .new_metering_point_type import NewMeteringPointType
-from .new_connection_state import NewConnectionState
-from .new_settlement_method import NewSettlementMethod
-from .new_metering_point_resolution import NewMeteringPointResolution
+from enum import Enum
+
+
+class NewConnectionState(Enum):
+    not_used = "D01"
+    closed_down = "D02"
+    new = "D03"
+    connected = "E22"
+    disconnected = "E23"
