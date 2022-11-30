@@ -2,7 +2,7 @@
 
 ## Version 3.4.0
 
-Return batch ID from `WholesaleClient.CreateBatchAsync`
+Return batch ID from `WholesaleClient.CreateBatchAsync()`
 
 ## Version 3.3.0
 
