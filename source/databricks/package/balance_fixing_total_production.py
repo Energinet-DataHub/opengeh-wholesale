@@ -33,12 +33,17 @@ from pyspark.sql.functions import (
     coalesce,
     explode,
     sum,
+    greatest,
+    least,
 )
 from pyspark.sql.types import (
+    StringType,
     DecimalType,
 )
 from pyspark.sql.window import Window
 from package.codelists import (
+    NewConnectionState,
+    NewMeteringPointType,
     ConnectionState,
     MeteringPointType,
     Quality,
@@ -59,14 +64,16 @@ METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
+    metering_points_periods_df: DataFrame,
+    market_roles_periods_df: DataFrame,
     raw_integration_events_df: DataFrame,
-    raw_time_series_points_df: DataFrame,
+    all_time_series_points_df: DataFrame,
     batch_grid_areas_df: DataFrame,
     batch_snapshot_datetime: datetime,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
-) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
+) -> tuple[DataFrame, DataFrame, DataFrame]:
     "Returns tuple (result_df, (time_series_quarter_basis_data_df, time_series_hour_basis_data_df))"
     "TODO: is this correct?"
 
@@ -74,26 +81,27 @@ def calculate_balance_fixing_total_production(
         raw_integration_events_df, batch_snapshot_datetime
     )
 
-    time_series_points = _get_time_series_points(
-        raw_time_series_points_df, batch_snapshot_datetime
+    time_series_points_df = _get_time_series_points_df(
+        all_time_series_points_df, batch_snapshot_datetime
     )
 
     grid_area_df = _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df)
 
-    metering_point_period_df = _get_metering_point_periods_df(
-        cached_integration_events_df,
+    master_basis_data_df = _get_master_basis_data_df(
+        metering_points_periods_df,
+        market_roles_periods_df,
         grid_area_df,
         period_start_datetime,
         period_end_datetime,
     )
 
     _check_all_grid_areas_have_metering_points(
-        batch_grid_areas_df, metering_point_period_df
+        batch_grid_areas_df, master_basis_data_df
     )
 
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
-        time_series_points,
-        metering_point_period_df,
+        time_series_points_df,
+        master_basis_data_df,
         period_start_datetime,
         period_end_datetime,
     )
@@ -102,24 +110,22 @@ def calculate_balance_fixing_total_production(
         enriched_time_series_point_df, time_zone
     )
 
-    master_basis_data_df = _get_master_basis_data(
-        metering_point_period_df, period_start_datetime, period_end_datetime
+    output_master_basis_data_df = _get_output_master_basis_data_df(
+        master_basis_data_df, period_start_datetime, period_end_datetime
     )
 
     result_df = _get_result_df(enriched_time_series_point_df)
 
     cached_integration_events_df.unpersist()
 
-    return (result_df, time_series_basis_data_df, master_basis_data_df)
+    return (result_df, time_series_basis_data_df, output_master_basis_data_df)
 
 
 def _check_all_grid_areas_have_metering_points(
-    batch_grid_areas_df: DataFrame, metering_point_period_df: DataFrame
+    batch_grid_areas_df: DataFrame, master_basis_data_df: DataFrame
 ) -> None:
-    distinct_grid_areas_rows_df = metering_point_period_df.select(
-        "GridAreaCode"
-    ).distinct()
-
+    distinct_grid_areas_rows_df = master_basis_data_df.select("GridAreaCode").distinct()
+    distinct_grid_areas_rows_df.show()
     grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
         distinct_grid_areas_rows_df, "GridAreaCode", "leftanti"
     )
@@ -147,10 +153,10 @@ def _get_cached_integration_events(
     )
 
 
-def _get_time_series_points(
-    raw_time_series_points_df: DataFrame, batch_snapshot_datetime: datetime
+def _get_time_series_points_df(
+    all_time_series_points_df: DataFrame, batch_snapshot_datetime: datetime
 ) -> DataFrame:
-    return raw_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
+    return all_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
 
 
 def _get_grid_areas_df(
@@ -187,164 +193,106 @@ def _get_grid_areas_df(
     return grid_area_df
 
 
-def _get_metering_point_periods_df(
-    cached_integration_events_df: DataFrame,
+def _get_master_basis_data_df(
+    metering_points_periods_df: DataFrame,
+    market_roles_periods_df: DataFrame,
     grid_area_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
-    metering_point_events_df = (
-        cached_integration_events_df.withColumn(
-            "body", from_json(col("body"), metering_point_generic_event_schema)
-        ).where(
-            col("body.MessageType").isin(
-                METERING_POINT_CREATED_MESSAGE_TYPE,
-                METERING_POINT_CONNECTED_MESSAGE_TYPE,
-                ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
-            )
-        )
-        # If new properties to the Meteringpoints are added
-        # Consider if they should be included in the 'dropDuplicates'
-        # To remove events that could have been received multiple times
-        .select(
-            "storedTime",
-            "body.MessageType",
-            "body.MeteringPointId",
-            "body.MeteringPointType",
-            "body.GsrnNumber",
-            "body.GridAreaLinkId",
-            "body.ConnectionState",
-            "body.EffectiveDate",
-            "body.Resolution",
-            "body.OperationTime",
-            "body.SettlementMethod",
-            "body.FromGridAreaCode",
-            "body.ToGridAreaCode",
-            "body.EnergySupplierGln",
-        )
-    ).dropDuplicates(
-        [
-            "MessageType",
-            "MeteringPointId",
-            "MeteringPointType",
-            "GsrnNumber",
-            "GridAreaLinkId",
-            "ConnectionState",
-            "EffectiveDate",
-            "Resolution",
-            "OperationTime",
-            "SettlementMethod",
-            "FromGridAreaCode",
-            "ToGridAreaCode",
-            "EnergySupplierGln",
-        ]
-    )
-    debug(
-        "Metering point created and connected events without duplicates",
-        metering_point_events_df.orderBy(col("storedTime").desc()),
-    )
-    window = Window.partitionBy("MeteringPointId").orderBy("EffectiveDate")
-    metering_point_periods_df = (
-        metering_point_events_df.withColumn(
-            "toEffectiveDate",
-            lead("EffectiveDate", 1, "3000-01-01T23:00:00.000+0000").over(window),
-        )
-        .withColumn(
-            "GridAreaLinkId",
-            coalesce(col("GridAreaLinkId"), last("GridAreaLinkId", True).over(window)),
-        )
-        .withColumn(
-            "ConnectionState",
-            when(
-                col("MessageType") == METERING_POINT_CREATED_MESSAGE_TYPE,
-                lit(ConnectionState.new.value),
-            ).when(
-                col("MessageType") == METERING_POINT_CONNECTED_MESSAGE_TYPE,
-                lit(ConnectionState.connected.value),
-            ),
-        )
-        .withColumn(
-            "ConnectionState",
-            coalesce(
-                col("ConnectionState"), last("ConnectionState", True).over(window)
-            ),
-        )
-        .withColumn(
-            "MeteringPointType",
-            coalesce(
-                col("MeteringPointType"), last("MeteringPointType", True).over(window)
-            ),
-        )
-        .withColumn(
-            "Resolution",
-            coalesce(col("Resolution"), last("Resolution", True).over(window)),
-        )
-        .withColumn(
-            "SettlementMethod",
-            coalesce(
-                col("SettlementMethod"), last("SettlementMethod", True).over(window)
-            ),
-        )
-        .withColumn(
-            "FromGridAreaCode",
-            coalesce(
-                col("FromGridAreaCode"), last("FromGridAreaCode", True).over(window)
-            ),
-        )
-        .withColumn(
-            "ToGridAreaCode",
-            coalesce(col("ToGridAreaCode"), last("ToGridAreaCode", True).over(window)),
-        )
-        .withColumn(
-            "EnergySupplierGln",
-            coalesce(
-                col("EnergySupplierGln"), last("EnergySupplierGln", True).over(window)
-            ),
-        )
-        .where(col("EffectiveDate") <= period_end_datetime)
-        .where(col("toEffectiveDate") >= period_start_datetime)
-        .where(
-            col("ConnectionState") == ConnectionState.connected.value
-        )  # Only aggregate when metering points is connected
-        .where(col("MeteringPointType") == MeteringPointType.production.value)
-        .where(col("EnergySupplierGln").isNotNull())
-        # Only aggregate when metering points have a energy supplier
-    )
-    debug(
-        "Metering point events before join with grid areas",
-        metering_point_periods_df.orderBy(col("storedTime").desc()),
-    )
-    # Only include metering points in the selected grid areas
-    metering_point_periods_df = metering_point_periods_df.join(
+    metering_points_in_grid_area = metering_points_periods_df.join(
         grid_area_df,
-        metering_point_periods_df["GridAreaLinkId"] == grid_area_df["GridAreaLinkId"],
+        metering_points_periods_df["GridArea"] == grid_area_df["GridAreaCode"],
         "inner",
-    ).select(
-        "GsrnNumber",
+    )
+
+    metering_point_periods_df = (
+        metering_points_in_grid_area.where(col("FromDate") < period_end_datetime)
+        .where(col("ToDate") > period_start_datetime)
+        .where(
+            (col("ConnectionState") == NewConnectionState.connected.value)
+            | (col("ConnectionState") == NewConnectionState.disconnected.value)
+        )
+        .where(col("MeteringPointType") == NewMeteringPointType.production.value)
+    )
+
+    market_roles_periods_df = market_roles_periods_df.where(
+        col("FromDate") < period_end_datetime
+    ).where(col("ToDate") > period_start_datetime)
+
+    master_basis_data_df = (
+        metering_point_periods_df.join(
+            market_roles_periods_df,
+            (
+                metering_point_periods_df["MeteringPointId"]
+                == market_roles_periods_df["MeteringPointId"]
+            )
+            & (
+                market_roles_periods_df["FromDate"]
+                < metering_point_periods_df["ToDate"]
+            )
+            & (
+                metering_point_periods_df["FromDate"]
+                < market_roles_periods_df["ToDate"]
+            ),
+            "left",
+        )
+        .withColumn(
+            "EffectiveDate",
+            greatest(
+                metering_point_periods_df["FromDate"],
+                market_roles_periods_df["FromDate"],
+            ),
+        )
+        .withColumn(
+            "toEffectiveDate",
+            least(
+                metering_point_periods_df["ToDate"], market_roles_periods_df["ToDate"]
+            ),
+        )
+        .withColumn(
+            "EffectiveDate",
+            when(
+                col("EffectiveDate") < period_start_datetime, period_start_datetime
+            ).otherwise(col("EffectiveDate")),
+        )
+        .withColumn(
+            "toEffectiveDate",
+            when(
+                col("toEffectiveDate") > period_end_datetime, period_end_datetime
+            ).otherwise(col("toEffectiveDate")),
+        )
+    )
+
+    master_basis_data_df = master_basis_data_df.select(
+        metering_point_periods_df["MeteringPointId"],
         "GridAreaCode",
         "EffectiveDate",
         "toEffectiveDate",
         "MeteringPointType",
         "SettlementMethod",
-        "FromGridAreaCode",
-        "ToGridAreaCode",
+        metering_point_periods_df["ToGridAreaCode"],
+        metering_point_periods_df["FromGridAreaCode"],
         "Resolution",
-        "EnergySupplierGln",
+        market_roles_periods_df["EnergySupplierId"],
+    )
+    debug(
+        "Metering point events before join with grid areas",
+        metering_point_periods_df.orderBy(col("FromDate").desc()),
     )
 
     debug(
         "Metering point periods",
         metering_point_periods_df.orderBy(
-            col("GridAreaCode"), col("GsrnNumber"), col("EffectiveDate")
+            col("GridAreaCode"), col("MeteringPointId"), col("FromDate")
         ),
     )
-
-    return metering_point_periods_df
+    return master_basis_data_df
 
 
 def _get_enriched_time_series_points_df(
     time_series_points: DataFrame,
-    metering_point_period_df: DataFrame,
+    master_basis_data_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
@@ -353,37 +301,37 @@ def _get_enriched_time_series_points_df(
         col("time") >= period_start_datetime
     ).where(col("time") < period_end_datetime)
 
-    quarterly_mp_df = metering_point_period_df.where(
+    quarterly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.quarterly.value
     )
-    hourly_mp_df = metering_point_period_df.where(
+    hourly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.hour.value
     )
 
     exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
 
     quarterly_times_df = (
-        quarterly_mp_df.select("GsrnNumber")
+        quarterly_mp_df.select("MeteringPointId")
         .distinct()
         .select(
-            "GsrnNumber",
+            "MeteringPointId",
             expr(
                 f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
             ).alias("quarter_times"),
         )
-        .select("GsrnNumber", explode("quarter_times").alias("time"))
+        .select("MeteringPointId", explode("quarter_times").alias("time"))
     )
 
     hourly_times_df = (
-        hourly_mp_df.select("GsrnNumber")
+        hourly_mp_df.select("MeteringPointId")
         .distinct()
         .select(
-            "GsrnNumber",
+            "MeteringPointId",
             expr(
                 f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 1 hour)"
             ).alias("times"),
         )
-        .select("GsrnNumber", explode("times").alias("time"))
+        .select("MeteringPointId", explode("times").alias("time"))
     )
 
     empty_points_for_each_metering_point_df = quarterly_times_df.union(hourly_times_df)
@@ -391,14 +339,14 @@ def _get_enriched_time_series_points_df(
     debug(
         "Time series points where time is within period",
         timeseries_df.orderBy(
-            col("GsrnNumber"),
+            col("MeteringPointId"),
             col("time"),
             col("storedTime").desc(),
         ),
     )
 
     # Only use latest registered points
-    window = Window.partitionBy("GsrnNumber", "time").orderBy(
+    window = Window.partitionBy("MeteringPointId", "time").orderBy(
         col("RegistrationDateTime").desc()
     )
     # If we end up with more than one point for the same Meteringpoint and "time".
@@ -410,43 +358,42 @@ def _get_enriched_time_series_points_df(
     debug(
         "Time series points with only latest points by registration date time",
         timeseries_df.orderBy(
-            col("GsrnNumber"),
+            col("MeteringPointId"),
             col("time"),
             col("storedTime").desc(),
         ),
     )
 
     timeseries_df = timeseries_df.select(
-        "GsrnNumber", "time", "Quantity", "Quality", "Resolution"
+        "MeteringPointId", "time", "Quantity", "Quality", "Resolution"
     )
 
     points_for_each_metering_point_df = empty_points_for_each_metering_point_df.join(
-        timeseries_df, ["GsrnNumber", "time"], "left"
+        timeseries_df, ["MeteringPointId", "time"], "left"
     )
 
-    # the metering_point_period_df is allready used once when creating the empty_points_for_each_metering_point_df
-    # rejoining metering_point_period_df with empty_points_for_each_metering_point_df requires the GsrNumber and
+    # the master_basis_data_df is allready used once when creating the empty_points_for_each_metering_point_df
+    # rejoining master_basis_data_df with empty_points_for_each_metering_point_df requires the GsrNumber and
     # Resolution column must be renamed for the select to be succesfull.
     points_for_each_metering_point_df = (
         points_for_each_metering_point_df.withColumnRenamed(
-            "GsrnNumber", "pfemp_GsrnNumber"
+            "MeteringPointId", "pfemp_MeteringPointId"
         ).withColumnRenamed("Resolution", "pfemp_Resolution")
     )
-
     enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
-        metering_point_period_df,
+        master_basis_data_df,
         (
-            metering_point_period_df["GsrnNumber"]
-            == points_for_each_metering_point_df["pfemp_GsrnNumber"]
+            master_basis_data_df["MeteringPointId"]
+            == points_for_each_metering_point_df["pfemp_MeteringPointId"]
         )
         & (points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
         & (points_for_each_metering_point_df["time"] < col("toEffectiveDate")),
         "left",
     ).select(
         "GridAreaCode",
-        metering_point_period_df["GsrnNumber"],
+        master_basis_data_df["MeteringPointId"],
         "MeteringPointType",
-        metering_point_period_df["Resolution"],
+        master_basis_data_df["Resolution"],
         "time",
         "Quantity",
         "Quality",
@@ -454,13 +401,13 @@ def _get_enriched_time_series_points_df(
 
     debug(
         "Enriched time series points",
-        timeseries_df.orderBy(col("GsrnNumber"), col("time")),
+        timeseries_df.orderBy(col("MeteringPointId"), col("time")),
     )
 
     return enriched_points_for_each_metering_point_df
 
 
-def _get_master_basis_data(
+def _get_output_master_basis_data_df(
     metering_point_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
@@ -484,7 +431,7 @@ def _get_master_basis_data(
         )
         .select(
             col("GridAreaCode"),  # column is only used for partitioning
-            col("GsrnNumber").alias("METERINGPOINTID"),
+            col("MeteringPointId").alias("METERINGPOINTID"),
             col("EffectiveDate").alias("VALIDFROM"),
             col("toEffectiveDate").alias("VALIDTO"),
             col("GridAreaCode").alias("GRIDAREA"),
@@ -492,7 +439,7 @@ def _get_master_basis_data(
             col("FromGridAreaCode").alias("FROMGRIDAREA"),
             col("TYPEOFMP"),
             col("SettlementMethod").alias("SETTLEMENTMETHOD"),
-            col("EnergySupplierGln").alias(("ENERGYSUPPLIERID")),
+            col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
         )
     )
 
@@ -522,7 +469,7 @@ def _get_time_series_basis_data_by_resolution(
     resolution: int,
     time_zone: str,
 ) -> DataFrame:
-    w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
+    w = Window.partitionBy("MeteringPointId", "localDate").orderBy("time")
 
     timeseries_basis_data_df = (
         enriched_time_series_point_df.where(col("Resolution") == resolution)
@@ -530,7 +477,7 @@ def _get_time_series_basis_data_by_resolution(
         .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
         .withColumn("STARTDATETIME", first("time").over(w))
         .groupBy(
-            "gsrnNumber",
+            "MeteringPointId",
             "localDate",
             "STARTDATETIME",
             "GridAreaCode",
@@ -539,7 +486,7 @@ def _get_time_series_basis_data_by_resolution(
         )
         .pivot("position")
         .agg(first("Quantity"))
-        .withColumnRenamed("gsrnNumber", "METERINGPOINTID")
+        .withColumnRenamed("MeteringPointId", "METERINGPOINTID")
         .withColumn(
             "TYPEOFMP",
             when(col("MeteringPointType") == MeteringPointType.production.value, "E18"),

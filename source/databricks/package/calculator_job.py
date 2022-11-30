@@ -41,7 +41,8 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     # Infrastructure settings
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--integration-events-path", type=str, required=False)
+    p.add("--integration-events-path", type=str, required=True)
+    p.add("--wholesale-container-path", type=str, required=True)
     p.add("--time-series-points-path", type=str, required=True)
     p.add("--process-results-path", type=str, required=False)
     p.add("--time-zone", type=str, required=True)
@@ -85,8 +86,17 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
     # Only points stored before the snapshot_datetime are needed.
-    raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
-        args.time_series_points_path
+    raw_time_series_points_df = (
+        spark.read.option("mergeSchema", "true")
+        .parquet(args.time_series_points_path)
+        .withColumnRenamed("GsrnNumber", "MeteringPointId")
+    )
+    metering_points_periods_df = spark.read.option("header", "true").csv(
+        f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
+    )
+
+    market_roles_periods_df = spark.read.option("header", "true").csv(
+        f"{args.wholesale_container_path}/EnergySupplierPeriods.csv"
     )
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
@@ -96,6 +106,8 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing_total_production(
+        metering_points_periods_df,
+        market_roles_periods_df,
         raw_integration_events_df,
         raw_time_series_points_df,
         batch_grid_areas_df,
