@@ -151,9 +151,6 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                         "ToGridArea": period["ToGridArea"]
                         if ("ToGridArea" in period)
                         else ToGridArea,
-                        "NetSettlementGroup": period["NetSettlementGroup"]
-                        if ("NetSettlementGroup" in period)
-                        else NetSettlementGroup,
                         "ParentMeteringPointId": period["ParentMeteringPointId"]
                         if ("ParentMeteringPointId" in period)
                         else ParentMeteringPointId,
@@ -161,12 +158,6 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                         if ("FromDate" in period)
                         else FromDate,
                         "ToDate": period["ToDate"] if ("ToDate" in period) else ToDate,
-                        "NumberOfTimeseries": period["NumberOfTimeseries"]
-                        if ("NumberOfTimeseries" in period)
-                        else NumberOfTimeseries,
-                        "EnergyQuantity": period["EnergyQuantity"]
-                        if ("EnergyQuantity" in period)
-                        else EnergyQuantity,
                     }
                 )
         else:
@@ -180,12 +171,9 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                     "Resolution": Resolution,
                     "FromGridArea": FromGridArea,
                     "ToGridArea": ToGridArea,
-                    "NetSettlementGroup": NetSettlementGroup,
                     "ParentMeteringPointId": ParentMeteringPointId,
                     "FromDate": FromDate,
                     "ToDate": ToDate,
-                    "NumberOfTimeseries": NumberOfTimeseries,
-                    "EnergyQuantity": EnergyQuantity,
                 }
             )
         return spark.createDataFrame(df_array)
