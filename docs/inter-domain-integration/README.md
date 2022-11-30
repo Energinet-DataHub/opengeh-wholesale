@@ -20,9 +20,3 @@ need to acquire:
 - Delegations
 
 Other consequense is that the contracts should not focus on all possible future context map but rather on the "well-known" requirements of the calculation engine.
-
-## TODOs
-
-- optimize storage by using smaller types?
-- SCMP+GLMP
-- EDI integration

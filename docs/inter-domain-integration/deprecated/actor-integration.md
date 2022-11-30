@@ -19,8 +19,8 @@ Data is returned as a JSON object with this format:
     "roles: [
       <role>*
     ],
-	"fromDate": <date time UTC>,
-	"toDate": <date time UTC|null>
+    "fromDate": <date time UTC>,
+    "toDate": <date time UTC|null>
   ]
 }
 ```
@@ -43,20 +43,20 @@ History for actor with id `3433d1d4-2fb8-440d-ba78-f3aa9a8b49e1`. Since 1st of J
   "id": "3433d1d4-2fb8-440d-ba78-f3aa9a8b49e1",
   "periods": [
     {
-	  "roles": [
-	    "DDM"
-	  ],
-	  "fromDate": "2018-12-31T22:00Z",
-	  "toDate": "2022-08-31T22:00Z"
-	},
+      "roles": [
+        "DDM"
+      ],
+      "fromDate": "2018-12-31T22:00Z",
+      "toDate": "2022-08-31T22:00Z"
+    },
     {
-	  "roles": [
-	    "DDM",
-		"MDR"
-	  ],
-	  "fromDate": "2022-08-31T22:00Z",
-	  "toDate": null
-	}
+      "roles": [
+        "DDM",
+        "MDR"
+      ],
+      "fromDate": "2022-08-31T22:00Z",
+      "toDate": null
+    }
   ]
 }
 ```
