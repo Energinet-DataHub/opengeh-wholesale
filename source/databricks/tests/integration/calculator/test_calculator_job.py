@@ -19,7 +19,7 @@ import pytest
 import yaml
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
-
+from package.calculator_args import CalculatorArgs
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 
@@ -40,24 +40,20 @@ class DictObj:
 @pytest.fixture(scope="session")
 def test_data_job_parameters(
     test_data, databricks_path, data_lake_path, timestamp_factory, worker_id
-):
+) -> CalculatorArgs:
     "test_data parameter ensures that the corresponding test data has been created when using these corresponding job parameters"
-    return DictObj(
-        {
-            "data_storage_account_name": "foo",
-            "data_storage_account_key": "foo",
-            "integration_events_path": f"{data_lake_path}/{worker_id}/parquet_test_files/integration_events",
-            "time_series_points_path": f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points",
-            "process_results_path": f"{data_lake_path}/{worker_id}/results",
-            "batch_id": executed_batch_id,
-            "batch_grid_areas": [805, 806],
-            "batch_snapshot_datetime": timestamp_factory("2022-09-02T21:59:00.000Z"),
-            "batch_period_start_datetime": timestamp_factory(
-                "2022-04-01T22:00:00.000Z"
-            ),
-            "batch_period_end_datetime": timestamp_factory("2022-09-01T22:00:00.000Z"),
-            "time_zone": "Europe/Copenhagen",
-        }
+    return CalculatorArgs(
+        data_storage_account_name="foo",
+        data_storage_account_key="foo",
+        integration_events_path=f"{data_lake_path}/{worker_id}/parquet_test_files/integration_events",
+        time_series_points_path=f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points",
+        process_results_path=f"{data_lake_path}/{worker_id}/results",
+        batch_id=executed_batch_id,
+        batch_grid_areas=[805, 806],
+        batch_snapshot_datetime=timestamp_factory("2022-09-02T21:59:00.000Z"),
+        batch_period_start_datetime=timestamp_factory("2022-04-01T22:00:00.000Z"),
+        batch_period_end_datetime=timestamp_factory("2022-09-01T22:00:00.000Z"),
+        time_zone="Europe/Copenhagen",
     )
 
 
@@ -130,7 +126,6 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 
 def test__result_is_generated_for_requested_grid_areas(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     source_path,
     worker_id,
@@ -152,7 +147,6 @@ def test__result_is_generated_for_requested_grid_areas(
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     source_path,
     executed_calculation_job,
@@ -176,7 +170,6 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 
 def test__calculator_result_schema_must_match_contract_with_dotnet(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     source_path,
     worker_id,
@@ -197,7 +190,6 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 
 def test__quantity_is_with_precision_3(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
@@ -232,7 +224,6 @@ def create_file_path_expression(directory_expression, extension):
 
 def test__result_file_path_matches_contract(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
@@ -258,7 +249,6 @@ def test__result_file_path_matches_contract(
 
 def test__creates_hour_csv_with_expected_columns_names(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     executed_calculation_job,
     worker_id,
@@ -280,7 +270,7 @@ def test__creates_hour_csv_with_expected_columns_names(
 
 
 def test__creates_quarter_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
+    spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -299,7 +289,7 @@ def test__creates_quarter_csv_with_expected_columns_names(
 
 
 def test__creates_csv_per_grid_area(
-    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
+    spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -323,7 +313,7 @@ def test__creates_csv_per_grid_area(
 
 
 def test__master_data_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
+    spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -347,7 +337,7 @@ def test__master_data_csv_with_expected_columns_names(
 
 
 def test__creates_master_data_csv_per_grid_area(
-    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
+    spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act: Executed in fixture executed_calculation_job
 
@@ -371,7 +361,6 @@ def test__creates_master_data_csv_per_grid_area(
 
 def test__master_basis_data_file_matches_contract(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
@@ -397,7 +386,6 @@ def test__master_basis_data_file_matches_contract(
 
 def test__hourly_basis_data_file_matches_contract(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
@@ -423,7 +411,6 @@ def test__hourly_basis_data_file_matches_contract(
 
 def test__quarterly_basis_data_file_matches_contract(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,

@@ -15,7 +15,7 @@
 import os
 import shutil
 import pytest
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch
 from package import integration_events_persister
 from package.integration_events_persister_streaming import (
     start,
