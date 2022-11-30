@@ -145,11 +145,11 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                         "Resolution": period["Resolution"]
                         if ("Resolution" in period)
                         else Resolution,
-                        "FromGridArea": period["FromGridArea"]
-                        if ("FromGridArea" in period)
+                        "FromGridAreaCode": period["FromGridAreaCode"]
+                        if ("FromGridAreaCode" in period)
                         else FromGridArea,
-                        "ToGridArea": period["ToGridArea"]
-                        if ("ToGridArea" in period)
+                        "ToGridAreaCode": period["ToGridAreaCode"]
+                        if ("ToGridAreaCode" in period)
                         else ToGridArea,
                         "ParentMeteringPointId": period["ParentMeteringPointId"]
                         if ("ParentMeteringPointId" in period)
@@ -169,8 +169,8 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                     "GridArea": GridArea,
                     "ConnectionState": ConnectionState,
                     "Resolution": Resolution,
-                    "FromGridArea": FromGridArea,
-                    "ToGridArea": ToGridArea,
+                    "FromGridAreaCode": FromGridArea,
+                    "ToGridAreaCode": ToGridArea,
                     "ParentMeteringPointId": ParentMeteringPointId,
                     "FromDate": FromDate,
                     "ToDate": ToDate,
@@ -533,8 +533,8 @@ def test__metering_points_have_expected_columns(
             & (col("toEffectiveDate") == june_2th)
             & (col("MeteringPointType") == metering_point_type)
             & (col("SettlementMethod") == settlement_method)
-            & (col("FromGridArea") == "some-in-gride-area")
-            & (col("ToGridArea") == "some-out-gride-area")
+            & (col("FromGridAreaCode") == "some-in-gride-area")
+            & (col("ToGridAreaCode") == "some-out-gride-area")
             & (col("Resolution") == NewMeteringPointResolution.hour.value)
             & (col("EnergySupplierId") == energy_supplier_id)
         ).count()
