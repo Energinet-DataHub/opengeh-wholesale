@@ -69,12 +69,13 @@ def calculate_balance_fixing_total_production(
     raw_integration_events_df: DataFrame,
     all_time_series_points_df: DataFrame,
     batch_grid_areas_df: DataFrame,
-    batch_snapshot_datetime,
-    period_start_datetime,
-    period_end_datetime,
-    time_zone,
+    batch_snapshot_datetime: datetime,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+    time_zone: str,
 ) -> DataFrame:
     "Returns tuple (result_df, (time_series_quarter_basis_data_df, time_series_hour_basis_data_df))"
+    "TODO: is this correct?"
 
     cached_integration_events_df = _get_cached_integration_events(
         raw_integration_events_df, batch_snapshot_datetime
@@ -121,8 +122,8 @@ def calculate_balance_fixing_total_production(
 
 
 def _check_all_grid_areas_have_metering_points(
-    batch_grid_areas_df, master_basis_data_df
-):
+    batch_grid_areas_df: DataFrame, master_basis_data_df: DataFrame
+) -> None:
     distinct_grid_areas_rows_df = master_basis_data_df.select("GridAreaCode").distinct()
     distinct_grid_areas_rows_df.show()
     grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
@@ -143,7 +144,7 @@ def _check_all_grid_areas_have_metering_points(
 
 
 def _get_cached_integration_events(
-    raw_integration_events_df, batch_snapshot_datetime
+    raw_integration_events_df: DataFrame, batch_snapshot_datetime: datetime
 ) -> DataFrame:
     return (
         raw_integration_events_df.where(col("storedTime") <= batch_snapshot_datetime)
@@ -153,12 +154,14 @@ def _get_cached_integration_events(
 
 
 def _get_time_series_points_df(
-    all_time_series_points_df, batch_snapshot_datetime
+    all_time_series_points_df: DataFrame, batch_snapshot_datetime: datetime
 ) -> DataFrame:
     return all_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
 
 
-def _get_grid_areas_df(cached_integration_events_df, batch_grid_areas_df) -> DataFrame:
+def _get_grid_areas_df(
+    cached_integration_events_df: DataFrame, batch_grid_areas_df: DataFrame
+) -> DataFrame:
     message_type = "GridAreaUpdated"  # Must correspond to the value stored by the integration event listener
 
     grid_area_events_df = (
@@ -288,10 +291,10 @@ def _get_master_basis_data_df(
 
 
 def _get_enriched_time_series_points_df(
-    time_series_points,
-    master_basis_data_df,
-    period_start_datetime,
-    period_end_datetime,
+    time_series_points: DataFrame,
+    master_basis_data_df: DataFrame,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
 ) -> DataFrame:
 
     timeseries_df = time_series_points.where(
@@ -404,10 +407,11 @@ def _get_enriched_time_series_points_df(
     return enriched_points_for_each_metering_point_df
 
 
-# Consider moving out of balance fixing as this is not related to the calculation
-def _get_output_master_basis_data_df(
-    metering_point_df, period_start_datetime, period_end_datetime
-):
+def _get_master_basis_data(
+    metering_point_df: DataFrame,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+) -> DataFrame:
     productionType = MeteringPointType.production.value
     return (
         metering_point_df.withColumn(
@@ -440,7 +444,9 @@ def _get_output_master_basis_data_df(
     )
 
 
-def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
+def _get_time_series_basis_data(
+    enriched_time_series_point_df: DataFrame, time_zone: str
+) -> tuple[DataFrame, DataFrame]:
     "Returns tuple (time_series_quarter_basis_data, time_series_hour_basis_data)"
 
     time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
@@ -459,9 +465,11 @@ def _get_time_series_basis_data(enriched_time_series_point_df, time_zone):
 
 
 def _get_time_series_basis_data_by_resolution(
-    enriched_time_series_point_df, resolution, time_zone
-):
-    w = Window.partitionBy("MeteringPointId", "localDate").orderBy("time")
+    enriched_time_series_point_df: DataFrame,
+    resolution: int,
+    time_zone: str,
+) -> DataFrame:
+    w = Window.partitionBy("gsrnNumber", "localDate").orderBy("time")
 
     timeseries_basis_data_df = (
         enriched_time_series_point_df.where(col("Resolution") == resolution)
@@ -496,8 +504,8 @@ def _get_time_series_basis_data_by_resolution(
     return timeseries_basis_data_df
 
 
-def _get_sorted_quantity_columns(timeseries_basis_data):
-    def num_sort(col_name):
+def _get_sorted_quantity_columns(timeseries_basis_data: DataFrame) -> list[str]:
+    def num_sort(col_name: str) -> int:
         "Extracts the nuber in the string"
         import re
 
@@ -510,7 +518,7 @@ def _get_sorted_quantity_columns(timeseries_basis_data):
     return quantity_columns
 
 
-def _get_result_df(enriched_time_series_points_df) -> DataFrame:
+def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
     # Total production in batch grid areas with quarterly resolution per grid area
     result_df = (
         enriched_time_series_points_df.withColumn(

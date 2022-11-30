@@ -23,11 +23,11 @@ from pyspark.sql.functions import (
 from package.db_logging import log
 
 
-def _persist(events_df, integration_events_path):
+def _persist(events_df: DataFrame, integration_events_path: str) -> None:
     (
-        events_df.write.partitionBy("year", "month", "day").mode("append").parquet(
-            integration_events_path
-        )
+        events_df.write.partitionBy("year", "month", "day")
+        .mode("append")
+        .parquet(integration_events_path)
     )
     log("Events received", events_df)
 
@@ -37,7 +37,7 @@ def integration_events_persister(
     streamingDf: DataFrame,
     integration_events_path: str,
     integration_events_checkpoint_path: str,
-):
+) -> None:
     events = (
         streamingDf.withColumn("storedTime", current_timestamp())
         .withColumn("year", year(col("storedTime")))
