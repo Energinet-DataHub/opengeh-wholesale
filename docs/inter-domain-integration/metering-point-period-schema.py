@@ -97,15 +97,15 @@ metering_point_period_schema = StructType(
         # The date of the last period is null.
         # Used in balance fixing and settlement.
         # TODO What happens with the partitioning if the date is null?
-        StructField("ToDate", TimestampType(), False),
+        StructField("ToDate", TimestampType(), True),
        
         # The year part of the `ToDate`. Used for partitioning.
-        StructField("ToDate_Year", IntegerType(), False),
+        StructField("ToDate_Year", IntegerType(), True),
         
         # The month part of the `ToDate`. Used for partitioning.
-        StructField("ToDate_Month", IntegerType(), False),
+        StructField("ToDate_Month", IntegerType(), True),
         
         # The date part of the `ToDate`. Used for partitioning.
-        StructField("ToDate_Date", IntegerType(), False),
+        StructField("ToDate_Date", IntegerType(), True),
     ]
 )
