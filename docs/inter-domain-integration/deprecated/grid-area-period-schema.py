@@ -19,25 +19,21 @@ from pyspark.sql.types import (
     StructType,
 )
 
-# TODO provide examples for all columns
-# TODO optimize storage by using smaller types?
-# TODO SCMP+GLMP
-# TODO are there any columns that can change and thus cause splitting of periods?
-
 """
+**DEPRECATED** - see the [README](../README.md).
+
 Schema for grid area periods
 
 Data must be stored in a Delta table.
 The table need not be partitioned.
 The table data must always contain updated periods.
+
+Grid access provider is not needed as it is related to B2B messaging.
 """
 grid_area_period_schema = StructType(
     [
         # 3 character grid area code uniquely identifying the grid area. All characters must be digits (0-9).
         StructField("GridAreaCode", StringType(), True),
-
-        # The unique actor id of the grid access provider (as provided by the market participant domain)
-        StructField("GridAccessProviderId", StringType(), True),
 
         # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
         # The date is inclusive.

@@ -1,5 +1,7 @@
 # Get periodized actor master data
 
+**DEPRECATED** - see the [README](../README.md).
+
 HTTP REST endpoint, which - given an actor number - returns the periods for the actor.
 
 ## Url

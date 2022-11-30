@@ -57,7 +57,7 @@ metering_point_period_schema = StructType(
         # The id of the parent metering point
         StructField("ParentMeteringPointId", StringType(), True),
         
-        # The unique actor id of the energy supplier (as provided by the market participant domain)
+        # The unique GLN/EIC number of the energy supplier
         StructField("EnergySupplierId", StringType(), True),
 
         # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
