@@ -19,7 +19,7 @@ import pytest
 import yaml
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
-
+from package.calculator_args import CalculatorArgs
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 
@@ -45,7 +45,7 @@ def test_data_job_parameters(
     timestamp_factory,
     worker_id,
     json_test_files,
-):
+) -> CalculatorArgs:
     "test_data parameter ensures that the corresponding test data has been created when using these corresponding job parameters"
     return DictObj(
         {
@@ -161,7 +161,6 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     source_path,
     executed_calculation_job,
@@ -334,7 +333,7 @@ def create_file_path_expression(directory_expression, extension):
 
 
 def test__master_data_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
+    spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -358,7 +357,7 @@ def test__master_data_csv_with_expected_columns_names(
 
 
 def test__creates_master_data_csv_per_grid_area(
-    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
+    spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act: Executed in fixture executed_calculation_job
 
@@ -382,7 +381,6 @@ def test__creates_master_data_csv_per_grid_area(
 
 def test__master_basis_data_file_matches_contract(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
