@@ -12,10 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
-
-WHOLESALE_CONTAINER_NAME = "wholesale"
+from pyspark.sql import SparkSession
 
 
-def get_storage_account_url(storage_account_name: str) -> str:
-    return f"https://{storage_account_name}.dfs.core.windows.net"
+class MigrationScriptArgs:
+    """Input arguments for the data lake migration scripts.
+
+    This class is shared across all scripts. The signature
+    of existing scripts doesn't need to be updated when new
+    members are added to this class.
+    """
+
+    def __init__(
+        self,
+        data_storage_account_url: str,
+        data_storage_account_key: str,
+        spark: SparkSession,
+    ) -> None:
+        self.storage_account_url = data_storage_account_url
+        self.storage_account_key = data_storage_account_key
+        self.spark = spark
