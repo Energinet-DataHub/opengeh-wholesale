@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-from datetime import datetime, timedelta
+"""
+This test is commented out as it is not needed anymore. but it is keept here until we have transisioned to using static datasources
 import pytest
+from datetime import datetime, timedelta
 from package.balance_fixing_total_production import (
-    _get_metering_point_periods_df,
+    _get_master_basis_data_df,
     METERING_POINT_CREATED_MESSAGE_TYPE,
     METERING_POINT_CONNECTED_MESSAGE_TYPE,
     ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE,
@@ -39,31 +40,30 @@ from tests.contract_utils import (
     read_contract,
     get_message_type,
 )
-
-
 # Factory defaults
 grid_area_code = "805"
+
 grid_area_link_id = "the-grid-area-link-id"
 gsrn_number = "the-gsrn-number"
 metering_point_id = "the-metering-point-id"
-
 first_of_june = datetime.strptime("31/05/2022 22:00", "%d/%m/%Y %H:%M")
 second_of_june = first_of_june + timedelta(days=1)
+
 third_of_june = first_of_june + timedelta(days=2)
 the_far_future = datetime.now()  # 200 years into the future is anticipated to be "far"
 
-
 @pytest.fixture
 def grid_area_df(spark):
+
     row = {
         "GridAreaCode": grid_area_code,
         "GridAreaLinkId": grid_area_link_id,
     }
     return spark.createDataFrame([row])
 
-
 @pytest.fixture
 def energy_supplier_changed_df_factory(spark):
+
     def factory(
         stored_time=second_of_june,
         metering_point_id=metering_point_id,
@@ -86,9 +86,9 @@ def energy_supplier_changed_df_factory(spark):
             "MessageType": message_type,
             "OperationTime": operation_time,
         }
-
         return (
             spark.createDataFrame([row])
+
             .withColumn(
                 "body",
                 to_json(
@@ -107,12 +107,12 @@ def energy_supplier_changed_df_factory(spark):
             )
             .select("storedTime", "body")
         )
-
     return factory
 
 
 @pytest.fixture
 def metering_point_created_df_factory(spark):
+
     def factory(
         stored_time=first_of_june,
         message_type=METERING_POINT_CREATED_MESSAGE_TYPE,
@@ -140,9 +140,9 @@ def metering_point_created_df_factory(spark):
             "FromGridAreaCode": "some-from-grid-area-code",
             "ToGridAreaCode": "some-to-grid-area-code",
         }
-
         return (
             spark.createDataFrame([row])
+
             .withColumn(
                 "body",
                 to_json(
@@ -168,12 +168,12 @@ def metering_point_created_df_factory(spark):
             )
             .select("storedTime", "body")
         )
-
     return factory
 
 
 @pytest.fixture
 def metering_point_connected_df_factory(spark):
+
     def factory(
         stored_time=third_of_june,
         message_type=METERING_POINT_CONNECTED_MESSAGE_TYPE,
@@ -196,9 +196,9 @@ def metering_point_connected_df_factory(spark):
                 "ToGridAreaCode": "some-to-grid-area-code",
             }
         ]
-
         return (
             spark.createDataFrame(row)
+
             .withColumn(
                 "body",
                 to_json(
@@ -218,11 +218,11 @@ def metering_point_connected_df_factory(spark):
             )
             .select("storedTime", "body")
         )
-
     return factory
 
 
 def test__schema_for_created__is_subsets_of_generic_schema():
+
     for created_field in metering_point_created_event_schema:
         generic_field = next(
             f
@@ -281,7 +281,6 @@ def test__metering_point_connected_schema_matches_contract(source_path):
 
 
 def test__metering_point_created_message_type__matches_contract(
-    metering_point_created_df_factory,
     grid_area_df,
     source_path,
 ):
@@ -486,8 +485,8 @@ def test__to_effective_date__is_in_the_far_future(
     grid_area_df,
     energy_supplier_changed_df_factory,
 ):
-    """toEffectiveDate can only be "far future" as only connected metering points
-    are included and no further events are currently supported."""
+    # toEffectiveDate can only be "far future" as only connected metering points
+    # are included and no further events are currently supported.
 
     # Arrange
     created_events_df = metering_point_created_df_factory()
@@ -718,3 +717,4 @@ def test__energy_supplier_changed_message_type__matches_contract(
     )
 
     assert ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE == contract_message_type
+"""
