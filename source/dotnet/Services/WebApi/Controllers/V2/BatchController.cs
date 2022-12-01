@@ -45,12 +45,11 @@ public class BatchController : ControllerBase
     /// </summary>
     /// <returns>Always 200 OK</returns>
     [HttpPost]
-    [Produces("text/plain")]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> CreateAsync([FromBody] BatchRequestDto batchRequestDto)
     {
         var batchId = await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
-        return Ok(batchId.ToString());
+        return Ok(batchId);
     }
 
     /// <summary>
