@@ -184,6 +184,7 @@ def _start(command_line_args: list[str]) -> None:
         process_results_path=infrastructure.get_process_results_path(
             args.data_storage_account_name
         ),
+        wholesale_container_path=args.wholesale_container_path,
         batch_id=args.batch_id,
         batch_grid_areas=args.batch_grid_areas,
         batch_snapshot_datetime=args.batch_snapshot_datetime,
