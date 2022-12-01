@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Wholesale.WebApi
         // JWT Token auth
         public const string ExternalOpenIdUrl = "EXTERNAL_OPEN_ID_URL";
         public const string InternalOpenIdUrl = "INTERNAL_OPEN_ID_URL";
-        public const string BackendAppId = "BACKEND_APP_ID";
+        public const string BackendAppId = "BACKEND_SERVICE_APP_ID";
 
         public const string CalculationStorageConnectionString = "CALCULATION_STORAGE_CONNECTION_STRING";
         public const string CalculationStorageContainerName = "CALCULATION_STORAGE_CONTAINER_NAME";
