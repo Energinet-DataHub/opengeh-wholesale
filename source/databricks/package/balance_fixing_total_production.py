@@ -73,7 +73,7 @@ def calculate_balance_fixing_total_production(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
-) -> tuple[DataFrame, DataFrame, DataFrame]:
+) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
     "Returns tuple (result_df, (time_series_quarter_basis_data_df, time_series_hour_basis_data_df))"
     "TODO: is this correct?"
 
