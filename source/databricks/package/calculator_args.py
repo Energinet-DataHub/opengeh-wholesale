@@ -23,6 +23,7 @@ class CalculatorArgs:
     integration_events_path: str
     time_series_points_path: str
     process_results_path: str
+    wholesale_container_path: str
     batch_id: str
     batch_grid_areas: valid_list
     batch_snapshot_datetime: valid_date
