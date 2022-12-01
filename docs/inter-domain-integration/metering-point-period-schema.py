@@ -32,7 +32,7 @@ The table data must always contain updated periods.
 """
 metering_point_period_schema = StructType(
     [
-        # The metering point GSRN number (18 characters) that uniquely identifies the metering point.
+        # GSRN (18 characters) that uniquely identifies the metering point
         # Used in balance fixing and settlement.
         # Example: 578710000000000103
         StructField("MeteringPointId", StringType(), False),

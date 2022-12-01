@@ -32,7 +32,7 @@ TODO z-ordered desc by registration time?
 """
 time_series_point_schema = StructType(
     [
-        # The metering point GSRN number (18 characters) that uniquely identifies the metering point
+        # GSRN (18 characters) that uniquely identifies the metering point
         # Example: 578710000000000103
         StructField("MeteringPointId", StringType(), False),
 
