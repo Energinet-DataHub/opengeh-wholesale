@@ -27,8 +27,9 @@ namespace Energinet.DataHub.Wholesale.WebApi
         public const string DbConnectionString = "DB_CONNECTION_STRING";
 
         // JWT Token auth
-        public const string FrontEndOpenIdUrl = "FRONTEND_OPEN_ID_URL";
-        public const string FrontEndServiceAppId = "FRONTEND_SERVICE_APP_ID";
+        public const string ExternalOpenIdUrl = "EXTERNAL_OPEN_ID_URL";
+        public const string InternalOpenIdUrl = "INTERNAL_OPEN_ID_URL";
+        public const string BackendAppId = "BACKEND_APP_ID";
 
         public const string CalculationStorageConnectionString = "CALCULATION_STORAGE_CONNECTION_STRING";
         public const string CalculationStorageContainerName = "CALCULATION_STORAGE_CONTAINER_NAME";

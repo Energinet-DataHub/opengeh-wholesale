@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.WebApp.Middleware;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -39,10 +38,6 @@ public class Startup
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-        if (!Environment.IsDevelopment())
-        {
-            services.AddJwtTokenSecurity();
-        }
 
         services.AddApiVersioning(config =>
         {
@@ -51,6 +46,7 @@ public class Startup
             config.ReportApiVersions = true;
         });
 
+        services.AddJwtTokenSecurity();
         services.AddCommandStack(Configuration);
         services.AddApplicationInsightsTelemetry();
 
@@ -60,6 +56,8 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+        app.UseHttpsRedirection();
+
         // Configure the HTTP request pipeline.
         if (Environment.IsDevelopment())
         {
@@ -67,14 +65,8 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-        else
-        {
-            // This middleware has to be configured after 'UseRouting' for 'AllowAnonymousAttribute' to work.
-            // We dont want JwtToken when running locally
-            app.UseMiddleware<JwtTokenMiddleware>();
-        }
 
-        app.UseHttpsRedirection();
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
