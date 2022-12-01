@@ -63,14 +63,16 @@ metering_point_period_schema = StructType(
         StructField("Resolution", StringType(), False),
         
         # 3 character grid area code uniquely identifying the from-grid area. All characters must be digits (0-9).
+        # The code has a value for E20 (exchange) metering points. For all other types it's null.
         # Used in balance fixing and settlement.
         # Example: 122
-        StructField("FromGridAreaCode", StringType(), False),
+        StructField("FromGridAreaCode", StringType(), True),
         
         # 3 character grid area code uniquely identifying the to-grid area. All characters must be digits (0-9).
+        # The code has a value for E20 (exchange) metering points. For all other types it's null.
         # Used in balance fixing and settlement.
         # Example: 134
-        StructField("ToGridAreaCode", StringType(), False),
+        StructField("ToGridAreaCode", StringType(), True),
         
         # The id of the parent metering point or null.
         # Used only in settlement.
