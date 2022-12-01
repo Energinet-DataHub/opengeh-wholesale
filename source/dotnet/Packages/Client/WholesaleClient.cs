@@ -26,7 +26,7 @@ public class WholesaleClient : IWholesaleClient
         _httpClient = httpClientFactory.CreateClient(wholesaleBaseUrl);
     }
 
-    public async Task CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto)
+    public async Task<Guid> CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto)
     {
         var response = await _httpClient
             .PostAsJsonAsync("v2/Batch", wholesaleBatchRequestDto)
@@ -34,6 +34,8 @@ public class WholesaleClient : IWholesaleClient
 
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
+
+        return await response.Content.ReadFromJsonAsync<Guid>().ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(
@@ -70,6 +72,17 @@ public class WholesaleClient : IWholesaleClient
             throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
 
         var batch = await response.Content.ReadFromJsonAsync<BatchDtoV2>().ConfigureAwait(false);
+        return batch;
+    }
+
+    public async Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDto processStepResultRequestDto)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"v2/ProcessStepResult", processStepResultRequestDto).ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
+
+        var batch = await response.Content.ReadFromJsonAsync<ProcessStepResultDto>().ConfigureAwait(false);
         return batch;
     }
 }

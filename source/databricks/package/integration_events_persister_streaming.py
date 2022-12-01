@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import sys
-from package import integration_events_persister, initialize_spark, log, db_logging
+from package import infrastructure, integration_events_persister, initialize_spark, log, db_logging
 from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
+from configargparse import argparse
 import configargparse
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]):
+def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
         description="Integration events stream ingestor",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -27,8 +28,8 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--event-hub-connectionstring", type=str, required=True)
-    p.add("--integration-events-path", type=str, required=True)
-    p.add("--integration-events-checkpoint-path", type=str, required=True)
+    p.add("--integration-events-path", type=str, required=False)
+    p.add("--integration-events-checkpoint-path", type=str, required=False)
     p.add("--log-level", type=valid_log_level, help="debug|information", required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
@@ -39,7 +40,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def _start(command_line_args: list[str]):
+def _start(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
@@ -65,12 +66,14 @@ def _start(command_line_args: list[str]):
 
     integration_events_persister(
         streamingDF,
-        args.integration_events_path,
-        args.integration_events_checkpoint_path,
+        infrastructure.get_integration_events_path(args.data_storage_account_name),
+        infrastructure.get_integration_events_checkpoint_path(
+            args.data_storage_account_name
+        ),
     )
 
 
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
-def start():
+def start() -> None:
     _start(sys.argv[1:])

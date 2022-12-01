@@ -111,10 +111,10 @@ public class BatchControllerTests :
             periodStart,
             periodEnd);
         var responseCreateAsync = await _client.PostAsJsonAsync(baseUrl, batchRequest, CancellationToken.None);
-        var batchId = await responseCreateAsync.Content.ReadAsStringAsync();
+        var batchId = await responseCreateAsync.Content.ReadFromJsonAsync<Guid>();
 
         // Act
-        var batchUrl = $"{baseUrl}?batchId={batchId}";
+        var batchUrl = $"{baseUrl}?batchId={batchId.ToString()}";
         var response = await _client.GetAsync(batchUrl);
 
         // Assert

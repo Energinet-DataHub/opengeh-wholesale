@@ -12,24 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import configargparse
 import sys
-from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col
-from pyspark.sql.types import Row
 
+import configargparse
 from package import (
     calculate_balance_fixing_total_production,
+    db_logging,
+    debug,
+    infrastructure,
     initialize_spark,
     log,
-    debug,
-    db_logging,
 )
-from package.args_helper import valid_date, valid_list, valid_log_level
-from package.datamigration import islocked
+from .calculator_args import CalculatorArgs
+from .args_helper import valid_date, valid_list, valid_log_level
+from .datamigration import islocked
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col
+from pyspark.sql.types import Row
+from configargparse import argparse
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]):
+def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
         description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
@@ -39,8 +42,9 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
     p.add("--integration-events-path", type=str, required=True)
+    p.add("--wholesale-container-path", type=str, required=True)
     p.add("--time-series-points-path", type=str, required=True)
-    p.add("--process-results-path", type=str, required=True)
+    p.add("--process-results-path", type=str, required=False)
     p.add("--time-zone", type=str, required=True)
 
     # Run parameters
@@ -62,7 +66,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]):
     return args
 
 
-def write_basis_data_to_csv(data_df: DataFrame, path: str):
+def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
     (
         data_df.withColumnRenamed("GridAreaCode", "grid_area")
         .repartition("grid_area")
@@ -73,7 +77,7 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str):
     )
 
 
-def _start_calculator(spark: SparkSession, args):
+def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     # Merge schema is expensive according to the Spark documentation.
     # Might be a candidate for future performance optimization initiatives.
     # Only events stored before the snapshot_datetime are needed.
@@ -82,8 +86,17 @@ def _start_calculator(spark: SparkSession, args):
     )
 
     # Only points stored before the snapshot_datetime are needed.
-    raw_time_series_points_df = spark.read.option("mergeSchema", "true").parquet(
-        args.time_series_points_path
+    raw_time_series_points_df = (
+        spark.read.option("mergeSchema", "true")
+        .parquet(args.time_series_points_path)
+        .withColumnRenamed("GsrnNumber", "MeteringPointId")
+    )
+    metering_points_periods_df = spark.read.option("header", "true").csv(
+        f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
+    )
+
+    market_roles_periods_df = spark.read.option("header", "true").csv(
+        f"{args.wholesale_container_path}/EnergySupplierPeriods.csv"
     )
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
@@ -93,6 +106,8 @@ def _start_calculator(spark: SparkSession, args):
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing_total_production(
+        metering_points_periods_df,
+        market_roles_periods_df,
         raw_integration_events_df,
         raw_time_series_points_df,
         batch_grid_areas_df,
@@ -138,13 +153,15 @@ def _start_calculator(spark: SparkSession, args):
     )
 
 
-def get_batch_grid_areas_df(batch_grid_areas, spark):
+def get_batch_grid_areas_df(
+    batch_grid_areas: list[str], spark: SparkSession
+) -> DataFrame:
     return spark.createDataFrame(
         map(lambda x: Row(str(x)), batch_grid_areas), ["GridAreaCode"]
     )
 
 
-def _start(command_line_args: list[str]):
+def _start(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
@@ -157,10 +174,29 @@ def _start(command_line_args: list[str]):
         args.data_storage_account_name, args.data_storage_account_key
     )
 
-    _start_calculator(spark, args)
+    calculator_args = CalculatorArgs(
+        data_storage_account_name=args.data_storage_account_name,
+        data_storage_account_key=args.data_storage_account_key,
+        integration_events_path=infrastructure.get_integration_events_path(
+            args.data_storage_account_name
+        ),
+        time_series_points_path=args.time_series_points_path,
+        process_results_path=infrastructure.get_process_results_path(
+            args.data_storage_account_name
+        ),
+        wholesale_container_path=args.wholesale_container_path,
+        batch_id=args.batch_id,
+        batch_grid_areas=args.batch_grid_areas,
+        batch_snapshot_datetime=args.batch_snapshot_datetime,
+        batch_period_start_datetime=args.batch_period_start_datetime,
+        batch_period_end_datetime=args.batch_period_end_datetime,
+        time_zone=args.time_zone,
+    )
+
+    _start_calculator(spark, calculator_args)
 
 
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
-def start():
+def start() -> None:
     _start(sys.argv[1:])

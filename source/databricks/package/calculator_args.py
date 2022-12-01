@@ -11,15 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .time_series_resolution import TimeSeriesResolution
-from .metering_point_type import MeteringPointType
-from .connection_state import ConnectionState
-from .quality import Quality
-from .settlement_method import SettlementMethod
-from .time_series_quality import TimeSeriesQuality
-from .metering_point_resolution import MeteringPointResolution
 
-from .new_metering_point_type import NewMeteringPointType
-from .new_connection_state import NewConnectionState
-from .new_settlement_method import NewSettlementMethod
-from .new_metering_point_resolution import NewMeteringPointResolution
+from dataclasses import dataclass
+from datetime import datetime
+
+
+@dataclass
+class CalculatorArgs:
+    data_storage_account_name: str
+    data_storage_account_key: str
+    integration_events_path: str
+    time_series_points_path: str
+    process_results_path: str
+    wholesale_container_path: str
+    batch_id: str
+    batch_grid_areas: list[str]
+    batch_snapshot_datetime: datetime
+    batch_period_start_datetime: datetime
+    batch_period_end_datetime: datetime
+    time_zone: str
