@@ -12,14 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "kv_access_policy_developers_security_group" {
+resource "azurerm_key_vault_access_policy" "kv_access_policy_developers_security_group" {
   count         = var.developers_security_group_object_id == null ? 0 : 1
-  
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-access-policy?ref=7.0.0"
 
-  key_vault_id  = module.kv_shared.id
-  app_identity  = {
-    tenant_id     = var.arm_tenant_id
-    principal_id  = var.developers_security_group_object_id
-  }
+  key_vault_id            = module.kv_shared.id
+  tenant_id               = var.arm_tenant_id
+  object_id               = var.developers_security_group_object_id
+  secret_permissions      = [
+    "List",
+    "Get"
+  ]
+  key_permissions         = [
+    "Get",
+    "List",
+    "Sign"
+  ]
 }
