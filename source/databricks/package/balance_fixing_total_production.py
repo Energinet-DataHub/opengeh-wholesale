@@ -383,7 +383,7 @@ def _get_enriched_time_series_points_df(
 
     master_basis_data_renamed_df = master_basis_data_df.withColumnRenamed(
         "MeteringPointId", "master_MeteringpointId"
-    )
+    ).withColumnRenamed("Resolution", "master_Resolution")
 
     enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
         master_basis_data_renamed_df,
@@ -398,7 +398,7 @@ def _get_enriched_time_series_points_df(
         "GridAreaCode",
         master_basis_data_renamed_df["master_MeteringpointId"],
         "MeteringPointType",
-        master_basis_data_renamed_df["Resolution"],
+        master_basis_data_renamed_df["master_Resolution"],
         "time",
         "Quantity",
         "Quality",
@@ -411,7 +411,7 @@ def _get_enriched_time_series_points_df(
 
     return enriched_points_for_each_metering_point_df.withColumnRenamed(
         "master_MeteringpointId", "MeteringpointId"
-    )
+    ).withColumnRenamed("master_Resolution", "Resolution")
 
 
 def _get_output_master_basis_data_df(
