@@ -23,6 +23,8 @@ from pyspark.sql.types import (
 Schema for system correction and grid loss metering point periods
 
 Metering point periods are used in balance fixing and settlement.
+Periods (given by `FromDate` and `ToDate`) must not overlap and must not have gaps in between.
+All but the `ToDate` of the last period must have value. The `ToDate` of the last period is null.
 
 Data must be stored in a Delta table.
 The table need not be partitioned.
