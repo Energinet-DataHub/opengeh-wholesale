@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from dataclasses import dataclass
-from .args_helper import valid_date, valid_list
+from datetime import datetime
 
 
 @dataclass
@@ -25,8 +25,8 @@ class CalculatorArgs:
     process_results_path: str
     wholesale_container_path: str
     batch_id: str
-    batch_grid_areas: valid_list
-    batch_snapshot_datetime: valid_date
-    batch_period_start_datetime: valid_date
-    batch_period_end_datetime: valid_date
+    batch_grid_areas: list[str]
+    batch_snapshot_datetime: datetime
+    batch_period_start_datetime: datetime
+    batch_period_end_datetime: datetime
     time_zone: str
