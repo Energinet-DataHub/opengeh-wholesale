@@ -84,14 +84,16 @@ metering_point_period_schema = StructType(
         StructField("ParentMeteringPointId", StringType(), True),
         
         # The unique GLN/EIC number of the energy supplier
+        # Not all metering points have an energy supplier registered, e.g. exchange (E20)
         # Used in balance fixing and settlement.
         # Example: 8100000000108
-        StructField("EnergySupplierId", StringType(), False),
+        StructField("EnergySupplierId", StringType(), True),
 
         # The unique GLN/EIC number of the balance responsible
+        # Not all metering points have a balance responsible registered, e.g. exchange (E20)
         # Used in balance fixing and settlement.
         # Example: 8100000000109
-        StructField("BalanceResponsibleId", StringType(), False),
+        StructField("BalanceResponsibleId", StringType(), True),
 
         # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
         # The date is inclusive.
