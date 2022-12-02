@@ -22,6 +22,8 @@ need to acquire:
 
 Other consequence is that the contracts should not focus on all possible future context map but rather on the "well-known" requirements of the calculation engine.
 
+The contracts are designed with the anticipation that it is safest to support audit and providing basis data by storing "snapshots". "Snapshots" is the idea that calculation input is captured and stored when (or before) a calculation starts. This is contrast to relying on data sources never being modified or tampered, and never exhibit race conditions regarding data writes at the same time as a calculation is started.
+
 ## Contracts
 
 The contracts defines data owned by the wholesale domain and the Delta tables will thus be located in the wholesale domain.
@@ -32,7 +34,6 @@ The following contracts are used in both balance fixing and settlement:
 
 - [metering_point_period_schema](metering-point-period-schema.py)
 - [time_series_point_schema](time-series-point-schema.py)
-- [system_correction_and_grid_loss_metering_point_periods_schema](system_correction_and_grid_loss_metering_point_periods_schema.py)
 
 Please note that it may be desirable to move system correction and grid loss metering points to the metering point periods table.
 

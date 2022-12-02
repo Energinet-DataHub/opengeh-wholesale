@@ -30,8 +30,11 @@ Only periods where metering points are connected (E22) or disconnected (E23) are
 
 Data must be stored in a Delta table.
 The table holds all consumption, production, exchange, and child metering points.
+
 The table must be partitioned by `ToDate`: ToDate_Year/ToDate_Month/ToDate_Date.
-TODO explain why by to-date
+It is important to partition by to-date instead of from-date as it will ensure efficient data filtering.
+This is because most periods will have a to-date prior to the calculation period start date.
+
 The table data must always contain updated periods.
 """
 metering_point_period_schema = StructType(
@@ -46,6 +49,11 @@ metering_point_period_schema = StructType(
         # Example: E20
         StructField("Type", StringType(), False),
         
+        # "system-correction" | "grid-loss"
+        # For non-calculated metering points the calculation type is null.
+        # Example: system-correction
+        StructField("CalculationType", StringType(), True),
+
         # "E02" (non-profiled)| "D01" (flex)
         # When metering point is not a consumption (E17) metering point the value is null. Otherwise it must have a value.
         # Used in balance fixing and settlement.
@@ -101,7 +109,6 @@ metering_point_period_schema = StructType(
         # The moment is exclusive.
         # The date of the last period is null.
         # Used in balance fixing and settlement.
-        # TODO What happens with the partitioning if the date is null?
         StructField("ToDate", TimestampType(), True),
        
         # The year part of the `ToDate`. Used for partitioning.

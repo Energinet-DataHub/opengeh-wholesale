@@ -20,6 +20,8 @@ from pyspark.sql.types import (
 )
 
 """
+**DEPRECATED** - see the [README](../README.md).
+
 Schema for system correction and grid loss metering point periods
 
 NOTE: This separate table will be skipped if the data can fit in

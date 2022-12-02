@@ -26,9 +26,7 @@ Time series points are used in both balance fixing and settlement.
 
 Data must be stored in a Delta table.
 The table must be partitioned by the observation time elements: year/month/date.
-New data must be appended.
-
-TODO z-ordered desc by registration time?
+Data must always be the current data.
 """
 time_series_point_schema = StructType(
     [
@@ -55,11 +53,6 @@ time_series_point_schema = StructType(
         StructField("ObservationTime_Month", IntegerType(), False),
         
         # The date part of the `ObservationTime`. Used in partition.
-        StructField("ObservationTime_Date", IntegerType(), False),
-        
-        # The registration time as specified by the MDR actor.
-        # In DataHub 2 this is the creation date time.
-        # TODO Needed if we use snapshots?
-        StructField("RegistrationTime", TimestampType(), False),
+        StructField("ObservationTime_Date", IntegerType(), False)
     ]
 )
