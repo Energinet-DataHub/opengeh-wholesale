@@ -21,3 +21,23 @@ need to acquire:
 - Delegations
 
 Other consequence is that the contracts should not focus on all possible future context map but rather on the "well-known" requirements of the calculation engine.
+
+## Contracts
+
+The contracts defines data owned by the wholesale domain and the Delta tables will thus be located in the wholesale domain.
+For now the population of the tables is outsourced to the migration domain. That will, however, change in the future
+when the upstream sources changes.
+
+The following contracts are used in both balance fixing and settlement:
+
+- [metering_point_period_schema](metering-point-period-schema.py)
+- [time_series_point_schema](time-series-point-schema.py)
+- [system_correction_and_grid_loss_metering_point_periods_schema](system_correction_and_grid_loss_metering_point_periods_schema.py)
+
+Please note that it may be desirable to move system correction and grid loss metering points to the metering point periods table.
+
+The following contracts are used only in settlement:
+
+- [imbalance_price_schema](imbalance-price-schema.py)
+
+Contracts for charges haven't yet been defined.
