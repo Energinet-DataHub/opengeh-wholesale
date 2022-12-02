@@ -51,7 +51,6 @@ def test_data_job_parameters(
         {
             "data_storage_account_name": "foo",
             "data_storage_account_key": "foo",
-            "integration_events_path": f"{data_lake_path}/{worker_id}/parquet_test_files/integration_events",
             "wholesale_container_path": f"{json_test_files}",
             "time_series_points_path": f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points",
             "process_results_path": f"{data_lake_path}/{worker_id}/results",
@@ -89,7 +88,7 @@ def _get_process_manager_parameters(filename):
 
 
 def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
-    integration_tests_path, databricks_path
+    databricks_path,
 ):
     # Act
     with pytest.raises(SystemExit) as excinfo:
@@ -116,8 +115,6 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
         "--data-storage-account-name",
         "foo",
         "--data-storage-account-key",
-        "foo",
-        "--integration-events-path",
         "foo",
         "--time-series-points-path",
         "foo",

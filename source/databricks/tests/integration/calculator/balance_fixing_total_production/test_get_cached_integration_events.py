@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+"""
+This test need to be removed when the static datasource has been implemented
 from datetime import datetime, timedelta
 import pytest
 from package.balance_fixing_total_production import (
@@ -54,3 +55,4 @@ def test__raw_events_with_stored_time_of_after_snapshot_time_is_not_included_in_
     assert _get_cached_integration_events(events_df, second_of_june).count() == 2
     # assert that only events from third of june and before is returned when snapshot time is third of june
     assert _get_cached_integration_events(events_df, third_of_june).count() == 3
+"""

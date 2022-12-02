@@ -41,7 +41,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     # Infrastructure settings
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--integration-events-path", type=str, required=True)
     p.add("--wholesale-container-path", type=str, required=True)
     p.add("--time-series-points-path", type=str, required=True)
     p.add("--process-results-path", type=str, required=False)
@@ -78,18 +77,14 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
 
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
-    # Merge schema is expensive according to the Spark documentation.
-    # Might be a candidate for future performance optimization initiatives.
-    # Only events stored before the snapshot_datetime are needed.
-    raw_integration_events_df = spark.read.option("mergeSchema", "true").parquet(
-        args.integration_events_path
-    )
-
     # Only points stored before the snapshot_datetime are needed.
-    raw_time_series_points_df = (
-        spark.read.option("mergeSchema", "true")
-        .parquet(args.time_series_points_path)
-        .withColumnRenamed("GsrnNumber", "MeteringPointId")
+    # raw_time_series_points_df = (
+    #     spark.read.option("mergeSchema", "true")
+    #     .parquet(args.time_series_points_path)
+    #     .withColumnRenamed("GsrnNumber", "MeteringPointId")
+    # )
+    new_timeseries_points = spark.read.option("header", "true").csv(
+        f"{args.wholesale_container_path}/TimeseriesPoints.csv"
     )
     metering_points_periods_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
@@ -106,18 +101,15 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing_total_production(
+        new_timeseries_points,
         metering_points_periods_df,
         market_roles_periods_df,
-        raw_integration_events_df,
-        raw_time_series_points_df,
         batch_grid_areas_df,
         args.batch_snapshot_datetime,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.time_zone,
     )
-
-    debug("raw_timeseries", raw_time_series_points_df)
 
     (timeseries_quarter_df, timeseries_hour_df) = timeseries_basis_data_df
     debug("timeseries basis data df_hour", timeseries_hour_df)
@@ -177,9 +169,6 @@ def _start(command_line_args: list[str]) -> None:
     calculator_args = CalculatorArgs(
         data_storage_account_name=args.data_storage_account_name,
         data_storage_account_key=args.data_storage_account_key,
-        integration_events_path=infrastructure.get_integration_events_path(
-            args.data_storage_account_name
-        ),
         time_series_points_path=args.time_series_points_path,
         process_results_path=infrastructure.get_process_results_path(
             args.data_storage_account_name
