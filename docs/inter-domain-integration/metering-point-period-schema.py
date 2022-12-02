@@ -44,10 +44,12 @@ metering_point_period_schema = StructType(
         # Example: E20
         StructField("Type", StringType(), False),
         
-        # "E02" (quarterly)| "D01" (flex)
+        # "E02" (non-profiled)| "D01" (flex)
+        # When metering point is not a consumption (E17) metering point the value is null. Otherwise it must have a value.
         # Used in balance fixing and settlement.
+        # 
         # Example: D01
-        StructField("SettlementMethod", StringType(), False),
+        StructField("SettlementMethod", StringType(), True),
         
         # 3 character grid area code uniquely identifying the grid area. All characters must be digits (0-9).
         # Used in balance fixing and settlement.
