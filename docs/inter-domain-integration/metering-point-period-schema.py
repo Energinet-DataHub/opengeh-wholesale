@@ -26,6 +26,8 @@ Metering point periods are used in balance fixing and settlement. Some fields ar
 Periods (given by `FromDate` and `ToDate`) must not overlap and must not have gaps in between.
 All but the `ToDate` of the last period must have value. The `ToDate` of the last period is null.
 
+Only periods where metering points are connected (E22) or disconnected (E23) are included.
+
 Data must be stored in a Delta table.
 The table holds all consumption, production, exchange, and child metering points.
 The table must be partitioned by `ToDate`: ToDate_Year/ToDate_Month/ToDate_Date.
@@ -55,11 +57,6 @@ metering_point_period_schema = StructType(
         # Used in balance fixing and settlement.
         # Example: 805
         StructField("GridAreaCode", StringType(), False),
-        
-        # "E22" (connected) | "E23" (disconnected) | "D03" (new) | "D02" (closed down)
-        # Used in balance fixing and settlement.
-        # Example: E22
-        StructField("ConnectionState", StringType(), False),
         
         # "PT1H" (hourly) | "PT15M" (quarterly)
         # Used in balance fixing and settlement.
