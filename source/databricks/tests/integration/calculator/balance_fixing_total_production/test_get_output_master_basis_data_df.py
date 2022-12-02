@@ -116,7 +116,7 @@ def test__columns_have_expected_values(
         grid_area_code=expected_grid_area_code,
         effective_date=expected_effective_date,
         to_effective_date=expected_to_effective_date,
-        meteringpoint_type="E18",
+        meteringpoint_type=NewMeteringPointType.production.value,
         from_grid_area=expected_from_grid_area,
         to_grid_area=expected_to_grid_area,
         settlement_method=expected_settlement_method,
