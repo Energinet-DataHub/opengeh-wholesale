@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from package.codelists import NewMeteringPointType, MeteringPointResolution
+from package.codelists import NewMeteringPointType, NewMeteringPointResolution
 from package.balance_fixing_total_production import _get_output_master_basis_data_df
 from datetime import datetime
 
@@ -32,7 +32,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         from_grid_area="some-from-grid-area",
         to_grid_area="some-to-grid-area",
         settlement_method="some-settlement-method",
-        resolution=MeteringPointResolution.hour.value,
+        resolution=NewMeteringPointResolution.hour.value,
         energy_supplier_id="some-energy-supplier-id",
     ):
         row = {
@@ -147,10 +147,10 @@ def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
 ):
     expected_number_of_metering_points = 2
     metering_point_period_df = metering_point_period_df_factory(
-        meteringpoint_id="1", resolution=MeteringPointResolution.quarterly.value
+        meteringpoint_id="1", resolution=NewMeteringPointResolution.quarterly.value
     ).union(
         metering_point_period_df_factory(
-            meteringpoint_id="2", resolution=MeteringPointResolution.hour.value
+            meteringpoint_id="2", resolution=NewMeteringPointResolution.hour.value
         )
     )
 
