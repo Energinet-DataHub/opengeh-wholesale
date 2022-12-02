@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from package.codelists import MeteringPointResolution, TimeSeriesQuality, Quality
+from package.codelists import NewMeteringPointResolution, TimeSeriesQuality, Quality
 from decimal import Decimal
 from package.balance_fixing_total_production import _get_result_df
 from pyspark.sql.functions import col, sum, lit
@@ -27,8 +27,8 @@ grid_area_code_806 = "806"
 @pytest.fixture
 def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
     def factory(
-        first_resolution=MeteringPointResolution.quarterly.value,
-        second_resolution=MeteringPointResolution.quarterly.value,
+        first_resolution=NewMeteringPointResolution.quarterly.value,
+        second_resolution=NewMeteringPointResolution.quarterly.value,
         first_quantity=Decimal("1"),
         second_quantity=Decimal("2"),
         first_time="2022-06-08T12:09:15.000Z",
@@ -64,7 +64,7 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
 @pytest.fixture
 def enriched_time_series_factory(spark, timestamp_factory):
     def factory(
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=NewMeteringPointResolution.quarterly.value,
         quantity=Decimal("1"),
         quality=TimeSeriesQuality.measured.value,
         gridArea="805",
@@ -124,7 +124,7 @@ def test__hourly_sums_are_rounded_correctly(
 ):
     """Test that checks acceptable rounding erros for hourly quantities summed on a quarterly basis"""
     df = enriched_time_series_factory(
-        resolution=MeteringPointResolution.hour.value, quantity=quantity
+        resolution=NewMeteringPointResolution.hour.value, quantity=quantity
     )
 
     result_df = _get_result_df(df)
@@ -140,9 +140,9 @@ def test__quarterly_and_hourly_sums_correctly(
     first_quantity = Decimal("2")
     second_quantity = Decimal("2")
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=MeteringPointResolution.quarterly.value,
+        first_resolution=NewMeteringPointResolution.quarterly.value,
         first_quantity=first_quantity,
-        second_resolution=MeteringPointResolution.hour.value,
+        second_resolution=NewMeteringPointResolution.hour.value,
         second_quantity=second_quantity,
     )
     result_df = _get_result_df(df)
@@ -155,9 +155,9 @@ def test__points_with_same_time_quantities_are_on_same_position(
 ):
     """Test that points with the same 'time' have added their 'Quantity's together on the same position"""
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=MeteringPointResolution.quarterly.value,
+        first_resolution=NewMeteringPointResolution.quarterly.value,
         first_quantity=Decimal("2"),
-        second_resolution=MeteringPointResolution.hour.value,
+        second_resolution=NewMeteringPointResolution.hour.value,
         second_quantity=Decimal("2"),
     )
     result_df = _get_result_df(df)
@@ -171,9 +171,9 @@ def test__position_is_based_on_time_correctly(
 ):
     """'position' is correctly placed based on 'time'"""
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=MeteringPointResolution.quarterly.value,
+        first_resolution=NewMeteringPointResolution.quarterly.value,
         first_quantity=Decimal("1"),
-        second_resolution=MeteringPointResolution.quarterly.value,
+        second_resolution=NewMeteringPointResolution.quarterly.value,
         second_quantity=Decimal("2"),
         first_time="2022-06-08T12:09:15.000Z",
         second_time="2022-06-08T12:09:30.000Z",
@@ -193,9 +193,9 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
 ):
     "Test that checks if hourly quantities are summed as quarterly"
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=MeteringPointResolution.hour.value,
+        first_resolution=NewMeteringPointResolution.hour.value,
         first_quantity=Decimal("4"),
-        second_resolution=MeteringPointResolution.hour.value,
+        second_resolution=NewMeteringPointResolution.hour.value,
         second_quantity=Decimal("8"),
         first_time="2022-06-08T12:09:15.000Z",
         second_time="2022-06-08T13:09:15.000Z",
@@ -230,21 +230,21 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
     """Test that values with different magnitudes do not lose precision when accumulated"""
     df = (
         enriched_time_series_factory(
-            MeteringPointResolution.hour.value, Decimal("400000000000")
+            NewMeteringPointResolution.hour.value, Decimal("400000000000")
         )
         .union(
             enriched_time_series_factory(
-                MeteringPointResolution.hour.value, minimum_quantity
+                NewMeteringPointResolution.hour.value, minimum_quantity
             )
         )
         .union(
             enriched_time_series_factory(
-                MeteringPointResolution.hour.value, minimum_quantity
+                NewMeteringPointResolution.hour.value, minimum_quantity
             )
         )
         .union(
             enriched_time_series_factory(
-                MeteringPointResolution.hour.value, minimum_quantity
+                NewMeteringPointResolution.hour.value, minimum_quantity
             )
         )
     )
