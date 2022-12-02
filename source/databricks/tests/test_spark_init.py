@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def test__trigger_download_of_spark_dependencies(
-    spark
-):
+
+from pyspark.sql import SparkSession
+
+
+def test__trigger_download_of_spark_dependencies(spark: SparkSession) -> None:
     # create sparksession to trigger download of spark dependencies. This is nessesary before
     # runing pytest in parralel with xdist. Else each work will conflict which each other when
     # trying to download dependencies to the same folder

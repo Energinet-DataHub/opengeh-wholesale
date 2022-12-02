@@ -13,7 +13,13 @@
 # limitations under the License.
 
 import sys
-from package import infrastructure, integration_events_persister, initialize_spark, log, db_logging
+from package import (
+    infrastructure,
+    integration_events_persister,
+    initialize_spark,
+    log,
+    db_logging,
+)
 from package.args_helper import valid_date, valid_list, valid_log_level
 from package.datamigration import islocked
 from configargparse import argparse

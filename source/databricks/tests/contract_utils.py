@@ -13,16 +13,21 @@
 # limitations under the License.
 
 import json
+from pyspark.sql.types import StructType
+from typing import Any
 
 
-def read_contract(path):
+def read_contract(path: str) -> Any:
     jsonFile = open(path)
     return json.load(jsonFile)
 
 
-def assert_contract_matches_schema(contract_path, schema):
+def assert_contract_matches_schema(contract_path: str, schema: StructType) -> None:
+    print(read_contract(contract_path))
     expected_schema = read_contract(contract_path)["fields"]
     actual_schema = json.loads(schema.json())["fields"]
+    print(expected_schema)
+    print(actual_schema)
 
     # Assert: Schema and contract has the same number of fields
     assert len(actual_schema) == len(expected_schema)
@@ -41,7 +46,7 @@ def assert_contract_matches_schema(contract_path, schema):
         does not match the expected type ({expected_field["type"]})."""
 
 
-def assert_codelist_matches_contract(codelist, contract_path):
+def assert_codelist_matches_contract(codelist: Any, contract_path: str) -> None:
     supported_literals = read_contract(contract_path)["literals"]
     literals = [member for member in codelist]
 
@@ -58,7 +63,7 @@ def assert_codelist_matches_contract(codelist, contract_path):
         assert literal.value == supported_arg["value"]
 
 
-def get_message_type(contract_path):
+def get_message_type(contract_path: str) -> Any:
     grid_area_updated_schema = read_contract(contract_path)
     return next(
         x for x in grid_area_updated_schema["fields"] if x["name"] == "MessageType"
