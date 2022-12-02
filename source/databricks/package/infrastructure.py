@@ -40,4 +40,4 @@ def get_process_results_path(storage_account_name: str) -> str:
 
 
 def get_wholesale_container_path(storage_account_name: str) -> str:
-    return f"abfss://{WHOLESALE_CONTAINER_NAME}@${storage_account_name}.dfs.core.windows.net/"
+    return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/"
