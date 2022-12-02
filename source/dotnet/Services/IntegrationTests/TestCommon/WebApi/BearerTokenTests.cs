@@ -26,11 +26,9 @@ public class BearerTokenTests :
     IClassFixture<WholesaleWebApiFixture>,
     IClassFixture<WebApiFactory>
 {
-    private const string BaseUrl = "/v1/batch";
-    private const bool SuppliedJwtTokenIsValid = true;
-    private const bool SuppliedJwtTokenIsInvalid = false;
+    private const string BaseUrl = "/v2/batch";
     private const string JwtBearerHttpHeader = "Authorization";
-    private const string JwtBearerToken = "Bearer xxx";
+    private const string JwtBearerToken = "Bearer eyZZZ";
 
     private readonly WebApiFactory _factory;
 
@@ -69,19 +67,5 @@ public class BearerTokenTests :
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task Request_WhenValidBearerToken_DoesNotReturn401Unauthorized()
-    {
-        // Arrange
-        using var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add(JwtBearerHttpHeader, JwtBearerToken);
-
-        // Act
-        var response = await client.GetAsync(BaseUrl);
-
-        // Assert
-        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
     }
 }
