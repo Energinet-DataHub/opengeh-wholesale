@@ -73,7 +73,7 @@ def calculate_balance_fixing_total_production(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
-) -> tuple[DataFrame, DataFrame, DataFrame]:
+) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
     "Returns tuple (result_df, (time_series_quarter_basis_data_df, time_series_hour_basis_data_df))"
     "TODO: is this correct?"
 
@@ -380,10 +380,15 @@ def _get_enriched_time_series_points_df(
             "MeteringPointId", "pfemp_MeteringPointId"
         ).withColumnRenamed("Resolution", "pfemp_Resolution")
     )
+
+    master_basis_data_renamed_df = master_basis_data_df.withColumnRenamed(
+        "MeteringPointId", "master_MeteringpointId"
+    ).withColumnRenamed("Resolution", "master_Resolution")
+
     enriched_points_for_each_metering_point_df = points_for_each_metering_point_df.join(
-        master_basis_data_df,
+        master_basis_data_renamed_df,
         (
-            master_basis_data_df["MeteringPointId"]
+            master_basis_data_renamed_df["master_MeteringpointId"]
             == points_for_each_metering_point_df["pfemp_MeteringPointId"]
         )
         & (points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
@@ -391,9 +396,9 @@ def _get_enriched_time_series_points_df(
         "left",
     ).select(
         "GridAreaCode",
-        master_basis_data_df["MeteringPointId"],
+        master_basis_data_renamed_df["master_MeteringpointId"],
         "MeteringPointType",
-        master_basis_data_df["Resolution"],
+        master_basis_data_renamed_df["master_Resolution"],
         "time",
         "Quantity",
         "Quality",
@@ -404,7 +409,9 @@ def _get_enriched_time_series_points_df(
         timeseries_df.orderBy(col("MeteringPointId"), col("time")),
     )
 
-    return enriched_points_for_each_metering_point_df
+    return enriched_points_for_each_metering_point_df.withColumnRenamed(
+        "master_MeteringpointId", "MeteringpointId"
+    ).withColumnRenamed("master_Resolution", "Resolution")
 
 
 def _get_output_master_basis_data_df(
@@ -412,12 +419,8 @@ def _get_output_master_basis_data_df(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
-    productionType = MeteringPointType.production.value
     return (
         metering_point_df.withColumn(
-            "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
-        )
-        .withColumn(
             "EffectiveDate",
             when(
                 col("EffectiveDate") < period_start_datetime, period_start_datetime
@@ -437,7 +440,7 @@ def _get_output_master_basis_data_df(
             col("GridAreaCode").alias("GRIDAREA"),
             col("ToGridAreaCode").alias("TOGRIDAREA"),
             col("FromGridAreaCode").alias("FROMGRIDAREA"),
-            col("TYPEOFMP"),
+            col("MeteringPointType").alias("TYPEOFMP"),
             col("SettlementMethod").alias("SETTLEMENTMETHOD"),
             col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
         )
