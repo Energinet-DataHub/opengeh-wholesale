@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from package.codelists import MeteringPointType, MeteringPointResolution
+from package.codelists import NewMeteringPointType, MeteringPointResolution
 from package.balance_fixing_total_production import _get_output_master_basis_data_df
 from datetime import datetime
 
@@ -28,7 +28,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         grid_area_code="some-grid-area",
         effective_date: datetime = timestamp_factory("2022-06-08T22:00:00.000Z"),
         to_effective_date: datetime = timestamp_factory("2022-06-10T22:00:00.000Z"),
-        meteringpoint_type=MeteringPointType.production.value,
+        meteringpoint_type=NewMeteringPointType.production.value,
         from_grid_area="some-from-grid-area",
         to_grid_area="some-to-grid-area",
         settlement_method="some-settlement-method",
