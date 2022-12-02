@@ -15,7 +15,6 @@
 import sys
 
 import configargparse
-from configargparse import argparse
 from package import (
     calculate_balance_fixing_total_production,
     db_logging,
@@ -24,13 +23,13 @@ from package import (
     initialize_spark,
     log,
 )
+from .calculator_args import CalculatorArgs
+from .args_helper import valid_date, valid_list, valid_log_level
+from .datamigration import islocked
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
-
-from .args_helper import valid_date, valid_list, valid_log_level
-from .calculator_args import CalculatorArgs
-from .datamigration import islocked
+from configargparse import argparse
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -182,7 +181,9 @@ def _start(command_line_args: list[str]) -> None:
         process_results_path=infrastructure.get_process_results_path(
             args.data_storage_account_name
         ),
-        wholesale_container_path=args.wholesale_container_path,
+        wholesale_container_path=infrastructure.get_wholesale_container_path(
+            args.data_storage_account_name
+        ),
         batch_id=args.batch_id,
         batch_grid_areas=args.batch_grid_areas,
         batch_snapshot_datetime=args.batch_snapshot_datetime,
