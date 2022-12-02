@@ -48,7 +48,7 @@ from package.codelists import (
     MeteringPointType,
     Quality,
     TimeSeriesQuality,
-    MeteringPointResolution,
+    NewMeteringPointResolution,
 )
 from package.schemas import (
     grid_area_updated_event_schema,
@@ -302,10 +302,10 @@ def _get_enriched_time_series_points_df(
     ).where(col("time") < period_end_datetime)
 
     quarterly_mp_df = master_basis_data_df.where(
-        col("Resolution") == MeteringPointResolution.quarterly.value
+        col("Resolution") == NewMeteringPointResolution.quarterly.value
     )
     hourly_mp_df = master_basis_data_df.where(
-        col("Resolution") == MeteringPointResolution.hour.value
+        col("Resolution") == NewMeteringPointResolution.hour.value
     )
 
     exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
@@ -454,13 +454,13 @@ def _get_time_series_basis_data(
 
     time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        MeteringPointResolution.quarterly.value,
+        NewMeteringPointResolution.quarterly.value,
         time_zone,
     )
 
     time_series_hour_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        MeteringPointResolution.hour.value,
+        NewMeteringPointResolution.hour.value,
         time_zone,
     )
 
@@ -527,7 +527,7 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
         enriched_time_series_points_df.withColumn(
             "quarter_times",
             when(
-                col("Resolution") == MeteringPointResolution.hour.value,
+                col("Resolution") == NewMeteringPointResolution.hour.value,
                 array(
                     col("time"),
                     col("time") + expr("INTERVAL 15 minutes"),
@@ -535,7 +535,7 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
             ).when(
-                col("Resolution") == MeteringPointResolution.quarterly.value,
+                col("Resolution") == NewMeteringPointResolution.quarterly.value,
                 array(col("time")),
             ),
         )
@@ -547,10 +547,10 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
         .withColumn(
             "quarter_quantity",
             when(
-                col("Resolution") == MeteringPointResolution.hour.value,
+                col("Resolution") == NewMeteringPointResolution.hour.value,
                 col("Quantity") / 4,
             ).when(
-                col("Resolution") == MeteringPointResolution.quarterly.value,
+                col("Resolution") == NewMeteringPointResolution.quarterly.value,
                 col("Quantity"),
             ),
         )
