@@ -15,7 +15,6 @@
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
-PROCESSES_CONTAINER_NAME = "processes"
 INTEGRATION_EVENTS_CONTAINER_NAME = "integration-events"
 
 RESULTS_FOLDER_NAME = "results"
@@ -36,7 +35,7 @@ def get_integration_events_checkpoint_path(storage_account_name: str) -> str:
 
 
 def get_process_results_path(storage_account_name: str) -> str:
-    return f"abfss://{PROCESSES_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/{RESULTS_FOLDER_NAME}"
+    return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/{RESULTS_FOLDER_NAME}"
 
 
 def get_wholesale_container_path(storage_account_name: str) -> str:
