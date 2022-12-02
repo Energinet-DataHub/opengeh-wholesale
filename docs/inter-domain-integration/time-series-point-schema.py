@@ -41,7 +41,7 @@ time_series_point_schema = StructType(
         # Example: 1234.534217
         StructField("Quantity", DecimalType(18,6), True),
 
-        # "A02" (missing) | "A03" (estimated) | "A04" (measured)
+        # "A02" (missing) | "A03" (estimated) | "A04" (measured) | "A06" (calculated)
         # Example: A02
         StructField("Quality", StringType(), False),
         
