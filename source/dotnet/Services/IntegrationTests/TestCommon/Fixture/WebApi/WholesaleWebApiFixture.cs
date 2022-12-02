@@ -49,9 +49,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
                 $"CONNECTIONSTRINGS:{EnvironmentSettingNames.DbConnectionString}",
                 DatabaseManager.ConnectionString);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ExternalOpenIdUrl, string.Empty);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.InternalOpenIdUrl, string.Empty);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.BackendAppId, string.Empty);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ExternalOpenIdUrl, "disabled");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.InternalOpenIdUrl, "disabled");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.BackendAppId, "disabled");
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
