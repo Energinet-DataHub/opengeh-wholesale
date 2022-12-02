@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketParticipant.Integration.Model.Parsers.Actor;
 using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -29,11 +28,14 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 /// </summary>
 public class WebApiFactory : WebApplicationFactory<Startup>
 {
-    private bool _enableAuth;
+    private bool _authenticationEnabled;
 
-    public void EnableAuthentication()
+    /// <summary>
+    /// Integration tests run without authentication, unless explicitly enabled.
+    /// </summary>
+    public void ReenableAuthentication()
     {
-        _enableAuth = true;
+        _authenticationEnabled = true;
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -41,10 +43,10 @@ public class WebApiFactory : WebApplicationFactory<Startup>
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));
 
+        // This can be used for changing registrations in the container (e.g. for mocks).
         builder.ConfigureServices(services =>
         {
-            // This can be used for changing registrations in the container (e.g. for mocks).
-            if (!_enableAuth)
+            if (!_authenticationEnabled)
             {
                 services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
             }

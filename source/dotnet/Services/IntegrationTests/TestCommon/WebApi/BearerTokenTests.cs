@@ -39,7 +39,7 @@ public class BearerTokenTests :
         : base(wholesaleWebApiFixture, testOutputHelper)
     {
         _factory = factory;
-        _factory.EnableAuthentication();
+        _factory.ReenableAuthentication();
     }
 
     [Fact]
