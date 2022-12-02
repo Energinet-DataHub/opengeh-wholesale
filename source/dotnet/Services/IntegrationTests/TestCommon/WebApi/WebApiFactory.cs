@@ -12,61 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Security.Claims;
-using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Wholesale.WebApi;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
+namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
+
+/// <summary>
+/// When we execute the tests on build agents we use the builded output (assemblies).
+/// To avoid an 'System.IO.DirectoryNotFoundException' exception from WebApplicationFactory
+/// during creation, we must set the path to the 'content root' using an environment variable
+/// named 'ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI'.
+/// </summary>
+public class WebApiFactory : WebApplicationFactory<Startup>
 {
-    /// <summary>
-    /// When we execute the tests on build agents we use the builded output (assemblies).
-    /// To avoid an 'System.IO.DirectoryNotFoundException' exception from WebApplicationFactory
-    /// during creation, we must set the path to the 'content root' using an environment variable
-    /// named 'ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI'.
-    /// </summary>
-    public class WebApiFactory : WebApplicationFactory<Startup>
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        public Mock<IJwtTokenValidator>? JwtTokenValidatorMock { get; private set; }
+        if (builder == null)
+            throw new ArgumentNullException(nameof(builder));
 
-        /// <summary>
-        /// IMPORTANT: Call after 'factory.CreateClient()' to ensure 'builder.ConfigureServices' has been executed.
-        ///
-        /// We reset the mock first because the mock instance is shared between tests. This way we can
-        /// reconfigure the mock per test.
-        /// </summary>
-        public void ReconfigureJwtTokenValidatorMock(bool isValid)
+        builder.ConfigureServices(services =>
         {
-            JwtTokenValidatorMock.Reset();
-
-            var claims = new ClaimsPrincipal();
-            JwtTokenValidatorMock!
-                .Setup(m => m.ValidateTokenAsync(It.IsAny<string>()))
-                .ReturnsAsync((IsValid: isValid, ClaimsPrincipal: claims));
-        }
-
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
             // This can be used for changing registrations in the container (e.g. for mocks).
-            builder.ConfigureServices(services =>
-            {
-                UnregisterService<IJwtTokenValidator>(services);
+            DisableAuthentication(services);
+        });
+    }
 
-                JwtTokenValidatorMock = new Mock<IJwtTokenValidator>();
-                services.AddScoped(_ => JwtTokenValidatorMock.Object);
-            });
-        }
-
-        private static void UnregisterService<TService>(IServiceCollection services)
-        {
-            var descriptor = services.Single(d => d.ServiceType == typeof(TService));
-            services.Remove(descriptor);
-        }
+    private static void DisableAuthentication(IServiceCollection services)
+    {
+        services.Configure<AuthenticationOptions>(o => o.RequireAuthenticatedSignIn = false);
     }
 }

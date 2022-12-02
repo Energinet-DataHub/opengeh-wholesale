@@ -56,7 +56,6 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
-        app.UseHttpsRedirection();
 
         // Configure the HTTP request pipeline.
         if (Environment.IsDevelopment())
@@ -66,6 +65,7 @@ public class Startup
             app.UseSwaggerUI();
         }
 
+        app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
 

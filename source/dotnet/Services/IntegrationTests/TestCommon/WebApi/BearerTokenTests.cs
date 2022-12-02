@@ -24,8 +24,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 public class BearerTokenTests :
     WebApiTestBase<WholesaleWebApiFixture>,
     IClassFixture<WholesaleWebApiFixture>,
-    IClassFixture<WebApiFactory>,
-    IAsyncLifetime
+    IClassFixture<WebApiFactory>
 {
     private const string BaseUrl = "/v1/batch";
     private const bool SuppliedJwtTokenIsValid = true;
@@ -44,17 +43,12 @@ public class BearerTokenTests :
         _factory = factory;
     }
 
-    public Task InitializeAsync() => Task.CompletedTask;
-
-    public Task DisposeAsync() => Task.CompletedTask;
-
     [Fact]
     public async Task Request_WhenMissingBearerToken_Returns401Unauthorized()
     {
         // Arrange
         using var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Remove(JwtBearerHttpHeader);
-        _factory.ReconfigureJwtTokenValidatorMock(SuppliedJwtTokenIsValid);
 
         // Act
         var response = await client.GetAsync(BaseUrl);
@@ -69,7 +63,6 @@ public class BearerTokenTests :
         // Arrange
         using var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Add(JwtBearerHttpHeader, JwtBearerToken);
-        _factory.ReconfigureJwtTokenValidatorMock(SuppliedJwtTokenIsInvalid);
 
         // Act
         var response = await client.GetAsync(BaseUrl);
@@ -84,7 +77,6 @@ public class BearerTokenTests :
         // Arrange
         using var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Add(JwtBearerHttpHeader, JwtBearerToken);
-        _factory.ReconfigureJwtTokenValidatorMock(SuppliedJwtTokenIsValid);
 
         // Act
         var response = await client.GetAsync(BaseUrl);
