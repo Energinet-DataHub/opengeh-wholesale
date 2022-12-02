@@ -28,7 +28,7 @@ public class BearerTokenTests :
 {
     private const string BaseUrl = "/v2/batch";
     private const string JwtBearerHttpHeader = "Authorization";
-    private const string JwtBearerToken = "Bearer eyZZZ";
+    private const string JwtBearerToken = "Bearer xxx";
 
     private readonly WebApiFactory _factory;
 
@@ -39,6 +39,7 @@ public class BearerTokenTests :
         : base(wholesaleWebApiFixture, testOutputHelper)
     {
         _factory = factory;
+        _factory.EnableAuthentication();
     }
 
     [Fact]

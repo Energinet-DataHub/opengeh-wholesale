@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.MarketParticipant.Integration.Model.Parsers.Actor;
 using Energinet.DataHub.Wholesale.WebApi;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +29,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 /// </summary>
 public class WebApiFactory : WebApplicationFactory<Startup>
 {
+    private bool _enableAuth;
+
+    public void EnableAuthentication()
+    {
+        _enableAuth = true;
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         if (builder == null)
@@ -36,12 +44,21 @@ public class WebApiFactory : WebApplicationFactory<Startup>
         builder.ConfigureServices(services =>
         {
             // This can be used for changing registrations in the container (e.g. for mocks).
-            DisableAuthentication(services);
+            if (!_enableAuth)
+            {
+                services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
+            }
         });
     }
 
-    private static void DisableAuthentication(IServiceCollection services)
+    private sealed class AllowAnonymous : IAuthorizationHandler
     {
-        services.Configure<AuthenticationOptions>(o => o.RequireAuthenticatedSignIn = false);
+        public Task HandleAsync(AuthorizationHandlerContext context)
+        {
+            foreach (var requirement in context.PendingRequirements.ToList())
+                context.Succeed(requirement);
+
+            return Task.CompletedTask;
+        }
     }
 }
