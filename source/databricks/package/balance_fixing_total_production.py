@@ -419,12 +419,8 @@ def _get_output_master_basis_data_df(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
-    productionType = MeteringPointType.production.value
     return (
         metering_point_df.withColumn(
-            "TYPEOFMP", when(col("MeteringPointType") == productionType, "E18")
-        )
-        .withColumn(
             "EffectiveDate",
             when(
                 col("EffectiveDate") < period_start_datetime, period_start_datetime
@@ -444,7 +440,7 @@ def _get_output_master_basis_data_df(
             col("GridAreaCode").alias("GRIDAREA"),
             col("ToGridAreaCode").alias("TOGRIDAREA"),
             col("FromGridAreaCode").alias("FROMGRIDAREA"),
-            col("TYPEOFMP"),
+            col("MeteringPointType").alias("TYPEOFMP"),
             col("SettlementMethod").alias("SETTLEMENTMETHOD"),
             col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
         )
