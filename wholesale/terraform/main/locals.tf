@@ -14,15 +14,14 @@
 
 locals {
     CALCULATION_STORAGE_CONTAINER_NAME                                 = "processes"
+    STORAGE_CONTAINER_NAME                                             = "wholesale"
+
 
     # Service Bus domain event subscriptions
     # The names are made shorter due to name length limit of 50 characters in Azure and the module eats up like 15 of the characters for convention based naming
     ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME              = "zip-basis-data"
     PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME = "publish-processes-completed"
-    
-    # Integration events
-    INTERGRATION_EVENTS_CONTAINER_NAME                                 = "integration-events"
-
+  
     # Database
     DB_CONNECTION_STRING                                               = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_wholesale.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
     DB_CONNECTION_STRING_SQL_AUTH                                      = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_wholesale.name};Persist Security Info=False;User ID=${data.azurerm_key_vault_secret.mssql_data_admin_name.value};Password=${data.azurerm_key_vault_secret.mssql_data_admin_password.value};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
