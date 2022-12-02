@@ -48,7 +48,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
         {
             if (!_authenticationEnabled)
             {
-                services.AddSingleton<IAuthorizationHandler, AllowAnonymous>();
+                services.AddSingleton<IAuthorizationHandler>(new AllowAnonymous());
             }
         });
     }
