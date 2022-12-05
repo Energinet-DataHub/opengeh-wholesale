@@ -18,7 +18,7 @@ from package.codelists import (
     Quality,
     TimeSeriesResolution,
     SettlementMethod,
-    TimeSeriesQuality,
+    # TimeSeriesQuality, TODO: LRN
 )
 from tests.contract_utils import assert_codelist_matches_contract
 
@@ -50,11 +50,12 @@ def test_quality_is_subset_of_contract(source_path):
     )
 
 
-def test_timeseries_quality_enum_equals_timeseries_contract(source_path):
-    assert_codelist_matches_contract(
-        TimeSeriesQuality,
-        f"{source_path}/contracts/time-series-domain/time-series-quality.json",
-    )
+# TODO: LRN
+# def test_timeseries_quality_enum_equals_timeseries_contract(source_path):
+#     assert_codelist_matches_contract(
+#         NewTimeSeriesQuality,
+#         f"{source_path}/contracts/time-series-domain/time-series-quality.json",
+#     )
 
 
 def test_resolution_is_subset_of_contract(source_path):
