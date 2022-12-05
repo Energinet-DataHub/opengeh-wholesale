@@ -121,11 +121,11 @@ public class Batch
     }
 
     /// <summary>
-    /// Reset an executing batch. This will ensure that it will be picked up and run again in a new job run.
+    /// Reset a batch. This will ensure that it will be picked up and run again in a new job run.
     /// </summary>
     public void Reset()
     {
-        if (ExecutionState is not BatchExecutionState.Executing)
+        if (ExecutionState is BatchExecutionState.Completed)
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Created);
 
         ExecutionState = BatchExecutionState.Created;
