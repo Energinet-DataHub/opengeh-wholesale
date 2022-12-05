@@ -25,7 +25,7 @@
 *.sln.docstates
 *.idea*
 .vscode/
-
+.mypy_cache/
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
