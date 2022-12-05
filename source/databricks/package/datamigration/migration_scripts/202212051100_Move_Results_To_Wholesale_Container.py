@@ -19,7 +19,7 @@ from package.datamigration.migration_script_args import MigrationScriptArgs
 def apply(args: MigrationScriptArgs) -> None:
 
     source_container = "processes"
-    source_directory = "results"
+    source_directory = "test_dir"
     destination_container = "wholesale"
     destination_directory = source_directory
 
