@@ -84,7 +84,9 @@ def test__all_migrations_script_has_correct_signature():
 @patch("package.datamigration.migration.DataLakeFileManager")
 @patch("package.datamigration.migration.get_uncommitted_migrations")
 @patch("package.datamigration.migration.upload_committed_migration")
+@patch("package.datamigration.migration._apply_migration")
 def test__migrate_datalake__upload_called_with_correct_name(
+    mock_apply_migration,
     mock_upload_committed_migration,
     mock_uncommitted_migrations,
     mock_file_manager,
@@ -93,6 +95,7 @@ def test__migrate_datalake__upload_called_with_correct_name(
     # Arrange
     all_migrations = _get_all_migrations()
     mock_uncommitted_migrations.return_value = all_migrations
+
     calls = []
     for name in all_migrations:
         calls.append(call(ANY, name))

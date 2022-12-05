@@ -78,7 +78,7 @@ def test__upload_committed_migration__when_migration_state_file_do_not_exist__cr
 ):
     # Arrange
     mock_file_manager.exists_file.return_value = False
-    mock_file_manager.download_csv.return_value = create_csv_reader_with_data("")
+    mock_file_manager.download_csv.return_value = []
 
     # Act
     upload_committed_migration(mock_file_manager, "dummy")
