@@ -17,7 +17,6 @@ from package.datamigration.migration_script_args import MigrationScriptArgs
 
 
 def apply(args: MigrationScriptArgs) -> None:
-
     source_container = "integration-events"
     destination_container = "wholesale"
 
