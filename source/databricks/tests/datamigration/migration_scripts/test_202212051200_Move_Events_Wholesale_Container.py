@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import importlib
-from unittest.mock import ANY, call, patch
+from unittest.mock import ANY, call, patch, Mock
 from types import ModuleType
 import pytest
 from package.datamigration.migration_script_args import MigrationScriptArgs
@@ -23,7 +23,7 @@ from package.datamigration.migration_script_args import MigrationScriptArgs
     "package.datamigration.migration_scripts.202212051200_Move_Events_To_Wholesale_Container.DataLakeDirectoryClient"
 )
 def test__apply__directory_client_contructed_with_correct_arguments(
-    mock_directory_client: str,
+    mock_directory_client: Mock,
 ) -> None:
 
     # Arrange
@@ -51,7 +51,7 @@ def test__apply__directory_client_contructed_with_correct_arguments(
     "package.datamigration.migration_scripts.202212051200_Move_Events_To_Wholesale_Container.DataLakeDirectoryClient"
 )
 def test__apply__calls_rename_directory_with_correct_arguments(
-    mock_directory_client,
+    mock_directory_client: Mock,
 ) -> None:
 
     # Arrange
@@ -74,7 +74,7 @@ def test__apply__calls_rename_directory_with_correct_arguments(
     "package.datamigration.migration_scripts.202212051200_Move_Events_To_Wholesale_Container.DataLakeDirectoryClient"
 )
 def test__apply__when_source_directory_not_exist__never_call_rename_directory(
-    mock_directory_client,
+    mock_directory_client: Mock,
 ) -> None:
 
     # Arrange
