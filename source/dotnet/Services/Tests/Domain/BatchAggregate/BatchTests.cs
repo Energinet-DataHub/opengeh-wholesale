@@ -59,28 +59,28 @@ public class BatchTests
     [Fact]
     public void Ctor_SetsExecutionTimeEndToNull()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        var sut = new BatchBuilder().WithStatePending().Build();
         sut.ExecutionTimeEnd.Should().BeNull();
     }
 
     [Fact]
     public void Ctor_ExecutionTimeStartNotNull()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        var sut = new BatchBuilder().WithStatePending().Build();
         sut.ExecutionTimeStart.Should().NotBeNull();
     }
 
     [Fact]
     public void MarkAsCompleted_WhenComplete_ThrowsInvalidOperationException()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
+        var sut = new BatchBuilder().WithStateCompleted().Build();
         Assert.Throws<InvalidOperationException>(() => sut.MarkAsCompleted());
     }
 
     [Fact]
     public void MarkAsCompleted_WhenExecuting_CompletesBatch()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
+        var sut = new BatchBuilder().WithStateExecuting().Build();
         sut.MarkAsCompleted();
         sut.ExecutionState.Should().Be(BatchExecutionState.Completed);
     }
@@ -88,7 +88,7 @@ public class BatchTests
     [Fact]
     public void MarkAsCompleted_SetsExecutionTimeEnd()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
+        var sut = new BatchBuilder().WithStateExecuting().Build();
         sut.MarkAsCompleted();
         sut.ExecutionTimeEnd.Should().NotBeNull();
     }
@@ -96,21 +96,21 @@ public class BatchTests
     [Fact]
     public void MarkAsExecuting_WhenExecuting_ThrowsInvalidOperationException()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
+        var sut = new BatchBuilder().WithStateExecuting().Build();
         Assert.Throws<InvalidOperationException>(() => sut.MarkAsExecuting());
     }
 
     [Fact]
     public void MarkAsExecuting_WhenComplete_ThrowsInvalidOperationException()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Completed).Build();
+        var sut = new BatchBuilder().WithStateCompleted().Build();
         Assert.Throws<InvalidOperationException>(() => sut.MarkAsExecuting());
     }
 
     [Fact]
     public void MarkAsExecuting_WhenPending_ExecutesBatch()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        var sut = new BatchBuilder().WithStatePending().Build();
         sut.MarkAsExecuting();
         sut.ExecutionState.Should().Be(BatchExecutionState.Executing);
     }
@@ -118,7 +118,7 @@ public class BatchTests
     [Fact]
     public void MarkAsExecuting_ExecutionTimeIsSetToNull()
     {
-        var sut = new BatchBuilder().WithState(BatchExecutionState.Pending).Build();
+        var sut = new BatchBuilder().WithStatePending().Build();
         sut.MarkAsExecuting();
         sut.ExecutionTimeEnd.Should().BeNull();
     }
