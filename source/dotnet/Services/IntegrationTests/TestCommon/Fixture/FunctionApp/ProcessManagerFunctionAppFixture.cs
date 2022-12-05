@@ -89,7 +89,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "processes");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
         }
 
         /// <inheritdoc/>
