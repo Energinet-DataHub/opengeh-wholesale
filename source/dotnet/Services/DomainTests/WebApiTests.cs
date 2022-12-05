@@ -112,27 +112,27 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public async Task When_CreatingBatch_Then_BatchIsEventuallyExecuting()
+            public async Task When_CreatingBatch_Then_BatchIsEventuallyCompleted()
             {
                 // Arrange
-                var startDate = new DateTimeOffset(2022, 9, 1, 8, 6, 32, TimeSpan.Zero);
-                var endDate = new DateTimeOffset(2022, 9, 2, 8, 6, 32, TimeSpan.Zero);
+                var startDate = new DateTimeOffset(2018, 1, 1, 8, 6, 32, TimeSpan.Zero);
+                var endDate = new DateTimeOffset(2018, 1, 2, 8, 6, 32, TimeSpan.Zero);
                 var batchRequestDto = new BatchRequestDto(ProcessType.BalanceFixing, new List<string> { "805" }, startDate, endDate);
 
                 // Act
                 var batchId = await Fixture.WholesaleClient.CreateBatchAsync(batchRequestDto).ConfigureAwait(false);
 
                 // Assert
-                var isExecuting = await Awaiter.TryWaitUntilConditionAsync(
+                var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
                     async () =>
                     {
                         var batchResult = await Fixture.WholesaleClient.GetBatchAsync(batchId);
-                        return batchResult?.ExecutionState == BatchState.Executing;
+                        return batchResult?.ExecutionState == BatchState.Completed;
                     },
                     DefaultTimeout,
                     DefaultDelay);
 
-                isExecuting.Should().BeTrue();
+                isCompleted.Should().BeTrue();
             }
         }
     }
