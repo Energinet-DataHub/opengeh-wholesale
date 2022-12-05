@@ -22,7 +22,7 @@ def apply(args: MigrationScriptArgs) -> None:
     destination_container = "wholesale"
 
     # move 'events' folder
-    events_source_directory = "events"
+    events_source_directory = "events" to wholesale container
     events_destination_directory = events_source_directory
     move_directory(
         args.storage_account_url,
@@ -33,7 +33,7 @@ def apply(args: MigrationScriptArgs) -> None:
         events_destination_directory,
     )
 
-    # move 'events-checkpoint'
+    # move 'events-checkpoint' to wholesale container
     events_checkpoint_source_directory = "events-checkpoint"
     events_checkpoint_destination_directory = events_checkpoint_source_directory
     move_directory(
