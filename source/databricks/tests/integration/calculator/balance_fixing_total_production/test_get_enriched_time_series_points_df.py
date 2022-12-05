@@ -23,6 +23,7 @@ from package.balance_fixing_total_production import (
 from package.codelists import (
     TimeSeriesResolution,
     NewMeteringPointResolution,
+    NewTimeSeriesQuality,
 )
 from pyspark.sql.functions import col
 
@@ -38,7 +39,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
                 "MeteringPointId": "the-meteringpoint-id",
                 #                "TransactionId": "1",
                 "Quantity": Decimal("1.1"),
-                "Quality": 3,
+                "Quality": NewTimeSeriesQuality.calculated.value,
                 #               "Resolution": resolution,
                 #                "RegistrationDateTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
                 #                "storedTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
@@ -212,45 +213,6 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
 
     # Assert
     assert actual.count() == expected_rows
-
-
-@pytest.mark.parametrize(
-    "registration_date_time_1, registration_date_time_2, expected_quantity",
-    [
-        (time_1, time_2, point_2_quantity),
-        (time_2, time_1, point_1_quantity),
-    ],
-)
-def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_latest_registation_time(
-    raw_time_series_points_with_same_gsrn_and_time_factory,
-    metering_point_period_df_factory,
-    timestamp_factory,
-    registration_date_time_1,
-    registration_date_time_2,
-    expected_quantity,
-):
-    # Arrange
-    raw_time_series_points = raw_time_series_points_with_same_gsrn_and_time_factory(
-        registration_date_time_1=registration_date_time_1,
-        registration_date_time_2=registration_date_time_2,
-    )
-    metering_point_period_df = metering_point_period_df_factory(
-        resolution=NewMeteringPointResolution.quarterly.value
-    )
-
-    # Act
-    actual = _get_enriched_time_series_points_df(
-        raw_time_series_points,
-        metering_point_period_df,
-        timestamp_factory("2022-06-10T12:00:00.000Z"),
-        timestamp_factory("2022-06-10T13:00:00.000Z"),
-    )
-
-    # Assert
-    assert actual.count() == 4
-    assert (
-        actual.filter(col("Quantity").isNotNull()).first().Quantity == expected_quantity
-    )
 
 
 def test__missing_point_has_quantity_null_for_quarterly_resolution(
