@@ -18,6 +18,7 @@ from types import ModuleType
 import pytest
 from package.datamigration.migration_script_args import MigrationScriptArgs
 
+
 @patch(
     "package.datamigration.migration_scripts.202212051200_Move_Events_To_Wholesale_Container.DataLakeDirectoryClient"
 )
