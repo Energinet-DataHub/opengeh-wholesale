@@ -48,4 +48,9 @@ public enum BatchExecutionState
     /// The batch has (Failed) failed.
     /// </summary>
     Failed = 3,
+
+    /// <summary>
+    /// The batch has been cancelled.
+    /// </summary>
+    Canceled,
 }
