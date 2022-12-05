@@ -21,8 +21,8 @@ def apply(args: MigrationScriptArgs) -> None:
     source_container = "integration-events"
     destination_container = "wholesale"
 
-    # move 'events' folder
-    events_source_directory = "events" to wholesale container
+    # move 'events' folder to wholesale container
+    events_source_directory = "events"
     events_destination_directory = events_source_directory
     move_directory(
         args.storage_account_url,
