@@ -161,5 +161,6 @@ def test__upload_committed_migration__append_data_is_called_with_correct_string(
 
 
 def create_csv_reader_with_data(string_data: str) -> None:
+    print("create_csv_reader_with_data")
     text_stream = StringIO(string_data)
     return csv.reader(text_stream, dialect="excel")
