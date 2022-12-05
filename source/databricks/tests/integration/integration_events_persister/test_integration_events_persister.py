@@ -73,10 +73,6 @@ valid_command_line_args = [
     "any-key",
     "--event-hub-connectionstring",
     "any-connection-string",
-    "--integration-events-path",
-    "any-path",
-    "--integration-events-checkpoint-path",
-    "any-checkpoint-path",
     "--log-level",
     "information",
 ]
