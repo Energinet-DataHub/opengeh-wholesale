@@ -82,7 +82,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     #     .withColumnRenamed("GsrnNumber", "MeteringPointId")
     # )
     new_timeseries_points = spark.read.option("header", "true").csv(
-        f"{args.wholesale_container_path}/TimeseriesPoints.csv"
+        f"{args.wholesale_container_path}/TimeSeriesPoints.csv"
     )
     metering_points_periods_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
