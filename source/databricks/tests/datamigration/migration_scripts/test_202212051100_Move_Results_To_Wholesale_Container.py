@@ -30,7 +30,7 @@ def test__apply__directory_client_contructed_with_correct_arguments(
     sut = get_migration_script()
     migration_args = MigrationScriptArgs("", "", None)
     processes_container = "processes"
-    results_source_directory = "results"
+    results_source_directory = "test_dir"
 
     # Act
     sut.apply(migration_args)
@@ -58,7 +58,7 @@ def test__apply__calls_rename_directory_with_correct_arguments(
 
     # Assert
     mock_directory_client.return_value.rename_directory.assert_called_with(
-        new_name="wholesale/results"
+        new_name="wholesale/test_dir"
     )
 
 
