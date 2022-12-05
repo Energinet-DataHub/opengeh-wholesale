@@ -120,6 +120,17 @@ public class Batch
         ExecutionState = BatchExecutionState.Failed;
     }
 
+    /// <summary>
+    /// Reset a batch. This will ensure that it will be picked up and run again in a new job run.
+    /// </summary>
+    public void Reset()
+    {
+        if (ExecutionState is BatchExecutionState.Completed)
+            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Created);
+
+        ExecutionState = BatchExecutionState.Created;
+    }
+
     private void ThrowInvalidStateTransitionException(BatchExecutionState currentState, BatchExecutionState desiredState)
     {
         throw new InvalidOperationException($"Cannot change batchExecutionState from {currentState} to {desiredState}");
