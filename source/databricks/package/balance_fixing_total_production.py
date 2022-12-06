@@ -282,7 +282,7 @@ def _get_enriched_time_series_points_df(
 
     new_points_for_each_metering_point_df = (
         empty_points_for_each_metering_point_df.join(
-            new_timeseries_df, ["MeteringPointId", "time"], "left"
+            new_timeseries_df, ["MeteringPointId", "Time"], "left"
         )
     )
 
