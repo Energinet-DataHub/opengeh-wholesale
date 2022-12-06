@@ -21,8 +21,8 @@ from package.balance_fixing_total_production import (
 )
 
 from package.codelists import (
-    TimeSeriesResolution,
     NewMeteringPointResolution,
+    NewTimeSeriesQuality,
 )
 from pyspark.sql.functions import col
 
@@ -30,22 +30,14 @@ from pyspark.sql.functions import col
 @pytest.fixture(scope="module")
 def raw_time_series_points_factory(spark, timestamp_factory):
     def factory(
-        resolution,
         time: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
     ):
         df = [
             {
                 "MeteringPointId": "the-meteringpoint-id",
-                "TransactionId": "1",
                 "Quantity": Decimal("1.1"),
-                "Quality": 3,
-                "Resolution": resolution,
-                "RegistrationDateTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
-                "storedTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
-                "time": time,
-                "year": 2022,
-                "month": 6,
-                "day": 8,
+                "Quality": NewTimeSeriesQuality.calculated.value,
+                "Time": time,
             }
         ]
         return spark.createDataFrame(df)
@@ -149,8 +141,7 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
 
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory("2022-06-08T22:15:00.000Z"),
-        resolution=TimeSeriesResolution.quarter.value,
+        time=timestamp_factory("2022-06-08T22:15:00.000Z")
     )
     metering_point_period_df = metering_point_period_df_factory(
         resolution=NewMeteringPointResolution.quarterly.value,
@@ -193,8 +184,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
 
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory("2022-06-08T12:15:00.000Z"),
-        resolution=TimeSeriesResolution.quarter.value,
+        time=timestamp_factory("2022-06-08T12:15:00.000Z")
     )
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=effective_date,
@@ -214,45 +204,6 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     assert actual.count() == expected_rows
 
 
-@pytest.mark.parametrize(
-    "registration_date_time_1, registration_date_time_2, expected_quantity",
-    [
-        (time_1, time_2, point_2_quantity),
-        (time_2, time_1, point_1_quantity),
-    ],
-)
-def test__given_two_points_with_same_gsrn_and_time__only_uses_the_one_with_the_latest_registation_time(
-    raw_time_series_points_with_same_gsrn_and_time_factory,
-    metering_point_period_df_factory,
-    timestamp_factory,
-    registration_date_time_1,
-    registration_date_time_2,
-    expected_quantity,
-):
-    # Arrange
-    raw_time_series_points = raw_time_series_points_with_same_gsrn_and_time_factory(
-        registration_date_time_1=registration_date_time_1,
-        registration_date_time_2=registration_date_time_2,
-    )
-    metering_point_period_df = metering_point_period_df_factory(
-        resolution=NewMeteringPointResolution.quarterly.value
-    )
-
-    # Act
-    actual = _get_enriched_time_series_points_df(
-        raw_time_series_points,
-        metering_point_period_df,
-        timestamp_factory("2022-06-10T12:00:00.000Z"),
-        timestamp_factory("2022-06-10T13:00:00.000Z"),
-    )
-
-    # Assert
-    assert actual.count() == 4
-    assert (
-        actual.filter(col("Quantity").isNotNull()).first().Quantity == expected_quantity
-    )
-
-
 def test__missing_point_has_quantity_null_for_quarterly_resolution(
     raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
 ):
@@ -260,7 +211,6 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
     start_time = "2022-06-08T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
-        resolution=TimeSeriesResolution.quarter.value,
     )
 
     metering_point_period_df = metering_point_period_df_factory(
@@ -287,7 +237,6 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
     start_time = "2022-06-08T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
-        resolution=TimeSeriesResolution.hour.value,
     )
 
     metering_point_period_df = metering_point_period_df_factory(
@@ -315,7 +264,6 @@ def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
     start_time = "2022-06-08T12:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
-        resolution=TimeSeriesResolution.quarter.value,
     )
 
     metering_point_period_df = metering_point_period_df_factory(
@@ -344,8 +292,7 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     start_time = "2022-06-08T22:00:00.000Z"
     end_time = "2022-06-09T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory(start_time),
-        resolution=TimeSeriesResolution.hour.value,
+        time=timestamp_factory(start_time)
     )
 
     metering_point_period_df = metering_point_period_df_factory(
@@ -376,9 +323,9 @@ def test__df_is_not_empty_when_no_time_series_points(
     start_time = "2022-06-08T22:00:00.000Z"
     end_time = "2022-06-09T22:00:00.000Z"
 
-    empty_raw_time_series_points = raw_time_series_points_factory(
-        resolution=NewMeteringPointResolution.hour.value,
-    ).filter(col("MeteringPointId") == "")
+    empty_raw_time_series_points = raw_time_series_points_factory().filter(
+        col("MeteringPointId") == ""
+    )
     metering_point_period_df = metering_point_period_df_factory(
         resolution=NewMeteringPointResolution.quarterly.value,
         effective_date=timestamp_factory(start_time),
@@ -455,7 +402,7 @@ def test__df_has_expected_row_count_according_to_dst(
 ):
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory(period_start), resolution=resolution
+        time=timestamp_factory(period_start)
     ).filter(col("MeteringPointId") != "the-meteringpoint-id")
 
     metering_point_period_df = metering_point_period_df_factory(

@@ -20,7 +20,6 @@ from datetime import datetime
 class CalculatorArgs:
     data_storage_account_name: str
     data_storage_account_key: str
-    integration_events_path: str
     time_series_points_path: str
     process_results_path: str
     wholesale_container_path: str
