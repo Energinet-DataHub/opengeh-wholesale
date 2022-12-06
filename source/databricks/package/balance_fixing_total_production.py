@@ -82,7 +82,7 @@ def calculate_balance_fixing_total_production(
     )
 
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
-        new_timeseries_points,
+        timeseries_points,
         master_basis_data_df,
         period_start_datetime,
         period_end_datetime,
