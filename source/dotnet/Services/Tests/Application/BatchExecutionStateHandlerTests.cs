@@ -36,9 +36,7 @@ public class MapBatchExecutionStateTests
         BatchExecutionStateHandler sut)
     {
         // Arrange
-        var batch = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch.MarkAsSubmitted(new JobRunId(11));
-        batch.MarkAsPending();
+        var batch = new BatchBuilder().WithStatePending().Build();
         var pendingBatches = new List<Batch>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
             .ReturnsAsync(pendingBatches);
@@ -59,10 +57,7 @@ public class MapBatchExecutionStateTests
         BatchExecutionStateHandler sut)
     {
         // Arrange
-        var batch = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch.MarkAsSubmitted(new JobRunId(11));
-        batch.MarkAsPending();
-        batch.MarkAsExecuting();
+        var batch = new BatchBuilder().WithStateExecuting().Build();
         var executingBatches = new List<Batch>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
             .ReturnsAsync(executingBatches);
@@ -75,6 +70,31 @@ public class MapBatchExecutionStateTests
         batch.ExecutionState.Should().Be(BatchExecutionState.Completed);
     }
 
+    /// <summary>
+    /// Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD.
+    /// Setting batch state back to "created" ensure they will be picked up and started again.
+    /// </summary>
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task UpdateExecutionState_WhenJobStateIsCancelled_UpdateBatchToCreated(
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
+        BatchExecutionStateHandler sut)
+    {
+        // Arrange
+        var batch = new BatchBuilder().WithStateExecuting().Build();
+        var executingBatches = new List<Batch>() { batch };
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+            .ReturnsAsync(executingBatches);
+        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch.RunId!)).ReturnsAsync(JobState.Canceled);
+
+        // Act
+        await sut.UpdateExecutionStateAsync(batchRepositoryMock.Object, calculatorJobRunnerMock.Object);
+
+        // Assert
+        batch.ExecutionState.Should().Be(BatchExecutionState.Created);
+    }
+
     [Theory]
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_ToCompleted(
@@ -83,13 +103,8 @@ public class MapBatchExecutionStateTests
         BatchExecutionStateHandler sut)
     {
         // Arrange
-        var batch1 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch1.MarkAsSubmitted(new JobRunId(11));
-        batch1.MarkAsPending();
-        var batch2 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch2.MarkAsSubmitted(new JobRunId(12));
-        batch2.MarkAsPending();
-        batch2.MarkAsExecuting();
+        var batch1 = new BatchBuilder().WithStatePending().Build();
+        var batch2 = new BatchBuilder().WithStateExecuting().Build();
         var batches = new List<Batch>() { batch1, batch2 };
 
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
@@ -114,12 +129,9 @@ public class MapBatchExecutionStateTests
         BatchExecutionStateHandler sut)
     {
         // Arrange
-        var batch1 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch1.MarkAsSubmitted(new JobRunId(111));
-        var batch2 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch2.MarkAsSubmitted(new JobRunId(222));
-        var batch3 = new BatchBuilder().WithState(BatchExecutionState.Created).Build();
-        batch3.MarkAsSubmitted(new JobRunId(333));
+        var batch1 = new BatchBuilder().WithStateSubmitted().Build();
+        var batch2 = new BatchBuilder().WithStateSubmitted().Build();
+        var batch3 = new BatchBuilder().WithStateSubmitted().Build();
         var batches = new List<Batch>() { batch1, batch2, batch3 };
 
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))

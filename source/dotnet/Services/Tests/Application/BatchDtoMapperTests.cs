@@ -36,7 +36,7 @@ public class BatchDtoMapperTests
         BatchDtoMapper sut)
     {
         // Arrange
-        var batch = new BatchBuilder().WithState(BatchExecutionState.Executing).Build();
+        var batch = new BatchBuilder().WithStateExecuting().Build();
 
         // Act
         var batchDto = sut.Map(batch);
