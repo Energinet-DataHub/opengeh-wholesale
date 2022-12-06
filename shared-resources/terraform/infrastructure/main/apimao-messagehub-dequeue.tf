@@ -51,7 +51,7 @@ module "apimao_messagehub_dequeue" {
                     </claim>
                 </required-claims>
             </validate-jwt>
-            <set-backend-service backend-id="${azurerm_api_management_backend.messagehub.name}" />
+            <set-backend-service backend-id="${azurerm_api_management_backend.market_roles.name}" />
             <rewrite-uri template="/api/dequeue" />
             <set-query-parameter name="bundleid" exists-action="override">
               <value>@(context.Request.MatchedParameters["id"])</value>
