@@ -35,3 +35,8 @@ variable domain_name_short {
   type          = string
   description   = "Shortest possible edition of the domain name."
 }
+
+variable azure_ad_security_group_id {
+  type          = string
+  description   = "The Id of the Azure Security group used for employees"
+}
