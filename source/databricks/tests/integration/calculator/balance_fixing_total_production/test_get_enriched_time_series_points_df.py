@@ -35,16 +35,9 @@ def raw_time_series_points_factory(spark, timestamp_factory):
         df = [
             {
                 "MeteringPointId": "the-meteringpoint-id",
-                #                "TransactionId": "1",
                 "Quantity": Decimal("1.1"),
                 "Quality": NewTimeSeriesQuality.calculated.value,
-                #               "Resolution": resolution,
-                #                "RegistrationDateTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
-                #                "storedTime": timestamp_factory("2022-06-10T12:09:15.000Z"),
                 "Time": time,
-                #                "year": 2022,
-                #                "month": 6,
-                #                "day": 8,
             }
         ]
         return spark.createDataFrame(df)
