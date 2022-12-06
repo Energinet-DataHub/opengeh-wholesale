@@ -22,15 +22,11 @@ from pyspark.sql.functions import (
     lit,
     col,
     collect_set,
-    from_json,
     to_date,
     from_utc_timestamp,
     row_number,
     expr,
     when,
-    lead,
-    last,
-    coalesce,
     explode,
     sum,
     greatest,
@@ -232,7 +228,6 @@ def _get_master_basis_data_df(
 
 def _get_enriched_time_series_points_df(
     new_timeseries_df: DataFrame,
-    # time_series_points: DataFrame,
     master_basis_data_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
@@ -240,10 +235,6 @@ def _get_enriched_time_series_points_df(
     new_timeseries_df = new_timeseries_df.where(
         col("Time") >= period_start_datetime
     ).where(col("Time") < period_end_datetime)
-
-    # timeseries_df = time_series_points.where(
-    #     col("time") >= period_start_datetime
-    # ).where(col("time") < period_end_datetime)
 
     quarterly_mp_df = master_basis_data_df.where(
         col("Resolution") == NewMeteringPointResolution.quarterly.value
@@ -285,35 +276,10 @@ def _get_enriched_time_series_points_df(
         new_timeseries_df.orderBy(col("MeteringPointId"), col("time")),
     )
 
-    # Only use latest registered points
-    #  window = Window.partitionBy("MeteringPointId", "time").orderBy(
-    #      col("RegistrationDateTime").desc()
-    #  )
-    #  If we end up with more than one point for the same Meteringpoint and "time".
-    #  We only need the latest point, this is essential to handle updates of points.
-    #  timeseries_df = timeseries_df.withColumn(
-    #      "row_number", row_number().over(window)
-    #  ).where(col("row_number") == 1)
-
-    # debug(
-    #     "Time series points with only latest points by registration date time",
-    #     timeseries_df.orderBy(
-    #         col("MeteringPointId"),
-    #         col("time"),
-    #         col("storedTime").desc(),
-    #     ),
-    # )
-
-    # timeseries_df = timeseries_df.select(
-    #     "MeteringPointId", "time", "Quantity", "Quality", "Resolution"
-    # )
     new_timeseries_df = new_timeseries_df.select(
         "MeteringPointId", "Time", "Quantity", "Quality"
     ).withColumnRenamed("Time", "time")
 
-    # points_for_each_metering_point_df = empty_points_for_each_metering_point_df.join(
-    #    timeseries_df, ["MeteringPointId", "time"], "left"
-    # )
     new_points_for_each_metering_point_df = (
         empty_points_for_each_metering_point_df.join(
             new_timeseries_df, ["MeteringPointId", "time"], "left"
@@ -323,18 +289,12 @@ def _get_enriched_time_series_points_df(
     # the master_basis_data_df is allready used once when creating the empty_points_for_each_metering_point_df
     # rejoining master_basis_data_df with empty_points_for_each_metering_point_df requires the GsrNumber and
     # Resolution column must be renamed for the select to be succesfull.
-    # points_for_each_metering_point_df = (
-    #    points_for_each_metering_point_df.withColumnRenamed(
-    #        "MeteringPointId", "pfemp_MeteringPointId"
-    #    ).withColumnRenamed("Resolution", "pfemp_Resolution")
-    # )
+
     new_points_for_each_metering_point_df = (
         new_points_for_each_metering_point_df.withColumnRenamed(
             "MeteringPointId", "pfemp_MeteringPointId"
         ).withColumnRenamed("Resolution", "pfemp_Resolution")
     )
-    print("-----")
-    new_points_for_each_metering_point_df.show()
 
     master_basis_data_renamed_df = master_basis_data_df.withColumnRenamed(
         "MeteringPointId", "master_MeteringpointId"
