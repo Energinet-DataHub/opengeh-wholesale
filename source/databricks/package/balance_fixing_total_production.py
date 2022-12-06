@@ -57,7 +57,7 @@ METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
-    new_timeseries_points: DataFrame,
+    timeseries_points: DataFrame,
     metering_points_periods_df: DataFrame,
     market_roles_periods_df: DataFrame,
     batch_grid_areas_df: DataFrame,
