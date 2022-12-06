@@ -13,11 +13,7 @@
 # limitations under the License.
 
 import pytest
-from package.codelists import (
-    NewMeteringPointResolution,
-    NewTimeSeriesQuality,
-    Quality,
-)
+from package.codelists import NewMeteringPointResolution, NewTimeSeriesQuality
 from decimal import Decimal
 from package.balance_fixing_total_production import _get_result_df
 from pyspark.sql.functions import col, sum, lit
@@ -265,19 +261,19 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
             NewTimeSeriesQuality.measured.value,
             NewTimeSeriesQuality.estimated.value,
             NewTimeSeriesQuality.missing.value,
-            Quality.incomplete.value,
+            NewTimeSeriesQuality.missing.value,
         ),
         (
             NewTimeSeriesQuality.measured.value,
             NewTimeSeriesQuality.estimated.value,
             NewTimeSeriesQuality.measured.value,
-            Quality.estimated.value,
+            NewTimeSeriesQuality.estimated.value,
         ),
         (
             NewTimeSeriesQuality.measured.value,
             NewTimeSeriesQuality.measured.value,
             NewTimeSeriesQuality.measured.value,
-            Quality.measured.value,
+            NewTimeSeriesQuality.measured.value,
         ),
     ],
 )
@@ -305,7 +301,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     df = enriched_time_series_factory().withColumn("quality", lit(None))
 
     result_df = _get_result_df(df)
-    assert result_df.first().quality == Quality.incomplete.value
+    assert result_df.first().quality == NewTimeSeriesQuality.missing.value
 
 
 def test__when_time_series_point_is_missing__quantity_is_0(

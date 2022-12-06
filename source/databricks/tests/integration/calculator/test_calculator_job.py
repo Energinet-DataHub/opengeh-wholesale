@@ -189,6 +189,7 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
     result_805 = spark.read.json(
         f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=805"
     )
+    result_805.printSchema()
     assert_contract_matches_schema(
         f"{source_path}/contracts/internal/calculator-result.json",
         result_805.schema,

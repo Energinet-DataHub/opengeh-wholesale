@@ -44,8 +44,6 @@ from pyspark.sql.window import Window
 from package.codelists import (
     NewConnectionState,
     NewMeteringPointType,
-    MeteringPointType,
-    Quality,
     NewTimeSeriesQuality,
     NewMeteringPointResolution,
 )
@@ -66,7 +64,6 @@ def calculate_balance_fixing_total_production(
     new_timeseries_points: DataFrame,
     metering_points_periods_df: DataFrame,
     market_roles_periods_df: DataFrame,
-    # all_time_series_points_df: DataFrame,
     batch_grid_areas_df: DataFrame,
     batch_snapshot_datetime: datetime,
     period_start_datetime: datetime,
@@ -75,10 +72,6 @@ def calculate_balance_fixing_total_production(
 ) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
     "Returns tuple (result_df, (time_series_quarter_basis_data_df, time_series_hour_basis_data_df))"
     "TODO: is this correct?"
-
-    # time_series_points_df = _get_time_series_points_df(
-    #     all_time_series_points_df, batch_snapshot_datetime
-    # )
 
     master_basis_data_df = _get_master_basis_data_df(
         metering_points_periods_df,
@@ -94,7 +87,6 @@ def calculate_balance_fixing_total_production(
 
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         new_timeseries_points,
-        #  time_series_points_df,
         master_basis_data_df,
         period_start_datetime,
         period_end_datetime,
@@ -450,10 +442,7 @@ def _get_time_series_basis_data_by_resolution(
         .pivot("position")
         .agg(first("Quantity"))
         .withColumnRenamed("MeteringPointId", "METERINGPOINTID")
-        .withColumn(
-            "TYPEOFMP",
-            when(col("MeteringPointType") == MeteringPointType.production.value, "E18"),
-        )
+        .withColumn("TYPEOFMP", col("MeteringPointType"))
     )
 
     quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data_df)
@@ -522,21 +511,21 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
                 array_contains(
                     col("collect_set(Quality)"), lit(NewTimeSeriesQuality.missing.value)
                 ),
-                lit(Quality.incomplete.value),
+                lit(NewTimeSeriesQuality.missing.value),
             )
             .when(
                 array_contains(
                     col("collect_set(Quality)"),
                     lit(NewTimeSeriesQuality.estimated.value),
                 ),
-                lit(Quality.estimated.value),
+                lit(NewTimeSeriesQuality.estimated.value),
             )
             .when(
                 array_contains(
                     col("collect_set(Quality)"),
                     lit(NewTimeSeriesQuality.measured.value),
                 ),
-                lit(Quality.measured.value),
+                lit(NewTimeSeriesQuality.measured.value),
             ),
         )
         .withColumnRenamed("Quality", "quality")
@@ -560,7 +549,7 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
         )
         .withColumn(
             "quality",
-            when(col("quality").isNull(), Quality.incomplete.value).otherwise(
+            when(col("quality").isNull(), NewTimeSeriesQuality.missing.value).otherwise(
                 col("quality")
             ),
         )
