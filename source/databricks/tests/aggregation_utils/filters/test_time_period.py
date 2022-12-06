@@ -13,7 +13,7 @@
 # limitations under the License.
 from datetime import datetime, timezone
 import pandas as pd
-from geh_stream.aggregation_utils.filters import filter_time_period
+from package.aggregation_utils.filters import filter_time_period
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, TimestampType, IntegerType
 import pytest
