@@ -273,7 +273,7 @@ def _get_enriched_time_series_points_df(
 
     debug(
         "Time series points where time is within period",
-        new_timeseries_df.orderBy(col("MeteringPointId"), col("time")),
+        new_timeseries_df.orderBy(col("MeteringPointId"), col("Time")),
     )
 
     new_timeseries_df = new_timeseries_df.select(
