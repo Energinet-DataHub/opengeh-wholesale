@@ -14,7 +14,7 @@
 
 """
 Test is disabled as the contract does not match as we transition to static datasource.
-They will be activated again when we remove the coorsponding contract tests in .net 
+They will be activated again when we remove the coorsponding contract tests in .net
 from package.codelists import (
     ConnectionState,
     MeteringPointType,
