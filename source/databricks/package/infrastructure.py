@@ -15,7 +15,6 @@
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
-INTEGRATION_EVENTS_CONTAINER_NAME = "integration-events"
 
 RESULTS_FOLDER_NAME = "results"
 EVENTS_FOLDER_NAME = "events"
@@ -27,15 +26,27 @@ def get_storage_account_url(storage_account_name: str) -> str:
 
 
 def get_integration_events_path(storage_account_name: str) -> str:
-    return f"abfss://{INTEGRATION_EVENTS_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/{EVENTS_FOLDER_NAME}"
+    return get_folder_path_in_wholesale_container(
+        storage_account_name, EVENTS_FOLDER_NAME
+    )
 
 
 def get_integration_events_checkpoint_path(storage_account_name: str) -> str:
-    return f"abfss://{INTEGRATION_EVENTS_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/{EVENTS_CHECKPOINT_FOLDER_NAME}"
+    return get_folder_path_in_wholesale_container(
+        storage_account_name, EVENTS_CHECKPOINT_FOLDER_NAME
+    )
 
 
 def get_process_results_path(storage_account_name: str) -> str:
-    return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/{RESULTS_FOLDER_NAME}"
+    return get_folder_path_in_wholesale_container(
+        storage_account_name, RESULTS_FOLDER_NAME
+    )
+
+
+def get_folder_path_in_wholesale_container(
+    storage_account_name: str, folder_name: str
+) -> str:
+    return f"{get_wholesale_container_path(storage_account_name)}/{folder_name}"
 
 
 def get_wholesale_container_path(storage_account_name: str) -> str:
