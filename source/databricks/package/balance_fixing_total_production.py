@@ -315,7 +315,7 @@ def _get_enriched_time_series_points_df(
             master_basis_data_renamed_df["master_MeteringpointId"],
             "MeteringPointType",
             master_basis_data_renamed_df["master_Resolution"],
-            "time",
+            "Time",
             "Quantity",
             "Quality",
         )
