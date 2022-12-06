@@ -13,9 +13,7 @@
 # limitations under the License.
 
 locals {
-    CALCULATION_STORAGE_CONTAINER_NAME                                 = "processes"
     STORAGE_CONTAINER_NAME                                             = "wholesale"
-
 
     # Service Bus domain event subscriptions
     # The names are made shorter due to name length limit of 50 characters in Azure and the module eats up like 15 of the characters for convention based naming

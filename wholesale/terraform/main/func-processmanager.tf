@@ -37,8 +37,6 @@ module "func_processmanager" {
     # Database
     DB_CONNECTION_STRING                                               = local.DB_CONNECTION_STRING
 
-    CALCULATION_STORAGE_CONNECTION_STRING                              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
-    CALCULATION_STORAGE_CONTAINER_NAME                                 = local.CALCULATION_STORAGE_CONTAINER_NAME
     STORAGE_CONNECTION_STRING                                          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
     STORAGE_CONTAINER_NAME                                             = local.STORAGE_CONTAINER_NAME
 
