@@ -116,10 +116,13 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
     df = results[ResultKeyName.aggregation_base_dataframe]
     exchangeIn = df.filter(
         col(Colname.metering_point_type) == MarketEvaluationPointType.exchange.value
-    ).filter(
-        (col(Colname.connection_state) == ConnectionState.connected.value)
-        | (col(Colname.connection_state) == ConnectionState.disconnected.value)
     )
+
+    ## move v8 poc: is already filtered in the enriched timeseries
+    ## .filter(
+    ##     (col(Colname.connection_state) == ConnectionState.connected.value)
+    ##     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
+    ## )
     exchangeIn = (
         exchangeIn.groupBy(
             Colname.in_grid_area,
@@ -133,10 +136,12 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
     )
     exchangeOut = df.filter(
         col(Colname.metering_point_type) == MarketEvaluationPointType.exchange.value
-    ).filter(
-        (col(Colname.connection_state) == ConnectionState.connected.value)
-        | (col(Colname.connection_state) == ConnectionState.disconnected.value)
     )
+    ## move v8 poc: is already filtered in the enriched timeseries
+    ## .filter(
+    ##     (col(Colname.connection_state) == ConnectionState.connected.value)
+    ##     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
+    ## )
     exchangeOut = (
         exchangeOut.groupBy(Colname.out_grid_area, window(col(Colname.time), "1 hour"))
         .sum(Colname.quantity)
@@ -213,10 +218,12 @@ def aggregate_per_ga_and_brp_and_es(
         result = result.filter(
             col(Colname.settlement_method) == settlement_method.value
         )
-    result = result.filter(
-        (col(Colname.connection_state) == ConnectionState.connected.value)
-        | (col(Colname.connection_state) == ConnectionState.disconnected.value)
-    )
+    result = result
+    ## move v8 poc: is already filtered in the enriched timeseries
+    ##.filter(
+    ##    (col(Colname.connection_state) == ConnectionState.connected.value)
+    ##    | (col(Colname.connection_state) == ConnectionState.disconnected.value)
+    ##)
     result = (
         result.groupBy(
             Colname.grid_area,
