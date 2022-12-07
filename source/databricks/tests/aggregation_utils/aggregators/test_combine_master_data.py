@@ -18,7 +18,7 @@ from package.aggregation_utils.aggregators import (
     combine_added_system_correction_with_master_data,
     combine_added_grid_loss_with_master_data,
 )
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from tests.helpers.dataframe_creators import aggregation_result_factory
 from pyspark.sql.types import (
     StructType,

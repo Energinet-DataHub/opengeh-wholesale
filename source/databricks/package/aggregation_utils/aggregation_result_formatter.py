@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame, SparkSession
 
 from pyspark.sql.functions import lit
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from geh_stream.codelists import Colname
 from geh_stream.schemas.output import aggregation_result_schema
 
@@ -37,12 +37,15 @@ def __add_missing_nullable_columns(result: DataFrame) -> DataFrame:
     return result
 
 
-def create_dataframe_from_aggregation_result_schema(metadata: Metadata, result: DataFrame) -> DataFrame:
+def create_dataframe_from_aggregation_result_schema(
+    metadata: Metadata, result: DataFrame
+) -> DataFrame:
     result = __add_missing_nullable_columns(result)
     # Replaces None value with zero for sum_quantity
     result = result.na.fill(value=0, subset=[Colname.sum_quantity])
 
-    return SparkSession.builder.getOrCreate().createDataFrame(result.select(
+    return SparkSession.builder.getOrCreate().createDataFrame(
+        result.select(
             lit(metadata.JobId).alias(Colname.job_id),
             lit(metadata.SnapshotId).alias(Colname.snapshot_id),
             lit(metadata.ResultId).alias(Colname.result_id),
@@ -60,4 +63,7 @@ def create_dataframe_from_aggregation_result_schema(metadata: Metadata, result: 
             Colname.metering_point_type,
             Colname.settlement_method,
             Colname.added_grid_loss,
-            Colname.added_system_correction).rdd, aggregation_result_schema)
+            Colname.added_system_correction,
+        ).rdd,
+        aggregation_result_schema,
+    )

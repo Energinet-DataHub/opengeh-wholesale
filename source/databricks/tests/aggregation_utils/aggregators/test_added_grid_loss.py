@@ -21,7 +21,7 @@ from geh_stream.codelists import (
 )
 from package.aggregation_utils.aggregators import calculate_added_grid_loss
 from geh_stream.codelists import Quality
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from geh_stream.schemas.output import aggregation_result_schema
 from package.aggregation_utils.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,

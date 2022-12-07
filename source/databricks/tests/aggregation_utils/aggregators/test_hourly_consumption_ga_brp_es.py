@@ -24,7 +24,7 @@ from geh_stream.codelists import (
     ConnectionState,
     Quality,
 )
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from geh_stream.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType

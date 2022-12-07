@@ -24,7 +24,7 @@ from package.aggregation_utils.aggregators import (
     aggregate_hourly_settled_consumption_ga_brp,
     aggregate_hourly_settled_consumption_ga,
 )
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from package.aggregation_utils.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )

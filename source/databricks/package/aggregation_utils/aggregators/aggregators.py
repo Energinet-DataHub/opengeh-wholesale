@@ -21,7 +21,7 @@ from geh_stream.codelists import (
     ResultKeyName,
     ResolutionDuration,
 )
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from package.aggregation_utils.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )

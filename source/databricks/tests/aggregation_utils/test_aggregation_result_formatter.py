@@ -19,7 +19,7 @@ from package.aggregation_utils.aggregation_result_formatter import (
 )
 from tests.helpers.dataframe_creators import aggregation_result_factory
 from geh_stream.codelists import Quality
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from geh_stream.schemas.output import aggregation_result_schema
 import pytest
 import pandas as pd
