@@ -39,8 +39,8 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchSearchDto.cs">
       <Link>Batches\BatchSearchDto.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\MeteringPointType.cs">
-      <Link>Batches\MeteringPointType.cs</Link>
+    <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
+      <Link>Batches\ProcessStepMeteringPointType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessDto.cs">
       <Link>Batches\ProcessDto.cs</Link>
