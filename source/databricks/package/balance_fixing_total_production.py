@@ -33,7 +33,6 @@ from pyspark.sql.functions import (
     least,
 )
 from pyspark.sql.types import (
-    StringType,
     DecimalType,
 )
 from pyspark.sql.window import Window
@@ -61,13 +60,10 @@ def calculate_balance_fixing_total_production(
     metering_points_periods_df: DataFrame,
     market_roles_periods_df: DataFrame,
     batch_grid_areas_df: DataFrame,
-    batch_snapshot_datetime: datetime,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
 ) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
-    "Returns tuple (result_df, (time_series_quarter_basis_data_df, time_series_hour_basis_data_df))"
-    "TODO: is this correct?"
 
     master_basis_data_df = _get_master_basis_data_df(
         metering_points_periods_df,

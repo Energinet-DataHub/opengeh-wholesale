@@ -75,13 +75,7 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
 
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
-    # Only points stored before the snapshot_datetime are needed.
-    # raw_time_series_points_df = (
-    #     spark.read.option("mergeSchema", "true")
-    #     .parquet(args.time_series_points_path)
-    #     .withColumnRenamed("GsrnNumber", "MeteringPointId")
-    # )
-    new_timeseries_points = spark.read.option("header", "true").csv(
+    timeseries_points = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/TimeSeriesPoints.csv"
     )
     metering_points_periods_df = spark.read.option("header", "true").csv(
@@ -99,11 +93,10 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing_total_production(
-        new_timeseries_points,
+        timeseries_points,
         metering_points_periods_df,
         market_roles_periods_df,
         batch_grid_areas_df,
-        args.batch_snapshot_datetime,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.time_zone,
