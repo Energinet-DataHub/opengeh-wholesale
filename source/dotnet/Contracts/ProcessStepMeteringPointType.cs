@@ -14,7 +14,10 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts;
 
-public enum MeteringPointType
+/// <summary>
+/// Represents which kind of metering point type the step was calculated on
+/// </summary>
+public enum ProcessStepMeteringPointType
 {
     Production = 0,
 }
