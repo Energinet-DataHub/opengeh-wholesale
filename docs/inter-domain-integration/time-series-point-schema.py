@@ -52,7 +52,7 @@ time_series_point_schema = StructType(
         # The month part of the `ObservationTime`. Used in partition.
         StructField("ObservationTime_Month", IntegerType(), False),
         
-        # The date part of the `ObservationTime`. Used in partition.
-        StructField("ObservationTime_Date", IntegerType(), False)
+        # The day part (1-31) of the `ObservationTime`. Used in partition.
+        StructField("ObservationTime_Day", IntegerType(), False)
     ]
 )
