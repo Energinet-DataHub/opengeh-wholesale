@@ -13,10 +13,9 @@
 # limitations under the License.
 
 import re
-from unittest.mock import patch
-
 import pytest
 import yaml
+from unittest.mock import patch
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
 from package.calculator_args import CalculatorArgs
@@ -115,8 +114,6 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
         "--data-storage-account-name",
         "foo",
         "--data-storage-account-key",
-        "foo",
-        "--time-series-points-path",
         "foo",
         "--time-zone",
         "Europe/Copenhagen",

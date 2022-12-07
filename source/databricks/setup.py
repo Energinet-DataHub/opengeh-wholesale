@@ -31,7 +31,6 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "start_stream = package.integration_events_persister_streaming:start",
             "start_calculator = package.calculator_job:start",
             "lock_storage = package.datamigration.lock_storage:lock",
             "unlock_storage = package.datamigration.lock_storage:unlock",
