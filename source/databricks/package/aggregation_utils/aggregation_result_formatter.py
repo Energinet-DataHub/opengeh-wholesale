@@ -46,11 +46,11 @@ def create_dataframe_from_aggregation_result_schema(
 
     return SparkSession.builder.getOrCreate().createDataFrame(
         result.select(
-            lit(metadata.JobId).alias(Colname.job_id),
-            lit(metadata.SnapshotId).alias(Colname.snapshot_id),
-            lit(metadata.ResultId).alias(Colname.result_id),
-            lit(metadata.ResultName).alias(Colname.result_name),
-            lit(metadata.ResultPath).alias(Colname.result_path),
+            #  lit(metadata.JobId).alias(Colname.job_id),
+            #  lit(metadata.SnapshotId).alias(Colname.snapshot_id),
+            #  lit(metadata.ResultId).alias(Colname.result_id),
+            #  lit(metadata.ResultName).alias(Colname.result_name),
+            #  lit(metadata.ResultPath).alias(Colname.result_path),
             Colname.grid_area,
             Colname.in_grid_area,
             Colname.out_grid_area,
