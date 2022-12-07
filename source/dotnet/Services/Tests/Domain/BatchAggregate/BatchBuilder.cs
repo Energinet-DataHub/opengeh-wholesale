@@ -23,16 +23,34 @@ namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 
 public class BatchBuilder
 {
+    private readonly IClock _clock = SystemClock.Instance;
     private readonly Instant _periodStart = Instant.FromDateTimeOffset(DateTimeOffset.Now);
     private readonly Instant _periodEnd = Instant.FromDateTimeOffset(DateTimeOffset.Now).PlusHours(1);
 
     private BatchExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
-    private IClock _clock = SystemClock.Instance;
 
-    public BatchBuilder WithState(BatchExecutionState state)
+    public BatchBuilder WithStateSubmitted()
     {
-        _state = state;
+        _state = BatchExecutionState.Submitted;
+        return this;
+    }
+
+    public BatchBuilder WithStatePending()
+    {
+        _state = BatchExecutionState.Pending;
+        return this;
+    }
+
+    public BatchBuilder WithStateExecuting()
+    {
+        _state = BatchExecutionState.Executing;
+        return this;
+    }
+
+    public BatchBuilder WithStateCompleted()
+    {
+        _state = BatchExecutionState.Completed;
         return this;
     }
 
@@ -51,8 +69,35 @@ public class BatchBuilder
     public Batch Build()
     {
         var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes, _periodStart, _periodEnd, _clock);
-        if (_state != null)
-            batch.SetPrivateProperty(b => b.ExecutionState, _state);
+        var jobRunId = new JobRunId(new Random().Next(1, 1000));
+
+        if (_state == BatchExecutionState.Submitted)
+        {
+            batch.MarkAsSubmitted(jobRunId);
+        }
+        else if (_state == BatchExecutionState.Pending)
+        {
+            batch.MarkAsSubmitted(jobRunId);
+            batch.MarkAsPending();
+        }
+        else if (_state == BatchExecutionState.Executing)
+        {
+            batch.MarkAsSubmitted(jobRunId);
+            batch.MarkAsPending();
+            batch.MarkAsExecuting();
+        }
+        else if (_state == BatchExecutionState.Completed)
+        {
+            batch.MarkAsSubmitted(jobRunId);
+            batch.MarkAsPending();
+            batch.MarkAsExecuting();
+            batch.MarkAsCompleted();
+        }
+        else if (_state != null)
+        {
+            throw new NotImplementedException();
+        }
+
         return batch;
     }
 }

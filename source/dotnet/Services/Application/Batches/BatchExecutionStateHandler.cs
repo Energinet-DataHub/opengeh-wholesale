@@ -55,7 +55,7 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Exception caught while trying to update execution state for run ID {batch.RunId}");
+                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {BatchRunId}", batch.RunId);
             }
         }
 
@@ -69,7 +69,7 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
             JobState.Pending => BatchExecutionState.Pending,
             JobState.Running => BatchExecutionState.Executing,
             JobState.Completed => BatchExecutionState.Completed,
-            JobState.Canceled => BatchExecutionState.Failed,
+            JobState.Canceled => BatchExecutionState.Canceled,
             JobState.Failed => BatchExecutionState.Failed,
             _ => throw new ArgumentOutOfRangeException(nameof(jobState), jobState, "Unexpected JobState."),
         };
@@ -91,6 +91,11 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
                 break;
             case BatchExecutionState.Failed:
                 batch.MarkAsFailed();
+                break;
+            case BatchExecutionState.Canceled:
+                // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
+                // Setting batch state back to "created" ensure they will be picked up and started again
+                batch.Reset();
                 break;
             default:
                 throw new ArgumentOutOfRangeException($"Unexpected execution state: {state.ToString()}.");

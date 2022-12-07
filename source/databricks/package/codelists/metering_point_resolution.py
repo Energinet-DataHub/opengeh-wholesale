@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import IntEnum
+from enum import Enum
 
 
-class MeteringPointResolution(IntEnum):
+class MeteringPointResolution(Enum):
     "Resolution values used in contracts exposed by the metering point domain."
-    hour = 1
-    quarterly = 2
+    hour = "PT1H"
+    quarterly = "PT15M"

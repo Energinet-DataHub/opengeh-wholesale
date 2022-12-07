@@ -29,7 +29,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     ):
         df = [
             {
-                "GsrnNumber": "a-gsrn-number",
+                "MeteringPointId": "a-metering-point-id",
                 "GridAreaCode": grid_area_code,
                 "MeteringPointType": "the_metering_point_type",
                 "EffectiveDate": timestamp_factory("2022-01-01T22:00:00.000Z"),

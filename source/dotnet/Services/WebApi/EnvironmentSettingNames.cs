@@ -31,7 +31,7 @@ namespace Energinet.DataHub.Wholesale.WebApi
         public const string InternalOpenIdUrl = "INTERNAL_OPEN_ID_URL";
         public const string BackendAppId = "BACKEND_SERVICE_APP_ID";
 
-        public const string CalculationStorageConnectionString = "CALCULATION_STORAGE_CONNECTION_STRING";
-        public const string CalculationStorageContainerName = "CALCULATION_STORAGE_CONTAINER_NAME";
+        public const string CalculationStorageConnectionString = "STORAGE_CONNECTION_STRING";
+        public const string CalculationStorageContainerName = "STORAGE_CONTAINER_NAME";
     }
 }

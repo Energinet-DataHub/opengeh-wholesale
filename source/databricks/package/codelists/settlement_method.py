@@ -12,12 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import IntEnum
+from enum import Enum
 
 
-class SettlementMethod(IntEnum):
-    "SettlementMethod values used in contracts exposed by the metering point domain."
-    unknown = 0
-    profiled = 1
-    nonprofiled = 2
-    flex = 3
+class SettlementMethod(Enum):
+    nonprofiled = "E02"
+    flex = "D01"

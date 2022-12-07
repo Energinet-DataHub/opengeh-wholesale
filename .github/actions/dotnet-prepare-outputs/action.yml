@@ -71,3 +71,13 @@ runs:
           --no-restore \
           --configuration Release \
           --output '${{ inputs.OUTPUT_PATH }}\databasemigration'
+
+    - name: Publish Domain Tests
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\Services\DomainTests\DomainTests.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '${{ inputs.OUTPUT_PATH }}\domaintests'

@@ -1,0 +1,20 @@
+﻿{
+  // Settings can be overridden per environment in Wholesale CD workflows.
+
+  // Use this on developer machine to toggle tests while developing them.
+  // Should be set 'false' using an environment variable on the build agent, to run these after deployment.
+  "DOMAINFACT_SKIP": true,
+
+  // B2C information that allows us to retrieve an access token from tests:
+  // => Key vault containing relevant B2C information (url's, usernames, secrets etc.)
+  "AZURE_B2CSECRETS_KEYVAULT_URL": "<B2C information key vault url>",
+  // => Environment part of key vault secret name, as some exists per environment.
+  "ENVIRONMENT_SHORT": "<short name of environment; e.g. 'u'>",
+  "ENVIRONMENT_INSTANCE": "<instance number of environment; e.g. '001'>",
+  // => User identification part of key vault secret name, as some has multiple settings.
+  "USER": "<user identification part of user related key vault secrets; e.g. 'dh' for 'B2C-u001-dh-username'>'",
+
+  // Domain specific variables used in tests.
+  "WEBAPI_BASEADDRESS": "<Wholesale Web API base address in live environment>",
+  "EXISTING_BATCHID": "<An existing batch id in live environment>"
+}
