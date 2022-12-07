@@ -14,3 +14,4 @@
 """
 By having a __init__.py in this directory, submodules are included when building wheel file
 """
+from .start import start_aggregations

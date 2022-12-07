@@ -50,6 +50,7 @@ from package.schemas import (
 from package.db_logging import debug
 from datetime import timedelta, datetime
 from decimal import Decimal
+from package.aggregation_utils.start import start_aggregations
 
 ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE = "EnergySupplierChanged"
 METERING_POINT_CREATED_MESSAGE_TYPE = "MeteringPointCreated"
@@ -87,7 +88,15 @@ def calculate_balance_fixing_total_production(
         period_start_datetime,
         period_end_datetime,
     )
+    print("timeseries_points")
+    timeseries_points.printSchema()
+    timeseries_points.show()
 
+    print("enriched_time_series_point_df")
+    enriched_time_series_point_df.printSchema()
+    enriched_time_series_point_df.show()
+
+    start_aggregations(enriched_time_series_point_df)
     time_series_basis_data_df = _get_time_series_basis_data(
         enriched_time_series_point_df, time_zone
     )
@@ -316,6 +325,8 @@ def _get_enriched_time_series_points_df(
             master_basis_data_renamed_df["master_MeteringpointId"],
             "MeteringPointType",
             master_basis_data_renamed_df["master_Resolution"],
+            master_basis_data_renamed_df["ToGridAreaCode"],
+            master_basis_data_renamed_df["FromGridAreaCode"],
             "Time",
             "Quantity",
             "Quality",

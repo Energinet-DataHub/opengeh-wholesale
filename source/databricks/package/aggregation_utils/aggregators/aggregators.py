@@ -40,15 +40,18 @@ def aggregate_net_exchange_per_neighbour_ga(
     results: dict, metadata: Metadata
 ) -> DataFrame:
     df = (
-        results[ResultKeyName.aggregation_base_dataframe]
-        .filter(
+        results[ResultKeyName.aggregation_base_dataframe].filter(
             col(Colname.metering_point_type) == MarketEvaluationPointType.exchange.value
         )
-        .filter(
-            (col(Colname.connection_state) == ConnectionState.connected.value)
-            | (col(Colname.connection_state) == ConnectionState.disconnected.value)
-        )
+        ## move v8 poc: is already filtered in the enriched timeseries
+        ## .filter(
+        ##     (col(Colname.connection_state) == ConnectionState.connected.value)
+        ##     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
+        ## )
     )
+    print("-------------------------")
+    df.show()
+    df.printSchema()
     exchange_in = (
         df.groupBy(
             Colname.in_grid_area,

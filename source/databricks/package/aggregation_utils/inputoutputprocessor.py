@@ -14,7 +14,7 @@
 
 
 from geh_stream.codelists import Colname, DateFormat
-from geh_stream.shared.services import CoordinatorService, StorageAccountService
+from package.shared.services import CoordinatorService, StorageAccountService
 from pyspark.sql.functions import col, date_format
 from pyspark.sql import DataFrame
 
