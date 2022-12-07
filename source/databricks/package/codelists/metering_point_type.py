@@ -15,7 +15,7 @@
 from enum import Enum
 
 
-class NewMeteringPointType(Enum):
+class MeteringPointType(Enum):
     production = "E18"
     consumption = "E17"
     exchange = "E20"
