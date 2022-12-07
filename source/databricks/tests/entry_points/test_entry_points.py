@@ -14,6 +14,7 @@
 
 import subprocess
 
+
 def test__entry_point__start_calculator__returns_0(installed_package):
     exit_code = subprocess.call(["start_calculator", "-h"])
     assert exit_code == 0
