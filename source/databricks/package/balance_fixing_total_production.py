@@ -33,7 +33,6 @@ from pyspark.sql.functions import (
     least,
 )
 from pyspark.sql.types import (
-    StringType,
     DecimalType,
 )
 from pyspark.sql.window import Window
@@ -43,10 +42,7 @@ from package.codelists import (
     TimeSeriesQuality,
     MeteringPointResolution,
 )
-from package.schemas import (
-    grid_area_updated_event_schema,
-    metering_point_generic_event_schema,
-)
+
 from package.db_logging import debug
 from datetime import timedelta, datetime
 from decimal import Decimal
@@ -61,13 +57,10 @@ def calculate_balance_fixing_total_production(
     metering_points_periods_df: DataFrame,
     market_roles_periods_df: DataFrame,
     batch_grid_areas_df: DataFrame,
-    batch_snapshot_datetime: datetime,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
 ) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
-    "Returns tuple (result_df, (time_series_quarter_basis_data_df, time_series_hour_basis_data_df))"
-    "TODO: is this correct?"
 
     master_basis_data_df = _get_master_basis_data_df(
         metering_points_periods_df,
@@ -121,12 +114,6 @@ def _check_all_grid_areas_have_metering_points(
         raise Exception(
             f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"
         )
-
-
-def _get_time_series_points_df(
-    all_time_series_points_df: DataFrame, batch_snapshot_datetime: datetime
-) -> DataFrame:
-    return all_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
 
 
 def _get_master_basis_data_df(

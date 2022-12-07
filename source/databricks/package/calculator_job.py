@@ -13,8 +13,14 @@
 # limitations under the License.
 
 import sys
-
 import configargparse
+from .calculator_args import CalculatorArgs
+from .args_helper import valid_date, valid_list, valid_log_level
+from .datamigration import islocked
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col
+from pyspark.sql.types import Row
+from configargparse import argparse
 from package import (
     calculate_balance_fixing_total_production,
     db_logging,
@@ -23,13 +29,6 @@ from package import (
     initialize_spark,
     log,
 )
-from .calculator_args import CalculatorArgs
-from .args_helper import valid_date, valid_list, valid_log_level
-from .datamigration import islocked
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col
-from pyspark.sql.types import Row
-from configargparse import argparse
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -41,7 +40,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     # Infrastructure settings
     p.add("--data-storage-account-name", type=str, required=True)
     p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--time-series-points-path", type=str, required=True)
     p.add("--time-zone", type=str, required=True)
 
     # Run parameters
@@ -75,13 +73,7 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
 
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
-    # Only points stored before the snapshot_datetime are needed.
-    # raw_time_series_points_df = (
-    #     spark.read.option("mergeSchema", "true")
-    #     .parquet(args.time_series_points_path)
-    #     .withColumnRenamed("GsrnNumber", "MeteringPointId")
-    # )
-    new_timeseries_points = spark.read.option("header", "true").csv(
+    timeseries_points = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/TimeSeriesPoints.csv"
     )
     metering_points_periods_df = spark.read.option("header", "true").csv(
@@ -99,11 +91,10 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing_total_production(
-        new_timeseries_points,
+        timeseries_points,
         metering_points_periods_df,
         market_roles_periods_df,
         batch_grid_areas_df,
-        args.batch_snapshot_datetime,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.time_zone,
@@ -167,7 +158,6 @@ def _start(command_line_args: list[str]) -> None:
     calculator_args = CalculatorArgs(
         data_storage_account_name=args.data_storage_account_name,
         data_storage_account_key=args.data_storage_account_key,
-        time_series_points_path=args.time_series_points_path,
         process_results_path=infrastructure.get_process_results_path(
             args.data_storage_account_name
         ),
@@ -176,7 +166,6 @@ def _start(command_line_args: list[str]) -> None:
         ),
         batch_id=args.batch_id,
         batch_grid_areas=args.batch_grid_areas,
-        batch_snapshot_datetime=args.batch_snapshot_datetime,
         batch_period_start_datetime=args.batch_period_start_datetime,
         batch_period_end_datetime=args.batch_period_end_datetime,
         time_zone=args.time_zone,
