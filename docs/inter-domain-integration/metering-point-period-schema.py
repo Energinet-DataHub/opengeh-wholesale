@@ -107,7 +107,7 @@ metering_point_period_schema = StructType(
         
         # The to-date of the period. The to-date must be the UTC time of the begining of a date in the given timezone/DST.
         # The moment is exclusive.
-        # The date of the last period is null.
+        # The date of the last period is null when the metering point has not been closed down. Otherwise null.
         # Used in balance fixing and settlement.
         StructField("ToDate", TimestampType(), True),
        

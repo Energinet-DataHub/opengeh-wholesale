@@ -76,7 +76,7 @@ charge_period_schema = StructType(
         
         # The to-date of the period. The to-date must be the UTC time of the begining of a date in the given timezone/DST.
         # The moment is exclusive.
-        # The date of the last period is null. TODO
+        # The date of the last period is null.
         StructField("ToDate", TimestampType(), True),
        
         # The year part of the `ToDate`. Used for partitioning.
