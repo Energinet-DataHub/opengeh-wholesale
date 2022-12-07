@@ -10,7 +10,7 @@
       },
       {
         "name": "quality",
-        "type": "long"
+        "type": "string"
       },
       {
         "name": "quarter_time",
