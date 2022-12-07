@@ -34,7 +34,7 @@ charge_price_point_schema = StructType(
         # The ID is only guaranteed to be unique for a specific actor and charge type.
         # The ID is provided by the charge owner (actor).
         # Example: 0010643756
-        StructField("SenderProvidedChargeId", StringType(), False),
+        StructField("ChargeId", StringType(), False),
 
         # "subscription" | "fee" | "tariff"
         # Example: subscription

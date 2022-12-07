@@ -52,7 +52,7 @@ charge_period_schema = StructType(
         # Example: 8100000000030
         StructField("ChargeOwnerId", StringType(), False),
 
-        # "PT1H" (hourly) | "PT15M" (quarterly)
+        # "PT1H" (hourly) | "PT1D" (daily)
         # Monthly values need to be converted to daily values before using in calculations.
         # Example: PT1H
         StructField("Resolution", StringType(), False),
