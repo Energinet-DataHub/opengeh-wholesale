@@ -40,5 +40,5 @@ Please note that it may be desirable to move system correction and grid loss met
 The following contracts are used only in settlement:
 
 - [imbalance_price_schema](imbalance-price-schema.py)
-
-Contracts for charges haven't yet been defined.
+- [charge_period_schema](charge-period-schema.py)
+- [charge_price_point_schema](charge-price-point-schema.py)
