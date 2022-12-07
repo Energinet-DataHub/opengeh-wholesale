@@ -56,7 +56,7 @@ from package.aggregation_utils.aggregators import (
 
 from package.aggregation_utils.inputoutputprocessor import InputOutputProcessor
 
-# from geh_stream.codelists import BasisDataKeyName, ResultKeyName
+from geh_stream.codelists import Colname, BasisDataKeyName, ResultKeyName
 
 # from geh_stream.aggregation_utils.trigger_base_arguments import trigger_base_arguments
 
@@ -93,65 +93,71 @@ from package.aggregation_utils.inputoutputprocessor import InputOutputProcessor
 #     io_processor.load_basis_data(spark, BasisDataKeyName.market_roles),
 #     io_processor.load_basis_data(spark, BasisDataKeyName.es_brp_relations),
 # )
-def (enrichs_timeseries):
+
+
+def start_aggregations(enriched_timeseries, spark):
+
+    results = {}
+    # Aggregate quality for aggregated timeseries grouped by grid area, market evaluation point type and time window
+    # results[ResultKeyName.aggregation_base_dataframe] = aggregate_quality(filtered)
+    results[ResultKeyName.aggregation_base_dataframe] = enriched_timeseries
+
+    # Get additional data for grid loss and system correction
+    # results[ResultKeyName.grid_loss_sys_cor_master_data] = io_processor.load_basis_data(
+    #     spark, BasisDataKeyName.grid_loss_sys_corr
+    # )
+
+    # Create a keyvalue dictionary for use in postprocessing. Each result are stored as a keyval with value being dataframe
+    metadate_df = spark.createDataFrame([
+        {
+            Colname.job_id: "",
+            Colname.snapshot_id: "",
+            Colname.result_id: "",
+            Colname.result_name: "",
+            Colname.result_path: ""
+        }
+    ])
+
+    aggregate_net_exchange_per_neighbour_ga(results, metadate_df)
+    aggregate_net_exchange_per_ga(results, metadate_df)
+    aggregate_hourly_consumption(results, metadate_df)
+    aggregate_flex_consumption(results, metadate_df)
+    aggregate_hourly_production(results, metadate_df)
+    calculate_grid_loss(results, metadate_df)
+    calculate_added_system_correction(results, metadate_df)
+    calculate_added_grid_loss(results, metadate_df)
+    combine_added_system_correction_with_master_data(results, metadate_df)  # TODO to be added to results later
+    combine_added_grid_loss_with_master_data(results, metadate_df)  # TODO to be added to results later
+    adjust_flex_consumption(results, metadate_df)
+    adjust_production(results, metadate_df)
+    aggregate_hourly_production_ga_es(results, metadate_df)
+    aggregate_hourly_settled_consumption_ga_es(results, metadate_df)
+    aggregate_flex_settled_consumption_ga_es(results, metadate_df)
+    aggregate_hourly_production_ga_brp(results, metadate_df)
+    aggregate_hourly_settled_consumption_ga_brp(results, metadate_df)
+    aggregate_flex_settled_consumption_ga_brp(results, metadate_df)
+    aggregate_hourly_production_ga(results, metadate_df)
+    aggregate_hourly_settled_consumption_ga(results, metadate_df)
+    aggregate_flex_settled_consumption_ga(results, metadate_df)
+    calculate_total_consumption(results, metadate_df)
+    calculate_residual_ga(results, metadate_df)
+
+
+    # for key, value in args.meta_data_dictionary.items():
+    #     key = int(key)
+    #     results[key] = functions[key](results, Metadata(**value))
+    # 
     
-results = {}
-# Aggregate quality for aggregated timeseries grouped by grid area, market evaluation point type and time window
-results[ResultKeyName.aggregation_base_dataframe] = aggregate_quality(filtered)
-
-# Get additional data for grid loss and system correction
-results[ResultKeyName.grid_loss_sys_cor_master_data] = io_processor.load_basis_data(
-    spark, BasisDataKeyName.grid_loss_sys_corr
-)
-
-# Create a keyvalue dictionary for use in postprocessing. Each result are stored as a keyval with value being dataframe
-metadata =  lit(metadata.JobId).alias(Colname.job_id),
-            lit(metadata.SnapshotId).alias(Colname.snapshot_id),
-            lit(metadata.ResultId).alias(Colname.result_id),
-            lit(metadata.ResultName).alias(Colname.result_name),
-            lit(metadata.ResultPath).alias(Colname.result_path),
-
-
-aggregate_net_exchange_per_neighbour_ga(results, enrichs_timeseries)
-aggregate_net_exchange_per_ga,
-aggregate_hourly_consumption,
-aggregate_flex_consumption,
-aggregate_hourly_production,
-calculate_grid_loss,
-calculate_added_system_correction,
-calculate_added_grid_loss,
-combine_added_system_correction_with_master_data,  # TODO to be added to results later
-combine_added_grid_loss_with_master_data,  # TODO to be added to results later
-adjust_flex_consumption,
-adjust_production,
-aggregate_hourly_production_ga_es,
-aggregate_hourly_settled_consumption_ga_es,
-aggregate_flex_settled_consumption_ga_es,
-aggregate_hourly_production_ga_brp,
-aggregate_hourly_settled_consumption_ga_brp,
-aggregate_flex_settled_consumption_ga_brp,
-aggregate_hourly_production_ga,
-aggregate_hourly_settled_consumption_ga,
-aggregate_flex_settled_consumption_ga,
-calculate_total_consumption,
-calculate_residual_ga,
-
-
-
-for key, value in args.meta_data_dictionary.items():
-    key = int(key)
-    results[key] = functions[key](results, Metadata(**value))
-
-
-# Enable to dump results to local csv files
-# export_to_csv(results)
-
-del results[ResultKeyName.aggregation_base_dataframe]
-del results[ResultKeyName.grid_loss_sys_cor_master_data]
-del results[90]
-del results[100]
-
-# Store aggregation results
-io_processor.do_post_processing(
-    args.process_type, args.job_id, args.result_url, results
-)
+    # Enable to dump results to local csv files
+    # export_to_csv(results)
+    
+    # del results[ResultKeyName.aggregation_base_dataframe]
+    # del results[ResultKeyName.grid_loss_sys_cor_master_data]
+    # del results[90]
+    # del results[100]
+    
+    # Store aggregation results
+    io_processor.do_post_processing(
+        args.process_type, args.job_id, args.result_url, results
+    )
+    
