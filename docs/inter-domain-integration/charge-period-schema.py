@@ -57,17 +57,19 @@ charge_period_schema = StructType(
         # Example: PT1H
         StructField("Resolution", StringType(), False),
 
-        # Specifies whether the charge is tax. Only applies to tarifs.
-        # Must have value for tarifs and must be null for other charge types.
+        # Specifies whether the charge is tax. Applies only to tariffs.
+        # For subscriptions and fees the value must be false.
         # Example: True
-        StructField("IsTax", BooleanType(), True),
+        StructField("IsTax", BooleanType(), False),
 
         # GSRN (18 characters) that uniquely identifies the metering point
+        # The field is from the charge link.
         # Example: 578710000000000103
         StructField("MeteringPointId", StringType(), False),
         
-        # TODO
-        # Quantity (Only for Fees & Subscriptions)
+        # Quantity (also known as factor)
+        # Value is 1 or larger. For tariffs it's always 1.
+        # The field is from the charge link.
         StructField("Quantity", IntegerType(), True),
 
         # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
