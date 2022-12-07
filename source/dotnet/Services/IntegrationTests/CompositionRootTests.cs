@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
-using iel = Energinet.DataHub.Wholesale.IntegrationEventListener;
 using pm = Energinet.DataHub.Wholesale.ProcessManager;
 using wapi = Energinet.DataHub.Wholesale.WebApi;
 
@@ -29,9 +28,6 @@ public class CompositionRootTests
 
     public static IEnumerable<object[]> ProcessManagerFunctions()
         => GetFunctionRequirements(typeof(pm.Program));
-
-    public static IEnumerable<object[]> IntegrationEventListenerFunctions()
-        => GetFunctionRequirements(typeof(iel.Program));
 
     public static IEnumerable<object[]> GetControllerRequirements()
     {
