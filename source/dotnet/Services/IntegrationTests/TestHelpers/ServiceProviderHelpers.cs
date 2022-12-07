@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 internal static class ServiceProviderHelpers
 {
     /// <summary>
-    /// Check if all needed types are registered in <see cref="IServiceProvider"/>
+    /// Check if all needed types are already registered in <see cref="IServiceProvider"/>
     /// </summary>
     /// <param name="services">All registered services</param>
     /// <param name="requirement">Requirement to be fulfilled</param>
