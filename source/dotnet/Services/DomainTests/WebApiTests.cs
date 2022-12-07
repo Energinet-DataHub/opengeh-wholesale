@@ -115,8 +115,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             public async Task When_CreatingBatch_Then_BatchIsEventuallyCompleted()
             {
                 // Arrange
-                var startDate = new DateTimeOffset(2018, 1, 1, 8, 6, 32, TimeSpan.Zero);
-                var endDate = new DateTimeOffset(2018, 1, 2, 8, 6, 32, TimeSpan.Zero);
+                var startDate = new DateTimeOffset(2022, 10, 30, 23, 0, 0, TimeSpan.Zero);
+                var endDate = new DateTimeOffset(2022, 11, 1, 23, 0, 0, TimeSpan.Zero);
                 var batchRequestDto = new BatchRequestDto(ProcessType.BalanceFixing, new List<string> { "805" }, startDate, endDate);
 
                 // Act
