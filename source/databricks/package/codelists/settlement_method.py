@@ -15,7 +15,6 @@
 from enum import Enum
 
 
-class NewMeteringPointResolution(Enum):
-    "Resolution values used in contracts exposed by the metering point domain."
-    hour = "PT1H"
-    quarterly = "PT15M"
+class SettlementMethod(Enum):
+    nonprofiled = "E02"
+    flex = "D01"

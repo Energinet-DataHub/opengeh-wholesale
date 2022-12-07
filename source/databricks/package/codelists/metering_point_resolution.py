@@ -15,9 +15,7 @@
 from enum import Enum
 
 
-class NewConnectionState(Enum):
-    not_used = "D01"
-    closed_down = "D02"
-    new = "D03"
-    connected = "E22"
-    disconnected = "E23"
+class MeteringPointResolution(Enum):
+    "Resolution values used in contracts exposed by the metering point domain."
+    hour = "PT1H"
+    quarterly = "PT15M"

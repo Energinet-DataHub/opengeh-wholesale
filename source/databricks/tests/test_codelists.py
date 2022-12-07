@@ -53,7 +53,7 @@ def test_quality_is_subset_of_contract(source_path):
 
 def test_timeseries_quality_enum_equals_timeseries_contract(source_path):
     assert_codelist_matches_contract(
-        NewTimeSeriesQuality,
+        TimeSeriesQuality,
         f"{source_path}/contracts/time-series-domain/time-series-quality.json",
     )
 
