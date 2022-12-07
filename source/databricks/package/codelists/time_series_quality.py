@@ -15,6 +15,8 @@
 from enum import Enum
 
 
-class NewSettlementMethod(Enum):
-    nonprofiled = "E02"
-    flex = "D01"
+class TimeSeriesQuality(Enum):
+    missing = "A02"
+    estimated = "A03"
+    measured = "A04"
+    calculated = "A06"

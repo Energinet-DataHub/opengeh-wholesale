@@ -19,10 +19,10 @@ from package.balance_fixing_total_production import (
     _get_master_basis_data_df,
 )
 from package.codelists import (
-    NewConnectionState,
-    NewMeteringPointType,
-    NewSettlementMethod,
-    NewMeteringPointResolution,
+    ConnectionState,
+    MeteringPointType,
+    SettlementMethod,
+    MeteringPointResolution,
 )
 
 from pyspark.sql.functions import col
@@ -35,10 +35,10 @@ grid_area_code = "805"
 grid_area_link_id = "the-grid-area-link-id"
 metering_point_id = "the-metering-point-id"
 energy_supplier_id = "the-energy-supplier-id"
-metering_point_type = NewMeteringPointType.production.value
-settlement_method = NewSettlementMethod.flex.value
-connection_state = NewConnectionState.connected.value
-resolution = NewMeteringPointResolution.hour.value
+metering_point_type = MeteringPointType.production.value
+settlement_method = SettlementMethod.flex.value
+connection_state = ConnectionState.connected.value
+resolution = MeteringPointResolution.hour.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%f"
 june_1th = datetime.strptime(
     "2022-06-01T00:00:00.000", date_time_formatting_string
@@ -257,25 +257,25 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                     "EffectiveDate": june_2th,
                     "toEffectiveDate": june_3th,
                     "EnergySupplierId": "1",
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 },
                 {
                     "EffectiveDate": june_3th,
                     "toEffectiveDate": june_5th,
                     "EnergySupplierId": "2",
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 },
                 {
                     "EffectiveDate": june_5th,
                     "toEffectiveDate": june_6th,
                     "EnergySupplierId": "2",
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 },
                 {
                     "EffectiveDate": june_6th,
                     "toEffectiveDate": june_7th,
                     "EnergySupplierId": "3",
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 },
             ],
         ),
@@ -292,7 +292,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                     "EffectiveDate": june_2th,
                     "toEffectiveDate": june_7th,
                     "EnergySupplierId": "2",
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 }
             ],
         ),
@@ -309,7 +309,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                     "EffectiveDate": june_2th,
                     "toEffectiveDate": june_7th,
                     "EnergySupplierId": "1",
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 }
             ],
         ),
@@ -337,7 +337,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                     "EffectiveDate": june_3th,
                     "toEffectiveDate": june_7th,
                     "EnergySupplierId": "1",
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 }
             ],
         ),
@@ -353,12 +353,12 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                 {
                     "FromDate": june_5th,
                     "ToDate": june_6th,
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 },
                 {
                     "FromDate": june_6th,
                     "ToDate": june_7th,
-                    "SettlementMethod": NewSettlementMethod.nonprofiled.value,
+                    "SettlementMethod": SettlementMethod.nonprofiled.value,
                 },
             ],
             [
@@ -366,13 +366,13 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                     "EffectiveDate": june_5th,
                     "toEffectiveDate": june_6th,
                     "EnergySupplierId": "2",
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 },
                 {
                     "EffectiveDate": june_6th,
                     "toEffectiveDate": june_7th,
                     "EnergySupplierId": "3",
-                    "SettlementMethod": NewSettlementMethod.nonprofiled.value,
+                    "SettlementMethod": SettlementMethod.nonprofiled.value,
                 },
             ],
         ),
@@ -389,31 +389,31 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                 {
                     "FromDate": june_2th,
                     "ToDate": june_3th,
-                    "ConnectionState": NewConnectionState.not_used.value,
+                    "ConnectionState": ConnectionState.not_used.value,
                 },
                 # closed_down
                 {
                     "FromDate": june_3th,
                     "ToDate": june_4th,
-                    "ConnectionState": NewConnectionState.closed_down.value,
+                    "ConnectionState": ConnectionState.closed_down.value,
                 },
                 # new
                 {
                     "FromDate": june_4th,
                     "ToDate": june_5th,
-                    "ConnectionState": NewConnectionState.new.value,
+                    "ConnectionState": ConnectionState.new.value,
                 },
                 # connected
                 {
                     "FromDate": june_5th,
                     "ToDate": june_6th,
-                    "ConnectionState": NewConnectionState.connected.value,
+                    "ConnectionState": ConnectionState.connected.value,
                 },
                 # disconnected
                 {
                     "FromDate": june_6th,
                     "ToDate": june_7th,
-                    "ConnectionState": NewConnectionState.disconnected.value,
+                    "ConnectionState": ConnectionState.disconnected.value,
                 },
             ],
             [
@@ -421,13 +421,13 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                     "EffectiveDate": june_5th,
                     "toEffectiveDate": june_6th,
                     "EnergySupplierId": "2",
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 },
                 {
                     "EffectiveDate": june_6th,
                     "toEffectiveDate": june_7th,
                     "EnergySupplierId": "3",
-                    "SettlementMethod": NewSettlementMethod.flex.value,
+                    "SettlementMethod": SettlementMethod.flex.value,
                 },
             ],
         ),
@@ -475,7 +475,7 @@ def test__when_type_is_production__returns_metering_point_period(
     metering_points_periods_df_factory,
 ):
     metering_points_periods_df = metering_points_periods_df_factory(
-        MeteringPointType=NewMeteringPointType.production.value
+        MeteringPointType=MeteringPointType.production.value
     )
     market_roles_periods_df = market_roles_period_df_factory()
 
@@ -495,7 +495,7 @@ def test__when_type_is_not_E18__does_not_returns_metering_point_period(
     metering_points_periods_df_factory,
 ):
     metering_points_periods_df = metering_points_periods_df_factory(
-        MeteringPointType=NewMeteringPointType.consumption.value
+        MeteringPointType=MeteringPointType.consumption.value
     )
     market_roles_periods_df = market_roles_period_df_factory()
 
@@ -535,7 +535,7 @@ def test__metering_points_have_expected_columns(
             & (col("SettlementMethod") == settlement_method)
             & (col("FromGridAreaCode") == "some-in-gride-area")
             & (col("ToGridAreaCode") == "some-out-gride-area")
-            & (col("Resolution") == NewMeteringPointResolution.hour.value)
+            & (col("Resolution") == MeteringPointResolution.hour.value)
             & (col("EnergySupplierId") == energy_supplier_id)
         ).count()
         == 1

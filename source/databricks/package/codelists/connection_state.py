@@ -15,8 +15,9 @@
 from enum import Enum
 
 
-class NewTimeSeriesQuality(Enum):
-    missing = "A02"
-    estimated = "A03"
-    measured = "A04"
-    calculated = "A06"
+class ConnectionState(Enum):
+    not_used = "D01"
+    closed_down = "D02"
+    new = "D03"
+    connected = "E22"
+    disconnected = "E23"
