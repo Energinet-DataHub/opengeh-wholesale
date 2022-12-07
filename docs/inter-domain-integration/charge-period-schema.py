@@ -68,7 +68,7 @@ charge_period_schema = StructType(
         
         # TODO
         # Quantity (Only for Fees & Subscriptions)
-        StructField("Quantity", IntegerType(), False),
+        StructField("Quantity", IntegerType(), True),
 
         # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
         # The date is inclusive.
