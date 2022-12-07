@@ -72,7 +72,7 @@ jobs:
       SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
 
   # Run tests in 'IntegrationTests.dll' NOT within the namespace 'IntegrationEventListener'
-  dotnet_ci_test_integrationtests_part2:
+  dotnet_ci_test_integrationtests_part1:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v9
@@ -116,7 +116,6 @@ jobs:
       # .NET
       dotnet_ci_build,
       dotnet_ci_test_integrationtests_part1,
-      dotnet_ci_test_integrationtests_part2,
       dotnet_ci_test_tests
     ]
     if: |
