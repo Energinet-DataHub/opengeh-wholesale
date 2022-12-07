@@ -42,10 +42,7 @@ from package.codelists import (
     TimeSeriesQuality,
     MeteringPointResolution,
 )
-from package.schemas import (
-    grid_area_updated_event_schema,
-    metering_point_generic_event_schema,
-)
+
 from package.db_logging import debug
 from datetime import timedelta, datetime
 from decimal import Decimal
@@ -117,12 +114,6 @@ def _check_all_grid_areas_have_metering_points(
         raise Exception(
             f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"
         )
-
-
-def _get_time_series_points_df(
-    all_time_series_points_df: DataFrame, batch_snapshot_datetime: datetime
-) -> DataFrame:
-    return all_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
 
 
 def _get_master_basis_data_df(
