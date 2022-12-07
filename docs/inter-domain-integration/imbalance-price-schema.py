@@ -52,8 +52,8 @@ imbalance_price_schema = StructType(
         # The month part of the `Time`. Used for partition.
         StructField("Time_Month", IntegerType(), False),
         
-        # The date part of the `Time`. Used for partition.
-        StructField("Time_Date", IntegerType(), False),
+        # The day part (1-31) of the `Time`. Used for partition.
+        StructField("Time_Day", IntegerType(), False),
         
         # The time when the imbalance price was received from NOIS.
         # TODO Only needed if we don't create snapshots

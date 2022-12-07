@@ -117,7 +117,7 @@ metering_point_period_schema = StructType(
         # The month part of the `ToDate`. Used for partitioning.
         StructField("ToDate_Month", IntegerType(), True),
         
-        # The date part of the `ToDate`. Used for partitioning.
-        StructField("ToDate_Date", IntegerType(), True),
+        # The day part (1-31) of the `ToDate`. Used for partitioning.
+        StructField("ToDate_Day", IntegerType(), True),
     ]
 )
