@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import IntEnum
+from enum import Enum
 
 
-class MeteringPointType(IntEnum):
-    "MeteringPointType values used in contracts exposed by the metering point domain."
-    production = 2
+class MeteringPointType(Enum):
+    production = "E18"
+    consumption = "E17"
+    exchange = "E20"

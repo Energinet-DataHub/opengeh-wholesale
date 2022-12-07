@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import IntEnum
+from enum import Enum
 
 
-class ConnectionState(IntEnum):
-    "ConnectionState values used in contracts exposed by the time series domain."
-    new = 1
-    connected = 2
-    disconnected = 3
-    closedDown = 4
+class ConnectionState(Enum):
+    not_used = "D01"
+    closed_down = "D02"
+    new = "D03"
+    connected = "E22"
+    disconnected = "E23"

@@ -12,13 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import IntEnum
+from enum import Enum
 
 
-class TimeSeriesQuality(IntEnum):
-    "Quality values used in contracts exposed by the time series domain."
-    invalid = 0
-    missing = 2
-    estimated = 3
-    measured = 4
-    calculated = 6
+class TimeSeriesQuality(Enum):
+    missing = "A02"
+    estimated = "A03"
+    measured = "A04"
+    calculated = "A06"
