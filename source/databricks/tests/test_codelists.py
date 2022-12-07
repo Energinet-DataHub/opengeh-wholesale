@@ -54,7 +54,7 @@ def test_quality_is_subset_of_contract(source_path: str) -> None:
 
 def test_timeseries_quality_enum_equals_timeseries_contract(source_path: str) -> None:
     assert_codelist_matches_contract(
-        NewTimeSeriesQuality,
+        TimeSeriesQuality,
         f"{source_path}/contracts/time-series-domain/time-series-quality.json",
     )
 

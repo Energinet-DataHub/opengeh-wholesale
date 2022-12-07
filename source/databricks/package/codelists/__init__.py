@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .new_time_series_quality import NewTimeSeriesQuality
-from .new_metering_point_type import NewMeteringPointType
-from .new_connection_state import NewConnectionState
-from .new_settlement_method import NewSettlementMethod
-from .new_metering_point_resolution import NewMeteringPointResolution
+from .time_series_quality import TimeSeriesQuality
+from .metering_point_type import MeteringPointType
+from .connection_state import ConnectionState
+from .settlement_method import SettlementMethod
+from .metering_point_resolution import MeteringPointResolution

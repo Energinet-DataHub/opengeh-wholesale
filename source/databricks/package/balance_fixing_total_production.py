@@ -38,10 +38,10 @@ from pyspark.sql.types import (
 )
 from pyspark.sql.window import Window
 from package.codelists import (
-    NewConnectionState,
-    NewMeteringPointType,
-    NewTimeSeriesQuality,
-    NewMeteringPointResolution,
+    ConnectionState,
+    MeteringPointType,
+    TimeSeriesQuality,
+    MeteringPointResolution,
 )
 from package.schemas import (
     grid_area_updated_event_schema,
@@ -146,10 +146,10 @@ def _get_master_basis_data_df(
         metering_points_in_grid_area.where(col("FromDate") < period_end_datetime)
         .where(col("ToDate") > period_start_datetime)
         .where(
-            (col("ConnectionState") == NewConnectionState.connected.value)
-            | (col("ConnectionState") == NewConnectionState.disconnected.value)
+            (col("ConnectionState") == ConnectionState.connected.value)
+            | (col("ConnectionState") == ConnectionState.disconnected.value)
         )
-        .where(col("MeteringPointType") == NewMeteringPointType.production.value)
+        .where(col("MeteringPointType") == MeteringPointType.production.value)
     )
 
     market_roles_periods_df = market_roles_periods_df.where(
@@ -237,10 +237,10 @@ def _get_enriched_time_series_points_df(
     ).where(col("Time") < period_end_datetime)
 
     quarterly_mp_df = master_basis_data_df.where(
-        col("Resolution") == NewMeteringPointResolution.quarterly.value
+        col("Resolution") == MeteringPointResolution.quarterly.value
     )
     hourly_mp_df = master_basis_data_df.where(
-        col("Resolution") == NewMeteringPointResolution.hour.value
+        col("Resolution") == MeteringPointResolution.hour.value
     )
 
     exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
@@ -366,13 +366,13 @@ def _get_time_series_basis_data(
 
     time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        NewMeteringPointResolution.quarterly.value,
+        MeteringPointResolution.quarterly.value,
         time_zone,
     )
 
     time_series_hour_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        NewMeteringPointResolution.hour.value,
+        MeteringPointResolution.hour.value,
         time_zone,
     )
 
@@ -436,7 +436,7 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
         enriched_time_series_points_df.withColumn(
             "quarter_times",
             when(
-                col("Resolution") == NewMeteringPointResolution.hour.value,
+                col("Resolution") == MeteringPointResolution.hour.value,
                 array(
                     col("time"),
                     col("time") + expr("INTERVAL 15 minutes"),
@@ -444,7 +444,7 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
             ).when(
-                col("Resolution") == NewMeteringPointResolution.quarterly.value,
+                col("Resolution") == MeteringPointResolution.quarterly.value,
                 array(col("time")),
             ),
         )
@@ -456,10 +456,10 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
         .withColumn(
             "quarter_quantity",
             when(
-                col("Resolution") == NewMeteringPointResolution.hour.value,
+                col("Resolution") == MeteringPointResolution.hour.value,
                 col("Quantity") / 4,
             ).when(
-                col("Resolution") == NewMeteringPointResolution.quarterly.value,
+                col("Resolution") == MeteringPointResolution.quarterly.value,
                 col("Quantity"),
             ),
         )
@@ -469,23 +469,23 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
             "Quality",
             when(
                 array_contains(
-                    col("collect_set(Quality)"), lit(NewTimeSeriesQuality.missing.value)
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
                 ),
-                lit(NewTimeSeriesQuality.missing.value),
+                lit(TimeSeriesQuality.missing.value),
             )
             .when(
                 array_contains(
                     col("collect_set(Quality)"),
-                    lit(NewTimeSeriesQuality.estimated.value),
+                    lit(TimeSeriesQuality.estimated.value),
                 ),
-                lit(NewTimeSeriesQuality.estimated.value),
+                lit(TimeSeriesQuality.estimated.value),
             )
             .when(
                 array_contains(
                     col("collect_set(Quality)"),
-                    lit(NewTimeSeriesQuality.measured.value),
+                    lit(TimeSeriesQuality.measured.value),
                 ),
-                lit(NewTimeSeriesQuality.measured.value),
+                lit(TimeSeriesQuality.measured.value),
             ),
         )
         .withColumnRenamed("Quality", "quality")
@@ -509,7 +509,7 @@ def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
         )
         .withColumn(
             "quality",
-            when(col("quality").isNull(), NewTimeSeriesQuality.missing.value).otherwise(
+            when(col("quality").isNull(), TimeSeriesQuality.missing.value).otherwise(
                 col("quality")
             ),
         )
