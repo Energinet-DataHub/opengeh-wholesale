@@ -54,15 +54,6 @@ public class CompositionRootTests
     }
 
     [Theory]
-    [MemberData(nameof(IntegrationEventListenerFunctions))]
-    public async Task IntegrationEventListener_can_resolve_dependencies_for(Requirement requirement)
-    {
-        using var host = await IntegrationEventListenerIntegrationTestHost.CreateAsync();
-        await using var scope = host.BeginScope();
-        Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
-    }
-
-    [Theory]
     [MemberData(nameof(GetControllerRequirements))]
     public async Task WebApi_can_resolve_dependencies_for(Requirement requirement)
     {
