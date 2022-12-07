@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 3.4.1
+
+Bump version as part of pipeline change.
+
 ## Version 3.4.0
 
 Return batch ID from `WholesaleClient.CreateBatchAsync()`
