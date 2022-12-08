@@ -122,7 +122,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
     # First repartition to co-locate all rows for a grid area on a single executor.
     # This ensures that only one file is being written/created for each grid area
-    # when writing/creating the files. The partition by creates a folder for each grid area.
+    # When writing/creating the files. The partition by creates a folder for each grid area.
     # result/
     (
         result_df.withColumnRenamed("GridAreaCode", "grid_area")
