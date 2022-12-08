@@ -25,7 +25,7 @@ from pyspark.sql.types import (
 Schema for charge periods
 
 Charge periods are only used in settlement.
-Periods (given by `FromDate` and `ToDate`) must not overlap and must not have gaps in between.
+Periods (given by `FromDate` and `ToDate`) must not overlap but may have gaps. Gaps may occur if the link has been removed for a period before being added again.
 All but the `ToDate` of the last period must have value. The `ToDate` of the last period is null.
 
 Data must be stored in a Delta table.
