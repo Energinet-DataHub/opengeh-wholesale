@@ -199,11 +199,11 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
 # What about market participant periods outside the selected period?
 def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with_expected_energy_supplier_and_dates(
     batch_grid_areas_df: DataFrame,
-    energy_supplier_period_df_factory: Callable[..., DataFrame],
+    energy_supplier_periods_df_factory: Callable[..., DataFrame],
     metering_points_periods_df_factory: Callable[..., DataFrame],
 ):
     metering_points_periods_df = metering_points_periods_df_factory()
-    energy_supplier_periods_df = energy_supplier_period_df_factory(
+    energy_supplier_periods_df = energy_supplier_periods_df_factory(
         periods=[
             {"FromDate": june_1th, "ToDate": june_2th, "EnergySupplierId": "1"},
             {"FromDate": june_2th, "ToDate": june_3th, "EnergySupplierId": "2"},
