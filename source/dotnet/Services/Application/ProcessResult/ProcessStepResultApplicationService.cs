@@ -47,7 +47,7 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
             .ToList();
 
         return new ProcessStepResultDto(
-            MeteringPointType.Production,
+            ProcessStepMeteringPointType.Production,
             pointsDto.Sum(x => x.Quantity),
             pointsDto.Min(x => x.Quantity),
             pointsDto.Max(x => x.Quantity),
