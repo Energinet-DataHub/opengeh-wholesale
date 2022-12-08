@@ -25,16 +25,12 @@ from pyspark.sql.functions import (
     when,
     explode,
     sum,
-    greatest,
-    least,
 )
 from pyspark.sql.types import (
     DecimalType,
 )
 from pyspark.sql.window import Window
 from package.codelists import (
-    ConnectionState,
-    MeteringPointType,
     TimeSeriesQuality,
     MeteringPointResolution,
 )
@@ -46,30 +42,21 @@ from decimal import Decimal
 
 
 def calculate_balance_fixing(
-    timeseries_points: DataFrame,
     metering_points_periods_df: DataFrame,
-    market_roles_periods_df: DataFrame,
+    timeseries_points: DataFrame,
     batch_grid_areas_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
 ) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
 
-    master_basis_data_df = _get_master_basis_data_df(
-        metering_points_periods_df,
-        market_roles_periods_df,
-        batch_grid_areas_df,
-        period_start_datetime,
-        period_end_datetime,
-    )
-
     _check_all_grid_areas_have_metering_points(
-        batch_grid_areas_df, master_basis_data_df
+        batch_grid_areas_df, metering_points_periods_df
     )
 
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         timeseries_points,
-        master_basis_data_df,
+        metering_points_periods_df,
         period_start_datetime,
         period_end_datetime,
     )
@@ -79,7 +66,7 @@ def calculate_balance_fixing(
     )
 
     output_master_basis_data_df = basis_data.get_master_basis_data_df(
-        master_basis_data_df, period_start_datetime, period_end_datetime
+        metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
     result_df = _get_result_df(enriched_time_series_point_df)
@@ -107,103 +94,6 @@ def _check_all_grid_areas_have_metering_points(
         raise Exception(
             f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"
         )
-
-
-def _get_master_basis_data_df(
-    metering_points_periods_df: DataFrame,
-    market_roles_periods_df: DataFrame,
-    grid_area_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
-) -> DataFrame:
-    metering_points_in_grid_area = metering_points_periods_df.join(
-        grid_area_df,
-        metering_points_periods_df["GridArea"] == grid_area_df["GridAreaCode"],
-        "inner",
-    )
-
-    metering_point_periods_df = (
-        metering_points_in_grid_area.where(col("FromDate") < period_end_datetime)
-        .where(col("ToDate") > period_start_datetime)
-        .where(
-            (col("ConnectionState") == ConnectionState.connected.value)
-            | (col("ConnectionState") == ConnectionState.disconnected.value)
-        )
-        .where(col("MeteringPointType") == MeteringPointType.production.value)
-    )
-
-    market_roles_periods_df = market_roles_periods_df.where(
-        col("FromDate") < period_end_datetime
-    ).where(col("ToDate") > period_start_datetime)
-
-    master_basis_data_df = (
-        metering_point_periods_df.join(
-            market_roles_periods_df,
-            (
-                metering_point_periods_df["MeteringPointId"]
-                == market_roles_periods_df["MeteringPointId"]
-            )
-            & (
-                market_roles_periods_df["FromDate"]
-                < metering_point_periods_df["ToDate"]
-            )
-            & (
-                metering_point_periods_df["FromDate"]
-                < market_roles_periods_df["ToDate"]
-            ),
-            "left",
-        )
-        .withColumn(
-            "EffectiveDate",
-            greatest(
-                metering_point_periods_df["FromDate"],
-                market_roles_periods_df["FromDate"],
-            ),
-        )
-        .withColumn(
-            "toEffectiveDate",
-            least(
-                metering_point_periods_df["ToDate"], market_roles_periods_df["ToDate"]
-            ),
-        )
-        .withColumn(
-            "EffectiveDate",
-            when(
-                col("EffectiveDate") < period_start_datetime, period_start_datetime
-            ).otherwise(col("EffectiveDate")),
-        )
-        .withColumn(
-            "toEffectiveDate",
-            when(
-                col("toEffectiveDate") > period_end_datetime, period_end_datetime
-            ).otherwise(col("toEffectiveDate")),
-        )
-    )
-
-    master_basis_data_df = master_basis_data_df.select(
-        metering_point_periods_df["MeteringPointId"],
-        "GridAreaCode",
-        "EffectiveDate",
-        "toEffectiveDate",
-        "MeteringPointType",
-        "SettlementMethod",
-        metering_point_periods_df["ToGridAreaCode"],
-        metering_point_periods_df["FromGridAreaCode"],
-        "Resolution",
-        market_roles_periods_df["EnergySupplierId"],
-    )
-    debug(
-        "Metering point events before join with grid areas",
-        metering_point_periods_df.orderBy(col("FromDate").desc()),
-    )
-
-    debug(
-        "Metering point periods",
-        metering_point_periods_df.orderBy(
-            col("GridAreaCode"), col("MeteringPointId"), col("FromDate")
-        ),
-    )
-    return master_basis_data_df
 
 
 def _get_enriched_time_series_points_df(

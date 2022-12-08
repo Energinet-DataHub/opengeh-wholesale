@@ -17,6 +17,7 @@ import configargparse
 from .calculator_args import CalculatorArgs
 from .args_helper import valid_date, valid_list, valid_log_level
 from .datamigration import islocked
+import package.calculation_input as calculation_input
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
@@ -73,27 +74,34 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
 
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
-    timeseries_points = spark.read.option("header", "true").csv(
+    timeseries_points_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/TimeSeriesPoints.csv"
     )
     metering_points_periods_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
     )
 
-    market_roles_periods_df = spark.read.option("header", "true").csv(
+    energy_supplier_periods_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/EnergySupplierPeriods.csv"
     )
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
+
+    metering_point_periods_df = calculation_input.get_metering_point_periods_df(
+        metering_points_periods_df,
+        energy_supplier_periods_df,
+        batch_grid_areas_df,
+        args.batch_period_start_datetime,
+        args.batch_period_end_datetime,
+    )
 
     (
         result_df,
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing(
-        timeseries_points,
-        metering_points_periods_df,
-        market_roles_periods_df,
+        metering_point_periods_df,
+        timeseries_points_df,
         batch_grid_areas_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,

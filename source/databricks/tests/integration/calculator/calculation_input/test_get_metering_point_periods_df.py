@@ -15,7 +15,7 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import pytest
-from package.balance_fixing import _get_master_basis_data_df
+from package.calculation_input import get_metering_point_periods_df
 from package.codelists import (
     ConnectionState,
     MeteringPointType,
@@ -186,7 +186,7 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
     metering_points_periods_df = metering_points_periods_df_factory()
     market_roles_periods_df = market_roles_period_df_factory()
 
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
         market_roles_periods_df,
         batch_grid_areas_df,
@@ -209,7 +209,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
             {"FromDate": june_2th, "ToDate": june_3th, "EnergySupplierId": "2"},
         ]
     )
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
         market_roles_periods_df,
         batch_grid_areas_df,
@@ -447,7 +447,7 @@ def test__returns_expected_periods(
         periods=market_roles_periods
     )
 
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
         market_roles_periods_df,
         batch_grid_areas_df,
@@ -476,7 +476,7 @@ def test__when_type_is_production__returns_metering_point_period(
     )
     market_roles_periods_df = market_roles_period_df_factory()
 
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
         market_roles_periods_df,
         batch_grid_areas_df,
@@ -496,7 +496,7 @@ def test__when_type_is_not_E18__does_not_returns_metering_point_period(
     )
     market_roles_periods_df = market_roles_period_df_factory()
 
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
         market_roles_periods_df,
         batch_grid_areas_df,
@@ -514,7 +514,7 @@ def test__metering_points_have_expected_columns(
     metering_points_periods_df = metering_points_periods_df_factory()
     market_roles_periods_df = market_roles_period_df_factory()
 
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
         market_roles_periods_df,
         batch_grid_areas_df,
