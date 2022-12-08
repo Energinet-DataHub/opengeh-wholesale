@@ -16,16 +16,13 @@ from datetime import timedelta
 import pytest
 from package.codelists import MeteringPointResolution, MeteringPointType
 from decimal import Decimal
-from package.balance_fixing_total_production import (
-    _get_time_series_basis_data,
-)
+from package.basis_data import get_time_series_basis_data_dfs
 from pyspark.sql.functions import lit
 from pyspark.sql.types import (
     StructField,
     StringType,
     TimestampType,
     StructType,
-    LongType,
     DecimalType,
 )
 
@@ -136,7 +133,7 @@ def test__has_correct_number_of_quantity_columns_according_to_dst(
         resolution=resolution,
         number_of_points=number_of_points,
     )
-    (quarter_df, hour_df) = _get_time_series_basis_data(
+    (quarter_df, hour_df) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
 
@@ -158,7 +155,7 @@ def test__returns_dataframe_with_quarter_resolution_metering_points(
         resolution=MeteringPointResolution.quarterly.value,
         number_of_points=96,
     )
-    (quarter_df, hour_df) = _get_time_series_basis_data(
+    (quarter_df, hour_df) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
     assert quarter_df.count() == 1
@@ -173,7 +170,7 @@ def test__returns_dataframe_with_hour_resolution_metering_points(
         resolution=MeteringPointResolution.hour.value,
         number_of_points=24,
     )
-    (quarter_df, hour_df) = _get_time_series_basis_data(
+    (quarter_df, hour_df) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
     assert quarter_df.count() == 0
@@ -196,7 +193,7 @@ def test__splits_single_metering_point_with_different_resolution_on_different_da
             number_of_points=24,
         )
     )
-    (quarter_df, hour_df) = _get_time_series_basis_data(
+    (quarter_df, hour_df) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
     assert quarter_df.count() == 1
@@ -210,7 +207,7 @@ def test__returns_expected_quantity_for_each_hour_column(enriched_time_series_fa
         number_of_points=24,
     )
 
-    (_, hour_df) = _get_time_series_basis_data(
+    (_, hour_df) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
 
@@ -230,7 +227,7 @@ def test__returns_expected_quantity_for_each_quarter_column(
         number_of_points=96,
     )
 
-    (quarter_df, _) = _get_time_series_basis_data(
+    (quarter_df, _) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
 
@@ -259,7 +256,7 @@ def test__multiple_dates_are_split_into_rows_for_quarterly_meteringpoints(
         number_of_points=number_of_points,
     )
 
-    (quarter_df, _) = _get_time_series_basis_data(
+    (quarter_df, _) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
 
@@ -284,7 +281,7 @@ def test__multiple_dates_are_split_into_rows_for_hourly_meteringpoints(
         number_of_points=number_of_points,
     )
 
-    (_, hour_df) = _get_time_series_basis_data(
+    (_, hour_df) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
 
@@ -299,7 +296,7 @@ def test__missing_point_has_empty_quantity(
         resolution=MeteringPointResolution.quarterly.value,
         number_of_points=96,
     ).withColumn("Quantity", lit(None).cast(DecimalType()))
-    (quarter_df, _) = _get_time_series_basis_data(
+    (quarter_df, _) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
 
