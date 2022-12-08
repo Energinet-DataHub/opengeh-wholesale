@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 4.0.0
+
+Renamed the `MeteringPointType` to `ProcessStepMeteringPointType`.
+
 ## Version 3.4.0
 
 Return batch ID from `WholesaleClient.CreateBatchAsync()`
