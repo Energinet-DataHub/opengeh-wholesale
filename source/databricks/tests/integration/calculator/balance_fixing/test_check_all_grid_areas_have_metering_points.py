@@ -14,7 +14,7 @@
 
 
 import pytest
-from package.balance_fixing_total_production import (
+from package.balance_fixing import (
     _check_all_grid_areas_have_metering_points,
 )
 from package.codelists import (

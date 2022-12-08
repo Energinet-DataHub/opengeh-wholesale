@@ -45,7 +45,7 @@ from datetime import timedelta, datetime
 from decimal import Decimal
 
 
-def calculate_balance_fixing_total_production(
+def calculate_balance_fixing(
     timeseries_points: DataFrame,
     metering_points_periods_df: DataFrame,
     market_roles_periods_df: DataFrame,
@@ -280,30 +280,24 @@ def _get_enriched_time_series_points_df(
         "MeteringPointId", "master_MeteringpointId"
     ).withColumnRenamed("Resolution", "master_Resolution")
 
-    enriched_points_for_each_metering_point_df = (
-        new_points_for_each_metering_point_df.join(
-            master_basis_data_renamed_df,
-            (
-                master_basis_data_renamed_df["master_MeteringpointId"]
-                == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
-            )
-            & (new_points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
-            & (new_points_for_each_metering_point_df["time"] < col("toEffectiveDate")),
-            "left",
-        ).select(
-            "GridAreaCode",
-            master_basis_data_renamed_df["master_MeteringpointId"],
-            "MeteringPointType",
-            master_basis_data_renamed_df["master_Resolution"],
-            "Time",
-            "Quantity",
-            "Quality",
+    return new_points_for_each_metering_point_df.join(
+        master_basis_data_renamed_df,
+        (
+            master_basis_data_renamed_df["master_MeteringpointId"]
+            == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
         )
+        & (new_points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
+        & (new_points_for_each_metering_point_df["time"] < col("toEffectiveDate")),
+        "left",
+    ).select(
+        "GridAreaCode",
+        master_basis_data_renamed_df["master_MeteringpointId"].alias("MeteringpointId"),
+        "MeteringPointType",
+        master_basis_data_renamed_df["master_Resolution"].alias("Resolution"),
+        "Time",
+        "Quantity",
+        "Quality",
     )
-
-    return enriched_points_for_each_metering_point_df.withColumnRenamed(
-        "master_MeteringpointId", "MeteringpointId"
-    ).withColumnRenamed("master_Resolution", "Resolution")
 
 
 def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:

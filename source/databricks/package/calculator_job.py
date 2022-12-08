@@ -22,7 +22,7 @@ from pyspark.sql.functions import col
 from pyspark.sql.types import Row
 from configargparse import argparse
 from package import (
-    calculate_balance_fixing_total_production,
+    calculate_balance_fixing,
     db_logging,
     debug,
     infrastructure,
@@ -90,7 +90,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         result_df,
         timeseries_basis_data_df,
         master_basis_data_df,
-    ) = calculate_balance_fixing_total_production(
+    ) = calculate_balance_fixing(
         timeseries_points,
         metering_points_periods_df,
         market_roles_periods_df,

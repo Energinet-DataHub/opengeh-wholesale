@@ -15,9 +15,7 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import pytest
-from package.balance_fixing_total_production import (
-    _get_master_basis_data_df,
-)
+from package.balance_fixing import _get_master_basis_data_df
 from package.codelists import (
     ConnectionState,
     MeteringPointType,
@@ -27,7 +25,6 @@ from package.codelists import (
 
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame
-import os
 from typing import Callable
 
 # Factory defaults
