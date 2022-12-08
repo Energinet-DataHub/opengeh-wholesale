@@ -14,7 +14,7 @@
 
 import pytest
 from package.codelists import MeteringPointType, MeteringPointResolution
-from package.balance_fixing_total_production import _get_output_master_basis_data_df
+from package.basis_data import get_master_basis_data_df
 from datetime import datetime
 
 period_start = "2022-06-08T12:22:00.000Z"
@@ -61,7 +61,7 @@ def test__get_master_basis_data_has_expected_columns(
             to_effective_date=timestamp_factory("2022-06-12T22:00:00.000Z"),
         )
     )
-    master_basis_data = _get_output_master_basis_data_df(
+    master_basis_data = get_master_basis_data_df(
         metering_point_period_df, period_start, period_end
     )
 
@@ -90,7 +90,7 @@ def test__each_meteringpoint_has_a_row(
         .union(metering_point_period_df_factory(meteringpoint_id="3"))
     )
 
-    master_basis_data = _get_output_master_basis_data_df(
+    master_basis_data = get_master_basis_data_df(
         metering_point_period_df, period_start, period_end
     )
 
@@ -123,7 +123,7 @@ def test__columns_have_expected_values(
         energy_supplier_id=expected_energy_supplier_id,
     )
 
-    master_basis_data_df = _get_output_master_basis_data_df(
+    master_basis_data_df = get_master_basis_data_df(
         metering_point_period_df, period_start, period_end
     )
 
@@ -154,7 +154,7 @@ def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
         )
     )
 
-    master_basis_data = _get_output_master_basis_data_df(
+    master_basis_data = get_master_basis_data_df(
         metering_point_period_df, period_start, period_end
     )
 
@@ -168,7 +168,7 @@ def test__effective_date_must_not_be_earlier_than_period_start(
     expected_vaild_from = "2022-06-09T12:09:15.000Z"
     metering_point_period_df = metering_point_period_df_factory(meteringpoint_id="1")
 
-    master_basis_data = _get_output_master_basis_data_df(
+    master_basis_data = get_master_basis_data_df(
         metering_point_period_df,
         expected_vaild_from,
         "2022-06-010T12:09:15.000Z",
@@ -185,7 +185,7 @@ def test__to_effective_date_must_not_be_after_period_end(
     expected_vaild_to = "2022-06-010T12:09:15.000Z"
     metering_point_period_df = metering_point_period_df_factory(meteringpoint_id="1")
 
-    master_basis_data = _get_output_master_basis_data_df(
+    master_basis_data = get_master_basis_data_df(
         metering_point_period_df,
         "2022-06-09T12:09:15.000Z",
         expected_vaild_to,

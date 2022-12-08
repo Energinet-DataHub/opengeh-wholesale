@@ -15,15 +15,11 @@
 from pyspark.sql import DataFrame
 
 from pyspark.sql.functions import (
-    concat,
-    first,
     array,
     array_contains,
     lit,
     col,
     collect_set,
-    to_date,
-    from_utc_timestamp,
     row_number,
     expr,
     when,
@@ -44,12 +40,9 @@ from package.codelists import (
 )
 
 from package.db_logging import debug
+import package.basis_data as basis_data
 from datetime import timedelta, datetime
 from decimal import Decimal
-
-ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE = "EnergySupplierChanged"
-METERING_POINT_CREATED_MESSAGE_TYPE = "MeteringPointCreated"
-METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
 
 
 def calculate_balance_fixing_total_production(
@@ -81,11 +74,11 @@ def calculate_balance_fixing_total_production(
         period_end_datetime,
     )
 
-    time_series_basis_data_df = _get_time_series_basis_data(
+    time_series_basis_data_df = basis_data.get_time_series_basis_data_dfs(
         enriched_time_series_point_df, time_zone
     )
 
-    output_master_basis_data_df = _get_output_master_basis_data_df(
+    output_master_basis_data_df = basis_data.get_master_basis_data_df(
         master_basis_data_df, period_start_datetime, period_end_datetime
     )
 
@@ -311,110 +304,6 @@ def _get_enriched_time_series_points_df(
     return enriched_points_for_each_metering_point_df.withColumnRenamed(
         "master_MeteringpointId", "MeteringpointId"
     ).withColumnRenamed("master_Resolution", "Resolution")
-
-
-def _get_output_master_basis_data_df(
-    metering_point_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
-) -> DataFrame:
-    return (
-        metering_point_df.withColumn(
-            "EffectiveDate",
-            when(
-                col("EffectiveDate") < period_start_datetime, period_start_datetime
-            ).otherwise(col("EffectiveDate")),
-        )
-        .withColumn(
-            "toEffectiveDate",
-            when(
-                col("toEffectiveDate") > period_end_datetime, period_end_datetime
-            ).otherwise(col("toEffectiveDate")),
-        )
-        .select(
-            col("GridAreaCode"),  # column is only used for partitioning
-            col("MeteringPointId").alias("METERINGPOINTID"),
-            col("EffectiveDate").alias("VALIDFROM"),
-            col("toEffectiveDate").alias("VALIDTO"),
-            col("GridAreaCode").alias("GRIDAREA"),
-            col("ToGridAreaCode").alias("TOGRIDAREA"),
-            col("FromGridAreaCode").alias("FROMGRIDAREA"),
-            col("MeteringPointType").alias("TYPEOFMP"),
-            col("SettlementMethod").alias("SETTLEMENTMETHOD"),
-            col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
-        )
-    )
-
-
-def _get_time_series_basis_data(
-    enriched_time_series_point_df: DataFrame, time_zone: str
-) -> tuple[DataFrame, DataFrame]:
-    "Returns tuple (time_series_quarter_basis_data, time_series_hour_basis_data)"
-
-    time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
-        enriched_time_series_point_df,
-        MeteringPointResolution.quarterly.value,
-        time_zone,
-    )
-
-    time_series_hour_basis_data_df = _get_time_series_basis_data_by_resolution(
-        enriched_time_series_point_df,
-        MeteringPointResolution.hour.value,
-        time_zone,
-    )
-
-    return (time_series_quarter_basis_data_df, time_series_hour_basis_data_df)
-
-
-def _get_time_series_basis_data_by_resolution(
-    enriched_time_series_point_df: DataFrame,
-    resolution: str,
-    time_zone: str,
-) -> DataFrame:
-    w = Window.partitionBy("MeteringPointId", "localDate").orderBy("time")
-
-    timeseries_basis_data_df = (
-        enriched_time_series_point_df.where(col("Resolution") == resolution)
-        .withColumn("localDate", to_date(from_utc_timestamp(col("time"), time_zone)))
-        .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
-        .withColumn("STARTDATETIME", first("time").over(w))
-        .groupBy(
-            "MeteringPointId",
-            "localDate",
-            "STARTDATETIME",
-            "GridAreaCode",
-            "MeteringPointType",
-            "Resolution",
-        )
-        .pivot("position")
-        .agg(first("Quantity"))
-        .withColumnRenamed("MeteringPointId", "METERINGPOINTID")
-        .withColumn("TYPEOFMP", col("MeteringPointType"))
-    )
-
-    quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data_df)
-    timeseries_basis_data_df = timeseries_basis_data_df.select(
-        "GridAreaCode",
-        "METERINGPOINTID",
-        "TYPEOFMP",
-        "STARTDATETIME",
-        *quantity_columns,
-    )
-    return timeseries_basis_data_df
-
-
-def _get_sorted_quantity_columns(timeseries_basis_data: DataFrame) -> list[str]:
-    def num_sort(col_name: str) -> int:
-        "Extracts the nuber in the string"
-        import re
-
-        return list(map(int, re.findall(r"\d+", col_name)))[0]
-
-    quantity_columns = [
-        c for c in timeseries_basis_data.columns if c.startswith("ENERGYQUANTITY")
-    ]
-    quantity_columns.sort(key=num_sort)
-    return quantity_columns
 
 
 def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
