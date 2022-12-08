@@ -59,7 +59,7 @@ def batch_grid_areas_df(spark) -> DataFrame:
 
 
 @pytest.fixture(scope="module")
-def energy_supplier_period_df_factory(spark):
+def energy_supplier_periods_df_factory(spark):
     def factory(
         EnergySupplierId=energy_supplier_id,
         MeteringPointId=metering_point_id,

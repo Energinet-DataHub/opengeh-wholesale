@@ -36,9 +36,11 @@ def get_metering_point_periods_df(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
+
+    grid_area_df = grid_area_df.withColumnRenamed("GridAreaCode", "ga_GridAreaCode")
     metering_points_in_grid_area = metering_points_periods_df.join(
         grid_area_df,
-        "GridAreaCode",
+        metering_points_periods_df["GridAreaCode"] == grid_area_df["ga_GridAreaCode"],
         "inner",
     )
 
@@ -103,7 +105,7 @@ def get_metering_point_periods_df(
 
     master_basis_data_df = master_basis_data_df.select(
         metering_point_periods_df["MeteringPointId"],
-        "GridAreaCode",
+        metering_point_periods_df["GridAreaCode"],
         "EffectiveDate",
         "toEffectiveDate",
         "MeteringPointType",
