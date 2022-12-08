@@ -16,4 +16,3 @@ from .spark_initializor import initialize_spark
 from .balance_fixing_total_production import calculate_balance_fixing_total_production
 from .db_logging import log, debug, loglevel
 from .args_helper import valid_date, valid_list, valid_log_level
-from . import basis_data
