@@ -98,7 +98,7 @@ def calculate_balance_fixing_total_production(
 
     enriched_time_series_point_df = enriched_time_series_point_df.withColumn(
         "BalanceResponsibleId", lit("1")
-    )
+    )  # this is not the corect value, so this need to be changed
 
     start_aggregations(enriched_time_series_point_df)
     time_series_basis_data_df = _get_time_series_basis_data(

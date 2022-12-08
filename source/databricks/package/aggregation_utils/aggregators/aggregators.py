@@ -200,7 +200,10 @@ def aggregate_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
 def aggregate_hourly_production(results: dict, metadata: Metadata) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe]
     return aggregate_per_ga_and_brp_and_es(
-        df, MarketEvaluationPointType.production, None, metadata
+        df,
+        MarketEvaluationPointType.production,
+        SettlementMethod.non_profiled,
+        metadata,
     )
 
 
