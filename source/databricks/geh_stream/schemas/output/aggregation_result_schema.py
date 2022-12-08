@@ -13,26 +13,52 @@
 # limitations under the License.
 
 from geh_stream.codelists import Colname
-from pyspark.sql.types import DecimalType, IntegerType, StructType, StructField, StringType, TimestampType
+from pyspark.sql.types import (
+    DecimalType,
+    IntegerType,
+    StructType,
+    StructField,
+    StringType,
+    TimestampType,
+)
 
 
-aggregation_result_schema = StructType([
-    StructField(Colname.job_id, StringType(), False),  # from metadata
-    StructField(Colname.snapshot_id, StringType(), False),  # from metadata
-    StructField(Colname.result_id, StringType(), False),  # from metadata
-    StructField(Colname.result_name, StringType(), False),  # from metadata
-    StructField(Colname.result_path, StringType(), False),  # from metadata
-    StructField(Colname.grid_area, StringType(), False),
-    StructField(Colname.in_grid_area, StringType(), True),
-    StructField(Colname.out_grid_area, StringType(), True),
-    StructField(Colname.balance_responsible_id, StringType(), True),
-    StructField(Colname.energy_supplier_id, StringType(), True),
-    StructField(Colname.time_window, StructType([StructField(Colname.start, TimestampType()), StructField(Colname.end, TimestampType())]), False),
-    StructField(Colname.resolution, StringType(), False),  # enum int: change to enum later
-    StructField(Colname.sum_quantity, DecimalType(18, 3), False),
-    StructField(Colname.quality, StringType(), False),  # enum int: change to enum later
-    StructField(Colname.metering_point_type, StringType(), False),  # enum int: change to enum later
-    StructField(Colname.settlement_method, StringType(), True),  # enum int: change to enum later
-    StructField(Colname.added_grid_loss, DecimalType(18, 3), True),
-    StructField(Colname.added_system_correction, DecimalType(18, 3), True)
-])
+aggregation_result_schema = StructType(
+    [
+        # StructField(Colname.job_id, StringType(), False),  # from metadata
+        # StructField(Colname.snapshot_id, StringType(), False),  # from metadata
+        # StructField(Colname.result_id, StringType(), False),  # from metadata
+        # StructField(Colname.result_name, StringType(), False),  # from metadata
+        # StructField(Colname.result_path, StringType(), False),  # from metadata
+        StructField(Colname.grid_area, StringType(), False),
+        StructField(Colname.in_grid_area, StringType(), True),
+        StructField(Colname.out_grid_area, StringType(), True),
+        StructField(Colname.balance_responsible_id, StringType(), True),
+        StructField(Colname.energy_supplier_id, StringType(), True),
+        StructField(
+            Colname.time_window,
+            StructType(
+                [
+                    StructField(Colname.start, TimestampType()),
+                    StructField(Colname.end, TimestampType()),
+                ]
+            ),
+            False,
+        ),
+        StructField(
+            Colname.resolution, StringType(), False
+        ),  # enum int: change to enum later
+        StructField(Colname.sum_quantity, DecimalType(18, 3), False),
+        StructField(
+            Colname.quality, StringType(), False
+        ),  # enum int: change to enum later
+        StructField(
+            Colname.metering_point_type, StringType(), False
+        ),  # enum int: change to enum later
+        StructField(
+            Colname.settlement_method, StringType(), True
+        ),  # enum int: change to enum later
+        StructField(Colname.added_grid_loss, DecimalType(18, 3), True),
+        StructField(Colname.added_system_correction, DecimalType(18, 3), True),
+    ]
+)

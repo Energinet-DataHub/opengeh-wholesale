@@ -120,11 +120,22 @@ def start_aggregations(enriched_timeseries):
     # Aggregate quality for aggregated timeseries grouped by grid area, market evaluation point type and time window
     # results[ResultKeyName.aggregation_base_dataframe] = aggregate_quality(filtered)
 
-    results[ResultKeyName.aggregation_base_dataframe] = enriched_timeseries.withColumn(
-        "Quantity", col("Quantity").cast(DecimalType(18, 6))
-    ).withColumn(
-        Colname.aggregated_quality, col(Colname.quality)
-    )  # this is not the corect value, so this need to be changed
+    results[ResultKeyName.aggregation_base_dataframe] = (
+        enriched_timeseries.withColumn(
+            "Quantity", col("Quantity").cast(DecimalType(18, 6))
+        )
+        .withColumn(
+            Colname.aggregated_quality,
+            col(
+                Colname.quality
+            ),  # this is not the corect value, so this need to be changed
+        )
+        .withColumn(
+            "BalanceResponsibleId",
+            lit("1"),  # this is not the corect value, so this need to be changed
+        )
+    )
+    results[ResultKeyName.aggregation_base_dataframe].show()
 
     # Get additional data for grid loss and system correction
     # results[ResultKeyName.grid_loss_sys_cor_master_data] = io_processor.load_basis_data(
@@ -168,12 +179,12 @@ def start_aggregations(enriched_timeseries):
     results[ResultKeyName.added_grid_loss] = calculate_added_grid_loss(results, metadate_df)
     print("---------results[ResultKeyName.added_grid_loss]:")
     results[ResultKeyName.added_grid_loss].show()
-    results[ResultKeyName.combined_system_correction] = combine_added_system_correction_with_master_data(results, metadate_df)  # TODO to be added to results later
-    print("---------results[ResultKeyName.combined_system_correction]:")
-    results[ResultKeyName.combined_system_correction].show()
-    results[ResultKeyName.combined_grid_loss] = combine_added_grid_loss_with_master_data(results, metadate_df)  # TODO to be added to results later
-    print("---------results[ResultKeyName.combined_grid_loss]:")
-    results[ResultKeyName.combined_grid_loss].show()
+    # results[ResultKeyName.combined_system_correction] = combine_added_system_correction_with_master_data(results, metadate_df)  # TODO to be added to results later
+    # print("---------results[ResultKeyName.combined_system_correction]:")
+    # results[ResultKeyName.combined_system_correction].show()
+    # results[ResultKeyName.combined_grid_loss] = combine_added_grid_loss_with_master_data(results, metadate_df)  # TODO to be added to results later
+    # print("---------results[ResultKeyName.combined_grid_loss]:")
+    # results[ResultKeyName.combined_grid_loss].show()
     results[ResultKeyName.flex_consumption_with_grid_loss] = adjust_flex_consumption(results, metadate_df)
     print("---------results[ResultKeyName.flex_consumption_with_grid_loss]:")
     results[ResultKeyName.flex_consumption_with_grid_loss].show()
