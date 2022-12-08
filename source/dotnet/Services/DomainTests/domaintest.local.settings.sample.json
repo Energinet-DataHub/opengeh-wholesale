@@ -13,6 +13,8 @@
   "ENVIRONMENT_INSTANCE": "<instance number of environment; e.g. '001'>",
   // => User identification part of key vault secret name, as some has multiple settings.
   "USER": "<user identification part of user related key vault secrets; e.g. 'dh' for 'B2C-u001-dh-username'>'",
+  // Address of endpoint that can get valid internal token with correct permissions: e.g. https://app-webapi-markpart-u-001.azurewebsites.net
+  "TOKEN_BASEADDRESS": "<Market Participant Web API base address in live environment>",
 
   // Domain specific variables used in tests.
   "WEBAPI_BASEADDRESS": "<Wholesale Web API base address in live environment>",
