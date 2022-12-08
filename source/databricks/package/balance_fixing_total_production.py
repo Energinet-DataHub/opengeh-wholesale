@@ -96,6 +96,10 @@ def calculate_balance_fixing_total_production(
     enriched_time_series_point_df.printSchema()
     enriched_time_series_point_df.show()
 
+    enriched_time_series_point_df = enriched_time_series_point_df.withColumn(
+        "BalanceResponsibleId", lit("1")
+    )
+
     start_aggregations(enriched_time_series_point_df)
     time_series_basis_data_df = _get_time_series_basis_data(
         enriched_time_series_point_df, time_zone
@@ -241,6 +245,8 @@ def _get_enriched_time_series_points_df(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
+    print("-------------master-------------")
+    new_timeseries_df.show()
     new_timeseries_df = new_timeseries_df.where(
         col("Time") >= period_start_datetime
     ).where(col("Time") < period_end_datetime)
@@ -324,12 +330,14 @@ def _get_enriched_time_series_points_df(
             "GridAreaCode",
             master_basis_data_renamed_df["master_MeteringpointId"],
             "MeteringPointType",
+            master_basis_data_renamed_df["SettlementMethod"],
             master_basis_data_renamed_df["master_Resolution"],
             master_basis_data_renamed_df["ToGridAreaCode"],
             master_basis_data_renamed_df["FromGridAreaCode"],
             "Time",
             "Quantity",
             "Quality",
+            master_basis_data_renamed_df["EnergySupplierId"],
         )
     )
 
