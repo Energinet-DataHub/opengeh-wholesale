@@ -60,3 +60,8 @@ module "kvs_st_data_lake_primary_access_key" {
   tags          = azurerm_resource_group.this.tags
 }
 
+resource "azurerm_role_assignment" "st_datalake_spn" {
+  scope                = module.st_data_lake.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azurerm_client_config.current.object_id
+}
