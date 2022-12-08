@@ -31,14 +31,14 @@ from datetime import datetime
 
 def get_metering_point_periods_df(
     metering_points_periods_df: DataFrame,
-    market_roles_periods_df: DataFrame,
+    energy_supplier_periods_df: DataFrame,
     grid_area_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
     metering_points_in_grid_area = metering_points_periods_df.join(
         grid_area_df,
-        metering_points_periods_df["GridArea"] == grid_area_df["GridAreaCode"],
+        "GridAreaCode",
         "inner",
     )
 
@@ -52,24 +52,24 @@ def get_metering_point_periods_df(
         .where(col("MeteringPointType") == MeteringPointType.production.value)
     )
 
-    market_roles_periods_df = market_roles_periods_df.where(
+    energy_supplier_periods_df = energy_supplier_periods_df.where(
         col("FromDate") < period_end_datetime
     ).where(col("ToDate") > period_start_datetime)
 
     master_basis_data_df = (
         metering_point_periods_df.join(
-            market_roles_periods_df,
+            energy_supplier_periods_df,
             (
                 metering_point_periods_df["MeteringPointId"]
-                == market_roles_periods_df["MeteringPointId"]
+                == energy_supplier_periods_df["MeteringPointId"]
             )
             & (
-                market_roles_periods_df["FromDate"]
+                energy_supplier_periods_df["FromDate"]
                 < metering_point_periods_df["ToDate"]
             )
             & (
                 metering_point_periods_df["FromDate"]
-                < market_roles_periods_df["ToDate"]
+                < energy_supplier_periods_df["ToDate"]
             ),
             "left",
         )
@@ -77,13 +77,14 @@ def get_metering_point_periods_df(
             "EffectiveDate",
             greatest(
                 metering_point_periods_df["FromDate"],
-                market_roles_periods_df["FromDate"],
+                energy_supplier_periods_df["FromDate"],
             ),
         )
         .withColumn(
             "toEffectiveDate",
             least(
-                metering_point_periods_df["ToDate"], market_roles_periods_df["ToDate"]
+                metering_point_periods_df["ToDate"],
+                energy_supplier_periods_df["ToDate"],
             ),
         )
         .withColumn(
@@ -110,7 +111,7 @@ def get_metering_point_periods_df(
         metering_point_periods_df["ToGridAreaCode"],
         metering_point_periods_df["FromGridAreaCode"],
         "Resolution",
-        market_roles_periods_df["EnergySupplierId"],
+        energy_supplier_periods_df["EnergySupplierId"],
     )
     debug(
         "Metering point events before join with grid areas",

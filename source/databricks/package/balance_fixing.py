@@ -32,15 +32,10 @@ from datetime import timedelta, datetime
 def calculate_balance_fixing(
     metering_points_periods_df: DataFrame,
     timeseries_points: DataFrame,
-    batch_grid_areas_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
 ) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
-
-    _check_all_grid_areas_have_metering_points(
-        batch_grid_areas_df, metering_points_periods_df
-    )
 
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         timeseries_points,
@@ -53,7 +48,7 @@ def calculate_balance_fixing(
         enriched_time_series_point_df, time_zone
     )
 
-    output_master_basis_data_df = basis_data.get_master_basis_data_df(
+    master_basis_data_df = basis_data.get_master_basis_data_df(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
@@ -64,30 +59,8 @@ def calculate_balance_fixing(
     return (
         total_production_per_ga_df,
         time_series_basis_data_df,
-        output_master_basis_data_df,
+        master_basis_data_df,
     )
-
-
-def _check_all_grid_areas_have_metering_points(
-    batch_grid_areas_df: DataFrame, master_basis_data_df: DataFrame
-) -> None:
-    distinct_grid_areas_rows_df = master_basis_data_df.select("GridAreaCode").distinct()
-    distinct_grid_areas_rows_df.show()
-    grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
-        distinct_grid_areas_rows_df, "GridAreaCode", "leftanti"
-    )
-
-    if grid_area_with_no_metering_point_df.count() > 0:
-        grid_areas_to_inform_about = grid_area_with_no_metering_point_df.select(
-            "GridAreaCode"
-        ).collect()
-
-        grid_area_codes_to_inform_about = map(
-            lambda x: x.__getitem__("GridAreaCode"), grid_areas_to_inform_about
-        )
-        raise Exception(
-            f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"
-        )
 
 
 def _get_enriched_time_series_points_df(
