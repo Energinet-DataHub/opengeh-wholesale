@@ -44,7 +44,7 @@ charge_period_schema = StructType(
         # Example: 0010643756
         StructField("ChargeId", StringType(), False),
 
-        # "subscription" | "fee" | "tariff"
+        # "D01" (subscription) | "D02 (fee) | "D03" (tariff)
         # Example: subscription
         StructField("ChargeType", StringType(), False),
 
