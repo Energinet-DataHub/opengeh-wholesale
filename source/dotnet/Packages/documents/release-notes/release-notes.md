@@ -1,8 +1,8 @@
 # Wholesale Client Package Release notes
 
-## Version 4.0.1
+## Version 4.1.0
 
-Bump version as part of pipeline change.
+Changes to `BatchDtoV2`.
 
 ## Version 4.0.0
 
