@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 4.0.1
+
+Bump version as part of pipeline change.
+
 ## Version 4.0.0
 
 Renamed the `MeteringPointType` to `ProcessStepMeteringPointType`.
