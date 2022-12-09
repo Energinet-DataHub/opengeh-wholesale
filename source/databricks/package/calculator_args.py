@@ -20,12 +20,10 @@ from datetime import datetime
 class CalculatorArgs:
     data_storage_account_name: str
     data_storage_account_key: str
-    time_series_points_path: str
     process_results_path: str
     wholesale_container_path: str
     batch_id: str
     batch_grid_areas: list[str]
-    batch_snapshot_datetime: datetime
     batch_period_start_datetime: datetime
     batch_period_end_datetime: datetime
     time_zone: str

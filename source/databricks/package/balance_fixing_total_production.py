@@ -15,45 +15,23 @@
 from pyspark.sql import DataFrame
 
 from pyspark.sql.functions import (
-    concat,
-    first,
-    array,
-    array_contains,
-    lit,
     col,
-    collect_set,
-    to_date,
-    from_utc_timestamp,
-    row_number,
     expr,
     when,
     explode,
-    sum,
     greatest,
     least,
 )
-from pyspark.sql.types import (
-    StringType,
-    DecimalType,
-)
-from pyspark.sql.window import Window
 from package.codelists import (
     ConnectionState,
     MeteringPointType,
-    TimeSeriesQuality,
     MeteringPointResolution,
 )
-from package.schemas import (
-    grid_area_updated_event_schema,
-    metering_point_generic_event_schema,
-)
-from package.db_logging import debug
-from datetime import timedelta, datetime
-from decimal import Decimal
 
-ENERGY_SUPPLIER_CHANGED_MESSAGE_TYPE = "EnergySupplierChanged"
-METERING_POINT_CREATED_MESSAGE_TYPE = "MeteringPointCreated"
-METERING_POINT_CONNECTED_MESSAGE_TYPE = "MeteringPointConnected"
+from package.db_logging import debug
+import package.basis_data as basis_data
+import package.steps as steps
+from datetime import timedelta, datetime
 
 
 def calculate_balance_fixing_total_production(
@@ -61,13 +39,10 @@ def calculate_balance_fixing_total_production(
     metering_points_periods_df: DataFrame,
     market_roles_periods_df: DataFrame,
     batch_grid_areas_df: DataFrame,
-    batch_snapshot_datetime: datetime,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
 ) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
-    "Returns tuple (result_df, (time_series_quarter_basis_data_df, time_series_hour_basis_data_df))"
-    "TODO: is this correct?"
 
     master_basis_data_df = _get_master_basis_data_df(
         metering_points_periods_df,
@@ -88,17 +63,23 @@ def calculate_balance_fixing_total_production(
         period_end_datetime,
     )
 
-    time_series_basis_data_df = _get_time_series_basis_data(
+    time_series_basis_data_df = basis_data.get_time_series_basis_data_dfs(
         enriched_time_series_point_df, time_zone
     )
 
-    output_master_basis_data_df = _get_output_master_basis_data_df(
+    output_master_basis_data_df = basis_data.get_master_basis_data_df(
         master_basis_data_df, period_start_datetime, period_end_datetime
     )
 
-    result_df = _get_result_df(enriched_time_series_point_df)
+    total_production_per_ga_df = steps.get_total_production_per_ga_df(
+        enriched_time_series_point_df
+    )
 
-    return (result_df, time_series_basis_data_df, output_master_basis_data_df)
+    return (
+        total_production_per_ga_df,
+        time_series_basis_data_df,
+        output_master_basis_data_df,
+    )
 
 
 def _check_all_grid_areas_have_metering_points(
@@ -121,12 +102,6 @@ def _check_all_grid_areas_have_metering_points(
         raise Exception(
             f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"
         )
-
-
-def _get_time_series_points_df(
-    all_time_series_points_df: DataFrame, batch_snapshot_datetime: datetime
-) -> DataFrame:
-    return all_time_series_points_df.where(col("storedTime") <= batch_snapshot_datetime)
 
 
 def _get_master_basis_data_df(
@@ -324,206 +299,3 @@ def _get_enriched_time_series_points_df(
     return enriched_points_for_each_metering_point_df.withColumnRenamed(
         "master_MeteringpointId", "MeteringpointId"
     ).withColumnRenamed("master_Resolution", "Resolution")
-
-
-def _get_output_master_basis_data_df(
-    metering_point_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
-) -> DataFrame:
-    return (
-        metering_point_df.withColumn(
-            "EffectiveDate",
-            when(
-                col("EffectiveDate") < period_start_datetime, period_start_datetime
-            ).otherwise(col("EffectiveDate")),
-        )
-        .withColumn(
-            "toEffectiveDate",
-            when(
-                col("toEffectiveDate") > period_end_datetime, period_end_datetime
-            ).otherwise(col("toEffectiveDate")),
-        )
-        .select(
-            col("GridAreaCode"),  # column is only used for partitioning
-            col("MeteringPointId").alias("METERINGPOINTID"),
-            col("EffectiveDate").alias("VALIDFROM"),
-            col("toEffectiveDate").alias("VALIDTO"),
-            col("GridAreaCode").alias("GRIDAREA"),
-            col("ToGridAreaCode").alias("TOGRIDAREA"),
-            col("FromGridAreaCode").alias("FROMGRIDAREA"),
-            col("MeteringPointType").alias("TYPEOFMP"),
-            col("SettlementMethod").alias("SETTLEMENTMETHOD"),
-            col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
-        )
-    )
-
-
-def _get_time_series_basis_data(
-    enriched_time_series_point_df: DataFrame, time_zone: str
-) -> tuple[DataFrame, DataFrame]:
-    "Returns tuple (time_series_quarter_basis_data, time_series_hour_basis_data)"
-
-    time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
-        enriched_time_series_point_df,
-        MeteringPointResolution.quarterly.value,
-        time_zone,
-    )
-
-    time_series_hour_basis_data_df = _get_time_series_basis_data_by_resolution(
-        enriched_time_series_point_df,
-        MeteringPointResolution.hour.value,
-        time_zone,
-    )
-
-    return (time_series_quarter_basis_data_df, time_series_hour_basis_data_df)
-
-
-def _get_time_series_basis_data_by_resolution(
-    enriched_time_series_point_df: DataFrame,
-    resolution: str,
-    time_zone: str,
-) -> DataFrame:
-    w = Window.partitionBy("MeteringPointId", "localDate").orderBy("time")
-
-    timeseries_basis_data_df = (
-        enriched_time_series_point_df.where(col("Resolution") == resolution)
-        .withColumn("localDate", to_date(from_utc_timestamp(col("time"), time_zone)))
-        .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
-        .withColumn("STARTDATETIME", first("time").over(w))
-        .groupBy(
-            "MeteringPointId",
-            "localDate",
-            "STARTDATETIME",
-            "GridAreaCode",
-            "MeteringPointType",
-            "Resolution",
-        )
-        .pivot("position")
-        .agg(first("Quantity"))
-        .withColumnRenamed("MeteringPointId", "METERINGPOINTID")
-        .withColumn("TYPEOFMP", col("MeteringPointType"))
-    )
-
-    quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data_df)
-    timeseries_basis_data_df = timeseries_basis_data_df.select(
-        "GridAreaCode",
-        "METERINGPOINTID",
-        "TYPEOFMP",
-        "STARTDATETIME",
-        *quantity_columns,
-    )
-    return timeseries_basis_data_df
-
-
-def _get_sorted_quantity_columns(timeseries_basis_data: DataFrame) -> list[str]:
-    def num_sort(col_name: str) -> int:
-        "Extracts the nuber in the string"
-        import re
-
-        return list(map(int, re.findall(r"\d+", col_name)))[0]
-
-    quantity_columns = [
-        c for c in timeseries_basis_data.columns if c.startswith("ENERGYQUANTITY")
-    ]
-    quantity_columns.sort(key=num_sort)
-    return quantity_columns
-
-
-def _get_result_df(enriched_time_series_points_df: DataFrame) -> DataFrame:
-    # Total production in batch grid areas with quarterly resolution per grid area
-    result_df = (
-        enriched_time_series_points_df.withColumn(
-            "quarter_times",
-            when(
-                col("Resolution") == MeteringPointResolution.hour.value,
-                array(
-                    col("time"),
-                    col("time") + expr("INTERVAL 15 minutes"),
-                    col("time") + expr("INTERVAL 30 minutes"),
-                    col("time") + expr("INTERVAL 45 minutes"),
-                ),
-            ).when(
-                col("Resolution") == MeteringPointResolution.quarterly.value,
-                array(col("time")),
-            ),
-        )
-        .select(
-            enriched_time_series_points_df["*"],
-            explode("quarter_times").alias("quarter_time"),
-        )
-        .withColumn("Quantity", col("Quantity").cast(DecimalType(18, 6)))
-        .withColumn(
-            "quarter_quantity",
-            when(
-                col("Resolution") == MeteringPointResolution.hour.value,
-                col("Quantity") / 4,
-            ).when(
-                col("Resolution") == MeteringPointResolution.quarterly.value,
-                col("Quantity"),
-            ),
-        )
-        .groupBy("GridAreaCode", "quarter_time")
-        .agg(sum("quarter_quantity"), collect_set("Quality"))
-        .withColumn(
-            "Quality",
-            when(
-                array_contains(
-                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
-                ),
-                lit(TimeSeriesQuality.missing.value),
-            )
-            .when(
-                array_contains(
-                    col("collect_set(Quality)"),
-                    lit(TimeSeriesQuality.estimated.value),
-                ),
-                lit(TimeSeriesQuality.estimated.value),
-            )
-            .when(
-                array_contains(
-                    col("collect_set(Quality)"),
-                    lit(TimeSeriesQuality.measured.value),
-                ),
-                lit(TimeSeriesQuality.measured.value),
-            ),
-        )
-        .withColumnRenamed("Quality", "quality")
-    )
-
-    debug(
-        "Pre-result split into quarter times",
-        result_df.orderBy(col("GridAreaCode"), col("quarter_time")),
-    )
-
-    window = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
-
-    # Points may be missing in result time series if all metering points are missing a point at a certain moment.
-    # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
-    result_df = (
-        result_df.withColumn("position", row_number().over(window))
-        .withColumnRenamed("sum(quarter_quantity)", "Quantity")
-        .withColumn(
-            "Quantity",
-            when(col("Quantity").isNull(), Decimal("0.000")).otherwise(col("Quantity")),
-        )
-        .withColumn(
-            "quality",
-            when(col("quality").isNull(), TimeSeriesQuality.missing.value).otherwise(
-                col("quality")
-            ),
-        )
-        .select(
-            "GridAreaCode",
-            col("Quantity").cast(DecimalType(18, 3)),
-            col("quality"),
-            "position",
-            "quarter_time",
-        )
-    )
-
-    debug(
-        "Balance fixing total production result",
-        result_df.orderBy(col("GridAreaCode"), col("position")),
-    )
-    return result_df
