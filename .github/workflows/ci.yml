@@ -123,7 +123,7 @@ jobs:
       TESTS_DLL_FILE_PATH: '\source\dotnet\Services\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 12
     secrets:
-      ${{ secrets.FORESIGHT_TESTKIT_TOKEN }} # SPIKE
+      FORESIGHT_TESTKIT_TOKEN: ${{ secrets.FORESIGHT_TESTKIT_TOKEN }} # SPIKE
 
   #
   # Branch policy status check
