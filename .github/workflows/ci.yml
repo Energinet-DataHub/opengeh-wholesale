@@ -117,11 +117,13 @@ jobs:
   dotnet_ci_test_tests:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@xdast
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@xdast # SPIKE
     with:
       OPERATING_SYSTEM: 'dh3-windows-2022-8cores'
       TESTS_DLL_FILE_PATH: '\source\dotnet\Services\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 12
+    secrets:
+      ${{ secrets.FORESIGHT_TESTKIT_TOKEN }} # SPIKE
 
   #
   # Branch policy status check
