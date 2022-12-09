@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-name: Publish NuGet packages - Client
+name: Publish NuGet packages
 
 on:
   # Build, test, pack and publish release packages
@@ -89,7 +89,7 @@ jobs:
 
       - name: Package content or build has changed
         id: changed-content
-        uses: tj-actions/changed-files@v17.2
+        uses: tj-actions/changed-files@v34
         with:
           files: |
             source/dotnet/Packages/Client/**/*.*
