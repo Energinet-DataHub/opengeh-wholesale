@@ -15,9 +15,7 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import pytest
-from package.balance_fixing_total_production import (
-    _get_master_basis_data_df,
-)
+from package.calculation_input import get_metering_point_periods_df
 from package.codelists import (
     ConnectionState,
     MeteringPointType,
@@ -27,7 +25,6 @@ from package.codelists import (
 
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame
-import os
 from typing import Callable
 
 # Factory defaults
@@ -62,13 +59,13 @@ def batch_grid_areas_df(spark) -> DataFrame:
 
 
 @pytest.fixture(scope="module")
-def market_roles_period_df_factory(spark):
+def energy_supplier_periods_df_factory(spark):
     def factory(
         EnergySupplierId=energy_supplier_id,
         MeteringPointId=metering_point_id,
         FromDate=june_1th,
         ToDate=june_3th,
-        GridArea=grid_area_code,
+        GridAreaCode=grid_area_code,
         periods=None,
     ) -> DataFrame:
         df_array = []
@@ -86,9 +83,9 @@ def market_roles_period_df_factory(spark):
                         if ("FromDate" in period)
                         else FromDate,
                         "ToDate": period["ToDate"] if ("ToDate" in period) else ToDate,
-                        "GridArea": period["GridArea"]
-                        if ("GridArea" in period)
-                        else GridArea,
+                        "GridAreaCode": period["GridAreaCode"]
+                        if ("GridAreaCode" in period)
+                        else GridAreaCode,
                     }
                 )
         else:
@@ -98,7 +95,7 @@ def market_roles_period_df_factory(spark):
                     "MeteringPointId": MeteringPointId,
                     "FromDate": FromDate,
                     "ToDate": ToDate,
-                    "GridArea": GridArea,
+                    "GridAreaCode": GridAreaCode,
                 }
             )
         return spark.createDataFrame(df_array)
@@ -112,7 +109,7 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
         MeteringPointId=metering_point_id,
         MeteringPointType=metering_point_type,
         SettlementMethod=settlement_method,
-        GridArea=grid_area_code,
+        GridAreaCode=grid_area_code,
         ConnectionState=connection_state,
         Resolution=resolution,
         FromGridArea="some-in-gride-area",
@@ -136,9 +133,9 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                         "SettlementMethod": period["SettlementMethod"]
                         if ("SettlementMethod" in period)
                         else SettlementMethod,
-                        "GridArea": period["GridArea"]
-                        if ("GridArea" in period)
-                        else GridArea,
+                        "GridAreaCode": period["GridAreaCode"]
+                        if ("GridAreaCode" in period)
+                        else GridAreaCode,
                         "ConnectionState": period["ConnectionState"]
                         if ("ConnectionState" in period)
                         else ConnectionState,
@@ -166,7 +163,7 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                     "MeteringPointId": MeteringPointId,
                     "MeteringPointType": MeteringPointType,
                     "SettlementMethod": SettlementMethod,
-                    "GridArea": GridArea,
+                    "GridAreaCode": GridAreaCode,
                     "ConnectionState": ConnectionState,
                     "Resolution": Resolution,
                     "FromGridAreaCode": FromGridArea,
@@ -183,15 +180,15 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
 
 def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
     batch_grid_areas_df: DataFrame,
-    market_roles_period_df_factory: Callable[..., DataFrame],
+    energy_supplier_periods_df_factory: Callable[..., DataFrame],
     metering_points_periods_df_factory: Callable[..., DataFrame],
 ):
     metering_points_periods_df = metering_points_periods_df_factory()
-    market_roles_periods_df = market_roles_period_df_factory()
+    energy_supplier_periods_df = energy_supplier_periods_df_factory()
 
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
-        market_roles_periods_df,
+        energy_supplier_periods_df,
         batch_grid_areas_df,
         june_1th,
         june_2th,
@@ -202,19 +199,19 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
 # What about market participant periods outside the selected period?
 def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with_expected_energy_supplier_and_dates(
     batch_grid_areas_df: DataFrame,
-    market_roles_period_df_factory: Callable[..., DataFrame],
+    energy_supplier_periods_df_factory: Callable[..., DataFrame],
     metering_points_periods_df_factory: Callable[..., DataFrame],
 ):
     metering_points_periods_df = metering_points_periods_df_factory()
-    market_roles_periods_df = market_roles_period_df_factory(
+    energy_supplier_periods_df = energy_supplier_periods_df_factory(
         periods=[
             {"FromDate": june_1th, "ToDate": june_2th, "EnergySupplierId": "1"},
             {"FromDate": june_2th, "ToDate": june_3th, "EnergySupplierId": "2"},
         ]
     )
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
-        market_roles_periods_df,
+        energy_supplier_periods_df,
         batch_grid_areas_df,
         june_1th,
         june_3th,
@@ -238,7 +235,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
 # Both periodized energy supplier and metering point
 # Test combinations with 0, 1 and 2 periods
 @pytest.mark.parametrize(
-    "batch_period, market_roles_periods, metering_points_periods, expected_periods",
+    "batch_period, energy_supplier_periods, metering_points_periods, expected_periods",
     [
         # 2 meteringpoint periods and 3 overlaping market roles periods returns 4 periods with correct dates and Energy suplier
         (
@@ -435,24 +432,24 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
 )
 def test__returns_expected_periods(
     batch_period,
-    market_roles_periods,
+    energy_supplier_periods,
     metering_points_periods,
     expected_periods,
     batch_grid_areas_df,
-    market_roles_period_df_factory,
+    energy_supplier_periods_df_factory,
     metering_points_periods_df_factory,
 ):
 
     metering_points_periods_df = metering_points_periods_df_factory(
         periods=metering_points_periods
     )
-    market_roles_periods_df = market_roles_period_df_factory(
-        periods=market_roles_periods
+    energy_supplier_periods_df = energy_supplier_periods_df_factory(
+        periods=energy_supplier_periods
     )
 
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
-        market_roles_periods_df,
+        energy_supplier_periods_df,
         batch_grid_areas_df,
         batch_period["start"],
         batch_period["end"],
@@ -471,17 +468,17 @@ def test__returns_expected_periods(
 
 def test__when_type_is_production__returns_metering_point_period(
     batch_grid_areas_df,
-    market_roles_period_df_factory,
+    energy_supplier_periods_df_factory,
     metering_points_periods_df_factory,
 ):
     metering_points_periods_df = metering_points_periods_df_factory(
         MeteringPointType=MeteringPointType.production.value
     )
-    market_roles_periods_df = market_roles_period_df_factory()
+    energy_supplier_periods_df = energy_supplier_periods_df_factory()
 
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
-        market_roles_periods_df,
+        energy_supplier_periods_df,
         batch_grid_areas_df,
         june_1th,
         june_2th,
@@ -491,17 +488,17 @@ def test__when_type_is_production__returns_metering_point_period(
 
 def test__when_type_is_not_E18__does_not_returns_metering_point_period(
     batch_grid_areas_df,
-    market_roles_period_df_factory,
+    energy_supplier_periods_df_factory,
     metering_points_periods_df_factory,
 ):
     metering_points_periods_df = metering_points_periods_df_factory(
         MeteringPointType=MeteringPointType.consumption.value
     )
-    market_roles_periods_df = market_roles_period_df_factory()
+    energy_supplier_periods_df = energy_supplier_periods_df_factory()
 
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
-        market_roles_periods_df,
+        energy_supplier_periods_df,
         batch_grid_areas_df,
         june_1th,
         june_2th,
@@ -511,15 +508,15 @@ def test__when_type_is_not_E18__does_not_returns_metering_point_period(
 
 def test__metering_points_have_expected_columns(
     batch_grid_areas_df: DataFrame,
-    market_roles_period_df_factory: Callable[..., DataFrame],
+    energy_supplier_periods_df_factory: Callable[..., DataFrame],
     metering_points_periods_df_factory: Callable[..., DataFrame],
 ):
     metering_points_periods_df = metering_points_periods_df_factory()
-    market_roles_periods_df = market_roles_period_df_factory()
+    energy_supplier_periods_df = energy_supplier_periods_df_factory()
 
-    raw_master_basis_data = _get_master_basis_data_df(
+    raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
-        market_roles_periods_df,
+        energy_supplier_periods_df,
         batch_grid_areas_df,
         june_1th,
         june_2th,

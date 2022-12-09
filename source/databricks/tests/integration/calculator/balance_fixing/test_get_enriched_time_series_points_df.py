@@ -16,7 +16,7 @@
 import pytest
 from decimal import Decimal
 from datetime import datetime
-from package.balance_fixing_total_production import (
+from package.balance_fixing import (
     _get_enriched_time_series_points_df,
 )
 
