@@ -153,9 +153,13 @@ def get_batch_grid_areas_df(
 
 
 def _check_all_grid_areas_have_metering_points(
-    batch_grid_areas_df: DataFrame, master_basis_data_df: DataFrame
+    batch_grid_areas_df: DataFrame, metering_points_periods_df: DataFrame
 ) -> None:
-    distinct_grid_areas_rows_df = master_basis_data_df.select("GridAreaCode").distinct()
+    distinct_grid_areas_rows_df = (
+        metering_points_periods_df.withColumnRenamed("GridArea", "GridAreaCode")
+        .select("GridAreaCode")
+        .distinct()
+    )
     distinct_grid_areas_rows_df.show()
     grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
         distinct_grid_areas_rows_df, "GridAreaCode", "leftanti"
