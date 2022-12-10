@@ -62,6 +62,7 @@ module "func_receiver" {
     METERING_POINT_CREATED_EVENT_B2B_SUBSCRIPTION_NAME            = module.sbs_metering_point_created_b2b_event.name
     CREATE_METERING_POINT_TRANSACTIONS_QUEUE_NAME                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-create-metering-point-transactions)"
     CUSTOMER_MASTER_DATA_UPDATE_RESPONSE_QUEUE_NAME               = module.sbq_customermasterdataupdateresponsequeue.name
+    FEATUREFLAG_ACTORMESSAGEQUEUE                                 = true
   }
 
   tags = azurerm_resource_group.this.tags
