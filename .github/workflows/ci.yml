@@ -79,7 +79,6 @@ jobs:
     with:
       OPERATING_SYSTEM: 'dh3-windows-2022-8cores'
       TESTS_DLL_FILE_PATH: '\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
-      TESTS_FILTER_EXPRESSION: 'FullyQualifiedName!~IntegrationEventListener'
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\source\dotnet\Services\WebApi'
       DOWNLOAD_ATTEMPT_LIMIT: 12
