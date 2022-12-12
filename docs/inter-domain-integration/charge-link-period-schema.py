@@ -54,7 +54,7 @@ charge_link_period_schema = StructType(
 
         # "PT1H" (hourly) | "P1D" (daily) | "P1M" (monthly)
         # Behaviour depends on the type of the charge.
-        # - Subscriptions: Always monthly. The value is converted to daily values.
+        # - Subscriptions: Always monthly. (The value is converted to "scale 8" daily values in calculations).
         # - Fees: Always monthly. The value is charged on the effective day on the metering point.
         # - Tariffs: Only hourly and daily resolution applies.
         # Example: PT1H
