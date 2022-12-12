@@ -13,7 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from tests.helpers.test_schemas import (
+from helpers.test_schemas import (
     tariff_schema,
     tariff_sum_and_count_schema,
     tariff_distinct_schema,

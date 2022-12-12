@@ -17,7 +17,6 @@ from geh_stream.codelists import Colname, ResolutionDuration, MarketEvaluationPo
 from geh_stream.aggregation_utils.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
-from tests.helpers.dataframe_creators import aggregation_result_factory
 from geh_stream.codelists import Quality
 from geh_stream.shared.data_classes import Metadata
 from geh_stream.schemas.output import aggregation_result_schema
