@@ -92,6 +92,7 @@ jobs:
         uses: tj-actions/changed-files@v17.2
         with:
           files: |
+            source/dotnet/Contracts/**/*.*
             source/dotnet/Packages/Client/**/*.*
             .github/workflows/packages-publish.yml
 

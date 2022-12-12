@@ -1,4 +1,4 @@
-MeteringPointId,MeteringPointType,SettlementMethod,GridArea,ConnectionState,Resolution,FromGridAreaCode,ToGridAreaCode,ParentMeteringPointId,FromDate,ToDate
+MeteringPointId,MeteringPointType,SettlementMethod,GridAreaCode,ConnectionState,Resolution,FromGridAreaCode,ToGridAreaCode,ParentMeteringPointId,FromDate,ToDate
 578710000000000103,E17,D01,805,E22,PT1H,NULL,NULL,NULL,2018-01-01 00:00:00,2018-01-02 00:00:00
 578710000000000103,E17,E02,805,E22,PT1H,NULL,NULL,NULL,2018-01-02 00:00:00,2018-01-03 00:00:00
 578710000000000104,E17,D01,805,E22,PT1H,NULL,NULL,NULL,2018-01-01 00:00:00,2018-01-02 00:00:00

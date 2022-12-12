@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 4.1.0
+
+Changes to `BatchDtoV2`.
+
 ## Version 4.0.0
 
 Renamed the `MeteringPointType` to `ProcessStepMeteringPointType`.
