@@ -45,8 +45,8 @@ charge_price_point_schema = StructType(
         StructField("ChargeOwnerId", StringType(), False),
 
         # The charge price. In the danish DataHub the price is in the DKK currency.
-        # Example: 1234.53421700
-        StructField("ChargePrice", DecimalType(18, 8), False),
+        # Example: 1234.534217
+        StructField("ChargePrice", DecimalType(18, 6), False),
 
         # The time when the energy was consumed/produced/exchanged
         StructField("ObservationTime", TimestampType(), False),
