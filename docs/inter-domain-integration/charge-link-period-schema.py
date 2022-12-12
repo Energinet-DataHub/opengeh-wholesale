@@ -73,7 +73,7 @@ charge_link_period_schema = StructType(
         # Quantity (also known as factor)
         # Value is 1 or larger. For tariffs it's always 1.
         # The field is from the charge link.
-        StructField("Quantity", IntegerType(), True),
+        StructField("Quantity", IntegerType(), False),
 
         # The start date of the link period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The date is inclusive.
