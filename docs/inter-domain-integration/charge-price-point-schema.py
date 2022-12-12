@@ -50,7 +50,7 @@ charge_price_point_schema = StructType(
         # Example: 1234.534217
         StructField("ChargePrice", DecimalType(18, 6), False),
 
-        # The time when the energy was consumed/produced/exchanged
+        # The time where the price applies
         StructField("ObservationTime", TimestampType(), False),
         
         # The year part of the `ObservationTime`. Used in partition.
