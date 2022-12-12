@@ -45,7 +45,7 @@ charge_link_period_schema = StructType(
         StructField("ChargeId", StringType(), False),
 
         # "D01" (subscription) | "D02 (fee) | "D03" (tariff)
-        # Example: subscription
+        # Example: D01
         StructField("ChargeType", StringType(), False),
 
         # The unique GLN/EIC number of the charge owner (actor)

@@ -38,8 +38,8 @@ charge_price_point_schema = StructType(
         # Example: 0010643756
         StructField("ChargeId", StringType(), False),
 
-        # "subscription" | "fee" | "tariff"
-        # Example: subscription
+        # "D01" (subscription) | "D02 (fee) | "D03" (tariff)
+        # Example: D01
         StructField("ChargeType", StringType(), False),
 
         # The unique GLN/EIC number of the charge owner (actor)
