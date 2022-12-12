@@ -56,7 +56,7 @@ charge_link_period_schema = StructType(
         # Behaviour depends on the type of the charge.
         # - Subscriptions: Always monthly. The value is converted to daily values.
         # - Fees: Always monthly. The value is charged on the effective day on the metering point.
-        # - Tarifs: Only hourly and daily resolution applies.
+        # - Tariffs: Only hourly and daily resolution applies.
         # Example: PT1H
         StructField("Resolution", StringType(), False),
 
