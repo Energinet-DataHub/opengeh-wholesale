@@ -52,7 +52,7 @@ charge_link_period_schema = StructType(
         # Example: 8100000000030
         StructField("ChargeOwnerId", StringType(), False),
 
-        # "PT1H" (hourly) | "PT1D" (daily) | "P1M" (monthly)
+        # "PT1H" (hourly) | "P1D" (daily) | "P1M" (monthly)
         # Behaviour depends on the type of the charge.
         # - Subscriptions: Always monthly. The value is converted to daily values.
         # - Fees: Always monthly. The value is charged on the effective day on the metering point.
