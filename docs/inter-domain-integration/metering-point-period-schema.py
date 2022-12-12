@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
+    IntegerType,
     StructField,
     StringType,
     TimestampType,
