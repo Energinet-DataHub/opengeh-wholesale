@@ -19,7 +19,7 @@ from geh_stream.codelists import (
     ResolutionDuration,
     MarketEvaluationPointType,
 )
-from geh_stream.aggregation_utils.aggregators import (
+from package.steps import (
     aggregate_flex_settled_consumption_ga_es,
     aggregate_flex_settled_consumption_ga_brp,
     aggregate_flex_settled_consumption_ga,

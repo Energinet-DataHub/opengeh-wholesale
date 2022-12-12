@@ -14,7 +14,7 @@
 from decimal import Decimal
 from datetime import datetime
 from geh_stream.codelists import Colname, ResultKeyName, ResolutionDuration
-from geh_stream.aggregation_utils.aggregators import (
+from package.steps import (
     combine_added_system_correction_with_master_data,
     combine_added_grid_loss_with_master_data,
 )
@@ -29,6 +29,65 @@ from pyspark.sql.types import (
 from unittest.mock import Mock
 import pytest
 import pandas as pd
+from geh_stream.schemas.output import aggregation_result_schema
+from tests.geh_stream.helpers import DataframeDefaults
+
+
+@pytest.fixture(scope="module")
+def aggregation_result_factory(spark):
+    def factory(
+        job_id=DataframeDefaults.default_job_id,
+        snapshot_id=DataframeDefaults.default_snapshot_id,
+        result_id=DataframeDefaults.default_result_id,
+        result_name=DataframeDefaults.default_result_name,
+        result_path=DataframeDefaults.default_result_path,
+        grid_area=DataframeDefaults.default_grid_area,
+        in_grid_area=None,
+        out_grid_area=None,
+        balance_responsible_id=None,
+        energy_supplier_id=None,
+        time_window_start=DataframeDefaults.default_time_window_start,
+        time_window_end=DataframeDefaults.default_time_window_end,
+        resolution=DataframeDefaults.default_resolution,
+        sum_quantity=DataframeDefaults.default_sum_quantity,
+        quality=DataframeDefaults.default_quality,
+        metering_point_type=DataframeDefaults.default_metering_point_type,
+        settlement_method=None,
+        added_grid_loss=None,
+        added_system_correction=None,
+    ):
+        pandas_df = pd.DataFrame().append(
+            [
+                {
+                    Colname.job_id: job_id,
+                    Colname.snapshot_id: snapshot_id,
+                    Colname.result_id: result_id,
+                    Colname.result_name: result_name,
+                    Colname.result_path: result_path,
+                    Colname.grid_area: grid_area,
+                    Colname.in_grid_area: in_grid_area,
+                    Colname.out_grid_area: out_grid_area,
+                    Colname.balance_responsible_id: balance_responsible_id,
+                    Colname.energy_supplier_id: energy_supplier_id,
+                    Colname.time_window: {
+                        Colname.start: time_window_start,
+                        Colname.end: time_window_end,
+                    },
+                    Colname.resolution: resolution,
+                    Colname.sum_quantity: sum_quantity,
+                    Colname.quality: quality,
+                    Colname.metering_point_type: metering_point_type,
+                    Colname.settlement_method: settlement_method,
+                    Colname.added_grid_loss: added_grid_loss,
+                    Colname.added_system_correction: added_system_correction,
+                }
+            ],
+            ignore_index=True,
+        )
+
+        return spark.createDataFrame(pandas_df, schema=aggregation_result_schema)
+
+    return factory
 
 
 @pytest.fixture(scope="module")

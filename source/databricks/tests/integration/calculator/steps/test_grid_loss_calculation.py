@@ -21,7 +21,7 @@ from geh_stream.codelists import (
     ResolutionDuration,
     SettlementMethod,
 )
-from geh_stream.aggregation_utils.aggregators import (
+from package.steps import (
     calculate_grid_loss,
     calculate_residual_ga,
 )

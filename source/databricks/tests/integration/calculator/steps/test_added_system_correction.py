@@ -19,7 +19,7 @@ from geh_stream.codelists import (
     ResolutionDuration,
     MarketEvaluationPointType,
 )
-from geh_stream.aggregation_utils.aggregators import calculate_added_grid_loss
+from package.steps import calculate_added_system_correction
 from geh_stream.codelists import Quality
 from geh_stream.shared.data_classes import Metadata
 from geh_stream.schemas.output import aggregation_result_schema
@@ -64,7 +64,6 @@ def agg_result_factory(spark, grid_loss_schema):
                 Colname.grid_area: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
-                Colname.quality: [],
                 Colname.resolution: [],
                 Colname.metering_point_type: [],
             }
@@ -113,43 +112,40 @@ def agg_result_factory(spark, grid_loss_schema):
     return factory
 
 
-def call_calculate_grid_loss(agg_result_factory) -> DataFrame:
+def call_calculate_added_system_correction(agg_result_factory) -> DataFrame:
     metadata = Metadata("1", "1", "1", "1", "1")
     results = {}
     results[ResultKeyName.grid_loss] = create_dataframe_from_aggregation_result_schema(
         metadata, agg_result_factory()
     )
-    return calculate_added_grid_loss(results, metadata)
+    return calculate_added_system_correction(results, metadata)
 
 
-def test_grid_area_grid_loss_has_no_values_below_zero(agg_result_factory):
-    result = call_calculate_grid_loss(agg_result_factory)
+def test_added_system_correction_has_no_values_below_zero(agg_result_factory):
+    result = call_calculate_added_system_correction(agg_result_factory)
 
-    assert result.filter(col(Colname.added_grid_loss) < 0).count() == 0
-
-
-def test_grid_area_grid_loss_changes_negative_values_to_zero(agg_result_factory):
-    result = call_calculate_grid_loss(agg_result_factory)
-
-    assert result.collect()[0][Colname.added_grid_loss] == Decimal("0.00000")
+    assert result.filter(col(Colname.added_system_correction) < 0).count() == 0
 
 
-def test_grid_area_grid_loss_positive_values_will_not_change(agg_result_factory):
-    result = call_calculate_grid_loss(agg_result_factory)
+def test_added_system_correction_change_negative_value_to_positive(agg_result_factory):
+    result = call_calculate_added_system_correction(agg_result_factory)
 
-    assert result.collect()[1][Colname.added_grid_loss] == Decimal("34.32000")
+    assert result.collect()[0][Colname.added_system_correction] == Decimal("12.56700")
 
 
-def test_grid_area_grid_loss_values_that_are_zero_stay_zero(agg_result_factory):
-    result = call_calculate_grid_loss(agg_result_factory)
+def test_added_system_correction_change_positive_value_to_zero(agg_result_factory):
+    result = call_calculate_added_system_correction(agg_result_factory)
 
-    assert result.collect()[2][Colname.added_grid_loss] == Decimal("0.00000")
+    assert result.collect()[1][Colname.added_system_correction] == Decimal("0.00000")
+
+
+def test_added_system_correction_values_that_are_zero_stay_zero(agg_result_factory):
+    result = call_calculate_added_system_correction(agg_result_factory)
+
+    assert result.collect()[2][Colname.added_system_correction] == Decimal("0.00000")
 
 
 def test_returns_correct_schema(agg_result_factory):
-    """
-    Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the single-hour resolution specified in the aggregator).
-    """
-    result = call_calculate_grid_loss(agg_result_factory)
+
+    result = call_calculate_added_system_correction(agg_result_factory)
     assert result.schema == aggregation_result_schema
