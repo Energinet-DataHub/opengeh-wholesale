@@ -30,6 +30,8 @@ inputs:
     required: true
 
 runs:
+  using: composite
+  steps:
     - name: Publish ProcessManager
       shell: bash
       run: |
