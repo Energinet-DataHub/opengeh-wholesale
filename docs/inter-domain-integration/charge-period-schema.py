@@ -75,11 +75,11 @@ charge_period_schema = StructType(
         # The field is from the charge link.
         StructField("Quantity", IntegerType(), True),
 
-        # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
+        # The start date of the period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The date is inclusive.
         StructField("FromDate", TimestampType(), False),
         
-        # The to-date of the period. The to-date must be the UTC time of the begining of a date in the given timezone/DST.
+        # The to-date of the period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The moment is exclusive.
         # The date of the last period is null.
         StructField("ToDate", TimestampType(), True),
