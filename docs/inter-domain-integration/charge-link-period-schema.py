@@ -14,7 +14,7 @@
 
 from pyspark.sql.types import (
     BooleanType,
-    DecimalType,
+    IntegerType,
     StructField,
     StringType,
     TimestampType,
@@ -22,9 +22,9 @@ from pyspark.sql.types import (
 )
 
 """
-Schema for charge periods
+Schema for charge link periods (and charges)
 
-Charge periods are only used in settlement.
+Charge link periods are only used in settlement.
 Periods (given by `FromDate` and `ToDate`) must not overlap but may have gaps. Gaps may occur if the link has been removed for a period before being added again.
 All but the `ToDate` of the last period must have value. The `ToDate` of the last period is null.
 
@@ -36,7 +36,7 @@ This is because most periods will have a to-date prior to the calculation period
 
 The table data must always contain updated periods.
 """
-charge_period_schema = StructType(
+charge_link_period_schema = StructType(
     [
         # ID of the charge
         # The ID is only guaranteed to be unique for a specific actor and charge type.
