@@ -14,7 +14,9 @@
 from decimal import Decimal
 from datetime import datetime
 from geh_stream.codelists import ChargeType
-from helpers.test_schemas import charges_flex_settled_consumption_schema
+from tests.geh_stream.helpers.test_schemas import (
+    charges_flex_settled_consumption_schema,
+)
 from geh_stream.codelists import Colname
 from geh_stream.wholesale_utils.calculators.fee_calculators import (
     calculate_fee_charge_price,
@@ -23,6 +25,7 @@ from geh_stream.wholesale_utils.calculators.fee_calculators import (
 )
 from geh_stream.wholesale_utils.wholesale_initializer import get_fee_charges
 import pytest
+import pandas as pd
 
 
 def test__calculate_fee_charge_price__simple(
