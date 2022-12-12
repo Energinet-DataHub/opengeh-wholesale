@@ -13,78 +13,104 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime, timedelta
-from geh_stream.codelists import Colname, ResultKeyName, ResolutionDuration, MarketEvaluationPointType
-from geh_stream.aggregation_utils.aggregators import \
-    aggregate_flex_settled_consumption_ga_es, \
-    aggregate_flex_settled_consumption_ga_brp, \
-    aggregate_flex_settled_consumption_ga
+from geh_stream.codelists import (
+    Colname,
+    ResultKeyName,
+    ResolutionDuration,
+    MarketEvaluationPointType,
+)
+from geh_stream.aggregation_utils.aggregators import (
+    aggregate_flex_settled_consumption_ga_es,
+    aggregate_flex_settled_consumption_ga_brp,
+    aggregate_flex_settled_consumption_ga,
+)
 from geh_stream.shared.data_classes import Metadata
-from geh_stream.aggregation_utils.aggregation_result_formatter import create_dataframe_from_aggregation_result_schema
+from geh_stream.aggregation_utils.aggregation_result_formatter import (
+    create_dataframe_from_aggregation_result_schema,
+)
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
 from geh_stream.codelists import Quality
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
-default_obs_time = datetime.strptime("2020-01-01T00:00:00+0000", date_time_formatting_string)
+default_obs_time = datetime.strptime(
+    "2020-01-01T00:00:00+0000", date_time_formatting_string
+)
 
 metadata = Metadata("1", "1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
 def agg_flex_consumption_schema():
-    return StructType() \
-        .add(Colname.grid_area, StringType(), False) \
-        .add(Colname.balance_responsible_id, StringType()) \
-        .add(Colname.energy_supplier_id, StringType()) \
-        .add(Colname.time_window,
-             StructType()
-             .add(Colname.start, TimestampType())
-             .add(Colname.end, TimestampType()),
-             False) \
-        .add(Colname.sum_quantity, DecimalType(20)) \
-        .add(Colname.quality, StringType()) \
-        .add(Colname.resolution, StringType()) \
+    return (
+        StructType()
+        .add(Colname.grid_area, StringType(), False)
+        .add(Colname.balance_responsible_id, StringType())
+        .add(Colname.energy_supplier_id, StringType())
+        .add(
+            Colname.time_window,
+            StructType()
+            .add(Colname.start, TimestampType())
+            .add(Colname.end, TimestampType()),
+            False,
+        )
+        .add(Colname.sum_quantity, DecimalType(20))
+        .add(Colname.quality, StringType())
+        .add(Colname.resolution, StringType())
         .add(Colname.metering_point_type, StringType())
+    )
 
 
 @pytest.fixture(scope="module")
 def test_data_factory(spark, agg_flex_consumption_schema):
-
     def factory():
-        pandas_df = pd.DataFrame({
-            Colname.grid_area: [],
-            Colname.balance_responsible_id: [],
-            Colname.energy_supplier_id: [],
-            Colname.time_window: [],
-            Colname.sum_quantity: [],
-            Colname.quality: [],
-            Colname.resolution: [],
-            Colname.metering_point_type: []
-        })
+        pandas_df = pd.DataFrame(
+            {
+                Colname.grid_area: [],
+                Colname.balance_responsible_id: [],
+                Colname.energy_supplier_id: [],
+                Colname.time_window: [],
+                Colname.sum_quantity: [],
+                Colname.quality: [],
+                Colname.resolution: [],
+                Colname.metering_point_type: [],
+            }
+        )
         for i in range(3):
             for j in range(5):
                 for k in range(10):
-                    pandas_df = pandas_df.append({
-                        Colname.grid_area: str(i),
-                        Colname.balance_responsible_id: str(j),
-                        Colname.energy_supplier_id: str(k),
-                        Colname.time_window: {
-                            Colname.start: default_obs_time + timedelta(hours=i),
-                            Colname.end: default_obs_time + timedelta(hours=i + 1)},
-                        Colname.sum_quantity: Decimal(i + j + k),
-                        Colname.quality: [Quality.estimated.value],
-                        Colname.resolution: [ResolutionDuration.hour],
-                        Colname.metering_point_type: [MarketEvaluationPointType.consumption.value]
-                    }, ignore_index=True)
+                    pandas_df = pandas_df.append(
+                        {
+                            Colname.grid_area: str(i),
+                            Colname.balance_responsible_id: str(j),
+                            Colname.energy_supplier_id: str(k),
+                            Colname.time_window: {
+                                Colname.start: default_obs_time + timedelta(hours=i),
+                                Colname.end: default_obs_time + timedelta(hours=i + 1),
+                            },
+                            Colname.sum_quantity: Decimal(i + j + k),
+                            Colname.quality: [Quality.estimated.value],
+                            Colname.resolution: [ResolutionDuration.hour],
+                            Colname.metering_point_type: [
+                                MarketEvaluationPointType.consumption.value
+                            ],
+                        },
+                        ignore_index=True,
+                    )
         return spark.createDataFrame(pandas_df, schema=agg_flex_consumption_schema)
+
     return factory
 
 
 def test_flex_consumption_calculation_per_ga_and_es(test_data_factory):
     results = {}
-    results[ResultKeyName.flex_consumption_with_grid_loss] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_settled_consumption_ga_es(results, metadata).sort(Colname.grid_area, Colname.energy_supplier_id, Colname.time_window)
+    results[
+        ResultKeyName.flex_consumption_with_grid_loss
+    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
+    result = aggregate_flex_settled_consumption_ga_es(results, metadata).sort(
+        Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
+    )
     result_collect = result.collect()
     assert result_collect[0][Colname.balance_responsible_id] is None
     assert result_collect[0][Colname.grid_area] == "0"
@@ -97,8 +123,12 @@ def test_flex_consumption_calculation_per_ga_and_es(test_data_factory):
 
 def test_flex_consumption_calculation_per_ga_and_brp(test_data_factory):
     results = {}
-    results[ResultKeyName.flex_consumption_with_grid_loss] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_settled_consumption_ga_brp(results, metadata).sort(Colname.grid_area, Colname.balance_responsible_id, Colname.time_window)
+    results[
+        ResultKeyName.flex_consumption_with_grid_loss
+    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
+    result = aggregate_flex_settled_consumption_ga_brp(results, metadata).sort(
+        Colname.grid_area, Colname.balance_responsible_id, Colname.time_window
+    )
     result_collect = result.collect()
     assert result_collect[0][Colname.energy_supplier_id] is None
     assert result_collect[0][Colname.sum_quantity] == Decimal("45")
@@ -111,8 +141,12 @@ def test_flex_consumption_calculation_per_ga_and_brp(test_data_factory):
 
 def test_flex_consumption_calculation_per_ga(test_data_factory):
     results = {}
-    results[ResultKeyName.flex_consumption_with_grid_loss] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_settled_consumption_ga(results, metadata).sort(Colname.grid_area, Colname.time_window)
+    results[
+        ResultKeyName.flex_consumption_with_grid_loss
+    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
+    result = aggregate_flex_settled_consumption_ga(results, metadata).sort(
+        Colname.grid_area, Colname.time_window
+    )
     result_collect = result.collect()
     assert result_collect[0][Colname.balance_responsible_id] is None
     assert result_collect[0][Colname.energy_supplier_id] is None

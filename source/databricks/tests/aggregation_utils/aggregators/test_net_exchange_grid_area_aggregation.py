@@ -28,7 +28,8 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 e_20 = MarketEvaluationPointType.exchange.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
-    "2020-01-01T00:00:00+0000", date_time_formatting_string)
+    "2020-01-01T00:00:00+0000", date_time_formatting_string
+)
 numberOfTestHours = 24
 
 metadata = Metadata("1", "1", "1", "1", "1")
@@ -38,14 +39,16 @@ metadata = Metadata("1", "1", "1", "1", "1")
 
 @pytest.fixture(scope="module")
 def time_series_schema():
-    return StructType() \
-        .add(Colname.metering_point_type, StringType(), False) \
-        .add(Colname.in_grid_area, StringType()) \
-        .add(Colname.out_grid_area, StringType(), False) \
-        .add(Colname.quantity, DecimalType(38, 10)) \
-        .add(Colname.time, TimestampType()) \
-        .add(Colname.connection_state, StringType()) \
+    return (
+        StructType()
+        .add(Colname.metering_point_type, StringType(), False)
+        .add(Colname.in_grid_area, StringType())
+        .add(Colname.out_grid_area, StringType(), False)
+        .add(Colname.quantity, DecimalType(38, 10))
+        .add(Colname.time, TimestampType())
+        .add(Colname.connection_state, StringType())
         .add(Colname.aggregated_quality, StringType())
+    )
 
 
 @pytest.fixture(scope="module")
@@ -53,15 +56,18 @@ def expected_schema():
     """
     Expected exchange aggregation output schema
     """
-    return StructType() \
-        .add(Colname.grid_area, StringType()) \
-        .add(Colname.time_window,
-             StructType()
-             .add(Colname.start, TimestampType())
-             .add(Colname.end, TimestampType())
-             ) \
-        .add(Colname.sum_quantity, DecimalType(38, 9)) \
+    return (
+        StructType()
+        .add(Colname.grid_area, StringType())
+        .add(
+            Colname.time_window,
+            StructType()
+            .add(Colname.start, TimestampType())
+            .add(Colname.end, TimestampType()),
+        )
+        .add(Colname.sum_quantity, DecimalType(38, 9))
         .add(Colname.aggregated_quality, StringType())
+    )
 
 
 @pytest.fixture(scope="module")
@@ -70,36 +76,118 @@ def time_series_data_frame(spark, time_series_schema):
     Sample Time Series DataFrame
     """
     # Create empty pandas df
-    pandas_df = pd.DataFrame({
-        Colname.metering_point_type: [],
-        Colname.in_grid_area: [],
-        Colname.out_grid_area: [],
-        Colname.quantity: [],
-        Colname.time: [],
-        Colname.connection_state: [],
-        Colname.aggregated_quality: []
-    })
+    pandas_df = pd.DataFrame(
+        {
+            Colname.metering_point_type: [],
+            Colname.in_grid_area: [],
+            Colname.out_grid_area: [],
+            Colname.quantity: [],
+            Colname.time: [],
+            Colname.connection_state: [],
+            Colname.aggregated_quality: [],
+        }
+    )
 
     # add 24 hours of exchange with different examples of exchange between grid areas. See readme.md for more info
 
     for x in range(numberOfTestHours):
-        pandas_df = add_row_of_data(pandas_df, e_20, "B", "A", Decimal(2) * x, default_obs_time + timedelta(hours=x), ConnectionState.connected.value)
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "B",
+            "A",
+            Decimal(2) * x,
+            default_obs_time + timedelta(hours=x),
+            ConnectionState.connected.value,
+        )
 
-        pandas_df = add_row_of_data(pandas_df, e_20, "B", "A", Decimal("0.5") * x, default_obs_time + timedelta(hours=x), ConnectionState.connected.value)
-        pandas_df = add_row_of_data(pandas_df, e_20, "B", "A", Decimal("0.7") * x, default_obs_time + timedelta(hours=x), ConnectionState.connected.value)
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "B",
+            "A",
+            Decimal("0.5") * x,
+            default_obs_time + timedelta(hours=x),
+            ConnectionState.connected.value,
+        )
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "B",
+            "A",
+            Decimal("0.7") * x,
+            default_obs_time + timedelta(hours=x),
+            ConnectionState.connected.value,
+        )
 
-        pandas_df = add_row_of_data(pandas_df, e_20, "A", "B", Decimal(3) * x, default_obs_time + timedelta(hours=x), ConnectionState.connected.value)
-        pandas_df = add_row_of_data(pandas_df, e_20, "A", "B", Decimal("0.9") * x, default_obs_time + timedelta(hours=x), ConnectionState.connected.value)
-        pandas_df = add_row_of_data(pandas_df, e_20, "A", "B", Decimal("1.2") * x, default_obs_time + timedelta(hours=x), ConnectionState.connected.value)
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "A",
+            "B",
+            Decimal(3) * x,
+            default_obs_time + timedelta(hours=x),
+            ConnectionState.connected.value,
+        )
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "A",
+            "B",
+            Decimal("0.9") * x,
+            default_obs_time + timedelta(hours=x),
+            ConnectionState.connected.value,
+        )
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "A",
+            "B",
+            Decimal("1.2") * x,
+            default_obs_time + timedelta(hours=x),
+            ConnectionState.connected.value,
+        )
 
-        pandas_df = add_row_of_data(pandas_df, e_20, "C", "A", Decimal("0.7") * x, default_obs_time + timedelta(hours=x), ConnectionState.connected.value)
-        pandas_df = add_row_of_data(pandas_df, e_20, "A", "C", Decimal("1.1") * x, default_obs_time + timedelta(hours=x), ConnectionState.connected.value)
-        pandas_df = add_row_of_data(pandas_df, e_20, "A", "C", Decimal("1.5") * x, default_obs_time + timedelta(hours=x), ConnectionState.connected.value)
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "C",
+            "A",
+            Decimal("0.7") * x,
+            default_obs_time + timedelta(hours=x),
+            ConnectionState.connected.value,
+        )
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "A",
+            "C",
+            Decimal("1.1") * x,
+            default_obs_time + timedelta(hours=x),
+            ConnectionState.connected.value,
+        )
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "A",
+            "C",
+            Decimal("1.5") * x,
+            default_obs_time + timedelta(hours=x),
+            ConnectionState.connected.value,
+        )
 
     return spark.createDataFrame(pandas_df, schema=time_series_schema)
 
 
-def add_row_of_data(pandas_df: pd.DataFrame, point_type, in_domain, out_domain, quantity: Decimal, timestamp, connectionState):
+def add_row_of_data(
+    pandas_df: pd.DataFrame,
+    point_type,
+    in_domain,
+    out_domain,
+    quantity: Decimal,
+    timestamp,
+    connectionState,
+):
     """
     Helper method to create a new row in the dataframe to improve readability and maintainability
     """
@@ -110,7 +198,7 @@ def add_row_of_data(pandas_df: pd.DataFrame, point_type, in_domain, out_domain, 
         Colname.quantity: quantity,
         Colname.time: timestamp,
         Colname.connection_state: connectionState,
-        Colname.aggregated_quality: Quality.estimated.value
+        Colname.aggregated_quality: Quality.estimated.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 
@@ -125,7 +213,7 @@ def aggregated_data_frame(time_series_data_frame):
 
 
 def test_test_data_has_correct_row_count(time_series_data_frame):
-    """ Check sample data row count"""
+    """Check sample data row count"""
     assert time_series_data_frame.count() == (9 * numberOfTestHours)
 
 
@@ -138,14 +226,37 @@ def test_exchange_aggregator_returns_correct_aggregations(aggregated_data_frame)
     """Check accuracy of aggregations"""
 
     for x in range(numberOfTestHours):
-        check_aggregation_row(aggregated_data_frame, "A", Decimal("3.8") * x, default_obs_time + timedelta(hours=x))
-        check_aggregation_row(aggregated_data_frame, "B", Decimal("-1.9") * x, default_obs_time + timedelta(hours=x))
-        check_aggregation_row(aggregated_data_frame, "C", Decimal("-1.9") * x, default_obs_time + timedelta(hours=x))
+        check_aggregation_row(
+            aggregated_data_frame,
+            "A",
+            Decimal("3.8") * x,
+            default_obs_time + timedelta(hours=x),
+        )
+        check_aggregation_row(
+            aggregated_data_frame,
+            "B",
+            Decimal("-1.9") * x,
+            default_obs_time + timedelta(hours=x),
+        )
+        check_aggregation_row(
+            aggregated_data_frame,
+            "C",
+            Decimal("-1.9") * x,
+            default_obs_time + timedelta(hours=x),
+        )
 
 
-def check_aggregation_row(df: DataFrame, MeteringGridArea_Domain_mRID: str, sum: Decimal, time: datetime):
+def check_aggregation_row(
+    df: DataFrame, MeteringGridArea_Domain_mRID: str, sum: Decimal, time: datetime
+):
     """Helper function that checks column values for the given row"""
-    gridfiltered = df.filter(df[Colname.grid_area] == MeteringGridArea_Domain_mRID).select(F.col(Colname.grid_area), F.col(
-        Colname.sum_quantity), F.col(f"{Colname.time_window_start}").alias("start"), F.col(f"{Colname.time_window_end}").alias("end"))
+    gridfiltered = df.filter(
+        df[Colname.grid_area] == MeteringGridArea_Domain_mRID
+    ).select(
+        F.col(Colname.grid_area),
+        F.col(Colname.sum_quantity),
+        F.col(f"{Colname.time_window_start}").alias("start"),
+        F.col(f"{Colname.time_window_end}").alias("end"),
+    )
     res = gridfiltered.filter(gridfiltered["start"] == time).toPandas()
     assert res[Colname.sum_quantity][0] == sum

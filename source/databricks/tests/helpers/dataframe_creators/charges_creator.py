@@ -30,21 +30,27 @@ def charges_factory(spark):
         charge_owner=DataframeDefaults.default_charge_owner,
         resolution=DataframeDefaults.default_resolution,
         charge_tax=DataframeDefaults.default_charge_tax,
-        currency=DataframeDefaults.default_currency
+        currency=DataframeDefaults.default_currency,
     ):
-        pandas_df = pd.DataFrame().append([{
-            Colname.charge_key: charge_key,
-            Colname.charge_id: charge_id,
-            Colname.charge_type: charge_type,
-            Colname.charge_owner: charge_owner,
-            Colname.resolution: resolution,
-            Colname.charge_tax: charge_tax,
-            Colname.currency: currency,
-            Colname.from_date: from_date,
-            Colname.to_date: to_date}],
-            ignore_index=True)
+        pandas_df = pd.DataFrame().append(
+            [
+                {
+                    Colname.charge_key: charge_key,
+                    Colname.charge_id: charge_id,
+                    Colname.charge_type: charge_type,
+                    Colname.charge_owner: charge_owner,
+                    Colname.resolution: resolution,
+                    Colname.charge_tax: charge_tax,
+                    Colname.currency: currency,
+                    Colname.from_date: from_date,
+                    Colname.to_date: to_date,
+                }
+            ],
+            ignore_index=True,
+        )
 
         return spark.createDataFrame(pandas_df, schema=charges_schema)
+
     return factory
 
 
@@ -54,16 +60,22 @@ def charge_links_factory(spark):
         from_date: datetime,
         to_date: datetime,
         charge_key=DataframeDefaults.default_charge_key,
-        metering_point_id=DataframeDefaults.default_metering_point_id
+        metering_point_id=DataframeDefaults.default_metering_point_id,
     ):
-        pandas_df = pd.DataFrame().append([{
-            Colname.charge_key: charge_key,
-            Colname.metering_point_id: metering_point_id,
-            Colname.from_date: from_date,
-            Colname.to_date: to_date}],
-            ignore_index=True)
+        pandas_df = pd.DataFrame().append(
+            [
+                {
+                    Colname.charge_key: charge_key,
+                    Colname.metering_point_id: metering_point_id,
+                    Colname.from_date: from_date,
+                    Colname.to_date: to_date,
+                }
+            ],
+            ignore_index=True,
+        )
 
         return spark.createDataFrame(pandas_df, schema=charge_links_schema)
+
     return factory
 
 
@@ -72,13 +84,19 @@ def charge_prices_factory(spark):
     def factory(
         time: datetime,
         charge_key=DataframeDefaults.default_charge_key,
-        charge_price=DataframeDefaults.default_charge_price
+        charge_price=DataframeDefaults.default_charge_price,
     ):
-        pandas_df = pd.DataFrame().append([{
-            Colname.charge_key: charge_key,
-            Colname.charge_price: charge_price,
-            Colname.time: time}],
-            ignore_index=True)
+        pandas_df = pd.DataFrame().append(
+            [
+                {
+                    Colname.charge_key: charge_key,
+                    Colname.charge_price: charge_price,
+                    Colname.time: time,
+                }
+            ],
+            ignore_index=True,
+        )
 
         return spark.createDataFrame(pandas_df, schema=charge_prices_schema)
+
     return factory

@@ -35,24 +35,30 @@ def metering_point_factory(spark):
         metering_method=DataframeDefaults.default_metering_method,
         parent_metering_point_id=DataframeDefaults.default_parent_metering_point_id,
         unit=DataframeDefaults.default_unit,
-        product=DataframeDefaults.default_product
+        product=DataframeDefaults.default_product,
     ):
-        pandas_df = pd.DataFrame().append([{
-            Colname.metering_point_id: metering_point_id,
-            Colname.metering_point_type: metering_point_type,
-            Colname.settlement_method: settlement_method,
-            Colname.grid_area: grid_area,
-            Colname.connection_state: connection_state,
-            Colname.resolution: resolution,
-            Colname.in_grid_area: in_grid_area,
-            Colname.out_grid_area: out_grid_area,
-            Colname.metering_method: metering_method,
-            Colname.parent_metering_point_id: parent_metering_point_id,
-            Colname.unit: unit,
-            Colname.product: product,
-            Colname.from_date: from_date,
-            Colname.to_date: to_date}],
-            ignore_index=True)
+        pandas_df = pd.DataFrame().append(
+            [
+                {
+                    Colname.metering_point_id: metering_point_id,
+                    Colname.metering_point_type: metering_point_type,
+                    Colname.settlement_method: settlement_method,
+                    Colname.grid_area: grid_area,
+                    Colname.connection_state: connection_state,
+                    Colname.resolution: resolution,
+                    Colname.in_grid_area: in_grid_area,
+                    Colname.out_grid_area: out_grid_area,
+                    Colname.metering_method: metering_method,
+                    Colname.parent_metering_point_id: parent_metering_point_id,
+                    Colname.unit: unit,
+                    Colname.product: product,
+                    Colname.from_date: from_date,
+                    Colname.to_date: to_date,
+                }
+            ],
+            ignore_index=True,
+        )
 
         return spark.createDataFrame(pandas_df, schema=metering_point_schema)
+
     return factory

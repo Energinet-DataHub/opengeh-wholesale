@@ -13,7 +13,12 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import MarketEvaluationPointType, SettlementMethod, ResolutionDuration, ChargeType
+from geh_stream.codelists import (
+    MarketEvaluationPointType,
+    SettlementMethod,
+    ResolutionDuration,
+    ChargeType,
+)
 import pytest
 import pandas as pd
 
@@ -23,7 +28,7 @@ const_charge_type = ChargeType.subscription
 const_charge_owner = "001"
 
 
-class DataframeDefaults():
+class DataframeDefaults:
     default_job_id: str = "1"
     default_snapshot_id: str = "1"
     default_result_id: str = "1"
@@ -33,7 +38,9 @@ class DataframeDefaults():
     default_added_system_correction: Decimal = Decimal("1.234")
     default_balance_responsible_id: str = "1"
     default_charge_id: str = const_charge_id
-    default_charge_key: str = f"{const_charge_id}-{const_charge_type}-{const_charge_owner}"
+    default_charge_key: str = (
+        f"{const_charge_id}-{const_charge_type}-{const_charge_owner}"
+    )
     default_charge_owner: str = const_charge_owner
     default_charge_price: Decimal = Decimal("1.123456")
     default_charge_tax: str = "true"

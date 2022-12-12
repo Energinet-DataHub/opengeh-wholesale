@@ -13,16 +13,25 @@
 # limitations under the License.
 
 from geh_stream.codelists import Colname
-from pyspark.sql.types import DecimalType, StructType, StructField, StringType, TimestampType, IntegerType
+from pyspark.sql.types import (
+    DecimalType,
+    StructType,
+    StructField,
+    StringType,
+    TimestampType,
+    IntegerType,
+)
 
 
-tariff_sum_and_count_schema = StructType([
-      StructField(Colname.grid_area, StringType(), False),
-      StructField(Colname.energy_supplier_id, StringType(), False),
-      StructField(Colname.time, TimestampType(), False),
-      StructField(Colname.metering_point_type, StringType(), False),
-      StructField(Colname.settlement_method, StringType(), False),
-      StructField(Colname.charge_key, StringType(), False),
-      StructField(Colname.total_quantity, DecimalType(18, 3), False),
-      StructField(Colname.charge_count, IntegerType(), False)
-])
+tariff_sum_and_count_schema = StructType(
+    [
+        StructField(Colname.grid_area, StringType(), False),
+        StructField(Colname.energy_supplier_id, StringType(), False),
+        StructField(Colname.time, TimestampType(), False),
+        StructField(Colname.metering_point_type, StringType(), False),
+        StructField(Colname.settlement_method, StringType(), False),
+        StructField(Colname.charge_key, StringType(), False),
+        StructField(Colname.total_quantity, DecimalType(18, 3), False),
+        StructField(Colname.charge_count, IntegerType(), False),
+    ]
+)

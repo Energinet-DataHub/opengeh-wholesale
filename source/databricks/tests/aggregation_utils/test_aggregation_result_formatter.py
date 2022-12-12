@@ -14,7 +14,9 @@
 from decimal import Decimal
 from datetime import datetime
 from geh_stream.codelists import Colname, ResolutionDuration, MarketEvaluationPointType
-from geh_stream.aggregation_utils.aggregation_result_formatter import create_dataframe_from_aggregation_result_schema
+from geh_stream.aggregation_utils.aggregation_result_formatter import (
+    create_dataframe_from_aggregation_result_schema,
+)
 from tests.helpers.dataframe_creators import aggregation_result_factory
 from geh_stream.codelists import Quality
 from geh_stream.shared.data_classes import Metadata
@@ -32,22 +34,30 @@ def agg_result_factory(spark):
         resolution=ResolutionDuration.hour,
         sum_quantity=Decimal("1.234"),
         quality=Quality.estimated.value,
-        metering_point_type=MarketEvaluationPointType.consumption.value
+        metering_point_type=MarketEvaluationPointType.consumption.value,
     ):
-        return spark.createDataFrame(pd.DataFrame().append([{
-            Colname.grid_area: grid_area,
-            Colname.time_window: {
-                Colname.start: start,
-                Colname.end: end},
-            Colname.resolution: resolution,
-            Colname.sum_quantity: sum_quantity,
-            Colname.quality: quality,
-            Colname.metering_point_type: metering_point_type}],
-            ignore_index=True))
+        return spark.createDataFrame(
+            pd.DataFrame().append(
+                [
+                    {
+                        Colname.grid_area: grid_area,
+                        Colname.time_window: {Colname.start: start, Colname.end: end},
+                        Colname.resolution: resolution,
+                        Colname.sum_quantity: sum_quantity,
+                        Colname.quality: quality,
+                        Colname.metering_point_type: metering_point_type,
+                    }
+                ],
+                ignore_index=True,
+            )
+        )
+
     return factory
 
 
-def test__create_dataframe_from_aggregation_result_schema__can_create_a_dataframe_that_match_aggregation_result_schema(agg_result_factory):
+def test__create_dataframe_from_aggregation_result_schema__can_create_a_dataframe_that_match_aggregation_result_schema(
+    agg_result_factory,
+):
     # Arrange
     metadata = Metadata("1", "1", "1", "1", "1")
     result = agg_result_factory()
@@ -57,7 +67,9 @@ def test__create_dataframe_from_aggregation_result_schema__can_create_a_datafram
     assert actual.schema == aggregation_result_schema
 
 
-def test__create_dataframe_from_aggregation_result_schema__match_expected_dataframe(agg_result_factory, aggregation_result_factory):
+def test__create_dataframe_from_aggregation_result_schema__match_expected_dataframe(
+    agg_result_factory, aggregation_result_factory
+):
     # Arrange
     metadata = Metadata("1", "1", "1", "1", "1")
     result = agg_result_factory()
@@ -68,7 +80,7 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
         resolution=ResolutionDuration.hour,
         sum_quantity=Decimal("1.234"),
         quality=Quality.estimated.value,
-        metering_point_type=MarketEvaluationPointType.consumption.value
+        metering_point_type=MarketEvaluationPointType.consumption.value,
     )
     # Act
     actual = create_dataframe_from_aggregation_result_schema(metadata, result)

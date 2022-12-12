@@ -36,24 +36,32 @@ def calculate_daily_subscription_price_factory(spark):
         settlement_method=DataframeDefaults.default_settlement_method,
         grid_area=DataframeDefaults.default_grid_area,
         connection_state=DataframeDefaults.default_connection_state,
-        energy_supplier_id=DataframeDefaults.default_energy_supplier_id
+        energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
     ):
-        pandas_df = pd.DataFrame().append([{
-            Colname.charge_key: charge_key,
-            Colname.charge_id: charge_id,
-            Colname.charge_type: charge_type,
-            Colname.charge_owner: charge_owner,
-            Colname.charge_price: charge_price,
-            Colname.time: time,
-            Colname.price_per_day: price_per_day,
-            Colname.charge_count: charge_count,
-            Colname.total_daily_charge_price: total_daily_charge_price,
-            Colname.metering_point_type: metering_point_type,
-            Colname.settlement_method: settlement_method,
-            Colname.grid_area: grid_area,
-            Colname.connection_state: connection_state,
-            Colname.energy_supplier_id: energy_supplier_id}],
-            ignore_index=True)
+        pandas_df = pd.DataFrame().append(
+            [
+                {
+                    Colname.charge_key: charge_key,
+                    Colname.charge_id: charge_id,
+                    Colname.charge_type: charge_type,
+                    Colname.charge_owner: charge_owner,
+                    Colname.charge_price: charge_price,
+                    Colname.time: time,
+                    Colname.price_per_day: price_per_day,
+                    Colname.charge_count: charge_count,
+                    Colname.total_daily_charge_price: total_daily_charge_price,
+                    Colname.metering_point_type: metering_point_type,
+                    Colname.settlement_method: settlement_method,
+                    Colname.grid_area: grid_area,
+                    Colname.connection_state: connection_state,
+                    Colname.energy_supplier_id: energy_supplier_id,
+                }
+            ],
+            ignore_index=True,
+        )
 
-        return spark.createDataFrame(pandas_df, schema=calculate_daily_subscription_price_schema)
+        return spark.createDataFrame(
+            pandas_df, schema=calculate_daily_subscription_price_schema
+        )
+
     return factory

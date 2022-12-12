@@ -27,16 +27,22 @@ def es_brp_relations_factory(spark):
         energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
         balance_responsible_id=DataframeDefaults.default_balance_responsible_id,
         grid_area=DataframeDefaults.default_grid_area,
-        metering_point_type=DataframeDefaults.default_metering_point_type
+        metering_point_type=DataframeDefaults.default_metering_point_type,
     ):
-        pandas_df = pd.DataFrame().append([{
-            Colname.energy_supplier_id: energy_supplier_id,
-            Colname.balance_responsible_id: balance_responsible_id,
-            Colname.grid_area: grid_area,
-            Colname.metering_point_type: metering_point_type,
-            Colname.from_date: from_date,
-            Colname.to_date: to_date}],
-            ignore_index=True)
+        pandas_df = pd.DataFrame().append(
+            [
+                {
+                    Colname.energy_supplier_id: energy_supplier_id,
+                    Colname.balance_responsible_id: balance_responsible_id,
+                    Colname.grid_area: grid_area,
+                    Colname.metering_point_type: metering_point_type,
+                    Colname.from_date: from_date,
+                    Colname.to_date: to_date,
+                }
+            ],
+            ignore_index=True,
+        )
 
         return spark.createDataFrame(pandas_df, schema=es_brp_relations_schema)
+
     return factory

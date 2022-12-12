@@ -40,31 +40,37 @@ def aggregation_result_factory(spark):
         metering_point_type=DataframeDefaults.default_metering_point_type,
         settlement_method=None,
         added_grid_loss=None,
-        added_system_correction=None
+        added_system_correction=None,
     ):
-        pandas_df = pd.DataFrame().append([{
-            Colname.job_id: job_id,
-            Colname.snapshot_id: snapshot_id,
-            Colname.result_id: result_id,
-            Colname.result_name: result_name,
-            Colname.result_path: result_path,
-            Colname.grid_area: grid_area,
-            Colname.in_grid_area: in_grid_area,
-            Colname.out_grid_area: out_grid_area,
-            Colname.balance_responsible_id: balance_responsible_id,
-            Colname.energy_supplier_id: energy_supplier_id,
-            Colname.time_window: {
-                Colname.start: time_window_start,
-                Colname.end: time_window_end},
-            Colname.resolution: resolution,
-            Colname.sum_quantity: sum_quantity,
-            Colname.quality: quality,
-            Colname.metering_point_type: metering_point_type,
-            Colname.settlement_method: settlement_method,
-            Colname.added_grid_loss: added_grid_loss,
-            Colname.added_system_correction: added_system_correction
-            }],
-            ignore_index=True)
+        pandas_df = pd.DataFrame().append(
+            [
+                {
+                    Colname.job_id: job_id,
+                    Colname.snapshot_id: snapshot_id,
+                    Colname.result_id: result_id,
+                    Colname.result_name: result_name,
+                    Colname.result_path: result_path,
+                    Colname.grid_area: grid_area,
+                    Colname.in_grid_area: in_grid_area,
+                    Colname.out_grid_area: out_grid_area,
+                    Colname.balance_responsible_id: balance_responsible_id,
+                    Colname.energy_supplier_id: energy_supplier_id,
+                    Colname.time_window: {
+                        Colname.start: time_window_start,
+                        Colname.end: time_window_end,
+                    },
+                    Colname.resolution: resolution,
+                    Colname.sum_quantity: sum_quantity,
+                    Colname.quality: quality,
+                    Colname.metering_point_type: metering_point_type,
+                    Colname.settlement_method: settlement_method,
+                    Colname.added_grid_loss: added_grid_loss,
+                    Colname.added_system_correction: added_system_correction,
+                }
+            ],
+            ignore_index=True,
+        )
 
         return spark.createDataFrame(pandas_df, schema=aggregation_result_schema)
+
     return factory

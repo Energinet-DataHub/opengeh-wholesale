@@ -13,22 +13,30 @@
 # limitations under the License.
 
 from geh_stream.codelists import Colname
-from pyspark.sql.types import DecimalType, StructType, StructField, StringType, TimestampType
+from pyspark.sql.types import (
+    DecimalType,
+    StructType,
+    StructField,
+    StringType,
+    TimestampType,
+)
 
 
-charges_complete_schema = StructType([
-      StructField(Colname.charge_key, StringType(), False),
-      StructField(Colname.charge_id, StringType(), False),
-      StructField(Colname.charge_type, StringType(), False),
-      StructField(Colname.charge_owner, StringType(), False),
-      StructField(Colname.charge_tax, StringType(), False),
-      StructField(Colname.resolution, StringType(), False),
-      StructField(Colname.time, TimestampType(), False),
-      StructField(Colname.charge_price, DecimalType(18, 8), False),
-      StructField(Colname.metering_point_id, StringType(), False),
-      StructField(Colname.energy_supplier_id, StringType(), False),
-      StructField(Colname.metering_point_type, StringType(), False),
-      StructField(Colname.connection_state, StringType(), False),
-      StructField(Colname.settlement_method, StringType(), False),
-      StructField(Colname.grid_area, StringType(), False),
-])
+charges_complete_schema = StructType(
+    [
+        StructField(Colname.charge_key, StringType(), False),
+        StructField(Colname.charge_id, StringType(), False),
+        StructField(Colname.charge_type, StringType(), False),
+        StructField(Colname.charge_owner, StringType(), False),
+        StructField(Colname.charge_tax, StringType(), False),
+        StructField(Colname.resolution, StringType(), False),
+        StructField(Colname.time, TimestampType(), False),
+        StructField(Colname.charge_price, DecimalType(18, 8), False),
+        StructField(Colname.metering_point_id, StringType(), False),
+        StructField(Colname.energy_supplier_id, StringType(), False),
+        StructField(Colname.metering_point_type, StringType(), False),
+        StructField(Colname.connection_state, StringType(), False),
+        StructField(Colname.settlement_method, StringType(), False),
+        StructField(Colname.grid_area, StringType(), False),
+    ]
+)

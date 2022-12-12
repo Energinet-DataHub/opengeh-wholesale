@@ -26,18 +26,24 @@ def time_series_factory(spark):
         metering_point_id=DataframeDefaults.default_metering_point_id,
         quantity=DataframeDefaults.default_quantity,
         ts_quality=DataframeDefaults.default_quality,
-        registration_date_time=DataframeDefaults.default_registration_date_time
+        registration_date_time=DataframeDefaults.default_registration_date_time,
     ):
-        pandas_df = pd.DataFrame().append([{
-            Colname.metering_point_id: metering_point_id,
-            Colname.quantity: quantity,
-            Colname.quality: ts_quality,
-            Colname.time: time,
-            Colname.year: time.year,
-            Colname.month: time.month,
-            Colname.day: time.day,
-            Colname.registration_date_time: registration_date_time}],
-            ignore_index=True)
+        pandas_df = pd.DataFrame().append(
+            [
+                {
+                    Colname.metering_point_id: metering_point_id,
+                    Colname.quantity: quantity,
+                    Colname.quality: ts_quality,
+                    Colname.time: time,
+                    Colname.year: time.year,
+                    Colname.month: time.month,
+                    Colname.day: time.day,
+                    Colname.registration_date_time: registration_date_time,
+                }
+            ],
+            ignore_index=True,
+        )
 
         return spark.createDataFrame(pandas_df, schema=time_series_points_schema)
+
     return factory

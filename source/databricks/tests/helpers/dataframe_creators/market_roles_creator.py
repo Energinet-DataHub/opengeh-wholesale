@@ -25,14 +25,20 @@ def market_roles_factory(spark):
         from_date: datetime,
         to_date: datetime,
         metering_point_id=DataframeDefaults.default_metering_point_id,
-        energy_supplier_id=DataframeDefaults.default_energy_supplier_id
+        energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
     ):
-        pandas_df = pd.DataFrame().append([{
-            Colname.energy_supplier_id: energy_supplier_id,
-            Colname.metering_point_id: metering_point_id,
-            Colname.from_date: from_date,
-            Colname.to_date: to_date}],
-            ignore_index=True)
+        pandas_df = pd.DataFrame().append(
+            [
+                {
+                    Colname.energy_supplier_id: energy_supplier_id,
+                    Colname.metering_point_id: metering_point_id,
+                    Colname.from_date: from_date,
+                    Colname.to_date: to_date,
+                }
+            ],
+            ignore_index=True,
+        )
 
         return spark.createDataFrame(pandas_df, schema=market_roles_schema)
+
     return factory

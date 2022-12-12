@@ -14,13 +14,27 @@
 from datetime import datetime
 from decimal import Decimal
 from geh_stream.codelists import Colname
-from geh_stream.schemas import charges_schema, charge_links_schema, charge_prices_schema, metering_point_schema, market_roles_schema
+from geh_stream.schemas import (
+    charges_schema,
+    charge_links_schema,
+    charge_prices_schema,
+    metering_point_schema,
+    market_roles_schema,
+)
 from geh_stream.schemas.output import calculate_daily_subscription_price_schema
 from geh_stream.schemas import time_series_points_schema
-from tests.helpers.dataframe_creators.calculate_daily_subscription_price_creator import calculate_daily_subscription_price_factory
-from tests.helpers.dataframe_creators.charges_creator import charges_factory, charge_links_factory, charge_prices_factory
+from tests.helpers.dataframe_creators.calculate_daily_subscription_price_creator import (
+    calculate_daily_subscription_price_factory,
+)
+from tests.helpers.dataframe_creators.charges_creator import (
+    charges_factory,
+    charge_links_factory,
+    charge_prices_factory,
+)
 from tests.helpers.dataframe_creators.market_roles_creator import market_roles_factory
-from tests.helpers.dataframe_creators.metering_point_creator import metering_point_factory
+from tests.helpers.dataframe_creators.metering_point_creator import (
+    metering_point_factory,
+)
 from tests.helpers.dataframe_creators.time_series_creator import time_series_factory
 from tests.helpers import DataframeDefaults
 import pytest
@@ -32,7 +46,9 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
     price_per_day = Decimal("1.123456")
     charge_count = 1
     total_daily_charge_price = Decimal("1.123456")
-    df = calculate_daily_subscription_price_factory(time, price_per_day, charge_count, total_daily_charge_price)
+    df = calculate_daily_subscription_price_factory(
+        time, price_per_day, charge_count, total_daily_charge_price
+    )
     result = df.collect()[0]
     assert len(df.columns) == len(calculate_daily_subscription_price_schema.fields)
     assert result[Colname.charge_key] == DataframeDefaults.default_charge_key
@@ -44,11 +60,21 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
     assert result[Colname.price_per_day] == price_per_day
     assert result[Colname.charge_count] == charge_count
     assert result[Colname.total_daily_charge_price] == total_daily_charge_price
-    assert result[Colname.metering_point_type] == DataframeDefaults.default_metering_point_type
-    assert result[Colname.settlement_method] == DataframeDefaults.default_settlement_method
+    assert (
+        result[Colname.metering_point_type]
+        == DataframeDefaults.default_metering_point_type
+    )
+    assert (
+        result[Colname.settlement_method] == DataframeDefaults.default_settlement_method
+    )
     assert result[Colname.grid_area] == DataframeDefaults.default_grid_area
-    assert result[Colname.connection_state] == DataframeDefaults.default_connection_state
-    assert result[Colname.energy_supplier_id] == DataframeDefaults.default_energy_supplier_id
+    assert (
+        result[Colname.connection_state] == DataframeDefaults.default_connection_state
+    )
+    assert (
+        result[Colname.energy_supplier_id]
+        == DataframeDefaults.default_energy_supplier_id
+    )
 
 
 def test_charges(charges_factory):
@@ -75,7 +101,9 @@ def test_charge_links(charge_links_factory):
     result = df.collect()[0]
     assert len(df.columns) == len(charge_links_schema.fields)
     assert result[Colname.charge_key] == DataframeDefaults.default_charge_key
-    assert result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
+    assert (
+        result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
+    )
     assert result[Colname.from_date] == from_date
     assert result[Colname.to_date] == to_date
 
@@ -96,8 +124,13 @@ def test_market_roles(market_roles_factory):
     df = market_roles_factory(from_date, to_date)
     result = df.collect()[0]
     assert len(df.columns) == len(market_roles_schema.fields)
-    assert result[Colname.energy_supplier_id] == DataframeDefaults.default_energy_supplier_id
-    assert result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
+    assert (
+        result[Colname.energy_supplier_id]
+        == DataframeDefaults.default_energy_supplier_id
+    )
+    assert (
+        result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
+    )
     assert result[Colname.from_date] == from_date
     assert result[Colname.to_date] == to_date
 
@@ -108,16 +141,28 @@ def test_metering_point(metering_point_factory):
     df = metering_point_factory(from_date, to_date)
     result = df.collect()[0]
     assert len(df.columns) == len(metering_point_schema.fields)
-    assert result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
-    assert result[Colname.metering_point_type] == DataframeDefaults.default_metering_point_type
-    assert result[Colname.settlement_method] == DataframeDefaults.default_settlement_method
+    assert (
+        result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
+    )
+    assert (
+        result[Colname.metering_point_type]
+        == DataframeDefaults.default_metering_point_type
+    )
+    assert (
+        result[Colname.settlement_method] == DataframeDefaults.default_settlement_method
+    )
     assert result[Colname.grid_area] == DataframeDefaults.default_grid_area
-    assert result[Colname.connection_state] == DataframeDefaults.default_connection_state
+    assert (
+        result[Colname.connection_state] == DataframeDefaults.default_connection_state
+    )
     assert result[Colname.resolution] == DataframeDefaults.default_resolution
     assert result[Colname.in_grid_area] == DataframeDefaults.default_in_grid_area
     assert result[Colname.out_grid_area] == DataframeDefaults.default_out_grid_area
     assert result[Colname.metering_method] == DataframeDefaults.default_metering_method
-    assert result[Colname.parent_metering_point_id] == DataframeDefaults.default_parent_metering_point_id
+    assert (
+        result[Colname.parent_metering_point_id]
+        == DataframeDefaults.default_parent_metering_point_id
+    )
     assert result[Colname.unit] == DataframeDefaults.default_unit
     assert result[Colname.product] == DataframeDefaults.default_product
     assert result[Colname.from_date] == from_date
@@ -129,7 +174,9 @@ def test_time_series(time_series_factory):
     df = time_series_factory(time)
     result = df.collect()[0]
     assert len(df.columns) == len(time_series_points_schema.fields)
-    assert result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
+    assert (
+        result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
+    )
     assert result[Colname.quantity] == DataframeDefaults.default_quantity
     assert result[Colname.quality] == DataframeDefaults.default_quality
     assert result[Colname.time] == time
