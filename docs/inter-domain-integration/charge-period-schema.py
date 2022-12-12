@@ -52,8 +52,11 @@ charge_period_schema = StructType(
         # Example: 8100000000030
         StructField("ChargeOwnerId", StringType(), False),
 
-        # "PT1H" (hourly) | "PT1D" (daily)
-        # Monthly values need to be converted to daily values before using in calculations.
+        # "PT1H" (hourly) | "PT1D" (daily) | "P1M" (monthly)
+        # Behaviour depends on the type of the charge.
+        # - Subscriptions: Always monthly. The value is converted to daily values.
+        # - Fees: Always monthly. The value is charged on the effective day on the metering point.
+        # - Tarifs: Only hourly and daily resolution applies.
         # Example: PT1H
         StructField("Resolution", StringType(), False),
 
