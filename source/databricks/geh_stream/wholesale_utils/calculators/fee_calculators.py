@@ -17,41 +17,68 @@ from geh_stream.codelists import Colname, MarketEvaluationPointType, SettlementM
 from geh_stream.schemas.output import calculate_fee_charge_price_schema
 
 
-def calculate_fee_charge_price(spark: SparkSession, fee_charges: DataFrame) -> DataFrame:
+def calculate_fee_charge_price(
+    spark: SparkSession, fee_charges: DataFrame
+) -> DataFrame:
     # filter on metering point type and settlement method
-    charges_flex_settled_consumption = filter_on_metering_point_type_and_settlement_method(fee_charges)
+    charges_flex_settled_consumption = (
+        filter_on_metering_point_type_and_settlement_method(fee_charges)
+    )
 
     # get count of charges and total daily charge price
-    df = get_count_of_charges_and_total_daily_charge_price(charges_flex_settled_consumption)
+    df = get_count_of_charges_and_total_daily_charge_price(
+        charges_flex_settled_consumption
+    )
 
     return spark.createDataFrame(df.rdd, calculate_fee_charge_price_schema)
 
 
-def filter_on_metering_point_type_and_settlement_method(fee_charges: DataFrame) -> DataFrame:
-    charges_flex_settled_consumption = fee_charges \
-        .filter(col(Colname.metering_point_type) == MarketEvaluationPointType.consumption.value) \
-        .filter(col(Colname.settlement_method) == SettlementMethod.flex_settled.value)
+def filter_on_metering_point_type_and_settlement_method(
+    fee_charges: DataFrame,
+) -> DataFrame:
+    charges_flex_settled_consumption = fee_charges.filter(
+        col(Colname.metering_point_type) == MarketEvaluationPointType.consumption.value
+    ).filter(col(Colname.settlement_method) == SettlementMethod.flex_settled.value)
     return charges_flex_settled_consumption
 
 
-def get_count_of_charges_and_total_daily_charge_price(charges_flex_settled_consumption: DataFrame) -> DataFrame:
-    grouped_charges = charges_flex_settled_consumption \
-        .groupBy(Colname.charge_owner, Colname.grid_area, Colname.energy_supplier_id, Colname.time) \
+def get_count_of_charges_and_total_daily_charge_price(
+    charges_flex_settled_consumption: DataFrame,
+) -> DataFrame:
+    grouped_charges = (
+        charges_flex_settled_consumption.groupBy(
+            Colname.charge_owner,
+            Colname.grid_area,
+            Colname.energy_supplier_id,
+            Colname.time,
+        )
         .agg(
             count("*").alias(Colname.charge_count),
-            sum(Colname.charge_price).alias(Colname.total_daily_charge_price)
-            ) \
+            sum(Colname.charge_price).alias(Colname.total_daily_charge_price),
+        )
         .select(
             Colname.charge_owner,
             Colname.grid_area,
             Colname.energy_supplier_id,
             Colname.time,
             Colname.charge_count,
-            Colname.total_daily_charge_price
+            Colname.total_daily_charge_price,
         )
+    )
 
-    df = charges_flex_settled_consumption \
-        .select("*").distinct().join(grouped_charges, [Colname.charge_owner, Colname.grid_area, Colname.energy_supplier_id, Colname.time], "inner") \
+    df = (
+        charges_flex_settled_consumption.select("*")
+        .distinct()
+        .join(
+            grouped_charges,
+            [
+                Colname.charge_owner,
+                Colname.grid_area,
+                Colname.energy_supplier_id,
+                Colname.time,
+            ],
+            "inner",
+        )
         .select(
             Colname.charge_key,
             Colname.charge_id,
@@ -65,6 +92,7 @@ def get_count_of_charges_and_total_daily_charge_price(charges_flex_settled_consu
             Colname.settlement_method,
             Colname.grid_area,
             Colname.connection_state,
-            Colname.energy_supplier_id
+            Colname.energy_supplier_id,
         )
+    )
     return df

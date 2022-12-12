@@ -16,7 +16,7 @@ from argparse import Namespace
 import dateutil.parser
 
 
-class Period():
+class Period:
     from_date: datetime
     to_date: datetime
 
@@ -26,5 +26,7 @@ class Period():
 
 
 def parse_period(beginning_date_time, end_date_time) -> Period:
-    period = Period(dateutil.parser.parse(beginning_date_time), dateutil.parser.parse(end_date_time))
+    period = Period(
+        dateutil.parser.parse(beginning_date_time), dateutil.parser.parse(end_date_time)
+    )
     return period

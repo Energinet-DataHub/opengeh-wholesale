@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class ResultKeyName():
+class ResultKeyName:
     aggregation_base_dataframe = 0
     grid_loss_sys_cor_master_data = 1
     net_exchange_per_neighbour = 10

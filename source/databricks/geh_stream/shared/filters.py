@@ -19,18 +19,20 @@ from typing import List
 
 
 def filter_on_date(df: DataFrame, period: Period) -> DataFrame:
-    return (df
-            .filter(col(Colname.time) < period.to_date)
-            .filter(col(Colname.time) >= period.from_date))
+    return df.filter(col(Colname.time) < period.to_date).filter(
+        col(Colname.time) >= period.from_date
+    )
 
 
 def filter_on_period(df: DataFrame, period: Period) -> DataFrame:
-    return (df
-            .filter(col(Colname.from_date) < period.to_date)
-            .filter(col(Colname.to_date) > period.from_date))
+    return df.filter(col(Colname.from_date) < period.to_date).filter(
+        col(Colname.to_date) > period.from_date
+    )
 
 
-def filter_on_grid_areas(df: DataFrame, grid_area_col: str, grid_areas: List[str]) -> DataFrame:
+def filter_on_grid_areas(
+    df: DataFrame, grid_area_col: str, grid_areas: List[str]
+) -> DataFrame:
     if grid_areas is not None and len(grid_areas):
         return df.filter(col(grid_area_col).isin(grid_areas))
     return df

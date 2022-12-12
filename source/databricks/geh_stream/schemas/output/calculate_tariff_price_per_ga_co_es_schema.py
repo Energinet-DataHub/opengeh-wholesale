@@ -13,23 +13,32 @@
 # limitations under the License.
 
 from geh_stream.codelists import Colname
-from pyspark.sql.types import DecimalType, IntegerType, StructType, StructField, StringType, TimestampType
+from pyspark.sql.types import (
+    DecimalType,
+    IntegerType,
+    StructType,
+    StructField,
+    StringType,
+    TimestampType,
+)
 
 
-calculate_tariff_price_per_ga_co_es_schema = StructType([
-    StructField(Colname.energy_supplier_id, StringType(), False),
-    StructField(Colname.grid_area, StringType(), False),
-    StructField(Colname.time, TimestampType(), False),
-    StructField(Colname.metering_point_type, StringType(), False),
-    StructField(Colname.settlement_method, StringType(), False),
-    StructField(Colname.charge_key, StringType(), False),
-    StructField(Colname.charge_id, StringType(), False),
-    StructField(Colname.charge_type, StringType(), False),
-    StructField(Colname.charge_owner, StringType(), False),
-    StructField(Colname.charge_tax, StringType(), False),
-    StructField(Colname.resolution, StringType(), False),
-    StructField(Colname.charge_price, DecimalType(18, 8), False),
-    StructField(Colname.total_quantity, DecimalType(18, 8), False),
-    StructField(Colname.charge_count, IntegerType(), False),
-    StructField(Colname.total_amount, DecimalType(18, 8), False),
-])
+calculate_tariff_price_per_ga_co_es_schema = StructType(
+    [
+        StructField(Colname.energy_supplier_id, StringType(), False),
+        StructField(Colname.grid_area, StringType(), False),
+        StructField(Colname.time, TimestampType(), False),
+        StructField(Colname.metering_point_type, StringType(), False),
+        StructField(Colname.settlement_method, StringType(), False),
+        StructField(Colname.charge_key, StringType(), False),
+        StructField(Colname.charge_id, StringType(), False),
+        StructField(Colname.charge_type, StringType(), False),
+        StructField(Colname.charge_owner, StringType(), False),
+        StructField(Colname.charge_tax, StringType(), False),
+        StructField(Colname.resolution, StringType(), False),
+        StructField(Colname.charge_price, DecimalType(18, 8), False),
+        StructField(Colname.total_quantity, DecimalType(18, 8), False),
+        StructField(Colname.charge_count, IntegerType(), False),
+        StructField(Colname.total_amount, DecimalType(18, 8), False),
+    ]
+)

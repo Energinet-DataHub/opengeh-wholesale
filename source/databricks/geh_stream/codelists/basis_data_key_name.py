@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class BasisDataKeyName():
+class BasisDataKeyName:
     time_series = "time_series"
     metering_points = "metering_points"
     market_roles = "market_roles"

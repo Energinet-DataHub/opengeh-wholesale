@@ -20,21 +20,46 @@ from geh_stream.shared.data_classes import Metadata
 metering_grid_area_domain_mrid_drop = "MeteringGridArea_Domain_mRID_drop"
 
 
-def combine_added_system_correction_with_master_data(results: dict, metadata: Metadata) -> DataFrame:
+def combine_added_system_correction_with_master_data(
+    results: dict, metadata: Metadata
+) -> DataFrame:
     added_system_correction_df = results[ResultKeyName.added_system_correction]
-    grid_loss_sys_cor_master_data_df = results[ResultKeyName.grid_loss_sys_cor_master_data]
-    return combine_master_data(added_system_correction_df, grid_loss_sys_cor_master_data_df, Colname.added_system_correction, Colname.is_system_correction)
+    grid_loss_sys_cor_master_data_df = results[
+        ResultKeyName.grid_loss_sys_cor_master_data
+    ]
+    return combine_master_data(
+        added_system_correction_df,
+        grid_loss_sys_cor_master_data_df,
+        Colname.added_system_correction,
+        Colname.is_system_correction,
+    )
 
 
-def combine_added_grid_loss_with_master_data(results: dict, metadata: Metadata) -> DataFrame:
+def combine_added_grid_loss_with_master_data(
+    results: dict, metadata: Metadata
+) -> DataFrame:
     added_grid_loss_df = results[ResultKeyName.added_grid_loss]
-    grid_loss_sys_cor_master_data_df = results[ResultKeyName.grid_loss_sys_cor_master_data]
-    return combine_master_data(added_grid_loss_df, grid_loss_sys_cor_master_data_df, Colname.added_grid_loss, Colname.is_grid_loss)
+    grid_loss_sys_cor_master_data_df = results[
+        ResultKeyName.grid_loss_sys_cor_master_data
+    ]
+    return combine_master_data(
+        added_grid_loss_df,
+        grid_loss_sys_cor_master_data_df,
+        Colname.added_grid_loss,
+        Colname.is_grid_loss,
+    )
 
 
-def combine_master_data(timeseries_df: DataFrame, grid_loss_sys_cor_master_data_df: DataFrame, quantity_column_name, mp_check):
+def combine_master_data(
+    timeseries_df: DataFrame,
+    grid_loss_sys_cor_master_data_df: DataFrame,
+    quantity_column_name,
+    mp_check,
+):
     df = timeseries_df.withColumnRenamed(quantity_column_name, Colname.quantity)
-    mddf = grid_loss_sys_cor_master_data_df.withColumnRenamed(Colname.grid_area, metering_grid_area_domain_mrid_drop)
+    mddf = grid_loss_sys_cor_master_data_df.withColumnRenamed(
+        Colname.grid_area, metering_grid_area_domain_mrid_drop
+    )
     return df.join(
         mddf,
         when(
@@ -46,11 +71,9 @@ def combine_master_data(timeseries_df: DataFrame, grid_loss_sys_cor_master_data_
             col(Colname.to_date).isNull()
             | (col(Colname.time_window_end) <= col(Colname.to_date))
         )
-        & (
-            col(Colname.grid_area)
-            == col(metering_grid_area_domain_mrid_drop)
-        )
-        & (col(mp_check)), "inner"
+        & (col(Colname.grid_area) == col(metering_grid_area_domain_mrid_drop))
+        & (col(mp_check)),
+        "inner",
     ).select(
         df[Colname.grid_area],
         df[Colname.quantity],
@@ -66,5 +89,5 @@ def combine_master_data(timeseries_df: DataFrame, grid_loss_sys_cor_master_data_
         df[Colname.metering_point_type],
         df[Colname.settlement_method],
         mddf[Colname.is_grid_loss],
-        mddf[Colname.is_system_correction]
+        mddf[Colname.is_system_correction],
     )

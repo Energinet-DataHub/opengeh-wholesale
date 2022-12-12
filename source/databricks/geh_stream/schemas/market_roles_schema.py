@@ -15,9 +15,11 @@
 from geh_stream.codelists import Colname
 from pyspark.sql.types import StructType, StructField, StringType, TimestampType
 
-market_roles_schema = StructType([
-      StructField(Colname.energy_supplier_id, StringType(), False),
-      StructField(Colname.metering_point_id, StringType(), False),
-      StructField(Colname.from_date, TimestampType(), False),
-      StructField(Colname.to_date, TimestampType(), False)
-])
+market_roles_schema = StructType(
+    [
+        StructField(Colname.energy_supplier_id, StringType(), False),
+        StructField(Colname.metering_point_id, StringType(), False),
+        StructField(Colname.from_date, TimestampType(), False),
+        StructField(Colname.to_date, TimestampType(), False),
+    ]
+)

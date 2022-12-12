@@ -14,8 +14,12 @@
 from geh_stream.codelists import Colname
 from pyspark.sql.types import StructType, StructField, StringType
 
-integration_event_schema = StructType([StructField(Colname.event_id, StringType()),
-                                       StructField(Colname.processed_date, StringType()),
-                                       StructField(Colname.event_name, StringType()),
-                                       StructField(Colname.domain, StringType()),
-                                       StructField("body", StringType())])
+integration_event_schema = StructType(
+    [
+        StructField(Colname.event_id, StringType()),
+        StructField(Colname.processed_date, StringType()),
+        StructField(Colname.event_name, StringType()),
+        StructField(Colname.domain, StringType()),
+        StructField("body", StringType()),
+    ]
+)

@@ -13,50 +13,63 @@
 # limitations under the License.
 
 
-def get_time_series_dataframe(time_series_df, metering_point_df, market_roles_df, es_brp_relations_df):
-    metering_point_join_conditions = \
-        [
-            time_series_df.metering_point_id == metering_point_df.metering_point_id,
-            time_series_df.time >= metering_point_df.from_date,
-            time_series_df.time < metering_point_df.to_date
-        ]
+def get_time_series_dataframe(
+    time_series_df, metering_point_df, market_roles_df, es_brp_relations_df
+):
+    metering_point_join_conditions = [
+        time_series_df.metering_point_id == metering_point_df.metering_point_id,
+        time_series_df.time >= metering_point_df.from_date,
+        time_series_df.time < metering_point_df.to_date,
+    ]
 
-    time_series_with_metering_point = time_series_df \
-        .join(metering_point_df, metering_point_join_conditions, "inner") \
-        .drop(metering_point_df.metering_point_id) \
-        .drop(metering_point_df.from_date) \
+    time_series_with_metering_point = (
+        time_series_df.join(metering_point_df, metering_point_join_conditions, "inner")
+        .drop(metering_point_df.metering_point_id)
+        .drop(metering_point_df.from_date)
         .drop(metering_point_df.to_date)
+    )
 
-    market_roles_join_conditions = \
-        [
-            time_series_with_metering_point.metering_point_id == market_roles_df.metering_point_id,
-            time_series_with_metering_point.time >= market_roles_df.from_date,
-            time_series_with_metering_point.time < market_roles_df.to_date
-        ]
+    market_roles_join_conditions = [
+        time_series_with_metering_point.metering_point_id
+        == market_roles_df.metering_point_id,
+        time_series_with_metering_point.time >= market_roles_df.from_date,
+        time_series_with_metering_point.time < market_roles_df.to_date,
+    ]
 
-    time_series_with_metering_point_and_market_roles = time_series_with_metering_point \
-        .join(market_roles_df, market_roles_join_conditions, "left") \
-        .drop(market_roles_df.metering_point_id) \
-        .drop(market_roles_df.from_date) \
+    time_series_with_metering_point_and_market_roles = (
+        time_series_with_metering_point.join(
+            market_roles_df, market_roles_join_conditions, "left"
+        )
+        .drop(market_roles_df.metering_point_id)
+        .drop(market_roles_df.from_date)
         .drop(market_roles_df.to_date)
+    )
 
-    es_brp_relations_join_conditions = \
-        [
-            time_series_with_metering_point_and_market_roles.energy_supplier_id == es_brp_relations_df.energy_supplier_id,
-            time_series_with_metering_point_and_market_roles.grid_area == es_brp_relations_df.grid_area,
-            time_series_with_metering_point_and_market_roles.metering_point_type == es_brp_relations_df.metering_point_type,
-            time_series_with_metering_point_and_market_roles.time >= es_brp_relations_df.from_date,
-            time_series_with_metering_point_and_market_roles.time < es_brp_relations_df.to_date,
-            time_series_with_metering_point_and_market_roles.metering_point_type == es_brp_relations_df.metering_point_type
-        ]
+    es_brp_relations_join_conditions = [
+        time_series_with_metering_point_and_market_roles.energy_supplier_id
+        == es_brp_relations_df.energy_supplier_id,
+        time_series_with_metering_point_and_market_roles.grid_area
+        == es_brp_relations_df.grid_area,
+        time_series_with_metering_point_and_market_roles.metering_point_type
+        == es_brp_relations_df.metering_point_type,
+        time_series_with_metering_point_and_market_roles.time
+        >= es_brp_relations_df.from_date,
+        time_series_with_metering_point_and_market_roles.time
+        < es_brp_relations_df.to_date,
+        time_series_with_metering_point_and_market_roles.metering_point_type
+        == es_brp_relations_df.metering_point_type,
+    ]
 
-    time_series_with_metering_point_and_market_roles_and_brp = time_series_with_metering_point_and_market_roles \
-        .join(es_brp_relations_df, es_brp_relations_join_conditions, "left") \
-        .drop(es_brp_relations_df.energy_supplier_id) \
-        .drop(es_brp_relations_df.grid_area) \
-        .drop(es_brp_relations_df.from_date) \
-        .drop(es_brp_relations_df.to_date) \
+    time_series_with_metering_point_and_market_roles_and_brp = (
+        time_series_with_metering_point_and_market_roles.join(
+            es_brp_relations_df, es_brp_relations_join_conditions, "left"
+        )
+        .drop(es_brp_relations_df.energy_supplier_id)
+        .drop(es_brp_relations_df.grid_area)
+        .drop(es_brp_relations_df.from_date)
+        .drop(es_brp_relations_df.to_date)
         .drop(es_brp_relations_df.metering_point_type)
+    )
 
     # Add charges for BRS-027
     # charges_with_prices_and_links = charges_df \

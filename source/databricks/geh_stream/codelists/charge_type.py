@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class ChargeType():
+class ChargeType:
     subscription = "D01"
     fee = "D02"
     tariff = "D03"

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class ResolutionDuration():
+class ResolutionDuration:
     year = "P1Y"
     month = "P1M"
     day = "P1D"

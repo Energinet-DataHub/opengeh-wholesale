@@ -13,5 +13,5 @@
 # limitations under the License.
 
 
-class DateFormat():
+class DateFormat:
     iso_8601 = "yyyy-MM-dd'T'HH:mm:ss'Z'"
