@@ -17,12 +17,13 @@ import configargparse
 from .calculator_args import CalculatorArgs
 from .args_helper import valid_date, valid_list, valid_log_level
 from .datamigration import islocked
+import package.calculation_input as calculation_input
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
 from configargparse import argparse
 from package import (
-    calculate_balance_fixing_total_production,
+    calculate_balance_fixing,
     db_logging,
     debug,
     infrastructure,
@@ -73,28 +74,37 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
 
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
-    timeseries_points = spark.read.option("header", "true").csv(
+    timeseries_points_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/TimeSeriesPoints.csv"
     )
     metering_points_periods_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
     )
 
-    market_roles_periods_df = spark.read.option("header", "true").csv(
+    energy_supplier_periods_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/EnergySupplierPeriods.csv"
     )
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
+    _check_all_grid_areas_have_metering_points(
+        batch_grid_areas_df, metering_points_periods_df
+    )
+
+    metering_point_periods_df = calculation_input.get_metering_point_periods_df(
+        metering_points_periods_df,
+        energy_supplier_periods_df,
+        batch_grid_areas_df,
+        args.batch_period_start_datetime,
+        args.batch_period_end_datetime,
+    )
 
     (
         result_df,
         timeseries_basis_data_df,
         master_basis_data_df,
-    ) = calculate_balance_fixing_total_production(
-        timeseries_points,
-        metering_points_periods_df,
-        market_roles_periods_df,
-        batch_grid_areas_df,
+    ) = calculate_balance_fixing(
+        metering_point_periods_df,
+        timeseries_points_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.time_zone,
@@ -122,7 +132,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
     # First repartition to co-locate all rows for a grid area on a single executor.
     # This ensures that only one file is being written/created for each grid area
-    # when writing/creating the files. The partition by creates a folder for each grid area.
+    # When writing/creating the files. The partition by creates a folder for each grid area.
     # result/
     (
         result_df.withColumnRenamed("GridAreaCode", "grid_area")
@@ -140,6 +150,28 @@ def get_batch_grid_areas_df(
     return spark.createDataFrame(
         map(lambda x: Row(str(x)), batch_grid_areas), ["GridAreaCode"]
     )
+
+
+def _check_all_grid_areas_have_metering_points(
+    batch_grid_areas_df: DataFrame, master_basis_data_df: DataFrame
+) -> None:
+    distinct_grid_areas_rows_df = master_basis_data_df.select("GridAreaCode").distinct()
+    distinct_grid_areas_rows_df.show()
+    grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
+        distinct_grid_areas_rows_df, "GridAreaCode", "leftanti"
+    )
+
+    if grid_area_with_no_metering_point_df.count() > 0:
+        grid_areas_to_inform_about = grid_area_with_no_metering_point_df.select(
+            "GridAreaCode"
+        ).collect()
+
+        grid_area_codes_to_inform_about = map(
+            lambda x: x.__getitem__("GridAreaCode"), grid_areas_to_inform_about
+        )
+        raise Exception(
+            f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"
+        )
 
 
 def _start(command_line_args: list[str]) -> None:
