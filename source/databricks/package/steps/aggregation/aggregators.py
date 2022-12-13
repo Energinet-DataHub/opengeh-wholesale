@@ -17,15 +17,13 @@ from geh_stream.codelists import (
     MarketEvaluationPointType,
     SettlementMethod,
     ConnectionState,
-    Colname,
-    ResultKeyName,
     ResolutionDuration,
 )
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
-
+from package.constants import ResultKeyName, Colname
 
 in_sum = "in_sum"
 out_sum = "out_sum"

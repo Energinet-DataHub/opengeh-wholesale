@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime, timedelta
-from geh_stream.codelists import Colname
+from package.constants import Colname
 from pyspark.sql.types import StructType, StringType, TimestampType
 from geh_stream.codelists import Quality, MarketEvaluationPointType
 from package.steps.aggregation import aggregate_quality

@@ -12,13 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-class BasisDataKeyName:
-    time_series = "time_series"
-    metering_points = "metering_points"
-    market_roles = "market_roles"
-    es_brp_relations = "es_brp_relations"
-    charges = "charges"
-    charge_links = "charge_links"
-    charge_prices = "charge_prices"
-    grid_loss_sys_corr = "grid_loss_sys_corr"
+from .result_key_name import ResultKeyName
+from .colname import Colname

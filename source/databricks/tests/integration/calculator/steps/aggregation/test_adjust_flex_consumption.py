@@ -14,8 +14,6 @@
 from decimal import Decimal
 from datetime import datetime
 from geh_stream.codelists import (
-    Colname,
-    ResultKeyName,
     ResolutionDuration,
     MarketEvaluationPointType,
 )
@@ -35,6 +33,7 @@ from pyspark.sql.types import (
 )
 import pytest
 import pandas as pd
+from package.constants import Colname, ResultKeyName
 
 # Default values
 default_domain = "D1"

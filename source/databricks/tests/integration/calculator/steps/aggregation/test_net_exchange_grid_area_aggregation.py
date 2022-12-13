@@ -15,7 +15,7 @@ import pytest
 from decimal import Decimal
 import pandas as pd
 from datetime import datetime, timedelta
-from geh_stream.codelists import Colname, ResultKeyName
+from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import aggregate_net_exchange_per_ga
 from geh_stream.codelists import MarketEvaluationPointType, ConnectionState, Quality
 from package.shared.data_classes import Metadata
