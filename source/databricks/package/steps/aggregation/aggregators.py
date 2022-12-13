@@ -12,18 +12,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, window, lit
+from pyspark.sql.functions import (
+    col,
+    window,
+    lit,
+    when,
+    array,
+    explode,
+    array_contains,
+    collect_set,
+    row_number,
+    expr,
+    sum,
+)
 from geh_stream.codelists import (
     MarketEvaluationPointType,
     SettlementMethod,
     ConnectionState,
     ResolutionDuration,
 )
+from package.codelists import (
+    TimeSeriesQuality,
+    MeteringPointResolution,
+)
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
 from package.constants import ResultKeyName, Colname
+from package.db_logging import debug
+from pyspark.sql.window import Window
+from pyspark.sql.types import (
+    DecimalType,
+)
+from decimal import Decimal
 
 in_sum = "in_sum"
 out_sum = "out_sum"
@@ -214,15 +236,26 @@ def aggregate_per_ga_and_brp_and_es(
     #     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
     # )
     result = (
-        result.groupBy(
+        result.withColumn(
+            "quarter_quantity",
+            when(
+                col("Resolution") == MeteringPointResolution.hour.value,
+                col("Quantity") / 4,
+            ).when(
+                col("Resolution") == MeteringPointResolution.quarterly.value,
+                col("Quantity"),
+            ),
+        )
+        .groupBy(
             Colname.grid_area,
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
-            window(col(Colname.time), "1 hour"),
+            window(col(Colname.time), "15 minutes"),
             Colname.aggregated_quality,
+            "quarter_quantity",
         )
-        .sum(Colname.quantity)
-        .withColumnRenamed(f"sum({Colname.quantity})", Colname.sum_quantity)
+        .sum("quarter_quantity")
+        .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
         .withColumnRenamed("window", Colname.time_window)
         .withColumnRenamed(Colname.aggregated_quality, Colname.quality)
         .select(
@@ -241,6 +274,7 @@ def aggregate_per_ga_and_brp_and_es(
             ),
         )
     )
+
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
