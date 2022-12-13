@@ -14,7 +14,7 @@
 from geh_stream.codelists import Colname, ResultKeyName
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 
 
 metering_grid_area_domain_mrid_drop = "MeteringGridArea_Domain_mRID_drop"

@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, count, sum
 from geh_stream.codelists import Colname, MarketEvaluationPointType, SettlementMethod
-from geh_stream.schemas.output import calculate_fee_charge_price_schema
+from package.schemas.output import calculate_fee_charge_price_schema
 
 
 def calculate_fee_charge_price(

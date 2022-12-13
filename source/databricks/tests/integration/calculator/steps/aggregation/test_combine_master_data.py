@@ -18,7 +18,7 @@ from package.steps.aggregation import (
     combine_added_system_correction_with_master_data,
     combine_added_grid_loss_with_master_data,
 )
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from pyspark.sql.types import (
     StructType,
     StringType,
@@ -29,8 +29,8 @@ from pyspark.sql.types import (
 from unittest.mock import Mock
 import pytest
 import pandas as pd
-from geh_stream.schemas.output import aggregation_result_schema
-from tests.geh_stream.helpers import DataframeDefaults
+from package.schemas.output import aggregation_result_schema
+from tests.helpers import DataframeDefaults
 
 
 @pytest.fixture(scope="module")
