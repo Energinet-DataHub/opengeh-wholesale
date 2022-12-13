@@ -13,9 +13,10 @@
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, sum, count
-from geh_stream.codelists import Colname, ChargeType
+from geh_stream.codelists import ChargeType
 from package.schemas.output import calculate_tariff_price_per_ga_co_es_schema
 from pyspark.sql.types import DecimalType
+from package.constants import Colname
 
 total_quantity = "total_quantity"
 charge_count = "charge_count"

@@ -13,7 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import Colname, ResultKeyName
+from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import (
     aggregate_hourly_consumption,
     aggregate_per_ga_and_brp_and_es,
