@@ -16,9 +16,7 @@ from datetime import datetime
 
 from numpy import append
 from geh_stream.codelists import (
-    Colname,
     Quality,
-    ResultKeyName,
     ResolutionDuration,
     MarketEvaluationPointType,
 )
@@ -30,7 +28,7 @@ from package.steps.aggregation.aggregation_result_formatter import (
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
-
+from package.constants import Colname, ResultKeyName
 
 metadata = Metadata("1", "1", "1", "1", "1")
 

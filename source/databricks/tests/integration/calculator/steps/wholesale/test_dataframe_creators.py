@@ -13,7 +13,7 @@
 # limitations under the License.
 from datetime import datetime
 from decimal import Decimal
-from geh_stream.codelists import Colname
+from package.constants import Colname
 from package.schemas import (
     charges_schema,
     charge_links_schema,

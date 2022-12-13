@@ -13,7 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import Colname, ResolutionDuration, MarketEvaluationPointType
+from geh_stream.codelists import ResolutionDuration, MarketEvaluationPointType
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -23,6 +23,7 @@ from package.schemas.output import aggregation_result_schema
 import pytest
 import pandas as pd
 from tests.helpers import DataframeDefaults
+from package.constants import Colname
 
 
 @pytest.fixture(scope="module")

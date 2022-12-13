@@ -16,6 +16,4 @@ from .quality import Quality
 from .settlement_method import SettlementMethod
 from .resolution_duration import ResolutionDuration
 from .connectionState import ConnectionState
-from .colname import Colname
 from .charge_type import ChargeType
-from .result_key_name import ResultKeyName

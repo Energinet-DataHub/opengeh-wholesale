@@ -15,11 +15,11 @@
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.functions import col, window, expr, explode, month, year
 from geh_stream.codelists import (
-    Colname,
     ResolutionDuration,
     ConnectionState,
     ChargeType,
 )
+from package.constants import Colname
 
 
 charge_from_date = "charge_from_date"

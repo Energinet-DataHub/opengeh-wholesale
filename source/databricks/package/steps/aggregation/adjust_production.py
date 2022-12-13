@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from geh_stream.codelists import (
-    Colname,
-    ResultKeyName,
     ResolutionDuration,
     MarketEvaluationPointType,
 )
@@ -23,7 +21,8 @@ from package.steps.aggregation.aggregation_result_formatter import (
 )
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
-
+from package.constants import ResultKeyName
+from package.constants import Colname
 
 sys_cor_energy_supplier = "SysCor_EnergySupplier"
 sys_cor_grid_area = "SysCor_GridArea"

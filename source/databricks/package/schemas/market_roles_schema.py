@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from geh_stream.codelists import Colname
+from package.constants import Colname
 from pyspark.sql.types import StructType, StructField, StringType, TimestampType
 
 market_roles_schema = StructType(
