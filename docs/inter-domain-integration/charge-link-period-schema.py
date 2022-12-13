@@ -26,7 +26,6 @@ Schema for charge link periods (and charges)
 
 Charge link periods are only used in settlement.
 Periods (given by `FromDate` and `ToDate`) must not overlap but may have gaps. Gaps may occur if the link has been removed for a period before being added again.
-All but the `ToDate` of the last period must have value. The `ToDate` of the last period is null.
 
 Data must be stored in a Delta table.
 
@@ -81,7 +80,8 @@ charge_link_period_schema = StructType(
         
         # The to-date of the link period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The moment is exclusive.
-        # The date of the last period is null.
+        # All but the `ToDate` of the last period must have value. The `ToDate` of the last period can be null for subscriptions and tariffs.
+        # The `ToDate` of fees is the day after the `FromDate`.
         StructField("ToDate", TimestampType(), True),
        
         # The year part of the `ToDate`. Used for partitioning.
