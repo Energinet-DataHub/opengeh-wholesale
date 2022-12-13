@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from geh_stream.codelists import Colname
-from geh_stream.shared.period import Period
+from package.shared.period import Period
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.functions import col
 from typing import List

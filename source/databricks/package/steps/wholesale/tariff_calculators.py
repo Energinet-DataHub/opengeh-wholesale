@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, sum, count
 from geh_stream.codelists import Colname, ChargeType
-from geh_stream.schemas.output import calculate_tariff_price_per_ga_co_es_schema
+from package.schemas.output import calculate_tariff_price_per_ga_co_es_schema
 from pyspark.sql.types import DecimalType
 
 total_quantity = "total_quantity"

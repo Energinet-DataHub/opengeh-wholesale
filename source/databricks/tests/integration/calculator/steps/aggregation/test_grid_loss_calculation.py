@@ -26,7 +26,7 @@ from package.steps.aggregation import (
     calculate_residual_ga,
 )
 from geh_stream.codelists import Quality
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
