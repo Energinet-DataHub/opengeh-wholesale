@@ -39,12 +39,6 @@ module "func_receiver" {
     DB_CONNECTION_STRING                                          = local.MS_MARKETROLES_CONNECTION_STRING
     INCOMING_CHANGE_OF_SUPPLIER_MESSAGE_QUEUE_NAME                = module.sbq_incoming_change_supplier_messagequeue.name
     INCOMING_CHANGE_CUSTOMER_CHARACTERISTICS_MESSAGE_QUEUE_NAME   = module.sbq_incoming_change_customer_characteristics_message_queue.name
-    MESSAGEHUB_QUEUE_CONNECTION_STRING                            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-transceiver-connection-string)",
-    MESSAGEHUB_DATA_AVAILABLE_QUEUE                               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-data-available-name)",
-    MESSAGEHUB_DOMAIN_REPLY_QUEUE                                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-marketroles-reply-name)",
-    MESSAGEHUB_STORAGE_CONTAINER_NAME                             = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketres-postofficereply-container-name)",
-    MESSAGEHUB_STORAGE_CONNECTION_STRING                          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketres-primary-connection-string)",
-    MESSAGE_REQUEST_QUEUE                                         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-marketroles-name)",
     MOVE_IN_REQUEST_ENDPOINT                                      = "https://func-processing-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}.azurewebsites.net/api/MoveIn"
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
