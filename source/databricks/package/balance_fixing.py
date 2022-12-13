@@ -24,7 +24,7 @@ import package.basis_data as basis_data
 import package.steps as steps
 import package.steps.aggregation as agg_steps
 from datetime import timedelta, datetime
-from geh_stream.codelists import ResultKeyName
+from package.constants import ResultKeyName
 from package.shared.data_classes import Metadata
 from pyspark.sql.types import (
     DecimalType,
