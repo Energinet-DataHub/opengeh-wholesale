@@ -28,6 +28,7 @@ setup(
         "azure-storage-file-datalake==12.9.1",
         "azure-storage-blob==12.14.1",
         "databricks-cli==0.17.3",
+        "python-dateutil==2.8.2",
     ],
     entry_points={
         "console_scripts": [
