@@ -19,7 +19,7 @@ from geh_stream.codelists import (
     ResolutionDuration,
     MarketEvaluationPointType,
 )
-from package.steps import (
+from package.steps.aggregation import (
     aggregate_hourly_settled_consumption_ga_es,
     aggregate_hourly_settled_consumption_ga_brp,
     aggregate_hourly_settled_consumption_ga,

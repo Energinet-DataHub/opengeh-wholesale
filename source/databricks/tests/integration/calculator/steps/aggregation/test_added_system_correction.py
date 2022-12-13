@@ -19,7 +19,7 @@ from geh_stream.codelists import (
     ResolutionDuration,
     MarketEvaluationPointType,
 )
-from package.steps import calculate_added_system_correction
+from package.steps.aggregation import calculate_added_system_correction
 from geh_stream.codelists import Quality
 from geh_stream.shared.data_classes import Metadata
 from geh_stream.schemas.output import aggregation_result_schema

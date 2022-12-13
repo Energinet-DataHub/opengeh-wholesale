@@ -14,7 +14,7 @@
 from decimal import Decimal
 from datetime import datetime
 from geh_stream.codelists import Colname, ResultKeyName
-from package.steps import (
+from package.steps.aggregation import (
     aggregate_flex_consumption,
     aggregate_per_ga_and_brp_and_es,
 )

@@ -22,7 +22,7 @@ from geh_stream.codelists import (
     ResolutionDuration,
     MarketEvaluationPointType,
 )
-from package.steps import calculate_total_consumption
+from package.steps.aggregation import calculate_total_consumption
 from geh_stream.shared.data_classes import Metadata
 from geh_stream.aggregation_utils.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
