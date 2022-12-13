@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module "sbs_int_events_grid_area_updated" {
-  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
+  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v10"
   name                = "grid-area-updated"
   project_name        = var.domain_name_short
   topic_id            = data.azurerm_key_vault_secret.sbt_integration_events_id.value

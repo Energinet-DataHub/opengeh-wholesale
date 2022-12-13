@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 module "mssql_database_application_access" {
-  source                  = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=7.1.0"
+  source                  = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=v10"
 
   sql_server_name         = data.azurerm_mssql_server.mssqlsrv.name
   database_name           = module.mssqldb_wholesale.name
   application_hosts_names = [
-                              module.func_processmanager.name,
-                              module.app_wholesale_api.name,
-                            ]
+    module.func_processmanager.name,
+    module.app_wholesale_api.name,
+  ]
 
   depends_on              = [
-                              module.func_processmanager.name,
-                              module.app_wholesale_api.name,
-                            ]
+    module.func_processmanager.name,
+    module.app_wholesale_api.name,
+  ]
 }

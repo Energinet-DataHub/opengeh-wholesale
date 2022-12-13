@@ -32,7 +32,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v9
     with:
       TERRAFORM_WORKING_DIRECTORY: './wholesale/terraform/main'
-      TERRAFORM_VERSION: '1.2.2'
+      TERRAFORM_VERSION: '1.3.2'
       RELEASE_NAME_PREFIX: 'wholesale_infrastructure'
       INFRASTRUCTURE_PATH: './wholesale/terraform'
     secrets:
