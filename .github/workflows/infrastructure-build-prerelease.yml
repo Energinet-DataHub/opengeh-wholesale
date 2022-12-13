@@ -1,0 +1,172 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Infrastructure build - prerelease
+
+# DESCRIPTION:
+#
+# Should only be used for pull requests.
+#
+# This workflow will validate the infrastructure as code (terraform files)
+# and then create a prerelease package containing the files.
+# The prerelease name will be in the format '<RELEASE_NAME_PREFIX>_<PR-number>'.
+
+on:
+  workflow_call:
+    inputs:
+      TERRAFORM_VERSION:
+        required: true
+        type: string
+      RELEASE_NAME_PREFIX:
+        required: false
+        default: 'infrastructure'
+        type: string
+      INFRASTRUCTURE_PATH:
+        required: true
+        type: string
+      OPERATING_SYSTEM:
+        required: false
+        default: 'ubuntu-22.04'
+        type: string
+      ADDITIONAL_INFRASTRUCTURE_PATH:
+        required: false
+        default: ''
+        type: string
+    secrets:
+      PAT_TOKEN:
+        required: true
+        description: 'PAT token for system account with private repository scope to access modules in private repository'
+
+env:
+  TERRAFORM_RELEASE_FOLDER_PATH: ${{ github.workspace }}/infrastructure
+  RELEASE_VERSION: ${{ inputs.RELEASE_NAME_PREFIX }}_${{ github.event.pull_request.number }}
+  RELEASE_ZIP_FILENAME: ${{ inputs.RELEASE_NAME_PREFIX }}_${{ github.event.pull_request.number }}.zip
+
+jobs:
+  find_environment_names:
+    name: Finding environments
+    runs-on: ${{ inputs.OPERATING_SYSTEM }}
+    outputs:
+      folders: ${{ steps.find_folder_names.outputs.folders }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # bash tree is used to make it easier to finder the subfolders.
+      # https://linuxhint.com/bash-tree-command/        
+      - run: sudo apt install tree jq -y
+        shell: bash
+
+      - name: Finding folders
+        id: find_folder_names
+        shell: bash
+        run: |
+          if [ -d ${{ inputs.INFRASTRUCTURE_PATH }}/env ]; then
+            echo "Finding folders"
+            cd ${{ inputs.INFRASTRUCTURE_PATH }}/env
+            folders=$(tree -J -d -L 1 | jq -c '.[0].contents | map(.name)')
+            echo "folders=$folders" >> $GITHUB_OUTPUT
+          else
+            echo "No env folder"
+            declare -a folders=()
+            echo "folders=$folders" >> $GITHUB_OUTPUT
+          fi
+
+  # If no environments exists, we still need to validate main folder
+  validate_main_environment:
+    if: ${{ needs.find_environment_names.outputs.folders == '' }}
+    needs: find_environment_names
+    name: Validating main configuration
+    runs-on: ${{ inputs.OPERATING_SYSTEM }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Copy infrastructure files
+        shell: bash
+        run: |
+          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
+
+      - name: Terraform validate
+        uses: ./.github/actions/terraform-validate
+        with:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          TERRAFORM_VERSION: ${{ inputs.TERRAFORM_VERSION }}
+          WORKING_DIRECTORY: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
+
+  # If environments exists, we validate the environments
+  validate_environments:
+    if: ${{ needs.find_environment_names.outputs.folders != '' }}
+    needs: find_environment_names
+    name: Validating ${{ matrix.environment_folder_name }} configuration
+    runs-on: ${{ inputs.OPERATING_SYSTEM }}
+    strategy:
+      matrix:
+        environment_folder_name: ${{ fromJSON(needs.find_environment_names.outputs.folders) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Copy infrastructure files
+        shell: bash
+        run: |
+          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
+          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/env/${{ matrix.environment_folder_name }}/* ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
+
+      - name: Terraform validate
+        uses: ./.github/actions/terraform-validate
+        with:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          TERRAFORM_VERSION: ${{ inputs.TERRAFORM_VERSION }}
+          WORKING_DIRECTORY: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
+
+  create_prerelease:
+    needs: [
+      validate_environments,
+      validate_main_environment
+    ]
+    if: ${{ always() && !contains(needs.*.result, 'failure') }}
+    runs-on: ${{ inputs.OPERATING_SYSTEM }}
+    env:
+      RELEASE_FOLDER_PATH: ${{ github.workspace }}/release
+      RELEASE_VERSION: ${{ inputs.RELEASE_NAME_PREFIX }}_${{ github.event.pull_request.number }}
+      RELEASE_ZIP_FILENAME: ${{ inputs.RELEASE_NAME_PREFIX }}_${{ github.event.pull_request.number }}.zip
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Copy infrastructure files
+        shell: bash
+        run: |
+          mkdir ${{ env.RELEASE_FOLDER_PATH }}
+          mkdir ${{ env.RELEASE_FOLDER_PATH }}/infrastructure
+          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/main ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/main 2>/dev/null || :
+          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/env ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/env 2>/dev/null || :
+
+      - name: Zip files for prerelease
+        uses: thedoctor0/zip-release@0.6.2
+        with:
+          type: 'zip'
+          filename: ${{ env.RELEASE_ZIP_FILENAME }}
+          directory: ${{ env.RELEASE_FOLDER_PATH }}
+
+      - name: Create prelease
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ env.RELEASE_VERSION }}
+          prerelease: true
+          title: ${{ env.RELEASE_VERSION }}
+          files: |
+            ${{ env.RELEASE_FOLDER_PATH }}/${{ env.RELEASE_ZIP_FILENAME }}
