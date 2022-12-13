@@ -57,7 +57,7 @@ def calculate_balance_fixing(
     total_production_per_ga_df = steps.get_total_production_per_ga_df(
         enriched_time_series_point_df
     )
-
+    total_production_per_ga_df.show(1000, False)
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = (
         enriched_time_series_point_df.withColumn(
@@ -80,7 +80,10 @@ def calculate_balance_fixing(
     total_production_per_ga_df_agg = agg_steps.aggregate_hourly_production(
         results, metadata_fake
     )
-    total_production_per_ga_df_agg.show()
+    total_production_per_ga_df_agg = total_production_per_ga_df_agg.select(
+        "GridAreaCode", "sum_quantity", "Quality", "time_window"
+    ).orderBy(col("GridAreaCode").asc())
+    total_production_per_ga_df_agg.show(1000, False)
 
     return (
         total_production_per_ga_df,

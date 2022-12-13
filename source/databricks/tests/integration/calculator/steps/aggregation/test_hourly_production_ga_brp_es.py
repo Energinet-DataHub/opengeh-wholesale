@@ -234,6 +234,7 @@ def test_hourly_production_aggregator_returns_correct_schema(time_series_row_fac
     assert aggregated_df.schema == aggregation_result_schema
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_hourly_production_test_invalid_connection_state(time_series_row_factory):
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
