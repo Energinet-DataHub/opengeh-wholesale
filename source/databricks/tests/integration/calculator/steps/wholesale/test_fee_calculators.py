@@ -18,12 +18,12 @@ from tests.geh_stream.helpers.test_schemas import (
     charges_flex_settled_consumption_schema,
 )
 from geh_stream.codelists import Colname
-from geh_stream.wholesale_utils.calculators.fee_calculators import (
+from package.steps.wholesale.fee_calculators import (
     calculate_fee_charge_price,
     filter_on_metering_point_type_and_settlement_method,
     get_count_of_charges_and_total_daily_charge_price,
 )
-from geh_stream.wholesale_utils.wholesale_initializer import get_fee_charges
+from package.steps.wholesale.wholesale_initializer import get_fee_charges
 import pytest
 import pandas as pd
 

@@ -25,13 +25,13 @@ from tests.geh_stream.helpers.test_schemas import (
     charges_per_day_schema,
 )
 from geh_stream.codelists import Colname, MarketEvaluationPointType, SettlementMethod
-from geh_stream.wholesale_utils.calculators.subscription_calculators import (
+from package.steps.wholesale.subscription_calculators import (
     calculate_daily_subscription_price,
     calculate_price_per_day,
     filter_on_metering_point_type_and_settlement_method,
     get_count_of_charges_and_total_daily_charge_price,
 )
-from geh_stream.wholesale_utils.wholesale_initializer import get_subscription_charges
+from package.steps.wholesale.wholesale_initializer import get_subscription_charges
 from calendar import monthrange
 import pytest
 import pandas as pd

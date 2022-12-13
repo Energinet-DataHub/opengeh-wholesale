@@ -19,7 +19,7 @@ from tests.geh_stream.helpers.test_schemas import (
     tariff_distinct_schema,
 )
 from geh_stream.codelists import Colname, ChargeType
-from geh_stream.wholesale_utils.calculators.tariff_calculators import (
+from package.steps.wholesale.tariff_calculators import (
     sum_quantity_and_count_charges,
     select_distinct_tariffs,
     join_with_agg_df,

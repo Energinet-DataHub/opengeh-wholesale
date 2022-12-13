@@ -14,7 +14,7 @@
 
 from datetime import datetime
 from decimal import Decimal
-from geh_stream.wholesale_utils.wholesale_initializer import (
+from package.steps.wholesale.wholesale_initializer import (
     join_with_charge_prices,
     join_with_charge_links,
     join_with_martket_roles,
