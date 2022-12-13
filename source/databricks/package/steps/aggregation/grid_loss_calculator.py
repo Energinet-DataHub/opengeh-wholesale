@@ -13,8 +13,6 @@
 # limitations under the License.
 
 from geh_stream.codelists import (
-    Colname,
-    ResultKeyName,
     ResolutionDuration,
     MarketEvaluationPointType,
     Quality,
@@ -26,7 +24,7 @@ from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
-
+from package.constants import Colname, ResultKeyName
 
 production_sum_quantity = "production_sum_quantity"
 exchange_sum_quantity = "exchange_sum_quantity"

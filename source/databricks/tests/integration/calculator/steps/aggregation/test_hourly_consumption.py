@@ -14,8 +14,6 @@
 from decimal import Decimal
 from datetime import datetime
 from geh_stream.codelists import (
-    Colname,
-    ResultKeyName,
     ResolutionDuration,
     MarketEvaluationPointType,
 )
@@ -32,6 +30,7 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
 from geh_stream.codelists import Quality
+from package.constants import Colname, ResultKeyName
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(

@@ -24,7 +24,7 @@ from tests.helpers.test_schemas import (
     charges_flex_settled_consumption_schema,
     charges_per_day_schema,
 )
-from geh_stream.codelists import Colname, MarketEvaluationPointType, SettlementMethod
+from geh_stream.codelists import MarketEvaluationPointType, SettlementMethod
 from package.steps.wholesale.subscription_calculators import (
     calculate_daily_subscription_price,
     calculate_price_per_day,
@@ -35,6 +35,7 @@ from package.steps.wholesale.wholesale_initializer import get_subscription_charg
 from calendar import monthrange
 import pytest
 import pandas as pd
+from package.constants import Colname
 
 
 def test__calculate_daily_subscription_price__simple(
