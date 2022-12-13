@@ -22,6 +22,7 @@ on:
       - ui/**
       - .github/workflows/ui-ci.yml
       - .github/workflows/ui-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #
@@ -29,9 +30,8 @@ jobs:
   # Branch policy status check
   #
   infrastructure_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v9
+    uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@main
     with:
-      TERRAFORM_WORKING_DIRECTORY: './ui/terraform/main'
       TERRAFORM_VERSION: '1.2.2'
       RELEASE_NAME_PREFIX: 'ui_infrastructure'
       INFRASTRUCTURE_PATH: './ui/terraform'

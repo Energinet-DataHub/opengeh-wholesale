@@ -22,6 +22,7 @@ on:
       - shared-resources/**
       - .github/workflows/shared-resources-ci.yml
       - .github/workflows/shared-resources-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #
@@ -29,10 +30,8 @@ jobs:
   # Branch policy status check
   #
   infrastructure_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v9
+    uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@main
     with:
-      TERRAFORM_WORKING_DIRECTORY: './shared-resources/terraform/infrastructure/main'
-      ADDITIONAL_TERRAFORM_WORKING_DIRECTORY: './shared-resources/terraform/landingzone/main'
       TERRAFORM_VERSION: '1.2.2'
       INFRASTRUCTURE_PATH: './shared-resources/terraform/infrastructure'
       ADDITIONAL_INFRASTRUCTURE_PATH: './shared-resources/terraform/landingzone'

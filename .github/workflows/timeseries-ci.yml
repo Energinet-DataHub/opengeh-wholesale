@@ -21,6 +21,7 @@ on:
       - timeseries/**
       - .github/workflows/timeseries-ci.yml
       - .github/workflows/timeseries-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #
@@ -28,9 +29,8 @@ jobs:
   # Branch policy status check
   #
   infrastructure_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v9
+    uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@main
     with:
-      TERRAFORM_WORKING_DIRECTORY: './timeseries/terraform/main'
       TERRAFORM_VERSION: '1.2.2'
       RELEASE_NAME_PREFIX: 'timeseries_infrastructure'
       INFRASTRUCTURE_PATH: './timeseries/terraform'

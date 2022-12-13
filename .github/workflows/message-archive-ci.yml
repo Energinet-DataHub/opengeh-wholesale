@@ -22,6 +22,7 @@ on:
       - message-archive/**
       - .github/workflows/message-archive-ci.yml
       - .github/workflows/message-archive-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #
@@ -29,9 +30,8 @@ jobs:
   # Branch policy status check
   #
   infrastructure_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v9
+    uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@main
     with:
-      TERRAFORM_WORKING_DIRECTORY: './message-archive/terraform/main'
       TERRAFORM_VERSION: '1.2.2'
       RELEASE_NAME_PREFIX: 'message_archive_infrastructure'
       INFRASTRUCTURE_PATH: './message-archive/terraform'

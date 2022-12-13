@@ -1,0 +1,38 @@
+name: Terraform Validate
+inputs:
+  WORKING_DIRECTORY:
+    description: 'Working directory of the Terraform configuration'
+    required: true
+  TERRAFORM_VERSION:
+    description: 'Terraform version of the configuration in WORKIWORKING_DIRECTORYNG_DIR'
+    required: true
+  PAT_TOKEN:
+    description: 'Access Token'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Inject PAT_TOKEN into git configuration
+      shell: bash
+      run: ls -ahl ${{ inputs.WORKING_DIRECTORY }}
+
+    - name: Inject PAT_TOKEN into git configuration
+      shell: bash
+      run: git config --global url."https://oauth2:${{ inputs.PAT_TOKEN }}@github.com".insteadOf https://github.com
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_wrapper: false
+        terraform_version: ${{ inputs.TERRAFORM_VERSION }}
+
+    - name: Terraform init
+      shell: bash
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+      run: terraform init -backend=false
+
+    - name: Terraform validate
+      shell: bash
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+      run: terraform validate
