@@ -32,7 +32,7 @@ from geh_stream.schemas.output import (
     calculate_daily_subscription_price_schema,
     calculate_fee_charge_price_schema,
 )
-from tests.geh_stream.helpers import DataframeDefaults
+from tests.helpers import DataframeDefaults
 import pytest
 import pandas as pd
 from datetime import datetime

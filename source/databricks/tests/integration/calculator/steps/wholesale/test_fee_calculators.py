@@ -14,7 +14,7 @@
 from decimal import Decimal
 from datetime import datetime
 from geh_stream.codelists import ChargeType
-from tests.geh_stream.helpers.test_schemas import (
+from tests.helpers.test_schemas import (
     charges_flex_settled_consumption_schema,
 )
 from geh_stream.codelists import Colname

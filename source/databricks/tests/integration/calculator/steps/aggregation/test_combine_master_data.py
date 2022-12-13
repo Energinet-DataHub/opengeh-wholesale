@@ -30,7 +30,7 @@ from unittest.mock import Mock
 import pytest
 import pandas as pd
 from geh_stream.schemas.output import aggregation_result_schema
-from tests.geh_stream.helpers import DataframeDefaults
+from tests.helpers import DataframeDefaults
 
 
 @pytest.fixture(scope="module")

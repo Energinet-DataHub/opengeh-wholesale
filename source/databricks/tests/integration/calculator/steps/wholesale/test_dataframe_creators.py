@@ -23,7 +23,7 @@ from geh_stream.schemas import (
 )
 from geh_stream.schemas.output import calculate_daily_subscription_price_schema
 from geh_stream.schemas import time_series_points_schema
-from tests.geh_stream.helpers import DataframeDefaults
+from tests.helpers import DataframeDefaults
 
 
 def test_calculate_daily_subscription_price(calculate_daily_subscription_price_factory):

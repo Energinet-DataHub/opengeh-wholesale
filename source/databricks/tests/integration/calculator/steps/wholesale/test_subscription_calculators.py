@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     StringType,
     TimestampType,
 )
-from tests.geh_stream.helpers.test_schemas import (
+from tests.helpers.test_schemas import (
     charges_flex_settled_consumption_schema,
     charges_per_day_schema,
 )

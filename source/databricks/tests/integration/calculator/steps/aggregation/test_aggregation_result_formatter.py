@@ -22,7 +22,7 @@ from geh_stream.shared.data_classes import Metadata
 from geh_stream.schemas.output import aggregation_result_schema
 import pytest
 import pandas as pd
-from tests.geh_stream.helpers import DataframeDefaults
+from tests.helpers import DataframeDefaults
 
 
 @pytest.fixture(scope="module")
