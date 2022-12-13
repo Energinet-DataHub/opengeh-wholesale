@@ -27,7 +27,7 @@
 # limitations under the License.
 
 from geh_stream.codelists import Colname, ChargeType
-from geh_stream.schemas.output import (
+from package.schemas.output import (
     aggregation_result_schema,
     calculate_daily_subscription_price_schema,
     calculate_fee_charge_price_schema,
@@ -37,7 +37,7 @@ import pytest
 import pandas as pd
 from datetime import datetime
 from decimal import Decimal
-from geh_stream.schemas import (
+from package.schemas import (
     charges_schema,
     charge_links_schema,
     charge_prices_schema,

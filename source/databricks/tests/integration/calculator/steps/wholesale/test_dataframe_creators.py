@@ -14,15 +14,15 @@
 from datetime import datetime
 from decimal import Decimal
 from geh_stream.codelists import Colname
-from geh_stream.schemas import (
+from package.schemas import (
     charges_schema,
     charge_links_schema,
     charge_prices_schema,
     metering_point_schema,
     market_roles_schema,
 )
-from geh_stream.schemas.output import calculate_daily_subscription_price_schema
-from geh_stream.schemas import time_series_points_schema
+from package.schemas.output import calculate_daily_subscription_price_schema
+from package.schemas import time_series_points_schema
 from tests.helpers import DataframeDefaults
 
 

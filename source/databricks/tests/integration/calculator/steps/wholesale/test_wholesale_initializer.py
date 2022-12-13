@@ -32,14 +32,14 @@ from geh_stream.codelists import (
     ResolutionDuration,
     ConnectionState,
 )
-from geh_stream.schemas import (
+from package.schemas import (
     charges_schema,
     charge_prices_schema,
     charge_links_schema,
     metering_point_schema,
     market_roles_schema,
 )
-from geh_stream.schemas import time_series_points_schema
+from package.schemas import time_series_points_schema
 from tests.helpers.test_schemas import (
     charges_with_prices_schema,
     charges_with_price_and_links_schema,

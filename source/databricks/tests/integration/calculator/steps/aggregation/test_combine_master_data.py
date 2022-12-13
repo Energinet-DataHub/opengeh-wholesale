@@ -29,7 +29,7 @@ from pyspark.sql.types import (
 from unittest.mock import Mock
 import pytest
 import pandas as pd
-from geh_stream.schemas.output import aggregation_result_schema
+from package.schemas.output import aggregation_result_schema
 from tests.helpers import DataframeDefaults
 
 
