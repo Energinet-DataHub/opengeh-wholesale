@@ -25,7 +25,7 @@ from package.steps.aggregation import (
     aggregate_hourly_settled_consumption_ga,
 )
 from geh_stream.shared.data_classes import Metadata
-from geh_stream.aggregation_utils.aggregation_result_formatter import (
+from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType

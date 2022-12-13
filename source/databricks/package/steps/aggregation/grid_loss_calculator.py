@@ -23,7 +23,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
 from .aggregate_quality import aggregate_total_consumption_quality
 from geh_stream.shared.data_classes import Metadata
-from geh_stream.aggregation_utils.aggregation_result_formatter import (
+from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
 
