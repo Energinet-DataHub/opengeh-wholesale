@@ -25,7 +25,6 @@ Schema for metering point periods
 
 Metering point periods are used in balance fixing and settlement. Some fields are only used in settlement. See each field for details.
 Periods (given by `FromDate` and `ToDate`) must not overlap and must not have gaps in between.
-All but the `ToDate` of the last period must have value. The `ToDate` of the last period is null.
 
 Only periods where metering points are connected (E22) or disconnected (E23) are included.
 
@@ -109,6 +108,7 @@ metering_point_period_schema = StructType(
         # The to-date of the period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The moment is exclusive.
         # The date of the last period is null when the metering point has not been closed down.
+        # Otherwise it is the date where the metering point was closed down.
         # Used in balance fixing and settlement.
         StructField("ToDate", TimestampType(), True),
        
