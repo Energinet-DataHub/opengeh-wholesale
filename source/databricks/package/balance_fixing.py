@@ -14,11 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-from pyspark.sql.functions import (
-    col,
-    expr,
-    explode,
-)
+from pyspark.sql.functions import col, expr, explode, lit
 from package.codelists import (
     MeteringPointResolution,
 )
@@ -26,7 +22,13 @@ from package.codelists import (
 from package.db_logging import debug
 import package.basis_data as basis_data
 import package.steps as steps
+import package.steps.aggregation as agg_steps
 from datetime import timedelta, datetime
+from package.constants import ResultKeyName
+from package.shared.data_classes import Metadata
+from pyspark.sql.types import (
+    DecimalType,
+)
 
 
 def calculate_balance_fixing(
@@ -55,6 +57,33 @@ def calculate_balance_fixing(
     total_production_per_ga_df = steps.get_total_production_per_ga_df(
         enriched_time_series_point_df
     )
+    total_production_per_ga_df.show(1000, False)
+    results = {}
+    results[ResultKeyName.aggregation_base_dataframe] = (
+        enriched_time_series_point_df.withColumn(
+            "Quantity", col("Quantity").cast(DecimalType(18, 6))
+        )
+        .withColumn(
+            "BalanceResponsibleId",
+            lit("1"),  # this is not the corect value, so this need to be changed
+        )
+        .withColumn(
+            "EnergySupplierId",
+            lit("1"),  # this is not the corect value, so this need to be changed
+        )
+        .withColumn(
+            "aggregated_quality",
+            col("Quality"),  # this is not the corect value, so this need to be changed
+        )
+    )
+    metadata_fake = Metadata("1", "1", "1", "1", "1")
+    total_production_per_ga_df_agg = agg_steps.aggregate_hourly_production(
+        results, metadata_fake
+    )
+    total_production_per_ga_df_agg = total_production_per_ga_df_agg.select(
+        "GridAreaCode", "sum_quantity", "Quality", "time_window"
+    ).orderBy(col("GridAreaCode").asc())
+    total_production_per_ga_df_agg.show(1000, False)
 
     return (
         total_production_per_ga_df,
