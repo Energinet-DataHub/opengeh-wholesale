@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
+    IntegerType,
     StructField,
     StringType,
     TimestampType,
@@ -100,14 +101,14 @@ metering_point_period_schema = StructType(
         # Example: 8100000000109
         StructField("BalanceResponsibleId", StringType(), True),
 
-        # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
+        # The start date of the period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The date is inclusive.
         # Used in balance fixing and settlement.
         StructField("FromDate", TimestampType(), False),
         
-        # The to-date of the period. The to-date must be the UTC time of the begining of a date in the given timezone/DST.
+        # The to-date of the period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The moment is exclusive.
-        # The date of the last period is null.
+        # The date of the last period is null when the metering point has not been closed down.
         # Used in balance fixing and settlement.
         StructField("ToDate", TimestampType(), True),
        
