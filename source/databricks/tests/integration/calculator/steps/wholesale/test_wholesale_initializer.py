@@ -27,7 +27,6 @@ from package.steps.wholesale.wholesale_initializer import (
     get_connected_metering_points,
 )
 from geh_stream.codelists import (
-    Colname,
     ChargeType,
     ResolutionDuration,
     ConnectionState,
@@ -49,6 +48,7 @@ from tests.helpers.test_schemas import (
 from pyspark.sql.functions import col
 import pytest
 import pandas as pd
+from package.constants import Colname
 
 
 charges_dataset = [

@@ -14,8 +14,6 @@
 from decimal import Decimal
 from datetime import datetime
 from geh_stream.codelists import (
-    Colname,
-    ResultKeyName,
     ResolutionDuration,
     MarketEvaluationPointType,
 )
@@ -31,6 +29,7 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql.functions import col
 import pytest
 import pandas as pd
+from package.constants import Colname, ResultKeyName
 
 
 @pytest.fixture(scope="module")

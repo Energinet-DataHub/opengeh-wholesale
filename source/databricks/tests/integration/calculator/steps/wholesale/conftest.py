@@ -26,7 +26,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from geh_stream.codelists import Colname, ChargeType
+from geh_stream.codelists import ChargeType
 from package.schemas.output import (
     aggregation_result_schema,
     calculate_daily_subscription_price_schema,
@@ -46,6 +46,7 @@ from package.schemas import (
     metering_point_schema,
     time_series_points_schema,
 )
+from package.constants import Colname
 
 
 @pytest.fixture(scope="session")
