@@ -21,7 +21,7 @@ from geh_stream.codelists import (
 )
 from package.steps.aggregation import calculate_added_system_correction
 from geh_stream.codelists import Quality
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,

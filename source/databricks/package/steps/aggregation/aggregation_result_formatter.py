@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame, SparkSession
 
 from pyspark.sql.functions import lit
-from geh_stream.shared.data_classes import Metadata
+from package.shared.data_classes import Metadata
 from geh_stream.codelists import Colname
 from package.schemas.output import aggregation_result_schema
 
