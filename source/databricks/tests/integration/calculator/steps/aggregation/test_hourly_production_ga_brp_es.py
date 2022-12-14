@@ -18,9 +18,7 @@ from package.steps.aggregation import (
     aggregate_hourly_production,
     aggregate_per_ga_and_brp_and_es,
 )
-from geh_stream.codelists import Quality
-from package.codelists import MeteringPointType
-
+from package.codelists import MeteringPointType, TimeSeriesQuality
 from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
@@ -91,7 +89,7 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.quantity: [quantity],
                 Colname.time: [obs_time],
                 Colname.connection_state: [connection_state],
-                Colname.aggregated_quality: [Quality.estimated.value],
+                Colname.aggregated_quality: [TimeSeriesQuality.estimated.value],
             }
         )
         return spark.createDataFrame(pandas_df, schema=time_series_schema)

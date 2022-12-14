@@ -13,12 +13,14 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from package.codelists import MeteringPointType, MeteringPointResolution
-
+from package.codelists import (
+    MeteringPointType,
+    MeteringPointResolution,
+    TimeSeriesQuality,
+)
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
-from geh_stream.codelists import Quality
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 import pytest
@@ -92,7 +94,7 @@ def agg_result_factory(spark):
         end=datetime(2020, 1, 1, 1, 0),
         resolution=MeteringPointResolution.hour.value,
         sum_quantity=Decimal("1.234"),
-        quality=Quality.estimated.value,
+        quality=TimeSeriesQuality.estimated.value,
         metering_point_type=MeteringPointType.consumption.value,
     ):
         return spark.createDataFrame(
@@ -138,7 +140,7 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
         time_window_end=datetime(2020, 1, 1, 1, 0),
         resolution=MeteringPointResolution.hour.value,
         sum_quantity=Decimal("1.234"),
-        quality=Quality.estimated.value,
+        quality=TimeSeriesQuality.estimated.value,
         metering_point_type=MeteringPointType.consumption.value,
     )
     # Act

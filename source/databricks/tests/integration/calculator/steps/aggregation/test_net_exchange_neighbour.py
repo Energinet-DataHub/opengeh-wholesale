@@ -20,8 +20,7 @@ from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import (
     aggregate_net_exchange_per_neighbour_ga,
 )
-from geh_stream.codelists import Quality
-from package.codelists import MeteringPointType
+from package.codelists import MeteringPointType, TimeSeriesQuality
 
 from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
@@ -35,7 +34,7 @@ default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
 numberOfTestHours = 24
-estimated_quality = Quality.estimated.value
+estimated_quality = TimeSeriesQuality.estimated.value
 metadata = Metadata("1", "1", "1", "1", "1")
 
 df_template = {

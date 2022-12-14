@@ -12,10 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from geh_stream.codelists import (
-    Quality,
-)
-from package.codelists import MeteringPointType, MeteringPointResolution
+from package.codelists import MeteringPointType, MeteringPointResolution, TimeSeriesQuality
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
 from .aggregate_quality import aggregate_total_consumption_quality
@@ -137,7 +134,7 @@ def __calculate_grid_loss_or_residual_ga(
             Colname.resolution
         ),  # TODO take resolution from metadata
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
-        lit(Quality.calculated.value).alias(Colname.quality),
+        lit(TimeSeriesQuality.calculated.value).alias(Colname.quality),
     )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
