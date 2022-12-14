@@ -172,7 +172,8 @@ jobs:
         run: |
           mkdir ${{ env.RELEASE_FOLDER_PATH }}
           mkdir ${{ env.RELEASE_FOLDER_PATH }}/infrastructure
-          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
+          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/main ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/main 2>/dev/null || :
+          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/env ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/env 2>/dev/null || :
 
       - name: Copy additional infrastructure files
         if: ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH != '' }}
