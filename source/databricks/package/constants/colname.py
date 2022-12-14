@@ -67,7 +67,7 @@ class Colname:
     sum_quantity = "sum_quantity"
     registration_date_time = "registration_date_time"
     """Be cautious to change as it is used in the published time series points from the time series domain."""
-    time = "Time"
+    time = "time"
     """When the production/consumption/exchange actually happened."""
     time_window = "time_window"
     time_window_end = "time_window.end"

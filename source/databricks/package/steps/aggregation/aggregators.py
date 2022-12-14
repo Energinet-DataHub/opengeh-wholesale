@@ -207,16 +207,16 @@ def aggregate_per_ga_and_brp_and_es(
     result = result.withColumn(
         "quarter_times",
         when(
-            col("Resolution") == MeteringPointResolution.hour.value,
+            col(Colname.resolution) == MeteringPointResolution.hour.value,
             array(
-                col("time"),
-                col("time") + expr("INTERVAL 15 minutes"),
-                col("time") + expr("INTERVAL 30 minutes"),
-                col("time") + expr("INTERVAL 45 minutes"),
+                col(Colname.time),
+                col(Colname.time) + expr("INTERVAL 15 minutes"),
+                col(Colname.time) + expr("INTERVAL 30 minutes"),
+                col(Colname.time) + expr("INTERVAL 45 minutes"),
             ),
         ).when(
-            col("Resolution") == MeteringPointResolution.quarter.value,
-            array(col("time")),
+            col(Colname.resolution) == MeteringPointResolution.quarter.value,
+            array(col(Colname.time)),
         ),
     ).select(
         result["*"],
@@ -229,11 +229,11 @@ def aggregate_per_ga_and_brp_and_es(
         result.withColumn(
             "quarter_quantity",
             when(
-                col("Resolution") == MeteringPointResolution.hour.value,
-                col("Quantity") / 4,
+                col(Colname.resolution) == MeteringPointResolution.hour.value,
+                col(Colname.quantity) / 4,
             ).when(
-                col("Resolution") == MeteringPointResolution.quarter.value,
-                col("Quantity"),
+                col(Colname.resolution) == MeteringPointResolution.quarter.value,
+                col(Colname.quantity),
             ),
         )
         .groupBy(
