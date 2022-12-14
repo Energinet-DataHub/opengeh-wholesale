@@ -1,14 +1,6 @@
 {
   "literals": [
     {
-      "name": "unknown",
-      "value": 0
-    },
-    {
-      "name": "new",
-      "value": 1
-    },
-    {
       "name": "connected",
       "value": 2
     },
@@ -16,9 +8,5 @@
       "name": "disconnected",
       "value": 3
     },
-    {
-      "name": "closedDown",
-      "value": 4
-    }
   ]
 }

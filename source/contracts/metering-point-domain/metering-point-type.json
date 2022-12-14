@@ -1,10 +1,6 @@
 {
   "literals": [
     {
-      "name": "unknown",
-      "value": 0
-    },
-    {
       "name": "consumption",
       "value": 1
     },

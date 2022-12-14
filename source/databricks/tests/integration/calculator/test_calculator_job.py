@@ -13,12 +13,14 @@
 # limitations under the License.
 
 import re
+from pyspark.sql import SparkSession
 import pytest
 import yaml
 from unittest.mock import patch
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
 from package.calculator_args import CalculatorArgs
+from package.schemas.time_series_point_schema import time_series_point_schema
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 
@@ -38,20 +40,17 @@ class DictObj:
 
 @pytest.fixture(scope="session")
 def test_data_job_parameters(
-    test_data,
     databricks_path,
     data_lake_path,
     timestamp_factory,
     worker_id,
-    json_test_files,
+    test_files_folder_path,
 ) -> CalculatorArgs:
-    "test_data parameter ensures that the corresponding test data has been created when using these corresponding job parameters"
     return DictObj(
         {
             "data_storage_account_name": "foo",
             "data_storage_account_key": "foo",
-            "wholesale_container_path": f"{json_test_files}",
-            "time_series_points_path": f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points",
+            "wholesale_container_path": f"{test_files_folder_path}",
             "process_results_path": f"{data_lake_path}/{worker_id}/results",
             "batch_id": executed_batch_id,
             "batch_grid_areas": [805, 806],
@@ -149,9 +148,10 @@ def test__result_is_generated_for_requested_grid_areas(
 
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
-    spark,
+    spark: SparkSession,
     data_lake_path,
     source_path,
+    test_files_folder_path,
     executed_calculation_job,
     worker_id,
 ):
@@ -159,16 +159,19 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    input_time_series_points = spark.read.parquet(
+    input_time_series_points = (
+        spark.read.schema(time_series_point_schema)
+        .option("header", "true")
+        .option("mode", "FAILFAST")
+        .csv(f"{test_files_folder_path}/TimeSeriesPoints.csv")
+    )
+    spark.read.parquet(
         f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points"
     )
     # When asserting both that the calculator creates output and it does it with input data that matches
     # the time series points contract from the time-series domain (in the same test), then we can infer that the
     # calculator works with the format of the data published from the time-series domain.
-    assert_contract_matches_schema(
-        f"{source_path}/contracts/time-series-domain/time-series-points.json",
-        input_time_series_points.schema,
-    )
+    assert input_time_series_points.schema == time_series_point_schema
 
 
 def test__calculator_result_schema_must_match_contract_with_dotnet(
