@@ -100,7 +100,7 @@ def adjust_production(results: dict, metadata: Metadata) -> DataFrame:
         Colname.time_window,
         Colname.sum_quantity,
         Colname.quality,
-        lit(ResolutionDuration.hour).alias(
+        lit(ResolutionDuration.hour.value).alias(
             Colname.resolution
         ),  # TODO take resolution from metadata
         lit(MeteringPointType.production.value).alias(Colname.metering_point_type),

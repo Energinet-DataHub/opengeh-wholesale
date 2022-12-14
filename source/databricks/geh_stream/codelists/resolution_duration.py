@@ -11,9 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from enum import Enum
 
 
-class ResolutionDuration:
+class ResolutionDuration(Enum):
     year = "P1Y"
     month = "P1M"
     day = "P1D"

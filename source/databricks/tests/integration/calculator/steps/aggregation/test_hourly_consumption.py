@@ -113,12 +113,12 @@ def agg_result_factory(spark, settled_schema):
                     Quality.estimated.value,
                 ],
                 Colname.resolution: [
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
+                    ResolutionDuration.hour.value,
+                    ResolutionDuration.hour.value,
+                    ResolutionDuration.hour.value,
+                    ResolutionDuration.hour.value,
+                    ResolutionDuration.hour.value,
+                    ResolutionDuration.hour.value,
                 ],
                 Colname.metering_point_type: [
                     MeteringPointType.consumption.value,

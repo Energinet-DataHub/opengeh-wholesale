@@ -43,7 +43,7 @@ default_supplier = "S1"
 default_sum_quantity = Decimal(1)
 default_added_grid_loss = Decimal(3)
 default_aggregated_quality = Quality.estimated.value
-default_resolution = ResolutionDuration.hour
+default_resolution = ResolutionDuration.hour.value
 default_metering_point_type = MeteringPointType.consumption.value
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"

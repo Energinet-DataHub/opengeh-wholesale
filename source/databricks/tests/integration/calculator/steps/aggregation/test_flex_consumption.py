@@ -89,7 +89,7 @@ def test_data_factory(spark, agg_flex_consumption_schema):
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
                             Colname.quality: [Quality.estimated.value],
-                            Colname.resolution: [ResolutionDuration.hour],
+                            Colname.resolution: [ResolutionDuration.hour.value],
                             Colname.metering_point_type: [
                                 MeteringPointType.consumption.value
                             ],

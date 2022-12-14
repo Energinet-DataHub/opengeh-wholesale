@@ -295,7 +295,7 @@ def __get_window_duration_string_based_on_resolution(
 ) -> str:
     window_duration_string = "1 hour"
 
-    if resolution_duration == ResolutionDuration.day:
+    if resolution_duration == ResolutionDuration.day.value:
         window_duration_string = "1 day"
 
     return window_duration_string

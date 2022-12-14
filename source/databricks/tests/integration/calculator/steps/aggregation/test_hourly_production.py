@@ -91,7 +91,7 @@ def test_data_factory(spark, agg_production_schema):
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
                             Colname.quality: [Quality.estimated.value],
-                            Colname.resolution: [ResolutionDuration.hour],
+                            Colname.resolution: [ResolutionDuration.hour.value],
                             Colname.metering_point_type: [
                                 MeteringPointType.production.value
                             ],
