@@ -64,7 +64,7 @@ jobs:
         uses: actions/checkout@v3
 
       # bash tree is used to make it easier to finder the subfolders.
-      # https://linuxhint.com/bash-tree-command/        
+      # https://linuxhint.com/bash-tree-command/
       - run: sudo apt install tree jq -y
         shell: bash
 
@@ -82,6 +82,27 @@ jobs:
             declare -a folders=()
             echo "folders=$folders" >> $GITHUB_OUTPUT
           fi
+
+  # If no environments exists, we still need to validate main folder
+  validate_additional_environment:
+    if: ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH != '' }}
+    name: Validating additional configuration
+    runs-on: ${{ inputs.OPERATING_SYSTEM }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Copy infrastructure files
+        shell: bash
+        run: |
+          cp -fR ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
+
+      - name: Terraform validate
+        uses: ./.github/actions/terraform-validate
+        with:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          TERRAFORM_VERSION: ${{ inputs.TERRAFORM_VERSION }}
+          WORKING_DIRECTORY: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
 
   # If no environments exists, we still need to validate main folder
   validate_main_environment:
@@ -151,8 +172,13 @@ jobs:
         run: |
           mkdir ${{ env.RELEASE_FOLDER_PATH }}
           mkdir ${{ env.RELEASE_FOLDER_PATH }}/infrastructure
-          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/main ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/main 2>/dev/null || :
-          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/env ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/env 2>/dev/null || :
+          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
+
+      - name: Copy additional infrastructure files
+        if: ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH != '' }}
+        shell: bash
+        run: |
+          cp -fR ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
 
       - name: Zip files for prerelease
         uses: thedoctor0/zip-release@0.6.2
