@@ -151,7 +151,7 @@ def test_production_aggregator_filters_out_incorrect_point_type(
     assert aggregated_df.count() == 0
 
 
-def test_production_aggregator_aggregates_observations_in_same_hour(
+def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
     time_series_row_factory,
 ):
     """
