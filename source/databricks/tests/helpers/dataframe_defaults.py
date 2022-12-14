@@ -13,15 +13,13 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import (
-    MarketEvaluationPointType,
-    SettlementMethod,
-    ResolutionDuration,
+from package.codelists import (
+    ChargeResolution,
     ChargeType,
+    MeteringPointType,
+    MeteringPointResolution,
+    SettlementMethod,
 )
-import pytest
-import pandas as pd
-
 
 const_charge_id = "001"
 const_charge_type = ChargeType.subscription
@@ -45,6 +43,7 @@ class DataframeDefaults:
     default_charge_price: Decimal = Decimal("1.123456")
     default_charge_tax: str = "true"
     default_charge_type: str = const_charge_type
+    default_charge_resolution: str = ChargeResolution.day.value
     default_connection_state: str = "E22"
     default_currency: str = "DDK"
     default_energy_supplier_id: str = "1"
@@ -52,15 +51,15 @@ class DataframeDefaults:
     default_in_grid_area: str = "1"
     default_metering_method: str = "1"
     default_metering_point_id: str = "D01"
-    default_metering_point_type: str = MarketEvaluationPointType.consumption.value
+    default_metering_point_type: str = MeteringPointType.consumption.value
     default_out_grid_area: str = "chargea"
     default_parent_metering_point_id: str = "1"
     default_product: str = "chargea"
     default_quality: str = "E01"
     default_quantity: Decimal = Decimal("1.123")
     default_registration_date_time: datetime = datetime(2020, 1, 1, 0, 0)
-    default_resolution: str = ResolutionDuration.day
-    default_settlement_method: str = SettlementMethod.flex_settled.value
+    default_metering_point_resolution: str = MeteringPointResolution.hour.value
+    default_settlement_method: str = SettlementMethod.flex.value
     default_sum_quantity: Decimal = Decimal("1.234")
     default_time_window_end: datetime = datetime(2020, 1, 1, 1, 0)
     default_time_window_start: datetime = datetime(2020, 1, 1, 0, 0)

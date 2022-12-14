@@ -11,10 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from geh_stream.codelists import (
-    ResolutionDuration,
-    MarketEvaluationPointType,
-)
+from package.codelists import MeteringPointResolution
+from package.codelists import MeteringPointType
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
@@ -102,12 +100,10 @@ def adjust_production(results: dict, metadata: Metadata) -> DataFrame:
         Colname.time_window,
         Colname.sum_quantity,
         Colname.quality,
-        lit(ResolutionDuration.hour).alias(
+        lit(MeteringPointResolution.hour.value).alias(
             Colname.resolution
         ),  # TODO take resolution from metadata
-        lit(MarketEvaluationPointType.production.value).alias(
-            Colname.metering_point_type
-        ),
+        lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
     ).orderBy(
         Colname.grid_area,
         Colname.balance_responsible_id,

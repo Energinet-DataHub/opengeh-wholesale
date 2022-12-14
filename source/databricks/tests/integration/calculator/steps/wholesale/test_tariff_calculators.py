@@ -18,7 +18,7 @@ from tests.helpers.test_schemas import (
     tariff_sum_and_count_schema,
     tariff_distinct_schema,
 )
-from geh_stream.codelists import ChargeType
+from package.codelists import ChargeType
 from package.steps.wholesale.tariff_calculators import (
     sum_quantity_and_count_charges,
     select_distinct_tariffs,

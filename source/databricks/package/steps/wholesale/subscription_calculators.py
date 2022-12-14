@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, last_day, dayofmonth, count, sum
 from pyspark.sql.types import DecimalType
-from geh_stream.codelists import MarketEvaluationPointType, SettlementMethod
+from package.codelists import MeteringPointType, SettlementMethod
 from package.schemas.output import calculate_daily_subscription_price_schema
 from package.constants import Colname
 
@@ -23,12 +23,12 @@ def calculate_daily_subscription_price(
     spark: SparkSession, subscription_charges: DataFrame
 ) -> DataFrame:
     # filter on metering point type and settlement method
-    charges_per_day_flex_settled_consumption = (
+    charges_per_day_flex_consumption = (
         filter_on_metering_point_type_and_settlement_method(subscription_charges)
     )
 
     # calculate price per day
-    charges_per_day = calculate_price_per_day(charges_per_day_flex_settled_consumption)
+    charges_per_day = calculate_price_per_day(charges_per_day_flex_consumption)
 
     # get count of charges and total daily charge price
     df = get_count_of_charges_and_total_daily_charge_price(charges_per_day)
@@ -39,16 +39,16 @@ def calculate_daily_subscription_price(
 def filter_on_metering_point_type_and_settlement_method(
     subscription_charges: DataFrame,
 ) -> DataFrame:
-    charges_per_day_flex_settled_consumption = subscription_charges.filter(
-        col(Colname.metering_point_type) == MarketEvaluationPointType.consumption.value
-    ).filter(col(Colname.settlement_method) == SettlementMethod.flex_settled.value)
-    return charges_per_day_flex_settled_consumption
+    charges_per_day_flex_consumption = subscription_charges.filter(
+        col(Colname.metering_point_type) == MeteringPointType.consumption.value
+    ).filter(col(Colname.settlement_method) == SettlementMethod.flex.value)
+    return charges_per_day_flex_consumption
 
 
 def calculate_price_per_day(
-    charges_per_day_flex_settled_consumption: DataFrame,
+    charges_per_day_flex_consumption: DataFrame,
 ) -> DataFrame:
-    charges_per_day = charges_per_day_flex_settled_consumption.withColumn(
+    charges_per_day = charges_per_day_flex_consumption.withColumn(
         Colname.price_per_day,
         (col(Colname.charge_price) / dayofmonth(last_day(col(Colname.time)))).cast(
             DecimalType(14, 8)

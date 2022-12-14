@@ -26,7 +26,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from geh_stream.codelists import ChargeType
+from package.codelists import ChargeType
 from package.schemas.output import (
     aggregation_result_schema,
     calculate_daily_subscription_price_schema,
@@ -150,7 +150,7 @@ def charges_factory(spark):
         charge_id=DataframeDefaults.default_charge_id,
         charge_type=DataframeDefaults.default_charge_type,
         charge_owner=DataframeDefaults.default_charge_owner,
-        resolution=DataframeDefaults.default_resolution,
+        charge_resolution=DataframeDefaults.default_charge_resolution,
         charge_tax=DataframeDefaults.default_charge_tax,
         currency=DataframeDefaults.default_currency,
     ):
@@ -161,7 +161,7 @@ def charges_factory(spark):
                     Colname.charge_id: charge_id,
                     Colname.charge_type: charge_type,
                     Colname.charge_owner: charge_owner,
-                    Colname.resolution: resolution,
+                    Colname.resolution: charge_resolution,
                     Colname.charge_tax: charge_tax,
                     Colname.currency: currency,
                     Colname.from_date: from_date,
@@ -288,7 +288,7 @@ def metering_point_factory(spark):
         settlement_method=DataframeDefaults.default_settlement_method,
         grid_area=DataframeDefaults.default_grid_area,
         connection_state=DataframeDefaults.default_connection_state,
-        resolution=DataframeDefaults.default_resolution,
+        resolution=DataframeDefaults.default_metering_point_resolution,
         in_grid_area=DataframeDefaults.default_in_grid_area,
         out_grid_area=DataframeDefaults.default_out_grid_area,
         metering_method=DataframeDefaults.default_metering_method,

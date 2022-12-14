@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from .charge_resolution import ChargeResolution
 from .time_series_quality import TimeSeriesQuality
 from .metering_point_type import MeteringPointType
 from .connection_state import ConnectionState
 from .settlement_method import SettlementMethod
 from .metering_point_resolution import MeteringPointResolution
+from .charge_type import ChargeType

@@ -13,10 +13,9 @@
 # limitations under the License.
 
 from geh_stream.codelists import (
-    ResolutionDuration,
-    MarketEvaluationPointType,
     Quality,
 )
+from package.codelists import MeteringPointType, MeteringPointResolution
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
 from .aggregate_quality import aggregate_total_consumption_quality
@@ -53,7 +52,7 @@ def calculate_grid_loss(results: dict, metadata: Metadata) -> DataFrame:
 def calculate_residual_ga(results: dict, metadata: Metadata) -> DataFrame:
     agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
     agg_hourly_consumption = results[ResultKeyName.hourly_settled_consumption_ga]
-    agg_flex_consumption = results[ResultKeyName.flex_settled_consumption_ga]
+    agg_flex_consumption = results[ResultKeyName.flex_consumption_ga]
     agg_production = results[ResultKeyName.hourly_production_ga]
     return __calculate_grid_loss_or_residual_ga(
         agg_net_exchange,
@@ -134,12 +133,10 @@ def __calculate_grid_loss_or_residual_ga(
         Colname.grid_area,
         Colname.time_window,
         Colname.sum_quantity,  # grid loss
-        lit(ResolutionDuration.hour).alias(
+        lit(MeteringPointResolution.hour.value).alias(
             Colname.resolution
         ),  # TODO take resolution from metadata
-        lit(MarketEvaluationPointType.consumption.value).alias(
-            Colname.metering_point_type
-        ),
+        lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         lit(Quality.calculated.value).alias(Colname.quality),
     )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
@@ -159,12 +156,10 @@ def calculate_added_system_correction(results: dict, metadata: Metadata) -> Data
         Colname.time_window,
         Colname.added_system_correction,
         Colname.sum_quantity,
-        lit(ResolutionDuration.hour).alias(
+        lit(MeteringPointResolution.hour.value).alias(
             Colname.resolution
         ),  # TODO take resolution from metadata
-        lit(MarketEvaluationPointType.production.value).alias(
-            Colname.metering_point_type
-        ),
+        lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
@@ -182,12 +177,10 @@ def calculate_added_grid_loss(results: dict, metadata: Metadata):
         Colname.time_window,
         Colname.added_grid_loss,
         Colname.sum_quantity,
-        lit(ResolutionDuration.hour).alias(
+        lit(MeteringPointResolution.hour.value).alias(
             Colname.resolution
         ),  # TODO take resolution from metadata
-        lit(MarketEvaluationPointType.consumption.value).alias(
-            Colname.metering_point_type
-        ),
+        lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
@@ -237,12 +230,10 @@ def calculate_total_consumption(results: dict, metadata: Metadata) -> DataFrame:
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(ResolutionDuration.hour).alias(
+            lit(MeteringPointResolution.hour.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
-            lit(MarketEvaluationPointType.consumption.value).alias(
-                Colname.metering_point_type
-            ),
+            lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         )
     )
 

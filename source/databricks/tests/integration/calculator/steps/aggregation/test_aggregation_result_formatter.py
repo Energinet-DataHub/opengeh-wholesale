@@ -13,7 +13,8 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import ResolutionDuration, MarketEvaluationPointType
+from package.codelists import MeteringPointType, MeteringPointResolution
+
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -41,7 +42,7 @@ def aggregation_result_factory(spark):
         energy_supplier_id=None,
         time_window_start=DataframeDefaults.default_time_window_start,
         time_window_end=DataframeDefaults.default_time_window_end,
-        resolution=DataframeDefaults.default_resolution,
+        resolution=DataframeDefaults.default_metering_point_resolution,
         sum_quantity=DataframeDefaults.default_sum_quantity,
         quality=DataframeDefaults.default_quality,
         metering_point_type=DataframeDefaults.default_metering_point_type,
@@ -89,10 +90,10 @@ def agg_result_factory(spark):
         grid_area="A",
         start=datetime(2020, 1, 1, 0, 0),
         end=datetime(2020, 1, 1, 1, 0),
-        resolution=ResolutionDuration.hour,
+        resolution=MeteringPointResolution.hour.value,
         sum_quantity=Decimal("1.234"),
         quality=Quality.estimated.value,
-        metering_point_type=MarketEvaluationPointType.consumption.value,
+        metering_point_type=MeteringPointType.consumption.value,
     ):
         return spark.createDataFrame(
             pd.DataFrame().append(
@@ -135,10 +136,10 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
         grid_area="A",
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
-        resolution=ResolutionDuration.hour,
+        resolution=MeteringPointResolution.hour.value,
         sum_quantity=Decimal("1.234"),
         quality=Quality.estimated.value,
-        metering_point_type=MarketEvaluationPointType.consumption.value,
+        metering_point_type=MeteringPointType.consumption.value,
     )
     # Act
     actual = create_dataframe_from_aggregation_result_schema(metadata, result)

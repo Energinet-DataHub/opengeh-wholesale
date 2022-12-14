@@ -19,11 +19,9 @@ from package.steps.aggregation import (
     aggregate_per_ga_and_brp_and_es,
 )
 from geh_stream.codelists import (
-    MarketEvaluationPointType,
-    SettlementMethod,
-    ConnectionState,
     Quality,
 )
+from package.codelists import ConnectionState, MeteringPointType, SettlementMethod
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
@@ -31,9 +29,8 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
 
-e_17 = MarketEvaluationPointType.consumption.value
-e_18 = MarketEvaluationPointType.production.value
-e_01 = SettlementMethod.profiled.value
+e_17 = MeteringPointType.consumption.value
+e_18 = MeteringPointType.production.value
 e_02 = SettlementMethod.non_profiled.value
 connected = ConnectionState.connected.value
 
@@ -148,20 +145,6 @@ def test_hourly_consumption_supplier_aggregator_filters_out_incorrect_point_type
     assert aggregated_df.count() == 0
 
 
-def test_hourly_consumption_supplier_aggregator_filters_out_incorrect_settlement_method(
-    time_series_row_factory,
-):
-    """
-    Aggregator should filter out all non "E02" SettlementMethod rows
-    """
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
-        settlement_method=e_01
-    )
-    aggregated_df = aggregate_hourly_consumption(results, metadata)
-    assert aggregated_df.count() == 0
-
-
 def test_hourly_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
     time_series_row_factory,
 ):
@@ -269,7 +252,7 @@ def test_hourly_consumption_test_filter_by_domain_is_pressent(time_series_row_fa
     df = time_series_row_factory()
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
-        MarketEvaluationPointType.consumption,
+        MeteringPointType.consumption,
         SettlementMethod.non_profiled,
         metadata,
     )
@@ -282,8 +265,8 @@ def test_hourly_consumption_test_filter_by_domain_is_not_pressent(
     df = time_series_row_factory()
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
-        MarketEvaluationPointType.consumption,
-        SettlementMethod.flex_settled,
+        MeteringPointType.consumption,
+        SettlementMethod.flex,
         metadata,
     )
     assert aggregated_df.count() == 0

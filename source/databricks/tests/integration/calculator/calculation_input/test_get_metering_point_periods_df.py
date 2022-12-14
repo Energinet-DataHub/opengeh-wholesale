@@ -17,12 +17,11 @@ from zoneinfo import ZoneInfo
 import pytest
 from package.calculation_input import get_metering_point_periods_df
 from package.codelists import (
-    ConnectionState,
     MeteringPointType,
     SettlementMethod,
     MeteringPointResolution,
 )
-
+from package.codelists import ConnectionState
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame
 from typing import Callable
@@ -355,7 +354,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                 {
                     "FromDate": june_6th,
                     "ToDate": june_7th,
-                    "SettlementMethod": SettlementMethod.nonprofiled.value,
+                    "SettlementMethod": SettlementMethod.non_profiled.value,
                 },
             ],
             [
@@ -369,7 +368,7 @@ def test__when_energy_supplier_changes_in_batch_period__returns_two_periods_with
                     "EffectiveDate": june_6th,
                     "toEffectiveDate": june_7th,
                     "EnergySupplierId": "3",
-                    "SettlementMethod": SettlementMethod.nonprofiled.value,
+                    "SettlementMethod": SettlementMethod.non_profiled.value,
                 },
             ],
         ),

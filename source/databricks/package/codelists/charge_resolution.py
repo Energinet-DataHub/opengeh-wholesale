@@ -11,12 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from enum import Enum
 
 
-# Keep aligned with the equivalent class in C#:
-# source/coordinator/Energinet.DataHub.Aggregation.Coordinator.Domain/Types/MarketEvaluationPointType.cs
-class MarketEvaluationPointType(Enum):
-    consumption = "E17"
-    production = "E18"
-    exchange = "E20"
+class ChargeResolution(Enum):
+    month = "P1M"
+    day = "P1D"
+    hour = "PT1H"

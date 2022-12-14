@@ -30,13 +30,13 @@ class ResultKeyName:
     hourly_production_with_system_correction_and_grid_loss = 120
     hourly_production_ga_es = 130
     hourly_settled_consumption_ga_es = 140
-    flex_settled_consumption_ga_es = 150
+    flex_consumption_ga_es = 150
     hourly_production_ga_brp = 160
     hourly_settled_consumption_ga_brp = 170
-    flex_settled_consumption_ga_brp = 180
+    flex_consumption_ga_brp = 180
     hourly_production_ga = 190
     hourly_settled_consumption_ga = 200
-    flex_settled_consumption_ga = 210
+    flex_consumption_ga = 210
     total_consumption = 220
     residual_ga = 230
     hourly_tariffs = "hourly_tariffs"

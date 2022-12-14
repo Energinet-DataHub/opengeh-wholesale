@@ -13,7 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import ResolutionDuration
+from package.codelists import MeteringPointResolution
 from package.steps.aggregation import (
     combine_added_system_correction_with_master_data,
     combine_added_grid_loss_with_master_data,
@@ -49,7 +49,7 @@ def aggregation_result_factory(spark):
         energy_supplier_id=None,
         time_window_start=DataframeDefaults.default_time_window_start,
         time_window_end=DataframeDefaults.default_time_window_end,
-        resolution=DataframeDefaults.default_resolution,
+        resolution=DataframeDefaults.default_metering_point_resolution,
         sum_quantity=DataframeDefaults.default_sum_quantity,
         quality=DataframeDefaults.default_quality,
         metering_point_type=DataframeDefaults.default_metering_point_type,
@@ -227,7 +227,7 @@ def test_combine_added_system_correction_with_master_data(
         added_system_correction=Decimal(6.0),
         time_window_start=datetime(2019, 1, 1, 0, 0),
         time_window_end=datetime(2019, 1, 1, 1, 0),
-        resolution=ResolutionDuration.hour,
+        resolution=MeteringPointResolution.hour.value,
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",
@@ -237,7 +237,7 @@ def test_combine_added_system_correction_with_master_data(
         added_system_correction=Decimal(6.0),
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
-        resolution=ResolutionDuration.hour,
+        resolution=MeteringPointResolution.hour.value,
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",
@@ -268,7 +268,7 @@ def test_combine_added_grid_loss_with_master_data(
         added_grid_loss=Decimal(6.0),
         time_window_start=datetime(2019, 1, 1, 0, 0),
         time_window_end=datetime(2019, 1, 1, 1, 0),
-        resolution=ResolutionDuration.hour,
+        resolution=MeteringPointResolution.hour.value,
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",
@@ -278,7 +278,7 @@ def test_combine_added_grid_loss_with_master_data(
         added_grid_loss=Decimal(6.0),
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
-        resolution=ResolutionDuration.hour,
+        resolution=MeteringPointResolution.hour.value,
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",
