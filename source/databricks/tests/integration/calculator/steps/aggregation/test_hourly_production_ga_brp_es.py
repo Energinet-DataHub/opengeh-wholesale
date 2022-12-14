@@ -61,7 +61,7 @@ def time_series_schema():
         .add(Colname.quantity, DecimalType())
         .add(Colname.time, TimestampType())
         .add(Colname.connection_state, StringType())
-        .add(Colname.aggregated_quality, StringType())
+        .add(Colname.quality, StringType())
         .add(Colname.resolution, StringType())
     )
 
@@ -91,7 +91,7 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.quantity: [quantity],
                 Colname.time: [obs_time],
                 Colname.connection_state: [connection_state],
-                Colname.aggregated_quality: [Quality.estimated.value],
+                Colname.quality: [Quality.estimated.value],
                 Colname.resolution: [resolution],
             }
         )
