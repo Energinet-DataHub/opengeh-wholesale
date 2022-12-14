@@ -22,6 +22,7 @@ on:
       - message-archive/**
       - .github/workflows/message-archive-ci.yml
       - .github/workflows/message-archive-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #

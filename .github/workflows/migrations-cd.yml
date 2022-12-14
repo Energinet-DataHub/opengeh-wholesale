@@ -22,6 +22,7 @@ on:
       - migrations/**
       - .github/workflows/migrations-ci.yml
       - .github/workflows/migrations-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #

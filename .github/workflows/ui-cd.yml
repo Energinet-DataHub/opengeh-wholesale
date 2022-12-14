@@ -22,6 +22,7 @@ on:
       - ui/**
       - .github/workflows/ui-ci.yml
       - .github/workflows/ui-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #

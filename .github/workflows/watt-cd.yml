@@ -22,6 +22,7 @@ on:
       - watt/**
       - .github/workflows/watt-ci.yml
       - .github/workflows/watt-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #

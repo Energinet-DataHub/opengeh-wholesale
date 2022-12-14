@@ -21,6 +21,7 @@ on:
       - timeseries/**
       - .github/workflows/timeseries-ci.yml
       - .github/workflows/timeseries-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #

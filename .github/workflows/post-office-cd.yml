@@ -22,6 +22,7 @@ on:
       - post-office/**
       - .github/workflows/post-office-ci.yml
       - .github/workflows/post-office-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #

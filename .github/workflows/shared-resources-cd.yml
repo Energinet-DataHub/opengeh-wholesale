@@ -22,6 +22,7 @@ on:
       - shared-resources/**
       - .github/workflows/shared-resources-ci.yml
       - .github/workflows/shared-resources-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #

@@ -22,6 +22,7 @@ on:
       - metering-point/**
       - .github/workflows/metering-point-ci.yml
       - .github/workflows/metering-point-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #

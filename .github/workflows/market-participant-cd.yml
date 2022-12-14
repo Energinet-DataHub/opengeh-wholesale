@@ -21,6 +21,7 @@ on:
       - market-participant/**
       - .github/workflows/market-participant-ci.yml
       - .github/workflows/market-participant-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #

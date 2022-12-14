@@ -22,6 +22,7 @@ on:
       - charges/**
       - .github/workflows/charges-ci.yml
       - .github/workflows/charges-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
 
 jobs:
   #
