@@ -19,11 +19,9 @@ from package.steps.aggregation import (
     aggregate_per_ga_and_brp_and_es,
 )
 from geh_stream.codelists import (
-    MarketEvaluationPointType,
-    SettlementMethod,
-    ConnectionState,
     Quality,
 )
+from package.codelists import ConnectionState, MeteringPointType, SettlementMethod
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
@@ -31,9 +29,9 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
 
-e_20 = MarketEvaluationPointType.exchange.value
-e_17 = MarketEvaluationPointType.consumption.value
-e_18 = MarketEvaluationPointType.production.value
+e_20 = MeteringPointType.exchange.value
+e_17 = MeteringPointType.consumption.value
+e_18 = MeteringPointType.production.value
 e_01 = SettlementMethod.profiled.value
 e_02 = SettlementMethod.non_profiled.value
 d_01 = SettlementMethod.flex_settled.value
@@ -278,7 +276,7 @@ def test_flex_consumption_test_filter_by_domain_is_present(time_series_row_facto
     df = time_series_row_factory()
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
-        MarketEvaluationPointType.consumption,
+        MeteringPointType.consumption,
         SettlementMethod.flex_settled,
         metadata,
     )
@@ -289,7 +287,7 @@ def test_flex_consumption_test_filter_by_domain_is_not_present(time_series_row_f
     df = time_series_row_factory()
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
-        MarketEvaluationPointType.consumption,
+        MeteringPointType.consumption,
         SettlementMethod.non_profiled,
         metadata,
     )

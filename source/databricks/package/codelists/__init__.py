@@ -17,3 +17,4 @@ from .metering_point_type import MeteringPointType
 from .connection_state import ConnectionState
 from .settlement_method import SettlementMethod
 from .metering_point_resolution import MeteringPointResolution
+from .charge_type import ChargeType

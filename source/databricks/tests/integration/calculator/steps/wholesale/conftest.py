@@ -26,7 +26,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from geh_stream.codelists import ChargeType
+from package.codelists import ChargeType
 from package.schemas.output import (
     aggregation_result_schema,
     calculate_daily_subscription_price_schema,
