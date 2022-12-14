@@ -164,7 +164,7 @@ def test_hourly_production_aggregator_aggregates_observations_in_same_hour(
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
     start_time = datetime(2020, 1, 1, 0, 0, 0)
-    end_time = datetime(2020, 1, 1, 1, 0, 0)
+    end_time = datetime(2020, 1, 1, 0, 15, 0)
 
     assert aggregated_df.count() == 1
     check_aggregation_row(
@@ -201,7 +201,7 @@ def test_hourly_production_aggregator_returns_distinct_rows_for_observations_in_
     # Create the start/end datetimes representing the start and end of the 1 hr time period for each row's ObservationTime
     # These should be datetime naive in order to compare to the Spark Dataframe
     start_time_row1 = datetime(2020, 1, 1, 0, 0, 0)
-    end_time_row1 = datetime(2020, 1, 1, 1, 0, 0)
+    end_time_row1 = datetime(2020, 1, 1, 0, 15, 0)
     check_aggregation_row(
         aggregated_df,
         0,
@@ -214,7 +214,7 @@ def test_hourly_production_aggregator_returns_distinct_rows_for_observations_in_
     )
 
     start_time_row2 = datetime(2020, 1, 1, 1, 0, 0)
-    end_time_row2 = datetime(2020, 1, 1, 2, 0, 0)
+    end_time_row2 = datetime(2020, 1, 1, 1, 15, 0)
     check_aggregation_row(
         aggregated_df,
         1,
@@ -236,16 +236,6 @@ def test_hourly_production_aggregator_returns_correct_schema(time_series_row_fac
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory()
     aggregated_df = aggregate_hourly_production(results, metadata)
     assert aggregated_df.schema == aggregation_result_schema
-
-
-@pytest.mark.skip(reason="no way of currently testing this")
-def test_hourly_production_test_invalid_connection_state(time_series_row_factory):
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
-        connection_state=ConnectionState.new.value
-    )
-    aggregated_df = aggregate_hourly_production(results, metadata)
-    assert aggregated_df.count() == 0
 
 
 def test_hourly_production_test_filter_by_domain_is_pressent(time_series_row_factory):

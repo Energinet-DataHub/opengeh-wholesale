@@ -231,11 +231,7 @@ def aggregate_per_ga_and_brp_and_es(
         result = result.filter(
             col(Colname.settlement_method) == settlement_method.value
         )
-    # result = result.filter(
-    #     (col(Colname.connection_state) == ConnectionState.connected.value)
-    #     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
-    # )
-    result = result.withColumn(
+   result = result.withColumn(
         "quarter_times",
         when(
             col("Resolution") == MeteringPointResolution.hour.value,
@@ -276,7 +272,6 @@ def aggregate_per_ga_and_brp_and_es(
         )
         .sum("quarter_quantity")
         .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
-        .withColumnRenamed(Colname.aggregated_quality, Colname.quality)
         .select(
             Colname.grid_area,
             Colname.balance_responsible_id,
