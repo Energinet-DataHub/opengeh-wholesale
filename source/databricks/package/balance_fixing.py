@@ -74,7 +74,7 @@ def calculate_balance_fixing(
         )
     )
     metadata_fake = Metadata("1", "1", "1", "1", "1")
-    total_production_per_ga_df_agg = agg_steps.aggregate_hourly_production(
+    total_production_per_ga_df_agg = agg_steps.aggregate_production(
         results, metadata_fake
     )
     total_production_per_ga_df_agg = total_production_per_ga_df_agg.select(

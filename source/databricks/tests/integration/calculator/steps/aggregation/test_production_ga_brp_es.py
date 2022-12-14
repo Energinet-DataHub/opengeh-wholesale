@@ -15,7 +15,7 @@ from decimal import Decimal
 from datetime import datetime
 from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import (
-    aggregate_hourly_production,
+    aggregate_production,
     aggregate_per_ga_and_brp_and_es,
 )
 from geh_stream.codelists import Quality
@@ -137,7 +137,7 @@ def check_aggregation_row(
         pytest.param(e_20, id="invalid because metering point type is exchange"),
     ],
 )
-def test_hourly_production_aggregator_filters_out_incorrect_point_type(
+def test_production_aggregator_filters_out_incorrect_point_type(
     point_type, time_series_row_factory
 ):
     """
@@ -147,22 +147,22 @@ def test_hourly_production_aggregator_filters_out_incorrect_point_type(
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
         point_type=point_type
     )
-    aggregated_df = aggregate_hourly_production(results, metadata)
+    aggregated_df = aggregate_production(results, metadata)
     assert aggregated_df.count() == 0
 
 
-def test_hourly_production_aggregator_aggregates_observations_in_same_hour(
+def test_production_aggregator_aggregates_observations_in_same_hour(
     time_series_row_factory,
 ):
     """
     Aggregator should calculate the correct sum of a "grid area" grouping within the
-    same 1hr time window
+    same quarter hour time window
     """
     row1_df = time_series_row_factory(quantity=Decimal(1))
     row2_df = time_series_row_factory(quantity=Decimal(2))
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
-    aggregated_df = aggregate_hourly_production(results, metadata)
+    aggregated_df = aggregate_production(results, metadata)
 
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
@@ -182,12 +182,12 @@ def test_hourly_production_aggregator_aggregates_observations_in_same_hour(
     )
 
 
-def test_hourly_production_aggregator_returns_distinct_rows_for_observations_in_different_hours(
+def test_production_aggregator_returns_distinct_rows_for_observations_in_different_hours(
     time_series_row_factory,
 ):
     """
     Aggregator can calculate the correct sum of a "grid area"-"responsible"-"supplier" grouping
-    within the 2 different 1hr time windows
+    within the 2 different quarter hour time windows
     """
     diff_obs_time = datetime.strptime(
         "2020-01-01T01:00:00+0000", date_time_formatting_string
@@ -197,11 +197,11 @@ def test_hourly_production_aggregator_returns_distinct_rows_for_observations_in_
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
-    aggregated_df = aggregate_hourly_production(results, metadata)
+    aggregated_df = aggregate_production(results, metadata)
 
     assert aggregated_df.count() == 2
 
-    # Create the start/end datetimes representing the start and end of the 1 hr time period for each row's ObservationTime
+    # Create the start/end datetimes representing the start and end of the quarter hour time period for each row's ObservationTime
     # These should be datetime naive in order to compare to the Spark Dataframe
     start_time_row1 = datetime(2020, 1, 1, 0, 0, 0)
     end_time_row1 = datetime(2020, 1, 1, 0, 15, 0)
@@ -230,18 +230,18 @@ def test_hourly_production_aggregator_returns_distinct_rows_for_observations_in_
     )
 
 
-def test_hourly_production_aggregator_returns_correct_schema(time_series_row_factory):
+def test_production_aggregator_returns_correct_schema(time_series_row_factory):
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the single-hour resolution specified in the aggregator).
+    and time window (from the quarter-hour resolution specified in the aggregator).
     """
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory()
-    aggregated_df = aggregate_hourly_production(results, metadata)
+    aggregated_df = aggregate_production(results, metadata)
     assert aggregated_df.schema == aggregation_result_schema
 
 
-def test_hourly_production_test_filter_by_domain_is_pressent(time_series_row_factory):
+def test_production_test_filter_by_domain_is_pressent(time_series_row_factory):
     df = time_series_row_factory()
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata

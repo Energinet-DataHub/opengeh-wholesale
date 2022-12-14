@@ -178,7 +178,7 @@ def test_filters_out_incorrect_settlement_method(
 def test_aggregates_observations_in_same_hour(time_series_row_factory):
     """
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
-    same 1hr time window
+    same quarter hour time window
     """
     results = {}
     row1_df = time_series_row_factory(quantity=Decimal(1))
@@ -209,7 +209,7 @@ def test_returns_distinct_rows_for_observations_in_different_hours(
 ):
     """
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
-    2 different 1hr time windows
+    2 different quarter hour time windows
     """
     diff_obs_time = datetime.strptime(
         "2020-01-01T01:00:00+0000", date_time_formatting_string
@@ -224,7 +224,7 @@ def test_returns_distinct_rows_for_observations_in_different_hours(
 
     assert aggregated_df.count() == 2
 
-    # Create the start/end datetimes representing the start and end of the 1 hr time period for each row's ObservationTime
+    # Create the start/end datetimes representing the start and end of the quarter hour time period for each row's ObservationTime
     # These should be datetime naive in order to compare to the Spark Dataframe
     start_time_row1 = datetime(2020, 1, 1, 0, 0, 0)
     end_time_row1 = datetime(2020, 1, 1, 0, 15, 0)
@@ -256,7 +256,7 @@ def test_returns_distinct_rows_for_observations_in_different_hours(
 def test_returns_correct_schema(time_series_row_factory):
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the single-hour resolution specified in the aggregator).
+    and time window (from the quarter-hour resolution specified in the aggregator).
     """
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory()
