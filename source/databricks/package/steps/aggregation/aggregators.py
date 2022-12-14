@@ -235,6 +235,27 @@ def aggregate_per_ga_and_brp_and_es(
     #     (col(Colname.connection_state) == ConnectionState.connected.value)
     #     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
     # )
+    result = result.withColumn(
+        "quarter_times",
+        when(
+            col("Resolution") == MeteringPointResolution.hour.value,
+            array(
+                col("time"),
+                col("time") + expr("INTERVAL 15 minutes"),
+                col("time") + expr("INTERVAL 30 minutes"),
+                col("time") + expr("INTERVAL 45 minutes"),
+            ),
+        ).when(
+            col("Resolution") == MeteringPointResolution.quarterly.value,
+            array(col("time")),
+        ),
+    ).select(
+        result["*"],
+        explode("quarter_times").alias("quarter_time"),
+    )
+    result = result.withColumn(
+        Colname.time_window, window(col("quarter_time"), "15 minutes")
+    )
     result = (
         result.withColumn(
             "quarter_quantity",
@@ -250,13 +271,11 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.grid_area,
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
-            window(col(Colname.time), "15 minutes"),
+            Colname.time_window,
             Colname.aggregated_quality,
-            "quarter_quantity",
         )
         .sum("quarter_quantity")
         .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
-        .withColumnRenamed("window", Colname.time_window)
         .withColumnRenamed(Colname.aggregated_quality, Colname.quality)
         .select(
             Colname.grid_area,
@@ -265,7 +284,7 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(ResolutionDuration.hour).alias(
+            lit(ResolutionDuration.quarter).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
