@@ -34,9 +34,8 @@ import pandas as pd
 e_20 = MeteringPointType.exchange.value
 e_17 = MeteringPointType.consumption.value
 e_18 = MeteringPointType.production.value
-e_01 = SettlementMethod.profiled.value
 e_02 = SettlementMethod.non_profiled.value
-d_01 = SettlementMethod.flex_settled.value
+d_01 = SettlementMethod.flex.value
 
 # Default time series data point values
 default_point_type = e_17
@@ -157,7 +156,6 @@ def test_filters_out_incorrect_point_type(point_type, time_series_row_factory):
 @pytest.mark.parametrize(
     "settlement_method",
     [
-        pytest.param(e_01, id="should filter out E01"),
         pytest.param(e_02, id="should filter out E02"),
     ],
 )
@@ -279,7 +277,7 @@ def test_flex_consumption_test_filter_by_domain_is_present(time_series_row_facto
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.consumption,
-        SettlementMethod.flex_settled,
+        SettlementMethod.flex,
         metadata,
     )
     assert aggregated_df.count() == 1

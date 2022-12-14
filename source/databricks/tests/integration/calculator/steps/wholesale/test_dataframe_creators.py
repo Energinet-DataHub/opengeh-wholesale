@@ -72,7 +72,7 @@ def test_charges(charges_factory):
     assert result[Colname.charge_id] == DataframeDefaults.default_charge_id
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
-    assert result[Colname.resolution] == DataframeDefaults.default_resolution
+    assert result[Colname.resolution] == DataframeDefaults.default_charge_resolution
     assert result[Colname.charge_tax] == DataframeDefaults.default_charge_tax
     assert result[Colname.currency] == DataframeDefaults.default_currency
     assert result[Colname.from_date] == from_date
@@ -140,7 +140,10 @@ def test_metering_point(metering_point_factory):
     assert (
         result[Colname.connection_state] == DataframeDefaults.default_connection_state
     )
-    assert result[Colname.resolution] == DataframeDefaults.default_resolution
+    assert (
+        result[Colname.resolution]
+        == DataframeDefaults.default_metering_point_resolution
+    )
     assert result[Colname.in_grid_area] == DataframeDefaults.default_in_grid_area
     assert result[Colname.out_grid_area] == DataframeDefaults.default_out_grid_area
     assert result[Colname.metering_method] == DataframeDefaults.default_metering_method

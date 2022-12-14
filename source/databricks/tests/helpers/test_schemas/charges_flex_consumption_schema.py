@@ -22,7 +22,7 @@ from pyspark.sql.types import (
 )
 
 
-charges_flex_settled_consumption_schema = StructType(
+charges_flex_consumption_schema = StructType(
     [
         StructField(Colname.charge_key, StringType(), False),
         StructField(Colname.charge_id, StringType(), False),

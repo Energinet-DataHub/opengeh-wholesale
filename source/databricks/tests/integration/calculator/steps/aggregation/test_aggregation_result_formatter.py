@@ -44,7 +44,7 @@ def aggregation_result_factory(spark):
         energy_supplier_id=None,
         time_window_start=DataframeDefaults.default_time_window_start,
         time_window_end=DataframeDefaults.default_time_window_end,
-        resolution=DataframeDefaults.default_resolution,
+        resolution=DataframeDefaults.default_metering_point_resolution,
         sum_quantity=DataframeDefaults.default_sum_quantity,
         quality=DataframeDefaults.default_quality,
         metering_point_type=DataframeDefaults.default_metering_point_type,

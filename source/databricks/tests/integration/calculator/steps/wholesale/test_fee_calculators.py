@@ -14,7 +14,7 @@
 from decimal import Decimal
 from datetime import datetime
 from tests.helpers.test_schemas import (
-    charges_flex_settled_consumption_schema,
+    charges_flex_consumption_schema,
 )
 from package.constants import Colname
 from package.codelists import ChargeType
@@ -212,8 +212,8 @@ def test__filter_on_metering_point_type_and_settlement_method__filters_on_E17_an
 ):
     # Arrange
     fee_charges = spark.createDataFrame(
-        fee_charges, schema=charges_flex_settled_consumption_schema
-    )  # fee_charges and charges_flex_settled_consumption has the same schema
+        fee_charges, schema=charges_flex_consumption_schema
+    )  # fee_charges and charges_flex_consumption has the same schema
 
     # Act
     result = filter_on_metering_point_type_and_settlement_method(fee_charges)
@@ -222,7 +222,7 @@ def test__filter_on_metering_point_type_and_settlement_method__filters_on_E17_an
     assert result.count() == expected
 
 
-charges_flex_settled_consumption_dataset_1 = [
+charges_flex_consumption_dataset_1 = [
     (
         "001-D01-001",
         "001",
@@ -237,7 +237,7 @@ charges_flex_settled_consumption_dataset_1 = [
         1,
     )
 ]
-charges_flex_settled_consumption_dataset_2 = [
+charges_flex_consumption_dataset_2 = [
     (
         "001-D01-001",
         "001",
@@ -265,7 +265,7 @@ charges_flex_settled_consumption_dataset_2 = [
         1,
     ),
 ]
-charges_flex_settled_consumption_dataset_3 = [
+charges_flex_consumption_dataset_3 = [
     (
         "001-D01-001",
         "001",
@@ -296,28 +296,26 @@ charges_flex_settled_consumption_dataset_3 = [
 
 
 @pytest.mark.parametrize(
-    "charges_flex_settled_consumption,expected_charge_count,expected_total_daily_charge_price",
+    "charges_flex_consumption,expected_charge_count,expected_total_daily_charge_price",
     [
-        (charges_flex_settled_consumption_dataset_1, 1, Decimal("100.10")),
-        (charges_flex_settled_consumption_dataset_2, 2, Decimal("200.20")),
-        (charges_flex_settled_consumption_dataset_3, 1, Decimal("100.10")),
+        (charges_flex_consumption_dataset_1, 1, Decimal("100.10")),
+        (charges_flex_consumption_dataset_2, 2, Decimal("200.20")),
+        (charges_flex_consumption_dataset_3, 1, Decimal("100.10")),
     ],
 )
 def test__get_count_of_charges_and_total_daily_charge_price__counts_and_sums_up_amount_per_day(
     spark,
-    charges_flex_settled_consumption,
+    charges_flex_consumption,
     expected_charge_count,
     expected_total_daily_charge_price,
 ):
     # Arrange
-    charges_flex_settled_consumption = spark.createDataFrame(
-        charges_flex_settled_consumption, schema=charges_flex_settled_consumption_schema
+    charges_flex_consumption = spark.createDataFrame(
+        charges_flex_consumption, schema=charges_flex_consumption_schema
     )
 
     # Act
-    result = get_count_of_charges_and_total_daily_charge_price(
-        charges_flex_settled_consumption
-    )
+    result = get_count_of_charges_and_total_daily_charge_price(charges_flex_consumption)
 
     # Assert
     assert result.collect()[0][Colname.charge_count] == expected_charge_count
