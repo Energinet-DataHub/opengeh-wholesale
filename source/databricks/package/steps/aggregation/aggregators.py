@@ -11,30 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, window, lit, when, array, expr, explode
-
 from package.codelists import (
-    MeteringPointType,
     MeteringPointResolution,
-    ConnectionState,
+    MeteringPointType,
     SettlementMethod,
 )
-from package.codelists import (
-    TimeSeriesQuality,
-    MeteringPointResolution,
-)
+from package.constants import Colname, ResultKeyName
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
-from package.constants import ResultKeyName, Colname
-from package.db_logging import debug
-from pyspark.sql.window import Window
-from pyspark.sql.types import (
-    DecimalType,
-)
-from decimal import Decimal
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import array, col, explode, expr, lit, when, window
 
 in_sum = "in_sum"
 out_sum = "out_sum"
