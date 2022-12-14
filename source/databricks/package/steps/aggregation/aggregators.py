@@ -276,6 +276,7 @@ def aggregate_per_ga_and_brp_and_es(
         )
         .sum("quarter_quantity")
         .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
+        .withColumnRenamed(Colname.aggregated_quality, Colname.quality)
         .select(
             Colname.grid_area,
             Colname.balance_responsible_id,

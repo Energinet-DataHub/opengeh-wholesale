@@ -37,6 +37,7 @@ default_responsible = "R1"
 default_supplier = "S1"
 default_quantity = Decimal(1)
 default_connection_state = ConnectionState.connected.value
+default_resolution = "PT15M"
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -61,6 +62,7 @@ def time_series_schema():
         .add(Colname.time, TimestampType())
         .add(Colname.connection_state, StringType())
         .add(Colname.aggregated_quality, StringType())
+        .add(Colname.resolution, StringType())
     )
 
 
@@ -78,6 +80,7 @@ def time_series_row_factory(spark, time_series_schema):
         quantity=default_quantity,
         obs_time=default_obs_time,
         connection_state=default_connection_state,
+        resolution=default_resolution,
     ):
         pandas_df = pd.DataFrame(
             {
@@ -89,6 +92,7 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.time: [obs_time],
                 Colname.connection_state: [connection_state],
                 Colname.aggregated_quality: [Quality.estimated.value],
+                Colname.resolution: [resolution],
             }
         )
         return spark.createDataFrame(pandas_df, schema=time_series_schema)

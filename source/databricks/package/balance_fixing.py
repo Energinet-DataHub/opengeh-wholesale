@@ -72,10 +72,10 @@ def calculate_balance_fixing(
             "EnergySupplierId",
             lit("1"),  # this is not the corect value, so this need to be changed
         )
-        # .withColumn(
-        #     "aggregated_quality",
-        #     col("Quality"),  # this is not the corect value, so this need to be changed
-        # )
+        .withColumn(
+            "aggregated_quality",
+            col("Quality"),  # this is not the corect value, so this need to be changed
+        )
     )
     metadata_fake = Metadata("1", "1", "1", "1", "1")
     total_production_per_ga_df_agg = agg_steps.aggregate_hourly_production(
