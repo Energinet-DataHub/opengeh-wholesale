@@ -231,7 +231,7 @@ def aggregate_per_ga_and_brp_and_es(
         result = result.filter(
             col(Colname.settlement_method) == settlement_method.value
         )
-   result = result.withColumn(
+    result = result.withColumn(
         "quarter_times",
         when(
             col("Resolution") == MeteringPointResolution.hour.value,
