@@ -13,8 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime, timedelta
-from geh_stream.codelists import ResolutionDuration
-from package.codelists import MeteringPointType
+from package.codelists import MeteringPointType, MeteringPointResolution
 
 from package.steps.aggregation import (
     aggregate_flex_settled_consumption_ga_es,
@@ -89,7 +88,7 @@ def test_data_factory(spark, agg_flex_consumption_schema):
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
                             Colname.quality: [Quality.estimated.value],
-                            Colname.resolution: [ResolutionDuration.hour.value],
+                            Colname.resolution: [MeteringPointResolution.hour.value],
                             Colname.metering_point_type: [
                                 MeteringPointType.consumption.value
                             ],

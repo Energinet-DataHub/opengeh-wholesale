@@ -13,10 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import (
-    ResolutionDuration,
-)
-from package.codelists import MeteringPointType
+from package.codelists import MeteringPointType, MeteringPointResolution
 from package.steps.aggregation import adjust_production
 from geh_stream.codelists import Quality
 from package.shared.data_classes import Metadata
@@ -42,7 +39,7 @@ default_supplier = "S1"
 default_sum_quantity = Decimal(1)
 default_added_system_correction = Decimal(3)
 default_aggregated_quality = Quality.estimated.value
-default_resolution = ResolutionDuration.hour.value
+default_resolution = MeteringPointResolution.hour.value
 default_metering_point_type = MeteringPointType.production.value
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"

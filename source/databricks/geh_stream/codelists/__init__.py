@@ -12,5 +12,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from .quality import Quality
-from .settlement_method import SettlementMethod
-from .resolution_duration import ResolutionDuration

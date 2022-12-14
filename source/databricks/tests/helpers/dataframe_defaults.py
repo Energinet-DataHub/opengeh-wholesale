@@ -13,12 +13,12 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import (
+from package.codelists import (
+    ChargeType,
+    MeteringPointType,
+    MeteringPointResolution,
     SettlementMethod,
-    ResolutionDuration,
 )
-
-from package.codelists import ChargeType, MeteringPointType
 import pytest
 import pandas as pd
 
@@ -59,7 +59,7 @@ class DataframeDefaults:
     default_quality: str = "E01"
     default_quantity: Decimal = Decimal("1.123")
     default_registration_date_time: datetime = datetime(2020, 1, 1, 0, 0)
-    default_resolution: str = ResolutionDuration.day.value
+    default_resolution: str = MeteringPointResolution.day.value
     default_settlement_method: str = SettlementMethod.flex_settled.value
     default_sum_quantity: Decimal = Decimal("1.234")
     default_time_window_end: datetime = datetime(2020, 1, 1, 1, 0)

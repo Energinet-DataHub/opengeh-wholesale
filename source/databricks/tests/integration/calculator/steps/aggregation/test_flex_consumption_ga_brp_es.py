@@ -19,10 +19,9 @@ from package.steps.aggregation import (
     aggregate_per_ga_and_brp_and_es,
 )
 from geh_stream.codelists import (
-    SettlementMethod,
     Quality,
 )
-from package.codelists import ConnectionState, MeteringPointType
+from package.codelists import ConnectionState, MeteringPointType, SettlementMethod
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame

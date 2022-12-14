@@ -14,11 +14,11 @@
 from decimal import Decimal
 from datetime import datetime, timedelta
 from enum import Enum
-from geh_stream.codelists import (
-    ResolutionDuration,
+from package.codelists import (
+    MeteringPointType,
+    MeteringPointResolution,
     SettlementMethod,
 )
-from package.codelists import MeteringPointType
 
 from package.steps.aggregation import (
     calculate_grid_loss,
@@ -120,7 +120,7 @@ def agg_result_factory(
                         },
                         Colname.sum_quantity: Decimal(20 + i),
                         Colname.quality: Quality.estimated.value,
-                        Colname.resolution: ResolutionDuration.hour.value,
+                        Colname.resolution: MeteringPointResolution.hour.value,
                         Colname.metering_point_type: MeteringPointType.exchange.value,
                     },
                     ignore_index=True,
@@ -151,7 +151,7 @@ def agg_result_factory(
                         },
                         Colname.sum_quantity: Decimal(13 + i),
                         Colname.quality: Quality.estimated.value,
-                        Colname.resolution: ResolutionDuration.hour.value,
+                        Colname.resolution: MeteringPointResolution.hour.value,
                         Colname.metering_point_type: MeteringPointType.consumption.value,
                     },
                     ignore_index=True,
@@ -184,7 +184,7 @@ def agg_result_factory(
                         },
                         Colname.sum_quantity: Decimal(14 + i),
                         Colname.quality: Quality.estimated.value,
-                        Colname.resolution: ResolutionDuration.hour.value,
+                        Colname.resolution: MeteringPointResolution.hour.value,
                         Colname.metering_point_type: MeteringPointType.consumption.value,
                     },
                     ignore_index=True,
@@ -217,7 +217,7 @@ def agg_result_factory(
                         },
                         Colname.sum_quantity: Decimal(50 + i),
                         Colname.quality: Quality.estimated.value,
-                        Colname.resolution: ResolutionDuration.hour.value,
+                        Colname.resolution: MeteringPointResolution.hour.value,
                         Colname.metering_point_type: MeteringPointType.production.value,
                     },
                     ignore_index=True,
@@ -271,12 +271,12 @@ def agg_net_exchange_factory(spark, agg_net_exchange_schema):
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
                     MeteringPointType.exchange.value,
@@ -338,12 +338,12 @@ def agg_flex_consumption_factory(spark, agg_consumption_and_production_schema):
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
                     MeteringPointType.consumption.value,
@@ -407,12 +407,12 @@ def agg_hourly_consumption_factory(spark, agg_consumption_and_production_schema)
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
                     MeteringPointType.consumption.value,
@@ -476,12 +476,12 @@ def agg_hourly_production_factory(spark, agg_consumption_and_production_schema):
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
                     MeteringPointType.production.value,

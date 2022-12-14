@@ -17,5 +17,9 @@ from enum import Enum
 
 class MeteringPointResolution(Enum):
     "Resolution values used in contracts exposed by the metering point domain."
+    year = "P1Y"
+    month = "P1M"
+    day = "P1D"
     hour = "PT1H"
     quarter = "PT15M"
+    minut = "PT1M"

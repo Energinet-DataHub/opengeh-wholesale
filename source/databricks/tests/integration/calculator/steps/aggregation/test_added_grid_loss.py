@@ -13,9 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import ResolutionDuration
-from package.codelists import MeteringPointType
-
+from package.codelists import MeteringPointType, MeteringPointResolution
 from package.steps.aggregation import calculate_added_grid_loss
 from geh_stream.codelists import Quality
 from package.shared.data_classes import Metadata
@@ -77,7 +75,7 @@ def agg_result_factory(spark, grid_loss_schema):
                     },
                     Colname.sum_quantity: Decimal(-12.567),
                     Colname.quality: Quality.estimated.value,
-                    Colname.resolution: ResolutionDuration.hour.value,
+                    Colname.resolution: MeteringPointResolution.hour.value,
                     Colname.metering_point_type: MeteringPointType.exchange.value,
                 },
                 {
@@ -88,7 +86,7 @@ def agg_result_factory(spark, grid_loss_schema):
                     },
                     Colname.sum_quantity: Decimal(34.32),
                     Colname.quality: Quality.estimated.value,
-                    Colname.resolution: ResolutionDuration.hour.value,
+                    Colname.resolution: MeteringPointResolution.hour.value,
                     Colname.metering_point_type: MeteringPointType.exchange.value,
                 },
                 {
@@ -99,7 +97,7 @@ def agg_result_factory(spark, grid_loss_schema):
                     },
                     Colname.sum_quantity: Decimal(0.0),
                     Colname.quality: Quality.estimated.value,
-                    Colname.resolution: ResolutionDuration.hour.value,
+                    Colname.resolution: MeteringPointResolution.hour.value,
                     Colname.metering_point_type: MeteringPointType.exchange.value,
                 },
             ],

@@ -13,10 +13,9 @@
 # limitations under the License.
 
 from geh_stream.codelists import (
-    ResolutionDuration,
     Quality,
 )
-from package.codelists import MeteringPointType
+from package.codelists import MeteringPointType, MeteringPointResolution
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
 from .aggregate_quality import aggregate_total_consumption_quality
@@ -134,7 +133,7 @@ def __calculate_grid_loss_or_residual_ga(
         Colname.grid_area,
         Colname.time_window,
         Colname.sum_quantity,  # grid loss
-        lit(ResolutionDuration.hour.value).alias(
+        lit(MeteringPointResolution.hour.value).alias(
             Colname.resolution
         ),  # TODO take resolution from metadata
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
@@ -157,7 +156,7 @@ def calculate_added_system_correction(results: dict, metadata: Metadata) -> Data
         Colname.time_window,
         Colname.added_system_correction,
         Colname.sum_quantity,
-        lit(ResolutionDuration.hour.value).alias(
+        lit(MeteringPointResolution.hour.value).alias(
             Colname.resolution
         ),  # TODO take resolution from metadata
         lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
@@ -178,7 +177,7 @@ def calculate_added_grid_loss(results: dict, metadata: Metadata):
         Colname.time_window,
         Colname.added_grid_loss,
         Colname.sum_quantity,
-        lit(ResolutionDuration.hour.value).alias(
+        lit(MeteringPointResolution.hour.value).alias(
             Colname.resolution
         ),  # TODO take resolution from metadata
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
@@ -231,7 +230,7 @@ def calculate_total_consumption(results: dict, metadata: Metadata) -> DataFrame:
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(ResolutionDuration.hour.value).alias(
+            lit(MeteringPointResolution.hour.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
             lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),

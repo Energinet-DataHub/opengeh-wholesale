@@ -11,9 +11,7 @@
 # # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # # See the License for the specific language governing permissions and
 # # limitations under the License.
-from geh_stream.codelists import (
-    ResolutionDuration,
-)
+from package.codelists import MeteringPointResolution
 from package.codelists import MeteringPointType
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
@@ -96,7 +94,7 @@ def adjust_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
         Colname.time_window,
         Colname.sum_quantity,
         Colname.quality,
-        lit(ResolutionDuration.hour.value).alias(
+        lit(MeteringPointResolution.hour.value).alias(
             Colname.resolution
         ),  # TODO take resolution from metadata
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),

@@ -13,8 +13,7 @@
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, count, sum
-from geh_stream.codelists import SettlementMethod
-from package.codelists import MeteringPointType
+from package.codelists import MeteringPointType, SettlementMethod
 from package.schemas.output import calculate_fee_charge_price_schema
 from package.constants import Colname
 

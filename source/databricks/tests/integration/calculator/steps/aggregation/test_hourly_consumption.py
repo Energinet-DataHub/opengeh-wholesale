@@ -13,10 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import (
-    ResolutionDuration,
-)
-from package.codelists import MeteringPointType
+from package.codelists import MeteringPointType, MeteringPointResolution
 
 from package.steps.aggregation import (
     aggregate_hourly_settled_consumption_ga_es,
@@ -113,12 +110,12 @@ def agg_result_factory(spark, settled_schema):
                     Quality.estimated.value,
                 ],
                 Colname.resolution: [
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
-                    ResolutionDuration.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
                     MeteringPointType.consumption.value,
