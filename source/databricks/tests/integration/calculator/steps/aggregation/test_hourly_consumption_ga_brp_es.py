@@ -45,6 +45,7 @@ default_responsible = "R1"
 default_supplier = "S1"
 default_quantity = Decimal(1)
 default_connection_state = connected
+default_resolution = "PT15M"
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -69,7 +70,8 @@ def time_series_schema():
         .add(Colname.quantity, DecimalType())
         .add(Colname.time, TimestampType())
         .add(Colname.connection_state, StringType())
-        .add(Colname.aggregated_quality, StringType())
+        .add(Colname.quality, StringType())
+        .add(Colname.resolution, StringType())
     )
 
 
@@ -88,6 +90,7 @@ def time_series_row_factory(spark, time_series_schema):
         quantity=default_quantity,
         obs_time=default_obs_time,
         connection_state=default_connection_state,
+        resolution=default_resolution,
     ):
         pandas_df = pd.DataFrame(
             {
@@ -99,7 +102,8 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.quantity: [quantity],
                 Colname.time: [obs_time],
                 Colname.connection_state: [connection_state],
-                Colname.aggregated_quality: [Quality.estimated.value],
+                Colname.quality: [Quality.estimated.value],
+                Colname.resolution: [resolution],
             },
         )
         return spark.createDataFrame(pandas_df, schema=time_series_schema)
@@ -178,7 +182,7 @@ def test_hourly_consumption_supplier_aggregator_aggregates_observations_in_same_
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
     start_time = datetime(2020, 1, 1, 0, 0, 0)
-    end_time = datetime(2020, 1, 1, 1, 0, 0)
+    end_time = datetime(2020, 1, 1, 0, 15, 0)
 
     assert aggregated_df.count() == 1
     check_aggregation_row(
@@ -216,7 +220,7 @@ def test_hourly_consumption_supplier_aggregator_returns_distinct_rows_for_observ
     # Create the start/end datetimes representing the start and end of the 1 hr time period for each row's ObservationTime
     # These should be datetime naive in order to compare to the Spark Dataframe
     start_time_row1 = datetime(2020, 1, 1, 0, 0, 0)
-    end_time_row1 = datetime(2020, 1, 1, 1, 0, 0)
+    end_time_row1 = datetime(2020, 1, 1, 0, 15, 0)
     check_aggregation_row(
         aggregated_df,
         0,
@@ -229,7 +233,7 @@ def test_hourly_consumption_supplier_aggregator_returns_distinct_rows_for_observ
     )
 
     start_time_row2 = datetime(2020, 1, 1, 1, 0, 0)
-    end_time_row2 = datetime(2020, 1, 1, 2, 0, 0)
+    end_time_row2 = datetime(2020, 1, 1, 1, 15, 0)
     check_aggregation_row(
         aggregated_df,
         1,
@@ -253,16 +257,6 @@ def test_hourly_consumption_supplier_aggregator_returns_correct_schema(
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory()
     aggregated_df = aggregate_hourly_consumption(results, metadata)
     assert aggregated_df.schema == aggregation_result_schema
-
-
-@pytest.mark.skip(reason="no way of currently testing this")
-def test_hourly_consumption_test_invalid_connection_state(time_series_row_factory):
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
-        connection_state=ConnectionState.new.value
-    )
-    aggregated_df = aggregate_hourly_consumption(results, metadata)
-    assert aggregated_df.count() == 0
 
 
 def test_hourly_consumption_test_filter_by_domain_is_pressent(time_series_row_factory):
