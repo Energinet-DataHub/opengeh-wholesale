@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, window, lit
+from pyspark.sql.functions import col, window, lit, when, array, expr, explode
 
 from package.codelists import (
     MeteringPointType,
@@ -227,7 +227,7 @@ def aggregate_per_ga_and_brp_and_es(
                 col("time") + expr("INTERVAL 45 minutes"),
             ),
         ).when(
-            col("Resolution") == MeteringPointResolution.quarterly.value,
+            col("Resolution") == MeteringPointResolution.quarter.value,
             array(col("time")),
         ),
     ).select(
@@ -244,7 +244,7 @@ def aggregate_per_ga_and_brp_and_es(
                 col("Resolution") == MeteringPointResolution.hour.value,
                 col("Quantity") / 4,
             ).when(
-                col("Resolution") == MeteringPointResolution.quarterly.value,
+                col("Resolution") == MeteringPointResolution.quarter.value,
                 col("Quantity"),
             ),
         )
@@ -264,7 +264,7 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(MeteringPointResolution.quarterly.value).alias(
+            lit(MeteringPointResolution.quarter.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
