@@ -19,7 +19,11 @@ from package.steps.aggregation import (
     aggregate_per_ga_and_brp_and_es,
 )
 from geh_stream.codelists import Quality
-from package.codelists import MeteringPointType
+from package.codelists import (
+    MeteringPointType,
+    MeteringPointResolution,
+    TimeSeriesQuality,
+)
 
 from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
@@ -247,3 +251,143 @@ def test_production_test_filter_by_domain_is_pressent(time_series_row_factory):
         df, MeteringPointType.production, None, metadata
     )
     assert aggregated_df.count() == 1
+
+
+minimum_quantity = Decimal("0.001")
+grid_area_code_805 = "805"
+grid_area_code_806 = "806"
+
+
+@pytest.fixture
+def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
+    def factory(
+        first_resolution=MeteringPointResolution.quarter.value,
+        second_resolution=MeteringPointResolution.quarter.value,
+        first_quantity=Decimal("1"),
+        second_quantity=Decimal("2"),
+        first_time="2022-06-08T12:09:15.000Z",
+        second_time="2022-06-08T12:09:15.000Z",
+        first_grid_area_code=grid_area_code_805,
+        second_grid_area_code=grid_area_code_805,
+    ):
+        time = timestamp_factory(first_time)
+        time2 = timestamp_factory(second_time)
+
+        df = [
+            {
+                Colname.metering_point_type: MeteringPointType.production.value,
+                "GridAreaCode": first_grid_area_code,
+                Colname.balance_responsible_id: default_responsible,
+                Colname.energy_supplier_id: default_supplier,
+                "Resolution": first_resolution,
+                "time": time,
+                "Quantity": first_quantity,
+                "Quality": TimeSeriesQuality.measured.value,
+            },
+            {
+                Colname.metering_point_type: MeteringPointType.production.value,
+                "GridAreaCode": second_grid_area_code,
+                Colname.balance_responsible_id: default_responsible,
+                Colname.energy_supplier_id: default_supplier,
+                "Resolution": second_resolution,
+                "time": time2,
+                "Quantity": second_quantity,
+                "Quality": TimeSeriesQuality.measured.value,
+            },
+        ]
+
+        return spark.createDataFrame(df)
+
+    return factory
+
+
+@pytest.fixture
+def enriched_time_series_factory(spark, timestamp_factory):
+    def factory(
+        resolution=MeteringPointResolution.quarter.value,
+        quantity=Decimal("1"),
+        quality=TimeSeriesQuality.measured.value,
+        gridArea="805",
+    ):
+        time = timestamp_factory("2022-06-08T12:09:15.000Z")
+
+        df = [
+            {
+                "GridAreaCode": gridArea,
+                "Resolution": resolution,
+                "GridAreaLinkId": "GridAreaLinkId",
+                "time": time,
+                "Quantity": quantity,
+                "Quality": quality,
+            }
+        ]
+        return spark.createDataFrame(df)
+
+    return factory
+
+
+# Test sums with only quarterly can be calculated
+def test__quarterly_sums_correctly(
+    enriched_time_series_quarterly_same_time_factory,
+):
+    """Test that checks quantity is summed correctly with only quarterly times"""
+    df = enriched_time_series_quarterly_same_time_factory(
+        first_quantity=Decimal("1"), second_quantity=Decimal("2")
+    )
+    result_df = aggregate_per_ga_and_brp_and_es(
+        df, MeteringPointType.production, None, metadata
+    )
+    result_df.show()
+    assert result_df.first().sum_quantity == 3
+
+
+@pytest.mark.parametrize(
+    "quantity, expected_point_quantity",
+    [
+        # 0.001 / 4 = 0.000250 ≈ 0.000
+        (Decimal("0.001"), Decimal("0.000")),
+        # 0.002 / 4 = 0.000500 ≈ 0.001
+        (Decimal("0.002"), Decimal("0.001")),
+        # 0.003 / 4 = 0.000750 ≈ 0.001
+        (Decimal("0.003"), Decimal("0.001")),
+        # 0.004 / 4 = 0.001000 ≈ 0.001
+        (Decimal("0.004"), Decimal("0.001")),
+        # 0.005 / 4 = 0.001250 ≈ 0.001
+        (Decimal("0.005"), Decimal("0.001")),
+        # 0.006 / 4 = 0.001500 ≈ 0.002
+        (Decimal("0.006"), Decimal("0.002")),
+        # 0.007 / 4 = 0.001750 ≈ 0.002
+        (Decimal("0.007"), Decimal("0.002")),
+        # 0.008 / 4 = 0.002000 ≈ 0.002
+        (Decimal("0.008"), Decimal("0.002")),
+    ],
+)
+def test__hourly_sums_are_rounded_correctly(
+    enriched_time_series_factory, quantity, expected_point_quantity
+):
+    """Test that checks acceptable rounding erros for hourly quantities summed on a quarterly basis"""
+    df = enriched_time_series_factory(
+        resolution=MeteringPointResolution.hour.value, quantity=quantity
+    )
+
+    result_df = get_total_production_per_ga_df(df)
+
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
+    assert result_df.where(col("Quantity") == expected_point_quantity).count() == 4
+
+
+def test__quarterly_and_hourly_sums_correctly(
+    enriched_time_series_quarterly_same_time_factory,
+):
+    """Test that checks quantity is summed correctly with quarterly and hourly times"""
+    first_quantity = Decimal("2")
+    second_quantity = Decimal("2")
+    df = enriched_time_series_quarterly_same_time_factory(
+        first_resolution=MeteringPointResolution.quarter.value,
+        first_quantity=first_quantity,
+        second_resolution=MeteringPointResolution.hour.value,
+        second_quantity=second_quantity,
+    )
+    result_df = get_total_production_per_ga_df(df)
+    sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
+    assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity
