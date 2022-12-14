@@ -17,9 +17,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import aggregate_net_exchange_per_ga
-from geh_stream.codelists import Quality
-from package.codelists import MeteringPointType
-from package.codelists import ConnectionState
+from package.codelists import MeteringPointType, ConnectionState, TimeSeriesQuality
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
@@ -200,7 +198,7 @@ def add_row_of_data(
         Colname.quantity: quantity,
         Colname.time: timestamp,
         Colname.connection_state: connectionState,
-        Colname.aggregated_quality: Quality.estimated.value,
+        Colname.aggregated_quality: TimeSeriesQuality.estimated.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 
