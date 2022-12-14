@@ -15,8 +15,11 @@ from decimal import Decimal
 from datetime import datetime
 
 from numpy import append
-from geh_stream.codelists import Quality
-from package.codelists import MeteringPointType, MeteringPointResolution
+from package.codelists import (
+    TimeSeriesQuality,
+    MeteringPointType,
+    MeteringPointResolution,
+)
 
 from package.steps.aggregation import calculate_total_consumption
 from package.shared.data_classes import Metadata
@@ -313,24 +316,36 @@ def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_fa
 @pytest.mark.parametrize(
     "prod_quality, ex_quality, expected_quality",
     [
-        (Quality.estimated.value, Quality.estimated.value, Quality.estimated.value),
         (
-            Quality.estimated.value,
-            Quality.quantity_missing.value,
-            Quality.estimated.value,
-        ),
-        (Quality.estimated.value, Quality.as_read.value, Quality.estimated.value),
-        (
-            Quality.quantity_missing.value,
-            Quality.quantity_missing.value,
-            Quality.estimated.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.estimated.value,
         ),
         (
-            Quality.quantity_missing.value,
-            Quality.as_read.value,
-            Quality.estimated.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.estimated.value,
         ),
-        (Quality.as_read.value, Quality.as_read.value, Quality.as_read.value),
+        (
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.estimated.value,
+        ),
+        (
+            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.estimated.value,
+        ),
+        (
+            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.estimated.value,
+        ),
+        (
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.measured.value,
+        ),
     ],
 )
 def test_aggregated_quality(

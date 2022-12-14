@@ -18,10 +18,12 @@ from package.steps.aggregation import (
     aggregate_flex_consumption,
     aggregate_per_ga_and_brp_and_es,
 )
-from geh_stream.codelists import (
-    Quality,
+from package.codelists import (
+    ConnectionState,
+    MeteringPointType,
+    SettlementMethod,
+    TimeSeriesQuality,
 )
-from package.codelists import ConnectionState, MeteringPointType, SettlementMethod
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
@@ -32,9 +34,8 @@ import pandas as pd
 e_20 = MeteringPointType.exchange.value
 e_17 = MeteringPointType.consumption.value
 e_18 = MeteringPointType.production.value
-e_01 = SettlementMethod.profiled.value
 e_02 = SettlementMethod.non_profiled.value
-d_01 = SettlementMethod.flex_settled.value
+d_01 = SettlementMethod.flex.value
 
 # Default time series data point values
 default_point_type = e_17
@@ -98,7 +99,7 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.quantity: [quantity],
                 Colname.time: [obs_time],
                 Colname.connection_state: [connection_state],
-                Colname.aggregated_quality: [Quality.estimated.value],
+                Colname.aggregated_quality: [TimeSeriesQuality.estimated.value],
             }
         )
         return spark.createDataFrame(pandas_df, schema=time_series_schema)
@@ -155,7 +156,6 @@ def test_filters_out_incorrect_point_type(point_type, time_series_row_factory):
 @pytest.mark.parametrize(
     "settlement_method",
     [
-        pytest.param(e_01, id="should filter out E01"),
         pytest.param(e_02, id="should filter out E02"),
     ],
 )
@@ -277,7 +277,7 @@ def test_flex_consumption_test_filter_by_domain_is_present(time_series_row_facto
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.consumption,
-        SettlementMethod.flex_settled,
+        SettlementMethod.flex,
         metadata,
     )
     assert aggregated_df.count() == 1

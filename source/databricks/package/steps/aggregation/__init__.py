@@ -22,13 +22,13 @@ from .aggregators import (
     aggregate_per_ga_and_brp_and_es,
     aggregate_hourly_production_ga_es,
     aggregate_hourly_settled_consumption_ga_es,
-    aggregate_flex_settled_consumption_ga_es,
+    aggregate_flex_consumption_ga_es,
     aggregate_hourly_production_ga_brp,
     aggregate_hourly_settled_consumption_ga_brp,
-    aggregate_flex_settled_consumption_ga_brp,
+    aggregate_flex_consumption_ga_brp,
     aggregate_hourly_production_ga,
     aggregate_hourly_settled_consumption_ga,
-    aggregate_flex_settled_consumption_ga,
+    aggregate_flex_consumption_ga,
 )
 from .grid_loss_calculator import (
     calculate_grid_loss,

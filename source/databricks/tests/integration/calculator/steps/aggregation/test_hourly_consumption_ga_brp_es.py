@@ -18,10 +18,12 @@ from package.steps.aggregation import (
     aggregate_hourly_consumption,
     aggregate_per_ga_and_brp_and_es,
 )
-from geh_stream.codelists import (
-    Quality,
+from package.codelists import (
+    ConnectionState,
+    MeteringPointType,
+    SettlementMethod,
+    TimeSeriesQuality,
 )
-from package.codelists import ConnectionState, MeteringPointType, SettlementMethod
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
@@ -31,7 +33,6 @@ import pandas as pd
 
 e_17 = MeteringPointType.consumption.value
 e_18 = MeteringPointType.production.value
-e_01 = SettlementMethod.profiled.value
 e_02 = SettlementMethod.non_profiled.value
 connected = ConnectionState.connected.value
 
@@ -97,7 +98,7 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.quantity: [quantity],
                 Colname.time: [obs_time],
                 Colname.connection_state: [connection_state],
-                Colname.aggregated_quality: [Quality.estimated.value],
+                Colname.aggregated_quality: [TimeSeriesQuality.estimated.value],
             },
         )
         return spark.createDataFrame(pandas_df, schema=time_series_schema)
@@ -141,20 +142,6 @@ def test_hourly_consumption_supplier_aggregator_filters_out_incorrect_point_type
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
         point_type=e_18
-    )
-    aggregated_df = aggregate_hourly_consumption(results, metadata)
-    assert aggregated_df.count() == 0
-
-
-def test_hourly_consumption_supplier_aggregator_filters_out_incorrect_settlement_method(
-    time_series_row_factory,
-):
-    """
-    Aggregator should filter out all non "E02" SettlementMethod rows
-    """
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
-        settlement_method=e_01
     )
     aggregated_df = aggregate_hourly_consumption(results, metadata)
     assert aggregated_df.count() == 0
@@ -281,7 +268,7 @@ def test_hourly_consumption_test_filter_by_domain_is_not_pressent(
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.consumption,
-        SettlementMethod.flex_settled,
+        SettlementMethod.flex,
         metadata,
     )
     assert aggregated_df.count() == 0
