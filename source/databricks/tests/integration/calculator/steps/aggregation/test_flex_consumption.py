@@ -13,10 +13,9 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime, timedelta
-from geh_stream.codelists import (
-    ResolutionDuration,
-    MarketEvaluationPointType,
-)
+from geh_stream.codelists import ResolutionDuration
+from package.codelists import MeteringPointType
+
 from package.steps.aggregation import (
     aggregate_flex_settled_consumption_ga_es,
     aggregate_flex_settled_consumption_ga_brp,
@@ -92,7 +91,7 @@ def test_data_factory(spark, agg_flex_consumption_schema):
                             Colname.quality: [Quality.estimated.value],
                             Colname.resolution: [ResolutionDuration.hour],
                             Colname.metering_point_type: [
-                                MarketEvaluationPointType.consumption.value
+                                MeteringPointType.consumption.value
                             ],
                         },
                         ignore_index=True,

@@ -17,12 +17,11 @@ from zoneinfo import ZoneInfo
 import pytest
 from package.calculation_input import get_metering_point_periods_df
 from package.codelists import (
-    ConnectionState,
     MeteringPointType,
     SettlementMethod,
     MeteringPointResolution,
 )
-
+from package.codelists import ConnectionState
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame
 from typing import Callable

@@ -14,11 +14,11 @@
 from decimal import Decimal
 from datetime import datetime
 from geh_stream.codelists import (
-    MarketEvaluationPointType,
     SettlementMethod,
     ResolutionDuration,
-    ChargeType,
 )
+
+from package.codelists import ChargeType, MeteringPointType
 import pytest
 import pandas as pd
 
@@ -52,7 +52,7 @@ class DataframeDefaults:
     default_in_grid_area: str = "1"
     default_metering_method: str = "1"
     default_metering_point_id: str = "D01"
-    default_metering_point_type: str = MarketEvaluationPointType.consumption.value
+    default_metering_point_type: str = MeteringPointType.consumption.value
     default_out_grid_area: str = "chargea"
     default_parent_metering_point_id: str = "1"
     default_product: str = "chargea"

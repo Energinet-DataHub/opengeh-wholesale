@@ -24,7 +24,9 @@ from tests.helpers.test_schemas import (
     charges_flex_settled_consumption_schema,
     charges_per_day_schema,
 )
-from geh_stream.codelists import MarketEvaluationPointType, SettlementMethod
+from geh_stream.codelists import SettlementMethod
+from package.codelists import MeteringPointType
+
 from package.steps.wholesale.subscription_calculators import (
     calculate_daily_subscription_price,
     calculate_price_per_day,

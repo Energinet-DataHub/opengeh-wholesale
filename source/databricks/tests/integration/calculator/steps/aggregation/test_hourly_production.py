@@ -15,8 +15,9 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from geh_stream.codelists import (
     ResolutionDuration,
-    MarketEvaluationPointType,
 )
+from package.codelists import MeteringPointType
+
 from package.steps.aggregation import (
     aggregate_hourly_production_ga_es,
     aggregate_hourly_production_ga_brp,
@@ -92,7 +93,7 @@ def test_data_factory(spark, agg_production_schema):
                             Colname.quality: [Quality.estimated.value],
                             Colname.resolution: [ResolutionDuration.hour],
                             Colname.metering_point_type: [
-                                MarketEvaluationPointType.production.value
+                                MeteringPointType.production.value
                             ],
                         },
                         ignore_index=True,

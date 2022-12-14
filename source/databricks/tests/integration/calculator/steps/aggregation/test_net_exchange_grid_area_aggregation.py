@@ -17,7 +17,9 @@ import pandas as pd
 from datetime import datetime, timedelta
 from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import aggregate_net_exchange_per_ga
-from geh_stream.codelists import MarketEvaluationPointType, ConnectionState, Quality
+from geh_stream.codelists import Quality
+from package.codelists import MeteringPointType
+from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
@@ -25,7 +27,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 
 
-e_20 = MarketEvaluationPointType.exchange.value
+e_20 = MeteringPointType.exchange.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string

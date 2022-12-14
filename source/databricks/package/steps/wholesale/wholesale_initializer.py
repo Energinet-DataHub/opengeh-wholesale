@@ -14,11 +14,8 @@
 
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.functions import col, window, expr, explode, month, year
-from geh_stream.codelists import (
-    ResolutionDuration,
-    ConnectionState,
-    ChargeType,
-)
+from geh_stream.codelists import ResolutionDuration
+from package.codelists import ConnectionState, ChargeType
 from package.constants import Colname
 
 

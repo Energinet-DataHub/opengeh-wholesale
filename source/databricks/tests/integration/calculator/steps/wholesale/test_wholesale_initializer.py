@@ -26,11 +26,8 @@ from package.steps.wholesale.wholesale_initializer import (
     get_charges_based_on_charge_type,
     get_connected_metering_points,
 )
-from geh_stream.codelists import (
-    ChargeType,
-    ResolutionDuration,
-    ConnectionState,
-)
+from geh_stream.codelists import ResolutionDuration
+from package.codelists import ConnectionState, ChargeType
 from package.schemas import (
     charges_schema,
     charge_prices_schema,
