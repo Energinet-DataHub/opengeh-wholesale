@@ -32,16 +32,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Publish IntegrationEventListener
-      shell: bash
-      run: |
-        dotnet publish \
-          '.\source\dotnet\Services\IntegrationEventListener\IntegrationEventListener.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '${{ inputs.OUTPUT_PATH }}\functions\integrationeventlistener'
-
     - name: Publish ProcessManager
       shell: bash
       run: |

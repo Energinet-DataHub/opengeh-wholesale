@@ -32,7 +32,6 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
     <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
   </ItemGroup>
@@ -68,9 +67,6 @@ limitations under the License.
   <ItemGroup>
     <EmbeddedResource Include="..\..\..\contracts\internal\calculation-job-parameters-reference.txt">
       <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\contracts\market-participant-domain\grid-area-updated.json">
-      <Link>IntegrationEventListener\MarketParticipant\grid-area-updated.json</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\contracts\internal\calculator-result.json">
       <Link>Sender\Infrastructure\Calculator\calculator-result.json</Link>

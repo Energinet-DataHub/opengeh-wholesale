@@ -13,6 +13,8 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
+    DecimalType,
+    IntegerType,
     StructField,
     StringType,
     TimestampType,
@@ -25,7 +27,7 @@ Schema for time series points
 Time series points are used in both balance fixing and settlement.
 
 Data must be stored in a Delta table.
-The table must be partitioned by the observation time elements: year/month/date.
+The table must be partitioned by the observation time elements: year/month/day.
 Data must always be the current data.
 """
 time_series_point_schema = StructType(
