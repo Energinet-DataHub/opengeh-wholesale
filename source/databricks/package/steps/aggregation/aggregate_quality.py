@@ -63,7 +63,7 @@ def aggregate_quality(time_series_df: DataFrame):
                     col(temp_quantity_missing_quality_count) > 0,
                     TimeSeriesQuality.estimated.value,
                 )
-                .otherwise(Quality.measured.value)
+                .otherwise(TimeSeriesQuality.measured.value)
             ),
         )
         .drop(temp_estimated_quality_count)
@@ -129,7 +129,7 @@ def aggregate_total_consumption_quality(df: DataFrame):
                     col(temp_quantity_missing_quality_count) > 0,
                     TimeSeriesQuality.estimated.value,
                 )
-                .otherwise(Quality.measured.value)
+                .otherwise(TimeSeriesQuality.measured.value)
             ),
         )
     )
