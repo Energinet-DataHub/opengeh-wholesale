@@ -31,7 +31,6 @@ import pandas as pd
 
 e_17 = MeteringPointType.consumption.value
 e_18 = MeteringPointType.production.value
-e_01 = SettlementMethod.profiled.value
 e_02 = SettlementMethod.non_profiled.value
 connected = ConnectionState.connected.value
 
@@ -141,20 +140,6 @@ def test_hourly_consumption_supplier_aggregator_filters_out_incorrect_point_type
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
         point_type=e_18
-    )
-    aggregated_df = aggregate_hourly_consumption(results, metadata)
-    assert aggregated_df.count() == 0
-
-
-def test_hourly_consumption_supplier_aggregator_filters_out_incorrect_settlement_method(
-    time_series_row_factory,
-):
-    """
-    Aggregator should filter out all non "E02" SettlementMethod rows
-    """
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
-        settlement_method=e_01
     )
     aggregated_df = aggregate_hourly_consumption(results, metadata)
     assert aggregated_df.count() == 0
@@ -281,7 +266,7 @@ def test_hourly_consumption_test_filter_by_domain_is_not_pressent(
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.consumption,
-        SettlementMethod.flex_settled,
+        SettlementMethod.flex,
         metadata,
     )
     assert aggregated_df.count() == 0

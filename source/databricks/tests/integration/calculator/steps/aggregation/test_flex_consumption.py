@@ -16,9 +16,9 @@ from datetime import datetime, timedelta
 from package.codelists import MeteringPointType, MeteringPointResolution
 
 from package.steps.aggregation import (
-    aggregate_flex_settled_consumption_ga_es,
-    aggregate_flex_settled_consumption_ga_brp,
-    aggregate_flex_settled_consumption_ga,
+    aggregate_flex_consumption_ga_es,
+    aggregate_flex_consumption_ga_brp,
+    aggregate_flex_consumption_ga,
 )
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
@@ -105,7 +105,7 @@ def test_flex_consumption_calculation_per_ga_and_es(test_data_factory):
     results[
         ResultKeyName.flex_consumption_with_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_settled_consumption_ga_es(results, metadata).sort(
+    result = aggregate_flex_consumption_ga_es(results, metadata).sort(
         Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
     )
     result_collect = result.collect()
@@ -123,7 +123,7 @@ def test_flex_consumption_calculation_per_ga_and_brp(test_data_factory):
     results[
         ResultKeyName.flex_consumption_with_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_settled_consumption_ga_brp(results, metadata).sort(
+    result = aggregate_flex_consumption_ga_brp(results, metadata).sort(
         Colname.grid_area, Colname.balance_responsible_id, Colname.time_window
     )
     result_collect = result.collect()
@@ -141,7 +141,7 @@ def test_flex_consumption_calculation_per_ga(test_data_factory):
     results[
         ResultKeyName.flex_consumption_with_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_settled_consumption_ga(results, metadata).sort(
+    result = aggregate_flex_consumption_ga(results, metadata).sort(
         Colname.grid_area, Colname.time_window
     )
     result_collect = result.collect()
