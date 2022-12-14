@@ -177,7 +177,7 @@ def aggregate_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
     return aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.consumption,
-        SettlementMethod.flex_settled,
+        SettlementMethod.flex,
         metadata,
     )
 
@@ -283,9 +283,7 @@ def aggregate_hourly_settled_consumption_ga_es(
     )
 
 
-def aggregate_flex_settled_consumption_ga_es(
-    results: dict, metadata: Metadata
-) -> DataFrame:
+def aggregate_flex_consumption_ga_es(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga_and_es(
         results[ResultKeyName.flex_consumption_with_grid_loss],
         MeteringPointType.consumption,
@@ -341,9 +339,7 @@ def aggregate_hourly_settled_consumption_ga_brp(
     )
 
 
-def aggregate_flex_settled_consumption_ga_brp(
-    results: dict, metadata: Metadata
-) -> DataFrame:
+def aggregate_flex_consumption_ga_brp(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga_and_brp(
         results[ResultKeyName.flex_consumption_with_grid_loss],
         MeteringPointType.consumption,
@@ -399,9 +395,7 @@ def aggregate_hourly_settled_consumption_ga(
     )
 
 
-def aggregate_flex_settled_consumption_ga(
-    results: dict, metadata: Metadata
-) -> DataFrame:
+def aggregate_flex_consumption_ga(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga(
         results[ResultKeyName.flex_consumption_with_grid_loss],
         MeteringPointType.consumption,

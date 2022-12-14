@@ -550,7 +550,7 @@ def test_grid_loss_calculation_calculates_correctly_on_grid_area(
         metadata, agg_hourly_consumption_factory()
     )
     results[
-        ResultKeyName.flex_settled_consumption_ga
+        ResultKeyName.flex_consumption_ga
     ] = create_dataframe_from_aggregation_result_schema(
         metadata, agg_flex_consumption_factory()
     )
