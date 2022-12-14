@@ -22,30 +22,35 @@ from pyspark.sql.types import (
 )
 
 """
-Schema for time series points
+Schema for charge price points
 
-Time series points are used in both balance fixing and settlement.
+Charge price points are only used in settlement.
 
 Data must be stored in a Delta table.
 The table must be partitioned by the observation time elements: year/month/day.
 Data must always be the current data.
 """
-time_series_point_schema = StructType(
+charge_price_point_schema = StructType(
     [
-        # GSRN (18 characters) that uniquely identifies the metering point
-        # Example: 578710000000000103
-        StructField("MeteringPointId", StringType(), False),
+        # ID of the charge
+        # The ID is only guaranteed to be unique for a specific actor and charge type.
+        # The ID is provided by the charge owner (actor).
+        # Example: 0010643756
+        StructField("ChargeId", StringType(), False),
 
-        # Energy quantity for the given observation time.
-        # Null when quality is missing.
+        # "D01" (subscription) | "D02 (fee) | "D03" (tariff)
+        # Example: D01
+        StructField("ChargeType", StringType(), False),
+
+        # The unique GLN/EIC number of the charge owner (actor)
+        # Example: 8100000000030
+        StructField("ChargeOwnerId", StringType(), False),
+
+        # The charge price. In the danish DataHub the price is in the DKK currency.
         # Example: 1234.534217
-        StructField("Quantity", DecimalType(18,6), True),
+        StructField("ChargePrice", DecimalType(18, 6), False),
 
-        # "A02" (missing) | "A03" (estimated) | "A04" (measured) | "A06" (calculated)
-        # Example: A02
-        StructField("Quality", StringType(), False),
-        
-        # The time when the energy was consumed/produced/exchanged
+        # The time where the price applies
         StructField("ObservationTime", TimestampType(), False),
         
         # The year part of the `ObservationTime`. Used in partition.

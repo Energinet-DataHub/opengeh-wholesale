@@ -50,11 +50,11 @@ system_correction_and_grid_loss_metering_point_periods_schema = StructType(
         # Example: 805
         StructField("GridAreaCode", StringType(), False),
         
-        # The start date of the period. The start date must be the UTC time of the begining of a date in the given timezone/DST.
+        # The start date of the period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The date is inclusive.
         StructField("FromDate", TimestampType(), False),
         
-        # The to-date of the period. The to-date must be the UTC time of the begining of a date in the given timezone/DST.
+        # The to-date of the period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The moment is exclusive.
         # The date of the last period is null.
         StructField("ToDate", TimestampType(), True),
