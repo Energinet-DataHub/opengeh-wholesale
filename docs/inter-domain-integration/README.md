@@ -33,7 +33,7 @@ when the upstream sources changes.
 The following contracts are used in both balance fixing and settlement:
 
 - [metering_point_period_schema](metering-point-period-schema.py)
-- [time_series_point_schema](/source/databricks/package/schemas/time_series_point_schema.py)
+- [time_series_point_schema](../../source/databricks/package/schemas/time_series_point_schema.py)
 
 Please note that it may be desirable to move system correction and grid loss metering points to the metering point periods table.
 
