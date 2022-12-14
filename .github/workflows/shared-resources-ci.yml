@@ -30,7 +30,7 @@ jobs:
   # Branch policy status check
   #
   infrastructure_ci:
-    uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@changes-to-build-prerelease
+    uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@main
     with:
       TERRAFORM_VERSION: '1.2.2'
       INFRASTRUCTURE_PATH: './shared-resources/terraform/infrastructure'
