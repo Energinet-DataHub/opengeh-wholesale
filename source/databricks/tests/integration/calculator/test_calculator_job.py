@@ -148,30 +148,30 @@ def test__result_is_generated_for_requested_grid_areas(
 
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
-    spark: SparkSession,
-    data_lake_path,
-    source_path,
-    test_files_folder_path,
-    executed_calculation_job,
-    worker_id,
+    spark: SparkSession, test_files_folder_path, executed_calculation_job
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
     input_time_series_points = (
-        spark.read.schema(time_series_point_schema)
+        spark.read.format("csv")
+        .schema(time_series_point_schema)
         .option("header", "true")
         .option("mode", "FAILFAST")
-        .csv(f"{test_files_folder_path}/TimeSeriesPoints.csv")
-    )
-    spark.read.parquet(
-        f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points"
+        .load(f"{test_files_folder_path}/TimeSeriesPoints.csv")
     )
     # When asserting both that the calculator creates output and it does it with input data that matches
     # the time series points contract from the time-series domain (in the same test), then we can infer that the
     # calculator works with the format of the data published from the time-series domain.
-    assert input_time_series_points.schema == time_series_point_schema
+    # NOTE:It is not evident from this test that it uses the same input as the calculator job
+
+    # Apparently nullability is ignored for CSV sources so we have to compare schemas in this slightly odd way
+    # See more at https://stackoverflow.com/questions/50609548/compare-schema-ignoring-nullable
+    assert all(
+        (a.name, a.dataType) == (b.name, b.dataType)
+        for a, b in zip(input_time_series_points.schema, time_series_point_schema)
+    )
 
 
 def test__calculator_result_schema_must_match_contract_with_dotnet(
