@@ -13,8 +13,11 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from package.codelists import MeteringPointType, MeteringPointResolution
-
+from package.codelists import (
+    MeteringPointType,
+    MeteringPointResolution,
+    TimeSeriesQuality,
+)
 from package.steps.aggregation import (
     aggregate_hourly_settled_consumption_ga_es,
     aggregate_hourly_settled_consumption_ga_brp,
@@ -27,7 +30,6 @@ from package.steps.aggregation.aggregation_result_formatter import (
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
-from geh_stream.codelists import Quality
 from package.constants import Colname, ResultKeyName
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -102,12 +104,12 @@ def agg_result_factory(spark, settled_schema):
                     Decimal(1.0),
                 ],
                 Colname.quality: [
-                    Quality.estimated.value,
-                    Quality.estimated.value,
-                    Quality.estimated.value,
-                    Quality.estimated.value,
-                    Quality.estimated.value,
-                    Quality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
                 ],
                 Colname.resolution: [
                     MeteringPointResolution.hour.value,
