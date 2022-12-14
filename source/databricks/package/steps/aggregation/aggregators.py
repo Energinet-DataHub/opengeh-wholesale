@@ -252,6 +252,7 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
+            # Colname.resolution,
             lit(MeteringPointResolution.quarter.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata

@@ -29,6 +29,7 @@ from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
+from pyspark.sql.functions import col
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
@@ -281,7 +282,7 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
                 Colname.energy_supplier_id: default_supplier,
                 "Resolution": first_resolution,
                 "time": time,
-                "Quantity": first_quantity,
+                Colname.quantity: first_quantity,
                 "Quality": TimeSeriesQuality.measured.value,
             },
             {
@@ -291,7 +292,7 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
                 Colname.energy_supplier_id: default_supplier,
                 "Resolution": second_resolution,
                 "time": time2,
-                "Quantity": second_quantity,
+                Colname.quantity: second_quantity,
                 "Quality": TimeSeriesQuality.measured.value,
             },
         ]
@@ -380,7 +381,7 @@ def test__quarterly_and_hourly_sums_correctly(
     enriched_time_series_quarterly_same_time_factory,
 ):
     """Test that checks quantity is summed correctly with quarterly and hourly times"""
-    first_quantity = Decimal("2")
+    first_quantity = Decimal("4")
     second_quantity = Decimal("2")
     df = enriched_time_series_quarterly_same_time_factory(
         first_resolution=MeteringPointResolution.quarter.value,
@@ -388,6 +389,10 @@ def test__quarterly_and_hourly_sums_correctly(
         second_resolution=MeteringPointResolution.hour.value,
         second_quantity=second_quantity,
     )
-    result_df = get_total_production_per_ga_df(df)
-    sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
-    assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity
+    result_df = aggregate_per_ga_and_brp_and_es(
+        df, MeteringPointType.production, None, metadata
+    )
+    result_df.printSchema()
+    result_df.show()
+    sum_quant = result_df.agg(sum("sum_quantity").alias("sum_quant"))
+    # assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity
