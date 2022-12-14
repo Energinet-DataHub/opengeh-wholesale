@@ -101,7 +101,7 @@ def _get_enriched_time_series_points_df(
     ).where(col("Time") < period_end_datetime)
 
     quarterly_mp_df = master_basis_data_df.where(
-        col("Resolution") == MeteringPointResolution.quarterly.value
+        col("Resolution") == MeteringPointResolution.quarter.value
     )
     hourly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.hour.value

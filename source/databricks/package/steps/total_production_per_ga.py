@@ -55,7 +55,7 @@ def get_total_production_per_ga_df(
                     col("time") + expr("INTERVAL 45 minutes"),
                 ),
             ).when(
-                col("Resolution") == MeteringPointResolution.quarterly.value,
+                col("Resolution") == MeteringPointResolution.quarter.value,
                 array(col("time")),
             ),
         )
@@ -70,7 +70,7 @@ def get_total_production_per_ga_df(
                 col("Resolution") == MeteringPointResolution.hour.value,
                 col("Quantity") / 4,
             ).when(
-                col("Resolution") == MeteringPointResolution.quarterly.value,
+                col("Resolution") == MeteringPointResolution.quarter.value,
                 col("Quantity"),
             ),
         )

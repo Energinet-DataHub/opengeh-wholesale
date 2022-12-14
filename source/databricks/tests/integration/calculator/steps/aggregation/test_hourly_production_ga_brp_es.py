@@ -18,7 +18,10 @@ from package.steps.aggregation import (
     aggregate_hourly_production,
     aggregate_per_ga_and_brp_and_es,
 )
-from geh_stream.codelists import MarketEvaluationPointType, ConnectionState, Quality
+from geh_stream.codelists import Quality
+from package.codelists import MeteringPointType
+
+from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
@@ -26,9 +29,9 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
 
-e_17 = MarketEvaluationPointType.consumption.value
-e_18 = MarketEvaluationPointType.production.value
-e_20 = MarketEvaluationPointType.exchange.value
+e_17 = MeteringPointType.consumption.value
+e_18 = MeteringPointType.production.value
+e_20 = MeteringPointType.exchange.value
 
 # Default time series data point values
 default_point_type = e_18
@@ -241,6 +244,6 @@ def test_hourly_production_aggregator_returns_correct_schema(time_series_row_fac
 def test_hourly_production_test_filter_by_domain_is_pressent(time_series_row_factory):
     df = time_series_row_factory()
     aggregated_df = aggregate_per_ga_and_brp_and_es(
-        df, MarketEvaluationPointType.production, None, metadata
+        df, MeteringPointType.production, None, metadata
     )
     assert aggregated_df.count() == 1

@@ -14,7 +14,8 @@
 from datetime import datetime, timedelta
 from package.constants import Colname
 from pyspark.sql.types import StructType, StringType, TimestampType
-from geh_stream.codelists import Quality, MarketEvaluationPointType
+from geh_stream.codelists import Quality
+from package.codelists import MeteringPointType
 from package.steps.aggregation import aggregate_quality
 import pytest
 import pandas as pd
@@ -68,7 +69,7 @@ def test_data_factory(spark, schema):
             pandas_df = pandas_df.append(
                 {
                     Colname.grid_area: str(1),
-                    Colname.metering_point_type: MarketEvaluationPointType.consumption.value,
+                    Colname.metering_point_type: MeteringPointType.consumption.value,
                     Colname.time: default_obs_time + timedelta(hours=1),
                     Colname.quality: df_qualities[i],
                 },

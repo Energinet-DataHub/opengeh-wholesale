@@ -26,11 +26,7 @@ from package.steps.wholesale.wholesale_initializer import (
     get_charges_based_on_charge_type,
     get_connected_metering_points,
 )
-from geh_stream.codelists import (
-    ChargeType,
-    ResolutionDuration,
-    ConnectionState,
-)
+from package.codelists import ConnectionState, ChargeType, MeteringPointResolution
 from package.schemas import (
     charges_schema,
     charge_prices_schema,
@@ -57,7 +53,7 @@ charges_dataset = [
         "001",
         ChargeType.tariff,
         "001",
-        ResolutionDuration.day,
+        MeteringPointResolution.day.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -68,7 +64,7 @@ charges_dataset = [
         "001",
         ChargeType.tariff,
         "001",
-        ResolutionDuration.day,
+        MeteringPointResolution.day.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -79,7 +75,7 @@ charges_dataset = [
         "001",
         ChargeType.tariff,
         "001",
-        ResolutionDuration.hour,
+        MeteringPointResolution.hour.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -90,7 +86,7 @@ charges_dataset = [
         "001",
         ChargeType.tariff,
         "001",
-        ResolutionDuration.month,
+        MeteringPointResolution.month.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -103,8 +99,8 @@ charges_dataset = [
 @pytest.mark.parametrize(
     "charges,resolution_duration,expected",
     [
-        (charges_dataset, ResolutionDuration.hour, 1),
-        (charges_dataset, ResolutionDuration.day, 2),
+        (charges_dataset, MeteringPointResolution.hour.value, 1),
+        (charges_dataset, MeteringPointResolution.day.value, 2),
     ],
 )
 def test__get_charges_based_on_resolution__filters_on_resolution_hour_or_day_only_for_tariff(
@@ -126,7 +122,7 @@ charges_dataset = [
         "001",
         ChargeType.tariff,
         "001",
-        ResolutionDuration.day,
+        MeteringPointResolution.day.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -137,7 +133,7 @@ charges_dataset = [
         "001",
         ChargeType.tariff,
         "001",
-        ResolutionDuration.day,
+        MeteringPointResolution.day.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -148,7 +144,7 @@ charges_dataset = [
         "001",
         ChargeType.subscription,
         "001",
-        ResolutionDuration.day,
+        MeteringPointResolution.day.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -159,7 +155,7 @@ charges_dataset = [
         "001",
         ChargeType.subscription,
         "001",
-        ResolutionDuration.day,
+        MeteringPointResolution.day.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -170,7 +166,7 @@ charges_dataset = [
         "001",
         ChargeType.fee,
         "001",
-        ResolutionDuration.day,
+        MeteringPointResolution.day.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -181,7 +177,7 @@ charges_dataset = [
         "001",
         ChargeType.tariff,
         "001",
-        ResolutionDuration.day,
+        MeteringPointResolution.day.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -732,8 +728,8 @@ time_series_dataset_1 = [
 @pytest.mark.parametrize(
     "time_series,resolution_duration,expected_count,expected_quantity",
     [
-        (time_series_dataset_1, ResolutionDuration.day, 2, 30),
-        (time_series_dataset_1, ResolutionDuration.hour, 3, 20),
+        (time_series_dataset_1, MeteringPointResolution.day.value, 2, 30),
+        (time_series_dataset_1, MeteringPointResolution.hour.value, 3, 20),
     ],
 )
 def test__group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(

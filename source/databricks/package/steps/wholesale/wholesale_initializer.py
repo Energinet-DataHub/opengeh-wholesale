@@ -14,11 +14,7 @@
 
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.functions import col, window, expr, explode, month, year
-from geh_stream.codelists import (
-    ResolutionDuration,
-    ConnectionState,
-    ChargeType,
-)
+from package.codelists import ConnectionState, ChargeType, MeteringPointResolution
 from package.constants import Colname
 
 
@@ -39,7 +35,7 @@ def get_tariff_charges(
     charge_prices: DataFrame,
     metering_points: DataFrame,
     market_roles: DataFrame,
-    resolution_duration: ResolutionDuration,
+    resolution_duration: MeteringPointResolution,
 ) -> DataFrame:
 
     # filter on resolution
@@ -102,7 +98,7 @@ def get_subscription_charges(
 
 
 def get_charges_based_on_resolution(
-    charges: DataFrame, resolution_duration: ResolutionDuration
+    charges: DataFrame, resolution_duration: MeteringPointResolution
 ) -> DataFrame:
     df = charges.filter(col(Colname.resolution) == resolution_duration)
     return df
@@ -241,7 +237,7 @@ def join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Data
 
 
 def group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    time_series: DataFrame, resolution_duration: ResolutionDuration
+    time_series: DataFrame, resolution_duration: MeteringPointResolution
 ) -> DataFrame:
     grouped_time_series = (
         time_series.groupBy(
@@ -294,11 +290,11 @@ def join_with_grouped_time_series(
 
 
 def __get_window_duration_string_based_on_resolution(
-    resolution_duration: ResolutionDuration,
+    resolution_duration: MeteringPointResolution,
 ) -> str:
     window_duration_string = "1 hour"
 
-    if resolution_duration == ResolutionDuration.day:
+    if resolution_duration == MeteringPointResolution.day.value:
         window_duration_string = "1 day"
 
     return window_duration_string

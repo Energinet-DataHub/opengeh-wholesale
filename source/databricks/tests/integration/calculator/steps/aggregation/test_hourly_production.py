@@ -13,10 +13,8 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime, timedelta
-from geh_stream.codelists import (
-    ResolutionDuration,
-    MarketEvaluationPointType,
-)
+from package.codelists import MeteringPointType, MeteringPointResolution
+
 from package.steps.aggregation import (
     aggregate_hourly_production_ga_es,
     aggregate_hourly_production_ga_brp,
@@ -90,9 +88,9 @@ def test_data_factory(spark, agg_production_schema):
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
                             Colname.quality: [Quality.estimated.value],
-                            Colname.resolution: [ResolutionDuration.hour],
+                            Colname.resolution: [MeteringPointResolution.hour.value],
                             Colname.metering_point_type: [
-                                MarketEvaluationPointType.production.value
+                                MeteringPointType.production.value
                             ],
                         },
                         ignore_index=True,
