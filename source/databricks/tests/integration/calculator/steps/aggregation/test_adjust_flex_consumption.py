@@ -13,10 +13,8 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import (
-    ResolutionDuration,
-    MarketEvaluationPointType,
-)
+from package.codelists import MeteringPointType, MeteringPointResolution
+
 from package.steps.aggregation import adjust_flex_consumption
 from geh_stream.codelists import Quality
 from package.shared.data_classes import Metadata
@@ -42,8 +40,8 @@ default_supplier = "S1"
 default_sum_quantity = Decimal(1)
 default_added_grid_loss = Decimal(3)
 default_aggregated_quality = Quality.estimated.value
-default_resolution = ResolutionDuration.hour
-default_metering_point_type = MarketEvaluationPointType.consumption.value
+default_resolution = MeteringPointResolution.hour.value
+default_metering_point_type = MeteringPointType.consumption.value
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_time_window = {

@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, count, sum
-from geh_stream.codelists import MarketEvaluationPointType, SettlementMethod
+from package.codelists import MeteringPointType, SettlementMethod
 from package.schemas.output import calculate_fee_charge_price_schema
 from package.constants import Colname
 
@@ -38,7 +38,7 @@ def filter_on_metering_point_type_and_settlement_method(
     fee_charges: DataFrame,
 ) -> DataFrame:
     charges_flex_settled_consumption = fee_charges.filter(
-        col(Colname.metering_point_type) == MarketEvaluationPointType.consumption.value
+        col(Colname.metering_point_type) == MeteringPointType.consumption.value
     ).filter(col(Colname.settlement_method) == SettlementMethod.flex_settled.value)
     return charges_flex_settled_consumption
 

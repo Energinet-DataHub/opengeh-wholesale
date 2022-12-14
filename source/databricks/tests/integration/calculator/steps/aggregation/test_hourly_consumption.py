@@ -13,10 +13,8 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import (
-    ResolutionDuration,
-    MarketEvaluationPointType,
-)
+from package.codelists import MeteringPointType, MeteringPointResolution
+
 from package.steps.aggregation import (
     aggregate_hourly_settled_consumption_ga_es,
     aggregate_hourly_settled_consumption_ga_brp,
@@ -112,20 +110,20 @@ def agg_result_factory(spark, settled_schema):
                     Quality.estimated.value,
                 ],
                 Colname.resolution: [
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
                 ],
             }
         )
