@@ -54,22 +54,21 @@ def calculate_balance_fixing(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
-    total_production_per_ga_df = steps.get_total_production_per_ga_df(
-        enriched_time_series_point_df
-    )
-    total_production_per_ga_df.show(1000, False)
+    # total_production_per_ga_df = steps.get_total_production_per_ga_df(
+    #     enriched_time_series_point_df
+    # )
 
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = (
         enriched_time_series_point_df.withColumn(
-            "Quantity", col("Quantity").cast(DecimalType(18, 6))
+            Colname.quantity, col(Colname.quantity).cast(DecimalType(18, 6))
         )
         .withColumn(
-            "BalanceResponsibleId",
+            Colname.balance_responsible_id,
             lit("1"),  # this is not the corect value, so this need to be changed
         )
         .withColumn(
-            "EnergySupplierId",
+            Colname.energy_supplier_id,
             lit("1"),  # this is not the corect value, so this need to be changed
         )
     )
@@ -78,13 +77,15 @@ def calculate_balance_fixing(
         results, metadata_fake
     )
     total_production_per_ga_df_agg = total_production_per_ga_df_agg.select(
-        "GridAreaCode", "sum_quantity", "Quality", "time_window", "Resolution"
-    ).orderBy(col("GridAreaCode").asc(), col("time_window").asc())
-    total_production_per_ga_df_agg.show(1000, False)
-    total_production_per_ga_df_agg.printSchema()
+        Colname.grid_area,
+        col(Colname.sum_quantity).alias(Colname.quantity),
+        col(Colname.quality).alias("quality"),
+        Colname.position,
+        col(Colname.time_window_start).alias("quarter_time"),
+    ).orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
 
     return (
-        total_production_per_ga_df,
+        total_production_per_ga_df_agg,
         time_series_basis_data_df,
         master_basis_data_df,
     )

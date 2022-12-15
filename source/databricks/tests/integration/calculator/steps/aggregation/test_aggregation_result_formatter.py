@@ -51,6 +51,7 @@ def aggregation_result_factory(spark):
         settlement_method=None,
         added_grid_loss=None,
         added_system_correction=None,
+        position=None,
     ):
         pandas_df = pd.DataFrame().append(
             [
@@ -76,6 +77,7 @@ def aggregation_result_factory(spark):
                     Colname.settlement_method: settlement_method,
                     Colname.added_grid_loss: added_grid_loss,
                     Colname.added_system_correction: added_system_correction,
+                    Colname.position: position,
                 }
             ],
             ignore_index=True,
