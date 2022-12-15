@@ -54,10 +54,9 @@ def calculate_balance_fixing(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
-    total_production_per_ga_df = steps.get_total_production_per_ga_df(
-        enriched_time_series_point_df
-    )
-    total_production_per_ga_df.show(1000, False)
+    # total_production_per_ga_df = steps.get_total_production_per_ga_df(
+    #     enriched_time_series_point_df
+    # )
 
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = (
@@ -84,8 +83,6 @@ def calculate_balance_fixing(
         "position",
         col("time_window").start.alias("quarter_time"),
     ).orderBy(col("GridAreaCode").asc(), col("time_window").asc())
-    total_production_per_ga_df_agg.show(1000, False)
-    total_production_per_ga_df_agg.printSchema()
 
     return (
         total_production_per_ga_df_agg,
