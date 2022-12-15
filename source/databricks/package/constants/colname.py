@@ -46,7 +46,7 @@ class Colname:
     job_id = "job_id"
     metering_method = "metering_method"
     metering_point_id = "MeteringPointId"
-    metering_point_type = "MeteringPointType"
+    metering_point_type = "Type"
     month = "Month"
     net_settlement_group = "net_settlement_group"
     out_grid_area = "out_grid_area"

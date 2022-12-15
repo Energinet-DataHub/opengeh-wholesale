@@ -19,7 +19,6 @@ from pyspark.sql.functions import (
     when,
 )
 from package.codelists import (
-    ConnectionState,
     MeteringPointType,
 )
 
@@ -44,11 +43,7 @@ def get_metering_point_periods_df(
     metering_point_periods_df = (
         metering_points_in_grid_area.where(col("FromDate") < period_end_datetime)
         .where(col("ToDate") > period_start_datetime)
-        .where(
-            (col("ConnectionState") == ConnectionState.connected.value)
-            | (col("ConnectionState") == ConnectionState.disconnected.value)
-        )
-        .where(col("MeteringPointType") == MeteringPointType.production.value)
+        .where(col("Type") == MeteringPointType.production.value)
         .withColumnRenamed("FromDate", "EffectiveDate")
         .withColumnRenamed("ToDate", "toEffectiveDate")
     )
@@ -66,26 +61,26 @@ def get_metering_point_periods_df(
     )
 
     master_basis_data_df = master_basis_data_df.select(
-        metering_point_periods_df["MeteringPointId"],
-        metering_point_periods_df["GridAreaCode"],
+        "MeteringPointId",
+        "GridAreaCode",
         "EffectiveDate",
         "toEffectiveDate",
-        "MeteringPointType",
+        "Type",
         "SettlementMethod",
-        metering_point_periods_df["ToGridAreaCode"],
-        metering_point_periods_df["FromGridAreaCode"],
+        "ToGridAreaCode",
+        "FromGridAreaCode",
         "Resolution",
-        metering_point_periods_df["EnergySupplierId"],
+        "EnergySupplierId",
     )
     debug(
         "Metering point events before join with grid areas",
-        metering_point_periods_df.orderBy(col("FromDate").desc()),
+        metering_point_periods_df.orderBy(col("EffectiveDate").desc()),
     )
 
     debug(
         "Metering point periods",
         metering_point_periods_df.orderBy(
-            col("GridAreaCode"), col("MeteringPointId"), col("FromDate")
+            col("GridAreaCode"), col("MeteringPointId"), col("EffectiveDate")
         ),
     )
     return master_basis_data_df
