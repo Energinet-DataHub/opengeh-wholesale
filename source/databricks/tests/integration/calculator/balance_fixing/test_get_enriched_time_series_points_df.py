@@ -24,6 +24,7 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
+from package.constants import Colname
 from pyspark.sql.functions import col
 
 
@@ -37,7 +38,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
                 "MeteringPointId": "the-meteringpoint-id",
                 "Quantity": Decimal("1.1"),
                 "Quality": TimeSeriesQuality.calculated.value,
-                "Time": time,
+                Colname.observation_time: time,
             }
         ]
         return spark.createDataFrame(df)
@@ -181,7 +182,9 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.where(col("Quantity").isNull()).count() == 95
 
 
@@ -208,7 +211,9 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.where(col("Quantity").isNull()).count() == 23
 
 
@@ -235,7 +240,9 @@ def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.count() > 1
     assert actual.where(col("quality").isNull()).count() == actual.count()
 
@@ -266,7 +273,9 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.count() > 1
     assert actual.where(col("quality").isNull()).count() == actual.count()
 

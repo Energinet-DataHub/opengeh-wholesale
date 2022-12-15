@@ -50,6 +50,6 @@ charge_prices_schema = StructType(
     [
         StructField(Colname.charge_key, StringType(), False),
         StructField(Colname.charge_price, DecimalType(18, 8), False),
-        StructField(Colname.time, TimestampType(), False),
+        StructField(Colname.charge_time, TimestampType(), False),
     ]
 )

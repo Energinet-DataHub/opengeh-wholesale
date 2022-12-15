@@ -66,7 +66,7 @@ def time_series_schema():
         .add(Colname.balance_responsible_id, StringType())
         .add(Colname.energy_supplier_id, StringType())
         .add(Colname.quantity, DecimalType())
-        .add(Colname.time, TimestampType())
+        .add(Colname.observation_time, TimestampType())
         .add(Colname.connection_state, StringType())
         .add(Colname.quality, StringType())
         .add(Colname.resolution, StringType())
@@ -96,7 +96,7 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
                 Colname.quantity: [quantity],
-                Colname.time: [obs_time],
+                Colname.observation_time: [obs_time],
                 Colname.connection_state: [connection_state],
                 Colname.quality: [TimeSeriesQuality.estimated.value],
                 Colname.resolution: [resolution],
@@ -280,7 +280,7 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
                 Colname.resolution: first_resolution,
-                Colname.time: time,
+                Colname.observation_time: time,
                 Colname.quantity: first_quantity,
                 Colname.quality: TimeSeriesQuality.measured.value,
             },
@@ -290,7 +290,7 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
                 Colname.resolution: second_resolution,
-                Colname.time: time2,
+                Colname.observation_time: time2,
                 Colname.quantity: second_quantity,
                 Colname.quality: TimeSeriesQuality.measured.value,
             },
@@ -318,7 +318,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
                 Colname.resolution: resolution,
-                Colname.time: time,
+                Colname.observation_time: time,
                 Colname.quantity: quantity,
                 Colname.quality: quality,
             }
