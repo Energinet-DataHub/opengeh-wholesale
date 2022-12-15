@@ -45,7 +45,7 @@ class Colname:
     is_system_correction = "is_system_correction"
     job_id = "job_id"
     metering_method = "metering_method"
-    metering_point_id = "MeteringpointId"
+    metering_point_id = "MeteringPointId"
     metering_point_type = "MeteringPointType"
     month = "month"
     net_settlement_group = "net_settlement_group"

@@ -161,13 +161,13 @@ def _get_enriched_time_series_points_df(
     )
 
     master_basis_data_renamed_df = master_basis_data_df.withColumnRenamed(
-        "MeteringPointId", "master_MeteringpointId"
+        "MeteringPointId", "master_MeteringPointId"
     ).withColumnRenamed("Resolution", "master_Resolution")
 
     return new_points_for_each_metering_point_df.join(
         master_basis_data_renamed_df,
         (
-            master_basis_data_renamed_df["master_MeteringpointId"]
+            master_basis_data_renamed_df["master_MeteringPointId"]
             == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
         )
         & (new_points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
@@ -175,7 +175,7 @@ def _get_enriched_time_series_points_df(
         "left",
     ).select(
         "GridAreaCode",
-        master_basis_data_renamed_df["master_MeteringpointId"].alias("MeteringpointId"),
+        master_basis_data_renamed_df["master_MeteringPointId"].alias("MeteringPointId"),
         "MeteringPointType",
         master_basis_data_renamed_df["master_Resolution"].alias("Resolution"),
         "Time",

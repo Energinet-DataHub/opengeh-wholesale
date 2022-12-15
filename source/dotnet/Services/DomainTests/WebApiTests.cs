@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using System.Net;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;

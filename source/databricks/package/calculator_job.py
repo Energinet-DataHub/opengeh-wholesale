@@ -30,6 +30,7 @@ from package import (
     initialize_spark,
     log,
 )
+from package.schemas import time_series_point_schema
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -74,8 +75,11 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
 
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
-    timeseries_points_df = spark.read.option("header", "true").csv(
-        f"{args.wholesale_container_path}/TimeSeriesPoints.csv"
+    timeseries_points_df = (
+        spark.read.schema(time_series_point_schema)
+        .option("header", "true")
+        .option("mode", "FAILFAST")
+        .csv(f"{args.wholesale_container_path}/TimeSeriesPoints.csv")
     )
     metering_points_periods_df = spark.read.option("header", "true").csv(
         f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
