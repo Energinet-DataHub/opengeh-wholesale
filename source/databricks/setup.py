@@ -20,7 +20,8 @@ setup(
     long_description="",
     long_description_content_type="text/markdown",
     license="MIT",
-    packages=find_packages(),
+    packages=find_packages(where="src", exclude=["tests*"]),
+    package_dir={"": "src"},
     install_requires=[
         "ConfigArgParse==1.5.3",
         "pyspark==3.3.0",
