@@ -58,51 +58,6 @@ def batch_grid_areas_df(spark) -> DataFrame:
 
 
 @pytest.fixture(scope="module")
-def energy_supplier_periods_df_factory(spark):
-    def factory(
-        EnergySupplierId=energy_supplier_id,
-        MeteringPointId=metering_point_id,
-        FromDate=june_1th,
-        ToDate=june_3th,
-        GridAreaCode=grid_area_code,
-        periods=None,
-    ) -> DataFrame:
-        df_array = []
-        if periods:
-            for period in periods:
-                df_array.append(
-                    {
-                        "EnergySupplierId": period["EnergySupplierId"]
-                        if ("EnergySupplierId" in period)
-                        else EnergySupplierId,
-                        "MeteringPointId": period["MeteringPointId"]
-                        if ("MeteringPointId" in period)
-                        else MeteringPointId,
-                        "FromDate": period["FromDate"]
-                        if ("FromDate" in period)
-                        else FromDate,
-                        "ToDate": period["ToDate"] if ("ToDate" in period) else ToDate,
-                        "GridAreaCode": period["GridAreaCode"]
-                        if ("GridAreaCode" in period)
-                        else GridAreaCode,
-                    }
-                )
-        else:
-            df_array.append(
-                {
-                    "EnergySupplierId": EnergySupplierId,
-                    "MeteringPointId": MeteringPointId,
-                    "FromDate": FromDate,
-                    "ToDate": ToDate,
-                    "GridAreaCode": GridAreaCode,
-                }
-            )
-        return spark.createDataFrame(df_array)
-
-    return factory
-
-
-@pytest.fixture(scope="module")
 def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
     def factory(
         MeteringPointId=metering_point_id,

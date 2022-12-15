@@ -85,10 +85,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
     )
 
-    energy_supplier_periods_df = spark.read.option("header", "true").csv(
-        f"{args.wholesale_container_path}/EnergySupplierPeriods.csv"
-    )
-
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
     _check_all_grid_areas_have_metering_points(
         batch_grid_areas_df, metering_points_periods_df
@@ -96,7 +92,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
     metering_point_periods_df = calculation_input.get_metering_point_periods_df(
         metering_points_periods_df,
-        energy_supplier_periods_df,
         batch_grid_areas_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,

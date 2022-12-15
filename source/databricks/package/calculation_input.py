@@ -17,8 +17,6 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     col,
     when,
-    greatest,
-    least,
 )
 from package.codelists import (
     ConnectionState,
@@ -31,7 +29,6 @@ from datetime import datetime
 
 def get_metering_point_periods_df(
     metering_points_periods_df: DataFrame,
-    energy_supplier_periods_df: DataFrame,
     grid_area_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
@@ -52,55 +49,20 @@ def get_metering_point_periods_df(
             | (col("ConnectionState") == ConnectionState.disconnected.value)
         )
         .where(col("MeteringPointType") == MeteringPointType.production.value)
+        .withColumnRenamed("FromDate", "EffectiveDate")
+        .withColumnRenamed("ToDate", "toEffectiveDate")
     )
 
-    energy_supplier_periods_df = energy_supplier_periods_df.where(
-        col("FromDate") < period_end_datetime
-    ).where(col("ToDate") > period_start_datetime)
-
-    master_basis_data_df = (
-        metering_point_periods_df.join(
-            energy_supplier_periods_df,
-            (
-                metering_point_periods_df["MeteringPointId"]
-                == energy_supplier_periods_df["MeteringPointId"]
-            )
-            & (
-                energy_supplier_periods_df["FromDate"]
-                < metering_point_periods_df["ToDate"]
-            )
-            & (
-                metering_point_periods_df["FromDate"]
-                < energy_supplier_periods_df["ToDate"]
-            ),
-            "left",
-        )
-        .withColumn(
-            "EffectiveDate",
-            greatest(
-                metering_point_periods_df["FromDate"],
-                energy_supplier_periods_df["FromDate"],
-            ),
-        )
-        .withColumn(
-            "toEffectiveDate",
-            least(
-                metering_point_periods_df["ToDate"],
-                energy_supplier_periods_df["ToDate"],
-            ),
-        )
-        .withColumn(
-            "EffectiveDate",
-            when(
-                col("EffectiveDate") < period_start_datetime, period_start_datetime
-            ).otherwise(col("EffectiveDate")),
-        )
-        .withColumn(
-            "toEffectiveDate",
-            when(
-                col("toEffectiveDate") > period_end_datetime, period_end_datetime
-            ).otherwise(col("toEffectiveDate")),
-        )
+    master_basis_data_df = metering_point_periods_df.withColumn(
+        "EffectiveDate",
+        when(
+            col("EffectiveDate") < period_start_datetime, period_start_datetime
+        ).otherwise(col("EffectiveDate")),
+    ).withColumn(
+        "toEffectiveDate",
+        when(
+            col("toEffectiveDate") > period_end_datetime, period_end_datetime
+        ).otherwise(col("toEffectiveDate")),
     )
 
     master_basis_data_df = master_basis_data_df.select(
@@ -113,7 +75,7 @@ def get_metering_point_periods_df(
         metering_point_periods_df["ToGridAreaCode"],
         metering_point_periods_df["FromGridAreaCode"],
         "Resolution",
-        energy_supplier_periods_df["EnergySupplierId"],
+        metering_point_periods_df["EnergySupplierId"],
     )
     debug(
         "Metering point events before join with grid areas",
