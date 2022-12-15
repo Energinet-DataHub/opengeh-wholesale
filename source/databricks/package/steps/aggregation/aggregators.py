@@ -11,20 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, window, lit
-
 from package.codelists import (
-    MeteringPointType,
     MeteringPointResolution,
-    ConnectionState,
+    MeteringPointType,
     SettlementMethod,
 )
+from package.constants import Colname, ResultKeyName
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
-from package.constants import ResultKeyName, Colname
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import array, col, explode, expr, lit, when, window
 
 in_sum = "in_sum"
 out_sum = "out_sum"
@@ -165,7 +163,7 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
 
 
 # Function to aggregate hourly consumption per grid area, balance responsible party and energy supplier (step 3)
-def aggregate_hourly_consumption(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_consumption(results: dict, metadata: Metadata) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe]
     return aggregate_per_ga_and_brp_and_es(
         df,
@@ -187,7 +185,7 @@ def aggregate_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
 
 
 # Function to aggregate hourly production per grid area, balance responsible party and energy supplier (step 5)
-def aggregate_hourly_production(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production(results: dict, metadata: Metadata) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe]
     return aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
@@ -208,22 +206,47 @@ def aggregate_per_ga_and_brp_and_es(
         result = result.filter(
             col(Colname.settlement_method) == settlement_method.value
         )
-    # result = result.filter(
-    #     (col(Colname.connection_state) == ConnectionState.connected.value)
-    #     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
-    # )
+    result = result.withColumn(
+        "quarter_times",
+        when(
+            col(Colname.resolution) == MeteringPointResolution.hour.value,
+            array(
+                col(Colname.observation_time),
+                col(Colname.observation_time) + expr("INTERVAL 15 minutes"),
+                col(Colname.observation_time) + expr("INTERVAL 30 minutes"),
+                col(Colname.observation_time) + expr("INTERVAL 45 minutes"),
+            ),
+        ).when(
+            col(Colname.resolution) == MeteringPointResolution.quarter.value,
+            array(col(Colname.observation_time)),
+        ),
+    ).select(
+        result["*"],
+        explode("quarter_times").alias("quarter_time"),
+    )
+    result = result.withColumn(
+        Colname.time_window, window(col("quarter_time"), "15 minutes")
+    )
     result = (
-        result.groupBy(
+        result.withColumn(
+            "quarter_quantity",
+            when(
+                col(Colname.resolution) == MeteringPointResolution.hour.value,
+                col(Colname.quantity) / 4,
+            ).when(
+                col(Colname.resolution) == MeteringPointResolution.quarter.value,
+                col(Colname.quantity),
+            ),
+        )
+        .groupBy(
             Colname.grid_area,
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
-            window(col(Colname.observation_time), "1 hour"),
-            Colname.aggregated_quality,
+            Colname.time_window,
+            Colname.quality,
         )
-        .sum(Colname.quantity)
-        .withColumnRenamed(f"sum({Colname.quantity})", Colname.sum_quantity)
-        .withColumnRenamed("window", Colname.time_window)
-        .withColumnRenamed(Colname.aggregated_quality, Colname.quality)
+        .sum("quarter_quantity")
+        .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
         .select(
             Colname.grid_area,
             Colname.balance_responsible_id,
@@ -231,7 +254,8 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(MeteringPointResolution.hour.value).alias(
+            # Colname.resolution,
+            lit(MeteringPointResolution.quarter.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
@@ -240,10 +264,11 @@ def aggregate_per_ga_and_brp_and_es(
             ),
         )
     )
+
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def aggregate_hourly_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga_and_es(
         results[ResultKeyName.hourly_production_with_system_correction_and_grid_loss],
         MeteringPointType.production,
@@ -299,7 +324,7 @@ def __aggregate_per_ga_and_es(
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def aggregate_hourly_production_ga_brp(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga_brp(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga_and_brp(
         results[ResultKeyName.hourly_production_with_system_correction_and_grid_loss],
         MeteringPointType.production,
@@ -355,7 +380,7 @@ def __aggregate_per_ga_and_brp(
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def aggregate_hourly_production_ga(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga(
         results[ResultKeyName.hourly_production_with_system_correction_and_grid_loss],
         MeteringPointType.production,

@@ -147,7 +147,9 @@ def test__quarterly_and_hourly_sums_correctly(
         second_quantity=second_quantity,
     )
     result_df = get_total_production_per_ga_df(df)
+    result_df.printSchema()
     sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
+    sum_quant.show()
     assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity
 
 

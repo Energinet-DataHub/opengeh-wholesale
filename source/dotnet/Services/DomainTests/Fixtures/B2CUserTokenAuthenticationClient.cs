@@ -37,8 +37,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public B2CUserTokenAuthenticationClient(B2CUserTokenConfiguration configuration)
         {
             Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            UserTokenPermissionAugmentation = new UserTokenPermissionAugmentation(configuration);
             AuthenticationHttpClient = new HttpClient();
         }
+
+        private UserTokenPermissionAugmentation UserTokenPermissionAugmentation { get; }
 
         private B2CUserTokenConfiguration Configuration { get; }
 
@@ -46,6 +49,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public void Dispose()
         {
+            UserTokenPermissionAugmentation.Dispose();
             AuthenticationHttpClient.Dispose();
         }
 
@@ -69,7 +73,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             httpResponse.EnsureSuccessStatusCode();
 
             var tokenResult = await httpResponse.Content.ReadFromJsonAsync<AccessTokenResult>();
-            return tokenResult!.AccessToken;
+            var externalAccessToken = tokenResult!.AccessToken;
+
+            return await UserTokenPermissionAugmentation.AugmentAccessTokenWithPermissionsAsync(externalAccessToken);
         }
     }
 }

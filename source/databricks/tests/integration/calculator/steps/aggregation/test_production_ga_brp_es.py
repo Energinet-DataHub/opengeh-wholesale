@@ -15,14 +15,20 @@ from decimal import Decimal
 from datetime import datetime
 from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import (
-    aggregate_hourly_production,
+    aggregate_production,
     aggregate_per_ga_and_brp_and_es,
 )
-from package.codelists import MeteringPointType, TimeSeriesQuality
+from package.codelists import (
+    MeteringPointType,
+    MeteringPointResolution,
+    TimeSeriesQuality,
+)
+
 from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
+from pyspark.sql.functions import col, sum
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
@@ -38,6 +44,7 @@ default_responsible = "R1"
 default_supplier = "S1"
 default_quantity = Decimal(1)
 default_connection_state = ConnectionState.connected.value
+default_resolution = "PT15M"
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -61,7 +68,8 @@ def time_series_schema():
         .add(Colname.quantity, DecimalType())
         .add(Colname.observation_time, TimestampType())
         .add(Colname.connection_state, StringType())
-        .add(Colname.aggregated_quality, StringType())
+        .add(Colname.quality, StringType())
+        .add(Colname.resolution, StringType())
     )
 
 
@@ -79,6 +87,7 @@ def time_series_row_factory(spark, time_series_schema):
         quantity=default_quantity,
         obs_time=default_obs_time,
         connection_state=default_connection_state,
+        resolution=default_resolution,
     ):
         pandas_df = pd.DataFrame(
             {
@@ -89,7 +98,8 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.quantity: [quantity],
                 Colname.observation_time: [obs_time],
                 Colname.connection_state: [connection_state],
-                Colname.aggregated_quality: [TimeSeriesQuality.estimated.value],
+                Colname.quality: [TimeSeriesQuality.estimated.value],
+                Colname.resolution: [resolution],
             }
         )
         return spark.createDataFrame(pandas_df, schema=time_series_schema)
@@ -131,7 +141,7 @@ def check_aggregation_row(
         pytest.param(e_20, id="invalid because metering point type is exchange"),
     ],
 )
-def test_hourly_production_aggregator_filters_out_incorrect_point_type(
+def test_production_aggregator_filters_out_incorrect_point_type(
     point_type, time_series_row_factory
 ):
     """
@@ -141,27 +151,27 @@ def test_hourly_production_aggregator_filters_out_incorrect_point_type(
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
         point_type=point_type
     )
-    aggregated_df = aggregate_hourly_production(results, metadata)
+    aggregated_df = aggregate_production(results, metadata)
     assert aggregated_df.count() == 0
 
 
-def test_hourly_production_aggregator_aggregates_observations_in_same_hour(
+def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
     time_series_row_factory,
 ):
     """
     Aggregator should calculate the correct sum of a "grid area" grouping within the
-    same 1hr time window
+    same quarter hour time window
     """
     row1_df = time_series_row_factory(quantity=Decimal(1))
     row2_df = time_series_row_factory(quantity=Decimal(2))
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
-    aggregated_df = aggregate_hourly_production(results, metadata)
+    aggregated_df = aggregate_production(results, metadata)
 
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
     start_time = datetime(2020, 1, 1, 0, 0, 0)
-    end_time = datetime(2020, 1, 1, 1, 0, 0)
+    end_time = datetime(2020, 1, 1, 0, 15, 0)
 
     assert aggregated_df.count() == 1
     check_aggregation_row(
@@ -176,12 +186,12 @@ def test_hourly_production_aggregator_aggregates_observations_in_same_hour(
     )
 
 
-def test_hourly_production_aggregator_returns_distinct_rows_for_observations_in_different_hours(
+def test_production_aggregator_returns_distinct_rows_for_observations_in_different_hours(
     time_series_row_factory,
 ):
     """
     Aggregator can calculate the correct sum of a "grid area"-"responsible"-"supplier" grouping
-    within the 2 different 1hr time windows
+    within the 2 different quarter hour time windows
     """
     diff_obs_time = datetime.strptime(
         "2020-01-01T01:00:00+0000", date_time_formatting_string
@@ -191,14 +201,14 @@ def test_hourly_production_aggregator_returns_distinct_rows_for_observations_in_
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
-    aggregated_df = aggregate_hourly_production(results, metadata)
+    aggregated_df = aggregate_production(results, metadata)
 
     assert aggregated_df.count() == 2
 
-    # Create the start/end datetimes representing the start and end of the 1 hr time period for each row's ObservationTime
+    # Create the start/end datetimes representing the start and end of the quarter hour time period for each row's ObservationTime
     # These should be datetime naive in order to compare to the Spark Dataframe
     start_time_row1 = datetime(2020, 1, 1, 0, 0, 0)
-    end_time_row1 = datetime(2020, 1, 1, 1, 0, 0)
+    end_time_row1 = datetime(2020, 1, 1, 0, 15, 0)
     check_aggregation_row(
         aggregated_df,
         0,
@@ -211,7 +221,7 @@ def test_hourly_production_aggregator_returns_distinct_rows_for_observations_in_
     )
 
     start_time_row2 = datetime(2020, 1, 1, 1, 0, 0)
-    end_time_row2 = datetime(2020, 1, 1, 2, 0, 0)
+    end_time_row2 = datetime(2020, 1, 1, 1, 15, 0)
     check_aggregation_row(
         aggregated_df,
         1,
@@ -224,30 +234,171 @@ def test_hourly_production_aggregator_returns_distinct_rows_for_observations_in_
     )
 
 
-def test_hourly_production_aggregator_returns_correct_schema(time_series_row_factory):
+def test_production_aggregator_returns_correct_schema(time_series_row_factory):
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the single-hour resolution specified in the aggregator).
+    and time window (from the quarter-hour resolution specified in the aggregator).
     """
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory()
-    aggregated_df = aggregate_hourly_production(results, metadata)
+    aggregated_df = aggregate_production(results, metadata)
     assert aggregated_df.schema == aggregation_result_schema
 
 
-@pytest.mark.skip(reason="no way of currently testing this")
-def test_hourly_production_test_invalid_connection_state(time_series_row_factory):
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
-        connection_state=ConnectionState.new.value
-    )
-    aggregated_df = aggregate_hourly_production(results, metadata)
-    assert aggregated_df.count() == 0
-
-
-def test_hourly_production_test_filter_by_domain_is_pressent(time_series_row_factory):
+def test_production_test_filter_by_domain_is_pressent(time_series_row_factory):
     df = time_series_row_factory()
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
     )
     assert aggregated_df.count() == 1
+
+
+minimum_quantity = Decimal("0.001")
+grid_area_code_805 = "805"
+grid_area_code_806 = "806"
+
+
+@pytest.fixture
+def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
+    def factory(
+        first_resolution=MeteringPointResolution.quarter.value,
+        second_resolution=MeteringPointResolution.quarter.value,
+        first_quantity=Decimal("1"),
+        second_quantity=Decimal("2"),
+        first_time="2022-06-08T12:09:15.000Z",
+        second_time="2022-06-08T12:09:15.000Z",
+        first_grid_area_code=grid_area_code_805,
+        second_grid_area_code=grid_area_code_805,
+    ):
+        time = timestamp_factory(first_time)
+        time2 = timestamp_factory(second_time)
+
+        df = [
+            {
+                Colname.metering_point_type: MeteringPointType.production.value,
+                Colname.grid_area: first_grid_area_code,
+                Colname.balance_responsible_id: default_responsible,
+                Colname.energy_supplier_id: default_supplier,
+                Colname.resolution: first_resolution,
+                Colname.time: time,
+                Colname.quantity: first_quantity,
+                Colname.quality: TimeSeriesQuality.measured.value,
+            },
+            {
+                Colname.metering_point_type: MeteringPointType.production.value,
+                Colname.grid_area: second_grid_area_code,
+                Colname.balance_responsible_id: default_responsible,
+                Colname.energy_supplier_id: default_supplier,
+                Colname.resolution: second_resolution,
+                Colname.time: time2,
+                Colname.quantity: second_quantity,
+                Colname.quality: TimeSeriesQuality.measured.value,
+            },
+        ]
+
+        return spark.createDataFrame(df)
+
+    return factory
+
+
+@pytest.fixture
+def enriched_time_series_factory(spark, timestamp_factory):
+    def factory(
+        resolution=MeteringPointResolution.quarter.value,
+        quantity=Decimal("1"),
+        quality=TimeSeriesQuality.measured.value,
+        gridArea="805",
+    ):
+        time = timestamp_factory("2022-06-08T12:09:15.000Z")
+
+        df = [
+            {
+                Colname.metering_point_type: MeteringPointType.production.value,
+                Colname.grid_area: gridArea,
+                Colname.balance_responsible_id: default_responsible,
+                Colname.energy_supplier_id: default_supplier,
+                Colname.resolution: resolution,
+                Colname.time: time,
+                Colname.quantity: quantity,
+                Colname.quality: quality,
+            }
+        ]
+        return spark.createDataFrame(df)
+
+    return factory
+
+
+# Test sums with only quarterly can be calculated
+def test__quarterly_sums_correctly(
+    enriched_time_series_quarterly_same_time_factory,
+):
+    """Test that checks quantity is summed correctly with only quarterly times"""
+    df = enriched_time_series_quarterly_same_time_factory(
+        first_quantity=Decimal("1"), second_quantity=Decimal("2")
+    )
+    result_df = aggregate_per_ga_and_brp_and_es(
+        df, MeteringPointType.production, None, metadata
+    )
+    result_df.show()
+    assert result_df.first().sum_quantity == 3
+
+
+@pytest.mark.parametrize(
+    "quantity, expected_point_quantity",
+    [
+        # 0.001 / 4 = 0.000250 ≈ 0.000
+        (Decimal("0.001"), Decimal("0.000")),
+        # 0.002 / 4 = 0.000500 ≈ 0.001
+        (Decimal("0.002"), Decimal("0.001")),
+        # 0.003 / 4 = 0.000750 ≈ 0.001
+        (Decimal("0.003"), Decimal("0.001")),
+        # 0.004 / 4 = 0.001000 ≈ 0.001
+        (Decimal("0.004"), Decimal("0.001")),
+        # 0.005 / 4 = 0.001250 ≈ 0.001
+        (Decimal("0.005"), Decimal("0.001")),
+        # 0.006 / 4 = 0.001500 ≈ 0.002
+        (Decimal("0.006"), Decimal("0.002")),
+        # 0.007 / 4 = 0.001750 ≈ 0.002
+        (Decimal("0.007"), Decimal("0.002")),
+        # 0.008 / 4 = 0.002000 ≈ 0.002
+        (Decimal("0.008"), Decimal("0.002")),
+    ],
+)
+def test__hourly_sums_are_rounded_correctly(
+    enriched_time_series_factory, quantity, expected_point_quantity
+):
+    """Test that checks acceptable rounding erros for hourly quantities summed on a quarterly basis"""
+    df = enriched_time_series_factory(
+        resolution=MeteringPointResolution.hour.value, quantity=quantity
+    )
+
+    result_df = aggregate_per_ga_and_brp_and_es(
+        df, MeteringPointType.production, None, metadata
+    )
+
+    assert result_df.count() == 4  # one hourly quantity should yield 4 points
+    assert (
+        result_df.where(col(Colname.sum_quantity) == expected_point_quantity).count()
+        == 4
+    )
+
+
+def test__quarterly_and_hourly_sums_correctly(
+    enriched_time_series_quarterly_same_time_factory,
+):
+    """Test that checks quantity is summed correctly with quarterly and hourly times"""
+    first_quantity = Decimal("4")
+    second_quantity = Decimal("2")
+    df = enriched_time_series_quarterly_same_time_factory(
+        first_resolution=MeteringPointResolution.quarter.value,
+        first_quantity=first_quantity,
+        second_resolution=MeteringPointResolution.hour.value,
+        second_quantity=second_quantity,
+    )
+    result_df = aggregate_per_ga_and_brp_and_es(
+        df, MeteringPointType.production, None, metadata
+    )
+    result_df.printSchema()
+    result_df.show()
+    sum_quant = result_df.agg(sum(Colname.sum_quantity).alias("sum_quant"))
+    assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity

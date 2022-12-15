@@ -58,6 +58,7 @@ def calculate_balance_fixing(
         enriched_time_series_point_df
     )
     total_production_per_ga_df.show(1000, False)
+
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = (
         enriched_time_series_point_df.withColumn(
@@ -71,19 +72,16 @@ def calculate_balance_fixing(
             "EnergySupplierId",
             lit("1"),  # this is not the corect value, so this need to be changed
         )
-        .withColumn(
-            "aggregated_quality",
-            col("Quality"),  # this is not the corect value, so this need to be changed
-        )
     )
     metadata_fake = Metadata("1", "1", "1", "1", "1")
-    total_production_per_ga_df_agg = agg_steps.aggregate_hourly_production(
+    total_production_per_ga_df_agg = agg_steps.aggregate_production(
         results, metadata_fake
     )
     total_production_per_ga_df_agg = total_production_per_ga_df_agg.select(
-        "GridAreaCode", "sum_quantity", "Quality", "time_window"
-    ).orderBy(col("GridAreaCode").asc())
+        "GridAreaCode", "sum_quantity", "Quality", "time_window", "Resolution"
+    ).orderBy(col("GridAreaCode").asc(), col("time_window").asc())
     total_production_per_ga_df_agg.show(1000, False)
+    total_production_per_ga_df_agg.printSchema()
 
     return (
         total_production_per_ga_df,
