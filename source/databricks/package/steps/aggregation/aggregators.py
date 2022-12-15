@@ -39,6 +39,7 @@ from pyspark.sql.functions import (
     window,
 )
 from pyspark.sql.window import Window
+from typing import Union
 
 in_sum = "in_sum"
 out_sum = "out_sum"
@@ -210,9 +211,9 @@ def aggregate_production(results: dict, metadata: Metadata) -> DataFrame:
 def aggregate_per_ga_and_brp_and_es(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
-    settlement_method: SettlementMethod,
+    settlement_method: Union[SettlementMethod, None],
     metadata: Metadata,
-):
+) -> DataFrame:
     result = df.filter(
         col(Colname.metering_point_type) == market_evaluation_point_type.value
     )

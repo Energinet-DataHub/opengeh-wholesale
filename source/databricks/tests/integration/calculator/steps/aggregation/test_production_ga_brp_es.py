@@ -331,7 +331,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
 # Test sums with only quarterly can be calculated
 def test__quarterly_sums_correctly(
     enriched_time_series_quarterly_same_time_factory,
-):
+) -> None:
     """Test that checks quantity is summed correctly with only quarterly times"""
     df = enriched_time_series_quarterly_same_time_factory(
         first_quantity=Decimal("1"), second_quantity=Decimal("2")
@@ -366,7 +366,7 @@ def test__quarterly_sums_correctly(
 )
 def test__hourly_sums_are_rounded_correctly(
     enriched_time_series_factory, quantity, expected_point_quantity
-):
+) -> None:
     """Test that checks acceptable rounding erros for hourly quantities summed on a quarterly basis"""
     df = enriched_time_series_factory(
         resolution=MeteringPointResolution.hour.value, quantity=quantity
