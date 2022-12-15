@@ -43,7 +43,7 @@ df_template = {
     Colname.in_grid_area: [],
     Colname.out_grid_area: [],
     Colname.quantity: [],
-    Colname.time: [],
+    Colname.observation_time: [],
     Colname.connection_state: [],
     Colname.aggregated_quality: [],
 }
@@ -58,7 +58,7 @@ def time_series_schema():
         .add(Colname.in_grid_area, StringType())
         .add(Colname.out_grid_area, StringType())
         .add(Colname.quantity, DecimalType(38))
-        .add(Colname.time, TimestampType())
+        .add(Colname.observation_time, TimestampType())
         .add(Colname.connection_state, StringType())
         .add(Colname.aggregated_quality, StringType())
     )
@@ -161,7 +161,7 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
         Colname.in_grid_area: in_domain,
         Colname.out_grid_area: out_domain,
         Colname.quantity: quantity,
-        Colname.time: timestamp,
+        Colname.observation_time: timestamp,
         Colname.connection_state: ConnectionState.connected.value,
         Colname.aggregated_quality: estimated_quality,
     }

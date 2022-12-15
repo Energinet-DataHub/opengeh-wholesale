@@ -15,6 +15,7 @@
 from datetime import timedelta
 import pytest
 from package.codelists import MeteringPointResolution, MeteringPointType
+from package.constants import Colname
 from decimal import Decimal
 from package.basis_data import get_time_series_basis_data_dfs
 from pyspark.sql.functions import lit
@@ -49,7 +50,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 StructField("GridAreaCode", StringType(), True),
                 StructField("Resolution", StringType(), True),
                 StructField("GridAreaLinkId", StringType(), True),
-                StructField("time", TimestampType(), True),
+                StructField(Colname.observation_time, TimestampType(), True),
                 StructField("Quantity", DecimalType(18, 3), True),
                 StructField("MeteringPointId", StringType(), True),
                 StructField("MeteringPointType", StringType(), True),
@@ -65,7 +66,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                     "GridAreaCode": grid_area,
                     "Resolution": resolution,
                     "GridAreaLinkId": "GridAreaLinkId",
-                    "time": time,
+                    Colname.observation_time: time,
                     "Quantity": quantity + i,
                     "MeteringPointId": metering_point_id,
                     "MeteringPointType": metering_point_type,

@@ -24,7 +24,7 @@ import package.basis_data as basis_data
 import package.steps as steps
 import package.steps.aggregation as agg_steps
 from datetime import timedelta, datetime
-from package.constants import ResultKeyName
+from package.constants import Colname, ResultKeyName
 from package.shared.data_classes import Metadata
 from pyspark.sql.types import (
     DecimalType,
@@ -98,8 +98,8 @@ def _get_enriched_time_series_points_df(
     period_end_datetime: datetime,
 ) -> DataFrame:
     new_timeseries_df = new_timeseries_df.where(
-        col("Time") >= period_start_datetime
-    ).where(col("Time") < period_end_datetime)
+        col(Colname.observation_time) >= period_start_datetime
+    ).where(col(Colname.observation_time) < period_end_datetime)
 
     quarterly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.quarter.value
@@ -119,7 +119,9 @@ def _get_enriched_time_series_points_df(
                 f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
             ).alias("quarter_times"),
         )
-        .select("MeteringPointId", explode("quarter_times").alias("Time"))
+        .select(
+            "MeteringPointId", explode("quarter_times").alias(Colname.observation_time)
+        )
     )
 
     hourly_times_df = (
@@ -131,23 +133,25 @@ def _get_enriched_time_series_points_df(
                 f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 1 hour)"
             ).alias("times"),
         )
-        .select("MeteringPointId", explode("times").alias("Time"))
+        .select("MeteringPointId", explode("times").alias(Colname.observation_time))
     )
 
     empty_points_for_each_metering_point_df = quarterly_times_df.union(hourly_times_df)
 
     debug(
         "Time series points where time is within period",
-        new_timeseries_df.orderBy(col("MeteringPointId"), col("Time")),
+        new_timeseries_df.orderBy(
+            col("MeteringPointId"), col(Colname.observation_time)
+        ),
     )
 
     new_timeseries_df = new_timeseries_df.select(
-        "MeteringPointId", "Time", "Quantity", "Quality"
-    ).withColumnRenamed("Time", "time")
+        "MeteringPointId", Colname.observation_time, "Quantity", "Quality"
+    )
 
     new_points_for_each_metering_point_df = (
         empty_points_for_each_metering_point_df.join(
-            new_timeseries_df, ["MeteringPointId", "Time"], "left"
+            new_timeseries_df, ["MeteringPointId", Colname.observation_time], "left"
         )
     )
 
@@ -171,15 +175,21 @@ def _get_enriched_time_series_points_df(
             master_basis_data_renamed_df["master_MeteringPointId"]
             == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
         )
-        & (new_points_for_each_metering_point_df["time"] >= col("EffectiveDate"))
-        & (new_points_for_each_metering_point_df["time"] < col("toEffectiveDate")),
+        & (
+            new_points_for_each_metering_point_df[Colname.observation_time]
+            >= col("EffectiveDate")
+        )
+        & (
+            new_points_for_each_metering_point_df[Colname.observation_time]
+            < col("toEffectiveDate")
+        ),
         "left",
     ).select(
         "GridAreaCode",
         master_basis_data_renamed_df["master_MeteringPointId"].alias("MeteringPointId"),
         "MeteringPointType",
         master_basis_data_renamed_df["master_Resolution"].alias("Resolution"),
-        "Time",
+        Colname.observation_time,
         "Quantity",
         "Quality",
     )
