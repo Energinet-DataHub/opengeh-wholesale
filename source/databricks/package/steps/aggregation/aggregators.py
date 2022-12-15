@@ -295,7 +295,6 @@ def aggregate_per_ga_and_brp_and_es(
     # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
     result = (
         result.withColumn("position", row_number().over(win))
-        .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
         .withColumn(
             Colname.sum_quantity,
             when(col(Colname.sum_quantity).isNull(), Decimal("0.000")).otherwise(

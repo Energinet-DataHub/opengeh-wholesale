@@ -60,5 +60,6 @@ aggregation_result_schema = StructType(
         ),  # enum int: change to enum later
         StructField(Colname.added_grid_loss, DecimalType(18, 3), True),
         StructField(Colname.added_system_correction, DecimalType(18, 3), True),
+        StructField(Colname.position, StringType(), True),
     ]
 )
