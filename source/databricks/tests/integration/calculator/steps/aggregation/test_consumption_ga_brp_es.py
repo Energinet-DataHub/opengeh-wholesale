@@ -101,8 +101,8 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.quantity: [quantity],
                 Colname.time: [obs_time],
                 Colname.connection_state: [connection_state],
-                Colname.resolution: [resolution],
                 Colname.aggregated_quality: [TimeSeriesQuality.estimated.value],
+                Colname.resolution: [resolution],
             },
         )
         return spark.createDataFrame(pandas_df, schema=time_series_schema)
