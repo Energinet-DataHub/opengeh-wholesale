@@ -44,7 +44,7 @@ from package.schemas import (
     es_brp_relations_schema,
     market_roles_schema,
     metering_point_schema,
-    time_series_points_schema,
+    time_series_point_schema,
 )
 from package.constants import Colname
 
@@ -330,7 +330,6 @@ def time_series_factory(spark):
         metering_point_id=DataframeDefaults.default_metering_point_id,
         quantity=DataframeDefaults.default_quantity,
         ts_quality=DataframeDefaults.default_quality,
-        registration_date_time=DataframeDefaults.default_registration_date_time,
     ):
         pandas_df = pd.DataFrame().append(
             [
@@ -342,12 +341,11 @@ def time_series_factory(spark):
                     Colname.year: time.year,
                     Colname.month: time.month,
                     Colname.day: time.day,
-                    Colname.registration_date_time: registration_date_time,
                 }
             ],
             ignore_index=True,
         )
 
-        return spark.createDataFrame(pandas_df, schema=time_series_points_schema)
+        return spark.createDataFrame(pandas_df, schema=time_series_point_schema)
 
     return factory

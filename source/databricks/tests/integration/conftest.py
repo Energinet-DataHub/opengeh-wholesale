@@ -27,7 +27,7 @@ def integration_tests_path(databricks_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def json_test_files(integration_tests_path: str) -> str:
+def test_files_folder_path(integration_tests_path: str) -> str:
     return f"{integration_tests_path}/calculator/test_files"
 
 
