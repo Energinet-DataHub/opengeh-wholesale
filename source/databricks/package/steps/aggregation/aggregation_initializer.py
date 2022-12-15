@@ -12,10 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pyspark.DataFrame import DataFrame
+
 
 def get_time_series_dataframe(
-    time_series_df, metering_point_df, market_roles_df, es_brp_relations_df
-):
+    time_series_df: DataFrame,
+    metering_point_df: DataFrame,
+    market_roles_df: DataFrame,
+    es_brp_relations_df: DataFrame,
+) -> DataFrame:
     metering_point_join_conditions = [
         time_series_df.metering_point_id == metering_point_df.metering_point_id,
         time_series_df.time >= metering_point_df.from_date,
