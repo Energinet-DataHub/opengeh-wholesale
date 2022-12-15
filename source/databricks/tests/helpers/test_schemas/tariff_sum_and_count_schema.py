@@ -27,7 +27,7 @@ tariff_sum_and_count_schema = StructType(
     [
         StructField(Colname.grid_area, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), False),
-        StructField(Colname.time, TimestampType(), False),
+        StructField(Colname.charge_time, TimestampType(), False),
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.settlement_method, StringType(), False),
         StructField(Colname.charge_key, StringType(), False),
