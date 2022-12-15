@@ -11,10 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from decimal import Decimal
+
 from package.codelists import (
     MeteringPointResolution,
     MeteringPointType,
     SettlementMethod,
+    TimeSeriesQuality,
 )
 from package.constants import Colname, ResultKeyName
 from package.shared.data_classes import Metadata
@@ -22,7 +25,21 @@ from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import array, col, explode, expr, lit, when, window
+from pyspark.sql.functions import (
+    array,
+    array_contains,
+    col,
+    collect_set,
+    explode,
+    expr,
+    lit,
+    row_number,
+    sum,
+    when,
+    window,
+)
+from pyspark.sql.window import Window
+from typing import Union
 
 in_sum = "in_sum"
 out_sum = "out_sum"
@@ -196,9 +213,9 @@ def aggregate_production(results: dict, metadata: Metadata) -> DataFrame:
 def aggregate_per_ga_and_brp_and_es(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
-    settlement_method: SettlementMethod,
+    settlement_method: Union[SettlementMethod, None],
     metadata: Metadata,
-):
+) -> DataFrame:
     result = df.filter(
         col(Colname.metering_point_type) == market_evaluation_point_type.value
     )
@@ -243,10 +260,56 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
             Colname.time_window,
-            Colname.quality,
+            # Colname.quality,
         )
-        .sum("quarter_quantity")
-        .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
+        # .sum("quarter_quantity")
+        # .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
+        .agg(
+            sum("quarter_quantity").alias(Colname.sum_quantity), collect_set("Quality")
+        )
+        .withColumn(
+            "Quality",
+            when(
+                array_contains(
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
+                ),
+                lit(TimeSeriesQuality.missing.value),
+            )
+            .when(
+                array_contains(
+                    col("collect_set(Quality)"),
+                    lit(TimeSeriesQuality.estimated.value),
+                ),
+                lit(TimeSeriesQuality.estimated.value),
+            )
+            .when(
+                array_contains(
+                    col("collect_set(Quality)"),
+                    lit(TimeSeriesQuality.measured.value),
+                ),
+                lit(TimeSeriesQuality.measured.value),
+            ),
+        )
+    )
+
+    win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
+
+    # Points may be missing in result time series if all metering points are missing a point at a certain moment.
+    # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
+    result = (
+        result.withColumn("position", row_number().over(win))
+        .withColumn(
+            Colname.sum_quantity,
+            when(col(Colname.sum_quantity).isNull(), Decimal("0.000")).otherwise(
+                col(Colname.sum_quantity)
+            ),
+        )
+        .withColumn(
+            Colname.quality,
+            when(
+                col(Colname.quality).isNull(), TimeSeriesQuality.missing.value
+            ).otherwise(col(Colname.quality)),
+        )
         .select(
             Colname.grid_area,
             Colname.balance_responsible_id,
@@ -262,6 +325,7 @@ def aggregate_per_ga_and_brp_and_es(
             lit(None if settlement_method is None else settlement_method.value).alias(
                 Colname.settlement_method
             ),
+            Colname.position,
         )
     )
 
