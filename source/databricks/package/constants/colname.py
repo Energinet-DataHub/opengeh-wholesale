@@ -51,6 +51,7 @@ class Colname:
     net_settlement_group = "net_settlement_group"
     out_grid_area = "out_grid_area"
     parent_metering_point_id = "parent_metering_point_id"
+    position = "position"
     price_per_day = "price_per_day"
     processed_date = "processed_date"
     product = "product"

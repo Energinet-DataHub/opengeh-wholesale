@@ -289,16 +289,18 @@ def aggregate_per_ga_and_brp_and_es(
         )
     )
 
-    win = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
+    win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
 
     # Points may be missing in result time series if all metering points are missing a point at a certain moment.
     # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
     result = (
         result.withColumn("position", row_number().over(win))
-        .withColumnRenamed("sum(quarter_quantity)", "Quantity")
+        .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
         .withColumn(
-            "Quantity",
-            when(col("Quantity").isNull(), Decimal("0.000")).otherwise(col("Quantity")),
+            Colname.sum_quantity,
+            when(col(Colname.sum_quantity).isNull(), Decimal("0.000")).otherwise(
+                col(Colname.sum_quantity)
+            ),
         )
         .withColumn(
             Colname.quality,
