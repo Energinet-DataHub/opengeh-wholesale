@@ -42,7 +42,7 @@ def sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
         tariffs.groupBy(
             Colname.grid_area,
             Colname.energy_supplier_id,
-            Colname.time,
+            Colname.charge_time,
             Colname.metering_point_type,
             Colname.settlement_method,
             Colname.charge_key,
@@ -65,7 +65,7 @@ def select_distinct_tariffs(tariffs: DataFrame) -> DataFrame:
         tariffs[Colname.charge_owner],
         tariffs[Colname.charge_tax],
         tariffs[Colname.resolution],
-        tariffs[Colname.time],
+        tariffs[Colname.charge_time],
         tariffs[Colname.charge_price],
         tariffs[Colname.energy_supplier_id],
         tariffs[Colname.metering_point_type],
@@ -82,7 +82,7 @@ def join_with_agg_df(df: DataFrame, agg_df: DataFrame) -> DataFrame:
             [
                 Colname.energy_supplier_id,
                 Colname.grid_area,
-                Colname.time,
+                Colname.charge_time,
                 Colname.metering_point_type,
                 Colname.settlement_method,
                 Colname.charge_key,
@@ -95,7 +95,7 @@ def join_with_agg_df(df: DataFrame, agg_df: DataFrame) -> DataFrame:
                 Colname.charge_key,
                 Colname.grid_area,
                 Colname.energy_supplier_id,
-                Colname.time,
+                Colname.charge_time,
                 Colname.metering_point_type,
                 Colname.settlement_method,
             ]

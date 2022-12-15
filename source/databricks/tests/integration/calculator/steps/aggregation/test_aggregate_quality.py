@@ -34,7 +34,7 @@ def schema():
         StructType()
         .add(Colname.grid_area, StringType(), False)
         .add(Colname.metering_point_type, StringType())
-        .add(Colname.time, TimestampType())
+        .add(Colname.observation_time, TimestampType())
         .add(Colname.quality, StringType())
     )
 
@@ -45,7 +45,7 @@ def expected_schema():
         StructType()
         .add(Colname.grid_area, StringType(), False)
         .add(Colname.metering_point_type, StringType())
-        .add(Colname.time, TimestampType())
+        .add(Colname.observation_time, TimestampType())
         .add(Colname.quality, StringType())
         .add(Colname.aggregated_quality, StringType(), False)
     )
@@ -60,7 +60,7 @@ def test_data_factory(spark, schema):
             {
                 Colname.grid_area: [],
                 Colname.metering_point_type: [],
-                Colname.time: [],
+                Colname.observation_time: [],
                 Colname.quality: [],
             }
         )
@@ -69,7 +69,7 @@ def test_data_factory(spark, schema):
                 {
                     Colname.grid_area: str(1),
                     Colname.metering_point_type: MeteringPointType.consumption.value,
-                    Colname.time: default_obs_time + timedelta(hours=1),
+                    Colname.observation_time: default_obs_time + timedelta(hours=1),
                     Colname.quality: df_qualities[i],
                 },
                 ignore_index=True,
@@ -221,7 +221,7 @@ def test_data_factory_with_diff_market_evalution_point_type(spark, schema):
             {
                 Colname.grid_area: [],
                 Colname.metering_point_type: [],
-                Colname.time: [],
+                Colname.observation_time: [],
                 Colname.quality: [],
             }
         )
@@ -230,7 +230,7 @@ def test_data_factory_with_diff_market_evalution_point_type(spark, schema):
                 {
                     Colname.grid_area: str(1),
                     Colname.metering_point_type: mp[i],
-                    Colname.time: default_obs_time + timedelta(hours=1),
+                    Colname.observation_time: default_obs_time + timedelta(hours=1),
                     Colname.quality: df_qualities[i],
                 },
                 ignore_index=True,
