@@ -79,17 +79,16 @@ def calculate_balance_fixing(
     )
     total_production_per_ga_df_agg = total_production_per_ga_df_agg.select(
         "GridAreaCode",
-        "sum_quantity",
-        "Quality",
-        "time_window",
-        "Resolution",
+        col("sum_quantity").alias("Quantity"),
+        col("Quality").alias("quality"),
         "position",
+        col("time_window").start.alias("quarter_time"),
     ).orderBy(col("GridAreaCode").asc(), col("time_window").asc())
     total_production_per_ga_df_agg.show(1000, False)
     total_production_per_ga_df_agg.printSchema()
 
     return (
-        total_production_per_ga_df,
+        total_production_per_ga_df_agg,
         time_series_basis_data_df,
         master_basis_data_df,
     )
