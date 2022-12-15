@@ -27,11 +27,12 @@ from package.codelists import (
 from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, sum, lit
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
+from typing import Callable
 
 e_17 = MeteringPointType.consumption.value
 e_18 = MeteringPointType.production.value
@@ -55,7 +56,7 @@ metadata = Metadata("1", "1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
-def time_series_schema():
+def time_series_schema() -> StructType:
     """
     Input time series data point schema
     """
@@ -74,7 +75,9 @@ def time_series_schema():
 
 
 @pytest.fixture(scope="module")
-def time_series_row_factory(spark, time_series_schema):
+def time_series_row_factory(
+    spark: SparkSession, time_series_schema: StructType
+) -> Callable:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
@@ -88,7 +91,7 @@ def time_series_row_factory(spark, time_series_schema):
         obs_time=default_obs_time,
         connection_state=default_connection_state,
         resolution=default_resolution,
-    ):
+    ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.metering_point_type: [point_type],

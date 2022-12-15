@@ -61,14 +61,14 @@ def calculate_balance_fixing(
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = (
         enriched_time_series_point_df.withColumn(
-            "Quantity", col("Quantity").cast(DecimalType(18, 6))
+            Colname.quantity, col(Colname.quantity).cast(DecimalType(18, 6))
         )
         .withColumn(
-            "BalanceResponsibleId",
+            Colname.balance_responsible_id,
             lit("1"),  # this is not the corect value, so this need to be changed
         )
         .withColumn(
-            "EnergySupplierId",
+            Colname.energy_supplier_id,
             lit("1"),  # this is not the corect value, so this need to be changed
         )
     )
@@ -77,12 +77,12 @@ def calculate_balance_fixing(
         results, metadata_fake
     )
     total_production_per_ga_df_agg = total_production_per_ga_df_agg.select(
-        "GridAreaCode",
-        col("sum_quantity").alias("Quantity"),
-        col("Quality").alias("quality"),
-        "position",
-        col("time_window").start.alias("quarter_time"),
-    ).orderBy(col("GridAreaCode").asc(), col("time_window").asc())
+        Colname.grid_area,
+        col(Colname.sum_quantity).alias(Colname.quantity),
+        col(Colname.quality).alias("quality"),
+        Colname.position,
+        col(Colname.time_window_start).alias("quarter_time"),
+    ).orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
 
     return (
         total_production_per_ga_df_agg,
