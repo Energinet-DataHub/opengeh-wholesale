@@ -71,51 +71,6 @@ point_1_quantity = Decimal("1.100")
 point_2_quantity = Decimal("2.200")
 
 
-@pytest.fixture(scope="module")
-def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_factory):
-    def factory(
-        registration_date_time_1: datetime = timestamp_factory(
-            "2022-06-10T12:00:00.000Z"
-        ),
-        registration_date_time_2: datetime = timestamp_factory(
-            "2022-06-10T12:15:00.000Z"
-        ),
-        stored_time_1: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
-        stored_time_2: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
-    ):
-        df = [
-            {
-                "MeteringPointId": "the-meteringpoint-id",
-                "TransactionId": "1",
-                "Quantity": point_1_quantity,
-                "Quality": 3,
-                "Resolution": 2,
-                "RegistrationDateTime": registration_date_time_1,
-                "storedTime": stored_time_1,
-                "time": timestamp_factory("2022-06-10T12:15:00.000Z"),
-                "year": 2022,
-                "month": 6,
-                "day": 8,
-            },
-            {
-                "MeteringPointId": "the-meteringpoint-id",
-                "TransactionId": "1",
-                "Quantity": point_2_quantity,
-                "Quality": 3,
-                "Resolution": 2,
-                "RegistrationDateTime": registration_date_time_2,
-                "storedTime": stored_time_2,
-                "time": timestamp_factory("2022-06-10T12:15:00.000Z"),
-                "year": 2022,
-                "month": 6,
-                "day": 8,
-            },
-        ]
-        return spark.createDataFrame(df)
-
-    return factory
-
-
 time_1 = "2022-06-10T12:15:00.000Z"
 time_2 = "2022-06-10T13:15:00.000Z"
 
