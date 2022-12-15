@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     TimestampType,
     StructType,
 )
-from constants import Colname
+from package.constants import Colname
 
 """
 Schema for time series points

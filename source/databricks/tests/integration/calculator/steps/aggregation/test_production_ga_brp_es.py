@@ -286,13 +286,13 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
             },
             {
                 Colname.metering_point_type: MeteringPointType.production.value,
-                "GridAreaCode": second_grid_area_code,
+                Colname.grid_area: second_grid_area_code,
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
-                "Resolution": second_resolution,
-                "time": time2,
+                Colname.resolution: second_resolution,
+                Colname.time: time2,
                 Colname.quantity: second_quantity,
-                "Quality": TimeSeriesQuality.measured.value,
+                Colname.quality: TimeSeriesQuality.measured.value,
             },
         ]
 
