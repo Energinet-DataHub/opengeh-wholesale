@@ -28,7 +28,7 @@ from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, sum
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
@@ -276,13 +276,13 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
         df = [
             {
                 Colname.metering_point_type: MeteringPointType.production.value,
-                "GridAreaCode": first_grid_area_code,
+                Colname.grid_area: first_grid_area_code,
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
-                "Resolution": first_resolution,
-                "time": time,
+                Colname.resolution: first_resolution,
+                Colname.time: time,
                 Colname.quantity: first_quantity,
-                "Quality": TimeSeriesQuality.measured.value,
+                Colname.quality: TimeSeriesQuality.measured.value,
             },
             {
                 Colname.metering_point_type: MeteringPointType.production.value,
@@ -313,12 +313,14 @@ def enriched_time_series_factory(spark, timestamp_factory):
 
         df = [
             {
-                "GridAreaCode": gridArea,
-                "Resolution": resolution,
-                "GridAreaLinkId": "GridAreaLinkId",
-                "time": time,
-                "Quantity": quantity,
-                "Quality": quality,
+                Colname.metering_point_type: MeteringPointType.production.value,
+                Colname.grid_area: gridArea,
+                Colname.balance_responsible_id: default_responsible,
+                Colname.energy_supplier_id: default_supplier,
+                Colname.resolution: resolution,
+                Colname.time: time,
+                Colname.quantity: quantity,
+                Colname.quality: quality,
             }
         ]
         return spark.createDataFrame(df)
@@ -370,10 +372,15 @@ def test__hourly_sums_are_rounded_correctly(
         resolution=MeteringPointResolution.hour.value, quantity=quantity
     )
 
-    result_df = get_total_production_per_ga_df(df)
+    result_df = aggregate_per_ga_and_brp_and_es(
+        df, MeteringPointType.production, None, metadata
+    )
 
     assert result_df.count() == 4  # one hourly quantity should yield 4 points
-    assert result_df.where(col("Quantity") == expected_point_quantity).count() == 4
+    assert (
+        result_df.where(col(Colname.sum_quantity) == expected_point_quantity).count()
+        == 4
+    )
 
 
 def test__quarterly_and_hourly_sums_correctly(
@@ -393,5 +400,5 @@ def test__quarterly_and_hourly_sums_correctly(
     )
     result_df.printSchema()
     result_df.show()
-    sum_quant = result_df.agg(sum("sum_quantity").alias("sum_quant"))
-    # assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity
+    sum_quant = result_df.agg(sum(Colname.sum_quantity).alias("sum_quant"))
+    assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity
