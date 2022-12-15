@@ -51,7 +51,7 @@ def aggregate_net_exchange_per_neighbour_ga(
         df.groupBy(
             Colname.in_grid_area,
             Colname.out_grid_area,
-            window(col(Colname.time), "1 hour"),
+            window(col(Colname.observation_time), "1 hour"),
             Colname.aggregated_quality,
         )
         .sum(Colname.quantity)
@@ -64,7 +64,7 @@ def aggregate_net_exchange_per_neighbour_ga(
         df.groupBy(
             Colname.in_grid_area,
             Colname.out_grid_area,
-            window(col(Colname.time), "1 hour"),
+            window(col(Colname.observation_time), "1 hour"),
         )
         .sum(Colname.quantity)
         .withColumnRenamed(f"sum({Colname.quantity})", out_sum)
@@ -117,7 +117,7 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
     exchangeIn = (
         exchangeIn.groupBy(
             Colname.in_grid_area,
-            window(col(Colname.time), "1 hour"),
+            window(col(Colname.observation_time), "1 hour"),
             Colname.aggregated_quality,
         )
         .sum(Colname.quantity)
@@ -133,7 +133,9 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
     #     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
     # )
     exchangeOut = (
-        exchangeOut.groupBy(Colname.out_grid_area, window(col(Colname.time), "1 hour"))
+        exchangeOut.groupBy(
+            Colname.out_grid_area, window(col(Colname.observation_time), "1 hour")
+        )
         .sum(Colname.quantity)
         .withColumnRenamed(f"sum({Colname.quantity})", out_sum)
         .withColumnRenamed("window", Colname.time_window)
@@ -215,7 +217,7 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.grid_area,
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
-            window(col(Colname.time), "1 hour"),
+            window(col(Colname.observation_time), "1 hour"),
             Colname.aggregated_quality,
         )
         .sum(Colname.quantity)

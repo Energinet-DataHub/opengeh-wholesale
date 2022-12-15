@@ -45,7 +45,7 @@ def time_series_schema():
         .add(Colname.in_grid_area, StringType())
         .add(Colname.out_grid_area, StringType(), False)
         .add(Colname.quantity, DecimalType(38, 10))
-        .add(Colname.time, TimestampType())
+        .add(Colname.observation_time, TimestampType())
         .add(Colname.connection_state, StringType())
         .add(Colname.aggregated_quality, StringType())
     )
@@ -82,7 +82,7 @@ def time_series_data_frame(spark, time_series_schema):
             Colname.in_grid_area: [],
             Colname.out_grid_area: [],
             Colname.quantity: [],
-            Colname.time: [],
+            Colname.observation_time: [],
             Colname.connection_state: [],
             Colname.aggregated_quality: [],
         }
@@ -196,7 +196,7 @@ def add_row_of_data(
         Colname.in_grid_area: in_domain,
         Colname.out_grid_area: out_domain,
         Colname.quantity: quantity,
-        Colname.time: timestamp,
+        Colname.observation_time: timestamp,
         Colname.connection_state: connectionState,
         Colname.aggregated_quality: TimeSeriesQuality.estimated.value,
     }

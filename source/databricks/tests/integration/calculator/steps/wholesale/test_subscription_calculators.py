@@ -150,7 +150,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
         market_roles_df,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
-        Colname.time
+        Colname.charge_time
     )
 
     expected_subscription_1 = calculate_daily_subscription_price_factory(
@@ -242,7 +242,7 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         market_roles_df,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
-        Colname.time, Colname.charge_key
+        Colname.charge_time, Colname.charge_key
     )
 
     expected_price_per_day_subscription_1 = Decimal(
@@ -306,7 +306,9 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     expected_2 = expected_subscription_1_with_charge_key_2.union(
         expected_subscription_2_with_charge_key_2
     )
-    expected = expected_1.union(expected_2).orderBy(Colname.time, Colname.charge_key)
+    expected = expected_1.union(expected_2).orderBy(
+        Colname.charge_time, Colname.charge_key
+    )
 
     # Assert
     assert result.collect() == expected.collect()

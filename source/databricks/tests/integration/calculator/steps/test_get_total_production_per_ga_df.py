@@ -14,6 +14,7 @@
 
 import pytest
 from package.codelists import MeteringPointResolution, TimeSeriesQuality
+from package.constants import Colname
 from decimal import Decimal
 from package.steps import get_total_production_per_ga_df
 from pyspark.sql.functions import col, sum, lit
@@ -43,14 +44,14 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
             {
                 "GridAreaCode": first_grid_area_code,
                 "Resolution": first_resolution,
-                "time": time,
+                Colname.observation_time: time,
                 "Quantity": first_quantity,
                 "Quality": TimeSeriesQuality.measured.value,
             },
             {
                 "GridAreaCode": second_grid_area_code,
                 "Resolution": second_resolution,
-                "time": time2,
+                Colname.observation_time: time2,
                 "Quantity": second_quantity,
                 "Quality": TimeSeriesQuality.measured.value,
             },
@@ -76,7 +77,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 "GridAreaCode": gridArea,
                 "Resolution": resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
-                "time": time,
+                Colname.observation_time: time,
                 "Quantity": quantity,
                 "Quality": quality,
             }

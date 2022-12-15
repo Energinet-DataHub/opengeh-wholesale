@@ -66,7 +66,7 @@ def time_series_schema():
         .add(Colname.balance_responsible_id, StringType())
         .add(Colname.energy_supplier_id, StringType())
         .add(Colname.quantity, DecimalType())
-        .add(Colname.time, TimestampType())
+        .add(Colname.observation_time, TimestampType())
         .add(Colname.connection_state, StringType())
         .add(Colname.aggregated_quality, StringType())
     )
@@ -96,7 +96,7 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
                 Colname.quantity: [quantity],
-                Colname.time: [obs_time],
+                Colname.observation_time: [obs_time],
                 Colname.connection_state: [connection_state],
                 Colname.aggregated_quality: [TimeSeriesQuality.estimated.value],
             },
