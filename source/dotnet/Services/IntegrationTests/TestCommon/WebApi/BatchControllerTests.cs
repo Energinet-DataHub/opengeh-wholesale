@@ -38,12 +38,10 @@ public class BatchControllerTests :
         : base(wholesaleWebApiFixture, testOutputHelper)
     {
         _client = factory.CreateClient();
-        factory.ReconfigureJwtTokenValidatorMock(isValid: true);
     }
 
     public Task InitializeAsync()
     {
-        _client.DefaultRequestHeaders.Add("Authorization", $"Bearer xxx");
         return Task.CompletedTask;
     }
 
