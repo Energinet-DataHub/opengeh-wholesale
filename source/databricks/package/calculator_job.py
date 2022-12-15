@@ -30,7 +30,7 @@ from package import (
     initialize_spark,
     log,
 )
-from package.schemas import time_series_point_schema
+from package.schemas import time_series_point_schema, metering_point_period_schema
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
