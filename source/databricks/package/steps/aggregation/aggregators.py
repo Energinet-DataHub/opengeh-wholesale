@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from decimal import Decimal
+
 from package.codelists import (
     MeteringPointResolution,
     MeteringPointType,
@@ -25,16 +27,18 @@ from package.steps.aggregation.aggregation_result_formatter import (
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     array,
+    array_contains,
     col,
+    collect_set,
     explode,
     expr,
     lit,
+    row_number,
+    sum,
     when,
     window,
-    sum,
-    collect_set,
-    array_contains,
 )
+from pyspark.sql.window import Window
 
 in_sum = "in_sum"
 out_sum = "out_sum"
@@ -283,7 +287,25 @@ def aggregate_per_ga_and_brp_and_es(
                 lit(TimeSeriesQuality.measured.value),
             ),
         )
-        .withColumnRenamed(Colname.quality, "quality")
+    )
+
+    win = Window.partitionBy("GridAreaCode").orderBy(col("quarter_time"))
+
+    # Points may be missing in result time series if all metering points are missing a point at a certain moment.
+    # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
+    result = (
+        result.withColumn("position", row_number().over(win))
+        .withColumnRenamed("sum(quarter_quantity)", "Quantity")
+        .withColumn(
+            "Quantity",
+            when(col("Quantity").isNull(), Decimal("0.000")).otherwise(col("Quantity")),
+        )
+        .withColumn(
+            Colname.quality,
+            when(
+                col(Colname.quality).isNull(), TimeSeriesQuality.missing.value
+            ).otherwise(col(Colname.quality)),
+        )
         .select(
             Colname.grid_area,
             Colname.balance_responsible_id,
@@ -299,6 +321,7 @@ def aggregate_per_ga_and_brp_and_es(
             lit(None if settlement_method is None else settlement_method.value).alias(
                 Colname.settlement_method
             ),
+            Colname.position,
         )
     )
 
