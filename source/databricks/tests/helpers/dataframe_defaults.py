@@ -57,7 +57,6 @@ class DataframeDefaults:
     default_product: str = "chargea"
     default_quality: str = "E01"
     default_quantity: Decimal = Decimal("1.123")
-    default_registration_date_time: datetime = datetime(2020, 1, 1, 0, 0)
     default_metering_point_resolution: str = MeteringPointResolution.hour.value
     default_settlement_method: str = SettlementMethod.flex.value
     default_sum_quantity: Decimal = Decimal("1.234")
