@@ -257,7 +257,7 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
             Colname.time_window,
-            Colname.quality,
+            # Colname.quality,
         )
         # .sum("quarter_quantity")
         # .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)

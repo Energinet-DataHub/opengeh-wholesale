@@ -463,8 +463,8 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
     )
     assert result_df.count() == 8
     actual = result_df.collect()
-    assert actual[0].sum_quanity == Decimal("1")
-    assert actual[4].sum_quanity == Decimal("2")
+    assert actual[0].sum_quantity == Decimal("1")
+    assert actual[4].sum_quantity == Decimal("2")
 
 
 def test__that_grid_area_code_in_input_is_in_output(
@@ -558,7 +558,8 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
     result_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
     )
-    assert result_df.first().quality == expected_quality
+    result_df.show()
+    assert result_df.first().Quality == expected_quality
 
 
 def test__when_time_series_point_is_missing__quality_has_value_incomplete(
@@ -570,7 +571,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     result_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
     )
-    assert result_df.first().quality == TimeSeriesQuality.missing.value
+    assert result_df.first().Quality == TimeSeriesQuality.missing.value
 
 
 def test__when_time_series_point_is_missing__quantity_is_0(
