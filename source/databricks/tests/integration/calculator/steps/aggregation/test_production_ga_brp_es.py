@@ -431,8 +431,8 @@ def test__position_is_based_on_time_correctly(
         first_quantity=Decimal("1"),
         second_resolution=MeteringPointResolution.quarter.value,
         second_quantity=Decimal("2"),
-        first_time="2022-06-08T12:09:15.000Z",
-        second_time="2022-06-08T12:09:30.000Z",
+        first_time="2022-06-08T12:00:00.000Z",
+        second_time="2022-06-08T12:15:00.000Z",
         first_grid_area_code=grid_area_code_805,
         second_grid_area_code=grid_area_code_805,
     )
