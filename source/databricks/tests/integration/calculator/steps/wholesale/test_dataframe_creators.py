@@ -22,7 +22,7 @@ from package.schemas import (
     market_roles_schema,
 )
 from package.schemas.output import calculate_daily_subscription_price_schema
-from package.schemas import time_series_points_schema
+from package.schemas import time_series_point_schema
 from tests.helpers import DataframeDefaults
 
 
@@ -161,7 +161,7 @@ def test_time_series(time_series_factory):
     time = datetime(2020, 1, 1, 0, 0)
     df = time_series_factory(time)
     result = df.collect()[0]
-    assert len(df.columns) == len(time_series_points_schema.fields)
+    assert len(df.columns) == len(time_series_point_schema.fields)
     assert (
         result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
     )

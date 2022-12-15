@@ -16,4 +16,4 @@ from .grid_loss_sys_corr_schema import grid_loss_sys_corr_schema
 from .market_roles_schema import market_roles_schema
 from .charges_schema import charges_schema, charge_links_schema, charge_prices_schema
 from .es_brp_relations_schema import es_brp_relations_schema
-from .time_series_points_schema import time_series_points_schema
+from .time_series_point_schema import time_series_point_schema
