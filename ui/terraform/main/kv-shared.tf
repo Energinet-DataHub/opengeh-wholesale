@@ -31,6 +31,11 @@ data "azurerm_key_vault_secret" "frontend_service_app_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "backend_open_id_url" {
+  name         = "backend-open-id-url"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "primary_action_group_id" {
   name         = "ag-primary-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id

@@ -29,8 +29,9 @@ module "app_wholesale_api" {
   health_check_alert_enabled                = var.enable_health_check_alerts
 
   app_settings                              = {
-    FRONTEND_OPEN_ID_URL                    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)",
-    FRONTEND_SERVICE_APP_ID                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)",
+    EXTERNAL_OPEN_ID_URL                    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
+    INTERNAL_OPEN_ID_URL                    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
+    BACKEND_SERVICE_APP_ID                  = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)"
     STORAGE_CONNECTION_STRING               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)",
     STORAGE_CONTAINER_NAME                  = local.STORAGE_CONTAINER_NAME
   }

@@ -58,6 +58,7 @@ module "apima_bff" {
             </trace>
             <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Failed policy requirements, or token is invalid or missing.">
                 <openid-config url="${data.azurerm_key_vault_secret.frontend_open_id_url.value}" />
+                <openid-config url="${data.azurerm_key_vault_secret.backend_open_id_url.value}" />
                 <required-claims>
                     <claim name="aud" match="any">
                         <value>${data.azurerm_key_vault_secret.frontend_service_app_id.value}</value>

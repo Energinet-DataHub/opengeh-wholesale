@@ -30,13 +30,14 @@ module "app_webapi" {
   dotnet_framework_version                  = "v6.0"
 
   app_settings = {
-    APPINSIGHTS_INSTRUMENTATIONKEY = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=appi-shared-instrumentation-key)",
-    FRONTEND_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)",
-    FRONTEND_SERVICE_APP_ID = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)",
-    LOCAL_TIMEZONENAME = "Europe/Copenhagen",
-    DOMAIN_EVENTS_TOPIC_NAME = "sbt-charges-domain-events",
-    INTEGRATIONEVENT_SENDER_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)",
-    METERING_POINT_ADMINISTRATOR_GLN = "5790001330552"
+    APPINSIGHTS_INSTRUMENTATIONKEY              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=appi-shared-instrumentation-key)"
+    EXTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
+    INTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
+    BACKEND_SERVICE_APP_ID                      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)"
+    LOCAL_TIMEZONENAME                          = "Europe/Copenhagen"
+    DOMAIN_EVENTS_TOPIC_NAME                    = "sbt-charges-domain-events"
+    INTEGRATIONEVENT_SENDER_CONNECTION_STRING   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
+    METERING_POINT_ADMINISTRATOR_GLN            = "5790001330552"
   }
 
   connection_strings = [
