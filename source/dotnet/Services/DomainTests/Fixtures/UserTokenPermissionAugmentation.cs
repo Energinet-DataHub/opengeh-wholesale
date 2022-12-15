@@ -46,14 +46,24 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         private async Task<Guid> GetActorAsync(string externalToken)
         {
             using var response = await _tokenHttpClient.GetAsync($"user/actors?externalToken={externalToken}");
+            response.EnsureSuccessStatusCode();
+
             var actors = await response.Content.ReadFromJsonAsync<GetAssociatedUserActorsResponseDto>();
-            return actors!.ActorIds.First();
+            var chosenActor = actors?.ActorIds.FirstOrDefault();
+            if (chosenActor == null)
+            {
+                throw new InvalidOperationException("The user requested for the domain test does not have actors assigned.");
+            }
+
+            return chosenActor.Value;
         }
 
         private async Task<string> AugmentTokenAsync(string externalToken, Guid actorId)
         {
             var request = new GetTokenRequestDto(actorId, externalToken);
             using var response = await _tokenHttpClient.PostAsJsonAsync("token", request);
+            response.EnsureSuccessStatusCode();
+
             var token = await response.Content.ReadFromJsonAsync<GetTokenResponseDto>();
             return token!.Token;
         }
