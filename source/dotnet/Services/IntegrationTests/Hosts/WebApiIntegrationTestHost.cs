@@ -58,8 +58,9 @@ public sealed class WebApiIntegrationTestHost : IDisposable
     {
         const string anyValue = "fake_value";
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.BackendAppId, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ExternalOpenIdUrl, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.InternalOpenIdUrl, anyValue);
         Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{EnvironmentSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, anyValue);

@@ -14,7 +14,6 @@
 
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 using Energinet.DataHub.Wholesale.WebApi;
@@ -28,13 +27,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
         {
             AzuriteManager = new AzuriteManager();
             DatabaseManager = new WholesaleDatabaseManager();
-            AuthorizationConfiguration = new AuthorizationConfiguration(
-                "u002",
-                "integrationtest.local.settings.json",
-                "AZURE_SECRETS_KEYVAULT_URL");
         }
-
-        public AuthorizationConfiguration AuthorizationConfiguration { get; }
 
         public WholesaleDatabaseManager DatabaseManager { get; }
 
@@ -56,8 +49,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
                 $"CONNECTIONSTRINGS:{EnvironmentSettingNames.DbConnectionString}",
                 DatabaseManager.ConnectionString);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndOpenIdUrl, AuthorizationConfiguration.FrontendOpenIdUrl);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.FrontEndServiceAppId, AuthorizationConfiguration.FrontendAppId);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ExternalOpenIdUrl, "disabled");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.InternalOpenIdUrl, "disabled");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.BackendAppId, "disabled");
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");

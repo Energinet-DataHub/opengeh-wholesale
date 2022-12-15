@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IdentityModel.Tokens.Jwt;
 using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
-using Energinet.DataHub.Core.App.Common.Abstractions.Security;
-using Energinet.DataHub.Core.App.Common.Identity;
-using Energinet.DataHub.Core.App.Common.Security;
-using Energinet.DataHub.Core.App.WebApp.Middleware;
+using Energinet.DataHub.Core.App.WebApp.Authentication;
+using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
@@ -32,9 +28,6 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -47,26 +40,12 @@ internal static class ServiceCollectionExtensions
     /// <param name="serviceCollection">ServiceCollection container</param>
     public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection)
     {
-        var metadataAddress = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.FrontEndOpenIdUrl);
-        var audience = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.FrontEndServiceAppId);
+        var externalOpenIdUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ExternalOpenIdUrl);
+        var internalOpenIdUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.InternalOpenIdUrl);
+        var backendAppId = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BackendAppId);
 
-        serviceCollection.AddSingleton<ISecurityTokenValidator, JwtSecurityTokenHandler>();
-        serviceCollection.AddSingleton<IConfigurationManager<OpenIdConnectConfiguration>>(_ =>
-            new ConfigurationManager<OpenIdConnectConfiguration>(
-                metadataAddress,
-                new OpenIdConnectConfigurationRetriever()));
-
-        serviceCollection.AddScoped<IJwtTokenValidator>(sp =>
-            new JwtTokenValidator(
-                sp.GetRequiredService<ILogger<JwtTokenValidator>>(),
-                sp.GetRequiredService<ISecurityTokenValidator>(),
-                sp.GetRequiredService<IConfigurationManager<OpenIdConnectConfiguration>>(),
-                audience));
-
-        serviceCollection.AddScoped<ClaimsPrincipalContext>();
-        serviceCollection.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
-
-        serviceCollection.AddScoped<JwtTokenMiddleware>();
+        serviceCollection.AddJwtBearerAuthentication(externalOpenIdUrl, internalOpenIdUrl, backendAppId);
+        serviceCollection.AddPermissionAuthorization();
     }
 
     public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)
