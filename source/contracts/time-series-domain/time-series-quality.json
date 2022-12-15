@@ -1,10 +1,6 @@
 {
   "literals": [
     {
-      "name": "invalid",
-      "value": 0
-    },
-    {
       "name": "missing",
       "value": 2
     },

@@ -31,8 +31,8 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="3.5.0" />
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="3.5.0" />
+    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="3.5.1" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="3.5.1" />
     <PackageReference Include="Energinet.DataHub.MessageHub.IntegrationTesting" Version="3.2.0" />
     <PackageReference Include="Energinet.DataHub.MeteringPoints.IntegrationEvents" Version="1.0.4" />
     <PackageReference Include="Energinet.DataHub.MessageHub.Core" Version="3.3.0" />
@@ -52,7 +52,6 @@ limitations under the License.
 
   <ItemGroup>
     <ProjectReference Include="..\DatabaseMigration\DatabaseMigration.csproj" />
-    <ProjectReference Include="..\IntegrationEventListener\IntegrationEventListener.csproj" />
     <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
     <ProjectReference Include="..\WebApi\WebApi.csproj" />

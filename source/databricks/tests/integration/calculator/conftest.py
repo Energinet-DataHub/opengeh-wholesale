@@ -49,39 +49,3 @@ def find_first_file() -> Callable[[str, str], str]:
         raise Exception("Target test file not found.")
 
     return f
-
-
-@pytest.fixture(scope="session")
-def test_data(
-    spark: SparkSession, json_test_files: str, data_lake_path: str, worker_id: str
-) -> None:
-    # Reads integration_events json file into dataframe and writes it to parquet
-    spark.read.json(f"{json_test_files}/integration_events.json").withColumn(
-        "body", col("body").cast("binary")
-    ).write.mode("overwrite").parquet(
-        f"{data_lake_path}/{worker_id}/parquet_test_files/integration_events"
-    )
-
-    # Schema should match published_time_series_points_schema in time series
-    published_time_series_points_schema = StructType(
-        [
-            StructField("GsrnNumber", StringType(), True),
-            StructField("TransactionId", StringType(), True),
-            StructField("Quantity", DecimalType(18, 3), True),
-            StructField("Quality", LongType(), True),
-            StructField("Resolution", LongType(), True),
-            StructField("RegistrationDateTime", TimestampType(), True),
-            StructField("storedTime", TimestampType(), False),
-            StructField("time", TimestampType(), True),
-            StructField("year", IntegerType(), True),
-            StructField("month", IntegerType(), True),
-            StructField("day", IntegerType(), True),
-        ]
-    )
-
-    # Reads time_series_points json file into dataframe with published_time_series_points_schema and writes it to parquet
-    spark.read.schema(published_time_series_points_schema).json(
-        f"{json_test_files}/time_series_points.json"
-    ).write.mode("overwrite").parquet(
-        f"{data_lake_path}/{worker_id}/parquet_test_files/time_series_points"
-    )

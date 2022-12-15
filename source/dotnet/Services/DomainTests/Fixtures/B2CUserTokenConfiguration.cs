@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// <summary>
         /// Ensure secrets are retrieved and ready for use.
         /// </summary>
-        public B2CUserTokenConfiguration(string b2cKeyVaultUrl, string environment, string user)
+        public B2CUserTokenConfiguration(string b2cKeyVaultUrl, string environment, string user, string tokenBaseAddress)
         {
             if (string.IsNullOrWhiteSpace(b2cKeyVaultUrl))
                 throw new ArgumentException($"'{nameof(b2cKeyVaultUrl)}' cannot be null or whitespace.", nameof(b2cKeyVaultUrl));
@@ -37,8 +37,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 throw new ArgumentException($"'{nameof(environment)}' cannot be null or empty.", nameof(environment));
             if (string.IsNullOrEmpty(user))
                 throw new ArgumentException($"'{nameof(user)}' cannot be null or empty.", nameof(user));
+            if (string.IsNullOrEmpty(tokenBaseAddress))
+                throw new ArgumentException($"'{nameof(tokenBaseAddress)}' cannot be null or empty.", nameof(tokenBaseAddress));
 
             var secretsConfiguration = BuildSecretsConfiguration(b2cKeyVaultUrl);
+
+            TokenBaseAddress = tokenBaseAddress;
 
             RopcUrl = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "ropc-auth-url"));
             FrontendAppId = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "frontend-app-id"));
@@ -52,6 +56,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// This is the URL used to retrieve the user token from B2C.
         /// </summary>
         public string RopcUrl { get; }
+
+        /// <summary>
+        /// The base address for the endpoint that augments the external token with permissions.
+        /// </summary>
+        public string TokenBaseAddress { get; }
 
         /// <summary>
         /// The frontend application id.
@@ -80,8 +89,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 root.GetValue<string>("ENVIRONMENT_INSTANCE");
             var user =
                 root.GetValue<string>("USER");
+            var tokenBaseAddress =
+                root.GetValue<string>("TOKEN_BASEADDRESS");
 
-            return new B2CUserTokenConfiguration(b2cKeyVaultUrl, environment, user);
+            return new B2CUserTokenConfiguration(b2cKeyVaultUrl, environment, user, tokenBaseAddress);
         }
 
         private static string BuildB2CEnvironmentSecretName(string environment, string secret)

@@ -147,7 +147,7 @@ def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
 ):
     expected_number_of_metering_points = 2
     metering_point_period_df = metering_point_period_df_factory(
-        meteringpoint_id="1", resolution=MeteringPointResolution.quarterly.value
+        meteringpoint_id="1", resolution=MeteringPointResolution.quarter.value
     ).union(
         metering_point_period_df_factory(
             meteringpoint_id="2", resolution=MeteringPointResolution.hour.value
