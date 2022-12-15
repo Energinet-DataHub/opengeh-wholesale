@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.DataFrame import DataFrame
+from pyspark.sql import DataFrame
 
 
 def get_time_series_dataframe(
