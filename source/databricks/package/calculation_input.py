@@ -45,8 +45,6 @@ def get_metering_point_periods_df(
 
     metering_point_periods_df = (
         metering_points_in_grid_area.where(col("FromDate") < period_end_datetime)
-        .where(col("ToDate") > period_start_datetime)
-        .where(col("ToDate_Year") >= period_start_datetime.year)
         # Use partitions
         .where(
             (col("ToDate_Year") == period_start_datetime.year)
