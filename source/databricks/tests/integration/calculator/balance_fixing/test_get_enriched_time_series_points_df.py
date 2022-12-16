@@ -24,6 +24,7 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
+from package.constants import Colname
 from pyspark.sql.functions import col
 
 
@@ -37,7 +38,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
                 "MeteringPointId": "the-meteringpoint-id",
                 "Quantity": Decimal("1.1"),
                 "Quality": TimeSeriesQuality.calculated.value,
-                "Time": time,
+                Colname.observation_time: time,
             }
         ]
         return spark.createDataFrame(df)
@@ -69,51 +70,6 @@ def metering_point_period_df_factory(spark, timestamp_factory):
 
 point_1_quantity = Decimal("1.100")
 point_2_quantity = Decimal("2.200")
-
-
-@pytest.fixture(scope="module")
-def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_factory):
-    def factory(
-        registration_date_time_1: datetime = timestamp_factory(
-            "2022-06-10T12:00:00.000Z"
-        ),
-        registration_date_time_2: datetime = timestamp_factory(
-            "2022-06-10T12:15:00.000Z"
-        ),
-        stored_time_1: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
-        stored_time_2: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
-    ):
-        df = [
-            {
-                "MeteringPointId": "the-meteringpoint-id",
-                "TransactionId": "1",
-                "Quantity": point_1_quantity,
-                "Quality": 3,
-                "Resolution": 2,
-                "RegistrationDateTime": registration_date_time_1,
-                "storedTime": stored_time_1,
-                "time": timestamp_factory("2022-06-10T12:15:00.000Z"),
-                "year": 2022,
-                "month": 6,
-                "day": 8,
-            },
-            {
-                "MeteringPointId": "the-meteringpoint-id",
-                "TransactionId": "1",
-                "Quantity": point_2_quantity,
-                "Quality": 3,
-                "Resolution": 2,
-                "RegistrationDateTime": registration_date_time_2,
-                "storedTime": stored_time_2,
-                "time": timestamp_factory("2022-06-10T12:15:00.000Z"),
-                "year": 2022,
-                "month": 6,
-                "day": 8,
-            },
-        ]
-        return spark.createDataFrame(df)
-
-    return factory
 
 
 time_1 = "2022-06-10T12:15:00.000Z"
@@ -226,7 +182,9 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.where(col("Quantity").isNull()).count() == 95
 
 
@@ -253,7 +211,9 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.where(col("Quantity").isNull()).count() == 23
 
 
@@ -280,7 +240,9 @@ def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.count() > 1
     assert actual.where(col("quality").isNull()).count() == actual.count()
 
@@ -311,7 +273,9 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.count() > 1
     assert actual.where(col("quality").isNull()).count() == actual.count()
 

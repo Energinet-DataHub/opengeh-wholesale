@@ -34,7 +34,7 @@ from package.codelists import (
     TimeSeriesQuality,
     MeteringPointResolution,
 )
-
+from package.constants import Colname
 from package.db_logging import debug
 from decimal import Decimal
 
@@ -49,14 +49,14 @@ def get_total_production_per_ga_df(
             when(
                 col("Resolution") == MeteringPointResolution.hour.value,
                 array(
-                    col("time"),
-                    col("time") + expr("INTERVAL 15 minutes"),
-                    col("time") + expr("INTERVAL 30 minutes"),
-                    col("time") + expr("INTERVAL 45 minutes"),
+                    col(Colname.observation_time),
+                    col(Colname.observation_time) + expr("INTERVAL 15 minutes"),
+                    col(Colname.observation_time) + expr("INTERVAL 30 minutes"),
+                    col(Colname.observation_time) + expr("INTERVAL 45 minutes"),
                 ),
             ).when(
                 col("Resolution") == MeteringPointResolution.quarter.value,
-                array(col("time")),
+                array(col(Colname.observation_time)),
             ),
         )
         .select(

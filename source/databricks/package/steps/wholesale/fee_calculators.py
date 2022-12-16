@@ -49,7 +49,7 @@ def get_count_of_charges_and_total_daily_charge_price(
             Colname.charge_owner,
             Colname.grid_area,
             Colname.energy_supplier_id,
-            Colname.time,
+            Colname.charge_time,
         )
         .agg(
             count("*").alias(Colname.charge_count),
@@ -59,7 +59,7 @@ def get_count_of_charges_and_total_daily_charge_price(
             Colname.charge_owner,
             Colname.grid_area,
             Colname.energy_supplier_id,
-            Colname.time,
+            Colname.charge_time,
             Colname.charge_count,
             Colname.total_daily_charge_price,
         )
@@ -74,7 +74,7 @@ def get_count_of_charges_and_total_daily_charge_price(
                 Colname.charge_owner,
                 Colname.grid_area,
                 Colname.energy_supplier_id,
-                Colname.time,
+                Colname.charge_time,
             ],
             "inner",
         )
@@ -84,7 +84,7 @@ def get_count_of_charges_and_total_daily_charge_price(
             Colname.charge_type,
             Colname.charge_owner,
             Colname.charge_price,
-            Colname.time,
+            Colname.charge_time,
             Colname.charge_count,
             Colname.total_daily_charge_price,
             Colname.metering_point_type,

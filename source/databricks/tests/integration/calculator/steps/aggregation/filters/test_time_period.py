@@ -13,6 +13,7 @@
 # limitations under the License.
 from datetime import datetime, timezone
 import pandas as pd
+from package.constants import Colname
 from package.steps.aggregation.filters import filter_time_period
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, TimestampType, IntegerType
@@ -35,7 +36,9 @@ from_time_pst = datetime.strptime(
 def observation_schema():
     """Schema of the test DataFrame"""
     return (
-        StructType().add("Time", TimestampType(), False).add("id", IntegerType(), False)
+        StructType()
+        .add(Colname.observation_time, TimestampType(), False)
+        .add("id", IntegerType(), False)
     )
 
 
@@ -52,7 +55,7 @@ def observation_data_frame(spark, observation_schema):
     """
     pandas_df = pd.DataFrame(
         {
-            "Time": [
+            Colname.observation_time: [
                 datetime.strptime(
                     "2018-01-01T00:00:00+0000", date_time_formatting_string
                 ),
@@ -77,12 +80,16 @@ def observation_data_frame(spark, observation_schema):
 
 @pytest.fixture(scope="module")
 def time_period_utc_filtered_data_frame(observation_data_frame):
-    return filter_time_period(observation_data_frame, from_time_utc, to_time_utc)
+    return filter_time_period(
+        observation_data_frame, Colname.observation_time, from_time_utc, to_time_utc
+    )
 
 
 @pytest.fixture(scope="module")
 def time_period_pst_filtered_data_frame(observation_data_frame):
-    return filter_time_period(observation_data_frame, from_time_pst, to_time_pst)
+    return filter_time_period(
+        observation_data_frame, Colname.observation_time, from_time_pst, to_time_pst
+    )
 
 
 def test_time_period_utc_filter_filters_out_rows_not_in_range(
