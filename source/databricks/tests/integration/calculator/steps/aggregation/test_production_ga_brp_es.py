@@ -29,83 +29,91 @@ from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, sum, lit
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import DecimalType
 import pytest
-import pandas as pd
 from typing import Callable
 
 e_17 = MeteringPointType.consumption.value
 e_18 = MeteringPointType.production.value
 e_20 = MeteringPointType.exchange.value
 
+minimum_quantity = Decimal("0.001")
+grid_area_code_805 = "805"
+grid_area_code_806 = "806"
+
 # Default time series data point values
-default_point_type = e_18
-default_grid_area = "G1"
+default_metering_point_type = e_18
+default_grid_area = grid_area_code_805
 default_responsible = "R1"
 default_supplier = "S1"
 default_quantity = Decimal(1)
+default_quality = TimeSeriesQuality.measured.value
 default_connection_state = ConnectionState.connected.value
-default_resolution = "PT15M"
-
-date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
-default_obs_time = datetime.strptime(
-    "2020-01-01T00:00:00+0000", date_time_formatting_string
-)
+default_resolution = MeteringPointResolution.quarter.value
+default_obs_time_string = "2020-01-01T00:00:00.000Z"
 
 metadata = Metadata("1", "1", "1", "1", "1")
 
 
-@pytest.fixture(scope="module")
-def time_series_schema() -> StructType:
-    """
-    Input time series data point schema
-    """
-    return (
-        StructType()
-        .add(Colname.metering_point_type, StringType(), False)
-        .add(Colname.grid_area, StringType(), False)
-        .add(Colname.balance_responsible_id, StringType())
-        .add(Colname.energy_supplier_id, StringType())
-        .add(Colname.quantity, DecimalType())
-        .add(Colname.observation_time, TimestampType())
-        .add(Colname.connection_state, StringType())
-        .add(Colname.quality, StringType())
-        .add(Colname.resolution, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def time_series_row_factory(
-    spark: SparkSession, time_series_schema: StructType
+@pytest.fixture
+def enriched_time_series_factory(
+    spark: SparkSession, timestamp_factory: Callable
 ) -> Callable:
-    """
-    Factory to generate a single row of time series data, with default parameters as specified above.
-    """
-
     def factory(
-        point_type: str = default_point_type,
-        grid_area: str = default_grid_area,
-        responsible: str = default_responsible,
-        supplier: str = default_supplier,
-        quantity: Decimal = default_quantity,
-        obs_time: datetime = default_obs_time,
-        connection_state: str = default_connection_state,
         resolution: str = default_resolution,
+        quantity: Decimal = default_quantity,
+        quality: str = default_quality,
+        grid_area: str = default_grid_area,
+        obs_time_string: str = default_obs_time_string,
+        metering_point_type: str = default_metering_point_type,
     ) -> DataFrame:
-        pandas_df = pd.DataFrame(
+        obs_time_datetime = timestamp_factory(obs_time_string)
+        df = [
             {
-                Colname.metering_point_type: [point_type],
-                Colname.grid_area: [grid_area],
-                Colname.balance_responsible_id: [responsible],
-                Colname.energy_supplier_id: [supplier],
-                Colname.quantity: [quantity],
-                Colname.observation_time: [obs_time],
-                Colname.connection_state: [connection_state],
-                Colname.quality: [TimeSeriesQuality.estimated.value],
-                Colname.resolution: [resolution],
+                Colname.metering_point_type: metering_point_type,
+                Colname.grid_area: grid_area,
+                Colname.balance_responsible_id: default_responsible,
+                Colname.energy_supplier_id: default_supplier,
+                Colname.quantity: quantity,
+                Colname.observation_time: obs_time_datetime,
+                Colname.connection_state: default_connection_state,
+                Colname.quality: quality,
+                Colname.resolution: resolution,
             }
+        ]
+        return spark.createDataFrame(df)
+
+    return factory
+
+
+@pytest.fixture
+def enriched_time_series_quarterly_same_time_factory(
+    enriched_time_series_factory: Callable,
+) -> Callable:
+    def factory(
+        first_resolution: str = MeteringPointResolution.quarter.value,
+        second_resolution: str = MeteringPointResolution.quarter.value,
+        first_quantity: Decimal = Decimal("1"),
+        second_quantity: Decimal = Decimal("2"),
+        first_obs_time_string: str = default_obs_time_string,
+        second_obs_time_string: str = default_obs_time_string,
+        first_grid_area_code: str = grid_area_code_805,
+        second_grid_area_code: str = grid_area_code_805,
+    ) -> DataFrame:
+        df = enriched_time_series_factory(
+            resolution=first_resolution,
+            quantity=first_quantity,
+            obs_time_string=first_obs_time_string,
+            grid_area=first_grid_area_code,
+        ).union(
+            enriched_time_series_factory(
+                resolution=second_resolution,
+                quantity=second_quantity,
+                obs_time_string=second_obs_time_string,
+                grid_area=second_grid_area_code,
+            )
         )
-        return spark.createDataFrame(pandas_df, schema=time_series_schema)
+        return df
 
     return factory
 
@@ -138,35 +146,35 @@ def check_aggregation_row(
 
 
 @pytest.mark.parametrize(
-    "point_type",
+    "metering_point_type",
     [
         pytest.param(e_17, id="invalid because metering point type is consumption"),
         pytest.param(e_20, id="invalid because metering point type is exchange"),
     ],
 )
 def test_production_aggregator_filters_out_incorrect_point_type(
-    point_type: str, time_series_row_factory: Callable
+    metering_point_type: str, enriched_time_series_factory: Callable
 ) -> None:
     """
     Aggregator should filter out all non "E18" MarketEvaluationPointType rows
     """
     results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
-        point_type=point_type
+    results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_factory(
+        metering_point_type=metering_point_type
     )
     aggregated_df = aggregate_production(results, metadata)
     assert aggregated_df.count() == 0
 
 
 def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
-    time_series_row_factory: Callable,
+    enriched_time_series_factory: Callable,
 ) -> None:
     """
     Aggregator should calculate the correct sum of a "grid area" grouping within the
     same quarter hour time window
     """
-    row1_df = time_series_row_factory(quantity=Decimal(1))
-    row2_df = time_series_row_factory(quantity=Decimal(2))
+    row1_df = enriched_time_series_factory(quantity=Decimal(1))
+    row2_df = enriched_time_series_factory(quantity=Decimal(2))
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
     aggregated_df = aggregate_production(results, metadata)
@@ -190,18 +198,14 @@ def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
 
 
 def test_production_aggregator_returns_distinct_rows_for_observations_in_different_hours(
-    time_series_row_factory: Callable,
+    enriched_time_series_factory: Callable,
 ) -> None:
     """
     Aggregator can calculate the correct sum of a "grid area"-"responsible"-"supplier" grouping
     within the 2 different quarter hour time windows
     """
-    diff_obs_time = datetime.strptime(
-        "2020-01-01T01:00:00+0000", date_time_formatting_string
-    )
-
-    row1_df = time_series_row_factory()
-    row2_df = time_series_row_factory(obs_time=diff_obs_time)
+    row1_df = enriched_time_series_factory()
+    row2_df = enriched_time_series_factory(obs_time_string="2020-01-01T01:00:00.000Z")
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
     aggregated_df = aggregate_production(results, metadata)
@@ -238,102 +242,26 @@ def test_production_aggregator_returns_distinct_rows_for_observations_in_differe
 
 
 def test_production_aggregator_returns_correct_schema(
-    time_series_row_factory: Callable,
+    enriched_time_series_factory: Callable,
 ) -> None:
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
     and time window (from the quarter-hour resolution specified in the aggregator).
     """
     results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory()
+    results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_factory()
     aggregated_df = aggregate_production(results, metadata)
     assert aggregated_df.schema == aggregation_result_schema
 
 
 def test_production_test_filter_by_domain_is_pressent(
-    time_series_row_factory: Callable,
+    enriched_time_series_factory: Callable,
 ) -> None:
-    df = time_series_row_factory()
+    df = enriched_time_series_factory()
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
     )
     assert aggregated_df.count() == 1
-
-
-minimum_quantity = Decimal("0.001")
-grid_area_code_805 = "805"
-grid_area_code_806 = "806"
-
-
-@pytest.fixture
-def enriched_time_series_quarterly_same_time_factory(
-    spark: SparkSession, timestamp_factory: Callable
-) -> Callable:
-    def factory(
-        first_resolution: str = MeteringPointResolution.quarter.value,
-        second_resolution: str = MeteringPointResolution.quarter.value,
-        first_quantity: Decimal = Decimal("1"),
-        second_quantity: Decimal = Decimal("2"),
-        first_time: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
-        second_time: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
-        first_grid_area_code: str = grid_area_code_805,
-        second_grid_area_code: str = grid_area_code_805,
-    ) -> DataFrame:
-        df = [
-            {
-                Colname.metering_point_type: MeteringPointType.production.value,
-                Colname.grid_area: first_grid_area_code,
-                Colname.balance_responsible_id: default_responsible,
-                Colname.energy_supplier_id: default_supplier,
-                Colname.resolution: first_resolution,
-                Colname.observation_time: first_time,
-                Colname.quantity: first_quantity,
-                Colname.quality: TimeSeriesQuality.measured.value,
-            },
-            {
-                Colname.metering_point_type: MeteringPointType.production.value,
-                Colname.grid_area: second_grid_area_code,
-                Colname.balance_responsible_id: default_responsible,
-                Colname.energy_supplier_id: default_supplier,
-                Colname.resolution: second_resolution,
-                Colname.observation_time: second_time,
-                Colname.quantity: second_quantity,
-                Colname.quality: TimeSeriesQuality.measured.value,
-            },
-        ]
-
-        return spark.createDataFrame(df)
-
-    return factory
-
-
-@pytest.fixture
-def enriched_time_series_factory(
-    spark: SparkSession, timestamp_factory: Callable
-) -> Callable:
-    def factory(
-        resolution: str = MeteringPointResolution.quarter.value,
-        quantity: Decimal = Decimal("1"),
-        quality: str = TimeSeriesQuality.measured.value,
-        grid_area: str = "805",
-        time: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
-    ) -> DataFrame:
-
-        df = [
-            {
-                Colname.metering_point_type: MeteringPointType.production.value,
-                Colname.grid_area: grid_area,
-                Colname.balance_responsible_id: default_responsible,
-                Colname.energy_supplier_id: default_supplier,
-                Colname.quantity: quantity,
-                Colname.observation_time: time,
-                Colname.quality: quality,
-                Colname.resolution: resolution,
-            }
-        ]
-        return spark.createDataFrame(df)
-
-    return factory
 
 
 # Test sums with only quarterly can be calculated
@@ -441,8 +369,8 @@ def test__position_is_based_on_time_correctly(
         first_quantity=Decimal("1"),
         second_resolution=MeteringPointResolution.quarter.value,
         second_quantity=Decimal("2"),
-        first_time="2022-06-08T12:00:00.000Z",
-        second_time="2022-06-08T12:15:00.000Z",
+        first_obs_time_string="2022-06-08T12:00:00.000Z",
+        second_obs_time_string="2022-06-08T12:15:00.000Z",
         first_grid_area_code=grid_area_code_805,
         second_grid_area_code=grid_area_code_805,
     )
@@ -465,8 +393,8 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
         first_quantity=Decimal("4"),
         second_resolution=MeteringPointResolution.hour.value,
         second_quantity=Decimal("8"),
-        first_time="2022-06-08T12:09:15.000Z",
-        second_time="2022-06-08T13:09:15.000Z",
+        first_obs_time_string="2022-06-08T12:09:15.000Z",
+        second_obs_time_string="2022-06-08T13:09:15.000Z",
     )
     result_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
