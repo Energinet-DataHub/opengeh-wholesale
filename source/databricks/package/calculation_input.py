@@ -46,15 +46,15 @@ def get_metering_point_periods_df(
     metering_point_periods_df = (
         metering_points_in_grid_area.where(col("FromDate") < period_end_datetime)
         # Use partitions
-        .where(
-            (col("ToDate_Year") == period_start_datetime.year)
-            & (col("ToDate_Month") >= period_start_datetime.month)
-        )
-        .where(
-            (col("ToDate_Year") == period_start_datetime.year)
-            & (col("ToDate_Month") == period_start_datetime.month)
-            & (col("ToDate_Day") > period_start_datetime.day)
-        )
+        # .where(
+        #     (col("ToDate_Year") == period_start_datetime.year)
+        #     & (col("ToDate_Month") >= period_start_datetime.month)
+        # )
+        # .where(
+        #     (col("ToDate_Year") == period_start_datetime.year)
+        #     & (col("ToDate_Month") == period_start_datetime.month)
+        #     & (col("ToDate_Day") > period_start_datetime.day)
+        # )
         .where(col("Type") == MeteringPointType.production.value)
         .withColumnRenamed("FromDate", "EffectiveDate")
         .withColumnRenamed("ToDate", "toEffectiveDate")

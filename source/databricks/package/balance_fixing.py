@@ -98,30 +98,9 @@ def _get_enriched_time_series_points_df(
     period_end_datetime: datetime,
 ) -> DataFrame:
     # Use partitions
-    new_timeseries_df = (
-        new_timeseries_df.where(
-            col("ObservationTime_Year") >= period_start_datetime.year
-        )
-        .where(
-            (col("ObservationTime_Year") == period_start_datetime.year)
-            & (col("ObservationTime_Month") >= period_start_datetime.month)
-        )
-        .where(
-            (col("ObservationTime_Year") == period_start_datetime.year)
-            & (col("ObservationTime_Month") == period_start_datetime.month)
-            & (col("ObservationTime_Day") >= period_start_datetime.day)
-        )
-        .where(col("ObservationTime_Year") <= period_end_datetime.year)
-        .where(
-            (col("ObservationTime_Year") == period_end_datetime.year)
-            & (col("ObservationTime_Month") <= period_end_datetime.month)
-        )
-        .where(
-            (col("ObservationTime_Year") == period_end_datetime.year)
-            & (col("ObservationTime_Month") == period_end_datetime.month)
-            & (col("ObservationTime_Day") <= period_end_datetime.day)
-        )
-    )
+    new_timeseries_df = new_timeseries_df.where(
+        col(Colname.observation_time) >= period_start_datetime
+    ).where(col(Colname.observation_time) < period_end_datetime)
 
     quarterly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.quarter.value
