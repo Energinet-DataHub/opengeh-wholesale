@@ -76,14 +76,12 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     timeseries_points_df = (
-        spark.read.schema(time_series_point_schema)
-        .option("mode", "FAILFAST")
+        spark.read.option("mode", "FAILFAST")
         .format("delta")
         .load(f"{args.wholesale_container_path}/calculation-input/time-series-points")
     )
     metering_points_periods_df = (
-        spark.read.schema(time_series_point_schema)
-        .option("mode", "FAILFAST")
+        spark.read.option("mode", "FAILFAST")
         .format("delta")
         .load(
             f"{args.wholesale_container_path}/calculation-input/metering-point-periods"
