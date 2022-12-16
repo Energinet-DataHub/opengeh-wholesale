@@ -56,7 +56,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
             {
                 "MeteringPointId": "the-meteringpoint-id",
                 "GridAreaCode": "805",
-                "MeteringPointType": "the_metering_point_type",
+                "Type": "the_metering_point_type",
                 "EffectiveDate": effective_date,
                 "toEffectiveDate": to_effective_date,
                 "Resolution": resolution,
