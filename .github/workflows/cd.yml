@@ -58,7 +58,6 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v9
     with:
-      OPERATING_SYSTEM: 'dh3-windows-2022-8cores'
       SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
       USE_AZURE_FUNCTIONS_TOOLS: true
       ENVIRONMENT: AzureAuth
