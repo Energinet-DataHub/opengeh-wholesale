@@ -307,24 +307,6 @@ def enriched_time_series_quarterly_same_time_factory(
     return factory
 
 
-@pytest.fixture(scope="module")
-def ts_schema() -> StructType:
-    """
-    Input time series data point schema
-    """
-    return (
-        StructType()
-        .add(Colname.metering_point_type, StringType(), False)
-        .add(Colname.grid_area, StringType(), False)
-        .add(Colname.balance_responsible_id, StringType())
-        .add(Colname.energy_supplier_id, StringType())
-        .add(Colname.quantity, DecimalType())
-        .add(Colname.observation_time, TimestampType())
-        .add(Colname.quality, StringType())
-        .add(Colname.resolution, StringType())
-    )
-
-
 @pytest.fixture
 def enriched_time_series_factory(
     spark: SparkSession, timestamp_factory: Callable
@@ -349,7 +331,7 @@ def enriched_time_series_factory(
                 Colname.resolution: resolution,
             }
         ]
-        return spark.createDataFrame(df, ts_schema)
+        return spark.createDataFrame(df)
 
     return factory
 
