@@ -81,8 +81,11 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         .option("mode", "FAILFAST")
         .csv(f"{args.wholesale_container_path}/TimeSeriesPoints.csv")
     )
-    metering_points_periods_df = spark.read.option("header", "true").csv(
-        f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
+    metering_points_periods_df = (
+        spark.read.schema(metering_point_period_schema)
+        .option("header", "true")
+        .option("mode", "FAILFAST")
+        .csv(f"{args.wholesale_container_path}/MeteringPointsPeriods.csv")
     )
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
