@@ -93,10 +93,12 @@ jobs:
   dotnet_ci_test_tests:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v9
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@xdast # SPIKE
     with:
       TESTS_DLL_FILE_PATH: '\source\dotnet\Services\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 20
+    secrets:
+      FORESIGHT_TESTKIT_TOKEN: ${{ secrets.FORESIGHT_TESTKIT_TOKEN }} # SPIKE
 
   #
   # Branch policy status check
@@ -107,11 +109,11 @@ jobs:
     needs: [
       ci_base,
       # Databricks
-      databricks_ci_build,
-      databricks_ci_test,
+      # databricks_ci_build,
+      # databricks_ci_test,
       # .NET
       dotnet_ci_build,
-      dotnet_ci_test_integrationtests_part1,
+      #dotnet_ci_test_integrationtests_part1,
       dotnet_ci_test_tests
     ]
     if: |
