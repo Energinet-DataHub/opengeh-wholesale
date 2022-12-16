@@ -187,7 +187,7 @@ def _get_enriched_time_series_points_df(
     ).select(
         "GridAreaCode",
         master_basis_data_renamed_df["master_MeteringPointId"].alias("MeteringPointId"),
-        "MeteringPointType",
+        "Type",
         master_basis_data_renamed_df["master_Resolution"].alias("Resolution"),
         Colname.observation_time,
         "Quantity",
