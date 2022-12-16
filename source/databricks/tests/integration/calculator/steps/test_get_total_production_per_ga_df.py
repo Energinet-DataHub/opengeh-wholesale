@@ -14,6 +14,7 @@
 
 import pytest
 from package.codelists import MeteringPointResolution, TimeSeriesQuality
+from package.constants import Colname
 from decimal import Decimal
 from package.steps import get_total_production_per_ga_df
 from pyspark.sql.functions import col, sum, lit
@@ -27,8 +28,8 @@ grid_area_code_806 = "806"
 @pytest.fixture
 def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
     def factory(
-        first_resolution=MeteringPointResolution.quarterly.value,
-        second_resolution=MeteringPointResolution.quarterly.value,
+        first_resolution=MeteringPointResolution.quarter.value,
+        second_resolution=MeteringPointResolution.quarter.value,
         first_quantity=Decimal("1"),
         second_quantity=Decimal("2"),
         first_time="2022-06-08T12:09:15.000Z",
@@ -43,14 +44,14 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
             {
                 "GridAreaCode": first_grid_area_code,
                 "Resolution": first_resolution,
-                "time": time,
+                Colname.observation_time: time,
                 "Quantity": first_quantity,
                 "Quality": TimeSeriesQuality.measured.value,
             },
             {
                 "GridAreaCode": second_grid_area_code,
                 "Resolution": second_resolution,
-                "time": time2,
+                Colname.observation_time: time2,
                 "Quantity": second_quantity,
                 "Quality": TimeSeriesQuality.measured.value,
             },
@@ -64,7 +65,7 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
 @pytest.fixture
 def enriched_time_series_factory(spark, timestamp_factory):
     def factory(
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarter.value,
         quantity=Decimal("1"),
         quality=TimeSeriesQuality.measured.value,
         gridArea="805",
@@ -76,7 +77,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 "GridAreaCode": gridArea,
                 "Resolution": resolution,
                 "GridAreaLinkId": "GridAreaLinkId",
-                "time": time,
+                Colname.observation_time: time,
                 "Quantity": quantity,
                 "Quality": quality,
             }
@@ -140,13 +141,15 @@ def test__quarterly_and_hourly_sums_correctly(
     first_quantity = Decimal("2")
     second_quantity = Decimal("2")
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=MeteringPointResolution.quarterly.value,
+        first_resolution=MeteringPointResolution.quarter.value,
         first_quantity=first_quantity,
         second_resolution=MeteringPointResolution.hour.value,
         second_quantity=second_quantity,
     )
     result_df = get_total_production_per_ga_df(df)
+    result_df.printSchema()
     sum_quant = result_df.agg(sum("Quantity").alias("sum_quant"))
+    sum_quant.show()
     assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity
 
 
@@ -155,7 +158,7 @@ def test__points_with_same_time_quantities_are_on_same_position(
 ):
     """Test that points with the same 'time' have added their 'Quantity's together on the same position"""
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=MeteringPointResolution.quarterly.value,
+        first_resolution=MeteringPointResolution.quarter.value,
         first_quantity=Decimal("2"),
         second_resolution=MeteringPointResolution.hour.value,
         second_quantity=Decimal("2"),
@@ -171,9 +174,9 @@ def test__position_is_based_on_time_correctly(
 ):
     """'position' is correctly placed based on 'time'"""
     df = enriched_time_series_quarterly_same_time_factory(
-        first_resolution=MeteringPointResolution.quarterly.value,
+        first_resolution=MeteringPointResolution.quarter.value,
         first_quantity=Decimal("1"),
-        second_resolution=MeteringPointResolution.quarterly.value,
+        second_resolution=MeteringPointResolution.quarter.value,
         second_quantity=Decimal("2"),
         first_time="2022-06-08T12:09:15.000Z",
         second_time="2022-06-08T12:09:30.000Z",

@@ -17,7 +17,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import aggregate_net_exchange_per_ga
-from geh_stream.codelists import MarketEvaluationPointType, ConnectionState, Quality
+from package.codelists import MeteringPointType, ConnectionState, TimeSeriesQuality
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
@@ -25,7 +25,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 
 
-e_20 = MarketEvaluationPointType.exchange.value
+e_20 = MeteringPointType.exchange.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
@@ -45,7 +45,7 @@ def time_series_schema():
         .add(Colname.in_grid_area, StringType())
         .add(Colname.out_grid_area, StringType(), False)
         .add(Colname.quantity, DecimalType(38, 10))
-        .add(Colname.time, TimestampType())
+        .add(Colname.observation_time, TimestampType())
         .add(Colname.connection_state, StringType())
         .add(Colname.aggregated_quality, StringType())
     )
@@ -82,7 +82,7 @@ def time_series_data_frame(spark, time_series_schema):
             Colname.in_grid_area: [],
             Colname.out_grid_area: [],
             Colname.quantity: [],
-            Colname.time: [],
+            Colname.observation_time: [],
             Colname.connection_state: [],
             Colname.aggregated_quality: [],
         }
@@ -196,9 +196,9 @@ def add_row_of_data(
         Colname.in_grid_area: in_domain,
         Colname.out_grid_area: out_domain,
         Colname.quantity: quantity,
-        Colname.time: timestamp,
+        Colname.observation_time: timestamp,
         Colname.connection_state: connectionState,
-        Colname.aggregated_quality: Quality.estimated.value,
+        Colname.aggregated_quality: TimeSeriesQuality.estimated.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 

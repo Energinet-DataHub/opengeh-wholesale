@@ -28,7 +28,7 @@ from pyspark.sql.window import Window
 from package.codelists import (
     MeteringPointResolution,
 )
-
+from package.constants import Colname
 from package.db_logging import debug
 from datetime import datetime
 
@@ -73,7 +73,7 @@ def get_time_series_basis_data_dfs(
 
     time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        MeteringPointResolution.quarterly.value,
+        MeteringPointResolution.quarter.value,
         time_zone,
     )
 
@@ -91,13 +91,18 @@ def _get_time_series_basis_data_by_resolution(
     resolution: str,
     time_zone: str,
 ) -> DataFrame:
-    w = Window.partitionBy("MeteringPointId", "localDate").orderBy("time")
+    w = Window.partitionBy("MeteringPointId", "localDate").orderBy(
+        Colname.observation_time
+    )
 
     timeseries_basis_data_df = (
         enriched_time_series_point_df.where(col("Resolution") == resolution)
-        .withColumn("localDate", to_date(from_utc_timestamp(col("time"), time_zone)))
+        .withColumn(
+            "localDate",
+            to_date(from_utc_timestamp(col(Colname.observation_time), time_zone)),
+        )
         .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
-        .withColumn("STARTDATETIME", first("time").over(w))
+        .withColumn("STARTDATETIME", first(Colname.observation_time).over(w))
         .groupBy(
             "MeteringPointId",
             "localDate",

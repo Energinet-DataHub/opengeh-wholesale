@@ -15,6 +15,7 @@
 from datetime import timedelta
 import pytest
 from package.codelists import MeteringPointResolution, MeteringPointType
+from package.constants import Colname
 from decimal import Decimal
 from package.basis_data import get_time_series_basis_data_dfs
 from pyspark.sql.functions import lit
@@ -34,7 +35,7 @@ grid_area_code_806 = "806"
 @pytest.fixture
 def enriched_time_series_factory(spark, timestamp_factory):
     def factory(
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarter.value,
         quantity=Decimal("1"),
         grid_area="805",
         metering_point_id="the_metering_point_id",
@@ -49,7 +50,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 StructField("GridAreaCode", StringType(), True),
                 StructField("Resolution", StringType(), True),
                 StructField("GridAreaLinkId", StringType(), True),
-                StructField("time", TimestampType(), True),
+                StructField(Colname.observation_time, TimestampType(), True),
                 StructField("Quantity", DecimalType(18, 3), True),
                 StructField("MeteringPointId", StringType(), True),
                 StructField("MeteringPointType", StringType(), True),
@@ -65,7 +66,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                     "GridAreaCode": grid_area,
                     "Resolution": resolution,
                     "GridAreaLinkId": "GridAreaLinkId",
-                    "time": time,
+                    Colname.observation_time: time,
                     "Quantity": quantity + i,
                     "MeteringPointId": metering_point_id,
                     "MeteringPointType": metering_point_type,
@@ -87,7 +88,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
         # DST has 24 hours
         (
             "2022-06-08T22:00:00.000Z",
-            MeteringPointResolution.quarterly.value,
+            MeteringPointResolution.quarter.value,
             96,
             96,
             0,
@@ -97,7 +98,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
         # standard time has 24 hours
         (
             "2022-06-08T22:00:00.000Z",
-            MeteringPointResolution.quarterly.value,
+            MeteringPointResolution.quarter.value,
             96,
             96,
             0,
@@ -110,7 +111,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
         # Therefore there should be 100 columns for quarter resolution and 25 for  hour resolution
         (
             "2022-10-29T22:00:00.000Z",
-            MeteringPointResolution.quarterly.value,
+            MeteringPointResolution.quarter.value,
             292,
             100,
             0,
@@ -152,7 +153,7 @@ def test__returns_dataframe_with_quarter_resolution_metering_points(
 ):
     enriched_time_series_points_df = enriched_time_series_factory(
         time="2022-10-28T22:00:00.000Z",
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarter.value,
         number_of_points=96,
     )
     (quarter_df, hour_df) = get_time_series_basis_data_dfs(
@@ -183,7 +184,7 @@ def test__splits_single_metering_point_with_different_resolution_on_different_da
     enriched_time_series_points_df = enriched_time_series_factory(
         metering_point_id="the_metering_point_id",
         time="2022-10-28T22:00:00.000Z",
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarter.value,
         number_of_points=96,
     ).union(
         enriched_time_series_factory(
@@ -223,7 +224,7 @@ def test__returns_expected_quantity_for_each_quarter_column(
 ):
     enriched_time_series_points_df = enriched_time_series_factory(
         time="2022-10-28T22:00:00.000Z",
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarter.value,
         number_of_points=96,
     )
 
@@ -252,7 +253,7 @@ def test__multiple_dates_are_split_into_rows_for_quarterly_meteringpoints(
 ):
     enriched_time_series_points_df = enriched_time_series_factory(
         time="2022-10-18T22:00:00.000Z",
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarter.value,
         number_of_points=number_of_points,
     )
 
@@ -293,7 +294,7 @@ def test__missing_point_has_empty_quantity(
 ):
     enriched_time_series_points_df = enriched_time_series_factory(
         time="2022-10-28T22:00:00.000Z",
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarter.value,
         number_of_points=96,
     ).withColumn("Quantity", lit(None).cast(DecimalType()))
     (quarter_df, _) = get_time_series_basis_data_dfs(

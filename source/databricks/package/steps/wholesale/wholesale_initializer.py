@@ -14,11 +14,7 @@
 
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.functions import col, window, expr, explode, month, year
-from geh_stream.codelists import (
-    ResolutionDuration,
-    ConnectionState,
-    ChargeType,
-)
+from package.codelists import ConnectionState, ChargeType, ChargeResolution
 from package.constants import Colname
 
 
@@ -39,7 +35,7 @@ def get_tariff_charges(
     charge_prices: DataFrame,
     metering_points: DataFrame,
     market_roles: DataFrame,
-    resolution_duration: ResolutionDuration,
+    resolution_duration: ChargeResolution,
 ) -> DataFrame:
 
     # filter on resolution
@@ -102,7 +98,7 @@ def get_subscription_charges(
 
 
 def get_charges_based_on_resolution(
-    charges: DataFrame, resolution_duration: ResolutionDuration
+    charges: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
     df = charges.filter(col(Colname.resolution) == resolution_duration)
     return df
@@ -125,7 +121,7 @@ def join_with_charge_prices(df: DataFrame, charge_prices: DataFrame) -> DataFram
         df[Colname.resolution],
         df[Colname.from_date],
         df[Colname.to_date],
-        charge_prices[Colname.time],
+        charge_prices[Colname.charge_time],
         charge_prices[Colname.charge_price],
     )
     return df
@@ -141,8 +137,8 @@ def explode_subscription(charges_with_prices: DataFrame) -> DataFrame:
                 )
             ),
         )
-        .filter((year(Colname.date) == year(Colname.time)))
-        .filter((month(Colname.date) == month(Colname.time)))
+        .filter((year(Colname.date) == year(Colname.charge_time)))
+        .filter((month(Colname.date) == month(Colname.charge_time)))
         .select(
             Colname.charge_key,
             Colname.charge_id,
@@ -153,7 +149,7 @@ def explode_subscription(charges_with_prices: DataFrame) -> DataFrame:
             Colname.date,
             Colname.charge_price,
         )
-        .withColumnRenamed(Colname.date, Colname.time)
+        .withColumnRenamed(Colname.date, Colname.charge_time)
     )
     return charges_with_prices
 
@@ -163,8 +159,8 @@ def join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame:
         charge_links,
         [
             df[Colname.charge_key] == charge_links[Colname.charge_key],
-            df[Colname.time] >= charge_links[Colname.from_date],
-            df[Colname.time] < charge_links[Colname.to_date],
+            df[Colname.charge_time] >= charge_links[Colname.from_date],
+            df[Colname.charge_time] < charge_links[Colname.to_date],
         ],
         "inner",
     ).select(
@@ -174,7 +170,7 @@ def join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame:
         df[Colname.charge_owner],
         df[Colname.charge_tax],
         df[Colname.resolution],
-        df[Colname.time],
+        df[Colname.charge_time],
         df[Colname.charge_price],
         charge_links[Colname.metering_point_id],
     )
@@ -186,8 +182,8 @@ def join_with_martket_roles(df: DataFrame, market_roles: DataFrame) -> DataFrame
         market_roles,
         [
             df[Colname.metering_point_id] == market_roles[Colname.metering_point_id],
-            df[Colname.time] >= market_roles[Colname.from_date],
-            df[Colname.time] < market_roles[Colname.to_date],
+            df[Colname.charge_time] >= market_roles[Colname.from_date],
+            df[Colname.charge_time] < market_roles[Colname.to_date],
         ],
         "inner",
     ).select(
@@ -197,7 +193,7 @@ def join_with_martket_roles(df: DataFrame, market_roles: DataFrame) -> DataFrame
         df[Colname.charge_owner],
         df[Colname.charge_tax],
         df[Colname.resolution],
-        df[Colname.time],
+        df[Colname.charge_time],
         df[Colname.charge_price],
         df[Colname.metering_point_id],
         market_roles[Colname.energy_supplier_id],
@@ -217,8 +213,8 @@ def join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Data
         metering_points,
         [
             df[Colname.metering_point_id] == metering_points[Colname.metering_point_id],
-            df[Colname.time] >= metering_points[Colname.from_date],
-            df[Colname.time] < metering_points[Colname.to_date],
+            df[Colname.charge_time] >= metering_points[Colname.from_date],
+            df[Colname.charge_time] < metering_points[Colname.to_date],
         ],
         "inner",
     ).select(
@@ -228,7 +224,7 @@ def join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Data
         df[Colname.charge_owner],
         df[Colname.charge_tax],
         df[Colname.resolution],
-        df[Colname.time],
+        df[Colname.charge_time],
         df[Colname.charge_price],
         df[Colname.metering_point_id],
         df[Colname.energy_supplier_id],
@@ -241,13 +237,13 @@ def join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Data
 
 
 def group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    time_series: DataFrame, resolution_duration: ResolutionDuration
+    time_series: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
     grouped_time_series = (
         time_series.groupBy(
             Colname.metering_point_id,
             window(
-                Colname.time,
+                Colname.observation_time,
                 __get_window_duration_string_based_on_resolution(resolution_duration),
             ),
         )
@@ -256,7 +252,7 @@ def group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
         .selectExpr(
             Colname.quantity,
             Colname.metering_point_id,
-            f"window.{Colname.start} as {Colname.time}",
+            f"window.{Colname.start} as {Colname.charge_time}",
         )
     )
     return grouped_time_series
@@ -270,7 +266,7 @@ def join_with_grouped_time_series(
         [
             df[Colname.metering_point_id]
             == grouped_time_series[Colname.metering_point_id],
-            df[Colname.time] == grouped_time_series[Colname.time],
+            df[Colname.charge_time] == grouped_time_series[Colname.observation_time],
         ],
         "inner",
     ).select(
@@ -280,7 +276,7 @@ def join_with_grouped_time_series(
         df[Colname.charge_owner],
         df[Colname.charge_tax],
         df[Colname.resolution],
-        df[Colname.time],
+        df[Colname.charge_time],
         df[Colname.charge_price],
         df[Colname.metering_point_id],
         df[Colname.energy_supplier_id],
@@ -294,12 +290,15 @@ def join_with_grouped_time_series(
 
 
 def __get_window_duration_string_based_on_resolution(
-    resolution_duration: ResolutionDuration,
+    resolution_duration: ChargeResolution,
 ) -> str:
     window_duration_string = "1 hour"
 
-    if resolution_duration == ResolutionDuration.day:
+    if resolution_duration == ChargeResolution.day.value:
         window_duration_string = "1 day"
+
+    if resolution_duration == ChargeResolution.month.value:
+        raise NotImplementedError("Month not yet implemented")
 
     return window_duration_string
 
@@ -340,7 +339,7 @@ def __join_properties_on_charges_with_given_charge_type(
             Colname.charge_id,
             Colname.charge_type,
             Colname.charge_owner,
-            Colname.time,
+            Colname.charge_time,
             Colname.charge_price,
             Colname.metering_point_type,
             Colname.settlement_method,

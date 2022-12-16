@@ -15,11 +15,12 @@ from decimal import Decimal
 from datetime import datetime
 
 from numpy import append
-from geh_stream.codelists import (
-    Quality,
-    ResolutionDuration,
-    MarketEvaluationPointType,
+from package.codelists import (
+    TimeSeriesQuality,
+    MeteringPointType,
+    MeteringPointResolution,
 )
+
 from package.steps.aggregation import calculate_total_consumption
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
@@ -112,20 +113,20 @@ def agg_net_exchange_factory(spark, net_exchange_schema):
                 ],
                 Colname.quality: ["56", "56", "56", "56", "QM", "56"],
                 Colname.resolution: [
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
                 ],
             }
         )
@@ -196,20 +197,20 @@ def agg_production_factory(spark, production_schema):
                 ],
                 Colname.quality: ["56", "56", "56", "56", "E01", "56"],
                 Colname.resolution: [
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
-                    MarketEvaluationPointType.production.value,
-                    MarketEvaluationPointType.production.value,
-                    MarketEvaluationPointType.production.value,
-                    MarketEvaluationPointType.production.value,
-                    MarketEvaluationPointType.production.value,
-                    MarketEvaluationPointType.production.value,
+                    MeteringPointType.production.value,
+                    MeteringPointType.production.value,
+                    MeteringPointType.production.value,
+                    MeteringPointType.production.value,
+                    MeteringPointType.production.value,
+                    MeteringPointType.production.value,
                 ],
             }
         )
@@ -242,10 +243,8 @@ def agg_total_production_factory(spark, production_schema):
                 },
                 Colname.sum_quantity: Decimal(1.0),
                 Colname.quality: quality,
-                Colname.resolution: [ResolutionDuration.hour],
-                Colname.metering_point_type: [
-                    MarketEvaluationPointType.production.value
-                ],
+                Colname.resolution: [MeteringPointResolution.hour.value],
+                Colname.metering_point_type: [MeteringPointType.production.value],
             },
             ignore_index=True,
         )
@@ -282,8 +281,8 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
                 "out_sum": Decimal(1.0),
                 Colname.sum_quantity: Decimal(1.0),
                 Colname.quality: quality,
-                Colname.resolution: [ResolutionDuration.hour],
-                Colname.metering_point_type: [MarketEvaluationPointType.exchange.value],
+                Colname.resolution: [MeteringPointResolution.hour.value],
+                Colname.metering_point_type: [MeteringPointType.exchange.value],
             },
             ignore_index=True,
         )
@@ -317,24 +316,36 @@ def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_fa
 @pytest.mark.parametrize(
     "prod_quality, ex_quality, expected_quality",
     [
-        (Quality.estimated.value, Quality.estimated.value, Quality.estimated.value),
         (
-            Quality.estimated.value,
-            Quality.quantity_missing.value,
-            Quality.estimated.value,
-        ),
-        (Quality.estimated.value, Quality.as_read.value, Quality.estimated.value),
-        (
-            Quality.quantity_missing.value,
-            Quality.quantity_missing.value,
-            Quality.estimated.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.estimated.value,
         ),
         (
-            Quality.quantity_missing.value,
-            Quality.as_read.value,
-            Quality.estimated.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.estimated.value,
         ),
-        (Quality.as_read.value, Quality.as_read.value, Quality.as_read.value),
+        (
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.estimated.value,
+        ),
+        (
+            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.estimated.value,
+        ),
+        (
+            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.estimated.value,
+        ),
+        (
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.measured.value,
+        ),
     ],
 )
 def test_aggregated_quality(

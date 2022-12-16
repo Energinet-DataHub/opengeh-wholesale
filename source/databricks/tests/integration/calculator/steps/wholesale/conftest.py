@@ -26,7 +26,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from geh_stream.codelists import ChargeType
+from package.codelists import ChargeType
 from package.schemas.output import (
     aggregation_result_schema,
     calculate_daily_subscription_price_schema,
@@ -44,7 +44,7 @@ from package.schemas import (
     es_brp_relations_schema,
     market_roles_schema,
     metering_point_schema,
-    time_series_points_schema,
+    time_series_point_schema,
 )
 from package.constants import Colname
 
@@ -75,7 +75,7 @@ def calculate_daily_subscription_price_factory(spark):
                     Colname.charge_type: charge_type,
                     Colname.charge_owner: charge_owner,
                     Colname.charge_price: charge_price,
-                    Colname.time: time,
+                    Colname.charge_time: time,
                     Colname.price_per_day: price_per_day,
                     Colname.charge_count: charge_count,
                     Colname.total_daily_charge_price: total_daily_charge_price,
@@ -121,7 +121,7 @@ def calculate_fee_charge_price_factory(spark):
                     Colname.charge_type: charge_type,
                     Colname.charge_owner: charge_owner,
                     Colname.charge_price: charge_price,
-                    Colname.time: time,
+                    Colname.charge_time: time,
                     Colname.charge_count: charge_count,
                     Colname.total_daily_charge_price: total_daily_charge_price,
                     Colname.metering_point_type: metering_point_type,
@@ -150,7 +150,7 @@ def charges_factory(spark):
         charge_id=DataframeDefaults.default_charge_id,
         charge_type=DataframeDefaults.default_charge_type,
         charge_owner=DataframeDefaults.default_charge_owner,
-        resolution=DataframeDefaults.default_resolution,
+        charge_resolution=DataframeDefaults.default_charge_resolution,
         charge_tax=DataframeDefaults.default_charge_tax,
         currency=DataframeDefaults.default_currency,
     ):
@@ -161,7 +161,7 @@ def charges_factory(spark):
                     Colname.charge_id: charge_id,
                     Colname.charge_type: charge_type,
                     Colname.charge_owner: charge_owner,
-                    Colname.resolution: resolution,
+                    Colname.resolution: charge_resolution,
                     Colname.charge_tax: charge_tax,
                     Colname.currency: currency,
                     Colname.from_date: from_date,
@@ -213,7 +213,7 @@ def charge_prices_factory(spark):
                 {
                     Colname.charge_key: charge_key,
                     Colname.charge_price: charge_price,
-                    Colname.time: time,
+                    Colname.charge_time: time,
                 }
             ],
             ignore_index=True,
@@ -288,7 +288,7 @@ def metering_point_factory(spark):
         settlement_method=DataframeDefaults.default_settlement_method,
         grid_area=DataframeDefaults.default_grid_area,
         connection_state=DataframeDefaults.default_connection_state,
-        resolution=DataframeDefaults.default_resolution,
+        resolution=DataframeDefaults.default_metering_point_resolution,
         in_grid_area=DataframeDefaults.default_in_grid_area,
         out_grid_area=DataframeDefaults.default_out_grid_area,
         metering_method=DataframeDefaults.default_metering_method,
@@ -330,7 +330,6 @@ def time_series_factory(spark):
         metering_point_id=DataframeDefaults.default_metering_point_id,
         quantity=DataframeDefaults.default_quantity,
         ts_quality=DataframeDefaults.default_quality,
-        registration_date_time=DataframeDefaults.default_registration_date_time,
     ):
         pandas_df = pd.DataFrame().append(
             [
@@ -338,16 +337,15 @@ def time_series_factory(spark):
                     Colname.metering_point_id: metering_point_id,
                     Colname.quantity: quantity,
                     Colname.quality: ts_quality,
-                    Colname.time: time,
-                    Colname.year: time.year,
-                    Colname.month: time.month,
-                    Colname.day: time.day,
-                    Colname.registration_date_time: registration_date_time,
+                    Colname.observation_time: time,
+                    Colname.observation_time_year: time.year,
+                    Colname.observation_time_month: time.month,
+                    Colname.observation_time_day: time.day,
                 }
             ],
             ignore_index=True,
         )
 
-        return spark.createDataFrame(pandas_df, schema=time_series_points_schema)
+        return spark.createDataFrame(pandas_df, schema=time_series_point_schema)
 
     return factory

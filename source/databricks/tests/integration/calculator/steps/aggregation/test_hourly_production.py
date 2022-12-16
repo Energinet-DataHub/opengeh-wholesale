@@ -13,14 +13,16 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime, timedelta
-from geh_stream.codelists import (
-    ResolutionDuration,
-    MarketEvaluationPointType,
+from package.codelists import (
+    MeteringPointType,
+    MeteringPointResolution,
+    TimeSeriesQuality,
 )
+
 from package.steps.aggregation import (
-    aggregate_hourly_production_ga_es,
-    aggregate_hourly_production_ga_brp,
-    aggregate_hourly_production_ga,
+    aggregate_production_ga_es,
+    aggregate_production_ga_brp,
+    aggregate_production_ga,
 )
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
@@ -29,7 +31,6 @@ from package.steps.aggregation.aggregation_result_formatter import (
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
-from geh_stream.codelists import Quality
 from package.constants import Colname, ResultKeyName
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -89,10 +90,10 @@ def test_data_factory(spark, agg_production_schema):
                                 Colname.end: default_obs_time + timedelta(hours=i + 1),
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
-                            Colname.quality: [Quality.estimated.value],
-                            Colname.resolution: [ResolutionDuration.hour],
+                            Colname.quality: [TimeSeriesQuality.estimated.value],
+                            Colname.resolution: [MeteringPointResolution.hour.value],
                             Colname.metering_point_type: [
-                                MarketEvaluationPointType.production.value
+                                MeteringPointType.production.value
                             ],
                         },
                         ignore_index=True,
@@ -107,7 +108,7 @@ def test_production_calculation_per_ga_and_es(test_data_factory):
     results[
         ResultKeyName.hourly_production_with_system_correction_and_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_hourly_production_ga_es(results, metadata).sort(
+    result = aggregate_production_ga_es(results, metadata).sort(
         Colname.grid_area, Colname.energy_supplier_id
     )
     result_collect = result.collect()
@@ -125,7 +126,7 @@ def test_production_calculation_per_ga_and_brp(test_data_factory):
     results[
         ResultKeyName.hourly_production_with_system_correction_and_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_hourly_production_ga_brp(results, metadata).sort(
+    result = aggregate_production_ga_brp(results, metadata).sort(
         Colname.grid_area, Colname.balance_responsible_id
     )
     result_collect = result.collect()
@@ -143,7 +144,7 @@ def test_production_calculation_per_ga(test_data_factory):
     results[
         ResultKeyName.hourly_production_with_system_correction_and_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_hourly_production_ga(results, metadata).sort(Colname.grid_area)
+    result = aggregate_production_ga(results, metadata).sort(Colname.grid_area)
     result_collect = result.collect()
     assert result_collect[0][Colname.balance_responsible_id] is None
     assert result_collect[0][Colname.energy_supplier_id] is None

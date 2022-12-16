@@ -21,10 +21,11 @@ from pyspark.sql.types import (
     TimestampType,
 )
 from tests.helpers.test_schemas import (
-    charges_flex_settled_consumption_schema,
+    charges_flex_consumption_schema,
     charges_per_day_schema,
 )
-from geh_stream.codelists import MarketEvaluationPointType, SettlementMethod
+from package.codelists import MeteringPointType, SettlementMethod
+
 from package.steps.wholesale.subscription_calculators import (
     calculate_daily_subscription_price,
     calculate_price_per_day,
@@ -149,7 +150,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
         market_roles_df,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
-        Colname.time
+        Colname.charge_time
     )
 
     expected_subscription_1 = calculate_daily_subscription_price_factory(
@@ -241,7 +242,7 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         market_roles_df,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
-        Colname.time, Colname.charge_key
+        Colname.charge_time, Colname.charge_key
     )
 
     expected_price_per_day_subscription_1 = Decimal(
@@ -305,7 +306,9 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     expected_2 = expected_subscription_1_with_charge_key_2.union(
         expected_subscription_2_with_charge_key_2
     )
-    expected = expected_1.union(expected_2).orderBy(Colname.time, Colname.charge_key)
+    expected = expected_1.union(expected_2).orderBy(
+        Colname.charge_time, Colname.charge_key
+    )
 
     # Assert
     assert result.collect() == expected.collect()
@@ -387,8 +390,8 @@ def test__filter_on_metering_point_type_and_settlement_method__filters_on_E17_an
 ):
     # Arrange
     subscription_charges = spark.createDataFrame(
-        subscription_charges, schema=charges_flex_settled_consumption_schema
-    )  # subscription_charges and charges_flex_settled_consumption has the same schema
+        subscription_charges, schema=charges_flex_consumption_schema
+    )  # subscription_charges and charges_flex_consumption has the same schema
 
     # Act
     result = filter_on_metering_point_type_and_settlement_method(subscription_charges)
@@ -397,7 +400,7 @@ def test__filter_on_metering_point_type_and_settlement_method__filters_on_E17_an
     assert result.count() == expected
 
 
-charges_flex_settled_consumption_dataset_1 = [
+charges_flex_consumption_dataset_1 = [
     (
         "001-D01-001",
         "001",
@@ -412,7 +415,7 @@ charges_flex_settled_consumption_dataset_1 = [
         1,
     )
 ]
-charges_flex_settled_consumption_dataset_2 = [
+charges_flex_consumption_dataset_2 = [
     (
         "001-D01-001",
         "001",
@@ -430,22 +433,22 @@ charges_flex_settled_consumption_dataset_2 = [
 
 
 @pytest.mark.parametrize(
-    "charges_flex_settled_consumption,expected",
+    "charges_flex_consumption,expected",
     [
-        (charges_flex_settled_consumption_dataset_1, Decimal("3.22903226")),
-        (charges_flex_settled_consumption_dataset_2, Decimal("6.91379310")),
+        (charges_flex_consumption_dataset_1, Decimal("3.22903226")),
+        (charges_flex_consumption_dataset_2, Decimal("6.91379310")),
     ],
 )
 def test__calculate_price_per_day__divides_charge_price_by_days_in_month(
-    spark, charges_flex_settled_consumption, expected
+    spark, charges_flex_consumption, expected
 ):
     # Arrange
-    charges_flex_settled_consumption = spark.createDataFrame(
-        charges_flex_settled_consumption, schema=charges_flex_settled_consumption_schema
+    charges_flex_consumption = spark.createDataFrame(
+        charges_flex_consumption, schema=charges_flex_consumption_schema
     )
 
     # Act
-    result = calculate_price_per_day(charges_flex_settled_consumption)
+    result = calculate_price_per_day(charges_flex_consumption)
 
     # Assert
     assert result.collect()[0][Colname.price_per_day] == expected

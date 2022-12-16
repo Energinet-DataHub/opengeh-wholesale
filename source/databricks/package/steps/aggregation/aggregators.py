@@ -11,19 +11,35 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, window, lit
-from geh_stream.codelists import (
-    MarketEvaluationPointType,
+from decimal import Decimal
+
+from package.codelists import (
+    MeteringPointResolution,
+    MeteringPointType,
     SettlementMethod,
-    ConnectionState,
-    ResolutionDuration,
+    TimeSeriesQuality,
 )
+from package.constants import Colname, ResultKeyName
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
-from package.constants import ResultKeyName, Colname
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import (
+    array,
+    array_contains,
+    col,
+    collect_set,
+    explode,
+    expr,
+    lit,
+    row_number,
+    sum,
+    when,
+    window,
+)
+from pyspark.sql.window import Window
+from typing import Union
 
 in_sum = "in_sum"
 out_sum = "out_sum"
@@ -39,7 +55,7 @@ def aggregate_net_exchange_per_neighbour_ga(
 ) -> DataFrame:
     df = (
         results[ResultKeyName.aggregation_base_dataframe].filter(
-            col(Colname.metering_point_type) == MarketEvaluationPointType.exchange.value
+            col(Colname.metering_point_type) == MeteringPointType.exchange.value
         )
         # .filter(
         #     (col(Colname.connection_state) == ConnectionState.connected.value)
@@ -50,7 +66,7 @@ def aggregate_net_exchange_per_neighbour_ga(
         df.groupBy(
             Colname.in_grid_area,
             Colname.out_grid_area,
-            window(col(Colname.time), "1 hour"),
+            window(col(Colname.observation_time), "1 hour"),
             Colname.aggregated_quality,
         )
         .sum(Colname.quantity)
@@ -63,7 +79,7 @@ def aggregate_net_exchange_per_neighbour_ga(
         df.groupBy(
             Colname.in_grid_area,
             Colname.out_grid_area,
-            window(col(Colname.time), "1 hour"),
+            window(col(Colname.observation_time), "1 hour"),
         )
         .sum(Colname.quantity)
         .withColumnRenamed(f"sum({Colname.quantity})", out_sum)
@@ -94,12 +110,10 @@ def aggregate_net_exchange_per_neighbour_ga(
             Colname.quality,
             Colname.sum_quantity,
             col(Colname.in_grid_area).alias(Colname.grid_area),
-            lit(ResolutionDuration.hour).alias(
+            lit(MeteringPointResolution.hour.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
-            lit(MarketEvaluationPointType.exchange.value).alias(
-                Colname.metering_point_type
-            ),
+            lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
         )
     )
     return create_dataframe_from_aggregation_result_schema(metadata, exchange)
@@ -109,7 +123,7 @@ def aggregate_net_exchange_per_neighbour_ga(
 def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe]
     exchangeIn = df.filter(
-        col(Colname.metering_point_type) == MarketEvaluationPointType.exchange.value
+        col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
     # .filter(
     #     (col(Colname.connection_state) == ConnectionState.connected.value)
@@ -118,7 +132,7 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
     exchangeIn = (
         exchangeIn.groupBy(
             Colname.in_grid_area,
-            window(col(Colname.time), "1 hour"),
+            window(col(Colname.observation_time), "1 hour"),
             Colname.aggregated_quality,
         )
         .sum(Colname.quantity)
@@ -127,14 +141,16 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
         .withColumnRenamed(Colname.in_grid_area, Colname.grid_area)
     )
     exchangeOut = df.filter(
-        col(Colname.metering_point_type) == MarketEvaluationPointType.exchange.value
+        col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
     # .filter(
     #     (col(Colname.connection_state) == ConnectionState.connected.value)
     #     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
     # )
     exchangeOut = (
-        exchangeOut.groupBy(Colname.out_grid_area, window(col(Colname.time), "1 hour"))
+        exchangeOut.groupBy(
+            Colname.out_grid_area, window(col(Colname.observation_time), "1 hour")
+        )
         .sum(Colname.quantity)
         .withColumnRenamed(f"sum({Colname.quantity})", out_sum)
         .withColumnRenamed("window", Colname.time_window)
@@ -154,23 +170,21 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
             Colname.time_window,
             Colname.sum_quantity,
             Colname.quality,
-            lit(ResolutionDuration.hour).alias(
+            lit(MeteringPointResolution.hour.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
-            lit(MarketEvaluationPointType.exchange.value).alias(
-                Colname.metering_point_type
-            ),
+            lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
         )
     )
     return create_dataframe_from_aggregation_result_schema(metadata, resultDf)
 
 
 # Function to aggregate hourly consumption per grid area, balance responsible party and energy supplier (step 3)
-def aggregate_hourly_consumption(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_consumption(results: dict, metadata: Metadata) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe]
     return aggregate_per_ga_and_brp_and_es(
         df,
-        MarketEvaluationPointType.consumption,
+        MeteringPointType.consumption,
         SettlementMethod.non_profiled,
         metadata,
     )
@@ -181,27 +195,27 @@ def aggregate_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe]
     return aggregate_per_ga_and_brp_and_es(
         df,
-        MarketEvaluationPointType.consumption,
-        SettlementMethod.flex_settled,
+        MeteringPointType.consumption,
+        SettlementMethod.flex,
         metadata,
     )
 
 
 # Function to aggregate hourly production per grid area, balance responsible party and energy supplier (step 5)
-def aggregate_hourly_production(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production(results: dict, metadata: Metadata) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe]
     return aggregate_per_ga_and_brp_and_es(
-        df, MarketEvaluationPointType.production, None, metadata
+        df, MeteringPointType.production, None, metadata
     )
 
 
 # Function to aggregate sum per grid area, balance responsible party and energy supplier (step 3, 4 and 5)
 def aggregate_per_ga_and_brp_and_es(
     df: DataFrame,
-    market_evaluation_point_type: MarketEvaluationPointType,
-    settlement_method: SettlementMethod,
+    market_evaluation_point_type: MeteringPointType,
+    settlement_method: Union[SettlementMethod, None],
     metadata: Metadata,
-):
+) -> DataFrame:
     result = df.filter(
         col(Colname.metering_point_type) == market_evaluation_point_type.value
     )
@@ -209,22 +223,93 @@ def aggregate_per_ga_and_brp_and_es(
         result = result.filter(
             col(Colname.settlement_method) == settlement_method.value
         )
-    # result = result.filter(
-    #     (col(Colname.connection_state) == ConnectionState.connected.value)
-    #     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
-    # )
+    result = result.withColumn(
+        "quarter_times",
+        when(
+            col(Colname.resolution) == MeteringPointResolution.hour.value,
+            array(
+                col(Colname.observation_time),
+                col(Colname.observation_time) + expr("INTERVAL 15 minutes"),
+                col(Colname.observation_time) + expr("INTERVAL 30 minutes"),
+                col(Colname.observation_time) + expr("INTERVAL 45 minutes"),
+            ),
+        ).when(
+            col(Colname.resolution) == MeteringPointResolution.quarter.value,
+            array(col(Colname.observation_time)),
+        ),
+    ).select(
+        result["*"],
+        explode("quarter_times").alias("quarter_time"),
+    )
+    result = result.withColumn(
+        Colname.time_window, window(col("quarter_time"), "15 minutes")
+    )
     result = (
-        result.groupBy(
+        result.withColumn(
+            "quarter_quantity",
+            when(
+                col(Colname.resolution) == MeteringPointResolution.hour.value,
+                col(Colname.quantity) / 4,
+            ).when(
+                col(Colname.resolution) == MeteringPointResolution.quarter.value,
+                col(Colname.quantity),
+            ),
+        )
+        .groupBy(
             Colname.grid_area,
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
-            window(col(Colname.time), "1 hour"),
-            Colname.aggregated_quality,
+            Colname.time_window,
+            # Colname.quality,
         )
-        .sum(Colname.quantity)
-        .withColumnRenamed(f"sum({Colname.quantity})", Colname.sum_quantity)
-        .withColumnRenamed("window", Colname.time_window)
-        .withColumnRenamed(Colname.aggregated_quality, Colname.quality)
+        # .sum("quarter_quantity")
+        # .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
+        .agg(
+            sum("quarter_quantity").alias(Colname.sum_quantity), collect_set("Quality")
+        )
+        .withColumn(
+            "Quality",
+            when(
+                array_contains(
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
+                ),
+                lit(TimeSeriesQuality.missing.value),
+            )
+            .when(
+                array_contains(
+                    col("collect_set(Quality)"),
+                    lit(TimeSeriesQuality.estimated.value),
+                ),
+                lit(TimeSeriesQuality.estimated.value),
+            )
+            .when(
+                array_contains(
+                    col("collect_set(Quality)"),
+                    lit(TimeSeriesQuality.measured.value),
+                ),
+                lit(TimeSeriesQuality.measured.value),
+            ),
+        )
+    )
+
+    win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
+
+    # Points may be missing in result time series if all metering points are missing a point at a certain moment.
+    # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
+    result = (
+        result.withColumn("position", row_number().over(win))
+        .withColumn(
+            Colname.sum_quantity,
+            when(col(Colname.sum_quantity).isNull(), Decimal("0.000")).otherwise(
+                col(Colname.sum_quantity)
+            ),
+        )
+        .withColumn(
+            Colname.quality,
+            when(
+                col(Colname.quality).isNull(), TimeSeriesQuality.missing.value
+            ).otherwise(col(Colname.quality)),
+        )
         .select(
             Colname.grid_area,
             Colname.balance_responsible_id,
@@ -232,22 +317,25 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(ResolutionDuration.hour).alias(
+            # Colname.resolution,
+            lit(MeteringPointResolution.quarter.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
             lit(None if settlement_method is None else settlement_method.value).alias(
                 Colname.settlement_method
             ),
+            Colname.position,
         )
     )
+
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def aggregate_hourly_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga_and_es(
         results[ResultKeyName.hourly_production_with_system_correction_and_grid_loss],
-        MarketEvaluationPointType.production,
+        MeteringPointType.production,
         metadata,
     )
 
@@ -257,17 +345,15 @@ def aggregate_hourly_settled_consumption_ga_es(
 ) -> DataFrame:
     return __aggregate_per_ga_and_es(
         results[ResultKeyName.hourly_consumption],
-        MarketEvaluationPointType.consumption,
+        MeteringPointType.consumption,
         metadata,
     )
 
 
-def aggregate_flex_settled_consumption_ga_es(
-    results: dict, metadata: Metadata
-) -> DataFrame:
+def aggregate_flex_consumption_ga_es(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga_and_es(
         results[ResultKeyName.flex_consumption_with_grid_loss],
-        MarketEvaluationPointType.consumption,
+        MeteringPointType.consumption,
         metadata,
     )
 
@@ -275,7 +361,7 @@ def aggregate_flex_settled_consumption_ga_es(
 # Function to aggregate sum per grid area and energy supplier (step 12, 13 and 14)
 def __aggregate_per_ga_and_es(
     df: DataFrame,
-    market_evaluation_point_type: MarketEvaluationPointType,
+    market_evaluation_point_type: MeteringPointType,
     metadata: Metadata,
 ) -> DataFrame:
     result = (
@@ -293,7 +379,7 @@ def __aggregate_per_ga_and_es(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(ResolutionDuration.hour).alias(
+            lit(MeteringPointResolution.hour.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
@@ -302,10 +388,10 @@ def __aggregate_per_ga_and_es(
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def aggregate_hourly_production_ga_brp(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga_brp(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga_and_brp(
         results[ResultKeyName.hourly_production_with_system_correction_and_grid_loss],
-        MarketEvaluationPointType.production,
+        MeteringPointType.production,
         metadata,
     )
 
@@ -315,17 +401,15 @@ def aggregate_hourly_settled_consumption_ga_brp(
 ) -> DataFrame:
     return __aggregate_per_ga_and_brp(
         results[ResultKeyName.hourly_consumption],
-        MarketEvaluationPointType.consumption,
+        MeteringPointType.consumption,
         metadata,
     )
 
 
-def aggregate_flex_settled_consumption_ga_brp(
-    results: dict, metadata: Metadata
-) -> DataFrame:
+def aggregate_flex_consumption_ga_brp(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga_and_brp(
         results[ResultKeyName.flex_consumption_with_grid_loss],
-        MarketEvaluationPointType.consumption,
+        MeteringPointType.consumption,
         metadata,
     )
 
@@ -333,7 +417,7 @@ def aggregate_flex_settled_consumption_ga_brp(
 # Function to aggregate sum per grid area and balance responsible party (step 15, 16 and 17)
 def __aggregate_per_ga_and_brp(
     df: DataFrame,
-    market_evaluation_point_type: MarketEvaluationPointType,
+    market_evaluation_point_type: MeteringPointType,
     metadata: Metadata,
 ) -> DataFrame:
     result = (
@@ -351,7 +435,7 @@ def __aggregate_per_ga_and_brp(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(ResolutionDuration.hour).alias(
+            lit(MeteringPointResolution.hour.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
@@ -360,10 +444,10 @@ def __aggregate_per_ga_and_brp(
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def aggregate_hourly_production_ga(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga(
         results[ResultKeyName.hourly_production_with_system_correction_and_grid_loss],
-        MarketEvaluationPointType.production,
+        MeteringPointType.production,
         metadata,
     )
 
@@ -373,17 +457,15 @@ def aggregate_hourly_settled_consumption_ga(
 ) -> DataFrame:
     return __aggregate_per_ga(
         results[ResultKeyName.hourly_consumption],
-        MarketEvaluationPointType.consumption,
+        MeteringPointType.consumption,
         metadata,
     )
 
 
-def aggregate_flex_settled_consumption_ga(
-    results: dict, metadata: Metadata
-) -> DataFrame:
+def aggregate_flex_consumption_ga(results: dict, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga(
         results[ResultKeyName.flex_consumption_with_grid_loss],
-        MarketEvaluationPointType.consumption,
+        MeteringPointType.consumption,
         metadata,
     )
 
@@ -391,7 +473,7 @@ def aggregate_flex_settled_consumption_ga(
 # Function to aggregate sum per grid area (step 18, 19 and 20)
 def __aggregate_per_ga(
     df: DataFrame,
-    market_evaluation_point_type: MarketEvaluationPointType,
+    market_evaluation_point_type: MeteringPointType,
     metadata: Metadata,
 ) -> DataFrame:
     result = (
@@ -403,7 +485,7 @@ def __aggregate_per_ga(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(ResolutionDuration.hour).alias(
+            lit(MeteringPointResolution.hour.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),

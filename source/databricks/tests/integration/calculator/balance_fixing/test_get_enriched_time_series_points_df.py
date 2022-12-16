@@ -24,6 +24,7 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
+from package.constants import Colname
 from pyspark.sql.functions import col
 
 
@@ -37,7 +38,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
                 "MeteringPointId": "the-meteringpoint-id",
                 "Quantity": Decimal("1.1"),
                 "Quality": TimeSeriesQuality.calculated.value,
-                "Time": time,
+                Colname.observation_time: time,
             }
         ]
         return spark.createDataFrame(df)
@@ -71,51 +72,6 @@ point_1_quantity = Decimal("1.100")
 point_2_quantity = Decimal("2.200")
 
 
-@pytest.fixture(scope="module")
-def raw_time_series_points_with_same_gsrn_and_time_factory(spark, timestamp_factory):
-    def factory(
-        registration_date_time_1: datetime = timestamp_factory(
-            "2022-06-10T12:00:00.000Z"
-        ),
-        registration_date_time_2: datetime = timestamp_factory(
-            "2022-06-10T12:15:00.000Z"
-        ),
-        stored_time_1: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
-        stored_time_2: datetime = timestamp_factory("2022-06-10T12:09:15.000Z"),
-    ):
-        df = [
-            {
-                "MeteringPointId": "the-meteringpoint-id",
-                "TransactionId": "1",
-                "Quantity": point_1_quantity,
-                "Quality": 3,
-                "Resolution": 2,
-                "RegistrationDateTime": registration_date_time_1,
-                "storedTime": stored_time_1,
-                "time": timestamp_factory("2022-06-10T12:15:00.000Z"),
-                "year": 2022,
-                "month": 6,
-                "day": 8,
-            },
-            {
-                "MeteringPointId": "the-meteringpoint-id",
-                "TransactionId": "1",
-                "Quantity": point_2_quantity,
-                "Quality": 3,
-                "Resolution": 2,
-                "RegistrationDateTime": registration_date_time_2,
-                "storedTime": stored_time_2,
-                "time": timestamp_factory("2022-06-10T12:15:00.000Z"),
-                "year": 2022,
-                "month": 6,
-                "day": 8,
-            },
-        ]
-        return spark.createDataFrame(df)
-
-    return factory
-
-
 time_1 = "2022-06-10T12:15:00.000Z"
 time_2 = "2022-06-10T13:15:00.000Z"
 
@@ -144,7 +100,7 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
         time=timestamp_factory("2022-06-08T22:15:00.000Z")
     )
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarter.value,
         effective_date=timestamp_factory("2022-06-08T12:00:00.000Z"),
         to_effective_date=timestamp_factory("2023-06-10T13:00:00.000Z"),
     )
@@ -189,7 +145,7 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     metering_point_period_df = metering_point_period_df_factory(
         effective_date=effective_date,
         to_effective_date=to_effective_date,
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarter.value,
     )
 
     # Act
@@ -214,7 +170,7 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
     )
 
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringPointResolution.quarterly.value
+        resolution=MeteringPointResolution.quarter.value
     )
     # Act
     actual = _get_enriched_time_series_points_df(
@@ -226,7 +182,9 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.where(col("Quantity").isNull()).count() == 95
 
 
@@ -253,7 +211,9 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.where(col("Quantity").isNull()).count() == 23
 
 
@@ -267,7 +227,7 @@ def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
     )
 
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringPointResolution.quarterly.value
+        resolution=MeteringPointResolution.quarter.value
     )
 
     # Act
@@ -280,7 +240,9 @@ def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.count() > 1
     assert actual.where(col("quality").isNull()).count() == actual.count()
 
@@ -311,7 +273,9 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(col("time") != timestamp_factory(start_time))
+    actual = actual.filter(
+        col(Colname.observation_time) != timestamp_factory(start_time)
+    )
     assert actual.count() > 1
     assert actual.where(col("quality").isNull()).count() == actual.count()
 
@@ -327,7 +291,7 @@ def test__df_is_not_empty_when_no_time_series_points(
         col("MeteringPointId") == ""
     )
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringPointResolution.quarterly.value,
+        resolution=MeteringPointResolution.quarter.value,
         effective_date=timestamp_factory(start_time),
         to_effective_date=timestamp_factory(end_time),
     )
@@ -351,7 +315,7 @@ def test__df_is_not_empty_when_no_time_series_points(
         (
             "2022-06-08T22:00:00.000Z",
             "2022-06-09T22:00:00.000Z",
-            MeteringPointResolution.quarterly.value,
+            MeteringPointResolution.quarter.value,
             96,
         ),
         # DST has 24 hours
@@ -367,7 +331,7 @@ def test__df_is_not_empty_when_no_time_series_points(
         (
             "2022-10-29T22:00:00.000Z",
             "2022-10-30T23:00:00.000Z",
-            MeteringPointResolution.quarterly.value,
+            MeteringPointResolution.quarter.value,
             100,
         ),
         (
@@ -386,7 +350,7 @@ def test__df_is_not_empty_when_no_time_series_points(
         (
             "2022-03-26T23:00:00.000Z",
             "2022-03-27T22:00:00.000Z",
-            MeteringPointResolution.quarterly.value,
+            MeteringPointResolution.quarter.value,
             92,
         ),
     ],

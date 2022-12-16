@@ -14,7 +14,7 @@
 from datetime import datetime, timedelta
 from package.constants import Colname
 from pyspark.sql.types import StructType, StringType, TimestampType
-from geh_stream.codelists import Quality, MarketEvaluationPointType
+from package.codelists import MeteringPointType, TimeSeriesQuality
 from package.steps.aggregation import aggregate_quality
 import pytest
 import pandas as pd
@@ -34,7 +34,7 @@ def schema():
         StructType()
         .add(Colname.grid_area, StringType(), False)
         .add(Colname.metering_point_type, StringType())
-        .add(Colname.time, TimestampType())
+        .add(Colname.observation_time, TimestampType())
         .add(Colname.quality, StringType())
     )
 
@@ -45,7 +45,7 @@ def expected_schema():
         StructType()
         .add(Colname.grid_area, StringType(), False)
         .add(Colname.metering_point_type, StringType())
-        .add(Colname.time, TimestampType())
+        .add(Colname.observation_time, TimestampType())
         .add(Colname.quality, StringType())
         .add(Colname.aggregated_quality, StringType(), False)
     )
@@ -60,7 +60,7 @@ def test_data_factory(spark, schema):
             {
                 Colname.grid_area: [],
                 Colname.metering_point_type: [],
-                Colname.time: [],
+                Colname.observation_time: [],
                 Colname.quality: [],
             }
         )
@@ -68,8 +68,8 @@ def test_data_factory(spark, schema):
             pandas_df = pandas_df.append(
                 {
                     Colname.grid_area: str(1),
-                    Colname.metering_point_type: MarketEvaluationPointType.consumption.value,
-                    Colname.time: default_obs_time + timedelta(hours=1),
+                    Colname.metering_point_type: MeteringPointType.consumption.value,
+                    Colname.observation_time: default_obs_time + timedelta(hours=1),
                     Colname.quality: df_qualities[i],
                 },
                 ignore_index=True,
@@ -83,90 +83,119 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimat
     test_data_factory,
 ):
     df = test_data_factory(
-        Quality.estimated.value, Quality.as_read.value, Quality.as_read.value
+        TimeSeriesQuality.estimated.value,
+        TimeSeriesQuality.measured.value,
+        TimeSeriesQuality.measured.value,
     )
 
     result_df = aggregate_quality(df)
 
-    assert result_df.collect()[0][Colname.aggregated_quality] == Quality.estimated.value
+    assert (
+        result_df.collect()[0][Colname.aggregated_quality]
+        == TimeSeriesQuality.estimated.value
+    )
 
 
 def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimated_and_calculated(
     test_data_factory,
 ):
     df = test_data_factory(
-        Quality.estimated.value, Quality.calculated.value, Quality.calculated.value
+        TimeSeriesQuality.estimated.value,
+        TimeSeriesQuality.calculated.value,
+        TimeSeriesQuality.calculated.value,
     )
 
     result_df = aggregate_quality(df)
 
-    assert result_df.collect()[0][Colname.aggregated_quality] == Quality.estimated.value
+    assert (
+        result_df.collect()[0][Colname.aggregated_quality]
+        == TimeSeriesQuality.estimated.value
+    )
 
 
 def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimated_calculated_and_read(
     test_data_factory,
 ):
     df = test_data_factory(
-        Quality.calculated.value, Quality.as_read.value, Quality.estimated.value
+        TimeSeriesQuality.calculated.value,
+        TimeSeriesQuality.measured.value,
+        TimeSeriesQuality.estimated.value,
     )
 
     result_df = aggregate_quality(df)
 
-    assert result_df.collect()[0][Colname.aggregated_quality] == Quality.estimated.value
+    assert (
+        result_df.collect()[0][Colname.aggregated_quality]
+        == TimeSeriesQuality.estimated.value
+    )
 
 
-def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimated_and_quantity_missing(
+def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimated_and_missing(
     test_data_factory,
 ):
     df = test_data_factory(
-        Quality.estimated.value,
-        Quality.quantity_missing.value,
-        Quality.quantity_missing.value,
+        TimeSeriesQuality.estimated.value,
+        TimeSeriesQuality.missing.value,
+        TimeSeriesQuality.missing.value,
     )
 
     result_df = aggregate_quality(df)
 
-    assert result_df.collect()[0][Colname.aggregated_quality] == Quality.estimated.value
+    assert (
+        result_df.collect()[0][Colname.aggregated_quality]
+        == TimeSeriesQuality.estimated.value
+    )
 
 
-def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_read_and_quantity_missing(
+def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_read_and_missing(
     test_data_factory,
 ):
     df = test_data_factory(
-        Quality.as_read.value,
-        Quality.quantity_missing.value,
-        Quality.quantity_missing.value,
+        TimeSeriesQuality.measured.value,
+        TimeSeriesQuality.missing.value,
+        TimeSeriesQuality.missing.value,
     )
 
     result_df = aggregate_quality(df)
 
-    assert result_df.collect()[0][Colname.aggregated_quality] == Quality.estimated.value
+    assert (
+        result_df.collect()[0][Colname.aggregated_quality]
+        == TimeSeriesQuality.estimated.value
+    )
 
 
-def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_calculated_and_quantity_missing(
+def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_calculated_and_missing(
     test_data_factory,
 ):
     df = test_data_factory(
-        Quality.calculated.value,
-        Quality.quantity_missing.value,
-        Quality.quantity_missing.value,
+        TimeSeriesQuality.calculated.value,
+        TimeSeriesQuality.missing.value,
+        TimeSeriesQuality.missing.value,
     )
 
     result_df = aggregate_quality(df)
 
-    assert result_df.collect()[0][Colname.aggregated_quality] == Quality.estimated.value
+    assert (
+        result_df.collect()[0][Colname.aggregated_quality]
+        == TimeSeriesQuality.estimated.value
+    )
 
 
 def test_set_aggregated_quality_to_read_when_quality_within_hour_is_either_read_or_calculated(
     test_data_factory,
 ):
     df = test_data_factory(
-        Quality.as_read.value, Quality.calculated.value, Quality.calculated.value
+        TimeSeriesQuality.measured.value,
+        TimeSeriesQuality.calculated.value,
+        TimeSeriesQuality.calculated.value,
     )
 
     result_df = aggregate_quality(df)
 
-    assert result_df.collect()[0][Colname.aggregated_quality] == Quality.as_read.value
+    assert (
+        result_df.collect()[0][Colname.aggregated_quality]
+        == TimeSeriesQuality.measured.value
+    )
 
 
 def test_returns_correct_schema(test_data_factory, expected_schema):
@@ -175,7 +204,9 @@ def test_returns_correct_schema(test_data_factory, expected_schema):
     and time window (from the single-hour resolution specified in the aggregator).
     """
     df = test_data_factory(
-        Quality.estimated.value, Quality.estimated.value, Quality.estimated.value
+        TimeSeriesQuality.estimated.value,
+        TimeSeriesQuality.estimated.value,
+        TimeSeriesQuality.estimated.value,
     )
     aggregated_df = aggregate_quality(df)
     assert aggregated_df.schema == expected_schema
@@ -185,12 +216,12 @@ def test_returns_correct_schema(test_data_factory, expected_schema):
 @pytest.fixture(scope="module")
 def test_data_factory_with_diff_market_evalution_point_type(spark, schema):
     def factory():
-        df_qualities = Quality.estimated.value
+        df_qualities = TimeSeriesQuality.estimated.value
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [],
                 Colname.metering_point_type: [],
-                Colname.time: [],
+                Colname.observation_time: [],
                 Colname.quality: [],
             }
         )
@@ -199,7 +230,7 @@ def test_data_factory_with_diff_market_evalution_point_type(spark, schema):
                 {
                     Colname.grid_area: str(1),
                     Colname.metering_point_type: mp[i],
-                    Colname.time: default_obs_time + timedelta(hours=1),
+                    Colname.observation_time: default_obs_time + timedelta(hours=1),
                     Colname.quality: df_qualities[i],
                 },
                 ignore_index=True,

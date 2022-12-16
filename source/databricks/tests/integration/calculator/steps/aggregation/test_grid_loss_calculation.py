@@ -14,16 +14,17 @@
 from decimal import Decimal
 from datetime import datetime, timedelta
 from enum import Enum
-from geh_stream.codelists import (
-    MarketEvaluationPointType,
-    ResolutionDuration,
+from package.codelists import (
+    MeteringPointType,
+    MeteringPointResolution,
     SettlementMethod,
+    TimeSeriesQuality
 )
+
 from package.steps.aggregation import (
     calculate_grid_loss,
     calculate_residual_ga,
 )
-from geh_stream.codelists import Quality
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
@@ -118,9 +119,9 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(20 + i),
-                        Colname.quality: Quality.estimated.value,
-                        Colname.resolution: ResolutionDuration.hour,
-                        Colname.metering_point_type: MarketEvaluationPointType.exchange.value,
+                        Colname.quality: TimeSeriesQuality.estimated.value,
+                        Colname.resolution: MeteringPointResolution.hour.value,
+                        Colname.metering_point_type: MeteringPointType.exchange.value,
                     },
                     ignore_index=True,
                 )
@@ -149,9 +150,9 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(13 + i),
-                        Colname.quality: Quality.estimated.value,
-                        Colname.resolution: ResolutionDuration.hour,
-                        Colname.metering_point_type: MarketEvaluationPointType.consumption.value,
+                        Colname.quality: TimeSeriesQuality.estimated.value,
+                        Colname.resolution: MeteringPointResolution.hour.value,
+                        Colname.metering_point_type: MeteringPointType.consumption.value,
                     },
                     ignore_index=True,
                 )
@@ -182,9 +183,9 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(14 + i),
-                        Colname.quality: Quality.estimated.value,
-                        Colname.resolution: ResolutionDuration.hour,
-                        Colname.metering_point_type: MarketEvaluationPointType.consumption.value,
+                        Colname.quality: TimeSeriesQuality.estimated.value,
+                        Colname.resolution: MeteringPointResolution.hour.value,
+                        Colname.metering_point_type: MeteringPointType.consumption.value,
                     },
                     ignore_index=True,
                 )
@@ -215,9 +216,9 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(50 + i),
-                        Colname.quality: Quality.estimated.value,
-                        Colname.resolution: ResolutionDuration.hour,
-                        Colname.metering_point_type: MarketEvaluationPointType.production.value,
+                        Colname.quality: TimeSeriesQuality.estimated.value,
+                        Colname.resolution: MeteringPointResolution.hour.value,
+                        Colname.metering_point_type: MeteringPointType.production.value,
                     },
                     ignore_index=True,
                 )
@@ -270,20 +271,20 @@ def agg_net_exchange_factory(spark, agg_net_exchange_schema):
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
-                    MarketEvaluationPointType.exchange.value,
-                    MarketEvaluationPointType.exchange.value,
-                    MarketEvaluationPointType.exchange.value,
-                    MarketEvaluationPointType.exchange.value,
-                    MarketEvaluationPointType.exchange.value,
-                    MarketEvaluationPointType.exchange.value,
+                    MeteringPointType.exchange.value,
+                    MeteringPointType.exchange.value,
+                    MeteringPointType.exchange.value,
+                    MeteringPointType.exchange.value,
+                    MeteringPointType.exchange.value,
+                    MeteringPointType.exchange.value,
                 ],
             }
         )
@@ -337,20 +338,20 @@ def agg_flex_consumption_factory(spark, agg_consumption_and_production_schema):
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
                 ],
             }
         )
@@ -406,20 +407,20 @@ def agg_hourly_consumption_factory(spark, agg_consumption_and_production_schema)
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
                 ],
             }
         )
@@ -475,20 +476,20 @@ def agg_hourly_production_factory(spark, agg_consumption_and_production_schema):
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
-                    MarketEvaluationPointType.production.value,
-                    MarketEvaluationPointType.production.value,
-                    MarketEvaluationPointType.production.value,
-                    MarketEvaluationPointType.production.value,
-                    MarketEvaluationPointType.production.value,
-                    MarketEvaluationPointType.production.value,
+                    MeteringPointType.production.value,
+                    MeteringPointType.production.value,
+                    MeteringPointType.production.value,
+                    MeteringPointType.production.value,
+                    MeteringPointType.production.value,
+                    MeteringPointType.production.value,
                 ],
             }
         )
@@ -549,7 +550,7 @@ def test_grid_loss_calculation_calculates_correctly_on_grid_area(
         metadata, agg_hourly_consumption_factory()
     )
     results[
-        ResultKeyName.flex_settled_consumption_ga
+        ResultKeyName.flex_consumption_ga
     ] = create_dataframe_from_aggregation_result_schema(
         metadata, agg_flex_consumption_factory()
     )

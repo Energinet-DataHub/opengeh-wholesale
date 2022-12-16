@@ -13,9 +13,10 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from geh_stream.codelists import (
-    ResolutionDuration,
-    MarketEvaluationPointType,
+from package.codelists import (
+    MeteringPointType,
+    MeteringPointResolution,
+    TimeSeriesQuality,
 )
 from package.steps.aggregation import (
     aggregate_hourly_settled_consumption_ga_es,
@@ -29,7 +30,6 @@ from package.steps.aggregation.aggregation_result_formatter import (
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
-from geh_stream.codelists import Quality
 from package.constants import Colname, ResultKeyName
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -104,28 +104,28 @@ def agg_result_factory(spark, settled_schema):
                     Decimal(1.0),
                 ],
                 Colname.quality: [
-                    Quality.estimated.value,
-                    Quality.estimated.value,
-                    Quality.estimated.value,
-                    Quality.estimated.value,
-                    Quality.estimated.value,
-                    Quality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.estimated.value,
                 ],
                 Colname.resolution: [
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
-                    ResolutionDuration.hour,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.hour.value,
                 ],
                 Colname.metering_point_type: [
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
-                    MarketEvaluationPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
+                    MeteringPointType.consumption.value,
                 ],
             }
         )

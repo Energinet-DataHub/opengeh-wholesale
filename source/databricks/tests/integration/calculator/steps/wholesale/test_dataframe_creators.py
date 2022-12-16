@@ -22,7 +22,7 @@ from package.schemas import (
     market_roles_schema,
 )
 from package.schemas.output import calculate_daily_subscription_price_schema
-from package.schemas import time_series_points_schema
+from package.schemas import time_series_point_schema
 from tests.helpers import DataframeDefaults
 
 
@@ -41,7 +41,7 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
     assert result[Colname.charge_price] == DataframeDefaults.default_charge_price
-    assert result[Colname.time] == time
+    assert result[Colname.charge_time] == time
     assert result[Colname.price_per_day] == price_per_day
     assert result[Colname.charge_count] == charge_count
     assert result[Colname.total_daily_charge_price] == total_daily_charge_price
@@ -72,7 +72,7 @@ def test_charges(charges_factory):
     assert result[Colname.charge_id] == DataframeDefaults.default_charge_id
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
-    assert result[Colname.resolution] == DataframeDefaults.default_resolution
+    assert result[Colname.resolution] == DataframeDefaults.default_charge_resolution
     assert result[Colname.charge_tax] == DataframeDefaults.default_charge_tax
     assert result[Colname.currency] == DataframeDefaults.default_currency
     assert result[Colname.from_date] == from_date
@@ -100,7 +100,7 @@ def test_charge_prices(charge_prices_factory):
     assert len(df.columns) == len(charge_prices_schema.fields)
     assert result[Colname.charge_key] == DataframeDefaults.default_charge_key
     assert result[Colname.charge_price] == DataframeDefaults.default_charge_price
-    assert result[Colname.time] == time
+    assert result[Colname.charge_time] == time
 
 
 def test_market_roles(market_roles_factory):
@@ -140,7 +140,10 @@ def test_metering_point(metering_point_factory):
     assert (
         result[Colname.connection_state] == DataframeDefaults.default_connection_state
     )
-    assert result[Colname.resolution] == DataframeDefaults.default_resolution
+    assert (
+        result[Colname.resolution]
+        == DataframeDefaults.default_metering_point_resolution
+    )
     assert result[Colname.in_grid_area] == DataframeDefaults.default_in_grid_area
     assert result[Colname.out_grid_area] == DataframeDefaults.default_out_grid_area
     assert result[Colname.metering_method] == DataframeDefaults.default_metering_method
@@ -158,10 +161,10 @@ def test_time_series(time_series_factory):
     time = datetime(2020, 1, 1, 0, 0)
     df = time_series_factory(time)
     result = df.collect()[0]
-    assert len(df.columns) == len(time_series_points_schema.fields)
+    assert len(df.columns) == len(time_series_point_schema.fields)
     assert (
         result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
     )
     assert result[Colname.quantity] == DataframeDefaults.default_quantity
     assert result[Colname.quality] == DataframeDefaults.default_quality
-    assert result[Colname.time] == time
+    assert result[Colname.observation_time] == time

@@ -20,6 +20,7 @@ from pyspark.sql.types import (
     TimestampType,
     StructType,
 )
+from package.constants import Colname
 
 """
 Schema for time series points
@@ -34,27 +35,21 @@ time_series_point_schema = StructType(
     [
         # GSRN (18 characters) that uniquely identifies the metering point
         # Example: 578710000000000103
-        StructField("MeteringPointId", StringType(), False),
-
+        StructField(Colname.metering_point_id, StringType(), False),
         # Energy quantity for the given observation time.
         # Null when quality is missing.
         # Example: 1234.534217
-        StructField("Quantity", DecimalType(18,6), True),
-
+        StructField(Colname.quantity, DecimalType(18, 6), True),
         # "A02" (missing) | "A03" (estimated) | "A04" (measured) | "A06" (calculated)
         # Example: A02
-        StructField("Quality", StringType(), False),
-        
+        StructField(Colname.quality, StringType(), False),
         # The time when the energy was consumed/produced/exchanged
         StructField("ObservationTime", TimestampType(), False),
-        
         # The year part of the `ObservationTime`. Used in partition.
         StructField("ObservationTime_Year", IntegerType(), False),
-        
         # The month part of the `ObservationTime`. Used in partition.
         StructField("ObservationTime_Month", IntegerType(), False),
-        
         # The day part (1-31) of the `ObservationTime`. Used in partition.
-        StructField("ObservationTime_Day", IntegerType(), False)
+        StructField("ObservationTime_Day", IntegerType(), False),
     ]
 )

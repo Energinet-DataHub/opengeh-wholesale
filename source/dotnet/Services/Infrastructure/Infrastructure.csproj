@@ -29,7 +29,7 @@ limitations under the License.
     <ItemGroup>
       <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.10.0" />
       <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.11.0" />
-      <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.1.0" />
+      <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.2.9" />
       <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="6.0.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
     </ItemGroup>
