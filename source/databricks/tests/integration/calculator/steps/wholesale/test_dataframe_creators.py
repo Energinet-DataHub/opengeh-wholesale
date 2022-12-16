@@ -41,7 +41,7 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
     assert result[Colname.charge_price] == DataframeDefaults.default_charge_price
-    assert result[Colname.time] == time
+    assert result[Colname.charge_time] == time
     assert result[Colname.price_per_day] == price_per_day
     assert result[Colname.charge_count] == charge_count
     assert result[Colname.total_daily_charge_price] == total_daily_charge_price
@@ -100,7 +100,7 @@ def test_charge_prices(charge_prices_factory):
     assert len(df.columns) == len(charge_prices_schema.fields)
     assert result[Colname.charge_key] == DataframeDefaults.default_charge_key
     assert result[Colname.charge_price] == DataframeDefaults.default_charge_price
-    assert result[Colname.time] == time
+    assert result[Colname.charge_time] == time
 
 
 def test_market_roles(market_roles_factory):
@@ -167,4 +167,4 @@ def test_time_series(time_series_factory):
     )
     assert result[Colname.quantity] == DataframeDefaults.default_quantity
     assert result[Colname.quality] == DataframeDefaults.default_quality
-    assert result[Colname.time] == time
+    assert result[Colname.observation_time] == time
