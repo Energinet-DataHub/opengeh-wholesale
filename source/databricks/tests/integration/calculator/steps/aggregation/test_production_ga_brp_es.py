@@ -83,14 +83,14 @@ def time_series_row_factory(
     """
 
     def factory(
-        point_type=default_point_type,
-        grid_area=default_grid_area,
-        responsible=default_responsible,
-        supplier=default_supplier,
-        quantity=default_quantity,
-        obs_time=default_obs_time,
-        connection_state=default_connection_state,
-        resolution=default_resolution,
+        point_type: str = default_point_type,
+        grid_area: str = default_grid_area,
+        responsible: str = default_responsible,
+        supplier: str = default_supplier,
+        quantity: Decimal = default_quantity,
+        obs_time: datetime = default_obs_time,
+        connection_state: str = default_connection_state,
+        resolution: str = default_resolution,
     ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
@@ -119,7 +119,7 @@ def check_aggregation_row(
     sum: Decimal,
     start: datetime,
     end: datetime,
-):
+) -> None:
     """
     Helper function that checks column values for the given row.
     Note that start and end datetimes are timezone-naive - we set the Spark session timezone to UTC in the
@@ -145,8 +145,8 @@ def check_aggregation_row(
     ],
 )
 def test_production_aggregator_filters_out_incorrect_point_type(
-    point_type, time_series_row_factory
-):
+    point_type: str, time_series_row_factory: Callable
+) -> None:
     """
     Aggregator should filter out all non "E18" MarketEvaluationPointType rows
     """
@@ -159,8 +159,8 @@ def test_production_aggregator_filters_out_incorrect_point_type(
 
 
 def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
-    time_series_row_factory,
-):
+    time_series_row_factory: Callable,
+) -> None:
     """
     Aggregator should calculate the correct sum of a "grid area" grouping within the
     same quarter hour time window
@@ -190,8 +190,8 @@ def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
 
 
 def test_production_aggregator_returns_distinct_rows_for_observations_in_different_hours(
-    time_series_row_factory,
-):
+    time_series_row_factory: Callable,
+) -> None:
     """
     Aggregator can calculate the correct sum of a "grid area"-"responsible"-"supplier" grouping
     within the 2 different quarter hour time windows
@@ -237,7 +237,9 @@ def test_production_aggregator_returns_distinct_rows_for_observations_in_differe
     )
 
 
-def test_production_aggregator_returns_correct_schema(time_series_row_factory):
+def test_production_aggregator_returns_correct_schema(
+    time_series_row_factory: Callable,
+) -> None:
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
     and time window (from the quarter-hour resolution specified in the aggregator).
@@ -248,7 +250,9 @@ def test_production_aggregator_returns_correct_schema(time_series_row_factory):
     assert aggregated_df.schema == aggregation_result_schema
 
 
-def test_production_test_filter_by_domain_is_pressent(time_series_row_factory):
+def test_production_test_filter_by_domain_is_pressent(
+    time_series_row_factory: Callable,
+) -> None:
     df = time_series_row_factory()
     aggregated_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
@@ -262,17 +266,19 @@ grid_area_code_806 = "806"
 
 
 @pytest.fixture
-def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
+def enriched_time_series_quarterly_same_time_factory(
+    spark: SparkSession, timestamp_factory: Callable
+) -> Callable:
     def factory(
-        first_resolution=MeteringPointResolution.quarter.value,
-        second_resolution=MeteringPointResolution.quarter.value,
-        first_quantity=Decimal("1"),
-        second_quantity=Decimal("2"),
-        first_time="2022-06-08T12:09:15.000Z",
-        second_time="2022-06-08T12:09:15.000Z",
-        first_grid_area_code=grid_area_code_805,
-        second_grid_area_code=grid_area_code_805,
-    ):
+        first_resolution: str = MeteringPointResolution.quarter.value,
+        second_resolution: str = MeteringPointResolution.quarter.value,
+        first_quantity: Decimal = Decimal("1"),
+        second_quantity: Decimal = Decimal("2"),
+        first_time: str = "2022-06-08T12:09:15.000Z",
+        second_time: str = "2022-06-08T12:09:15.000Z",
+        first_grid_area_code: str = grid_area_code_805,
+        second_grid_area_code: str = grid_area_code_805,
+    ) -> DataFrame:
         time = timestamp_factory(first_time)
         time2 = timestamp_factory(second_time)
 
@@ -305,19 +311,21 @@ def enriched_time_series_quarterly_same_time_factory(spark, timestamp_factory):
 
 
 @pytest.fixture
-def enriched_time_series_factory(spark, timestamp_factory):
+def enriched_time_series_factory(
+    spark: SparkSession, timestamp_factory: Callable
+) -> Callable:
     def factory(
-        resolution=MeteringPointResolution.quarter.value,
-        quantity=Decimal("1"),
-        quality=TimeSeriesQuality.measured.value,
-        gridArea="805",
-    ):
+        resolution: str = MeteringPointResolution.quarter.value,
+        quantity: Decimal = Decimal("1"),
+        quality: str = TimeSeriesQuality.measured.value,
+        grid_area: str = "805",
+    ) -> DataFrame:
         time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
         df = [
             {
                 Colname.metering_point_type: MeteringPointType.production.value,
-                Colname.grid_area: gridArea,
+                Colname.grid_area: grid_area,
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
                 Colname.resolution: resolution,
@@ -333,7 +341,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
 
 # Test sums with only quarterly can be calculated
 def test__quarterly_sums_correctly(
-    enriched_time_series_quarterly_same_time_factory,
+    enriched_time_series_quarterly_same_time_factory: Callable,
 ) -> None:
     """Test that checks quantity is summed correctly with only quarterly times"""
     df = enriched_time_series_quarterly_same_time_factory(
@@ -368,7 +376,9 @@ def test__quarterly_sums_correctly(
     ],
 )
 def test__hourly_sums_are_rounded_correctly(
-    enriched_time_series_factory, quantity, expected_point_quantity
+    enriched_time_series_factory: Callable,
+    quantity: Decimal,
+    expected_point_quantity: Decimal,
 ) -> None:
     """Test that checks acceptable rounding erros for hourly quantities summed on a quarterly basis"""
     df = enriched_time_series_factory(
@@ -387,8 +397,8 @@ def test__hourly_sums_are_rounded_correctly(
 
 
 def test__quarterly_and_hourly_sums_correctly(
-    enriched_time_series_quarterly_same_time_factory,
-):
+    enriched_time_series_quarterly_same_time_factory: Callable,
+) -> None:
     """Test that checks quantity is summed correctly with quarterly and hourly times"""
     first_quantity = Decimal("4")
     second_quantity = Decimal("2")
@@ -408,8 +418,8 @@ def test__quarterly_and_hourly_sums_correctly(
 
 
 def test__points_with_same_time_quantities_are_on_same_position(
-    enriched_time_series_quarterly_same_time_factory,
-):
+    enriched_time_series_quarterly_same_time_factory: Callable,
+) -> None:
     """Test that points with the same 'time' have added their 'Quantity's together on the same position"""
     df = enriched_time_series_quarterly_same_time_factory(
         first_resolution=MeteringPointResolution.quarter.value,
@@ -426,8 +436,8 @@ def test__points_with_same_time_quantities_are_on_same_position(
 
 
 def test__position_is_based_on_time_correctly(
-    enriched_time_series_quarterly_same_time_factory,
-):
+    enriched_time_series_quarterly_same_time_factory: Callable,
+) -> None:
     """'position' is correctly placed based on 'time'"""
     df = enriched_time_series_quarterly_same_time_factory(
         first_resolution=MeteringPointResolution.quarter.value,
@@ -450,8 +460,8 @@ def test__position_is_based_on_time_correctly(
 
 
 def test__that_hourly_quantity_is_summed_as_quarterly(
-    enriched_time_series_quarterly_same_time_factory,
-):
+    enriched_time_series_quarterly_same_time_factory: Callable,
+) -> None:
     "Test that checks if hourly quantities are summed as quarterly"
     df = enriched_time_series_quarterly_same_time_factory(
         first_resolution=MeteringPointResolution.hour.value,
@@ -471,8 +481,8 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
 
 
 def test__that_grid_area_code_in_input_is_in_output(
-    enriched_time_series_quarterly_same_time_factory,
-):
+    enriched_time_series_quarterly_same_time_factory: Callable,
+) -> None:
     "Test that the grid area codes in input are in result"
     df = enriched_time_series_quarterly_same_time_factory()
     result_df = aggregate_per_ga_and_brp_and_es(
@@ -481,7 +491,9 @@ def test__that_grid_area_code_in_input_is_in_output(
     assert result_df.first().GridAreaCode == str(grid_area_code_805)
 
 
-def test__each_grid_area_has_a_sum(enriched_time_series_quarterly_same_time_factory):
+def test__each_grid_area_has_a_sum(
+    enriched_time_series_quarterly_same_time_factory: Callable,
+) -> None:
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
     result_df = aggregate_per_ga_and_brp_and_es(
@@ -492,8 +504,8 @@ def test__each_grid_area_has_a_sum(enriched_time_series_quarterly_same_time_fact
 
 
 def test__final_sum_of_different_magnitudes_should_not_lose_precision(
-    enriched_time_series_factory,
-):
+    enriched_time_series_factory: Callable,
+) -> None:
     """Test that values with different magnitudes do not lose precision when accumulated"""
     df = (
         enriched_time_series_factory(
@@ -546,13 +558,12 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
     ],
 )
 def test__quality_is_lowest_common_denominator_among_measured_estimated_and_missing(
-    enriched_time_series_factory,
-    timestamp_factory,
-    quality_1,
-    quality_2,
-    quality_3,
-    expected_quality,
-):
+    enriched_time_series_factory: Callable,
+    quality_1: str,
+    quality_2: str,
+    quality_3: str,
+    expected_quality: str,
+) -> None:
     df = (
         enriched_time_series_factory(quality=quality_1)
         .union(enriched_time_series_factory(quality=quality_2))
@@ -566,9 +577,8 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
 
 
 def test__when_time_series_point_is_missing__quality_has_value_incomplete(
-    enriched_time_series_factory,
-    timestamp_factory,
-):
+    enriched_time_series_factory: Callable,
+) -> None:
     df = enriched_time_series_factory().withColumn("quality", lit(None))
 
     result_df = aggregate_per_ga_and_brp_and_es(
@@ -578,9 +588,8 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
 
 
 def test__when_time_series_point_is_missing__quantity_is_0(
-    enriched_time_series_factory,
-    timestamp_factory,
-):
+    enriched_time_series_factory: Callable,
+) -> None:
     df = enriched_time_series_factory().withColumn(
         Colname.quantity, lit(None).cast(DecimalType())
     )
