@@ -44,7 +44,7 @@ class Colname:
     job_id = "job_id"
     metering_method = "metering_method"
     metering_point_id = "metering_point_id"
-    metering_point_type = "metering_point_type"
+    metering_point_type = "Type"
     month = "month"
     """Can represent different things like registration month, creation month, receival month."""
     net_settlement_group = "net_settlement_group"
