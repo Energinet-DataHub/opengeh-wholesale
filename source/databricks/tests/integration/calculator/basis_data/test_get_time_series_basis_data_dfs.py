@@ -53,7 +53,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 StructField(Colname.observation_time, TimestampType(), True),
                 StructField("Quantity", DecimalType(18, 3), True),
                 StructField("MeteringPointId", StringType(), True),
-                StructField("MeteringPointType", StringType(), True),
+                StructField("Type", StringType(), True),
             ]
         )
 

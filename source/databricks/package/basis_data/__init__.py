@@ -59,7 +59,7 @@ def get_master_basis_data_df(
             col("GridAreaCode").alias("GRIDAREA"),
             col("ToGridAreaCode").alias("TOGRIDAREA"),
             col("FromGridAreaCode").alias("FROMGRIDAREA"),
-            col("MeteringPointType").alias("TYPEOFMP"),
+            col("Type").alias("TYPEOFMP"),
             col("SettlementMethod").alias("SETTLEMENTMETHOD"),
             col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
         )
@@ -108,13 +108,13 @@ def _get_time_series_basis_data_by_resolution(
             "localDate",
             "STARTDATETIME",
             "GridAreaCode",
-            "MeteringPointType",
+            "Type",
             "Resolution",
         )
         .pivot("position")
         .agg(first("Quantity"))
         .withColumnRenamed("MeteringPointId", "METERINGPOINTID")
-        .withColumn("TYPEOFMP", col("MeteringPointType"))
+        .withColumn("TYPEOFMP", col("Type"))
     )
 
     quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data_df)
