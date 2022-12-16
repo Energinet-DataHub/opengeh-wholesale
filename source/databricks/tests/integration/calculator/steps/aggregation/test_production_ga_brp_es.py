@@ -274,14 +274,11 @@ def enriched_time_series_quarterly_same_time_factory(
         second_resolution: str = MeteringPointResolution.quarter.value,
         first_quantity: Decimal = Decimal("1"),
         second_quantity: Decimal = Decimal("2"),
-        first_time: str = "2022-06-08T12:09:15.000Z",
-        second_time: str = "2022-06-08T12:09:15.000Z",
+        first_time: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
+        second_time: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
         first_grid_area_code: str = grid_area_code_805,
         second_grid_area_code: str = grid_area_code_805,
     ) -> DataFrame:
-        time = timestamp_factory(first_time)
-        time2 = timestamp_factory(second_time)
-
         df = [
             {
                 Colname.metering_point_type: MeteringPointType.production.value,
@@ -289,7 +286,7 @@ def enriched_time_series_quarterly_same_time_factory(
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
                 Colname.resolution: first_resolution,
-                Colname.observation_time: time,
+                Colname.observation_time: first_time,
                 Colname.quantity: first_quantity,
                 Colname.quality: TimeSeriesQuality.measured.value,
             },
@@ -299,7 +296,7 @@ def enriched_time_series_quarterly_same_time_factory(
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
                 Colname.resolution: second_resolution,
-                Colname.observation_time: time2,
+                Colname.observation_time: second_time,
                 Colname.quantity: second_quantity,
                 Colname.quality: TimeSeriesQuality.measured.value,
             },
@@ -308,6 +305,24 @@ def enriched_time_series_quarterly_same_time_factory(
         return spark.createDataFrame(df)
 
     return factory
+
+
+@pytest.fixture(scope="module")
+def ts_schema() -> StructType:
+    """
+    Input time series data point schema
+    """
+    return (
+        StructType()
+        .add(Colname.metering_point_type, StringType(), False)
+        .add(Colname.grid_area, StringType(), False)
+        .add(Colname.balance_responsible_id, StringType())
+        .add(Colname.energy_supplier_id, StringType())
+        .add(Colname.quantity, DecimalType())
+        .add(Colname.observation_time, TimestampType())
+        .add(Colname.quality, StringType())
+        .add(Colname.resolution, StringType())
+    )
 
 
 @pytest.fixture
@@ -319,8 +334,8 @@ def enriched_time_series_factory(
         quantity: Decimal = Decimal("1"),
         quality: str = TimeSeriesQuality.measured.value,
         grid_area: str = "805",
+        time: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
     ) -> DataFrame:
-        time = timestamp_factory("2022-06-08T12:09:15.000Z")
 
         df = [
             {
@@ -328,13 +343,13 @@ def enriched_time_series_factory(
                 Colname.grid_area: grid_area,
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
-                Colname.resolution: resolution,
-                Colname.observation_time: time,
                 Colname.quantity: quantity,
+                Colname.observation_time: time,
                 Colname.quality: quality,
+                Colname.resolution: resolution,
             }
         ]
-        return spark.createDataFrame(df)
+        return spark.createDataFrame(df, ts_schema)
 
     return factory
 
