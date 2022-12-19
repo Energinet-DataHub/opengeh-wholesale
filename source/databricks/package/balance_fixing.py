@@ -97,7 +97,6 @@ def _get_enriched_time_series_points_df(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
-    # Use partitions
     new_timeseries_df = new_timeseries_df.where(
         col(Colname.observation_time) >= period_start_datetime
     ).where(col(Colname.observation_time) < period_end_datetime)
