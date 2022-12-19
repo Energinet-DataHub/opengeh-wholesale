@@ -39,7 +39,7 @@ def aggregate_quality(time_series_df: DataFrame) -> DataFrame:
         time_series_df.groupBy(
             Colname.grid_area,
             Colname.metering_point_type,
-            window(Colname.time, "1 hour"),
+            window(Colname.observation_time, "1 hour"),
         )
         .agg(
             # Count entries where quality is estimated (Quality=56)
@@ -68,16 +68,28 @@ def aggregate_quality(time_series_df: DataFrame) -> DataFrame:
         )
         .drop(temp_estimated_quality_count)
         .drop(temp_quantity_missing_quality_count)
-        .withColumn(Colname.time, col("window").start)
+        .withColumn(Colname.observation_time, col("window").start)
         .withColumnRenamed("window", Colname.time_window)
     )
 
     joined_df = time_series_df.join(
         agg_df,
-        (year(time_series_df[Colname.time]) == year(agg_df[Colname.time]))
-        & (month(time_series_df[Colname.time]) == month(agg_df[Colname.time]))
-        & (dayofmonth(time_series_df[Colname.time]) == dayofmonth(agg_df[Colname.time]))
-        & (hour(time_series_df[Colname.time]) == hour(agg_df[Colname.time]))
+        (
+            year(time_series_df[Colname.observation_time])
+            == year(agg_df[Colname.observation_time])
+        )
+        & (
+            month(time_series_df[Colname.observation_time])
+            == month(agg_df[Colname.observation_time])
+        )
+        & (
+            dayofmonth(time_series_df[Colname.observation_time])
+            == dayofmonth(agg_df[Colname.observation_time])
+        )
+        & (
+            hour(time_series_df[Colname.observation_time])
+            == hour(agg_df[Colname.observation_time])
+        )
         & (
             time_series_df[Colname.metering_point_type]
             == agg_df[Colname.metering_point_type]

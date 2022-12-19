@@ -30,7 +30,7 @@ from package import (
     initialize_spark,
     log,
 )
-from package.schemas import time_series_point_schema
+from package.schemas import time_series_point_schema, metering_point_period_schema
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -81,12 +81,11 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         .option("mode", "FAILFAST")
         .csv(f"{args.wholesale_container_path}/TimeSeriesPoints.csv")
     )
-    metering_points_periods_df = spark.read.option("header", "true").csv(
-        f"{args.wholesale_container_path}/MeteringPointsPeriods.csv"
-    )
-
-    energy_supplier_periods_df = spark.read.option("header", "true").csv(
-        f"{args.wholesale_container_path}/EnergySupplierPeriods.csv"
+    metering_points_periods_df = (
+        spark.read.schema(metering_point_period_schema)
+        .option("header", "true")
+        .option("mode", "FAILFAST")
+        .csv(f"{args.wholesale_container_path}/MeteringPointsPeriods.csv")
     )
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
@@ -96,7 +95,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
     metering_point_periods_df = calculation_input.get_metering_point_periods_df(
         metering_points_periods_df,
-        energy_supplier_periods_df,
         batch_grid_areas_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,

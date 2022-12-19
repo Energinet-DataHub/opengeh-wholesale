@@ -38,7 +38,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         row = {
             "MeteringPointId": meteringpoint_id,
             "GridAreaCode": grid_area_code,
-            "MeteringPointType": meteringpoint_type,
+            "Type": meteringpoint_type,
             "EffectiveDate": effective_date,
             "toEffectiveDate": to_effective_date,
             "FromGridAreaCode": from_grid_area,

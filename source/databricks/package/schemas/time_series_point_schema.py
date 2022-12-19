@@ -44,12 +44,12 @@ time_series_point_schema = StructType(
         # Example: A02
         StructField(Colname.quality, StringType(), False),
         # The time when the energy was consumed/produced/exchanged
-        StructField(Colname.time, TimestampType(), False),
+        StructField("ObservationTime", TimestampType(), False),
         # The year part of the `ObservationTime`. Used in partition.
-        StructField(Colname.year, IntegerType(), False),
+        StructField("ObservationTime_Year", IntegerType(), False),
         # The month part of the `ObservationTime`. Used in partition.
-        StructField(Colname.month, IntegerType(), False),
+        StructField("ObservationTime_Month", IntegerType(), False),
         # The day part (1-31) of the `ObservationTime`. Used in partition.
-        StructField(Colname.day, IntegerType(), False),
+        StructField("ObservationTime_Day", IntegerType(), False),
     ]
 )

@@ -34,6 +34,8 @@ def __add_missing_nullable_columns(result: DataFrame) -> DataFrame:
         result = result.withColumn(Colname.added_grid_loss, lit(None))
     if Colname.added_system_correction not in result.columns:
         result = result.withColumn(Colname.added_system_correction, lit(None))
+    if Colname.position not in result.columns:
+        result = result.withColumn(Colname.position, lit(None))
     return result
 
 
@@ -64,6 +66,7 @@ def create_dataframe_from_aggregation_result_schema(
             Colname.settlement_method,
             Colname.added_grid_loss,
             Colname.added_system_correction,
+            Colname.position,
         ).rdd,
         aggregation_result_schema,
     )

@@ -17,6 +17,6 @@ from pyspark.sql.functions import col
 
 
 def filter_time_period(
-    df: DataFrame, from_time: datetime, to_time: datetime
+    df: DataFrame, colname: str, from_time: datetime, to_time: datetime
 ) -> DataFrame:
-    return df.filter(col("time") >= from_time).filter(col("time") < to_time)
+    return df.filter(col(colname) >= from_time).filter(col(colname) < to_time)
