@@ -53,9 +53,9 @@ def combine_added_grid_loss_with_master_data(
 def combine_master_data(
     timeseries_df: DataFrame,
     grid_loss_sys_cor_master_data_df: DataFrame,
-    quantity_column_name,
-    mp_check,
-):
+    quantity_column_name: str,
+    mp_check: str,
+) -> DataFrame:
     df = timeseries_df.withColumnRenamed(quantity_column_name, Colname.quantity)
     mddf = grid_loss_sys_cor_master_data_df.withColumnRenamed(
         Colname.grid_area, metering_grid_area_domain_mrid_drop
