@@ -65,12 +65,19 @@ def test_data_job_parameters(
 
 
 @pytest.fixture(scope="session")
-def executed_calculation_job(spark, test_data_job_parameters):
+def executed_calculation_job(
+    spark, test_data_job_parameters, test_files_folder_path, data_lake_path
+):
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
     This act is made as a session-scoped fixture because it is a slow process
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
+    df = spark.read.csv(
+        f"{test_files_folder_path}/MeteringPointsPeriods.csv",
+        header=True,
+    )
+    df.write.format("delta").save(f"{data_lake_path}/delta")
     _start_calculator(spark, test_data_job_parameters)
 
 
@@ -125,26 +132,26 @@ def _get_process_manager_parameters(filename):
 #     _get_valid_args_or_throw(command_line_args)
 
 
-# def test__result_is_generated_for_requested_grid_areas(
-#     spark,
-#     test_data_job_parameters,
-#     data_lake_path,
-#     source_path,
-#     worker_id,
-#     executed_calculation_job,
-# ):
-#     # Act
-#     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+def test__result_is_generated_for_requested_grid_areas(
+    spark,
+    test_data_job_parameters,
+    data_lake_path,
+    source_path,
+    worker_id,
+    executed_calculation_job,
+):
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
-#     # Assert
-#     result_805 = spark.read.json(
-#         f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=805"
-#     )
-#     result_806 = spark.read.json(
-#         f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=806"
-#     )
-#     assert result_805.count() >= 1, "Calculator job failed to write files"
-#     assert result_806.count() >= 1, "Calculator job failed to write files"
+    # Assert
+    result_805 = spark.read.json(
+        f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=805"
+    )
+    result_806 = spark.read.json(
+        f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=806"
+    )
+    assert result_805.count() >= 1, "Calculator job failed to write files"
+    assert result_806.count() >= 1, "Calculator job failed to write files"
 
 
 # def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
