@@ -75,16 +75,18 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     timeseries_points_df = (
-        spark.read.schema(time_series_point_schema)
-        .option("header", "true")
-        .option("mode", "FAILFAST")
-        .csv(f"{args.wholesale_container_path}/TimeSeriesPoints.csv")
+        spark.read.option("mode", "FAILFAST")  # .schema(time_series_point_schema)
+        .format("delta")
+        .load(
+            f"{args.wholesale_container_path}/calculation-input-v2/time-series-points"
+        )
     )
     metering_points_periods_df = (
-        spark.read.schema(metering_point_period_schema)
-        .option("header", "true")
-        .option("mode", "FAILFAST")
-        .csv(f"{args.wholesale_container_path}/MeteringPointsPeriods.csv")
+        spark.read.option("mode", "FAILFAST")  # .schema(metering_point_period_schema)
+        .format("delta")
+        .load(
+            f"{args.wholesale_container_path}/calculation-input-v2/metering-point-periods"
+        )
     )
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)

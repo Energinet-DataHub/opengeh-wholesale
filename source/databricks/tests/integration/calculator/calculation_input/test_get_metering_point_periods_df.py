@@ -125,68 +125,64 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
 
     return factory
 
+    # def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
+    #     batch_grid_areas_df: DataFrame,
+    #     metering_points_periods_df_factory: Callable[..., DataFrame],
+    # ):
+    #     metering_points_periods_df = metering_points_periods_df_factory()
 
-def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
-    batch_grid_areas_df: DataFrame,
-    metering_points_periods_df_factory: Callable[..., DataFrame],
-):
-    metering_points_periods_df = metering_points_periods_df_factory()
+    #     raw_master_basis_data = get_metering_point_periods_df(
+    #         metering_points_periods_df,
+    #         batch_grid_areas_df,
+    #         june_1th,
+    #         june_2th,
+    #     )
+    #     assert raw_master_basis_data.count() == 1
 
-    raw_master_basis_data = get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
-        june_1th,
-        june_2th,
-    )
-    assert raw_master_basis_data.count() == 1
+    # def test__when_type_is_production__returns_metering_point_period(
+    #     batch_grid_areas_df,
+    #     metering_points_periods_df_factory,
+    # ):
+    #     metering_points_periods_df = metering_points_periods_df_factory(
+    #         MeteringPointType=MeteringPointType.production.value
+    #     )
 
+    #     raw_master_basis_data = get_metering_point_periods_df(
+    #         metering_points_periods_df,
+    #         batch_grid_areas_df,
+    #         june_1th,
+    #         june_2th,
+    #     )
+    #     assert raw_master_basis_data.count() == 1
 
-def test__when_type_is_production__returns_metering_point_period(
-    batch_grid_areas_df,
-    metering_points_periods_df_factory,
-):
-    metering_points_periods_df = metering_points_periods_df_factory(
-        MeteringPointType=MeteringPointType.production.value
-    )
+    # def test__when_type_is_not_E18__does_not_returns_metering_point_period(
+    #     batch_grid_areas_df,
+    #     metering_points_periods_df_factory,
+    # ):
+    #     metering_points_periods_df = metering_points_periods_df_factory(
+    #         MeteringPointType=MeteringPointType.consumption.value
+    #     )
 
-    raw_master_basis_data = get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
-        june_1th,
-        june_2th,
-    )
-    assert raw_master_basis_data.count() == 1
+    #     raw_master_basis_data = get_metering_point_periods_df(
+    #         metering_points_periods_df,
+    #         batch_grid_areas_df,
+    #         june_1th,
+    #         june_2th,
+    #     )
+    #     assert raw_master_basis_data.count() == 0
 
+    # def test__metering_points_have_expected_columns(
+    #     batch_grid_areas_df: DataFrame,
+    #     metering_points_periods_df_factory: Callable[..., DataFrame],
+    # ):
+    #     metering_points_periods_df = metering_points_periods_df_factory()
 
-def test__when_type_is_not_E18__does_not_returns_metering_point_period(
-    batch_grid_areas_df,
-    metering_points_periods_df_factory,
-):
-    metering_points_periods_df = metering_points_periods_df_factory(
-        MeteringPointType=MeteringPointType.consumption.value
-    )
-
-    raw_master_basis_data = get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
-        june_1th,
-        june_2th,
-    )
-    assert raw_master_basis_data.count() == 0
-
-
-def test__metering_points_have_expected_columns(
-    batch_grid_areas_df: DataFrame,
-    metering_points_periods_df_factory: Callable[..., DataFrame],
-):
-    metering_points_periods_df = metering_points_periods_df_factory()
-
-    raw_master_basis_data = get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
-        june_1th,
-        june_2th,
-    )
+    #     raw_master_basis_data = get_metering_point_periods_df(
+    #         metering_points_periods_df,
+    #         batch_grid_areas_df,
+    #         june_1th,
+    #         june_2th,
+    #     )
 
     assert (
         raw_master_basis_data.where(

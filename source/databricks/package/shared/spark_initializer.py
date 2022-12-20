@@ -40,5 +40,4 @@ def initialize_spark(
         .set("spark.databricks.delta.optimizeWrite.enabled", "True")
         .set("spark.databricks.delta.autoCompact.enabled", "True")
     )
-
     return SparkSession.builder.config(conf=spark_conf).getOrCreate()

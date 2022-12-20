@@ -23,10 +23,18 @@ from datetime import datetime
 import subprocess
 from typing import Generator, Callable, Optional
 
+from delta import *
 
+#
+# builder = pyspark.sql.SparkSession.builder.appName("MyApp") \
+#    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+#    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+#
+# spark = configure_spark_with_delta_pip(builder).getOrCreate()
+#
 @pytest.fixture(scope="session")
 def spark() -> SparkSession:
-    return (
+    return configure_spark_with_delta_pip(
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
         .config("spark.ui.showConsoleProgress", "false")
         .config("spark.ui.enabled", "false")
@@ -42,6 +50,11 @@ def spark() -> SparkSession:
         .config("spark.shuffle.compress", False)
         .config("spark.shuffle.spill.compress", False)
         .config("spark.sql.shuffle.partitions", 1)
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+        .config(
+            "spark.sql.catalog.spark_catalog",
+            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+        )
     ).getOrCreate()
 
 
