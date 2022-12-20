@@ -26,8 +26,8 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     def factory(
         meteringpoint_id="the-metering-point",
         grid_area_code="some-grid-area",
-        effective_date: datetime = timestamp_factory("2022-06-08T22:00:00.000Z"),
-        to_effective_date: datetime = timestamp_factory("2022-06-10T22:00:00.000Z"),
+        from_date: datetime = timestamp_factory("2022-06-08T22:00:00.000Z"),
+        to_date: datetime = timestamp_factory("2022-06-10T22:00:00.000Z"),
         meteringpoint_type=MeteringPointType.production.value,
         from_grid_area="some-from-grid-area",
         to_grid_area="some-to-grid-area",
@@ -39,8 +39,8 @@ def metering_point_period_df_factory(spark, timestamp_factory):
             "MeteringPointId": meteringpoint_id,
             "GridAreaCode": grid_area_code,
             "Type": meteringpoint_type,
-            "EffectiveDate": effective_date,
-            "toEffectiveDate": to_effective_date,
+            "FromDate": from_date,
+            "ToDate": to_date,
             "FromGridAreaCode": from_grid_area,
             "ToGridAreaCode": to_grid_area,
             "SettlementMethod": settlement_method,
@@ -57,8 +57,8 @@ def test__get_master_basis_data_has_expected_columns(
 ):
     metering_point_period_df = metering_point_period_df_factory().union(
         metering_point_period_df_factory(
-            effective_date=timestamp_factory("2022-06-10T22:00:00.000Z"),
-            to_effective_date=timestamp_factory("2022-06-12T22:00:00.000Z"),
+            from_date=timestamp_factory("2022-06-10T22:00:00.000Z"),
+            to_date=timestamp_factory("2022-06-12T22:00:00.000Z"),
         )
     )
     master_basis_data = get_master_basis_data_df(
@@ -103,8 +103,8 @@ def test__columns_have_expected_values(
 ):
     expected_meteringpoint_id = "the-metering-point"
     expected_grid_area_code = "some-grid-area"
-    expected_effective_date = timestamp_factory("2022-06-08T22:00:00.000Z")
-    expected_to_effective_date = timestamp_factory("2022-06-09T22:00:00.000Z")
+    expected_from_date = timestamp_factory("2022-06-08T22:00:00.000Z")
+    expected_to_date = timestamp_factory("2022-06-09T22:00:00.000Z")
     expected_meteringpoint_type = "E18"
     expected_from_grid_area = "some-from-grid-area"
     expected_to_grid_area = "some-to-grid-area"
@@ -114,8 +114,8 @@ def test__columns_have_expected_values(
     metering_point_period_df = metering_point_period_df_factory(
         meteringpoint_id=expected_meteringpoint_id,
         grid_area_code=expected_grid_area_code,
-        effective_date=expected_effective_date,
-        to_effective_date=expected_to_effective_date,
+        from_date=expected_from_date,
+        to_date=expected_to_date,
         meteringpoint_type=MeteringPointType.production.value,
         from_grid_area=expected_from_grid_area,
         to_grid_area=expected_to_grid_area,
@@ -132,8 +132,8 @@ def test__columns_have_expected_values(
 
     assert actual.GridAreaCode == expected_grid_area_code
     assert actual.METERINGPOINTID == expected_meteringpoint_id
-    assert actual.VALIDFROM == str(expected_effective_date)
-    assert actual.VALIDTO == str(expected_to_effective_date)
+    assert actual.VALIDFROM == str(expected_from_date)
+    assert actual.VALIDTO == str(expected_to_date)
     assert actual.GRIDAREA == expected_grid_area_code
     assert actual.TOGRIDAREA == expected_to_grid_area
     assert actual.FROMGRIDAREA == expected_from_grid_area
@@ -162,7 +162,7 @@ def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
     assert master_basis_data.count() == expected_number_of_metering_points
 
 
-def test__effective_date_must_not_be_earlier_than_period_start(
+def test__from_date_must_not_be_earlier_than_period_start(
     metering_point_period_df_factory,
 ):
     expected_vaild_from = "2022-06-09T12:09:15.000Z"
@@ -179,7 +179,7 @@ def test__effective_date_must_not_be_earlier_than_period_start(
     assert actual.VALIDFROM == expected_vaild_from
 
 
-def test__to_effective_date_must_not_be_after_period_end(
+def test__to_date_must_not_be_after_period_end(
     metering_point_period_df_factory,
 ):
     expected_vaild_to = "2022-06-010T12:09:15.000Z"
