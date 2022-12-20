@@ -68,7 +68,7 @@ def calculate_balance_fixing(
             lit("1"),  # this is not the corect value, so this need to be changed
         )
     )
-    metadata_fake = Metadata("1", "1", "1", "1", "1")
+    metadata_fake = Metadata("1", "1", "1", "1")
     total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
     total_production_per_ga_df = total_production_per_ga_df.select(
         Colname.grid_area,

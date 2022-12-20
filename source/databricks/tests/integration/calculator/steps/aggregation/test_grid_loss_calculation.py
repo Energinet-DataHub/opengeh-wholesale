@@ -18,7 +18,7 @@ from package.codelists import (
     MeteringPointType,
     MeteringPointResolution,
     SettlementMethod,
-    TimeSeriesQuality
+    TimeSeriesQuality,
 )
 
 from package.steps.aggregation import (
@@ -40,7 +40,7 @@ default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
 
-metadata = Metadata("1", "1", "1", "1", "1")
+metadata = Metadata("1", "1", "1", "1")
 
 
 class AggregationMethod(Enum):
@@ -502,7 +502,7 @@ def agg_hourly_production_factory(spark, agg_consumption_and_production_schema):
 
 
 def test_grid_loss_calculation(agg_result_factory):
-    metadata = Metadata("1", "1", "1", "1", "1")
+    metadata = Metadata("1", "1", "1", "1")
     results = {}
     results[
         ResultKeyName.net_exchange_per_ga
@@ -537,7 +537,7 @@ def test_grid_loss_calculation_calculates_correctly_on_grid_area(
     agg_flex_consumption_factory,
     agg_hourly_production_factory,
 ):
-    metadata = Metadata("1", "1", "1", "1", "1")
+    metadata = Metadata("1", "1", "1", "1")
     results = {}
     results[
         ResultKeyName.net_exchange_per_ga
