@@ -32,7 +32,7 @@ default_obs_time = datetime.strptime(
 )
 numberOfTestHours = 24
 
-metadata = Metadata("1", "1", "1", "1", "1")
+metadata = Metadata("1", "1", "1", "1")
 
 # Time series schema
 

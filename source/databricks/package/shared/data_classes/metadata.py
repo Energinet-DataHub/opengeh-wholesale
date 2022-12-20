@@ -18,7 +18,6 @@ from dataclasses import dataclass
 @dataclass
 class Metadata:
     JobId: str
-    SnapshotId: str
     ResultId: str
     ResultName: str
     ResultPath: str

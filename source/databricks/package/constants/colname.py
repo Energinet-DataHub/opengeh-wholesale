@@ -67,7 +67,6 @@ class Colname:
     result_name = "result_name"
     result_path = "result_path"
     settlement_method = "settlement_method"
-    snapshot_id = "snapshot_id"
     start = "start"
     start_datetime = "start_datetime"
     sum_quantity = "sum_quantity"

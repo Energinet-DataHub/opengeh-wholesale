@@ -35,7 +35,7 @@ default_obs_time = datetime.strptime(
 )
 numberOfTestHours = 24
 estimated_quality = TimeSeriesQuality.estimated.value
-metadata = Metadata("1", "1", "1", "1", "1")
+metadata = Metadata("1", "1", "1", "1")
 
 df_template = {
     Colname.grid_area: [],

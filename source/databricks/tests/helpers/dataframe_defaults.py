@@ -28,7 +28,6 @@ const_charge_owner = "001"
 
 class DataframeDefaults:
     default_job_id: str = "1"
-    default_snapshot_id: str = "1"
     default_result_id: str = "1"
     default_result_name: str = "1"
     default_result_path: str = "1"
