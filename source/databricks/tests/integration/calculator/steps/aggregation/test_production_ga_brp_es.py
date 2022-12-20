@@ -23,8 +23,6 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-
-from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
@@ -48,7 +46,6 @@ default_responsible = "R1"
 default_supplier = "S1"
 default_quantity = Decimal(1)
 default_quality = TimeSeriesQuality.measured.value
-default_connection_state = ConnectionState.connected.value
 default_resolution = MeteringPointResolution.quarter.value
 default_obs_time_string = "2020-01-01T00:00:00.000Z"
 
@@ -76,7 +73,6 @@ def enriched_time_series_factory(
                 Colname.energy_supplier_id: default_supplier,
                 Colname.quantity: quantity,
                 Colname.observation_time: obs_time_datetime,
-                Colname.connection_state: default_connection_state,
                 Colname.quality: quality,
                 Colname.resolution: resolution,
             }

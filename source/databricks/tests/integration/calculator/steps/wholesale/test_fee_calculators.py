@@ -148,7 +148,6 @@ fee_charges_dataset_1 = [
         "D01",
         "001",
         1,
-        1,
     )
 ]
 fee_charges_dataset_2 = [
@@ -162,7 +161,6 @@ fee_charges_dataset_2 = [
         "E18",
         "D01",
         "001",
-        1,
         1,
     )
 ]
@@ -178,7 +176,6 @@ fee_charges_dataset_3 = [
         "D02",
         "001",
         1,
-        1,
     )
 ]
 fee_charges_dataset_4 = [
@@ -192,7 +189,6 @@ fee_charges_dataset_4 = [
         "E18",
         "D02",
         "001",
-        1,
         1,
     )
 ]
@@ -234,7 +230,6 @@ charges_flex_consumption_dataset_1 = [
         "D01",
         "001",
         1,
-        1,
     )
 ]
 charges_flex_consumption_dataset_2 = [
@@ -249,7 +244,6 @@ charges_flex_consumption_dataset_2 = [
         "D01",
         "001",
         1,
-        1,
     ),
     (
         "001-D01-001",
@@ -261,7 +255,6 @@ charges_flex_consumption_dataset_2 = [
         "E17",
         "D01",
         "001",
-        1,
         1,
     ),
 ]
@@ -277,7 +270,6 @@ charges_flex_consumption_dataset_3 = [
         "D01",
         "001",
         1,
-        1,
     ),
     (
         "001-D01-001",
@@ -289,7 +281,6 @@ charges_flex_consumption_dataset_3 = [
         "E17",
         "D01",
         "001",
-        1,
         1,
     ),
 ]
