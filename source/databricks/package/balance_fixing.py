@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-from pyspark.sql.functions import col, expr, explode, lit, year, month, dayofmonth
+from pyspark.sql.functions import col, expr, explode, lit
 from package.codelists import (
     MeteringPointResolution,
 )
