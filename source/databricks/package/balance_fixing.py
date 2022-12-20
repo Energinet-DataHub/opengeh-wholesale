@@ -135,17 +135,22 @@ def _get_enriched_time_series_points_df(
     debug(
         "Time series points where time is within period",
         new_timeseries_df.orderBy(
-            col("MeteringPointId"), col(Colname.observation_time)
+            Colname.metering_point_id, col(Colname.observation_time)
         ),
     )
 
     new_timeseries_df = new_timeseries_df.select(
-        "MeteringPointId", Colname.observation_time, "Quantity", "Quality"
+        Colname.metering_point_id,
+        Colname.observation_time,
+        Colname.quantity,
+        Colname.quality,
     )
 
     new_points_for_each_metering_point_df = (
         empty_points_for_each_metering_point_df.join(
-            new_timeseries_df, ["MeteringPointId", Colname.observation_time], "left"
+            new_timeseries_df,
+            [Colname.metering_point_id, Colname.observation_time],
+            "left",
         )
     )
 
