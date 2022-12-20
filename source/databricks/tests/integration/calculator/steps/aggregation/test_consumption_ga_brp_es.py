@@ -19,7 +19,6 @@ from package.steps.aggregation import (
     aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
-    ConnectionState,
     MeteringPointType,
     SettlementMethod,
     TimeSeriesQuality,
@@ -34,7 +33,6 @@ import pandas as pd
 e_17 = MeteringPointType.consumption.value
 e_18 = MeteringPointType.production.value
 e_02 = SettlementMethod.non_profiled.value
-connected = ConnectionState.connected.value
 
 # Default time series data point values
 default_point_type = e_17
@@ -43,7 +41,6 @@ default_domain = "D1"
 default_responsible = "R1"
 default_supplier = "S1"
 default_quantity = Decimal(1)
-default_connection_state = connected
 default_resolution = "PT15M"
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -88,7 +85,6 @@ def time_series_row_factory(spark, time_series_schema):
         supplier=default_supplier,
         quantity=default_quantity,
         obs_time=default_obs_time,
-        connection_state=default_connection_state,
         resolution=default_resolution,
     ):
         pandas_df = pd.DataFrame(
@@ -100,7 +96,6 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.energy_supplier_id: [supplier],
                 Colname.quantity: [quantity],
                 Colname.observation_time: [obs_time],
-                Colname.connection_state: [connection_state],
                 Colname.aggregated_quality: [TimeSeriesQuality.estimated.value],
                 Colname.resolution: [resolution],
             },

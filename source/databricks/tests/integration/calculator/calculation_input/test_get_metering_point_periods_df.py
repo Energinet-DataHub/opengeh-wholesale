@@ -21,7 +21,6 @@ from package.codelists import (
     SettlementMethod,
     MeteringPointResolution,
 )
-from package.codelists import ConnectionState
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame
 from typing import Callable
@@ -33,7 +32,6 @@ metering_point_id = "the-metering-point-id"
 energy_supplier_id = "the-energy-supplier-id"
 metering_point_type = MeteringPointType.production.value
 settlement_method = SettlementMethod.flex.value
-connection_state = ConnectionState.connected.value
 resolution = MeteringPointResolution.hour.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%f"
 june_1th = datetime.strptime(
@@ -63,7 +61,6 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
         MeteringPointType=metering_point_type,
         SettlementMethod=settlement_method,
         GridAreaCode=grid_area_code,
-        ConnectionState=connection_state,
         Resolution=resolution,
         FromGridArea="some-in-gride-area",
         ToGridArea="some-out-gride-area",
@@ -90,9 +87,6 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                         "GridAreaCode": period["GridAreaCode"]
                         if ("GridAreaCode" in period)
                         else GridAreaCode,
-                        "ConnectionState": period["ConnectionState"]
-                        if ("ConnectionState" in period)
-                        else ConnectionState,
                         "Resolution": period["Resolution"]
                         if ("Resolution" in period)
                         else Resolution,
@@ -118,7 +112,6 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                     "Type": MeteringPointType,
                     "SettlementMethod": SettlementMethod,
                     "GridAreaCode": GridAreaCode,
-                    "ConnectionState": ConnectionState,
                     "Resolution": Resolution,
                     "FromGridAreaCode": FromGridArea,
                     "ToGridAreaCode": ToGridArea,

@@ -53,14 +53,8 @@ exchange_out_out_grid_area = "ExOut_OutMeteringGridArea_Domain_mRID"
 def aggregate_net_exchange_per_neighbour_ga(
     results: dict, metadata: Metadata
 ) -> DataFrame:
-    df = (
-        results[ResultKeyName.aggregation_base_dataframe].filter(
-            col(Colname.metering_point_type) == MeteringPointType.exchange.value
-        )
-        # .filter(
-        #     (col(Colname.connection_state) == ConnectionState.connected.value)
-        #     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
-        # )
+    df = results[ResultKeyName.aggregation_base_dataframe].filter(
+        col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
     exchange_in = (
         df.groupBy(
@@ -125,10 +119,6 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
     exchangeIn = df.filter(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
-    # .filter(
-    #     (col(Colname.connection_state) == ConnectionState.connected.value)
-    #     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
-    # )
     exchangeIn = (
         exchangeIn.groupBy(
             Colname.in_grid_area,
@@ -143,10 +133,6 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
     exchangeOut = df.filter(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
-    # .filter(
-    #     (col(Colname.connection_state) == ConnectionState.connected.value)
-    #     | (col(Colname.connection_state) == ConnectionState.disconnected.value)
-    # )
     exchangeOut = (
         exchangeOut.groupBy(
             Colname.out_grid_area, window(col(Colname.observation_time), "1 hour")

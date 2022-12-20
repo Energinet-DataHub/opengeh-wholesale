@@ -21,8 +21,6 @@ from package.steps.aggregation import (
     aggregate_net_exchange_per_neighbour_ga,
 )
 from package.codelists import MeteringPointType, TimeSeriesQuality
-
-from package.codelists import ConnectionState
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
@@ -59,7 +57,6 @@ def time_series_schema():
         .add(Colname.out_grid_area, StringType())
         .add(Colname.quantity, DecimalType(38))
         .add(Colname.observation_time, TimestampType())
-        .add(Colname.connection_state, StringType())
         .add(Colname.aggregated_quality, StringType())
     )
 
@@ -162,7 +159,6 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
         Colname.out_grid_area: out_domain,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
-        Colname.connection_state: ConnectionState.connected.value,
         Colname.aggregated_quality: estimated_quality,
     }
     return pandas_df.append(new_row, ignore_index=True)

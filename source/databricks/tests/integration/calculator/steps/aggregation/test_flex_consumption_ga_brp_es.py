@@ -19,7 +19,6 @@ from package.steps.aggregation import (
     aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
-    ConnectionState,
     MeteringPointType,
     SettlementMethod,
     TimeSeriesQuality,
@@ -44,7 +43,6 @@ default_domain = "D1"
 default_responsible = "R1"
 default_supplier = "S1"
 default_quantity = Decimal(1)
-default_connection_state = ConnectionState.connected.value
 default_resolution = "PT15M"
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"

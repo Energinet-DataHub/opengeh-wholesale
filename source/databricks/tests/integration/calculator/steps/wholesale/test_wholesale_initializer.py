@@ -24,9 +24,8 @@ from package.steps.wholesale.wholesale_initializer import (
     group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity,
     join_with_grouped_time_series,
     get_charges_based_on_charge_type,
-    get_connected_metering_points,
 )
-from package.codelists import ConnectionState, ChargeType, ChargeResolution
+from package.codelists import ChargeType, ChargeResolution
 from package.schemas import (
     charges_schema,
     charge_prices_schema,
@@ -505,7 +504,6 @@ metering_points_dataset_1 = [
         "E17",
         "D01",
         "1",
-        ConnectionState.connected.value,
         "P1D",
         "2",
         "1",
@@ -523,7 +521,6 @@ metering_points_dataset_2 = [
         "E17",
         "D01",
         "1",
-        ConnectionState.disconnected.value,
         "P1D",
         "2",
         "1",
@@ -538,25 +535,6 @@ metering_points_dataset_2 = [
 
 
 # Shared
-@pytest.mark.parametrize(
-    "metering_points,expected",
-    [(metering_points_dataset_1, 1), (metering_points_dataset_2, 0)],
-)
-def test__get_connected_metering_points__filters_on_connection_state_connected(
-    spark, metering_points, expected
-):
-    # Arrange
-    metering_points = spark.createDataFrame(
-        metering_points, schema=metering_point_schema
-    )
-
-    # Act
-    result = get_connected_metering_points(metering_points)
-
-    # Assert
-    assert result.count() == expected
-
-
 charges_with_price_and_links_and_market_roles_dataset_1 = [
     (
         "001-D01-001",

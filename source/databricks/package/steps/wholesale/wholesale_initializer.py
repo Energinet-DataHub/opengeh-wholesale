@@ -14,7 +14,7 @@
 
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.functions import col, window, expr, explode, month, year
-from package.codelists import ConnectionState, ChargeType, ChargeResolution
+from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
@@ -201,13 +201,6 @@ def join_with_martket_roles(df: DataFrame, market_roles: DataFrame) -> DataFrame
     return df
 
 
-def get_connected_metering_points(metering_points: DataFrame) -> DataFrame:
-    metering_points = metering_points.filter(
-        col(Colname.connection_state) == ConnectionState.connected.value
-    )
-    return metering_points
-
-
 def join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> DataFrame:
     df = df.join(
         metering_points,
@@ -328,8 +321,6 @@ def __join_properties_on_charges_with_given_charge_type(
     )
 
     df = join_with_martket_roles(charges_with_price_and_links, market_roles)
-
-    metering_points = get_connected_metering_points(metering_points)
 
     df = join_with_metering_points(df, metering_points)
 
