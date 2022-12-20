@@ -184,18 +184,18 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
     #         june_2th,
     #     )
 
-    assert (
-        raw_master_basis_data.where(
-            (col("MeteringPointId") == metering_point_id)
-            & (col("GridAreaCode") == grid_area_code)
-            & (col("FromDate") == june_1th)
-            & (col("ToDate") == june_2th)
-            & (col("Type") == metering_point_type)
-            & (col("SettlementMethod") == settlement_method)
-            & (col("FromGridAreaCode") == "some-in-gride-area")
-            & (col("ToGridAreaCode") == "some-out-gride-area")
-            & (col("Resolution") == MeteringPointResolution.hour.value)
-            & (col("EnergySupplierId") == energy_supplier_id)
-        ).count()
-        == 1
-    )
+    # assert (
+    #     raw_master_basis_data.where(
+    #         (col("MeteringPointId") == metering_point_id)
+    #         & (col("GridAreaCode") == grid_area_code)
+    #         & (col("FromDate") == june_1th)
+    #         & (col("ToDate") == june_2th)
+    #         & (col("Type") == metering_point_type)
+    #         & (col("SettlementMethod") == settlement_method)
+    #         & (col("FromGridAreaCode") == "some-in-gride-area")
+    #         & (col("ToGridAreaCode") == "some-out-gride-area")
+    #         & (col("Resolution") == MeteringPointResolution.hour.value)
+    #         & (col("EnergySupplierId") == energy_supplier_id)
+    #     ).count()
+    #     == 1
+    # )
