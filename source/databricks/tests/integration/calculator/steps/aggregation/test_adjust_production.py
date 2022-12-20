@@ -13,7 +13,11 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from package.codelists import MeteringPointType, MeteringPointResolution, TimeSeriesQuality
+from package.codelists import (
+    MeteringPointType,
+    MeteringPointResolution,
+    TimeSeriesQuality,
+)
 from package.steps.aggregation import adjust_production
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
@@ -53,7 +57,7 @@ default_valid_to = datetime.strptime(
     "2020-01-01T01:00:00+0000", date_time_formatting_string
 )
 
-metadata = Metadata("1", "1", "1", "1", "1")
+metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")

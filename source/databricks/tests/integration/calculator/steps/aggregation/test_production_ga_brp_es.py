@@ -49,7 +49,7 @@ default_quality = TimeSeriesQuality.measured.value
 default_resolution = MeteringPointResolution.quarter.value
 default_obs_time_string = "2020-01-01T00:00:00.000Z"
 
-metadata = Metadata("1", "1", "1", "1", "1")
+metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture
