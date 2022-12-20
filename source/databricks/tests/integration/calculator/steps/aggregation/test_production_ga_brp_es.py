@@ -275,7 +275,6 @@ def test__quarterly_sums_correctly(
     result_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
     )
-    result_df.show()
     assert result_df.first().sum_quantity == 3
 
 
@@ -497,7 +496,6 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
     result_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
     )
-    result_df.show()
     assert result_df.first().Quality == expected_quality
 
 
