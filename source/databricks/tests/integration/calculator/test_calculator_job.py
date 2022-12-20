@@ -54,7 +54,6 @@ def test_data_job_parameters(
             "process_results_path": f"{data_lake_path}/{worker_id}/results",
             "batch_id": executed_batch_id,
             "batch_grid_areas": [805, 806],
-            "batch_snapshot_datetime": timestamp_factory("2022-09-02T21:59:00.000Z"),
             "batch_period_start_datetime": timestamp_factory(
                 "2018-01-01T22:00:00.000Z"
             ),

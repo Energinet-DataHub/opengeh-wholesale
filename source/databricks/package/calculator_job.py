@@ -46,7 +46,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 
     # Run parameters
     p.add("--batch-id", type=str, required=True)
-    p.add("--batch-snapshot-datetime", type=valid_date, required=True)
     p.add("--batch-grid-areas", type=valid_list, required=True)
     p.add("--batch-period-start-datetime", type=valid_date, required=True)
     p.add("--batch-period-end-datetime", type=valid_date, required=True)
@@ -76,16 +75,16 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     timeseries_points_df = (
-        spark.read.option("mode", "FAILFAST")
-        .format("delta")
-        .load(f"{args.wholesale_container_path}/calculation-input/time-series-points")
-    )
-    metering_points_periods_df = (
-        spark.read.option("mode", "FAILFAST")
+        spark.read.option("mode", "FAILFAST")  # .schema(time_series_point_schema)
         .format("delta")
         .load(
-            f"{args.wholesale_container_path}/calculation-input/metering-point-periods"
+            f"{args.wholesale_container_path}/calculation-input-v2/time-series-points"
         )
+    )
+    metering_points_periods_df = (
+        spark.read.option("mode", "FAILFAST")  # .schema(metering_point_period_schema)
+        .format("delta")
+        .load(f"{args.wholesale_container_path}/calculation-input-v2/meteringpoints")
     )
 
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)

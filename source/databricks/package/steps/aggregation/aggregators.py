@@ -260,10 +260,7 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
             Colname.time_window,
-            # Colname.quality,
         )
-        # .sum("quarter_quantity")
-        # .withColumnRenamed("sum(quarter_quantity)", Colname.sum_quantity)
         .agg(
             sum("quarter_quantity").alias(Colname.sum_quantity), collect_set("Quality")
         )
@@ -317,7 +314,6 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            # Colname.resolution,
             lit(MeteringPointResolution.quarter.value).alias(
                 Colname.resolution
             ),  # TODO take resolution from metadata
