@@ -241,7 +241,7 @@ def grid_loss_sys_cor_row_factory(spark, grid_loss_sys_cor_schema):
     return factory
 
 
-metadata = Metadata("1", "1", "1", "1", "1")
+metadata = Metadata("1", "1", "1", "1")
 
 
 def test_grid_area_grid_loss_is_added_to_grid_loss_energy_responsible(

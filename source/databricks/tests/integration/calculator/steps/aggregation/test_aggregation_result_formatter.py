@@ -33,7 +33,6 @@ from package.constants import Colname
 def aggregation_result_factory(spark):
     def factory(
         job_id=DataframeDefaults.default_job_id,
-        snapshot_id=DataframeDefaults.default_snapshot_id,
         result_id=DataframeDefaults.default_result_id,
         result_name=DataframeDefaults.default_result_name,
         result_path=DataframeDefaults.default_result_path,
@@ -57,7 +56,6 @@ def aggregation_result_factory(spark):
             [
                 {
                     Colname.job_id: job_id,
-                    Colname.snapshot_id: snapshot_id,
                     Colname.result_id: result_id,
                     Colname.result_name: result_name,
                     Colname.result_path: result_path,
@@ -122,7 +120,7 @@ def test__create_dataframe_from_aggregation_result_schema__can_create_a_datafram
     agg_result_factory,
 ):
     # Arrange
-    metadata = Metadata("1", "1", "1", "1", "1")
+    metadata = Metadata("1", "1", "1", "1")
     result = agg_result_factory()
     # Act
     actual = create_dataframe_from_aggregation_result_schema(metadata, result)
@@ -134,7 +132,7 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
     agg_result_factory, aggregation_result_factory
 ):
     # Arrange
-    metadata = Metadata("1", "1", "1", "1", "1")
+    metadata = Metadata("1", "1", "1", "1")
     result = agg_result_factory()
     expected = aggregation_result_factory(
         grid_area="A",
