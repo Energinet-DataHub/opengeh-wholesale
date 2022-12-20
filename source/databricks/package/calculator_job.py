@@ -46,7 +46,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 
     # Run parameters
     p.add("--batch-id", type=str, required=True)
-    p.add("--batch-snapshot-datetime", type=valid_date, required=True)
     p.add("--batch-grid-areas", type=valid_list, required=True)
     p.add("--batch-period-start-datetime", type=valid_date, required=True)
     p.add("--batch-period-end-datetime", type=valid_date, required=True)

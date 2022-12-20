@@ -44,27 +44,25 @@ def get_metering_point_periods_df(
         metering_points_in_grid_area.where(col("FromDate") < period_end_datetime)
         .where(col("ToDate") > period_start_datetime)
         .where(col("Type") == MeteringPointType.production.value)
-        .withColumnRenamed("FromDate", "EffectiveDate")
-        .withColumnRenamed("ToDate", "toEffectiveDate")
     )
 
     master_basis_data_df = metering_point_periods_df.withColumn(
-        "EffectiveDate",
-        when(
-            col("EffectiveDate") < period_start_datetime, period_start_datetime
-        ).otherwise(col("EffectiveDate")),
+        "FromDate",
+        when(col("FromDate") < period_start_datetime, period_start_datetime).otherwise(
+            col("FromDate")
+        ),
     ).withColumn(
-        "toEffectiveDate",
-        when(
-            col("toEffectiveDate") > period_end_datetime, period_end_datetime
-        ).otherwise(col("toEffectiveDate")),
+        "ToDate",
+        when(col("ToDate") > period_end_datetime, period_end_datetime).otherwise(
+            col("ToDate")
+        ),
     )
 
     master_basis_data_df = master_basis_data_df.select(
         "MeteringPointId",
         "GridAreaCode",
-        "EffectiveDate",
-        "toEffectiveDate",
+        "FromDate",
+        "ToDate",
         "Type",
         "SettlementMethod",
         "ToGridAreaCode",
@@ -74,13 +72,13 @@ def get_metering_point_periods_df(
     )
     debug(
         "Metering point events before join with grid areas",
-        metering_point_periods_df.orderBy(col("EffectiveDate").desc()),
+        metering_point_periods_df.orderBy(col("FromDate").desc()),
     )
 
     debug(
         "Metering point periods",
         metering_point_periods_df.orderBy(
-            col("GridAreaCode"), col("MeteringPointId"), col("EffectiveDate")
+            col("GridAreaCode"), col("MeteringPointId"), col("FromDate")
         ),
     )
     return master_basis_data_df

@@ -50,16 +50,16 @@ def raw_time_series_points_factory(spark, timestamp_factory):
 def metering_point_period_df_factory(spark, timestamp_factory):
     def factory(
         resolution,
-        effective_date: datetime = timestamp_factory("2022-01-01T22:00:00.000Z"),
-        to_effective_date: datetime = timestamp_factory("2022-12-22T22:00:00.000Z"),
+        from_date: datetime = timestamp_factory("2022-01-01T22:00:00.000Z"),
+        to_date: datetime = timestamp_factory("2022-12-22T22:00:00.000Z"),
     ):
         df = [
             {
                 "MeteringPointId": "the-meteringpoint-id",
                 "GridAreaCode": "805",
                 "Type": "the_metering_point_type",
-                "EffectiveDate": effective_date,
-                "toEffectiveDate": to_effective_date,
+                "FromDate": from_date,
+                "ToDate": to_date,
                 "Resolution": resolution,
             }
         ]
@@ -101,8 +101,8 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
     )
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.quarter.value,
-        effective_date=timestamp_factory("2022-06-08T12:00:00.000Z"),
-        to_effective_date=timestamp_factory("2023-06-10T13:00:00.000Z"),
+        from_date=timestamp_factory("2022-06-08T12:00:00.000Z"),
+        to_date=timestamp_factory("2023-06-10T13:00:00.000Z"),
     )
 
     # Act
@@ -118,33 +118,33 @@ def test__given_different_period_start_and_period_end__return_dataframe_with_cor
 
 
 @pytest.mark.parametrize(
-    "effective_date, to_effective_date, expected_rows",
+    "from_date, to_date, expected_rows",
     [
-        # effective_date = time and to_effective_date > time should have 1
+        # from_date = time and to_date > time should have 1
         ("2022-06-15T22:00:00.000Z", "2022-06-16T22:00:00.000Z", 96),
-        # effective_date < time and to_effective_date > time should have 1
+        # from_date < time and to_date > time should have 1
         ("2022-06-14T22:00:00.000Z", "2022-06-16T22:00:00.000Z", 192),
     ],
 )
-def test__given_different_effective_date_and_to_effective_date__return_dataframe_with_correct_number_of_rows(
+def test__given_different_from_date_and_to_date__return_dataframe_with_correct_number_of_rows(
     raw_time_series_points_factory,
     metering_point_period_df_factory,
     timestamp_factory,
-    effective_date,
-    to_effective_date,
+    from_date,
+    to_date,
     expected_rows,
 ):
     """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
     expected_rows is the number of rows in the output dataframe when given different parameters,
-    effective_date and to_effective_date"""
+    from_date and to_date"""
 
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory("2022-06-08T12:15:00.000Z")
     )
     metering_point_period_df = metering_point_period_df_factory(
-        effective_date=effective_date,
-        to_effective_date=to_effective_date,
+        from_date=from_date,
+        to_date=to_date,
         resolution=MeteringPointResolution.quarter.value,
     )
 
@@ -152,8 +152,8 @@ def test__given_different_effective_date_and_to_effective_date__return_dataframe
     actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
-        timestamp_factory(effective_date),
-        timestamp_factory(to_effective_date),
+        timestamp_factory(from_date),
+        timestamp_factory(to_date),
     )
 
     # Assert
@@ -258,8 +258,8 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     )
 
     metering_point_period_df = metering_point_period_df_factory(
-        effective_date=timestamp_factory(start_time),
-        to_effective_date=timestamp_factory(end_time),
+        from_date=timestamp_factory(start_time),
+        to_date=timestamp_factory(end_time),
         resolution=MeteringPointResolution.hour.value,
     )
 
@@ -292,8 +292,8 @@ def test__df_is_not_empty_when_no_time_series_points(
     )
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.quarter.value,
-        effective_date=timestamp_factory(start_time),
-        to_effective_date=timestamp_factory(end_time),
+        from_date=timestamp_factory(start_time),
+        to_date=timestamp_factory(end_time),
     )
 
     # Act
@@ -370,8 +370,8 @@ def test__df_has_expected_row_count_according_to_dst(
     ).filter(col("MeteringPointId") != "the-meteringpoint-id")
 
     metering_point_period_df = metering_point_period_df_factory(
-        effective_date=timestamp_factory(period_start),
-        to_effective_date=timestamp_factory(period_end),
+        from_date=timestamp_factory(period_start),
+        to_date=timestamp_factory(period_end),
         resolution=resolution,
     )
 
