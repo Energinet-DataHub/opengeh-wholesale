@@ -73,11 +73,21 @@ def executed_calculation_job(
     This act is made as a session-scoped fixture because it is a slow process
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
-    df = spark.read.csv(
+    meteringPointsDf = spark.read.csv(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         header=True,
     )
-    df.write.format("delta").save(f"{data_lake_path}/delta")
+    meteringPointsDf.write.format("delta").mode("overwrite").save(
+        f"{data_lake_path}/delta/meteringpoints"
+    )
+
+    timeseriesPointsDf = spark.read.csv(
+        f"{test_files_folder_path}/TimeSeriesPoints.csv",
+        header=True,
+    )
+    timeseriesPointsDf.write.format("delta").mode("overwrite").save(
+        f"{data_lake_path}/delta/timeeriesPoints"
+    )
     _start_calculator(spark, test_data_job_parameters)
 
 

@@ -41,5 +41,4 @@ def initialize_spark(
             f"fs.azure.account.key.{shared_storage_account_name}.dfs.core.windows.net",
             shared_storage_account_key,
         )
-
     return SparkSession.builder.config(conf=spark_conf).getOrCreate()
