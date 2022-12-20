@@ -376,9 +376,9 @@ subscription_charges_dataset_4 = [
     "subscription_charges,expected",
     [
         (subscription_charges_dataset_1, 1),
-        # (subscription_charges_dataset_2, 0),
-        # (subscription_charges_dataset_3, 0),
-        # (subscription_charges_dataset_4, 0),
+        (subscription_charges_dataset_2, 0),
+        (subscription_charges_dataset_3, 0),
+        (subscription_charges_dataset_4, 0),
     ],
 )
 def test__filter_on_metering_point_type_and_settlement_method__filters_on_E17_and_D01(
