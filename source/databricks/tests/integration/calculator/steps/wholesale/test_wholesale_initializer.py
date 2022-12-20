@@ -502,7 +502,6 @@ metering_points_dataset_1 = [
     (
         "D01",
         "E17",
-        "D01",
         "1",
         "P1D",
         "2",
@@ -519,7 +518,6 @@ metering_points_dataset_2 = [
     (
         "D01",
         "E17",
-        "D01",
         "1",
         "P1D",
         "2",
@@ -595,7 +593,6 @@ metering_points_dataset = [
     (
         "D01",
         "E17",
-        "D01",
         "1",
         "1",
         "P1D",
@@ -752,7 +749,6 @@ charges_complete_dataset_1 = [
         "1",
         "E17",
         "E22",
-        "D01",
         "1",
     )
 ]

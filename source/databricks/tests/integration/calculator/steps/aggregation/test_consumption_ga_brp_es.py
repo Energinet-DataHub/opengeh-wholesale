@@ -65,7 +65,6 @@ def time_series_schema():
         .add(Colname.energy_supplier_id, StringType())
         .add(Colname.quantity, DecimalType())
         .add(Colname.observation_time, TimestampType())
-        .add(Colname.connection_state, StringType())
         .add(Colname.quality, StringType())
         .add(Colname.resolution, StringType())
     )

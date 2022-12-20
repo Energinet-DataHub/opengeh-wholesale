@@ -222,7 +222,6 @@ def join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Data
         df[Colname.metering_point_id],
         df[Colname.energy_supplier_id],
         metering_points[Colname.metering_point_type],
-        metering_points[Colname.connection_state],
         metering_points[Colname.settlement_method],
         metering_points[Colname.grid_area],
     )
@@ -274,7 +273,6 @@ def join_with_grouped_time_series(
         df[Colname.metering_point_id],
         df[Colname.energy_supplier_id],
         df[Colname.metering_point_type],
-        df[Colname.connection_state],
         df[Colname.settlement_method],
         df[Colname.grid_area],
         grouped_time_series[Colname.quantity],
@@ -335,7 +333,6 @@ def __join_properties_on_charges_with_given_charge_type(
             Colname.metering_point_type,
             Colname.settlement_method,
             Colname.grid_area,
-            Colname.connection_state,
             Colname.energy_supplier_id,
         )
 

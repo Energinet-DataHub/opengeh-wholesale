@@ -42,7 +42,6 @@ df_template = {
     Colname.out_grid_area: [],
     Colname.quantity: [],
     Colname.observation_time: [],
-    Colname.connection_state: [],
     Colname.aggregated_quality: [],
 }
 
