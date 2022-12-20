@@ -33,7 +33,7 @@ RUN mamba install --quiet --yes --satisfied-skip-solve \
 
 # Install python packages used in pyspark development 
 RUN pip --no-cache-dir install pyspelling azure-eventhub azure-identity azure-storage-file-datalake coverage-threshold \
-    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli mypy \
+    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli mypy delta-spark==1.0.0 \
     build
 
 # Below will make everything in the directory owned by the group ${NB_GID}
