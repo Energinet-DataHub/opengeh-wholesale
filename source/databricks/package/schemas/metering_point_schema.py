@@ -18,7 +18,6 @@ from pyspark.sql.types import (
     StructField,
     StringType,
     TimestampType,
-    IntegerType,
 )
 
 metering_point_schema = StructType(
@@ -27,7 +26,6 @@ metering_point_schema = StructType(
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.settlement_method, StringType()),
         StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.connection_state, StringType(), False),
         StructField(Colname.resolution, StringType(), False),
         StructField(Colname.in_grid_area, StringType()),
         StructField(Colname.out_grid_area, StringType()),
