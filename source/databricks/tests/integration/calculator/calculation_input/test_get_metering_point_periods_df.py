@@ -199,8 +199,8 @@ def test__metering_points_have_expected_columns(
         raw_master_basis_data.where(
             (col("MeteringPointId") == metering_point_id)
             & (col("GridAreaCode") == grid_area_code)
-            & (col("EffectiveDate") == june_1th)
-            & (col("toEffectiveDate") == june_2th)
+            & (col("FromDate") == june_1th)
+            & (col("ToDate") == june_2th)
             & (col("Type") == metering_point_type)
             & (col("SettlementMethod") == settlement_method)
             & (col("FromGridAreaCode") == "some-in-gride-area")

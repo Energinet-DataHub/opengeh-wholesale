@@ -40,22 +40,22 @@ def get_master_basis_data_df(
 ) -> DataFrame:
     return (
         metering_point_df.withColumn(
-            "EffectiveDate",
+            "FromDate",
             when(
-                col("EffectiveDate") < period_start_datetime, period_start_datetime
-            ).otherwise(col("EffectiveDate")),
+                col("FromDate") < period_start_datetime, period_start_datetime
+            ).otherwise(col("FromDate")),
         )
         .withColumn(
-            "toEffectiveDate",
-            when(
-                col("toEffectiveDate") > period_end_datetime, period_end_datetime
-            ).otherwise(col("toEffectiveDate")),
+            "ToDate",
+            when(col("ToDate") > period_end_datetime, period_end_datetime).otherwise(
+                col("ToDate")
+            ),
         )
         .select(
             col("GridAreaCode"),  # column is only used for partitioning
             col("MeteringPointId").alias("METERINGPOINTID"),
-            col("EffectiveDate").alias("VALIDFROM"),
-            col("toEffectiveDate").alias("VALIDTO"),
+            col("FromDate").alias("VALIDFROM"),
+            col("ToDate").alias("VALIDTO"),
             col("GridAreaCode").alias("GRIDAREA"),
             col("ToGridAreaCode").alias("TOGRIDAREA"),
             col("FromGridAreaCode").alias("FROMGRIDAREA"),
