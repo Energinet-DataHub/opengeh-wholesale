@@ -31,7 +31,7 @@ import pytest
 import pandas as pd
 from package.constants import Colname, ResultKeyName
 
-metadata = Metadata("1", "1", "1", "1", "1")
+metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")

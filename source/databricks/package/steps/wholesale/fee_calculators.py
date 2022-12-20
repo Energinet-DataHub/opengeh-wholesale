@@ -90,7 +90,6 @@ def get_count_of_charges_and_total_daily_charge_price(
             Colname.metering_point_type,
             Colname.settlement_method,
             Colname.grid_area,
-            Colname.connection_state,
             Colname.energy_supplier_id,
         )
     )

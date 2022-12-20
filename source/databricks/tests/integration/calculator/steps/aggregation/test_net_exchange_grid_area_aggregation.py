@@ -17,7 +17,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import aggregate_net_exchange_per_ga
-from package.codelists import MeteringPointType, ConnectionState, TimeSeriesQuality
+from package.codelists import MeteringPointType, TimeSeriesQuality
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
@@ -32,7 +32,7 @@ default_obs_time = datetime.strptime(
 )
 numberOfTestHours = 24
 
-metadata = Metadata("1", "1", "1", "1", "1")
+metadata = Metadata("1", "1", "1", "1")
 
 # Time series schema
 
@@ -46,7 +46,6 @@ def time_series_schema():
         .add(Colname.out_grid_area, StringType(), False)
         .add(Colname.quantity, DecimalType(38, 10))
         .add(Colname.observation_time, TimestampType())
-        .add(Colname.connection_state, StringType())
         .add(Colname.aggregated_quality, StringType())
     )
 
@@ -83,7 +82,6 @@ def time_series_data_frame(spark, time_series_schema):
             Colname.out_grid_area: [],
             Colname.quantity: [],
             Colname.observation_time: [],
-            Colname.connection_state: [],
             Colname.aggregated_quality: [],
         }
     )
@@ -98,7 +96,6 @@ def time_series_data_frame(spark, time_series_schema):
             "A",
             Decimal(2) * x,
             default_obs_time + timedelta(hours=x),
-            ConnectionState.connected.value,
         )
 
         pandas_df = add_row_of_data(
@@ -108,7 +105,6 @@ def time_series_data_frame(spark, time_series_schema):
             "A",
             Decimal("0.5") * x,
             default_obs_time + timedelta(hours=x),
-            ConnectionState.connected.value,
         )
         pandas_df = add_row_of_data(
             pandas_df,
@@ -117,7 +113,6 @@ def time_series_data_frame(spark, time_series_schema):
             "A",
             Decimal("0.7") * x,
             default_obs_time + timedelta(hours=x),
-            ConnectionState.connected.value,
         )
 
         pandas_df = add_row_of_data(
@@ -127,7 +122,6 @@ def time_series_data_frame(spark, time_series_schema):
             "B",
             Decimal(3) * x,
             default_obs_time + timedelta(hours=x),
-            ConnectionState.connected.value,
         )
         pandas_df = add_row_of_data(
             pandas_df,
@@ -136,7 +130,6 @@ def time_series_data_frame(spark, time_series_schema):
             "B",
             Decimal("0.9") * x,
             default_obs_time + timedelta(hours=x),
-            ConnectionState.connected.value,
         )
         pandas_df = add_row_of_data(
             pandas_df,
@@ -145,7 +138,6 @@ def time_series_data_frame(spark, time_series_schema):
             "B",
             Decimal("1.2") * x,
             default_obs_time + timedelta(hours=x),
-            ConnectionState.connected.value,
         )
 
         pandas_df = add_row_of_data(
@@ -155,7 +147,6 @@ def time_series_data_frame(spark, time_series_schema):
             "A",
             Decimal("0.7") * x,
             default_obs_time + timedelta(hours=x),
-            ConnectionState.connected.value,
         )
         pandas_df = add_row_of_data(
             pandas_df,
@@ -164,7 +155,6 @@ def time_series_data_frame(spark, time_series_schema):
             "C",
             Decimal("1.1") * x,
             default_obs_time + timedelta(hours=x),
-            ConnectionState.connected.value,
         )
         pandas_df = add_row_of_data(
             pandas_df,
@@ -173,7 +163,6 @@ def time_series_data_frame(spark, time_series_schema):
             "C",
             Decimal("1.5") * x,
             default_obs_time + timedelta(hours=x),
-            ConnectionState.connected.value,
         )
 
     return spark.createDataFrame(pandas_df, schema=time_series_schema)
@@ -186,7 +175,6 @@ def add_row_of_data(
     out_domain,
     quantity: Decimal,
     timestamp,
-    connectionState,
 ):
     """
     Helper method to create a new row in the dataframe to improve readability and maintainability
@@ -197,7 +185,6 @@ def add_row_of_data(
         Colname.out_grid_area: out_domain,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
-        Colname.connection_state: connectionState,
         Colname.aggregated_quality: TimeSeriesQuality.estimated.value,
     }
     return pandas_df.append(new_row, ignore_index=True)

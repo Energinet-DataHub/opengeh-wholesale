@@ -21,7 +21,6 @@ from package.codelists import (
     SettlementMethod,
     MeteringPointResolution,
 )
-from package.codelists import ConnectionState
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame
 from typing import Callable
@@ -33,7 +32,6 @@ metering_point_id = "the-metering-point-id"
 energy_supplier_id = "the-energy-supplier-id"
 metering_point_type = MeteringPointType.production.value
 settlement_method = SettlementMethod.flex.value
-connection_state = ConnectionState.connected.value
 resolution = MeteringPointResolution.hour.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%f"
 june_1th = datetime.strptime(
@@ -63,7 +61,6 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
         MeteringPointType=metering_point_type,
         SettlementMethod=settlement_method,
         GridAreaCode=grid_area_code,
-        ConnectionState=connection_state,
         Resolution=resolution,
         FromGridArea="some-in-gride-area",
         ToGridArea="some-out-gride-area",
@@ -90,9 +87,6 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                         "GridAreaCode": period["GridAreaCode"]
                         if ("GridAreaCode" in period)
                         else GridAreaCode,
-                        "ConnectionState": period["ConnectionState"]
-                        if ("ConnectionState" in period)
-                        else ConnectionState,
                         "Resolution": period["Resolution"]
                         if ("Resolution" in period)
                         else Resolution,
@@ -118,7 +112,6 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                     "Type": MeteringPointType,
                     "SettlementMethod": SettlementMethod,
                     "GridAreaCode": GridAreaCode,
-                    "ConnectionState": ConnectionState,
                     "Resolution": Resolution,
                     "FromGridAreaCode": FromGridArea,
                     "ToGridAreaCode": ToGridArea,
@@ -132,81 +125,77 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
 
     return factory
 
+    # def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
+    #     batch_grid_areas_df: DataFrame,
+    #     metering_points_periods_df_factory: Callable[..., DataFrame],
+    # ):
+    #     metering_points_periods_df = metering_points_periods_df_factory()
 
-# def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
-#     batch_grid_areas_df: DataFrame,
-#     metering_points_periods_df_factory: Callable[..., DataFrame],
-# ):
-#     metering_points_periods_df = metering_points_periods_df_factory()
+    #     raw_master_basis_data = get_metering_point_periods_df(
+    #         metering_points_periods_df,
+    #         batch_grid_areas_df,
+    #         june_1th,
+    #         june_2th,
+    #     )
+    #     assert raw_master_basis_data.count() == 1
 
-#     raw_master_basis_data = get_metering_point_periods_df(
-#         metering_points_periods_df,
-#         batch_grid_areas_df,
-#         june_1th,
-#         june_2th,
-#     )
-#     assert raw_master_basis_data.count() == 1
+    # def test__when_type_is_production__returns_metering_point_period(
+    #     batch_grid_areas_df,
+    #     metering_points_periods_df_factory,
+    # ):
+    #     metering_points_periods_df = metering_points_periods_df_factory(
+    #         MeteringPointType=MeteringPointType.production.value
+    #     )
 
+    #     raw_master_basis_data = get_metering_point_periods_df(
+    #         metering_points_periods_df,
+    #         batch_grid_areas_df,
+    #         june_1th,
+    #         june_2th,
+    #     )
+    #     assert raw_master_basis_data.count() == 1
 
-# def test__when_type_is_production__returns_metering_point_period(
-#     batch_grid_areas_df,
-#     metering_points_periods_df_factory,
-# ):
-#     metering_points_periods_df = metering_points_periods_df_factory(
-#         MeteringPointType=MeteringPointType.production.value
-#     )
+    # def test__when_type_is_not_E18__does_not_returns_metering_point_period(
+    #     batch_grid_areas_df,
+    #     metering_points_periods_df_factory,
+    # ):
+    #     metering_points_periods_df = metering_points_periods_df_factory(
+    #         MeteringPointType=MeteringPointType.consumption.value
+    #     )
 
-#     raw_master_basis_data = get_metering_point_periods_df(
-#         metering_points_periods_df,
-#         batch_grid_areas_df,
-#         june_1th,
-#         june_2th,
-#     )
-#     assert raw_master_basis_data.count() == 1
+    #     raw_master_basis_data = get_metering_point_periods_df(
+    #         metering_points_periods_df,
+    #         batch_grid_areas_df,
+    #         june_1th,
+    #         june_2th,
+    #     )
+    #     assert raw_master_basis_data.count() == 0
 
+    # def test__metering_points_have_expected_columns(
+    #     batch_grid_areas_df: DataFrame,
+    #     metering_points_periods_df_factory: Callable[..., DataFrame],
+    # ):
+    #     metering_points_periods_df = metering_points_periods_df_factory()
 
-# def test__when_type_is_not_E18__does_not_returns_metering_point_period(
-#     batch_grid_areas_df,
-#     metering_points_periods_df_factory,
-# ):
-#     metering_points_periods_df = metering_points_periods_df_factory(
-#         MeteringPointType=MeteringPointType.consumption.value
-#     )
+    #     raw_master_basis_data = get_metering_point_periods_df(
+    #         metering_points_periods_df,
+    #         batch_grid_areas_df,
+    #         june_1th,
+    #         june_2th,
+    #     )
 
-#     raw_master_basis_data = get_metering_point_periods_df(
-#         metering_points_periods_df,
-#         batch_grid_areas_df,
-#         june_1th,
-#         june_2th,
-#     )
-#     assert raw_master_basis_data.count() == 0
-
-
-# def test__metering_points_have_expected_columns(
-#     batch_grid_areas_df: DataFrame,
-#     metering_points_periods_df_factory: Callable[..., DataFrame],
-# ):
-#     metering_points_periods_df = metering_points_periods_df_factory()
-
-#     raw_master_basis_data = get_metering_point_periods_df(
-#         metering_points_periods_df,
-#         batch_grid_areas_df,
-#         june_1th,
-#         june_2th,
-#     )
-
-#     assert (
-#         raw_master_basis_data.where(
-#             (col("MeteringPointId") == metering_point_id)
-#             & (col("GridAreaCode") == grid_area_code)
-#             & (col("EffectiveDate") == june_1th)
-#             & (col("toEffectiveDate") == june_2th)
-#             & (col("Type") == metering_point_type)
-#             & (col("SettlementMethod") == settlement_method)
-#             & (col("FromGridAreaCode") == "some-in-gride-area")
-#             & (col("ToGridAreaCode") == "some-out-gride-area")
-#             & (col("Resolution") == MeteringPointResolution.hour.value)
-#             & (col("EnergySupplierId") == energy_supplier_id)
-#         ).count()
-#         == 1
-#     )
+    # assert (
+    #     raw_master_basis_data.where(
+    #         (col("MeteringPointId") == metering_point_id)
+    #         & (col("GridAreaCode") == grid_area_code)
+    #         & (col("FromDate") == june_1th)
+    #         & (col("ToDate") == june_2th)
+    #         & (col("Type") == metering_point_type)
+    #         & (col("SettlementMethod") == settlement_method)
+    #         & (col("FromGridAreaCode") == "some-in-gride-area")
+    #         & (col("ToGridAreaCode") == "some-out-gride-area")
+    #         & (col("Resolution") == MeteringPointResolution.hour.value)
+    #         & (col("EnergySupplierId") == energy_supplier_id)
+    #     ).count()
+    #     == 1
+    # )

@@ -38,7 +38,6 @@ from package.constants import Colname, ResultKeyName
 def aggregation_result_factory(spark):
     def factory(
         job_id=DataframeDefaults.default_job_id,
-        snapshot_id=DataframeDefaults.default_snapshot_id,
         result_id=DataframeDefaults.default_result_id,
         result_name=DataframeDefaults.default_result_name,
         result_path=DataframeDefaults.default_result_path,
@@ -62,7 +61,6 @@ def aggregation_result_factory(spark):
             [
                 {
                     Colname.job_id: job_id,
-                    Colname.snapshot_id: snapshot_id,
                     Colname.result_id: result_id,
                     Colname.result_name: result_name,
                     Colname.result_path: result_path,
@@ -219,7 +217,7 @@ def test_combine_added_system_correction_with_master_data(
     aggregation_result_factory,
     expected_combined_data_factory,
 ):
-    metadata = Metadata("1", "1", "1", "1", "1")
+    metadata = Metadata("1", "1", "1", "1")
     results = {}
     results[
         ResultKeyName.grid_loss_sys_cor_master_data
@@ -260,7 +258,7 @@ def test_combine_added_grid_loss_with_master_data(
     aggregation_result_factory,
     expected_combined_data_factory,
 ):
-    metadata = Metadata("1", "1", "1", "1", "1")
+    metadata = Metadata("1", "1", "1", "1")
     results = {}
     results[
         ResultKeyName.grid_loss_sys_cor_master_data

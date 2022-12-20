@@ -54,9 +54,6 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
     )
     assert result[Colname.grid_area] == DataframeDefaults.default_grid_area
     assert (
-        result[Colname.connection_state] == DataframeDefaults.default_connection_state
-    )
-    assert (
         result[Colname.energy_supplier_id]
         == DataframeDefaults.default_energy_supplier_id
     )
@@ -137,9 +134,6 @@ def test_metering_point(metering_point_factory):
         result[Colname.settlement_method] == DataframeDefaults.default_settlement_method
     )
     assert result[Colname.grid_area] == DataframeDefaults.default_grid_area
-    assert (
-        result[Colname.connection_state] == DataframeDefaults.default_connection_state
-    )
     assert (
         result[Colname.resolution]
         == DataframeDefaults.default_metering_point_resolution

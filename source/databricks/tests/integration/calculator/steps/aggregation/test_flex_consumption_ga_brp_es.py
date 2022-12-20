@@ -19,7 +19,6 @@ from package.steps.aggregation import (
     aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
-    ConnectionState,
     MeteringPointType,
     SettlementMethod,
     TimeSeriesQuality,
@@ -44,7 +43,6 @@ default_domain = "D1"
 default_responsible = "R1"
 default_supplier = "S1"
 default_quantity = Decimal(1)
-default_connection_state = ConnectionState.connected.value
 default_resolution = "PT15M"
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -52,7 +50,7 @@ default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
 
-metadata = Metadata("1", "1", "1", "1", "1")
+metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
@@ -69,7 +67,6 @@ def time_series_schema():
         .add(Colname.energy_supplier_id, StringType())
         .add(Colname.quantity, DecimalType())
         .add(Colname.observation_time, TimestampType())
-        .add(Colname.connection_state, StringType())
         .add(Colname.quality, StringType())
         .add(Colname.resolution, StringType())
     )
@@ -89,7 +86,6 @@ def time_series_row_factory(spark, time_series_schema):
         supplier=default_supplier,
         quantity=default_quantity,
         obs_time=default_obs_time,
-        connection_state=default_connection_state,
         resolution=default_resolution,
     ):
         pandas_df = pd.DataFrame(
@@ -101,7 +97,6 @@ def time_series_row_factory(spark, time_series_schema):
                 Colname.energy_supplier_id: [supplier],
                 Colname.quantity: [quantity],
                 Colname.observation_time: [obs_time],
-                Colname.connection_state: [connection_state],
                 Colname.quality: [TimeSeriesQuality.estimated.value],
                 Colname.resolution: [resolution],
             }

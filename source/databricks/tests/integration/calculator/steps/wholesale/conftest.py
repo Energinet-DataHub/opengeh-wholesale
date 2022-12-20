@@ -64,7 +64,6 @@ def calculate_daily_subscription_price_factory(spark):
         metering_point_type=DataframeDefaults.default_metering_point_type,
         settlement_method=DataframeDefaults.default_settlement_method,
         grid_area=DataframeDefaults.default_grid_area,
-        connection_state=DataframeDefaults.default_connection_state,
         energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
     ):
         pandas_df = pd.DataFrame().append(
@@ -82,7 +81,6 @@ def calculate_daily_subscription_price_factory(spark):
                     Colname.metering_point_type: metering_point_type,
                     Colname.settlement_method: settlement_method,
                     Colname.grid_area: grid_area,
-                    Colname.connection_state: connection_state,
                     Colname.energy_supplier_id: energy_supplier_id,
                 }
             ],
@@ -110,7 +108,6 @@ def calculate_fee_charge_price_factory(spark):
         metering_point_type=DataframeDefaults.default_metering_point_type,
         settlement_method=DataframeDefaults.default_settlement_method,
         grid_area=DataframeDefaults.default_grid_area,
-        connection_state=DataframeDefaults.default_connection_state,
         energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
     ):
         pandas_df = pd.DataFrame().append(
@@ -127,7 +124,6 @@ def calculate_fee_charge_price_factory(spark):
                     Colname.metering_point_type: metering_point_type,
                     Colname.settlement_method: settlement_method,
                     Colname.grid_area: grid_area,
-                    Colname.connection_state: connection_state,
                     Colname.energy_supplier_id: energy_supplier_id,
                 }
             ],
@@ -287,7 +283,6 @@ def metering_point_factory(spark):
         metering_point_type=DataframeDefaults.default_metering_point_type,
         settlement_method=DataframeDefaults.default_settlement_method,
         grid_area=DataframeDefaults.default_grid_area,
-        connection_state=DataframeDefaults.default_connection_state,
         resolution=DataframeDefaults.default_metering_point_resolution,
         in_grid_area=DataframeDefaults.default_in_grid_area,
         out_grid_area=DataframeDefaults.default_out_grid_area,
@@ -303,7 +298,6 @@ def metering_point_factory(spark):
                     Colname.metering_point_type: metering_point_type,
                     Colname.settlement_method: settlement_method,
                     Colname.grid_area: grid_area,
-                    Colname.connection_state: connection_state,
                     Colname.resolution: resolution,
                     Colname.in_grid_area: in_grid_area,
                     Colname.out_grid_area: out_grid_area,

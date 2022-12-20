@@ -50,16 +50,16 @@ def raw_time_series_points_factory(spark, timestamp_factory):
 def metering_point_period_df_factory(spark, timestamp_factory):
     def factory(
         resolution,
-        effective_date: datetime = timestamp_factory("2022-01-01T22:00:00.000Z"),
-        to_effective_date: datetime = timestamp_factory("2022-12-22T22:00:00.000Z"),
+        from_date: datetime = timestamp_factory("2022-01-01T22:00:00.000Z"),
+        to_date: datetime = timestamp_factory("2022-12-22T22:00:00.000Z"),
     ):
         df = [
             {
                 "MeteringPointId": "the-meteringpoint-id",
                 "GridAreaCode": "805",
                 "Type": "the_metering_point_type",
-                "EffectiveDate": effective_date,
-                "toEffectiveDate": to_effective_date,
+                "FromDate": from_date,
+                "ToDate": to_date,
                 "Resolution": resolution,
             }
         ]
@@ -96,7 +96,7 @@ time_2 = "2022-06-10T13:15:00.000Z"
 #     period_start, period_end"""
 
 #     # Arrange
-#     raw_time_series_points = raw_time_series_points_factory(
+#    raw_time_series_points = raw_time_series_points_factory(
 #         time=timestamp_factory("2022-06-08T22:15:00.000Z")
 #     )
 #     metering_point_period_df = metering_point_period_df_factory(

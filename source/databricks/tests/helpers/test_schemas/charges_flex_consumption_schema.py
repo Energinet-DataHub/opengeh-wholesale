@@ -33,7 +33,6 @@ charges_flex_consumption_schema = StructType(
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.settlement_method, StringType(), False),
         StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.connection_state, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), False),
     ]
 )

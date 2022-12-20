@@ -23,7 +23,7 @@ from datetime import datetime
 import subprocess
 from typing import Generator, Callable, Optional
 
-from delta import *
+from delta import configure_spark_with_delta_pip
 
 #
 # builder = pyspark.sql.SparkSession.builder.appName("MyApp") \
@@ -32,6 +32,8 @@ from delta import *
 #
 # spark = configure_spark_with_delta_pip(builder).getOrCreate()
 #
+
+
 @pytest.fixture(scope="session")
 def spark() -> SparkSession:
     return configure_spark_with_delta_pip(

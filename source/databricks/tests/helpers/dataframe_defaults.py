@@ -28,7 +28,6 @@ const_charge_owner = "001"
 
 class DataframeDefaults:
     default_job_id: str = "1"
-    default_snapshot_id: str = "1"
     default_result_id: str = "1"
     default_result_name: str = "1"
     default_result_path: str = "1"
@@ -44,7 +43,6 @@ class DataframeDefaults:
     default_charge_tax: str = "true"
     default_charge_type: str = const_charge_type
     default_charge_resolution: str = ChargeResolution.day.value
-    default_connection_state: str = "E22"
     default_currency: str = "DDK"
     default_energy_supplier_id: str = "1"
     default_grid_area: str = "500"

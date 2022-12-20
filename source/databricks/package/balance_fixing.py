@@ -68,7 +68,7 @@ def calculate_balance_fixing(
             lit("1"),  # this is not the corect value, so this need to be changed
         )
     )
-    metadata_fake = Metadata("1", "1", "1", "1", "1")
+    metadata_fake = Metadata("1", "1", "1", "1")
     total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
     total_production_per_ga_df = total_production_per_ga_df.select(
         Colname.grid_area,
@@ -176,11 +176,11 @@ def _get_enriched_time_series_points_df(
         )
         & (
             new_points_for_each_metering_point_df[Colname.observation_time]
-            >= col("EffectiveDate")
+            >= col("FromDate")
         )
         & (
             new_points_for_each_metering_point_df[Colname.observation_time]
-            < col("toEffectiveDate")
+            < col("ToDate")
         ),
         "left",
     ).select(
