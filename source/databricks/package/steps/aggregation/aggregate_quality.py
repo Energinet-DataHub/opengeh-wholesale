@@ -34,7 +34,7 @@ aggregated_production_quality = "aggregated_production_quality"
 aggregated_net_exchange_quality = "aggregated_net_exchange_quality"
 
 
-def aggregate_quality(time_series_df: DataFrame):
+def aggregate_quality(time_series_df: DataFrame) -> DataFrame:
     agg_df = (
         time_series_df.groupBy(
             Colname.grid_area,
@@ -100,7 +100,7 @@ def aggregate_quality(time_series_df: DataFrame):
     return joined_df
 
 
-def aggregate_total_consumption_quality(df: DataFrame):
+def aggregate_total_consumption_quality(df: DataFrame) -> DataFrame:
     df = (
         df.groupBy(Colname.grid_area, Colname.time_window, Colname.sum_quantity)
         .agg(
