@@ -31,7 +31,6 @@ class Colname:
     date = "date"
     day = "Day"
     domain = "domain"
-    effective_date = "effective_date"
     end = "end"
     end_datetime = "end_datetime"
     energy_supplier_id = "EnergySupplierId"

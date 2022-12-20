@@ -171,11 +171,11 @@ def _get_enriched_time_series_points_df(
         )
         & (
             new_points_for_each_metering_point_df[Colname.observation_time]
-            >= col("EffectiveDate")
+            >= col("FromDate")
         )
         & (
             new_points_for_each_metering_point_df[Colname.observation_time]
-            < col("toEffectiveDate")
+            < col("ToDate")
         ),
         "left",
     ).select(
