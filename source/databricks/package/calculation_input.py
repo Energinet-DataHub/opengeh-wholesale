@@ -21,7 +21,7 @@ from pyspark.sql.functions import (
 from package.codelists import (
     MeteringPointType,
 )
-
+from package.constants import Colname
 from package.db_logging import debug
 from datetime import datetime
 
@@ -33,52 +33,60 @@ def get_metering_point_periods_df(
     period_end_datetime: datetime,
 ) -> DataFrame:
 
-    grid_area_df = grid_area_df.withColumnRenamed("GridAreaCode", "ga_GridAreaCode")
+    grid_area_df = grid_area_df.withColumnRenamed(Colname.grid_area, "ga_GridAreaCode")
     metering_points_in_grid_area = metering_points_periods_df.join(
         grid_area_df,
-        metering_points_periods_df["GridAreaCode"] == grid_area_df["ga_GridAreaCode"],
+        metering_points_periods_df[Colname.grid_area]
+        == grid_area_df["ga_GridAreaCode"],
         "inner",
     )
 
     metering_point_periods_df = (
-        metering_points_in_grid_area.where(col("FromDate") < period_end_datetime)
-        .where(col("ToDate") > period_start_datetime)
-        .where(col("Type") == MeteringPointType.production.value)
+        metering_points_in_grid_area.where(col(Colname.from_date) < period_end_datetime)
+        .where(
+            col(Colname.to_date).isNull()
+            | (col(Colname.to_date) > period_start_datetime)
+        )
+        .where(col(Colname.metering_point_type) == MeteringPointType.production.value)
     )
 
     master_basis_data_df = metering_point_periods_df.withColumn(
-        "FromDate",
-        when(col("FromDate") < period_start_datetime, period_start_datetime).otherwise(
-            col("FromDate")
-        ),
+        Colname.from_date,
+        when(
+            col(Colname.from_date) < period_start_datetime, period_start_datetime
+        ).otherwise(col(Colname.from_date)),
     ).withColumn(
-        "ToDate",
-        when(col("ToDate") > period_end_datetime, period_end_datetime).otherwise(
-            col("ToDate")
-        ),
+        Colname.to_date,
+        when(
+            col(Colname.to_date).isNull()
+            | (col(Colname.to_date) > period_end_datetime),
+            period_end_datetime,
+        ).otherwise(col(Colname.to_date)),
     )
 
     master_basis_data_df = master_basis_data_df.select(
-        "MeteringPointId",
-        "GridAreaCode",
-        "FromDate",
-        "ToDate",
-        "Type",
-        "SettlementMethod",
-        "ToGridAreaCode",
-        "FromGridAreaCode",
-        "Resolution",
-        "EnergySupplierId",
+        Colname.metering_point_id,
+        Colname.grid_area,
+        Colname.from_date,
+        Colname.to_date,
+        Colname.metering_point_type,
+        Colname.settlement_method,
+        Colname.out_grid_area,
+        Colname.in_grid_area,
+        Colname.resolution,
+        Colname.energy_supplier_id,
     )
     debug(
         "Metering point events before join with grid areas",
-        metering_point_periods_df.orderBy(col("FromDate").desc()),
+        metering_point_periods_df.orderBy(col(Colname.from_date).desc()),
     )
 
     debug(
         "Metering point periods",
         metering_point_periods_df.orderBy(
-            col("GridAreaCode"), col("MeteringPointId"), col("FromDate")
+            col(Colname.grid_area),
+            col(Colname.metering_point_id),
+            col(Colname.from_date),
         ),
     )
     return master_basis_data_df
