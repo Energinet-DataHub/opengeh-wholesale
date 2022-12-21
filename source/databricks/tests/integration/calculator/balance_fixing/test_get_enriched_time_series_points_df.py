@@ -25,7 +25,6 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.constants import Colname
 from pyspark.sql.functions import col
 
 
@@ -310,8 +309,10 @@ def test__df_is_not_empty_when_no_time_series_points(
         timestamp_factory(end_time),
     )
 
-#     # Assert
-#     assert actual.count() == 96
+    # Assert
+    assert actual.count() == 96
+    
+    
 @pytest.mark.parametrize(
     "period_start, period_end, resolution, expected_number_of_rows",
     [
