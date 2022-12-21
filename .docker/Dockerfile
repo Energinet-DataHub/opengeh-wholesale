@@ -30,7 +30,6 @@ RUN mamba install --quiet --yes --satisfied-skip-solve \
     'pyarrow=2.0.*' 'rope=0.18.*' 'pytest=7.1.*' 'configargparse=1.2.3'  \
     'coverage=6.3.*' 'azure-storage-blob=12.8.*' 'pytest-mock=3.7.*' \
     'virtualenv=20.*'
-    #'delta-core=2.11*' #TODO FIX SEBAsTIAN
 
 # Install python packages used in pyspark development 
 RUN pip --no-cache-dir install pyspelling azure-eventhub azure-identity azure-storage-file-datalake coverage-threshold \
