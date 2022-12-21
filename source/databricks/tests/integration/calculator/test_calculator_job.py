@@ -447,7 +447,7 @@ def test__quarterly_basis_data_file_matches_contract(
         contract.extension,
     )
 
-    #     # Act: Executed in fixture executed_calculation_job
+    # Act: Executed in fixture executed_calculation_job
 
     # Assert
     actual_file_path = find_first_file(
