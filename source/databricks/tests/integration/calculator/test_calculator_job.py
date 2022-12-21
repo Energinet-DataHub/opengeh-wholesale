@@ -79,7 +79,6 @@ def executed_calculation_job(
     meteringPointsDf.write.format("delta").mode("overwrite").save(
         f"{data_lake_path}/calculation-input-v2/metering-point-periods"
     )
-
     timeseriesPointsDf = spark.read.csv(
         f"{test_files_folder_path}/TimeSeriesPoints.csv",
         header=True,
@@ -87,6 +86,7 @@ def executed_calculation_job(
     timeseriesPointsDf.write.format("delta").mode("overwrite").save(
         f"{data_lake_path}/calculation-input-v2/time-series-points"
     )
+
     _start_calculator(spark, test_data_job_parameters)
 
 
