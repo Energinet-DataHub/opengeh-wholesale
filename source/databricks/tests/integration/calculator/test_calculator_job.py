@@ -50,7 +50,7 @@ def test_data_job_parameters(
         {
             "data_storage_account_name": "foo",
             "data_storage_account_key": "foo",
-            "wholesale_container_path": f"{data_lake_path}/delta/",
+            "wholesale_container_path": f"{data_lake_path}",
             "process_results_path": f"{data_lake_path}/{worker_id}/results",
             "batch_id": executed_batch_id,
             "batch_grid_areas": [805, 806],
@@ -77,7 +77,7 @@ def executed_calculation_job(
         header=True,
     )
     meteringPointsDf.write.format("delta").mode("overwrite").save(
-        f"{data_lake_path}/delta/calculation-input-v2/metering-point-periods"
+        f"{data_lake_path}/calculation-input-v2/metering-point-periods"
     )
 
     timeseriesPointsDf = spark.read.csv(
@@ -85,7 +85,7 @@ def executed_calculation_job(
         header=True,
     )
     timeseriesPointsDf.write.format("delta").mode("overwrite").save(
-        f"{data_lake_path}/delta/calculation-input-v2/time-series-points"
+        f"{data_lake_path}/calculation-input-v2/time-series-points"
     )
     _start_calculator(spark, test_data_job_parameters)
 

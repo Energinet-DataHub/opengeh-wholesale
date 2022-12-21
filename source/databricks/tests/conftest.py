@@ -28,7 +28,7 @@ from delta import configure_spark_with_delta_pip
 
 @pytest.fixture(scope="session")
 def spark() -> SparkSession:
-    return configure_spark_with_delta_pip(
+    return configure_spark_with_delta_pip(  # see https://docs.delta.io/latest/quick-start.html#python
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
         .config("spark.ui.showConsoleProgress", "false")
         .config("spark.ui.enabled", "false")
