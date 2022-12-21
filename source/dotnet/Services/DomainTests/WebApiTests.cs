@@ -89,6 +89,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(15);
             private static readonly TimeSpan DefaultDelay = TimeSpan.FromSeconds(30);
 
+            private static readonly Guid ExistingBatchId = new Guid("a68d4452-943b-4f45-b32f-5f84607c6b6b");
+            private static readonly string ExistingGridAreaCode = "543";
+
             public Given_Authorized(AuthorizedClientFixture fixture)
             {
                 Fixture = fixture;
@@ -102,11 +105,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 // Arrange
 
                 // Act
-                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(Fixture.Configuration.ExistingBatchId);
+                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(ExistingBatchId);
 
                 // Assert
                 batchResult.Should().NotBeNull();
-                batchResult!.BatchNumber.Should().Be(Fixture.Configuration.ExistingBatchId);
+                batchResult!.BatchNumber.Should().Be(ExistingBatchId);
             }
 
             [DomainFact]
@@ -117,7 +120,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 var endDate = new DateTimeOffset(2020, 1, 29, 23, 0, 0, TimeSpan.Zero);
                 var batchRequestDto = new BatchRequestDto(
                     ProcessType.BalanceFixing,
-                    new List<string> { Fixture.Configuration.ExistingGridAreaCode },
+                    new List<string> { ExistingGridAreaCode },
                     startDate,
                     endDate);
 
