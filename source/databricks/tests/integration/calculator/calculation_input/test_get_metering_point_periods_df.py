@@ -48,6 +48,7 @@ june_9th = june_1th + timedelta(days=8)
 june_10th = june_1th + timedelta(days=9)
 balance_responsible_id = "someBalanceResponsibleId"
 
+
 @pytest.fixture
 def batch_grid_areas_df(spark) -> DataFrame:
     row = {"GridAreaCode": grid_area_code}
@@ -147,6 +148,7 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
 
     return factory
 
+
 def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
     batch_grid_areas_df: DataFrame,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -160,6 +162,7 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
         june_2th,
     )
     assert raw_master_basis_data.count() == 1
+
 
 def test__when_type_is_production__returns_metering_point_period(
     batch_grid_areas_df,
@@ -177,6 +180,7 @@ def test__when_type_is_production__returns_metering_point_period(
     )
     assert raw_master_basis_data.count() == 1
 
+
 def test__when_type_is_not_E18__does_not_returns_metering_point_period(
         batch_grid_areas_df,
         metering_points_periods_df_factory,
@@ -191,6 +195,7 @@ def test__when_type_is_not_E18__does_not_returns_metering_point_period(
         june_2th,
     )
     assert raw_master_basis_data.count() == 0
+
 
 def test__metering_points_have_expected_columns(
     batch_grid_areas_df: DataFrame,
