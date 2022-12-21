@@ -113,9 +113,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             public async Task When_CreatingBatch_Then_BatchIsEventuallyCompleted()
             {
                 // Arrange
-                var startDate = new DateTimeOffset(2022, 10, 30, 23, 0, 0, TimeSpan.Zero);
-                var endDate = new DateTimeOffset(2022, 11, 1, 23, 0, 0, TimeSpan.Zero);
-                var batchRequestDto = new BatchRequestDto(ProcessType.BalanceFixing, new List<string> { "805" }, startDate, endDate);
+                var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
+                var endDate = new DateTimeOffset(2020, 1, 29, 23, 0, 0, TimeSpan.Zero);
+                var batchRequestDto = new BatchRequestDto(
+                    ProcessType.BalanceFixing,
+                    new List<string> { Fixture.Configuration.ExistingGridAreaCode },
+                    startDate,
+                    endDate);
 
                 // Act
                 var batchId = await Fixture.WholesaleClient.CreateBatchAsync(batchRequestDto).ConfigureAwait(false);
