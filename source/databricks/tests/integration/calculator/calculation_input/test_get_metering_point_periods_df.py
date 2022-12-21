@@ -76,16 +76,8 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
             for period in periods:
                 df_array.append(
                     {
-<<<<<<< HEAD
-                        "BalanceResponsibleId": period["BalanceResponsibleId"]
-                        if ("BalanceResponsibleId" in period)
-                        else BalanceResponsibleId,
-                        "MeteringPointId": period["MeteringPointId"]
-                        if ("MeteringPointId" in period)
-=======
                         Colname.metering_point_id: period[Colname.metering_point_id]
                         if (Colname.metering_point_id in period)
->>>>>>> main
                         else MeteringPointId,
                         Colname.metering_point_type: period[Colname.metering_point_type]
                         if (Colname.metering_point_type in period)
