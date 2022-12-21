@@ -50,7 +50,7 @@ def test_data_job_parameters(
         {
             "data_storage_account_name": "foo",
             "data_storage_account_key": "foo",
-            "wholesale_container_path": f"{test_files_folder_path}",
+            "wholesale_container_path": f"{data_lake_path}",
             "process_results_path": f"{data_lake_path}/{worker_id}/results",
             "batch_id": executed_batch_id,
             "batch_grid_areas": [805, 806],
@@ -64,12 +64,29 @@ def test_data_job_parameters(
 
 
 @pytest.fixture(scope="session")
-def executed_calculation_job(spark, test_data_job_parameters):
+def executed_calculation_job(
+    spark, test_data_job_parameters, test_files_folder_path, data_lake_path
+):
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
     This act is made as a session-scoped fixture because it is a slow process
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
+    meteringPointsDf = spark.read.csv(
+        f"{test_files_folder_path}/MeteringPointsPeriods.csv",
+        header=True,
+    )
+    meteringPointsDf.write.format("delta").mode("overwrite").save(
+        f"{data_lake_path}/calculation-input-v2/metering-point-periods"
+    )
+    timeseriesPointsDf = spark.read.csv(
+        f"{test_files_folder_path}/TimeSeriesPoints.csv",
+        header=True,
+    )
+    timeseriesPointsDf.write.format("delta").mode("overwrite").save(
+        f"{data_lake_path}/calculation-input-v2/time-series-points"
+    )
+
     _start_calculator(spark, test_data_job_parameters)
 
 
@@ -90,7 +107,6 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
     # Act
     with pytest.raises(SystemExit) as excinfo:
         _get_valid_args_or_throw("--unexpected-arg")
-
     # Assert
     assert excinfo.value.code == 2
 
@@ -164,7 +180,6 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
     # the time series points contract from the time-series domain (in the same test), then we can infer that the
     # calculator works with the format of the data published from the time-series domain.
     # NOTE:It is not evident from this test that it uses the same input as the calculator job
-
     # Apparently nullability is ignored for CSV sources so we have to compare schemas in this slightly odd way
     # See more at https://stackoverflow.com/questions/50609548/compare-schema-ignoring-nullable
     assert all(
@@ -205,7 +220,6 @@ def test__quantity_is_with_precision_3(
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
-
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
     result_805 = spark.read.json(
@@ -245,7 +259,6 @@ def test__result_file_path_matches_contract(
         contract.directory_expression,
         contract.extension,
     )
-
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
@@ -270,7 +283,6 @@ def test__creates_hour_csv_with_expected_columns_names(
     actual = spark.read.option("header", "true").csv(
         f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805"
     )
-
     assert actual.columns == [
         "METERINGPOINTID",
         "TYPEOFMP",
@@ -383,7 +395,6 @@ def test__master_basis_data_file_matches_contract(
         contract.directory_expression,
         contract.extension,
     )
-
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
