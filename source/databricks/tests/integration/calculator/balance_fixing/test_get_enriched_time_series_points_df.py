@@ -19,12 +19,12 @@ from datetime import datetime
 from package.balance_fixing import (
     _get_enriched_time_series_points_df,
 )
+from package.constants import Colname
 
 from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.constants import Colname
 from pyspark.sql.functions import col
 
 
@@ -55,12 +55,17 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     ):
         df = [
             {
-                "MeteringPointId": "the-meteringpoint-id",
-                "GridAreaCode": "805",
-                "Type": "the_metering_point_type",
-                "FromDate": from_date,
-                "ToDate": to_date,
-                "Resolution": resolution,
+                Colname.metering_point_id: "the-meteringpoint-id",
+                Colname.grid_area: "805",
+                Colname.from_date: from_date,
+                Colname.to_date: to_date,
+                Colname.metering_point_type: "the_metering_point_type",
+                Colname.settlement_method: "D01",
+                Colname.out_grid_area: "",
+                Colname.in_grid_area: "",
+                Colname.resolution: resolution,
+                Colname.energy_supplier_id: "someId",
+                Colname.balance_responsible_id: "someId",
             }
         ]
         return spark.createDataFrame(df)

@@ -46,6 +46,7 @@ june_7th = june_1th + timedelta(days=6)
 june_8th = june_1th + timedelta(days=7)
 june_9th = june_1th + timedelta(days=8)
 june_10th = june_1th + timedelta(days=9)
+balance_responsible_id = "someBalanceResponsibleId"
 
 
 @pytest.fixture
@@ -69,12 +70,16 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
         ToDate=june_3th,
         periods=None,
         EnergySupplierId=energy_supplier_id,
+        BalanceResponsibleId=balance_responsible_id,
     ) -> DataFrame:
         df_array = []
         if periods:
             for period in periods:
                 df_array.append(
                     {
+                        Colname.balance_responsible_id: period[Colname.balance_responsible_id]
+                        if (Colname.balance_responsible_id in period)
+                        else BalanceResponsibleId,
                         Colname.metering_point_id: period[Colname.metering_point_id]
                         if (Colname.metering_point_id in period)
                         else MeteringPointId,
@@ -112,6 +117,7 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
         else:
             df_array.append(
                 {
+                    Colname.balance_responsible_id: BalanceResponsibleId,
                     Colname.metering_point_id: MeteringPointId,
                     Colname.metering_point_type: MeteringPointType,
                     Colname.settlement_method: SettlementMethod,
@@ -128,6 +134,7 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
 
         schema = StructType(
             [
+                StructField(Colname.balance_responsible_id, StringType(), False),
                 StructField(Colname.metering_point_id, StringType(), False),
                 StructField(Colname.metering_point_type, StringType(), False),
                 StructField(Colname.settlement_method, StringType(), False),
@@ -180,13 +187,12 @@ def test__when_type_is_production__returns_metering_point_period(
 
 
 def test__when_type_is_not_E18__does_not_returns_metering_point_period(
-    batch_grid_areas_df,
-    metering_points_periods_df_factory,
+        batch_grid_areas_df,
+        metering_points_periods_df_factory,
 ):
     metering_points_periods_df = metering_points_periods_df_factory(
         MeteringPointType=MeteringPointType.consumption.value
     )
-
     raw_master_basis_data = get_metering_point_periods_df(
         metering_points_periods_df,
         batch_grid_areas_df,
