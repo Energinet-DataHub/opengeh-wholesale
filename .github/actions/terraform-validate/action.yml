@@ -3,9 +3,6 @@ inputs:
   WORKING_DIRECTORY:
     description: 'Working directory of the Terraform configuration'
     required: true
-  TERRAFORM_VERSION:
-    description: 'Terraform version of the configuration in WORKIWORKING_DIRECTORYNG_DIR'
-    required: true
   PAT_TOKEN:
     description: 'Access Token'
     required: true
@@ -21,11 +18,24 @@ runs:
       shell: bash
       run: git config --global url."https://oauth2:${{ inputs.PAT_TOKEN }}@github.com".insteadOf https://github.com
 
+    - name: Get Terraform Version
+      shell: bash
+      id: get-terraform-version
+      run: |
+        if [ -f "${{ inputs.WORKING_DIRECTORY }}/.terraform-version" ]; then
+          terraform_version=`cat ${{ inputs.WORKING_DIRECTORY }}/.terraform-version`
+          echo "Version found $terraform_version"
+          echo "TERRAFORM_VERSION=${terraform_version}" >>$GITHUB_OUTPUT
+        else
+          echo "Missing file .terraform-version"
+          exit 1;
+        fi
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_wrapper: false
-        terraform_version: ${{ inputs.TERRAFORM_VERSION }}
+        terraform_version: ${{ steps.get-terraform-version.outputs.TERRAFORM_VERSION }}
 
     - name: Terraform init
       shell: bash

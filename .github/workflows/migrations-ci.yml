@@ -22,6 +22,8 @@ on:
       - migrations/**
       - .github/workflows/migrations-ci.yml
       - .github/workflows/migrations-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
+      - .github/actions/terraform-validate/*
 
 jobs:
   #
@@ -32,7 +34,6 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v9
     with:
       TERRAFORM_WORKING_DIRECTORY: './migrations/terraform/main'
-      TERRAFORM_VERSION: '1.2.2'
       RELEASE_NAME_PREFIX: 'migrations_infrastructure'
       INFRASTRUCTURE_PATH: './migrations/terraform'
     secrets:

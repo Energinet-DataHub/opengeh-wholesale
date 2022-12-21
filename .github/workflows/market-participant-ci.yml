@@ -22,6 +22,7 @@ on:
       - .github/workflows/market-participant-ci.yml
       - .github/workflows/market-participant-cd.yml
       - .github/workflows/infrastructure-build-prerelease.yml
+      - .github/actions/terraform-validate/*
 
 jobs:
   #
@@ -31,7 +32,6 @@ jobs:
   infrastructure_ci:
     uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@main
     with:
-      TERRAFORM_VERSION: '1.2.2'
       RELEASE_NAME_PREFIX: 'market_participant_infrastructure'
       INFRASTRUCTURE_PATH: './market-participant/terraform'
     secrets:

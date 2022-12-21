@@ -23,6 +23,7 @@ on:
       - .github/workflows/watt-ci.yml
       - .github/workflows/watt-cd.yml
       - .github/workflows/infrastructure-build-prerelease.yml
+      - .github/actions/terraform-validate/*
 
 jobs:
   #
@@ -32,7 +33,6 @@ jobs:
   infrastructure_ci:
     uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@main
     with:
-      TERRAFORM_VERSION: '1.2.4'
       RELEASE_NAME_PREFIX: 'watt_infrastructure'
       INFRASTRUCTURE_PATH: './watt/terraform'
     secrets:
