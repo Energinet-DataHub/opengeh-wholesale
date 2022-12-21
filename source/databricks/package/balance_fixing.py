@@ -55,19 +55,7 @@ def calculate_balance_fixing(
     )
 
     results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = (
-        enriched_time_series_point_df.withColumn(
-            Colname.quantity, col(Colname.quantity).cast(DecimalType(18, 6))
-        )
-        .withColumn(
-            Colname.balance_responsible_id,
-            lit("1"),  # this is not the corect value, so this need to be changed
-        )
-        .withColumn(
-            Colname.energy_supplier_id,
-            lit("1"),  # this is not the corect value, so this need to be changed
-        )
-    )
+    results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_point_df
     metadata_fake = Metadata("1", "1", "1", "1")
     total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
     total_production_per_ga_df = total_production_per_ga_df.select(
@@ -168,27 +156,37 @@ def _get_enriched_time_series_points_df(
         "MeteringPointId", "master_MeteringPointId"
     ).withColumnRenamed("Resolution", "master_Resolution")
 
-    return new_points_for_each_metering_point_df.join(
-        master_basis_data_renamed_df,
-        (
-            master_basis_data_renamed_df["master_MeteringPointId"]
-            == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
+    return (
+        new_points_for_each_metering_point_df.withColumn(
+            Colname.quantity, col(Colname.quantity).cast(DecimalType(18, 6))
         )
-        & (
-            new_points_for_each_metering_point_df[Colname.observation_time]
-            >= col("FromDate")
+        .join(
+            master_basis_data_renamed_df,
+            (
+                master_basis_data_renamed_df["master_MeteringPointId"]
+                == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
+            )
+            & (
+                new_points_for_each_metering_point_df[Colname.observation_time]
+                >= col("FromDate")
+            )
+            & (
+                new_points_for_each_metering_point_df[Colname.observation_time]
+                < col("ToDate")
+            ),
+            "left",
         )
-        & (
-            new_points_for_each_metering_point_df[Colname.observation_time]
-            < col("ToDate")
-        ),
-        "left",
-    ).select(
-        "GridAreaCode",
-        master_basis_data_renamed_df["master_MeteringPointId"].alias("MeteringPointId"),
-        "Type",
-        master_basis_data_renamed_df["master_Resolution"].alias("Resolution"),
-        Colname.observation_time,
-        "Quantity",
-        "Quality",
+        .select(
+            "GridAreaCode",
+            master_basis_data_renamed_df["master_MeteringPointId"].alias(
+                "MeteringPointId"
+            ),
+            "Type",
+            master_basis_data_renamed_df["master_Resolution"].alias("Resolution"),
+            Colname.observation_time,
+            "Quantity",
+            "Quality",
+            "EnergySupplierId",
+            "BalanceResponsibleId",
+        )
     )

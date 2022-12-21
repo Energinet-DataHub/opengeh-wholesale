@@ -69,6 +69,7 @@ def get_metering_point_periods_df(
         "FromGridAreaCode",
         "Resolution",
         "EnergySupplierId",
+        "BalanceResponsibleId",
     )
     debug(
         "Metering point events before join with grid areas",
