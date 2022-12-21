@@ -311,8 +311,8 @@ def test__df_is_not_empty_when_no_time_series_points(
 
     # Assert
     assert actual.count() == 96
-    
-    
+
+
 @pytest.mark.parametrize(
     "period_start, period_end, resolution, expected_number_of_rows",
     [

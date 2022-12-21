@@ -421,9 +421,9 @@ def test__hourly_basis_data_file_matches_contract(
         contract.extension,
     )
 
-    #     # Act: Executed in fixture executed_calculation_job
+    # Act: Executed in fixture executed_calculation_job
 
-    #     # Assert
+    # Assert
     actual_file_path = find_first_file(
         f"{data_lake_path}/{worker_id}",
         f"results/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805/part-*.csv",
