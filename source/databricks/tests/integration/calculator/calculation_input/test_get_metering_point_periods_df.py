@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
 import pytest
 from package.calculation_input import get_metering_point_periods_df
 from package.codelists import (
@@ -21,8 +20,10 @@ from package.codelists import (
     SettlementMethod,
     MeteringPointResolution,
 )
+from package.constants import Colname
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType
 from typing import Callable
 
 # Factory defaults
@@ -33,10 +34,9 @@ energy_supplier_id = "the-energy-supplier-id"
 metering_point_type = MeteringPointType.production.value
 settlement_method = SettlementMethod.flex.value
 resolution = MeteringPointResolution.hour.value
-date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%f"
-june_1th = datetime.strptime(
-    "2022-06-01T00:00:00.000", date_time_formatting_string
-).replace(tzinfo=ZoneInfo("Europe/Copenhagen"))
+date_time_formatting_string = "%Y-%m-%dT%H:%M"
+# +02:00 dates (e.g. danish DST)
+june_1th = datetime.strptime("2022-05-31T22:00", date_time_formatting_string)
 june_2th = june_1th + timedelta(days=1)
 june_3th = june_1th + timedelta(days=2)
 june_4th = june_1th + timedelta(days=3)
@@ -76,57 +76,82 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
             for period in periods:
                 df_array.append(
                     {
+<<<<<<< HEAD
                         "BalanceResponsibleId": period["BalanceResponsibleId"]
                         if ("BalanceResponsibleId" in period)
                         else BalanceResponsibleId,
                         "MeteringPointId": period["MeteringPointId"]
                         if ("MeteringPointId" in period)
+=======
+                        Colname.metering_point_id: period[Colname.metering_point_id]
+                        if (Colname.metering_point_id in period)
+>>>>>>> main
                         else MeteringPointId,
-                        "MeteringPointType": period["MeteringPointType"]
-                        if ("MeteringPointType" in period)
+                        Colname.metering_point_type: period[Colname.metering_point_type]
+                        if (Colname.metering_point_type in period)
                         else MeteringPointType,
-                        "SettlementMethod": period["SettlementMethod"]
-                        if ("SettlementMethod" in period)
+                        Colname.settlement_method: period[Colname.settlement_method]
+                        if (Colname.settlement_method in period)
                         else SettlementMethod,
-                        "GridAreaCode": period["GridAreaCode"]
-                        if ("GridAreaCode" in period)
+                        Colname.grid_area: period[Colname.grid_area]
+                        if (Colname.grid_area in period)
                         else GridAreaCode,
-                        "Resolution": period["Resolution"]
-                        if ("Resolution" in period)
+                        Colname.resolution: period[Colname.resolution]
+                        if (Colname.resolution in period)
                         else Resolution,
-                        "FromGridAreaCode": period["FromGridAreaCode"]
-                        if ("FromGridAreaCode" in period)
+                        Colname.in_grid_area: period[Colname.in_grid_area]
+                        if (Colname.in_grid_area in period)
                         else FromGridArea,
-                        "ToGridAreaCode": period["ToGridAreaCode"]
-                        if ("ToGridAreaCode" in period)
+                        Colname.out_grid_area: period[Colname.out_grid_area]
+                        if (Colname.out_grid_area in period)
                         else ToGridArea,
-                        "ParentMeteringPointId": period["ParentMeteringPointId"]
-                        if ("ParentMeteringPointId" in period)
+                        Colname.parent_metering_point_id: period[
+                            Colname.parent_metering_point_id
+                        ]
+                        if (Colname.parent_metering_point_id in period)
                         else ParentMeteringPointId,
-                        "FromDate": period["FromDate"]
-                        if ("FromDate" in period)
+                        Colname.from_date: period[Colname.from_date]
+                        if (Colname.from_date in period)
                         else FromDate,
-                        "ToDate": period["ToDate"] if ("ToDate" in period) else ToDate,
+                        Colname.to_date: period[Colname.to_date]
+                        if (Colname.to_date in period)
+                        else ToDate,
                     }
                 )
         else:
             df_array.append(
                 {
-                    "BalanceResponsibleId": BalanceResponsibleId,
-                    "MeteringPointId": MeteringPointId,
-                    "Type": MeteringPointType,
-                    "SettlementMethod": SettlementMethod,
-                    "GridAreaCode": GridAreaCode,
-                    "Resolution": Resolution,
-                    "FromGridAreaCode": FromGridArea,
-                    "ToGridAreaCode": ToGridArea,
-                    "ParentMeteringPointId": ParentMeteringPointId,
-                    "FromDate": FromDate,
-                    "ToDate": ToDate,
-                    "EnergySupplierId": EnergySupplierId,
+                    Colname.metering_point_id: MeteringPointId,
+                    Colname.metering_point_type: MeteringPointType,
+                    Colname.settlement_method: SettlementMethod,
+                    Colname.grid_area: GridAreaCode,
+                    Colname.resolution: Resolution,
+                    Colname.in_grid_area: FromGridArea,
+                    Colname.out_grid_area: ToGridArea,
+                    Colname.parent_metering_point_id: ParentMeteringPointId,
+                    Colname.from_date: FromDate,
+                    Colname.to_date: ToDate,
+                    Colname.energy_supplier_id: EnergySupplierId,
                 }
             )
-        return spark.createDataFrame(df_array)
+
+        schema = StructType(
+            [
+                StructField(Colname.metering_point_id, StringType(), False),
+                StructField(Colname.metering_point_type, StringType(), False),
+                StructField(Colname.settlement_method, StringType(), False),
+                StructField(Colname.grid_area, StringType(), False),
+                StructField(Colname.resolution, StringType(), False),
+                StructField(Colname.in_grid_area, StringType(), False),
+                StructField(Colname.out_grid_area, StringType(), False),
+                StructField(Colname.parent_metering_point_id, StringType(), False),
+                StructField(Colname.from_date, TimestampType(), False),
+                StructField(Colname.to_date, TimestampType(), True),
+                StructField(Colname.energy_supplier_id, StringType(), False),
+            ]
+        )
+
+        return spark.createDataFrame(df_array, schema=schema)
 
     return factory
 
@@ -190,16 +215,35 @@ def test__metering_points_have_expected_columns(
 
     assert (
         raw_master_basis_data.where(
-            (col("MeteringPointId") == metering_point_id)
-            & (col("GridAreaCode") == grid_area_code)
-            & (col("FromDate") == june_1th)
-            & (col("ToDate") == june_2th)
-            & (col("Type") == metering_point_type)
-            & (col("SettlementMethod") == settlement_method)
-            & (col("FromGridAreaCode") == "some-in-gride-area")
-            & (col("ToGridAreaCode") == "some-out-gride-area")
-            & (col("Resolution") == MeteringPointResolution.hour.value)
-            & (col("EnergySupplierId") == energy_supplier_id)
+            (col(Colname.metering_point_id) == metering_point_id)
+            & (col(Colname.grid_area) == grid_area_code)
+            & (col(Colname.from_date) == june_1th)
+            & (col(Colname.to_date) == june_2th)
+            & (col(Colname.metering_point_type) == metering_point_type)
+            & (col(Colname.settlement_method) == settlement_method)
+            & (col(Colname.in_grid_area) == "some-in-gride-area")
+            & (col(Colname.out_grid_area) == "some-out-gride-area")
+            & (col(Colname.resolution) == MeteringPointResolution.hour.value)
+            & (col(Colname.energy_supplier_id) == energy_supplier_id)
         ).count()
         == 1
     )
+
+
+def test__when_period_to_date_is_null__returns_metering_point_period_with_to_date_equal_to_period_end(
+    batch_grid_areas_df,
+    metering_points_periods_df_factory,
+):
+    # Arrange
+    metering_points_periods_df = metering_points_periods_df_factory(ToDate=None)
+    period_end = june_2th
+
+    raw_master_basis_data = get_metering_point_periods_df(
+        metering_points_periods_df,
+        batch_grid_areas_df,
+        june_1th,
+        period_end_datetime=period_end,
+    )
+
+    assert raw_master_basis_data.count() == 1
+    assert raw_master_basis_data.where(col(Colname.to_date) == period_end).count() == 1
