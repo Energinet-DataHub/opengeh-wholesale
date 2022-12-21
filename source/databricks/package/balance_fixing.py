@@ -38,7 +38,8 @@ def calculate_balance_fixing(
     period_end_datetime: datetime,
     time_zone: str,
 ) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
-
+    print("---------------------")
+    metering_points_periods_df.show()
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         timeseries_points,
         metering_points_periods_df,

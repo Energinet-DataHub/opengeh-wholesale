@@ -88,7 +88,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
             f"{args.wholesale_container_path}/calculation-input-v2/metering-point-periods"
         )
     )
-
     batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
     _check_all_grid_areas_have_metering_points(
         batch_grid_areas_df, metering_points_periods_df
