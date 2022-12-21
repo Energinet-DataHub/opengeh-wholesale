@@ -134,6 +134,7 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
 
         schema = StructType(
             [
+                StructField(Colname.balance_responsible_id, StringType(), False),
                 StructField(Colname.metering_point_id, StringType(), False),
                 StructField(Colname.metering_point_type, StringType(), False),
                 StructField(Colname.settlement_method, StringType(), False),
