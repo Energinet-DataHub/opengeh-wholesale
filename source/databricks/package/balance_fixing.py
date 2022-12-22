@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-from pyspark.sql.functions import col, expr, explode, lit
+from pyspark.sql.functions import col, expr, explode, sum, first
 from package.codelists import (
     MeteringPointResolution,
 )
@@ -57,13 +57,22 @@ def calculate_balance_fixing(
     results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_point_df
     metadata_fake = Metadata("1", "1", "1", "1")
     total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
-    total_production_per_ga_df = total_production_per_ga_df.select(
-        Colname.grid_area,
-        col(Colname.sum_quantity).alias(Colname.quantity),
-        col(Colname.quality).alias("quality"),
-        Colname.position,
-        col(Colname.time_window_start).alias("quarter_time"),
-    ).orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
+    total_production_per_ga_df = (
+        total_production_per_ga_df.groupBy(Colname.grid_area, Colname.time_window)
+        .agg(
+            sum(Colname.sum_quantity).alias(Colname.quantity),
+            first(Colname.position).alias(Colname.position),
+            first(Colname.quality).alias(Colname.quality),
+        )
+        .select(
+            Colname.grid_area,
+            Colname.quantity,
+            col(Colname.quality).alias("quality"),
+            Colname.position,
+            col(Colname.time_window_start).alias("quarter_time"),
+        )
+        .orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
+    )
 
     return (
         total_production_per_ga_df,

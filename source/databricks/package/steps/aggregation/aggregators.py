@@ -248,7 +248,9 @@ def aggregate_per_ga_and_brp_and_es(
             Colname.time_window,
         )
         .agg(
-            sum("quarter_quantity").alias(Colname.sum_quantity), collect_set("Quality")
+            # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
+            sum("quarter_quantity").alias(Colname.sum_quantity),
+            collect_set("Quality"),
         )
         .withColumn(
             "Quality",
@@ -277,8 +279,6 @@ def aggregate_per_ga_and_brp_and_es(
 
     win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
 
-    # Points may be missing in result time series if all metering points are missing a point at a certain moment.
-    # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
     result = (
         result.withColumn("position", row_number().over(win))
         .withColumn(
