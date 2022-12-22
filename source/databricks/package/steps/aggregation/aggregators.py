@@ -243,8 +243,6 @@ def aggregate_per_ga_and_brp_and_es(
         )
         .groupBy(
             Colname.grid_area,
-            Colname.balance_responsible_id,
-            Colname.energy_supplier_id,
             Colname.time_window,
         )
         .agg(
