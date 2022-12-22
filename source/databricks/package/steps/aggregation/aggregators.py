@@ -248,6 +248,8 @@ def aggregate_per_ga_and_brp_and_es(
         .agg(
             sum("quarter_quantity").alias(Colname.sum_quantity), collect_set("Quality")
         )
+        .withColumn(Colname.balance_responsible_id, "1")
+        .withColumn(Colname.energy_supplier_id, "1")
         .withColumn(
             "Quality",
             when(
