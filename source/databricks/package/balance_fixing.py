@@ -61,14 +61,12 @@ def calculate_balance_fixing(
         total_production_per_ga_df.groupBy(Colname.grid_area, Colname.time_window)
         .agg(
             sum(Colname.sum_quantity).alias(Colname.quantity),
-            first(Colname.position).alias(Colname.position),
             first(Colname.quality).alias(Colname.quality),
         )
         .select(
             Colname.grid_area,
             Colname.quantity,
             col(Colname.quality).alias("quality"),
-            Colname.position,
             col(Colname.time_window_start).alias("quarter_time"),
         )
         .orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
