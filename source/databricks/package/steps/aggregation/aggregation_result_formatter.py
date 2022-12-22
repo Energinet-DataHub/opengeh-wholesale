@@ -42,9 +42,13 @@ def __add_missing_nullable_columns(result: DataFrame) -> DataFrame:
 def create_dataframe_from_aggregation_result_schema(
     metadata: Metadata, result: DataFrame
 ) -> DataFrame:
+    "Fit result in a general DataFrame. This is used for all results and missing columns will be null."
+
     result = __add_missing_nullable_columns(result)
     # Replaces None value with zero for sum_quantity
     result = result.na.fill(value=0, subset=[Colname.sum_quantity])
+
+    # Create data frame from RDD in order to be able to apply the schema
     return SparkSession.builder.getOrCreate().createDataFrame(
         result.select(
             lit(metadata.JobId).alias(Colname.job_id),
