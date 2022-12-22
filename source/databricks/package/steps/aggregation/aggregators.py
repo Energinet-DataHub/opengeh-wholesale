@@ -243,13 +243,13 @@ def aggregate_per_ga_and_brp_and_es(
         )
         .groupBy(
             Colname.grid_area,
-            Colname.balance_responsible_id,
-            Colname.energy_supplier_id,
             Colname.time_window,
         )
         .agg(
             sum("quarter_quantity").alias(Colname.sum_quantity), collect_set("Quality")
         )
+        .withColumn(Colname.balance_responsible_id, "1")
+        .withColumn(Colname.energy_supplier_id, "1")
         .withColumn(
             "Quality",
             when(
