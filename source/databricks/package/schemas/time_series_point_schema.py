@@ -23,12 +23,11 @@ from pyspark.sql.types import (
 from package.constants import Colname
 
 """
-Schema for time series points
+Schema for time series points input data used by the calculator job.
 
 Time series points are used in both balance fixing and settlement.
 
 Data must be stored in a Delta table.
-The table must be partitioned by the observation time elements: year/month/day.
 Data must always be the current data.
 """
 time_series_point_schema = StructType(
@@ -45,11 +44,5 @@ time_series_point_schema = StructType(
         StructField(Colname.quality, StringType(), False),
         # The time when the energy was consumed/produced/exchanged
         StructField("ObservationTime", TimestampType(), False),
-        # The year part of the `ObservationTime`. Used in partition.
-        StructField("ObservationTime_Year", IntegerType(), False),
-        # The month part of the `ObservationTime`. Used in partition.
-        StructField("ObservationTime_Month", IntegerType(), False),
-        # The day part (1-31) of the `ObservationTime`. Used in partition.
-        StructField("ObservationTime_Day", IntegerType(), False),
     ]
 )
