@@ -661,36 +661,24 @@ time_series_dataset_1 = [
         Decimal("10"),
         "D01",
         datetime(2020, 1, 15, 5, 0),
-        2020,
-        1,
-        15,
     ),
     (
         "D01",
         Decimal("10"),
         "D01",
         datetime(2020, 1, 15, 1, 0),
-        2020,
-        1,
-        15,
     ),
     (
         "D01",
         Decimal("10"),
         "D01",
         datetime(2020, 1, 15, 1, 30),
-        2020,
-        1,
-        15,
     ),
     (
         "D01",
         Decimal("10"),
         "D01",
         datetime(2020, 1, 16, 1, 0),
-        2020,
-        1,
-        15,
     ),
 ]
 
@@ -730,9 +718,6 @@ grouped_time_series_dataset_1 = [
         Decimal("10"),
         "D01",
         datetime(2020, 1, 15, 0, 0),
-        2020,
-        1,
-        15,
     )
 ]
 charges_complete_dataset_1 = [
