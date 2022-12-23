@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM jupyter/pyspark-notebook:spark-3.1.2
+# The spark version should should follow the spark version in databricks.
+# The databricks version of spark is controlled from dh3-infrastructure and uses latest LTS (ATTOW - Spark v3.3.0)
+FROM jupyter/pyspark-notebook:spark-3.3.0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -25,15 +27,17 @@ COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 RUN apt-get update; \
     apt-get install -y npm && npm install -g n && n lts && hash -r && npm install -g azurite
 
-# Install spark packages with mamba 
+# Install spark packages with mamba (packages has to be updated according to spark version)
 RUN mamba install --quiet --yes --satisfied-skip-solve \
-    'pyarrow=2.0.*' 'rope=0.18.*' 'pytest=7.1.*' 'configargparse=1.2.3'  \
-    'coverage=6.3.*' 'azure-storage-blob=12.8.*' 'pytest-mock=3.7.*' \
+    'pyarrow=9.0.*' 'rope=1.6.*' 'pytest=7.2.*' 'configargparse=1.5.3'  \
+    'coverage=7.0.*' 'azure-storage-blob=12.14.*' 'pytest-mock=3.10.*' \
     'virtualenv=20.*'
 
-# Install python packages used in pyspark development 
+# Install python packages used in pyspark development (keep spark dependent packages alligned)
+# delta-spark version has to have compatibility with spark version (https://docs.delta.io/latest/releases.html)
+# example (delta 2.2.x = spark 3.3.x)
 RUN pip --no-cache-dir install pyspelling azure-eventhub azure-identity azure-storage-file-datalake coverage-threshold \
-    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli mypy delta-spark==1.0.0 \
+    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli mypy delta-spark==2.2.0 \
     build
 
 # Below will make everything in the directory owned by the group ${NB_GID}
