@@ -181,7 +181,7 @@ def test__from_date_must_not_be_earlier_than_period_start(
 
 def test__to_date_must_not_be_after_period_end(
     metering_point_period_df_factory,
-):
+) -> None:
     expected_vaild_to = "2022-06-10T12:09:15.000Z"
     metering_point_period_df = metering_point_period_df_factory(meteringpoint_id="1")
 
