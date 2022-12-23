@@ -332,9 +332,6 @@ def time_series_factory(spark):
                     Colname.quantity: quantity,
                     Colname.quality: ts_quality,
                     Colname.observation_time: time,
-                    Colname.observation_time_year: time.year,
-                    Colname.observation_time_month: time.month,
-                    Colname.observation_time_day: time.day,
                 }
             ],
             ignore_index=True,
