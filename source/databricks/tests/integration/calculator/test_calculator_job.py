@@ -20,7 +20,7 @@ from unittest.mock import patch
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
 from package.calculator_args import CalculatorArgs
-from package.schemas.time_series_point_schema import time_series_point_schema
+from package.schemas import time_series_point_schema, metering_point_period_schema
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 
@@ -65,26 +65,33 @@ def test_data_job_parameters(
 
 @pytest.fixture(scope="session")
 def executed_calculation_job(
-    spark, test_data_job_parameters, test_files_folder_path, data_lake_path
+    spark: SparkSession,
+    test_data_job_parameters,
+    test_files_folder_path,
+    data_lake_path,
 ):
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
     This act is made as a session-scoped fixture because it is a slow process
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
-    meteringPointsDf = spark.read.csv(
+    metering_points_df = spark.read.csv(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         header=True,
+        schema=metering_point_period_schema,
     )
-    meteringPointsDf.write.format("delta").mode("overwrite").save(
-        f"{data_lake_path}/calculation-input-v2/metering-point-periods"
+    metering_points_df.write.format("delta").save(
+        f"{data_lake_path}/calculation-input-v2/metering-point-periods",
+        mode="overwrite",
     )
-    timeseriesPointsDf = spark.read.csv(
+    timeseries_points_df = spark.read.csv(
         f"{test_files_folder_path}/TimeSeriesPoints.csv",
         header=True,
+        schema=time_series_point_schema,
     )
-    timeseriesPointsDf.write.format("delta").mode("overwrite").save(
-        f"{data_lake_path}/calculation-input-v2/time-series-points"
+
+    timeseries_points_df.write.format("delta").save(
+        f"{data_lake_path}/calculation-input-v2/time-series-points", mode="overwrite"
     )
 
     _start_calculator(spark, test_data_job_parameters)
