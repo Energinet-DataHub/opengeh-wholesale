@@ -21,7 +21,7 @@ from pyspark.sql.types import (
 )
 
 """
-Schema for metering point periods
+Schema for metering point periods input data used by the calculator job.
 
 Metering point periods are used in balance fixing and settlement. Some fields are only used in settlement. See each field for details.
 Periods (given by `FromDate` and `ToDate`) must not overlap and must not have gaps in between.
@@ -31,7 +31,6 @@ Only periods where metering points are connected (E22) or disconnected (E23) are
 Data must be stored in a Delta table.
 The table holds all consumption, production, exchange, and child metering points.
 
-The table must be partitioned by `ToDate`: ToDate_Year/ToDate_Month/ToDate_Date.
 It is important to partition by to-date instead of from-date as it will ensure efficient data filtering.
 This is because most periods will have a to-date prior to the calculation period start date.
 
@@ -99,11 +98,5 @@ metering_point_period_schema = StructType(
         # Otherwise it is the date where the metering point was closed down.
         # Used in balance fixing and settlement.
         StructField("ToDate", TimestampType(), True),
-        # The year part of the `ToDate`. Used for partitioning.
-        StructField("ToDate_Year", IntegerType(), True),
-        # The month part of the `ToDate`. Used for partitioning.
-        StructField("ToDate_Month", IntegerType(), True),
-        # The day part (1-31) of the `ToDate`. Used for partitioning.
-        StructField("ToDate_Day", IntegerType(), True),
     ]
 )
