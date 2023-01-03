@@ -18,33 +18,15 @@ from package.datamigration.migration_script_args import MigrationScriptArgs
 
 def apply(args: MigrationScriptArgs) -> None:
     container = "wholesale"
-
-    # Rename 'results' folder to 'calculation-output'
     current_directory_name = "results"
     new_directory_name = "calculation-output"
-    rename_directory(
-        args.storage_account_url,
-        args.storage_account_key,
-        container,
-        current_directory_name,
-        new_directory_name,
-    )
 
-
-def rename_directory(
-    storage_account_url: str,
-    storage_account_key: str,
-    container: str,
-    current_directory_name: str,
-    new_directory_name: str,
-) -> None:
     directory_client = DataLakeDirectoryClient(
-        storage_account_url,
+        args.storage_account_url,
         container,
         current_directory_name,
-        storage_account_key,
+        args.storage_account_key,
     )
-
     if not directory_client.exists():
         source_path = container + "/" + current_directory_name
         print(
