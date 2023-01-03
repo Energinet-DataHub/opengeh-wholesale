@@ -32,15 +32,13 @@ def test__apply__directory_client_contructed_with_correct_arguments(
     source_container = "wholesale"
     source_directory = "results"
 
-    event_call = call(ANY, source_container, source_directory, ANY)
-
-    expected_calls = [event_call]
-
     # Act
     sut.apply(migration_args)
 
     # Assert
-    mock_directory_client.assert_has_calls(expected_calls, any_order=True)
+    mock_directory_client.assert_called_with(
+        ANY, source_container, source_directory, ANY
+    )
 
 
 @patch(
@@ -53,16 +51,14 @@ def test__apply__calls_rename_directory_with_correct_arguments(
     # Arrange
     sut = get_migration_script()
     migration_args = MigrationScriptArgs("", "", ANY)
-    mock_directory_client.return_value.exists.return_value = True
-    expected_calls = [
-        call(new_name="wholesale/calculation-output"),
-    ]
 
     # Act
     sut.apply(migration_args)
 
     # Assert
-    mock_directory_client.return_value.rename_directory.assert_has_calls(expected_calls)
+    mock_directory_client.return_value.rename_directory.assert_called_with(
+        new_name="wholesale/calculation-output"
+    )
 
 
 @patch(
