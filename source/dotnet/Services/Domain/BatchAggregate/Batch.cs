@@ -41,6 +41,17 @@ public class Batch
             throw new ArgumentException("periodStart is greater or equal to periodEnd");
         }
 
+        // Validate that period end is set to 1 millisecond before midnight
+        // The hard coded time zone will be refactored out of this class in an upcoming PR
+        var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
+        var zonedDateTime = new ZonedDateTime(PeriodEnd.Plus(Duration.FromMilliseconds(1)), dateTimeZone);
+        var localDateTime = zonedDateTime.LocalDateTime;
+        if (localDateTime.TimeOfDay != LocalTime.Midnight)
+        {
+            throw new ArgumentException(
+                $"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
+        }
+
         ExecutionTimeStart = _clock.GetCurrentInstant();
         ExecutionTimeEnd = null;
         IsBasisDataDownloadAvailable = false;
