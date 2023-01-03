@@ -1,7 +1,0 @@
-subscription_id                       = "VALUE"
-resource_group_name                   = "VALUE"
-environment_short                     = "VALUE"
-environment_instance                  = "VALUE"
-domain_name_short                     = "VALUE"
-shared_resources_resource_group_name  = "VALUE"
-shared_resources_keyvault_name       = "VALUE"
