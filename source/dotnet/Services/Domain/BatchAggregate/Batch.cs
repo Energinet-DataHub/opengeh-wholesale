@@ -57,7 +57,7 @@ public class Batch
         IEnumerable<GridAreaCode> gridAreaCodes,
         Instant periodStart,
         Instant periodEnd,
-        out List<string> validationErrors)
+        out IEnumerable<string> validationErrors)
     {
         var errors = new List<string>();
 
