@@ -44,15 +44,22 @@ public class BatchTests
     [Fact]
     public void Ctor_WhenNoGridAreaCodes_ThrowsArgumentException()
     {
+        // Arrange
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
         var clock = SystemClock.Instance;
-        Assert.Throws<ArgumentException>(() => new Batch(
-            ProcessType.BalanceFixing,
-            emptyGridAreaCodes,
-            Instant.FromDateTimeOffset(DateTimeOffset.Now),
-            Instant.FromDateTimeOffset(DateTimeOffset.Now),
-            clock));
+
+        // Act
+        var batch = new Batch(
+                ProcessType.BalanceFixing,
+                emptyGridAreaCodes,
+                Instant.FromDateTimeOffset(DateTimeOffset.Now),
+                Instant.FromDateTimeOffset(DateTimeOffset.Now),
+                clock);
+
+        // Assert
+        batch.IsValid(out var validationErrors).Should().BeFalse();
+        validationErrors.Should().Contain("Batch must contain at least one grid area code.");
     }
 
     [Fact]
@@ -88,15 +95,17 @@ public class BatchTests
         var gridAreaCode = new GridAreaCode("113");
 
         // Act
-        var actual = Assert.Throws<ArgumentException>(() => new Batch(
+        var actual = new Batch(
             ProcessType.BalanceFixing,
             new[] { gridAreaCode },
             Instant.MinValue,
             periodEnd,
-            SystemClock.Instance));
+            SystemClock.Instance);
 
         // Assert
-        actual.Message.Should().ContainAll("period", "end");
+        actual.IsValid(out var validationErrors).Should().BeFalse();
+        validationErrors.Should()
+            .Contain($"The period end '{actual.PeriodEnd.ToString()}' must be one millisecond before midnight.");
     }
 
     [Fact]

@@ -29,16 +29,28 @@ public class Batch
         ExecutionState = BatchExecutionState.Created;
         ProcessType = processType;
         _clock = clock;
-
         _gridAreaCodes = gridAreaCodes.ToList();
-        if (!_gridAreaCodes.Any())
-            throw new ArgumentException("Batch must contain at least one grid area code.");
-
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
-        if (periodStart >= periodEnd)
+        ExecutionTimeStart = _clock.GetCurrentInstant();
+        ExecutionTimeEnd = null;
+        IsBasisDataDownloadAvailable = false;
+    }
+
+    /// <summary>
+    /// Performs validation on the Batch
+    /// </summary>
+    /// <param name="validationErrors"> out's a list of possible errors.</param>
+    /// <returns>If the Batch is valid</returns>
+    public bool IsValid(out List<string> validationErrors)
+    {
+        var errorMessages = new List<string>();
+        if (!_gridAreaCodes.Any())
+            errorMessages.Add("Batch must contain at least one grid area code.");
+
+        if (PeriodStart >= PeriodEnd)
         {
-            throw new ArgumentException("periodStart is greater or equal to periodEnd");
+            errorMessages.Add("periodStart is greater or equal to periodEnd");
         }
 
         // Validate that period end is set to 1 millisecond before midnight
@@ -48,13 +60,12 @@ public class Batch
         var localDateTime = zonedDateTime.LocalDateTime;
         if (localDateTime.TimeOfDay != LocalTime.Midnight)
         {
-            throw new ArgumentException(
-                $"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
+            errorMessages.Add(
+                $"The period end '{PeriodEnd.ToString()}' must be one millisecond before midnight.");
         }
 
-        ExecutionTimeStart = _clock.GetCurrentInstant();
-        ExecutionTimeEnd = null;
-        IsBasisDataDownloadAvailable = false;
+        validationErrors = errorMessages;
+        return !errorMessages.Any();
     }
 
     /// <summary>
