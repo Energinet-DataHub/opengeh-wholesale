@@ -26,6 +26,7 @@ using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
+using NodaTime.Extensions;
 using Test.Core;
 using Xunit;
 
@@ -101,8 +102,8 @@ public sealed class BasisDataApplicationServiceTests
         var batch = new Batch(
             ProcessType.BalanceFixing,
             new[] { gridAreaCode },
-            SystemClock.Instance.GetCurrentInstant(),
-            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeOffset.Parse("2021-12-31T23:00Z").ToInstant(),
+            DateTimeOffset.Parse("2022-01-31T22:59:59.999Z").ToInstant(),
             SystemClock.Instance);
         batch.SetPrivateProperty(b => b.Id, batchCompletedEvent.BatchId);
         return batch;

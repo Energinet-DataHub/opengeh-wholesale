@@ -24,11 +24,20 @@ namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 public class BatchBuilder
 {
     private readonly IClock _clock = SystemClock.Instance;
-    private readonly Instant _periodStart = Instant.FromDateTimeOffset(DateTimeOffset.Now);
-    private readonly Instant _periodEnd = Instant.FromDateTimeOffset(DateTimeOffset.Now).PlusHours(1);
+    private readonly Instant _periodStart;
+    private readonly Instant _periodEnd;
 
     private BatchExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
+
+    public BatchBuilder()
+    {
+        // Create a valid period representing January in a +01:00 offset (e.g. time zone "Europe/Copenhagen")
+        // In order to be valid the last millisecond must be omitted
+        var firstOfJanuary = DateTimeOffset.Parse("2021-01-31T23:00Z");
+        _periodStart = Instant.FromDateTimeOffset(firstOfJanuary);
+        _periodEnd = Instant.FromDateTimeOffset(firstOfJanuary.AddMonths(1).AddMilliseconds(-1));
+    }
 
     public BatchBuilder WithStateSubmitted()
     {

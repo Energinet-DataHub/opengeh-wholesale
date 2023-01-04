@@ -16,14 +16,10 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
-using Moq;
-using NodaTime;
 using Xunit;
 using Xunit.Categories;
-using ProcessType = Energinet.DataHub.Wholesale.Domain.ProcessAggregate.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Tests.Application;
 
@@ -51,11 +47,7 @@ public class BatchDtoMapperTests
         BatchDtoMapper sut)
     {
         // Arrange
-        var clockMock = new Mock<IClock>();
-        var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var somePeriodStart = Instant.FromUtc(2022, 5, 31, 22, 00);
-        var somePeriodEnd = Instant.FromUtc(2022, 6, 1, 22, 00);
-        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, somePeriodStart, somePeriodEnd, clockMock.Object);
+        var batch = new BatchBuilder().Build();
 
         // Act
         var batchDto = sut.Map(batch);
@@ -71,11 +63,7 @@ public class BatchDtoMapperTests
         BatchDtoMapper sut)
     {
         // Arrange
-        var clockMock = new Mock<IClock>();
-        var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var somePeriodStart = Instant.FromUtc(2022, 5, 31, 22, 00);
-        var somePeriodEnd = Instant.FromUtc(2022, 6, 1, 22, 00);
-        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, somePeriodStart, somePeriodEnd, clockMock.Object);
+        var batch = new BatchBuilder().Build();
         batch.MarkAsExecuting(); // this sets ExecutionTimeStart
         batch.MarkAsCompleted(); // this sets ExecutionTimeEnd
 

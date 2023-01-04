@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
 using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 using Xunit.Categories;
 
@@ -73,6 +74,29 @@ public class BatchTests
     {
         var sut = new BatchBuilder().WithStateCompleted().Build();
         Assert.Throws<InvalidOperationException>(() => sut.MarkAsCompleted());
+    }
+
+    [Theory]
+    [InlineData("2023-01-31T23:00Z")]
+    [InlineData("2023-01-31T22:59:59Z")]
+    [InlineData("2023-01-31T22:59:59.9999999Z")]
+    [InlineData("2023-01-31")]
+    public void Ctor_WhenPeriodEndIsNot1MillisecondBeforeMidnight_ThrowsArgumentException(string periodEndString)
+    {
+        // Arrange
+        var periodEnd = DateTimeOffset.Parse(periodEndString).ToInstant();
+        var gridAreaCode = new GridAreaCode("113");
+
+        // Act
+        var actual = Assert.Throws<ArgumentException>(() => new Batch(
+            ProcessType.BalanceFixing,
+            new[] { gridAreaCode },
+            Instant.MinValue,
+            periodEnd,
+            SystemClock.Instance));
+
+        // Assert
+        actual.Message.Should().ContainAll("period", "end");
     }
 
     [Fact]

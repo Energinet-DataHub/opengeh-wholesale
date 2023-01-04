@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
 using Moq;
 using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.JobRunner;
@@ -35,12 +36,11 @@ public class DatabricksCalculatorJobParametersFactoryTests
         DatabricksCalculatorJobParametersFactory sut)
     {
         // Arrange
-        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(Instant.FromUtc(2022, 6, 2, 22, 00));
         var batch = new Batch(
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("805"), new("806") },
-            Instant.FromUtc(2022, 5, 31, 22, 00),
-            Instant.FromUtc(2022, 6, 1, 22, 00),
+            DateTimeOffset.Parse("2022-05-31T22:00Z").ToInstant(),
+            DateTimeOffset.Parse("2022-06-01T21:59:59.999Z").ToInstant(),
             clockMock.Object);
 
         using var stream = EmbeddedResources.GetStream("Infrastructure.JobRunner.calculation-job-parameters-reference.txt");
