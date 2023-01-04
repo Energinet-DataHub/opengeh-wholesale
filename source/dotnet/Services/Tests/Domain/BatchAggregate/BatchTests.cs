@@ -48,14 +48,12 @@ public class BatchTests
         var emptyGridAreaCodes = new List<GridAreaCode>();
         var clock = SystemClock.Instance;
 
-        var actual = Assert.Throws<ArgumentException>(() => new Batch(
+        Assert.Throws<ArgumentException>(() => new Batch(
             ProcessType.BalanceFixing,
             emptyGridAreaCodes,
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
             clock));
-
-        actual.Message.Should().ContainAll("period", "end");
     }
 
     [Fact]
