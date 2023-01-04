@@ -68,6 +68,7 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v9
     with:
+      DOTNET_VERSION: 6.0.403 # TODO: Verify duration of setup .NET if we set specific version
       SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
 
   # Run tests in 'IntegrationTests.dll' NOT within the namespace 'IntegrationEventListener'
