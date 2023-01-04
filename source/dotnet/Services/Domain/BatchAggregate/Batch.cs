@@ -83,9 +83,23 @@ public class Batch
 
     public JobRunId? RunId { get; private set; }
 
+    /// <summary>
+    /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
+    /// </summary>
     public Instant PeriodStart { get; }
 
+    /// <summary>
+    /// Must be exactly 1 ms before the end (midnight) of the local date.
+    /// The 1 ms off is by design originating from the front-end decision on how to handle date periods.
+    /// </summary>
     public Instant PeriodEnd { get; }
+
+    /// <summary>
+    /// Gets an open-ended period end. That is a period end, which is exactly at midnight and thus exclusive.
+    /// This is used in calculations as it prevents loss of e.g. time-series received in the last millisecond
+    /// before midnight.
+    /// </summary>
+    public Instant OpenPeriodEnd => PeriodEnd.Plus(Duration.FromMilliseconds(1));
 
     public bool IsBasisDataDownloadAvailable { get; set; }
 
