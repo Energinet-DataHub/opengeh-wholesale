@@ -72,7 +72,7 @@ public sealed class BatchApplicationServiceTests
         const string gridAreaCode = "123";
 
         // Act
-        await target.CreateAsync(new BatchRequestDto(ProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
+        await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
@@ -102,7 +102,7 @@ public sealed class BatchApplicationServiceTests
         const string gridAreaCode = "456";
 
         // Act
-        await target.CreateAsync(new BatchRequestDto(ProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
+        await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
@@ -132,7 +132,7 @@ public sealed class BatchApplicationServiceTests
         const string gridAreaCode = "789";
 
         // Act
-        await target.CreateAsync(new BatchRequestDto(ProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
+        await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
@@ -179,5 +179,14 @@ public sealed class BatchApplicationServiceTests
                 },
         };
         return calculatorJob;
+    }
+
+    private static BatchRequestDto CreateBatchRequestDto(string gridAreaCode)
+    {
+        return new BatchRequestDto(
+            ProcessType.BalanceFixing,
+            new[] { gridAreaCode },
+            DateTimeOffset.Parse("2021-12-31T23:00Z"),
+            DateTimeOffset.Parse("2022-01-31T22:59:59.999Z"));
     }
 }

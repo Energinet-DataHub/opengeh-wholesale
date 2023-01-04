@@ -117,7 +117,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             {
                 // Arrange
                 var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
-                var endDate = new DateTimeOffset(2020, 1, 29, 23, 0, 0, TimeSpan.Zero);
+                var endDate = new DateTimeOffset(2020, 1, 29, 23, 0, 0, TimeSpan.Zero).AddMilliseconds(-1);
                 var batchRequestDto = new BatchRequestDto(
                     ProcessType.BalanceFixing,
                     new List<string> { ExistingGridAreaCode },

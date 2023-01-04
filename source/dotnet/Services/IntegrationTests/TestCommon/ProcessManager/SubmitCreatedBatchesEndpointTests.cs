@@ -24,8 +24,8 @@ using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
 using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -117,8 +117,9 @@ public class SubmitCreatedBatchesEndpointTests
         private async Task<Guid> CreateAndSavePendingBatch(string gridAreaCode)
         {
             await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
-            var periodStart = Instant.FromDateTimeOffset(DateTimeOffset.Now);
-            var periodEnd = periodStart.PlusHours(1);
+            var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z").ToInstant();
+            var periodEnd = DateTimeOffset.Parse("2022-01-31T22:59:59.999Z").ToInstant();
+
             var clock = SystemClock.Instance;
             var pendingBatch = new Batch(
                 ProcessType.BalanceFixing,
