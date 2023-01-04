@@ -47,7 +47,6 @@ public class BatchTests
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
         var clock = SystemClock.Instance;
-
         Assert.Throws<ArgumentException>(() => new Batch(
             ProcessType.BalanceFixing,
             emptyGridAreaCodes,
