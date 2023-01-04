@@ -63,12 +63,6 @@ data "azurerm_key_vault_secret" "sb_integration_events_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-# ID of the topic receiving all domain integration events
-data "azurerm_key_vault_secret" "sbt_integration_events_id" {
-  name         = "sbt-sharedres-integrationevent-received-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "mssql_data_admin_name" {
   name         = "mssql-data-admin-user-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
