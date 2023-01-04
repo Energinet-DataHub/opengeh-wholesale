@@ -82,5 +82,6 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICalculatorJobRunner>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobParametersFactory>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IProcessStepResultApplicationService, ProcessStepResultApplicationService>();
+        services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
     }
 }

@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
@@ -32,24 +31,34 @@ public class BatchController : ControllerBase
     private readonly IBatchApplicationService _batchApplicationService;
     private readonly IBatchDtoV2Mapper _batchDtoV2Mapper;
     private readonly IBasisDataApplicationService _basisDataApplicationService;
+    private readonly IBatchRequestDtoValidator _batchRequestDtoValidator;
 
-    public BatchController(IBatchApplicationService batchApplicationService, IBatchDtoV2Mapper batchDtoV2Mapper, IBasisDataApplicationService basisDataApplicationService)
+    public BatchController(
+        IBatchApplicationService batchApplicationService,
+        IBatchDtoV2Mapper batchDtoV2Mapper,
+        IBasisDataApplicationService basisDataApplicationService,
+        IBatchRequestDtoValidator batchRequestDtoValidator)
     {
         _batchApplicationService = batchApplicationService;
         _batchDtoV2Mapper = batchDtoV2Mapper;
         _basisDataApplicationService = basisDataApplicationService;
+        _batchRequestDtoValidator = batchRequestDtoValidator;
     }
 
     /// <summary>
     /// Create a batch.
     /// </summary>
-    /// <returns>Always 200 OK</returns>
+    /// <returns>200 Ok with The batch id, or a 400 with an errormessage</returns>
     [HttpPost]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> CreateAsync([FromBody] BatchRequestDto batchRequestDto)
     {
-        var batchId = await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
-        return Ok(batchId);
+        if (!_batchRequestDtoValidator.IsValid(batchRequestDto, out var errorMessages))
+        {
+            return StatusCode(400, string.Join(",", errorMessages));
+        }
+
+        return Ok(await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false));
     }
 
     /// <summary>

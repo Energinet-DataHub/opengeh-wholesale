@@ -94,6 +94,28 @@ public class BatchControllerTests :
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
+    [Theory]
+    [InlineData("2023-01-31T23:00Z")]
+    [InlineData("2023-01-31T22:59:59Z")]
+    [InlineData("2023-01-31T22:59:59.9999999Z")]
+    [InlineData("2023-01-31")]
+    public async Task CreateAsync_WhenCalledWithInvalidPeriodEnd_ReturnsBadRequest(string periodEndString)
+    {
+        // Arrange
+        const string baseUrl = "/v2/batch";
+        var periodStart = DateTimeOffset.Parse("2022-12-31T23:00:00Z");
+        var periodEnd = DateTimeOffset.Parse(periodEndString);
+        var batchRequest = new BatchRequestDto(
+            ProcessType.BalanceFixing,
+            new List<string> { "805" },
+            periodStart,
+            periodEnd);
+        // Act
+        var response = await _client.PostAsJsonAsync(baseUrl, batchRequest, CancellationToken.None);
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
     private static BatchRequestDto CreateBatchRequestDto()
     {
         var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z");
