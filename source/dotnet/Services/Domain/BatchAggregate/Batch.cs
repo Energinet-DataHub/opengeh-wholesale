@@ -21,14 +21,13 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 public class Batch
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
-    private readonly IClock _clock;
 
     public Batch(
         ProcessType processType,
         List<GridAreaCode> gridAreaCodes,
         Instant periodStart,
         Instant periodEnd,
-        IClock clock)
+        Instant executionTimeStart)
         : this()
     {
         _gridAreaCodes = gridAreaCodes.ToList();
@@ -37,10 +36,9 @@ public class Batch
 
         ExecutionState = BatchExecutionState.Created;
         ProcessType = processType;
-        _clock = clock;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
-        ExecutionTimeStart = _clock.GetCurrentInstant();
+        ExecutionTimeStart = executionTimeStart;
         ExecutionTimeEnd = null;
         IsBasisDataDownloadAvailable = false;
     }
@@ -91,7 +89,6 @@ public class Batch
     {
         Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();
-        _clock = SystemClock.Instance;
     }
 
     // Private setter is used implicitly by tests
@@ -103,7 +100,7 @@ public class Batch
 
     public BatchExecutionState ExecutionState { get; private set; }
 
-    public Instant? ExecutionTimeStart { get; private set; }
+    public Instant ExecutionTimeStart { get; private set; }
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
@@ -154,13 +151,19 @@ public class Batch
         ExecutionState = BatchExecutionState.Executing;
     }
 
-    public void MarkAsCompleted()
+    public void MarkAsCompleted(Instant executionTimeEnd)
     {
         if (ExecutionState is BatchExecutionState.Completed or BatchExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Completed);
 
+        if (executionTimeEnd < ExecutionTimeStart)
+        {
+            throw new ArgumentException(
+                $"Execution time end '{executionTimeEnd}' cannot be before execution time start '{ExecutionTimeStart}'");
+        }
+
         ExecutionState = BatchExecutionState.Completed;
-        ExecutionTimeEnd = _clock.GetCurrentInstant();
+        ExecutionTimeEnd = executionTimeEnd;
     }
 
     public void MarkAsFailed()
