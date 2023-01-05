@@ -19,7 +19,6 @@ using FluentAssertions;
 using Moq;
 using NodaTime;
 using NodaTime.Extensions;
-using NodaTime.Text;
 using Xunit;
 using Xunit.Categories;
 
