@@ -54,9 +54,7 @@ public class BatchController : ControllerBase
     public async Task<IActionResult> CreateAsync([FromBody] BatchRequestDto batchRequestDto)
     {
         if (!_batchRequestDtoValidator.IsValid(batchRequestDto, out var errorMessages))
-        {
-            return StatusCode(400, string.Join(",", errorMessages));
-        }
+            return StatusCode(400, string.Join(" ", errorMessages));
 
         var batchId = await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
         return Ok(batchId);
