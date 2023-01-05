@@ -182,7 +182,7 @@ def _start(command_line_args: list[str]) -> None:
 
     if islocked(args.data_storage_account_name, args.data_storage_account_key):
         log("Exiting because storage is locked due to data migrations running.")
-        exit(3)
+        sys.exit(3)
 
     spark = initialize_spark(
         args.data_storage_account_name, args.data_storage_account_key
