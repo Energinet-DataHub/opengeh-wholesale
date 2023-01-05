@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
+using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
@@ -52,11 +53,13 @@ public class MapBatchExecutionStateTests
     [Theory]
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_WhenJobStateIsCompleted_UpdateBatchToCompleted(
+        [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculatorJobRunner> calculatorJobRunnerMock,
         BatchExecutionStateHandler sut)
     {
         // Arrange
+        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(SystemClock.Instance.GetCurrentInstant());
         var batch = new BatchBuilder().WithStateExecuting().Build();
         var executingBatches = new List<Batch>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
