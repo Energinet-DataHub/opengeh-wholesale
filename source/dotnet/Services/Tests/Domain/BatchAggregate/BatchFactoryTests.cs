@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
+using Moq;
 using NodaTime;
 using Xunit;
 using Xunit.Categories;
@@ -51,5 +53,20 @@ public class BatchFactoryTests
         // Assert
         batch.GridAreaCodes.Select(x => x.Code).Should().Contain(_someGridAreasIds);
         batch.GridAreaCodes.Count.Should().Be(_someGridAreasIds.Count);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void Create_ReturnsBatchWithExpectedExecutionTimeStart([Frozen] Mock<IClock> clockMock, BatchFactory sut)
+    {
+        // Arrange
+        var expected = SystemClock.Instance.GetCurrentInstant();
+        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(expected);
+
+        // Act
+        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate);
+
+        // Assert
+        batch.ExecutionTimeStart.Should().Be(expected);
     }
 }
