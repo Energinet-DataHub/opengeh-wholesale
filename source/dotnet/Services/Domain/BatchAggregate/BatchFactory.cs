@@ -27,9 +27,13 @@ public class BatchFactory : IBatchFactory
         _clock = clock;
     }
 
-    public Batch Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate)
+    public Batch Create(
+        ProcessType processType,
+        IEnumerable<string> gridAreaCodes,
+        DateTimeOffset startDate,
+        DateTimeOffset endDate)
     {
-        var gridAreas = gridAreaCodes.Select(c => new GridAreaCode(c));
+        var gridAreas = gridAreaCodes.Select(c => new GridAreaCode(c)).ToList();
         var periodStart = Instant.FromDateTimeOffset(startDate);
         var periodEnd = Instant.FromDateTimeOffset(endDate);
         return new Batch(processType, gridAreas, periodStart, periodEnd, _clock);
