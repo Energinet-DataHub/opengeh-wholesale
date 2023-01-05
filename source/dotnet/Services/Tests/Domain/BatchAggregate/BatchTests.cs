@@ -116,7 +116,7 @@ public class BatchTests
             new List<GridAreaCode> { gridAreaCode },
             startPeriod,
             Instant.FromDateTimeOffset(new DateTimeOffset(2023, 02, 01, 23, 0, 0, new TimeSpan(0))),
-            SystemClock.Instance));
+            SystemClock.Instance.GetCurrentInstant()));
 
         // Assert
         actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}'must be midnight.");
