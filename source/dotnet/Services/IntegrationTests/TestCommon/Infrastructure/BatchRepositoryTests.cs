@@ -64,7 +64,8 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var batch = CreateBatch(someGridAreasIds);
         var sut = new BatchRepository(writeContext);
         batch.MarkAsExecuting(); // This call will ensure ExecutionTimeStart is set
-        batch.MarkAsCompleted();  // This call will ensure ExecutionTimeEnd is set
+        batch.MarkAsCompleted(
+            batch.ExecutionTimeStart.Plus(Duration.FromDays(2))); // This call will ensure ExecutionTimeEnd is set
         batch.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
         batch.ExecutionTimeStart.Should().NotBeNull(); // Additional check
 
@@ -108,6 +109,11 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z").ToInstant();
         var periodEnd = DateTimeOffset.Parse("2022-01-31T22:59:59.999Z").ToInstant();
 
-        return new Batch(ProcessType.BalanceFixing, someGridAreasIds, periodStart, periodEnd, SystemClock.Instance);
+        return new Batch(
+            ProcessType.BalanceFixing,
+            someGridAreasIds,
+            periodStart,
+            periodEnd,
+            SystemClock.Instance.GetCurrentInstant());
     }
 }

@@ -120,13 +120,12 @@ public class SubmitCreatedBatchesEndpointTests
             var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z").ToInstant();
             var periodEnd = DateTimeOffset.Parse("2022-01-31T22:59:59.999Z").ToInstant();
 
-            var clock = SystemClock.Instance;
             var pendingBatch = new Batch(
                 ProcessType.BalanceFixing,
                 new List<GridAreaCode> { new(gridAreaCode) },
                 periodStart,
                 periodEnd,
-                clock);
+                SystemClock.Instance.GetCurrentInstant());
 
             await dbContext.Batches.AddAsync(pendingBatch);
             await dbContext.SaveChangesAsync();

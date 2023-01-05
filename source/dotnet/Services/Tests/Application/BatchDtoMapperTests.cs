@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
+using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
@@ -65,13 +66,13 @@ public class BatchDtoMapperTests
         // Arrange
         var batch = new BatchBuilder().Build();
         batch.MarkAsExecuting(); // this sets ExecutionTimeStart
-        batch.MarkAsCompleted(); // this sets ExecutionTimeEnd
+        batch.MarkAsCompleted(batch.ExecutionTimeStart.Plus(Duration.FromDays(2))); // this sets ExecutionTimeEnd
 
         // Act
         var batchDto = sut.Map(batch);
 
         // Assert
-        batchDto.ExecutionTimeStart.Should().Be(batch.ExecutionTimeStart!.Value.ToDateTimeOffset());
+        batchDto.ExecutionTimeStart.Should().Be(batch.ExecutionTimeStart.ToDateTimeOffset());
         batchDto.ExecutionTimeEnd.Should().Be(batch.ExecutionTimeEnd!.Value.ToDateTimeOffset());
     }
 
