@@ -58,7 +58,8 @@ public class BatchController : ControllerBase
             return StatusCode(400, string.Join(",", errorMessages));
         }
 
-        return Ok(await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false));
+        var batchId = await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
+        return Ok(batchId);
     }
 
     /// <summary>

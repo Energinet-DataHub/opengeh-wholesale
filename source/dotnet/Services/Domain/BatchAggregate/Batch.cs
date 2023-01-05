@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public class Batch
 {
-    private readonly List<GridAreaCode> _gridAreaCodes;
+    private readonly IEnumerable<GridAreaCode> _gridAreaCodes;
     private readonly IClock _clock;
 
     public Batch(
@@ -31,9 +31,9 @@ public class Batch
         IClock clock)
         : this()
     {
-        _gridAreaCodes = gridAreaCodes.ToList();
-        if (IsValid(_gridAreaCodes, periodStart, periodEnd, out var errorMessages) == false)
-            throw new ArgumentException(string.Join(",", errorMessages));
+        _gridAreaCodes = gridAreaCodes;
+        if (!IsValid(_gridAreaCodes, periodStart, periodEnd, out var errorMessages))
+            throw new ArgumentException(string.Join(" ", errorMessages));
 
         ExecutionState = BatchExecutionState.Created;
         ProcessType = processType;
@@ -65,9 +65,7 @@ public class Batch
             errors.Add("Batch must contain at least one grid area code.");
 
         if (periodStart >= periodEnd)
-        {
             errors.Add("periodStart is greater or equal to periodEnd");
-        }
 
         // Validate that period end is set to 1 millisecond before midnight
         // The hard coded time zone will be refactored out of this class in an upcoming PR
@@ -75,10 +73,7 @@ public class Batch
         var zonedDateTime = new ZonedDateTime(periodEnd.Plus(Duration.FromMilliseconds(1)), dateTimeZone);
         var localDateTime = zonedDateTime.LocalDateTime;
         if (localDateTime.TimeOfDay != LocalTime.Midnight)
-        {
-            errors.Add(
-                $"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
-        }
+            errors.Add($"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
 
         validationErrors = errors;
         return !errors.Any();
@@ -100,7 +95,7 @@ public class Batch
 
     public ProcessType ProcessType { get; }
 
-    public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes;
+    public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes.ToList();
 
     public BatchExecutionState ExecutionState { get; private set; }
 
