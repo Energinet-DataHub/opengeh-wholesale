@@ -75,6 +75,10 @@ public class Batch
         if (localDateTime.TimeOfDay != LocalTime.Midnight)
             errors.Add($"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
 
+        var timeOfDay = new ZonedDateTime(periodStart, dateTimeZone).TimeOfDay;
+        if (timeOfDay != LocalTime.Midnight)
+            errors.Add($"The period start '{periodStart.ToString()}'must be midnight.");
+
         validationErrors = errors;
         return !errors.Any();
     }

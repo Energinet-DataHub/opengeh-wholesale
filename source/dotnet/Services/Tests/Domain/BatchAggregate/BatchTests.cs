@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
 using NodaTime;
 using NodaTime.Extensions;
+using NodaTime.Text;
 using Xunit;
 using Xunit.Categories;
 
@@ -97,6 +98,27 @@ public class BatchTests
 
         // Assert
         actual.Message.Should().ContainAll("period", "end");
+    }
+
+    [Theory]
+    [InlineData("2023-01-31T22:59:00.9999999Z")]
+    [InlineData("2023-01-31T23:00:00.9999999Z")]
+    public void Ctor_WhenPeriodStartIsNotMidnight_ThrowsArgumentException(string periodStartString)
+    {
+        // Arrange
+        var startPeriod = DateTimeOffset.Parse(periodStartString).ToInstant();
+        var gridAreaCode = new GridAreaCode("113");
+
+        // Act
+        var actual = Assert.Throws<ArgumentException>(() => new Batch(
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { gridAreaCode },
+            startPeriod,
+            Instant.FromDateTimeOffset(new DateTimeOffset(2023, 02, 01, 23, 0, 0, new TimeSpan(0))),
+            SystemClock.Instance));
+
+        // Assert
+        actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}'must be midnight.");
     }
 
     [Fact]
