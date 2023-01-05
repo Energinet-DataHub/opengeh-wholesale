@@ -90,7 +90,7 @@ public class BatchTests
         // Act
         var actual = Assert.Throws<ArgumentException>(() => new Batch(
             ProcessType.BalanceFixing,
-            new[] { gridAreaCode },
+            new List<GridAreaCode> { gridAreaCode },
             Instant.MinValue,
             periodEnd,
             SystemClock.Instance));

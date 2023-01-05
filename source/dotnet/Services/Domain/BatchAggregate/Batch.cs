@@ -20,18 +20,18 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public class Batch
 {
-    private readonly IEnumerable<GridAreaCode> _gridAreaCodes;
+    private readonly List<GridAreaCode> _gridAreaCodes;
     private readonly IClock _clock;
 
     public Batch(
         ProcessType processType,
-        IEnumerable<GridAreaCode> gridAreaCodes,
+        List<GridAreaCode> gridAreaCodes,
         Instant periodStart,
         Instant periodEnd,
         IClock clock)
         : this()
     {
-        _gridAreaCodes = gridAreaCodes;
+        _gridAreaCodes = gridAreaCodes.ToList();
         if (!IsValid(_gridAreaCodes, periodStart, periodEnd, out var errorMessages))
             throw new ArgumentException(string.Join(" ", errorMessages));
 
@@ -95,7 +95,7 @@ public class Batch
 
     public ProcessType ProcessType { get; }
 
-    public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes.ToList();
+    public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes;
 
     public BatchExecutionState ExecutionState { get; private set; }
 

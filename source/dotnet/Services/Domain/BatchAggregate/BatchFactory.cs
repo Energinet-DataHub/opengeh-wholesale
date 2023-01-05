@@ -33,7 +33,7 @@ public class BatchFactory : IBatchFactory
         DateTimeOffset startDate,
         DateTimeOffset endDate)
     {
-        var gridAreas = gridAreaCodes.Select(c => new GridAreaCode(c));
+        var gridAreas = gridAreaCodes.Select(c => new GridAreaCode(c)).ToList();
         var periodStart = Instant.FromDateTimeOffset(startDate);
         var periodEnd = Instant.FromDateTimeOffset(endDate);
         return new Batch(processType, gridAreas, periodStart, periodEnd, _clock);

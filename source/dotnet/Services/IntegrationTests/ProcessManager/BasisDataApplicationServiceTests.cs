@@ -101,7 +101,7 @@ public sealed class BasisDataApplicationServiceTests
         var gridAreaCode = new GridAreaCode("805");
         var batch = new Batch(
             ProcessType.BalanceFixing,
-            new[] { gridAreaCode },
+            new List<GridAreaCode> { gridAreaCode },
             DateTimeOffset.Parse("2021-12-31T23:00Z").ToInstant(),
             DateTimeOffset.Parse("2022-01-31T22:59:59.999Z").ToInstant(),
             SystemClock.Instance);
