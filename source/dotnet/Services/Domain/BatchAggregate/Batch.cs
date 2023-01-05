@@ -23,38 +23,60 @@ public class Batch
     private readonly List<GridAreaCode> _gridAreaCodes;
     private readonly IClock _clock;
 
-    public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes, Instant periodStart, Instant periodEnd, IClock clock)
+    public Batch(
+        ProcessType processType,
+        List<GridAreaCode> gridAreaCodes,
+        Instant periodStart,
+        Instant periodEnd,
+        IClock clock)
         : this()
     {
+        _gridAreaCodes = gridAreaCodes.ToList();
+        if (!IsValid(_gridAreaCodes, periodStart, periodEnd, out var errorMessages))
+            throw new ArgumentException(string.Join(" ", errorMessages));
+
         ExecutionState = BatchExecutionState.Created;
         ProcessType = processType;
         _clock = clock;
-
-        _gridAreaCodes = gridAreaCodes.ToList();
-        if (!_gridAreaCodes.Any())
-            throw new ArgumentException("Batch must contain at least one grid area code.");
-
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
+        ExecutionTimeStart = _clock.GetCurrentInstant();
+        ExecutionTimeEnd = null;
+        IsBasisDataDownloadAvailable = false;
+    }
+
+    /// <summary>
+    /// Validate if parameters are valid for a Batch.
+    /// </summary>
+    /// <param name="gridAreaCodes"></param>
+    /// <param name="periodStart"></param>
+    /// <param name="periodEnd"></param>
+    /// <param name="validationErrors"></param>
+    /// <returns>If the parameters are valid for a Batch</returns>
+    public static bool IsValid(
+        IEnumerable<GridAreaCode> gridAreaCodes,
+        Instant periodStart,
+        Instant periodEnd,
+        out IEnumerable<string> validationErrors)
+    {
+        var errors = new List<string>();
+
+        if (!gridAreaCodes.Any())
+            errors.Add("Batch must contain at least one grid area code.");
+
         if (periodStart >= periodEnd)
-        {
-            throw new ArgumentException("periodStart is greater or equal to periodEnd");
-        }
+            errors.Add("periodStart is greater or equal to periodEnd");
 
         // Validate that period end is set to 1 millisecond before midnight
         // The hard coded time zone will be refactored out of this class in an upcoming PR
         var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
-        var zonedDateTime = new ZonedDateTime(PeriodEnd.Plus(Duration.FromMilliseconds(1)), dateTimeZone);
+        var zonedDateTime = new ZonedDateTime(periodEnd.Plus(Duration.FromMilliseconds(1)), dateTimeZone);
         var localDateTime = zonedDateTime.LocalDateTime;
         if (localDateTime.TimeOfDay != LocalTime.Midnight)
-        {
-            throw new ArgumentException(
-                $"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
-        }
+            errors.Add($"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
 
-        ExecutionTimeStart = _clock.GetCurrentInstant();
-        ExecutionTimeEnd = null;
-        IsBasisDataDownloadAvailable = false;
+        validationErrors = errors;
+        return !errors.Any();
     }
 
     /// <summary>

@@ -123,7 +123,7 @@ public class SubmitCreatedBatchesEndpointTests
             var clock = SystemClock.Instance;
             var pendingBatch = new Batch(
                 ProcessType.BalanceFixing,
-                new[] { new GridAreaCode(gridAreaCode) },
+                new List<GridAreaCode> { new(gridAreaCode) },
                 periodStart,
                 periodEnd,
                 clock);
