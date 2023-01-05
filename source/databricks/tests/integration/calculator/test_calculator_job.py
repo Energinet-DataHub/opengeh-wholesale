@@ -271,7 +271,7 @@ def test__result_file_path_matches_contract(
     # Assert
     actual_result_file = find_first_file(
         f"{data_lake_path}/{worker_id}",
-        f"calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln=grid_access_provider/step=productio/part-*.json",
+        f"calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln=grid_access_provider/step=production/part-*.json",
     )
     assert re.match(expected_path_expression, actual_result_file)
 
