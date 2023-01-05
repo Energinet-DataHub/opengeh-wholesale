@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 module "st_data_lake" {
-  source                            = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v9"
+  source                            = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v10"
 
   name                              = "datalake"
   project_name                      = var.domain_name_short
@@ -31,7 +31,7 @@ module "st_data_lake" {
 }
 
 module "kvs_st_data_lake_primary_connection_string" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v9"
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
   name          = "st-data-lake-primary-connection-string"
   value         = module.st_data_lake.primary_connection_string
@@ -41,7 +41,7 @@ module "kvs_st_data_lake_primary_connection_string" {
 }
 
 module "kvs_st_data_lake_name" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v9"
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
   name          = "st-data-lake-name"
   value         = module.st_data_lake.name
@@ -51,7 +51,7 @@ module "kvs_st_data_lake_name" {
 }
 
 module "kvs_st_data_lake_primary_access_key" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v9"
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
   name          = "st-data-lake-primary-access-key"
   value         = module.st_data_lake.primary_access_key
