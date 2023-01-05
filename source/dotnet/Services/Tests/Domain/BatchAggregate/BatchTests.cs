@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
+using Moq;
 using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
@@ -46,13 +47,13 @@ public class BatchTests
     {
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
-        var clock = SystemClock.Instance;
-        Assert.Throws<ArgumentException>(() => new Batch(
+        var actual = Assert.Throws<ArgumentException>(() => new Batch(
             ProcessType.BalanceFixing,
             emptyGridAreaCodes,
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
-            clock));
+            SystemClock.Instance.GetCurrentInstant()));
+        actual.Message.Should().Contain("Batch must contain at least one grid area code");
     }
 
     [Fact]
@@ -73,7 +74,7 @@ public class BatchTests
     public void MarkAsCompleted_WhenComplete_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithStateCompleted().Build();
-        Assert.Throws<InvalidOperationException>(() => sut.MarkAsCompleted());
+        Assert.Throws<InvalidOperationException>(() => sut.MarkAsCompleted(It.IsAny<Instant>()));
     }
 
     [Theory]
@@ -93,7 +94,7 @@ public class BatchTests
             new List<GridAreaCode> { gridAreaCode },
             Instant.MinValue,
             periodEnd,
-            SystemClock.Instance));
+            SystemClock.Instance.GetCurrentInstant()));
 
         // Assert
         actual.Message.Should().ContainAll("period", "end");
@@ -102,17 +103,44 @@ public class BatchTests
     [Fact]
     public void MarkAsCompleted_WhenExecuting_CompletesBatch()
     {
+        // Arrange
         var sut = new BatchBuilder().WithStateExecuting().Build();
-        sut.MarkAsCompleted();
+        var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart.Plus(Duration.FromDays(2));
+
+        // Act
+        sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
+
+        // Assert
         sut.ExecutionState.Should().Be(BatchExecutionState.Completed);
     }
 
     [Fact]
     public void MarkAsCompleted_SetsExecutionTimeEnd()
     {
+        // Arrange
         var sut = new BatchBuilder().WithStateExecuting().Build();
-        sut.MarkAsCompleted();
+        var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart.Plus(Duration.FromDays(2));
+
+        // Act
+        sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
+
+        // Assert
         sut.ExecutionTimeEnd.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void MarkAsCompleted_WhenExecutionTimeEndLessThanStart_ThrowsArgumentException()
+    {
+        // Arrange
+        var sut = new BatchBuilder().WithStateExecuting().Build();
+        var executionTimeEndLessThanStart = sut.ExecutionTimeStart.Minus(Duration.FromDays(2));
+
+        // Act
+        var actual = Assert.Throws<ArgumentException>(() => sut.MarkAsCompleted(executionTimeEndLessThanStart));
+
+        // Assert
+        sut.ExecutionTimeEnd.Should().BeNull();
+        actual.Message.Should().Contain("cannot be before execution time start");
     }
 
     [Fact]

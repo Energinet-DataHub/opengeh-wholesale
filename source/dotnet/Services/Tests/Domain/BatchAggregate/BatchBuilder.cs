@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using NodaTime;
 using Test.Core;
 
@@ -23,7 +22,6 @@ namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 
 public class BatchBuilder
 {
-    private readonly IClock _clock = SystemClock.Instance;
     private readonly Instant _periodStart;
     private readonly Instant _periodEnd;
 
@@ -77,7 +75,7 @@ public class BatchBuilder
 
     public Batch Build()
     {
-        var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes, _periodStart, _periodEnd, _clock);
+        var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes, _periodStart, _periodEnd, SystemClock.Instance.GetCurrentInstant());
         var jobRunId = new JobRunId(new Random().Next(1, 1000));
 
         if (_state == BatchExecutionState.Submitted)
@@ -100,7 +98,7 @@ public class BatchBuilder
             batch.MarkAsSubmitted(jobRunId);
             batch.MarkAsPending();
             batch.MarkAsExecuting();
-            batch.MarkAsCompleted();
+            batch.MarkAsCompleted(SystemClock.Instance.GetCurrentInstant());
         }
         else if (_state != null)
         {

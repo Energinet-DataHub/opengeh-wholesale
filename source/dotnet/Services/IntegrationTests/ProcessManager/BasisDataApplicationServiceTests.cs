@@ -104,7 +104,7 @@ public sealed class BasisDataApplicationServiceTests
             new List<GridAreaCode> { gridAreaCode },
             DateTimeOffset.Parse("2021-12-31T23:00Z").ToInstant(),
             DateTimeOffset.Parse("2022-01-31T22:59:59.999Z").ToInstant(),
-            SystemClock.Instance);
+            SystemClock.Instance.GetCurrentInstant());
         batch.SetPrivateProperty(b => b.Id, batchCompletedEvent.BatchId);
         return batch;
     }
