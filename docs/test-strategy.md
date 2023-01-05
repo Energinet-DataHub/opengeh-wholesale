@@ -1,6 +1,6 @@
 # Wholesale - Test Strategy (Draft)
 
-This document describes the test strategy for the Wholesale domain in Datahub 3.0 at Energinet
+This document describes the test strategy for the Wholesale domain in DataHub 3.0 at Energinet
 
 ## Motivation
 
@@ -32,7 +32,7 @@ We strive to follow the ‘Shift Left’ principle, where we test at the early s
 
 ### Definition
 
-To avoid confusion or ambiguous interpretation of the term “Unit”, the term Unit Test refers solely to test done to an individual semantical unit of written or produced piece of code or text.  A unit test is hence a test that test:
+To avoid confusion or ambiguous interpretation of the term “Unit”, the term Unit Test refers solely to test done to an individual semantic unit of written or produced piece of code or text.  A unit test is hence a test that test:
 
 Test of a single method, property or class.
 
@@ -52,7 +52,7 @@ Python Mocked tests using Pytest and unittest.mock
 
 ### Metrics and Evaluation
 
-.NET code Coverage is performed by CodeCov
+.NET code Coverage is performed by codecov
 
 We don’t evaluate it, and we have no targets.
 
@@ -120,7 +120,7 @@ The intension is not to do exhaustive testing but rather to do smoke tests end2e
 
 ### Methods and Implementation
 
-The domain tests act on the external interfaces of the Wholesale domain. This could be the http endpoints that are available via the wholesale NuGet package. It could also be interactions with events or queues. Tests are located in a dedicated project in the wholesale repository (see here). They are executed as part of the CD pipeline in U001. If the domain test fails then the CD step fails, and there will be no deployment to T001.
+The domain tests act on the external interfaces of the Wholesale domain. This could be the HTTP endpoints that are available via the wholesale NuGet package. It could also be interactions with events or queues. Tests are located in a dedicated project in the wholesale repository (see here). They are executed as part of the CD pipeline in U001. If the domain test fails then the CD step fails, and there will be no deployment to T001.
 
 Example:
 
