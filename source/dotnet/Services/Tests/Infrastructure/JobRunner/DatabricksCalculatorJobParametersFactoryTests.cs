@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
@@ -20,7 +19,6 @@ using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
-using Moq;
 using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
@@ -32,7 +30,6 @@ public class DatabricksCalculatorJobParametersFactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void CreateParameters_MatchesExpectationOfDatabricksJob(
-        [Frozen] Mock<IClock> clockMock,
         DatabricksCalculatorJobParametersFactory sut)
     {
         // Arrange
@@ -41,7 +38,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
             new List<GridAreaCode> { new("805"), new("806") },
             DateTimeOffset.Parse("2022-05-31T22:00Z").ToInstant(),
             DateTimeOffset.Parse("2022-06-01T21:59:59.999Z").ToInstant(),
-            clockMock.Object);
+            SystemClock.Instance.GetCurrentInstant());
 
         using var stream = EmbeddedResources.GetStream("Infrastructure.JobRunner.calculation-job-parameters-reference.txt");
         using var reader = new StreamReader(stream);
