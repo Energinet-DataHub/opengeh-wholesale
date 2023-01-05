@@ -65,13 +65,15 @@ public class Batch
         if (periodStart >= periodEnd)
             errors.Add("periodStart is greater or equal to periodEnd");
 
-        // Validate that period end is set to 1 millisecond before midnight
         // The hard coded time zone will be refactored out of this class in an upcoming PR
         var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
-        var zonedDateTime = new ZonedDateTime(periodEnd.Plus(Duration.FromMilliseconds(1)), dateTimeZone);
-        var localDateTime = zonedDateTime.LocalDateTime;
-        if (localDateTime.TimeOfDay != LocalTime.Midnight)
+
+        // Validate that period end is set to 1 millisecond before midnight
+        if (new ZonedDateTime(periodEnd.Plus(Duration.FromMilliseconds(1)), dateTimeZone).TimeOfDay != LocalTime.Midnight)
             errors.Add($"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
+
+        if (new ZonedDateTime(periodStart, dateTimeZone).TimeOfDay != LocalTime.Midnight)
+            errors.Add($"The period start '{periodStart.ToString()}'must be midnight.");
 
         validationErrors = errors;
         return !errors.Any();
