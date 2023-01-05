@@ -46,6 +46,7 @@ pytest
 readme
 RSM
 SonarCloud
+SqlServerDataManager
 TestCommon
 tox
 TSO
