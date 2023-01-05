@@ -30,39 +30,39 @@ We strive to follow the ‘Shift Left’ principle, where we test at the early s
 
 ## Unit Test
 
-### Definition
+Definition:
 
 To avoid confusion or ambiguous interpretation of the term “Unit”, the term Unit Test refers solely to test done to an individual semantic unit of written or produced piece of code or text.  A unit test is hence a test that test:
 
-Test of a single method, property or class.
+- Test of a single method, property or class.
 
-Test contracts adherence.
+- Test contracts adherence.
 
-All dependencies of the unit under test are presumed mocked.
+- All dependencies of the unit under test are presumed mocked.
 
-### Objective
+Objective:
 
-By isolating and executing a single unit of code, we can analyse files before system execution.
+- By isolating and executing a single unit of code, we can analyse files before system execution.
 
-### Methods and Implementation
+Methods and Implementation:
 
-C# Mocked test using xUnit and Moq
+- C# Mocked test using xUnit and Moq
 
-Python Mocked tests using Pytest and unittest.mock
+- Python Mocked tests using Pytest and unittest.mock
 
-### Metrics and Evaluation
+Metrics and Evaluation:
 
-.NET code Coverage is performed by codecov
+- .NET code Coverage is performed by codecov
 
-We don’t evaluate it, and we have no targets.
+- We don’t evaluate it, and we have no targets.
 
 ## Integration Test
 
-### Definition
+Definition:
 
 Test that a component in combination with other components in the system. Examples of components are Azure Functions and App Services
 
-### Objective
+Objective:
 
 Ensure that the connectivity between components meets the requirements
 
@@ -94,31 +94,31 @@ The goal for the tests is to verify the interaction between the python code (whi
 
 Test are executed on a Spark cluster provisioned within a Docker container.
 
-### Metrics and Evaluation
+Metrics and Evaluation:
 
-None at the moment.
+- None at the moment.
 
-### Performance issues
+Performance issues:
 
-To ensure short feedback only a single calculation is executed with multiple tests later asserting on the result.
+- To ensure short feedback only a single calculation is executed with multiple tests later asserting on the result.
 
 ## Domain Test
 
-### Definition
+Definition:
 
-End2end test within the Wholesale domain. The relevant artifacts are deployed and tested on a live Azure environment.
+- End2end test within the Wholesale domain. The relevant artifacts are deployed and tested on a live Azure environment.
 
-### Objective
+Objective:
 
-Catch bugs that are not found in integration and unit test
+- Catch bugs that are not found in integration and unit test
 
-Build confidence in that the Wholesale domain works end2end
+- Build confidence in that the Wholesale domain works end2end
 
-Guard T001 environment against potential against breaking
+- Guard T001 environment against potential against breaking
 
-The intension is not to do exhaustive testing but rather to do smoke tests end2end via endpoints
+- The intension is not to do exhaustive testing but rather to do smoke tests end2end via endpoints
 
-### Methods and Implementation
+Methods and Implementation:
 
 The domain tests act on the external interfaces of the Wholesale domain. This could be the HTTP endpoints that are available via the wholesale NuGet package. It could also be interactions with events or queues. Tests are located in a dedicated project in the wholesale repository (see here). They are executed as part of the CD pipeline in U001. If the domain test fails then the CD step fails, and there will be no deployment to T001.
 
@@ -132,25 +132,25 @@ Domain tests are currently the only tests that use Databricks - our integration 
 
 Before adding new domain test, always consider if you can shift-left: can the test be done as a unit or integration test? Domain tests give late feedback, and the code is already in main, so only add new domain tests if there are no good alternatives.
 
-### Metrics and Evaluation
+Metrics and Evaluation:
 
-None at the moment.
+- None at the moment.
 
-### Infrastructure Test
+## Infrastructure Test
 
-### Definition
+Definition:
 
-Ensuring and validating any provisioned infrastructure.
+- Ensuring and validating any provisioned infrastructure.
 
-Presence of services and/or resources and also validating their state and configuration.
+- Presence of services and/or resources and also validating their state and configuration.
 
-### Objective
+Objective:
 
-Validate system state on a live environment before reaching test or production environments
+- Validate system state on a live environment before reaching test or production environments
 
-Deployment verification in a CD Pipeline
+- Deployment verification in a CD Pipeline
 
-### Methods and Implementation
+Methods and Implementation:
 
 - HealthCheck's
     - Usually HealthCheck's are implemented for monitoring, but in this case, we also use it as a way of verifying connectivity and authorization between components.
@@ -163,26 +163,26 @@ All HealthCheck's are called in the CD pipeline when the development environment
 
 Example: An Azure-functions HealthCheck would consist of checking its connection to a service bus and a SQL server database.
 
-### Metrics and Evaluation
+Metrics and Evaluation:
 
-None at the moment.
+- None at the moment.
 
 ## Performance Test
 
-### Definition
+Definition:
 
-Test that verifies that the system meets a business time (performance?) requirement.
+- Test that verifies that the system meets a business time (performance?) requirement.
 
-### Objective
+Objective:
 
 - Verify that the system meets the timely requirements defined by the business.
 
 - Verify that changes to the system don’t deteriorate the system’s performance
 
-### Methods and Implementation
+Methods and Implementation:
 
-There is as of, yet no chosen method, or implementations made.
+- There is as of, yet no chosen method, or implementations made.
 
-### Metrics and Evaluation
+Metrics and Evaluation:
 
-None at the moment.
+- None at the moment.
