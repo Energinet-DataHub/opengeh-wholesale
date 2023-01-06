@@ -90,6 +90,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
+
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
         }
 
         /// <inheritdoc/>

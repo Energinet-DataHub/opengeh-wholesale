@@ -21,10 +21,12 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 public class BatchFactory : IBatchFactory
 {
     private readonly IClock _clock;
+    private readonly DateTimeZone _dateTimeZone;
 
-    public BatchFactory(IClock clock)
+    public BatchFactory(IClock clock, DateTimeZone dateTimeZone)
     {
         _clock = clock;
+        _dateTimeZone = dateTimeZone;
     }
 
     public Batch Create(
@@ -37,6 +39,6 @@ public class BatchFactory : IBatchFactory
         var periodStart = Instant.FromDateTimeOffset(startDate);
         var periodEnd = Instant.FromDateTimeOffset(endDate);
         var executionTimeStart = _clock.GetCurrentInstant();
-        return new Batch(processType, gridAreas, periodStart, periodEnd, executionTimeStart);
+        return new Batch(processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone);
     }
 }

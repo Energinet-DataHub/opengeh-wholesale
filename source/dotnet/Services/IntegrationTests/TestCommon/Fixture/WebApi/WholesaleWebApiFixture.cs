@@ -62,6 +62,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
                 Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
                 Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
 
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
+
             if (!await blobContainerClient.ExistsAsync())
                 await blobContainerClient.CreateAsync();
         }

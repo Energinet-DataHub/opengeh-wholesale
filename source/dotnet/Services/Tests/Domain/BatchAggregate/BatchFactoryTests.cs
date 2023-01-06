@@ -29,12 +29,15 @@ public class BatchFactoryTests
 {
     private readonly DateTimeOffset _startDate = DateTimeOffset.Parse("2021-12-31T23:00Z");
     private readonly DateTimeOffset _endDate = DateTimeOffset.Parse("2022-01-31T22:59:59.999Z");
+    private readonly DateTimeZone _timeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
     private readonly List<string> _someGridAreasIds = new() { "004", "805" };
 
-    [Theory]
-    [InlineAutoMoqData]
-    public void Create_ReturnsBatchWithCorrectPeriod(BatchFactory sut)
+    [Fact]
+    public void Create_ReturnsBatchWithCorrectPeriod()
     {
+        // Arrange
+        var sut = new BatchFactory(SystemClock.Instance, _timeZone);
+
         // Act
         var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate);
 
@@ -43,10 +46,12 @@ public class BatchFactoryTests
         batch.PeriodEnd.Should().Be(Instant.FromDateTimeOffset(_endDate));
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public void Create_ReturnsBatchWithCorrectGridAreas(BatchFactory sut)
+    [Fact]
+    public void Create_ReturnsBatchWithCorrectGridAreas()
     {
+        // Arrange
+        var sut = new BatchFactory(SystemClock.Instance, _timeZone);
+
         // Act
         var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate);
 
@@ -57,11 +62,12 @@ public class BatchFactoryTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Create_ReturnsBatchWithExpectedExecutionTimeStart([Frozen] Mock<IClock> clockMock, BatchFactory sut)
+    public void Create_ReturnsBatchWithExpectedExecutionTimeStart([Frozen] Mock<IClock> clockMock)
     {
         // Arrange
         var expected = SystemClock.Instance.GetCurrentInstant();
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(expected);
+        var sut = new BatchFactory(clockMock.Object, _timeZone);
 
         // Act
         var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate);

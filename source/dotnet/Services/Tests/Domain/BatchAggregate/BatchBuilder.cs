@@ -75,7 +75,13 @@ public class BatchBuilder
 
     public Batch Build()
     {
-        var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes, _periodStart, _periodEnd, SystemClock.Instance.GetCurrentInstant());
+        var batch = new Batch(
+            ProcessType.BalanceFixing,
+            _gridAreaCodes,
+            _periodStart,
+            _periodEnd,
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         var jobRunId = new JobRunId(new Random().Next(1, 1000));
 
         if (_state == BatchExecutionState.Submitted)
