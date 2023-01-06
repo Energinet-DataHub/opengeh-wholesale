@@ -37,7 +37,7 @@ def calculate_balance_fixing(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
-) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
+) -> tuple[DataFrame, DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         timeseries_points,
         metering_points_periods_df,
@@ -56,6 +56,8 @@ def calculate_balance_fixing(
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_point_df
     metadata_fake = Metadata("1", "1", "1", "1")
+
+    # Total production per grid
     total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
     total_production_per_ga_df = (
         total_production_per_ga_df.groupBy(Colname.grid_area, Colname.time_window)
@@ -71,8 +73,17 @@ def calculate_balance_fixing(
         )
         .orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
     )
+   
+    # Total consumption per energy supplier
+    total_consumption_per_ga_and_brp_and_es = agg_steps.aggregate_consumption(
+        results, metadata_fake
+    )
+    total_production_per_ga_df = total_production_per_ga_df.withColumnRenamed(
+        Colname.sum_quantity, Colname.quantity
+    )
 
     return (
+        total_consumption_per_ga_and_brp_and_es,
         total_production_per_ga_df,
         time_series_basis_data_df,
         master_basis_data_df,

@@ -148,7 +148,7 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 
 
 def test__result_is_generated_for_requested_grid_areas(
-    spark,
+    spark: SparkSession,
     test_data_job_parameters,
     data_lake_path,
     source_path,

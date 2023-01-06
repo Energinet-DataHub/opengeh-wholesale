@@ -19,9 +19,10 @@ from .args_helper import valid_date, valid_list, valid_log_level
 from .datamigration import islocked
 import package.calculation_input as calculation_input
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, lit, shuffle
 from pyspark.sql.types import Row
 from configargparse import argparse
+from package.constants import Colname
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -101,7 +102,8 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
     (
-        result_df,
+        consumption_per_ga_and_brp_and_es,
+        production_per_ga_df,
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing(
@@ -132,16 +134,34 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         f"{args.process_results_path}/master-basis-data/batch_id={args.batch_id}",
     )
 
+    production_per_ga_df = production_per_ga_df.withColumn("step", lit("production"))
+    production_per_ga_df = production_per_ga_df.withColumn("gln", lit("provider"))
+
+    path = f"{args.process_results_path}/tmp2/batch_id={args.batch_id}"
+
     # First repartition to co-locate all rows for a grid area on a single executor.
     # This ensures that only one file is being written/created for each grid area
     # When writing/creating the files. The partition by creates a folder for each grid area.
     # result/
+    production_per_ga_df = production_per_ga_df.withColumn("step", lit("consumption"))
     (
-        result_df.withColumnRenamed("GridAreaCode", "grid_area")
-        .withColumn("quantity", col("quantity").cast("string"))
+        production_per_ga_df.withColumnRenamed("GridAreaCode", "grid_area")
+        .withColumn(Colname.quantity, col(Colname.quantity).cast("string"))
         .repartition("grid_area")
+        .write.mode("append")
+        .partitionBy("grid_area", "gln", "step")
+        .json(path)
+    )
+
+    consumption_per_ga_and_brp_and_es = consumption_per_ga_and_brp_and_es.withColumn(
+        "step", lit("production")
+    )
+    (
+        consumption_per_ga_and_brp_and_es.withColumnRenamed("GridAreaCode", "grid_area")
+        .withColumn("quantity", col("quantity").cast("string"))
+        .repartition(Colname.grid_area)
         .write.mode("overwrite")
-        .partitionBy("grid_area")
+        .partitionBy("grid_area", "gln", "step")
         .json(f"{args.process_results_path}/batch_id={args.batch_id}")
     )
 
