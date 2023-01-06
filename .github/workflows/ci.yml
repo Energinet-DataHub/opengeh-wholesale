@@ -66,7 +66,7 @@ jobs:
   dotnet_ci_build:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v9
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v9 # TODO: Remove comment when done testing
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
 
@@ -74,7 +74,7 @@ jobs:
   dotnet_ci_test_integrationtests_part1:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v9
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v9 # TODO: Remove comment when done testing
     with:
       TESTS_DLL_FILE_PATH: '\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
@@ -93,7 +93,7 @@ jobs:
   dotnet_ci_test_tests:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v9
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v9 # TODO: Remove comment when done testing
     with:
       TESTS_DLL_FILE_PATH: '\source\dotnet\Services\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 20
