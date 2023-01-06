@@ -15,16 +15,19 @@
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Microsoft.Extensions.Logging;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public class BatchExecutionStateHandler : IBatchExecutionStateHandler
 {
     private readonly ILogger _logger;
+    private readonly IClock _clock;
 
-    public BatchExecutionStateHandler(ILogger<BatchExecutionStateHandler> logger)
+    public BatchExecutionStateHandler(ILogger<BatchExecutionStateHandler> logger, IClock clock)
     {
         _logger = logger;
+        _clock = clock;
     }
 
     /// <summary>
@@ -75,7 +78,7 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
         };
     }
 
-    private static void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)
+    private void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)
     {
         switch (state)
         {
@@ -86,7 +89,7 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
                 batch.MarkAsExecuting();
                 break;
             case BatchExecutionState.Completed:
-                batch.MarkAsCompleted();
+                batch.MarkAsCompleted(_clock.GetCurrentInstant());
                 completedBatches.Add(batch);
                 break;
             case BatchExecutionState.Failed:
