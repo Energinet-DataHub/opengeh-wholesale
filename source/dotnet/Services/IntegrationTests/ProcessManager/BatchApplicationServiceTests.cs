@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -183,10 +184,11 @@ public sealed class BatchApplicationServiceTests
 
     private static BatchRequestDto CreateBatchRequestDto(string gridAreaCode)
     {
+        var period = Periods.January_EuropeCopenhagen;
         return new BatchRequestDto(
             ProcessType.BalanceFixing,
             new[] { gridAreaCode },
-            DateTimeOffset.Parse("2021-12-31T23:00Z"),
-            DateTimeOffset.Parse("2022-01-31T22:59:59.999Z"));
+            period.PeriodStart,
+            period.PeriodEnd);
     }
 }

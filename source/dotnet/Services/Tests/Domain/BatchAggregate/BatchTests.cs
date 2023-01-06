@@ -52,7 +52,8 @@ public class BatchTests
             emptyGridAreaCodes,
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
-            SystemClock.Instance.GetCurrentInstant()));
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!));
         actual.Message.Should().Contain("Batch must contain at least one grid area code");
     }
 
@@ -78,11 +79,12 @@ public class BatchTests
     }
 
     [Theory]
-    [InlineData("2023-01-31T23:00Z")]
-    [InlineData("2023-01-31T22:59:59Z")]
-    [InlineData("2023-01-31T22:59:59.9999999Z")]
-    [InlineData("2023-01-31")]
-    public void Ctor_WhenPeriodEndIsNot1MillisecondBeforeMidnight_ThrowsArgumentException(string periodEndString)
+    [InlineData("2023-01-31T23:00Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T22:59:59Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T22:59:59.9999999Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T22:59:59.999Z", "America/Cayman")]
+    public void Ctor_WhenPeriodEndIsNot1MillisecondBeforeMidnight_ThrowsArgumentException(string periodEndString, string timeZoneId)
     {
         // Arrange
         var periodEnd = DateTimeOffset.Parse(periodEndString).ToInstant();
@@ -94,7 +96,8 @@ public class BatchTests
             new List<GridAreaCode> { gridAreaCode },
             Instant.MinValue,
             periodEnd,
-            SystemClock.Instance.GetCurrentInstant()));
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!));
 
         // Assert
         actual.Message.Should().ContainAll("period", "end");

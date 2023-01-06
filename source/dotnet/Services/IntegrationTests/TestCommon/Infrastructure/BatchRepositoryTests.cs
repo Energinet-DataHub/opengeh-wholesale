@@ -17,10 +17,10 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Infrastructure;
@@ -106,14 +106,13 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
     private static Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
-        var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z").ToInstant();
-        var periodEnd = DateTimeOffset.Parse("2022-01-31T22:59:59.999Z").ToInstant();
-
+        var period = Periods.January_EuropeCopenhagen_Instant;
         return new Batch(
             ProcessType.BalanceFixing,
             someGridAreasIds,
-            periodStart,
-            periodEnd,
-            SystemClock.Instance.GetCurrentInstant());
+            period.PeriodStart,
+            period.PeriodEnd,
+            SystemClock.Instance.GetCurrentInstant(),
+            period.DateTimeZone);
     }
 }

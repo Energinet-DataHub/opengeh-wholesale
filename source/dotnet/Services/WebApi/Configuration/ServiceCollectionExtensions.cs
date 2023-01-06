@@ -83,5 +83,17 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICalculatorJobParametersFactory>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IProcessStepResultApplicationService, ProcessStepResultApplicationService>();
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
+
+        services.ConfigureDateTime();
+    }
+
+    private static void ConfigureDateTime(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
+        var dateTimeZoneId = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DateTimeZoneId);
+        var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId);
+        if (dateTimeZone == null)
+            throw new ArgumentNullException($"Missing application setting '{EnvironmentSettingNames.DateTimeZoneId}'");
+        serviceCollection.AddSingleton(dateTimeZone);
     }
 }

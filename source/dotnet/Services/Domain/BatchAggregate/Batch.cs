@@ -27,11 +27,12 @@ public class Batch
         List<GridAreaCode> gridAreaCodes,
         Instant periodStart,
         Instant periodEnd,
-        Instant executionTimeStart)
+        Instant executionTimeStart,
+        DateTimeZone dateTimeZone)
         : this()
     {
         _gridAreaCodes = gridAreaCodes.ToList();
-        if (!IsValid(_gridAreaCodes, periodStart, periodEnd, out var errorMessages))
+        if (!IsValid(_gridAreaCodes, periodStart, periodEnd, dateTimeZone, out var errorMessages))
             throw new ArgumentException(string.Join(" ", errorMessages));
 
         ExecutionState = BatchExecutionState.Created;
@@ -49,12 +50,14 @@ public class Batch
     /// <param name="gridAreaCodes"></param>
     /// <param name="periodStart"></param>
     /// <param name="periodEnd"></param>
+    /// <param name="dateTimeZone"></param>
     /// <param name="validationErrors"></param>
     /// <returns>If the parameters are valid for a Batch</returns>
     public static bool IsValid(
         IEnumerable<GridAreaCode> gridAreaCodes,
         Instant periodStart,
         Instant periodEnd,
+        DateTimeZone dateTimeZone,
         out IEnumerable<string> validationErrors)
     {
         var errors = new List<string>();
@@ -67,7 +70,6 @@ public class Batch
 
         // Validate that period end is set to 1 millisecond before midnight
         // The hard coded time zone will be refactored out of this class in an upcoming PR
-        var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
         var zonedDateTime = new ZonedDateTime(periodEnd.Plus(Duration.FromMilliseconds(1)), dateTimeZone);
         var localDateTime = zonedDateTime.LocalDateTime;
         if (localDateTime.TimeOfDay != LocalTime.Midnight)
