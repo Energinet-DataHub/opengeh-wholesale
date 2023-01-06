@@ -83,7 +83,7 @@ public class BatchTests
     [InlineData("2023-01-31T22:59:59Z", "Europe/Copenhagen")]
     [InlineData("2023-01-31T22:59:59.9999999Z", "Europe/Copenhagen")]
     [InlineData("2023-01-31", "Europe/Copenhagen")]
-    [InlineData("2023-01-31T22:59:59.999Z", "America/Cayman")]
+    [InlineData("2023-01-31T22:59:59.999Z", "Asia/Tokyo")]
     public void Ctor_WhenPeriodEndIsNot1MillisecondBeforeMidnight_ThrowsArgumentException(string periodEndString, string timeZoneId)
     {
         // Arrange
