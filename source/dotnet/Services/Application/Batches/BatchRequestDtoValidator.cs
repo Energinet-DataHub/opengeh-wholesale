@@ -15,18 +15,27 @@
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using NodaTime;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public class BatchRequestDtoValidator : IBatchRequestDtoValidator
 {
+    private readonly DateTimeZone _dateTimeZone;
+
+    public BatchRequestDtoValidator(DateTimeZone dateTimeZone)
+    {
+        _dateTimeZone = dateTimeZone;
+    }
+
     public bool IsValid(BatchRequestDto batchRequestDto, out IEnumerable<string> errorMessages)
     {
         var isValid = Batch.IsValid(
             batchRequestDto.GridAreaCodes.Select(code => new GridAreaCode(code)),
             batchRequestDto.StartDate.ToInstant(),
             batchRequestDto.EndDate.ToInstant(),
+            _dateTimeZone,
             out var validationErrors);
         errorMessages = validationErrors;
         return isValid;
