@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-from pyspark.sql.functions import col, expr, explode, sum, first
+from pyspark.sql.functions import col, expr, explode, sum, first, lit
 from package.codelists import (
     MeteringPointResolution,
 )
@@ -72,6 +72,8 @@ def calculate_balance_fixing(
             col(Colname.time_window_start).alias("quarter_time"),
         )
         .orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
+        .withColumn("gln", lit("grid_access_provider"))
+        .withColumn("step", lit("production"))
     )
    
     # Total consumption per energy supplier

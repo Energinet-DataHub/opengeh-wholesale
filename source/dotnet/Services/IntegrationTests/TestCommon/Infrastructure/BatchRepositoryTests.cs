@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
@@ -39,11 +40,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var periodStart = Instant.FromUtc(2022, 5, 31, 22, 00);
-        var periodEnd = Instant.FromUtc(2022, 6, 1, 22, 00);
-        var clock = SystemClock.Instance;
-
-        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, periodStart, periodEnd, clock);
+        var batch = CreateBatch(someGridAreasIds);
         var sut = new BatchRepository(writeContext);
 
         // Act
@@ -64,14 +61,11 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var somePeriodStart = Instant.FromUtc(2022, 5, 31, 22, 00);
-        var somePeriodEnd = Instant.FromUtc(2022, 6, 1, 22, 00);
-        var clock = SystemClock.Instance;
-
-        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, somePeriodStart, somePeriodEnd, clock);
+        var batch = CreateBatch(someGridAreasIds);
         var sut = new BatchRepository(writeContext);
         batch.MarkAsExecuting(); // This call will ensure ExecutionTimeStart is set
-        batch.MarkAsCompleted();  // This call will ensure ExecutionTimeEnd is set
+        batch.MarkAsCompleted(
+            batch.ExecutionTimeStart.Plus(Duration.FromDays(2))); // This call will ensure ExecutionTimeEnd is set
         batch.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
         batch.ExecutionTimeStart.Should().NotBeNull(); // Additional check
 
@@ -93,11 +87,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var somePeriodStart = Instant.FromUtc(2022, 5, 31, 22, 00);
-        var somePeriodEnd = Instant.FromUtc(2022, 6, 1, 22, 00);
-        var clock = SystemClock.Instance;
-
-        var batch = new Batch(ProcessType.BalanceFixing, someGridAreasIds, somePeriodStart, somePeriodEnd, clock);
+        var batch = CreateBatch(someGridAreasIds);
         var sut = new BatchRepository(writeContext);
 
         // Act
@@ -112,5 +102,17 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
         actual.ExecutionTimeEnd.Should().BeNull();
         actual.ExecutionTimeStart.Should().NotBeNull();
+    }
+
+    private static Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
+    {
+        var period = Periods.January_EuropeCopenhagen_Instant;
+        return new Batch(
+            ProcessType.BalanceFixing,
+            someGridAreasIds,
+            period.PeriodStart,
+            period.PeriodEnd,
+            SystemClock.Instance.GetCurrentInstant(),
+            period.DateTimeZone);
     }
 }

@@ -21,29 +21,62 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 public class Batch
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
-    private readonly IClock _clock;
 
-    public Batch(ProcessType processType, IEnumerable<GridAreaCode> gridAreaCodes, Instant periodStart, Instant periodEnd, IClock clock)
+    public Batch(
+        ProcessType processType,
+        List<GridAreaCode> gridAreaCodes,
+        Instant periodStart,
+        Instant periodEnd,
+        Instant executionTimeStart,
+        DateTimeZone dateTimeZone)
         : this()
     {
+        _gridAreaCodes = gridAreaCodes.ToList();
+        if (!IsValid(_gridAreaCodes, periodStart, periodEnd, dateTimeZone, out var errorMessages))
+            throw new ArgumentException(string.Join(" ", errorMessages));
+
         ExecutionState = BatchExecutionState.Created;
         ProcessType = processType;
-        _clock = clock;
-
-        _gridAreaCodes = gridAreaCodes.ToList();
-        if (!_gridAreaCodes.Any())
-            throw new ArgumentException("Batch must contain at least one grid area code.");
-
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
-        if (periodStart >= periodEnd)
-        {
-            throw new ArgumentException("periodStart is greater or equal to periodEnd");
-        }
-
-        ExecutionTimeStart = _clock.GetCurrentInstant();
+        ExecutionTimeStart = executionTimeStart;
         ExecutionTimeEnd = null;
         IsBasisDataDownloadAvailable = false;
+    }
+
+    /// <summary>
+    /// Validate if parameters are valid for a Batch.
+    /// </summary>
+    /// <param name="gridAreaCodes"></param>
+    /// <param name="periodStart"></param>
+    /// <param name="periodEnd"></param>
+    /// <param name="dateTimeZone"></param>
+    /// <param name="validationErrors"></param>
+    /// <returns>If the parameters are valid for a Batch</returns>
+    public static bool IsValid(
+        IEnumerable<GridAreaCode> gridAreaCodes,
+        Instant periodStart,
+        Instant periodEnd,
+        DateTimeZone dateTimeZone,
+        out IEnumerable<string> validationErrors)
+    {
+        var errors = new List<string>();
+
+        if (!gridAreaCodes.Any())
+            errors.Add("Batch must contain at least one grid area code.");
+
+        if (periodStart >= periodEnd)
+            errors.Add("periodStart is greater or equal to periodEnd");
+
+        // Validate that period end is set to 1 millisecond before midnight
+        if (new ZonedDateTime(periodEnd.Plus(Duration.FromMilliseconds(1)), dateTimeZone).TimeOfDay != LocalTime.Midnight)
+            errors.Add($"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
+
+        if (new ZonedDateTime(periodStart, dateTimeZone).TimeOfDay != LocalTime.Midnight)
+            errors.Add($"The period start '{periodStart.ToString()}'must be midnight.");
+
+        validationErrors = errors;
+        return !errors.Any();
     }
 
     /// <summary>
@@ -54,7 +87,6 @@ public class Batch
     {
         Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();
-        _clock = SystemClock.Instance;
     }
 
     // Private setter is used implicitly by tests
@@ -66,15 +98,29 @@ public class Batch
 
     public BatchExecutionState ExecutionState { get; private set; }
 
-    public Instant? ExecutionTimeStart { get; private set; }
+    public Instant ExecutionTimeStart { get; private set; }
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
     public JobRunId? RunId { get; private set; }
 
+    /// <summary>
+    /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
+    /// </summary>
     public Instant PeriodStart { get; }
 
+    /// <summary>
+    /// Must be exactly 1 ms before the end (midnight) of the local date.
+    /// The 1 ms off is by design originating from the front-end decision on how to handle date periods.
+    /// </summary>
     public Instant PeriodEnd { get; }
+
+    /// <summary>
+    /// Gets an open-ended period end. That is a period end, which is exactly at midnight and thus exclusive.
+    /// This is used in calculations as it prevents loss of e.g. time-series received in the last millisecond
+    /// before midnight.
+    /// </summary>
+    public Instant OpenPeriodEnd => PeriodEnd.Plus(Duration.FromMilliseconds(1));
 
     public bool IsBasisDataDownloadAvailable { get; set; }
 
@@ -103,13 +149,19 @@ public class Batch
         ExecutionState = BatchExecutionState.Executing;
     }
 
-    public void MarkAsCompleted()
+    public void MarkAsCompleted(Instant executionTimeEnd)
     {
         if (ExecutionState is BatchExecutionState.Completed or BatchExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Completed);
 
+        if (executionTimeEnd < ExecutionTimeStart)
+        {
+            throw new ArgumentException(
+                $"Execution time end '{executionTimeEnd}' cannot be before execution time start '{ExecutionTimeStart}'");
+        }
+
         ExecutionState = BatchExecutionState.Completed;
-        ExecutionTimeEnd = _clock.GetCurrentInstant();
+        ExecutionTimeEnd = executionTimeEnd;
     }
 
     public void MarkAsFailed()

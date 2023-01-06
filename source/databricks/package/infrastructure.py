@@ -16,7 +16,7 @@
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
 
-RESULTS_FOLDER_NAME = "results"
+RESULTS_FOLDER_NAME = "calculation-output"
 EVENTS_FOLDER_NAME = "events"
 EVENTS_CHECKPOINT_FOLDER_NAME = "events-checkpoint"
 

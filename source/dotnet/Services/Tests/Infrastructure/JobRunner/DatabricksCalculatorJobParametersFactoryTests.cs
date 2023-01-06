@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
@@ -20,8 +19,8 @@ using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
-using Moq;
 using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.JobRunner;
@@ -31,17 +30,16 @@ public class DatabricksCalculatorJobParametersFactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void CreateParameters_MatchesExpectationOfDatabricksJob(
-        [Frozen] Mock<IClock> clockMock,
         DatabricksCalculatorJobParametersFactory sut)
     {
         // Arrange
-        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(Instant.FromUtc(2022, 6, 2, 22, 00));
         var batch = new Batch(
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("805"), new("806") },
-            Instant.FromUtc(2022, 5, 31, 22, 00),
-            Instant.FromUtc(2022, 6, 1, 22, 00),
-            clockMock.Object);
+            DateTimeOffset.Parse("2022-05-31T22:00Z").ToInstant(),
+            DateTimeOffset.Parse("2022-06-01T21:59:59.999Z").ToInstant(),
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
         using var stream = EmbeddedResources.GetStream("Infrastructure.JobRunner.calculation-job-parameters-reference.txt");
         using var reader = new StreamReader(stream);

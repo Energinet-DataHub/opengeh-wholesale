@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
@@ -98,12 +99,14 @@ public sealed class BasisDataApplicationServiceTests
     private static Batch CreateBatch(BatchCompletedEventDto batchCompletedEvent)
     {
         var gridAreaCode = new GridAreaCode("805");
+        var period = Periods.January_EuropeCopenhagen_Instant;
         var batch = new Batch(
             ProcessType.BalanceFixing,
-            new[] { gridAreaCode },
+            new List<GridAreaCode> { gridAreaCode },
+            period.PeriodStart,
+            period.PeriodEnd,
             SystemClock.Instance.GetCurrentInstant(),
-            SystemClock.Instance.GetCurrentInstant(),
-            SystemClock.Instance);
+            period.DateTimeZone);
         batch.SetPrivateProperty(b => b.Id, batchCompletedEvent.BatchId);
         return batch;
     }

@@ -4,21 +4,21 @@
 # Due to the distributed nature of Spark the file names cannot be determined precisely.
 
 result_file:
-    # Example: results/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/grid_area=806/
-    directory_expression: results/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/grid_area=\d{3}/
+    # Example: calculation-output/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/result/grid_area=806/gln=grid_access_provider/step=production/
+    directory_expression: calculation-output/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/result/grid_area=\d{3}/gln=.*/step=.*/
     extension: .json
 
 time_series_hour_basis_data_file:
-    # Example: results/basis-data/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/time-series-hour/grid_area=806/
-    directory_expression: results/basis-data/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/time-series-hour/grid_area=\d{3}/
+    # Example: calculation-output/basis-data/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/time-series-hour/grid_area=806/
+    directory_expression: calculation-output/basis-data/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/time-series-hour/grid_area=\d{3}/
     extension: .csv
 
 time_series_quarter_basis_data_file:
-    # Example: results/basis-data/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/time-series-quarter/grid_area=806/
-    directory_expression: results/basis-data/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/time-series-quarter/grid_area=\d{3}/
+    # Example: calculation-output/basis-data/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/time-series-quarter/grid_area=806/
+    directory_expression: calculation-output/basis-data/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/time-series-quarter/grid_area=\d{3}/
     extension: .csv
 
 master_basis_data_file:
-    # Example: results/master-basis-data/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/grid_area=806/
-    directory_expression: results/master-basis-data/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/grid_area=\d{3}/
+    # Example: calculation-output/master-basis-data/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/grid_area=806/
+    directory_expression: calculation-output/master-basis-data/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/grid_area=\d{3}/
     extension: .csv

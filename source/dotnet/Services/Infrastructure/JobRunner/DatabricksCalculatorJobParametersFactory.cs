@@ -14,19 +14,11 @@
 
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 
 public class DatabricksCalculatorJobParametersFactory : ICalculatorJobParametersFactory
 {
-    private readonly IClock _clock;
-
-    public DatabricksCalculatorJobParametersFactory(IClock clock)
-    {
-        _clock = clock;
-    }
-
     public IEnumerable<string> CreateParameters(Batch batch)
     {
         var gridAreas = string.Join(", ", batch.GridAreaCodes.Select(c => c.Code));
@@ -36,7 +28,7 @@ public class DatabricksCalculatorJobParametersFactory : ICalculatorJobParameters
             $"--batch-id={batch.Id}",
             $"--batch-grid-areas=[{gridAreas}]",
             $"--batch-period-start-datetime={batch.PeriodStart}",
-            $"--batch-period-end-datetime={batch.PeriodEnd}",
+            $"--batch-period-end-datetime={batch.OpenPeriodEnd}",
         };
     }
 }

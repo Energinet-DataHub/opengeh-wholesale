@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -72,7 +73,7 @@ public sealed class BatchApplicationServiceTests
         const string gridAreaCode = "123";
 
         // Act
-        await target.CreateAsync(new BatchRequestDto(ProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
+        await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
@@ -102,7 +103,7 @@ public sealed class BatchApplicationServiceTests
         const string gridAreaCode = "456";
 
         // Act
-        await target.CreateAsync(new BatchRequestDto(ProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
+        await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
@@ -132,7 +133,7 @@ public sealed class BatchApplicationServiceTests
         const string gridAreaCode = "789";
 
         // Act
-        await target.CreateAsync(new BatchRequestDto(ProcessType.BalanceFixing, new[] { gridAreaCode }, DateTimeOffset.Now, DateTimeOffset.Now));
+        await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
         await target.StartSubmittingAsync();
         await target.UpdateExecutionStateAsync();
 
@@ -179,5 +180,15 @@ public sealed class BatchApplicationServiceTests
                 },
         };
         return calculatorJob;
+    }
+
+    private static BatchRequestDto CreateBatchRequestDto(string gridAreaCode)
+    {
+        var period = Periods.January_EuropeCopenhagen;
+        return new BatchRequestDto(
+            ProcessType.BalanceFixing,
+            new[] { gridAreaCode },
+            period.PeriodStart,
+            period.PeriodEnd);
     }
 }

@@ -51,7 +51,7 @@ def test_data_job_parameters(
             "data_storage_account_name": "foo",
             "data_storage_account_key": "foo",
             "wholesale_container_path": f"{data_lake_path}",
-            "process_results_path": f"{data_lake_path}/{worker_id}/results",
+            "process_results_path": f"{data_lake_path}/{worker_id}/calculation-output",
             "batch_id": executed_batch_id,
             "batch_grid_areas": [805, 806],
             "batch_period_start_datetime": timestamp_factory(
@@ -160,10 +160,10 @@ def test__result_is_generated_for_requested_grid_areas(
 
     # Assert
     result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln=grid_access_provider/step=production"
     )
     result_806 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=806"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=806/gln=grid_access_provider/step=production"
     )
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
@@ -208,7 +208,7 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 
     # Assert
     result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln=grid_access_provider/step=production"
     )
     result_805.printSchema()
     assert_contract_matches_schema(
@@ -230,7 +230,7 @@ def test__quantity_is_with_precision_3(
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
     result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/results/batch_id={executed_batch_id}/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln=grid_access_provider/step=production"
     )
     import re
 
@@ -271,7 +271,7 @@ def test__result_file_path_matches_contract(
     # Assert
     actual_result_file = find_first_file(
         f"{data_lake_path}/{worker_id}",
-        f"results/batch_id={executed_batch_id}/grid_area=805/part-*.json",
+        f"calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln=grid_access_provider/step=production/part-*.json",
     )
     assert re.match(expected_path_expression, actual_result_file)
 
@@ -288,7 +288,7 @@ def test__creates_hour_csv_with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805"
     )
     assert actual.columns == [
         "METERINGPOINTID",
@@ -306,7 +306,7 @@ def test__creates_quarter_csv_with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805"
     )
 
     assert actual.columns == [
@@ -325,11 +325,11 @@ def test__creates_csv_per_grid_area(
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805"
     )
 
     basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=806"
+        f"{data_lake_path}/{worker_id}/calculation-output/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=806"
     )
 
     assert (
@@ -349,7 +349,7 @@ def test__master_data_csv_with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id={executed_batch_id}/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/master-basis-data/batch_id={executed_batch_id}/grid_area=805"
     )
 
     assert actual.columns == [
@@ -372,11 +372,11 @@ def test__creates_master_data_csv_per_grid_area(
 
     # Assert
     master_basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id={executed_batch_id}/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/master-basis-data/batch_id={executed_batch_id}/grid_area=805"
     )
 
     master_basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/results/master-basis-data/batch_id={executed_batch_id}/grid_area=806"
+        f"{data_lake_path}/{worker_id}/calculation-output/master-basis-data/batch_id={executed_batch_id}/grid_area=806"
     )
 
     assert (
@@ -407,7 +407,7 @@ def test__master_basis_data_file_matches_contract(
     # Assert
     actual_file_path = find_first_file(
         f"{data_lake_path}/{worker_id}/",
-        f"results/master-basis-data/batch_id={executed_batch_id}/grid_area=805/part-*.csv",
+        f"calculation-output/master-basis-data/batch_id={executed_batch_id}/grid_area=805/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
 
@@ -433,7 +433,7 @@ def test__hourly_basis_data_file_matches_contract(
     # Assert
     actual_file_path = find_first_file(
         f"{data_lake_path}/{worker_id}",
-        f"results/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805/part-*.csv",
+        f"calculation-output/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
 
@@ -459,7 +459,7 @@ def test__quarterly_basis_data_file_matches_contract(
     # Assert
     actual_file_path = find_first_file(
         f"{data_lake_path}/{worker_id}",
-        f"results/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805/part-*.csv",
+        f"calculation-output/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
 

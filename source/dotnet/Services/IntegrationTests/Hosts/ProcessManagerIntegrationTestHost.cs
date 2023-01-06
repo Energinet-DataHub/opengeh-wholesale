@@ -75,6 +75,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, "https://thisurlgoesnowhere.net/");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)

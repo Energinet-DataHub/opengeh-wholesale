@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Core
+using Energinet.DataHub.Wholesale.Contracts;
+
+namespace Energinet.DataHub.Wholesale.Application.Batches;
+
+public interface IBatchRequestDtoValidator
 {
-    public static class EnvironmentVariableHelper
-    {
-        public static string GetEnvVariable(string variableName)
-        {
-            return Environment.GetEnvironmentVariable(variableName) ??
-                   throw new Exception($"Application is missing required environment variable '{variableName}'");
-        }
-    }
+    bool IsValid(BatchRequestDto batchRequestDto, out IEnumerable<string> errorMessages);
 }

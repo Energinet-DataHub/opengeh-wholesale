@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using NodaTime;
 using Test.Core;
 
@@ -23,12 +22,20 @@ namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 
 public class BatchBuilder
 {
-    private readonly IClock _clock = SystemClock.Instance;
-    private readonly Instant _periodStart = Instant.FromDateTimeOffset(DateTimeOffset.Now);
-    private readonly Instant _periodEnd = Instant.FromDateTimeOffset(DateTimeOffset.Now).PlusHours(1);
+    private readonly Instant _periodStart;
+    private readonly Instant _periodEnd;
 
     private BatchExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
+
+    public BatchBuilder()
+    {
+        // Create a valid period representing January in a +01:00 offset (e.g. time zone "Europe/Copenhagen")
+        // In order to be valid the last millisecond must be omitted
+        var firstOfJanuary = DateTimeOffset.Parse("2021-01-31T23:00Z");
+        _periodStart = Instant.FromDateTimeOffset(firstOfJanuary);
+        _periodEnd = Instant.FromDateTimeOffset(firstOfJanuary.AddMonths(1).AddMilliseconds(-1));
+    }
 
     public BatchBuilder WithStateSubmitted()
     {
@@ -68,7 +75,13 @@ public class BatchBuilder
 
     public Batch Build()
     {
-        var batch = new Batch(ProcessType.BalanceFixing, _gridAreaCodes, _periodStart, _periodEnd, _clock);
+        var batch = new Batch(
+            ProcessType.BalanceFixing,
+            _gridAreaCodes,
+            _periodStart,
+            _periodEnd,
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         var jobRunId = new JobRunId(new Random().Next(1, 1000));
 
         if (_state == BatchExecutionState.Submitted)
@@ -91,7 +104,7 @@ public class BatchBuilder
             batch.MarkAsSubmitted(jobRunId);
             batch.MarkAsPending();
             batch.MarkAsExecuting();
-            batch.MarkAsCompleted();
+            batch.MarkAsCompleted(SystemClock.Instance.GetCurrentInstant());
         }
         else if (_state != null)
         {

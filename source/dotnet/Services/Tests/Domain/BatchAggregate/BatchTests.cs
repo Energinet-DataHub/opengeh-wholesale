@@ -16,7 +16,9 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
+using Moq;
 using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 using Xunit.Categories;
 
@@ -45,13 +47,14 @@ public class BatchTests
     {
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
-        var clock = SystemClock.Instance;
-        Assert.Throws<ArgumentException>(() => new Batch(
+        var actual = Assert.Throws<ArgumentException>(() => new Batch(
             ProcessType.BalanceFixing,
             emptyGridAreaCodes,
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
-            clock));
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!));
+        actual.Message.Should().Contain("Batch must contain at least one grid area code");
     }
 
     [Fact]
@@ -72,23 +75,98 @@ public class BatchTests
     public void MarkAsCompleted_WhenComplete_ThrowsInvalidOperationException()
     {
         var sut = new BatchBuilder().WithStateCompleted().Build();
-        Assert.Throws<InvalidOperationException>(() => sut.MarkAsCompleted());
+        Assert.Throws<InvalidOperationException>(() => sut.MarkAsCompleted(It.IsAny<Instant>()));
+    }
+
+    [Theory]
+    [InlineData("2023-01-31T23:00Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T22:59:59Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T22:59:59.9999999Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T22:59:59.999Z", "Asia/Tokyo")]
+    public void Ctor_WhenPeriodEndIsNot1MillisecondBeforeMidnight_ThrowsArgumentException(string periodEndString, string timeZoneId)
+    {
+        // Arrange
+        var periodEnd = DateTimeOffset.Parse(periodEndString).ToInstant();
+        var gridAreaCode = new GridAreaCode("113");
+
+        // Act
+        var actual = Assert.Throws<ArgumentException>(() => new Batch(
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { gridAreaCode },
+            Instant.MinValue,
+            periodEnd,
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!));
+
+        // Assert
+        actual.Message.Should().ContainAll("period", "end");
+    }
+
+    [Theory]
+    [InlineData("2023-01-31T22:59:00.9999999Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T23:00:00.9999999Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T23:00:00Z", "America/Cayman")]
+    public void Ctor_WhenPeriodStartIsNotMidnight_ThrowsArgumentException(string periodStartString, string timeZoneId)
+    {
+        // Arrange
+        var startPeriod = DateTimeOffset.Parse(periodStartString).ToInstant();
+        var gridAreaCode = new GridAreaCode("113");
+
+        // Act
+        var actual = Assert.Throws<ArgumentException>(() => new Batch(
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { gridAreaCode },
+            startPeriod,
+            Instant.FromDateTimeOffset(new DateTimeOffset(2023, 02, 01, 23, 0, 0, new TimeSpan(0))),
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!));
+
+        // Assert
+        actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}'must be midnight.");
     }
 
     [Fact]
     public void MarkAsCompleted_WhenExecuting_CompletesBatch()
     {
+        // Arrange
         var sut = new BatchBuilder().WithStateExecuting().Build();
-        sut.MarkAsCompleted();
+        var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart.Plus(Duration.FromDays(2));
+
+        // Act
+        sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
+
+        // Assert
         sut.ExecutionState.Should().Be(BatchExecutionState.Completed);
     }
 
     [Fact]
     public void MarkAsCompleted_SetsExecutionTimeEnd()
     {
+        // Arrange
         var sut = new BatchBuilder().WithStateExecuting().Build();
-        sut.MarkAsCompleted();
+        var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart.Plus(Duration.FromDays(2));
+
+        // Act
+        sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
+
+        // Assert
         sut.ExecutionTimeEnd.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void MarkAsCompleted_WhenExecutionTimeEndLessThanStart_ThrowsArgumentException()
+    {
+        // Arrange
+        var sut = new BatchBuilder().WithStateExecuting().Build();
+        var executionTimeEndLessThanStart = sut.ExecutionTimeStart.Minus(Duration.FromDays(2));
+
+        // Act
+        var actual = Assert.Throws<ArgumentException>(() => sut.MarkAsCompleted(executionTimeEndLessThanStart));
+
+        // Assert
+        sut.ExecutionTimeEnd.Should().BeNull();
+        actual.Message.Should().Contain("cannot be before execution time start");
     }
 
     [Fact]
