@@ -160,10 +160,10 @@ def test__result_is_generated_for_requested_grid_areas(
 
     # Assert
     result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln=grid_access_provider/step=production"
     )
     result_806 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/grid_area=806"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=806/gln=grid_access_provider/step=production"
     )
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
@@ -208,7 +208,7 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 
     # Assert
     result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln=grid_access_provider/step=production"
     )
     result_805.printSchema()
     assert_contract_matches_schema(
@@ -230,7 +230,7 @@ def test__quantity_is_with_precision_3(
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
     result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln=grid_access_provider/step=production"
     )
     import re
 
@@ -271,7 +271,7 @@ def test__result_file_path_matches_contract(
     # Assert
     actual_result_file = find_first_file(
         f"{data_lake_path}/{worker_id}",
-        f"calculation-output/batch_id={executed_batch_id}/grid_area=805/part-*.json",
+        f"calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln=grid_access_provider/step=production/part-*.json",
     )
     assert re.match(expected_path_expression, actual_result_file)
 

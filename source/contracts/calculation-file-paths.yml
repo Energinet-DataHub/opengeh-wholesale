@@ -4,8 +4,8 @@
 # Due to the distributed nature of Spark the file names cannot be determined precisely.
 
 result_file:
-    # Example: calculation-output/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/grid_area=806/
-    directory_expression: calculation-output/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/grid_area=\d{3}/
+    # Example: calculation-output/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/result/grid_area=806/gln=grid_access_provider/step=production/
+    directory_expression: calculation-output/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/result/grid_area=\d{3}/gln=.*/step=.*/
     extension: .json
 
 time_series_hour_basis_data_file:
