@@ -93,7 +93,7 @@ internal static class ServiceCollectionExtensions
         var dateTimeZoneId = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DateTimeZoneId);
         var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId);
         if (dateTimeZone == null)
-            throw new ArgumentNullException($"Missing application setting '{EnvironmentSettingNames.DateTimeZoneId}'");
+            throw new ArgumentNullException($"Cannot resolve date time zone object for zone id '{dateTimeZoneId}' from application setting '{EnvironmentSettingNames.DateTimeZoneId}'");
         serviceCollection.AddSingleton(dateTimeZone);
     }
 }
