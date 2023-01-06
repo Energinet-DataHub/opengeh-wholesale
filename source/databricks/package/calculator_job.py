@@ -141,8 +141,8 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         .withColumn("quantity", col("quantity").cast("string"))
         .repartition("grid_area")
         .write.mode("overwrite")
-        .partitionBy("grid_area")
-        .json(f"{args.process_results_path}/batch_id={args.batch_id}")
+        .partitionBy(["grid_area", "gln", "step"])
+        .json(f"{args.process_results_path}/batch_id={args.batch_id}/result")
     )
 
 
