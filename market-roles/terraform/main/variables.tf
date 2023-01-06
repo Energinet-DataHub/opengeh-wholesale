@@ -51,3 +51,9 @@ variable developer_ad_group_name {
   description   = "(Optional) Name of the AD group containing developers to have read access to SQL database."
   default       = ""
 }
+
+variable performancetest_enabled {
+  type          = string
+  description   = "(Optional) Enables features needed for the Messaging.Api Performance Test"
+  default       = "false"
+}
