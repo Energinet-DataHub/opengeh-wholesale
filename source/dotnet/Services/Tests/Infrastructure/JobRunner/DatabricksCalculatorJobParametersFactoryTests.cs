@@ -38,7 +38,8 @@ public class DatabricksCalculatorJobParametersFactoryTests
             new List<GridAreaCode> { new("805"), new("806") },
             DateTimeOffset.Parse("2022-05-31T22:00Z").ToInstant(),
             DateTimeOffset.Parse("2022-06-01T21:59:59.999Z").ToInstant(),
-            SystemClock.Instance.GetCurrentInstant());
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
         using var stream = EmbeddedResources.GetStream("Infrastructure.JobRunner.calculation-job-parameters-reference.txt");
         using var reader = new StreamReader(stream);

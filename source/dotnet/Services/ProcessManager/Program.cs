@@ -66,12 +66,12 @@ public static class Program
             .ConfigureServices(Applications)
             .ConfigureServices(Domains)
             .ConfigureServices(Infrastructure)
+            .ConfigureServices(DateTime)
             .ConfigureServices(HealthCheck);
     }
 
     private static void Middlewares(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<CorrelationIdMiddleware>();
         serviceCollection.AddScoped<IIntegrationEventContext, IntegrationEventContext>();
@@ -152,6 +152,16 @@ public static class Program
             provider => new BatchFileManager(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
+    }
+
+    private static void DateTime(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
+        var dateTimeZoneId = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DateTimeZoneId);
+        var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId);
+        if (dateTimeZone == null)
+            throw new ArgumentNullException($"Cannot resolve date time zone object for zone id '{dateTimeZoneId}' from application setting '{EnvironmentSettingNames.DateTimeZoneId}'");
+        serviceCollection.AddSingleton(dateTimeZone);
     }
 
     private static void HealthCheck(IServiceCollection serviceCollection)

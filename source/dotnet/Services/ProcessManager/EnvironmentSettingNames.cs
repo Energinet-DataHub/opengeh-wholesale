@@ -45,4 +45,6 @@ public static class EnvironmentSettingNames
 
     public const string BatchCompletedEventName = "BATCH_COMPLETED_EVENT_NAME";
     public const string ProcessCompletedEventName = "PROCESS_COMPLETED_EVENT_NAME";
+
+    public const string DateTimeZoneId = "TIME_ZONE";
 }
