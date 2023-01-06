@@ -39,9 +39,11 @@ def apply(args: MigrationScriptArgs) -> None:
             if "/grid_area=" in directory.name:
                 if directory.is_directory:
                     current_directory_name = directory.name
+                    print(current_directory_name)
                     directory_client = file_system_client.get_directory_client(
                         directory=current_directory_name
                     )
+                    print(directory_client.url)
                     # Extract batch_id from current directory
                     # example: calculation-output/batch_id=fc1cb5ba-e055-408d-bb9c-0015baf9e425/grid_area=806
                     batch_id = directory.name[19:64]
@@ -68,7 +70,9 @@ def move_and_rename_folder(
     container: str,
 ) -> None:
     source_path = f"{container}/{current_directory_name}"
+    print(source_path)
     new_path = f"{container}/{new_directory_name}"
+    print(source_path)
 
     if not directory_client.exists():
         print(
@@ -77,3 +81,4 @@ def move_and_rename_folder(
         return
 
     directory_client.rename_directory(new_name=new_path)
+    print("--done--")
