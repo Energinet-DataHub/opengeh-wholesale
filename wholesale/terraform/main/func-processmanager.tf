@@ -34,6 +34,8 @@ module "func_processmanager" {
   tags                                      = azurerm_resource_group.this.tags
 
   app_settings                              = {
+    TIME_ZONE                                                          = local.TIME_ZONE
+
     # Database
     DB_CONNECTION_STRING                                               = local.DB_CONNECTION_STRING
 
