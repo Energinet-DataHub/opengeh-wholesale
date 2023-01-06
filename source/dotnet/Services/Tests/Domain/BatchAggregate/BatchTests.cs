@@ -104,9 +104,10 @@ public class BatchTests
     }
 
     [Theory]
-    [InlineData("2023-01-31T22:59:00.9999999Z")]
-    [InlineData("2023-01-31T23:00:00.9999999Z")]
-    public void Ctor_WhenPeriodStartIsNotMidnight_ThrowsArgumentException(string periodStartString)
+    [InlineData("2023-01-31T22:59:00.9999999Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T23:00:00.9999999Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T23:00:00Z", "America/Cayman")]
+    public void Ctor_WhenPeriodStartIsNotMidnight_ThrowsArgumentException(string periodStartString, string timeZoneId)
     {
         // Arrange
         var startPeriod = DateTimeOffset.Parse(periodStartString).ToInstant();
@@ -118,7 +119,8 @@ public class BatchTests
             new List<GridAreaCode> { gridAreaCode },
             startPeriod,
             Instant.FromDateTimeOffset(new DateTimeOffset(2023, 02, 01, 23, 0, 0, new TimeSpan(0))),
-            SystemClock.Instance.GetCurrentInstant()));
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!));
 
         // Assert
         actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}'must be midnight.");
