@@ -134,16 +134,15 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         f"{args.process_results_path}/master-basis-data/batch_id={args.batch_id}",
     )
 
-    production_per_ga_df = production_per_ga_df.withColumn("step", lit("production"))
-    production_per_ga_df = production_per_ga_df.withColumn("gln", lit("provider"))
-
-    path = f"{args.process_results_path}/tmp2/batch_id={args.batch_id}"
+    path = f"{args.process_results_path}/batch_id={args.batch_id}/result"
 
     # First repartition to co-locate all rows for a grid area on a single executor.
     # This ensures that only one file is being written/created for each grid area
     # When writing/creating the files. The partition by creates a folder for each grid area.
     # result/
-    production_per_ga_df = production_per_ga_df.withColumn("step", lit("consumption"))
+    production_per_ga_df = production_per_ga_df.withColumn(
+        "step", lit("production")
+    ).withColumn("gln", lit("grid_access_provider"))
     (
         production_per_ga_df.withColumnRenamed("GridAreaCode", "grid_area")
         .withColumn(Colname.quantity, col(Colname.quantity).cast("string"))
@@ -154,16 +153,20 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
     consumption_per_ga_and_brp_and_es = consumption_per_ga_and_brp_and_es.withColumn(
-        "step", lit("production")
+        "step", lit("non_profiled_consumption")
+    ).withColumnRenamed("gln", "EnergySupplierId")
+
+    consumption_per_ga_and_brp_and_es = consumption_per_ga_and_brp_and_es.withColumn(
+        "step", lit("non_profiled_consumption")
     )
-    (
-        consumption_per_ga_and_brp_and_es.withColumnRenamed("GridAreaCode", "grid_area")
-        .withColumn("quantity", col("quantity").cast("string"))
-        .repartition(Colname.grid_area)
-        .write.mode("overwrite")
-        .partitionBy(["grid_area", "gln", "step"])
-        .json(f"{args.process_results_path}/batch_id={args.batch_id}/result")
-    )
+    # (
+    #     consumption_per_ga_and_brp_and_es.withColumnRenamed("GridAreaCode", "grid_area")
+    #     .withColumn("quantity", col("quantity").cast("string"))
+    #     .repartition(Colname.grid_area)
+    #     .write.mode("overwrite")
+    #     .partitionBy("grid_area", "gln", "step")
+    #     .json(f"{args.process_results_path}/batch_id={args.batch_id}")
+    # )
 
 
 def get_batch_grid_areas_df(
@@ -202,7 +205,7 @@ def _start(command_line_args: list[str]) -> None:
 
     if islocked(args.data_storage_account_name, args.data_storage_account_key):
         log("Exiting because storage is locked due to data migrations running.")
-        sys.exit(3)
+        exit(3)
 
     spark = initialize_spark(
         args.data_storage_account_name, args.data_storage_account_key
