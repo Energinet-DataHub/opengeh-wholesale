@@ -1,4 +1,4 @@
-# Wholesale - Test Strategy (Draft)
+# Wholesale - Test Strategy
 
 This document describes the test strategy for the Wholesale domain in DataHub 3.0 at Energinet
 
