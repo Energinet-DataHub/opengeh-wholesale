@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 module "st_source_maps" {
-  source                      = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=7.2.0"
+  source                      = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=v10"
 
   name                        = "sourcemaps"
   project_name                = var.domain_name_short
@@ -42,7 +42,7 @@ resource "azurerm_role_assignment" "this" {
 }
 
 module "kvs_st_source_maps_primary_connection_string" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=7.2.0"
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
   
   name          = "st-sourcemaps-primary-connection-string"
   value         = module.st_source_maps.primary_connection_string
@@ -52,7 +52,7 @@ module "kvs_st_source_maps_primary_connection_string" {
 }
 
 module "kvs_st_source_maps_name" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=7.2.0"
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
   
   name          = "st-sourcemaps-name"
   value         = module.st_source_maps.name

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 module "app_webapi" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v9"
+  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v10"
 
   name                                      = "webapi"
   project_name                              = var.domain_name_short
@@ -51,7 +51,7 @@ module "app_webapi" {
 }
 
 module "kvs_app_markpart_webapi_base_url" {
-  source                                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=7.0.0"
+  source                                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
   name                                            = "app-markpart-webapi-base-url"
   value                                           = "https://${module.app_webapi.default_hostname}"
@@ -61,7 +61,7 @@ module "kvs_app_markpart_webapi_base_url" {
 }
 
 module "kvs_backend_open_id_url" {
-  source                                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=7.0.0"
+  source                                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
   name                                            = "backend-open-id-url"
   value                                           = "https://${module.app_webapi.default_hostname}/.well-known/openid-configuration"

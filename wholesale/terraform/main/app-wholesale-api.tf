@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 module "app_wholesale_api" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v9"
+  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v10"
 
   name                                      = "webapi"
   project_name                              = var.domain_name_short
@@ -49,7 +49,7 @@ module "app_wholesale_api" {
 }
 
 module "kvs_app_wholesale_api_base_url" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=7.0.0"
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
   name          = "app-wholesale-api-base-url"
   value         = "https://${module.app_wholesale_api.default_hostname}"
