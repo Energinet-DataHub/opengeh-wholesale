@@ -145,27 +145,26 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     ).withColumn("gln", lit("grid_access_provider"))
     (
         production_per_ga_df.withColumnRenamed("GridAreaCode", "grid_area")
-        .withColumn(Colname.quantity, col(Colname.quantity).cast("string"))
+        .withColumn("quantity", col("quantity").cast("string"))
         .repartition("grid_area")
-        .write.mode("append")
+        .write.mode("overwrite")
         .partitionBy("grid_area", "gln", "step")
         .json(path)
     )
 
-    consumption_per_ga_and_brp_and_es = consumption_per_ga_and_brp_and_es.withColumn(
-        "step", lit("non_profiled_consumption")
-    ).withColumnRenamed("gln", "EnergySupplierId")
+    # consumption_per_ga_and_brp_and_es.show()
 
-    consumption_per_ga_and_brp_and_es = consumption_per_ga_and_brp_and_es.withColumn(
-        "step", lit("non_profiled_consumption")
-    )
+    # consumption_per_ga_and_brp_and_es = consumption_per_ga_and_brp_and_es.withColumn(
+    #     "step", lit("non_profiled_consumption")
+    # ).withColumnRenamed("EnergySupplierId", "gln")
+
     # (
     #     consumption_per_ga_and_brp_and_es.withColumnRenamed("GridAreaCode", "grid_area")
-    #     .withColumn("quantity", col("quantity").cast("string"))
-    #     .repartition(Colname.grid_area)
+    #     .withColumn(Colname.quantity, col(Colname.quantity).cast("string"))
+    #     .repartition("grid_area")
     #     .write.mode("overwrite")
     #     .partitionBy("grid_area", "gln", "step")
-    #     .json(f"{args.process_results_path}/batch_id={args.batch_id}")
+    #     .json(path)
     # )
 
 

@@ -75,20 +75,18 @@ def calculate_balance_fixing(
         .withColumn("gln", lit("grid_access_provider"))
         .withColumn("step", lit("production"))
     )
-  
-    total_production_per_ga_df = total_production_per_ga_df.withColumnRenamed(
-        Colname.sum_quantity, Colname.quantity
-    )
-    
+
     # Consumption per energy supplier
     total_consumption_per_ga_and_brp_and_es = agg_steps.aggregate_consumption(
         results, metadata_fake
     )
 
-    total_consumption_per_ga_and_brp_and_es = total_consumption_per_ga_and_brp_and_es.withColumnRenamed(
-        Colname.sum_quantity, Colname.quantity
+    total_consumption_per_ga_and_brp_and_es = (
+        total_consumption_per_ga_and_brp_and_es.withColumnRenamed(
+            Colname.sum_quantity, Colname.quantity
+        )
     )
-    
+
     return (
         total_consumption_per_ga_and_brp_and_es,
         total_production_per_ga_df,
