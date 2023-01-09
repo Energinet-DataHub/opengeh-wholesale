@@ -33,5 +33,5 @@ variable environment_instance {
 
 variable domain_name_short {
   type          = string
-  description   = "Shortest possible edition of the domain name."
+  description   = "Shortest possible edition of the domain name"
 }
