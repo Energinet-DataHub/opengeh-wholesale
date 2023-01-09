@@ -19,6 +19,6 @@ time_series_quarter_basis_data_file:
     extension: .csv
 
 master_basis_data_file:
-    # Example: calculation-output/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/master_basis_data/grid_area=806/gln=grid_access_provider/
-    directory_expression: calculation-output/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/master_basis_data/grid_area=\d{3}/gln=.*/
+    # Example: calculation-output/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/basis_data/master_basis_data/grid_area=806/gln=grid_access_provider/
+    directory_expression: calculation-output/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/basis_data/master_basis_data/grid_area=\d{3}/gln=.*/
     extension: .csv

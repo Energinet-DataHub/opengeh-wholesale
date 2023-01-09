@@ -52,7 +52,9 @@ def apply(args: MigrationScriptArgs) -> None:
             directory_client = file_system_client.get_directory_client(
                 directory=current_directory_name
             )
-            new_sub_directory_name = f"{batch_id}/master_basis_data/{grid_area}"
+            new_sub_directory_name = (
+                f"{batch_id}/basis_data/master_basis_data/{grid_area}"
+            )
             parrent_directory_client.create_sub_directory(new_sub_directory_name)
             new_directory_name = (
                 f"{directory_name}/{new_sub_directory_name}/gln=grid_access_provider"
