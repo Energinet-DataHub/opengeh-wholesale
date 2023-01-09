@@ -49,8 +49,6 @@ module "mssql_data" {
     min_capacity = 0
     max_capacity = 10
   }
-
-  tags                            = azurerm_resource_group.this.tags
 }
 
 resource "random_password" "mssql_administrator_login_password" {
@@ -65,8 +63,6 @@ module "kvs_mssql_data_elastic_pool_id" {
   name          = "mssql-data-elastic-pool-id"
   value         = module.mssql_data.elastic_pool_id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_mssql_data_admin_name" {
@@ -75,8 +71,6 @@ module "kvs_mssql_data_admin_name" {
   name          = "mssql-data-admin-user-name"
   value         = local.mssqlServerAdminName
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_mssql_data_admin_password" {
@@ -85,8 +79,6 @@ module "kvs_mssql_data_admin_password" {
   name          = "mssql-data-admin-user-password"
   value         = random_password.mssql_administrator_login_password.result
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_mssql_data_url" {
@@ -95,8 +87,6 @@ module "kvs_mssql_data_url" {
   name          = "mssql-data-url"
   value         = module.mssql_data.fully_qualified_domain_name
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_mssql_data_name" {
@@ -105,6 +95,4 @@ module "kvs_mssql_data_name" {
   name          = "mssql-data-name"
   value         = module.mssql_data.name
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }

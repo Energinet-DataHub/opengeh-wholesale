@@ -16,7 +16,6 @@ data "azurerm_client_config" "this" {}
 resource "azurerm_resource_group" "integration-test-rg" {
   name      = "rg-DataHub-IntegrationTestResources-U-002"
   location  = "West Europe"
-  tags      = data.azurerm_subscription.this.tags
 }
 
 #
@@ -28,8 +27,6 @@ resource "azurerm_log_analytics_workspace" "integration-test-log" {
   resource_group_name = azurerm_resource_group.integration-test-rg.name
   sku                 = "PerGB2018"
   retention_in_days   = 30
-
-  tags                = azurerm_resource_group.integration-test-rg.tags
 
   lifecycle {
     ignore_changes = [
@@ -44,8 +41,6 @@ resource "azurerm_application_insights" "integration-test-appi" {
   resource_group_name = azurerm_resource_group.integration-test-rg.name
   application_type    = "web"
   workspace_id        = azurerm_log_analytics_workspace.integration-test-log.id
-
-  tags                = azurerm_resource_group.integration-test-rg.tags
 
   lifecycle {
     ignore_changes = [
@@ -64,8 +59,6 @@ resource "azurerm_eventhub_namespace" "integration-test-evhns" {
   sku                 = "Standard"
   capacity            = 1
 
-  tags                = azurerm_resource_group.integration-test-rg.tags
-
   lifecycle {
     ignore_changes = [
       tags,
@@ -83,8 +76,6 @@ resource "azurerm_servicebus_namespace" "integration-test-sbns" {
   sku                 = "Premium"
   capacity            = 1
 
-  tags                = azurerm_resource_group.integration-test-rg.tags
-
   lifecycle {
     ignore_changes = [
       tags,
@@ -101,8 +92,6 @@ resource "azurerm_key_vault" "integration-test-kv" {
   resource_group_name = azurerm_resource_group.integration-test-rg.name
   tenant_id           = data.azurerm_client_config.this.tenant_id
   sku_name            = "standard"
-
-  tags                = azurerm_resource_group.integration-test-rg.tags
 
   lifecycle {
     ignore_changes = [
@@ -183,8 +172,6 @@ resource "azurerm_key_vault_secret" "kvs-appi-instrumentation-key" {
   value         = azurerm_application_insights.integration-test-appi.instrumentation_key
   key_vault_id  = azurerm_key_vault.integration-test-kv.id
 
-  tags          = azurerm_resource_group.integration-test-rg.tags
-
   lifecycle {
     ignore_changes = [
       tags,
@@ -200,8 +187,6 @@ resource "azurerm_key_vault_secret" "kvs-evhns-connection-string" {
   name          = "AZURE-EVENTHUB-CONNECTIONSTRING"
   value         = azurerm_eventhub_namespace.integration-test-evhns.default_primary_connection_string
   key_vault_id  = azurerm_key_vault.integration-test-kv.id
-
-  tags          = azurerm_resource_group.integration-test-rg.tags
 
   lifecycle {
     ignore_changes = [
@@ -219,8 +204,6 @@ resource "azurerm_key_vault_secret" "kvs-log-workspace-id" {
   value         = azurerm_log_analytics_workspace.integration-test-log.workspace_id
   key_vault_id  = azurerm_key_vault.integration-test-kv.id
 
-  tags          = azurerm_resource_group.integration-test-rg.tags
-
   lifecycle {
     ignore_changes = [
       tags,
@@ -236,8 +219,6 @@ resource "azurerm_key_vault_secret" "kvs-sbns-connection-string" {
   name          = "AZURE-SERVICEBUS-CONNECTIONSTRING"
   value         = azurerm_servicebus_namespace.integration-test-sbns.default_primary_connection_string
   key_vault_id  = azurerm_key_vault.integration-test-kv.id
-
-  tags          = azurerm_resource_group.integration-test-rg.tags
 
   lifecycle {
     ignore_changes = [
@@ -255,8 +236,6 @@ resource "azurerm_key_vault_secret" "kvs-resource-group-name" {
   value         = azurerm_resource_group.integration-test-rg.name
   key_vault_id  = azurerm_key_vault.integration-test-kv.id
 
-  tags          = azurerm_resource_group.integration-test-rg.tags
-
   lifecycle {
     ignore_changes = [
       tags,
@@ -272,8 +251,6 @@ resource "azurerm_key_vault_secret" "kvs-shared-spn-id" {
   name          = "AZURE-SHARED-SPNID"
   value         = data.azurerm_client_config.this.client_id
   key_vault_id  = azurerm_key_vault.integration-test-kv.id
-
-  tags          = azurerm_resource_group.integration-test-rg.tags
 
   lifecycle {
     ignore_changes = [
@@ -291,8 +268,6 @@ resource "azurerm_key_vault_secret" "kvs-shared-subscription-id" {
   value         = data.azurerm_client_config.this.subscription_id
   key_vault_id  = azurerm_key_vault.integration-test-kv.id
 
-  tags          = azurerm_resource_group.integration-test-rg.tags
-
   lifecycle {
     ignore_changes = [
       tags,
@@ -308,8 +283,6 @@ resource "azurerm_key_vault_secret" "kvs-shared-tenant-id" {
   name          = "AZURE-SHARED-TENANTID"
   value         = data.azurerm_client_config.this.tenant_id
   key_vault_id  = azurerm_key_vault.integration-test-kv.id
-
-  tags          = azurerm_resource_group.integration-test-rg.tags
 
   lifecycle {
     ignore_changes = [

@@ -29,6 +29,4 @@ module "mssqldb_marketroles" {
   elastic_pool_id                     = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
   monitor_alerts_action_group_id      = data.azurerm_key_vault_secret.primary_action_group_id.value
   monitor_alerts_resource_group_name  = azurerm_resource_group.this.name
-
-  tags                                = data.azurerm_resource_group.shared_resources.tags
 }

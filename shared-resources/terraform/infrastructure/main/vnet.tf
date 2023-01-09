@@ -28,8 +28,6 @@ module "kvs_vnet_name" {
   name          = "vnet-name"
   value         = data.azurerm_virtual_network.this.name
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_vnet_id" {
@@ -38,8 +36,6 @@ module "kvs_vnet_id" {
   name          = "vnet-id"
   value         = data.azurerm_virtual_network.this.id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_vnet_resource_group_name" {
@@ -48,8 +44,6 @@ module "kvs_vnet_resource_group_name" {
   name          = "vnet-resource-group-name"
   value         = data.azurerm_virtual_network.this.resource_group_name
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "snet_private_endpoints" {
@@ -102,8 +96,6 @@ module "kvs_snet_private_endpoints_id" {
   name          = "snet-private-endpoints-id"
   value         = module.snet_private_endpoints.id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_snet_vnet_integration_id" {
@@ -112,8 +104,6 @@ module "kvs_snet_vnet_integration_id" {
   name          = "snet-vnet-integration-id"
   value         = module.snet_vnet_integration.id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 
@@ -152,6 +142,4 @@ module "kvs_snet_vnet_integrations_id" {
   name          = "snet-vnet-integrations-id"
   value         = module.snet_vnet_integrations.id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }

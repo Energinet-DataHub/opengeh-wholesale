@@ -43,6 +43,4 @@ module "func_receiver" {
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
     FEATUREFLAG_ACTORMESSAGEQUEUE                                 = true
   }
-
-  tags = azurerm_resource_group.this.tags
 }

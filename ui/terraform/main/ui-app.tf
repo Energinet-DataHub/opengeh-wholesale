@@ -16,8 +16,6 @@ resource "azurerm_static_site" "ui" {
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
 
-  tags                = azurerm_resource_group.this.tags
-
   lifecycle {
     ignore_changes = [
       # Ignore changes to tags, e.g. because a management agent
@@ -33,6 +31,4 @@ module "kvs_stapp_ui_web_app_api_key" {
   name          = "stapp-ui-web-app-api-key"
   value         = azurerm_static_site.ui.api_key
   key_vault_id  = data.azurerm_key_vault.kv_shared_resources.id
-
-  tags          = azurerm_resource_group.this.tags
 }

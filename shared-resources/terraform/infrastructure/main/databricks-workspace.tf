@@ -32,8 +32,6 @@ module "dbw_shared" {
   ]
 
   log_analytics_workspace_id                = module.log_workspace_shared.id
-
-  tags                                      = azurerm_resource_group.this.tags
 }
 
 module "kvs_databricks_workspace_id" {
@@ -42,8 +40,6 @@ module "kvs_databricks_workspace_id" {
   name          = "dbw-shared-workspace-id"
   value         = module.dbw_shared.id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_databricks_workspace_url" {
@@ -52,8 +48,6 @@ module "kvs_databricks_workspace_url" {
   name          = "dbw-shared-workspace-url"
   value         = module.dbw_shared.workspace_url
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_databricks_public_network_id" {
@@ -62,8 +56,6 @@ module "kvs_databricks_public_network_id" {
   name          = "dbw-public-network-id"
   value         = module.dbw_shared.public_network_id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_databricks_private_dns_resource_group_name" {
@@ -72,8 +64,6 @@ module "kvs_databricks_private_dns_resource_group_name" {
   name          = "databricks-private-dns-resource-group-name"
   value         = module.dbw_shared.private_dns_zone_resource_group_name
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 data "external" "databricks_token" {
@@ -89,6 +79,4 @@ module "kvs_databricks_dbw_shared_workspace_token" {
   name          = "dbw-shared-workspace-token"
   value         = data.external.databricks_token.result.pat_token
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }

@@ -41,8 +41,6 @@ resource "azurerm_public_ip" "deployagent" {
   allocation_method   = "Static"
   ip_tags             = {}
 
-  tags                = azurerm_resource_group.this.tags
-
   lifecycle {
     ignore_changes = [
       # Ignore changes to tags, e.g. because a management agent
@@ -66,8 +64,6 @@ resource "azurerm_network_interface" "deployagent" {
     public_ip_address_id          = azurerm_public_ip.deployagent[count.index].id
   }
 
-  tags                = azurerm_resource_group.this.tags
-
   lifecycle {
     ignore_changes = [
       # Ignore changes to tags, e.g. because a management agent
@@ -82,8 +78,6 @@ resource "azurerm_network_security_group" "deployagent" {
   name                = "nsg-deployagent-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
-
-  tags                = azurerm_resource_group.this.tags
 
   lifecycle {
     ignore_changes = [
@@ -150,8 +144,6 @@ resource "azurerm_storage_account" "deployagent" {
   account_replication_type    = "LRS"
   min_tls_version             = "TLS1_2"
 
-  tags                        = azurerm_resource_group.this.tags
-
   lifecycle {
     ignore_changes = [
       # Ignore changes to tags, e.g. because a management agent
@@ -185,8 +177,6 @@ resource "azurerm_linux_virtual_machine" "deployagent" {
 
   # Changes to the script file means the VM will be recreated
   custom_data                     = filebase64sha256("${path.module}/scripts/setup-deploy-agent.sh")
-
-  tags                            = azurerm_resource_group.this.tags
 
   lifecycle {
     ignore_changes = [
