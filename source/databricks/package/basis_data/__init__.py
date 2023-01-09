@@ -63,6 +63,7 @@ def get_master_basis_data_df(
             col("Type").alias("TYPEOFMP"),
             col("SettlementMethod").alias("SETTLEMENTMETHOD"),
             col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
+            col("gln"),
         )
     )
 

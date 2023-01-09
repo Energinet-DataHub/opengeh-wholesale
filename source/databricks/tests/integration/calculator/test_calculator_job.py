@@ -21,6 +21,7 @@ from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
 from package.calculator_args import CalculatorArgs
 from package.schemas import time_series_point_schema, metering_point_period_schema
+from pyspark.sql.functions import lit
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 
@@ -79,7 +80,7 @@ def executed_calculation_job(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         header=True,
         schema=metering_point_period_schema,
-    )
+    ).withColumn("gln", lit("grid_access_provider"))
     metering_points_df.write.format("delta").save(
         f"{data_lake_path}/calculation-input-v2/metering-point-periods",
         mode="overwrite",
@@ -88,7 +89,7 @@ def executed_calculation_job(
         f"{test_files_folder_path}/TimeSeriesPoints.csv",
         header=True,
         schema=time_series_point_schema,
-    )
+    ).withColumn("gln", lit("grid_access_provider"))
 
     timeseries_points_df.write.format("delta").save(
         f"{data_lake_path}/calculation-input-v2/time-series-points", mode="overwrite"
@@ -288,7 +289,7 @@ def test__creates_hour_csv_with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_hour/grid_area=805/gln=grid_access_provider"
     )
     assert actual.columns == [
         "METERINGPOINTID",
@@ -306,7 +307,7 @@ def test__creates_quarter_csv_with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area=805/gln=grid_access_provider"
     )
 
     assert actual.columns == [
@@ -325,11 +326,11 @@ def test__creates_csv_per_grid_area(
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area=805/gln=grid_access_provider"
     )
 
     basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=806"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area=806/gln=grid_access_provider"
     )
 
     assert (
@@ -349,7 +350,7 @@ def test__master_data_csv_with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/master-basis-data/batch_id={executed_batch_id}/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/master_basis_data/grid_area=805/gln=grid_access_provider"
     )
 
     assert actual.columns == [
@@ -362,6 +363,7 @@ def test__master_data_csv_with_expected_columns_names(
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
         "ENERGYSUPPLIERID",
+        "gln",
     ]
 
 
@@ -372,11 +374,11 @@ def test__creates_master_data_csv_per_grid_area(
 
     # Assert
     master_basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/master-basis-data/batch_id={executed_batch_id}/grid_area=805"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/master_basis_data/grid_area=805/gln=grid_access_provider"
     )
 
     master_basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/master-basis-data/batch_id={executed_batch_id}/grid_area=806"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/master_basis_data/grid_area=806/gln=grid_access_provider"
     )
 
     assert (
@@ -407,7 +409,7 @@ def test__master_basis_data_file_matches_contract(
     # Assert
     actual_file_path = find_first_file(
         f"{data_lake_path}/{worker_id}/",
-        f"calculation-output/master-basis-data/batch_id={executed_batch_id}/grid_area=805/part-*.csv",
+        f"calculation-output/batch_id={executed_batch_id}/master_basis_data/grid_area=805/gln=grid_access_provider/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
 
@@ -433,7 +435,7 @@ def test__hourly_basis_data_file_matches_contract(
     # Assert
     actual_file_path = find_first_file(
         f"{data_lake_path}/{worker_id}",
-        f"calculation-output/basis-data/batch_id={executed_batch_id}/time-series-hour/grid_area=805/part-*.csv",
+        f"calculation-output/batch_id={executed_batch_id}/basis_data/time_series_hour/grid_area=805/gln=grid_access_provider/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
 
@@ -459,7 +461,7 @@ def test__quarterly_basis_data_file_matches_contract(
     # Assert
     actual_file_path = find_first_file(
         f"{data_lake_path}/{worker_id}",
-        f"calculation-output/basis-data/batch_id={executed_batch_id}/time-series-quarter/grid_area=805/part-*.csv",
+        f"calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area=805/gln=grid_access_provider/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
 
