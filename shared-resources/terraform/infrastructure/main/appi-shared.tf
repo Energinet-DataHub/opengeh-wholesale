@@ -21,7 +21,6 @@ module "appi_shared" {
   resource_group_name          = azurerm_resource_group.this.name
   location                     = azurerm_resource_group.this.location
   log_analytics_workspace_id   = module.log_workspace_shared.id 
-  tags                         = azurerm_resource_group.this.tags
 }
 
 module "kvs_appi_shared_connection_string" {
@@ -30,8 +29,6 @@ module "kvs_appi_shared_connection_string" {
   name          = "appi-shared-connection-string"
   value         = module.appi_shared.connection_string
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_appi_shared_instrumentation_key" {
@@ -40,8 +37,6 @@ module "kvs_appi_shared_instrumentation_key" {
   name          = "appi-shared-instrumentation-key"
   value         = module.appi_shared.instrumentation_key
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_appi_shared_name" {
@@ -50,8 +45,6 @@ module "kvs_appi_shared_name" {
   name          = "appi-shared-name"
   value         = module.appi_shared.name
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_appi_shared_id" {
@@ -60,6 +53,4 @@ module "kvs_appi_shared_id" {
   name          = "appi-shared-id"
   value         = module.appi_shared.id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }

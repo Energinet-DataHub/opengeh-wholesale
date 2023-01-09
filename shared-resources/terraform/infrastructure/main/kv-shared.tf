@@ -28,6 +28,4 @@ module "kv_shared" {
     module.snet_vnet_integrations.id,
     data.azurerm_subnet.deployment_agents_subnet.id
   ]
-
-  tags                            = azurerm_resource_group.this.tags
 }

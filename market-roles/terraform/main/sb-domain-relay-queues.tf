@@ -51,8 +51,6 @@ module "kvs_sbq_create_metering_point_transactions" {
   name          = "sbq-create-metering-point-transactions"
   value         = module.sbq_create_metering_point_transactions.name
   key_vault_id  = data.azurerm_key_vault.kv_shared_resources.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "sbq_customermasterdataupdaterequestqueue" {

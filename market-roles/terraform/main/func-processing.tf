@@ -43,6 +43,4 @@ module "func_processing" {
     METERING_POINT_CREATED_EVENT_ENERGY_SUPPLYING_SUBSCRIPTION_NAME = module.sbs_metering_point_created_energy_supplying_event.name
     CUSTOMER_MASTER_DATA_UPDATE_REQUEST_QUEUE_NAME                  = module.sbq_customermasterdataupdaterequestqueue.name,
   }
-
-  tags                                      = azurerm_resource_group.this.tags
 }

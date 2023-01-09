@@ -29,8 +29,6 @@ module "kvs_log_shared_name" {
   name          = "log-shared-name"
   value         = module.log_workspace_shared.name
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_log_shared_id" {
@@ -39,6 +37,4 @@ module "kvs_log_shared_id" {
   name          = "log-shared-id"
   value         = module.log_workspace_shared.id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }

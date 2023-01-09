@@ -45,6 +45,4 @@ module "func_receiver" {
     MARKET_PARTICIPANT_CHANGED_ACTOR_CREATED_SUBSCRIPTION_NAME    = module.sbs_market_roles_b2b_actor_created.name
     FEATUREFLAG_ACTORMESSAGEQUEUE                                 = true
   }
-
-  tags = azurerm_resource_group.this.tags
 }

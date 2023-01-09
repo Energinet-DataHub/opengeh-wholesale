@@ -44,8 +44,6 @@ module "app_wholesale_api" {
       value = local.DB_CONNECTION_STRING
     }
   ]
-
-  tags                                  = azurerm_resource_group.this.tags
 }
 
 module "kvs_app_wholesale_api_base_url" {
@@ -54,6 +52,4 @@ module "kvs_app_wholesale_api_base_url" {
   name          = "app-wholesale-api-base-url"
   value         = "https://${module.app_wholesale_api.default_hostname}"
   key_vault_id  = data.azurerm_key_vault.kv_shared_resources.id
-
-  tags          = azurerm_resource_group.this.tags
 }

@@ -24,8 +24,6 @@ module "ag_primary" {
   short_name                = "Primary"
   email_receiver_name       = "DevOps"
   email_receiver_address    = var.ag_primary_email_address
-
-  tags                      = azurerm_resource_group.this.tags
 }
 
 module "kvs_ag_primary_id" {
@@ -34,6 +32,4 @@ module "kvs_ag_primary_id" {
   name          = "ag-primary-id"
   value         = module.ag_primary.id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
