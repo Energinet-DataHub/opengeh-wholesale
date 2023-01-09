@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IO.Compression;
 using System.Net;
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
@@ -132,10 +134,30 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     async () =>
                     {
                         var batchResult = await Fixture.WholesaleClient.GetBatchAsync(batchId);
-                        return batchResult?.ExecutionState == BatchState.Completed;
+                        return batchResult?.ExecutionState == BatchState.Completed && batchResult.IsBasisDataDownloadAvailable;
                     },
                     DefaultTimeout,
                     DefaultDelay);
+
+                var result = await Fixture.WholesaleClient
+                    .GetProcessStepResultAsync(
+                        new ProcessStepResultRequestDto(
+                            batchId,
+                            ExistingGridAreaCode,
+                            ProcessStepType.AggregateProductionPerGridArea))
+                    .ConfigureAwait(false);
+
+                result.Should().NotContainNullsOrEmptyEnumerables();
+
+                var basisData = await Fixture.WholesaleClient.GetZippedBasisDataStreamAsync(batchId)
+                    .ConfigureAwait(false);
+                var archive = new ZipArchive(basisData);
+
+                var basisDataFileNames = archive.Entries.Select(entry => entry.FullName).ToList();
+
+                basisDataFileNames.Should().Contain("Timeseries_PT1H.csv")
+                    .And.Contain("Timeseries_PT15M.csv")
+                    .And.Contain("MeteringPointMasterData.csv");
 
                 isCompleted.Should().BeTrue();
             }
