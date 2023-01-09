@@ -83,7 +83,7 @@ public class BatchFileManager : IBatchFileManager
             $"{gridAreaCode.Code}/Timeseries_PT15M.csv");
 
     public static (string Directory, string Extension, string ZipEntryPath) GetMasterBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/batch_id={batchId}/master_basis_data/grid_area={gridAreaCode.Code}/gln=grid_access_provider/",
+        => ($"calculation-output/batch_id={batchId}/basis_data/master_basis_data/grid_area={gridAreaCode.Code}/gln=grid_access_provider/",
             ".csv",
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
 

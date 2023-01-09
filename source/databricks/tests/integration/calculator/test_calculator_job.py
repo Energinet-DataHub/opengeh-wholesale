@@ -350,7 +350,7 @@ def test__master_data_csv_with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/master_basis_data/grid_area=805/gln=grid_access_provider"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area=805/gln=grid_access_provider"
     )
 
     assert actual.columns == [
@@ -373,11 +373,11 @@ def test__creates_master_data_csv_per_grid_area(
 
     # Assert
     master_basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/master_basis_data/grid_area=805/gln=grid_access_provider"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area=805/gln=grid_access_provider"
     )
 
     master_basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/master_basis_data/grid_area=806/gln=grid_access_provider"
+        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area=806/gln=grid_access_provider"
     )
 
     assert (
@@ -408,7 +408,7 @@ def test__master_basis_data_file_matches_contract(
     # Assert
     actual_file_path = find_first_file(
         f"{data_lake_path}/{worker_id}/",
-        f"calculation-output/batch_id={executed_batch_id}/master_basis_data/grid_area=805/gln=grid_access_provider/part-*.csv",
+        f"calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area=805/gln=grid_access_provider/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
 

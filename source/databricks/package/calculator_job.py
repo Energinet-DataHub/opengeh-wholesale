@@ -129,7 +129,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
     write_basis_data_to_csv(
         master_basis_data_df,
-        f"{args.process_results_path}/batch_id={args.batch_id}/master_basis_data",
+        f"{args.process_results_path}/batch_id={args.batch_id}/basis_data/master_basis_data",
     )
 
     # First repartition to co-locate all rows for a grid area on a single executor.
