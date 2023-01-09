@@ -77,6 +77,7 @@ def test__get_master_basis_data_has_expected_columns(
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
         "ENERGYSUPPLIERID",
+        "gln",
     ]
 
 
