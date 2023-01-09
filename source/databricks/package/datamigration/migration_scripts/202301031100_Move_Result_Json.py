@@ -33,6 +33,9 @@ def apply(args: MigrationScriptArgs) -> None:
 
     # Enumerate the directories in the parent folder
     directories = file_system_client.get_paths(path=directory_name)
+    parrent_directory_client = file_system_client.get_directory_client(
+        directory=directory_name
+    )
 
     # Rename each directory
     for directory in directories:
@@ -45,11 +48,18 @@ def apply(args: MigrationScriptArgs) -> None:
             grid_area = match.group(2)
             current_directory_name = directory.name
 
-            new_directory_name = f"{directory_name}/{batch_id}/result/{grid_area}/gln=grid_access_provider/step=production"
-
+            directory_client = file_system_client.get_directory_client(
+                directory=current_directory_name
+            )
+            new_sub_directory_name = (
+                f"{batch_id}/result/{grid_area}/gln=grid_access_provider"
+            )
+            parrent_directory_client.create_sub_directory(new_sub_directory_name)
+            new_directory_name = (
+                f"{directory_name}/{new_sub_directory_name}/step=production"
+            )
             move_and_rename_folder(
-                storage_account_url=args.storage_account_url,
-                storage_account_key=args.storage_account_key,
+                directory_client=directory_client,
                 current_directory_name=current_directory_name,
                 new_directory_name=new_directory_name,
                 container=container,
@@ -57,18 +67,11 @@ def apply(args: MigrationScriptArgs) -> None:
 
 
 def move_and_rename_folder(
-    storage_account_url: str,
-    storage_account_key: str,
+    directory_client: DataLakeDirectoryClient,
     current_directory_name: str,
     new_directory_name: str,
     container: str,
 ) -> None:
-    directory_client = DataLakeDirectoryClient(
-        account_url=storage_account_url,
-        file_system_name=container,
-        directory_name=current_directory_name,
-        credential=storage_account_key,
-    )
     source_path = f"{container}/{current_directory_name}"
     new_path = f"{container}/{new_directory_name}"
 
