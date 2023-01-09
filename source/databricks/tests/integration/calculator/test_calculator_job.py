@@ -363,7 +363,6 @@ def test__master_data_csv_with_expected_columns_names(
         "TYPEOFMP",
         "SETTLEMENTMETHOD",
         "ENERGYSUPPLIERID",
-        "gln",
     ]
 
 
