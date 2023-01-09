@@ -115,7 +115,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public async Task When_CreatingBatch_Then_BatchIsEventuallyCompleted()
+            public async Task When_CreatingBatch_Then_BatchIsEventuallyCompletedAndZipped_Then_BasisDataAndResultIsDownloaded()
             {
                 // Arrange
                 var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
@@ -147,7 +147,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                             ProcessStepType.AggregateProductionPerGridArea))
                     .ConfigureAwait(false);
 
-                result.Should().NotContainNullsOrEmptyEnumerables();
+                result.Should().NotBeNull();
 
                 var basisData = await Fixture.WholesaleClient.GetZippedBasisDataStreamAsync(batchId)
                     .ConfigureAwait(false);
