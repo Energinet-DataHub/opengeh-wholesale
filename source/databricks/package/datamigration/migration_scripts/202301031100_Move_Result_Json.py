@@ -45,14 +45,11 @@ def apply(args: MigrationScriptArgs) -> None:
             grid_area = match.group(2)
             current_directory_name = directory.name
 
-            directory_client = file_system_client.get_directory_client(
-                directory=current_directory_name
-            )
-
             new_directory_name = f"{directory_name}/{batch_id}/result/{grid_area}/gln=grid_access_provider/step=production"
 
             move_and_rename_folder(
-                directory_client=directory_client,
+                storage_account_url=args.storage_account_url,
+                storage_account_key=args.storage_account_key,
                 current_directory_name=current_directory_name,
                 new_directory_name=new_directory_name,
                 container=container,
@@ -60,11 +57,18 @@ def apply(args: MigrationScriptArgs) -> None:
 
 
 def move_and_rename_folder(
-    directory_client: DataLakeDirectoryClient,
+    storage_account_url: str,
+    storage_account_key: str,
     current_directory_name: str,
     new_directory_name: str,
     container: str,
 ) -> None:
+    directory_client = DataLakeDirectoryClient(
+        account_url=storage_account_url,
+        file_system_name=container,
+        directory_name=current_directory_name,
+        credential=storage_account_key,
+    )
     source_path = f"{container}/{current_directory_name}"
     new_path = f"{container}/{new_directory_name}"
 
