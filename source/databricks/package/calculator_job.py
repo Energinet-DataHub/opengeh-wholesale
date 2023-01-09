@@ -154,18 +154,18 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
     # consumption_per_ga_and_brp_and_es.show()
 
-    # consumption_per_ga_and_brp_and_es = consumption_per_ga_and_brp_and_es.withColumn(
-    #     "step", lit("non_profiled_consumption")
-    # ).withColumnRenamed("EnergySupplierId", "gln")
+    consumption_per_ga_and_brp_and_es = consumption_per_ga_and_brp_and_es.withColumn(
+        "step", lit("non_profiled_consumption")
+    ).withColumnRenamed("EnergySupplierId", "gln")
 
-    # (
-    #     consumption_per_ga_and_brp_and_es.withColumnRenamed("GridAreaCode", "grid_area")
-    #     .withColumn(Colname.quantity, col(Colname.quantity).cast("string"))
-    #     .repartition("grid_area")
-    #     .write.mode("overwrite")
-    #     .partitionBy("grid_area", "gln", "step")
-    #     .json(path)
-    # )
+    (
+        consumption_per_ga_and_brp_and_es.withColumnRenamed("GridAreaCode", "grid_area")
+        .withColumn(Colname.quantity, col(Colname.quantity).cast("string"))
+        .repartition("grid_area")
+        .write.mode("append")
+        .partitionBy("grid_area", "gln", "step")
+        .json(path)
+    )
 
 
 def get_batch_grid_areas_df(
