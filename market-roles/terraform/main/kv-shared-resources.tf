@@ -77,33 +77,8 @@ data "azurerm_key_vault_secret" "primary_action_group_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "sbq_metering_point_master_data_response_name" {
-  name = "sbq-metering-point-master-data-response-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "sbq_metering_point_master_data_request_name" {
-  name = "sbq-metering-point-master-data-request-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "sbt_energy_supplier_changed_name" {
-  name = "sbt-energy-supplier-changed-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "sbs_energy_supplier_changed_to_messaging_name" {
-  name = "sbs-energy-supplier-changed-to-messaging-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "mssql_data_elastic_pool_id" {
   name         = "mssql-data-elastic-pool-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_name_id" {
-  name         = "sbt-sharedres-integrationevent-received-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
