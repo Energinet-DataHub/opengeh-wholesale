@@ -41,8 +41,6 @@ module "func_receiver" {
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
-    INTEGRATION_EVENT_TOPIC_NAME                                  = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-sharedres-integrationevent-received-name)"
-    MARKET_PARTICIPANT_CHANGED_ACTOR_CREATED_SUBSCRIPTION_NAME    = module.sbs_market_roles_b2b_actor_created.name
     FEATUREFLAG_ACTORMESSAGEQUEUE                                 = true
   }
 

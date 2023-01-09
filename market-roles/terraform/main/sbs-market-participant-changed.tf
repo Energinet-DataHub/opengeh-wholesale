@@ -23,16 +23,3 @@ module "sbs_market_roles_energy_supplying_actor_created" {
     }  
   }
 }
-
-module "sbs_market_roles_b2b_actor_created" {
-  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v9"
-  name                = "b2b-actor-created"
-  topic_id            = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_name_id.value
-  project_name        = var.domain_name_short
-  max_delivery_count  = 10 
-  correlation_filter  = {
-    properties     = {
-      "messageType" = "ActorCreatedIntegrationEvent",
-    }  
-  }
-}
