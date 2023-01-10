@@ -18,8 +18,10 @@ public static class EnvironmentSettingNames
 {
     public const string AzureWebJobsStorage = "AzureWebJobsStorage";
     public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
-
     public const string DatabaseConnectionString = "DB_CONNECTION_STRING";
+    public const string DateTimeZoneId = "TIME_ZONE";
+
+    #region ServiceBus
 
     /// <summary>
     /// Connection string to manage the wholesale domain service bus namespace.
@@ -33,12 +35,6 @@ public static class EnvironmentSettingNames
 
     public const string ServiceBusListenConnectionString = "SERVICE_BUS_LISTEN_CONNECTION_STRING";
 
-    public const string DatabricksWorkspaceUrl = "DATABRICKS_WORKSPACE_URL";
-    public const string DatabricksWorkspaceToken = "DATABRICKS_WORKSPACE_TOKEN";
-
-    public const string CalculationStorageConnectionString = "STORAGE_CONNECTION_STRING";
-    public const string CalculationStorageContainerName = "STORAGE_CONTAINER_NAME";
-
     public const string DomainEventsTopicName = "DOMAIN_EVENTS_TOPIC_NAME";
     public const string ZipBasisDataWhenCompletedBatchSubscriptionName = "ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME";
     public const string PublishProcessesCompletedWhenCompletedBatchSubscriptionName = "PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME";
@@ -46,5 +42,18 @@ public static class EnvironmentSettingNames
     public const string BatchCompletedEventName = "BATCH_COMPLETED_EVENT_NAME";
     public const string ProcessCompletedEventName = "PROCESS_COMPLETED_EVENT_NAME";
 
-    public const string DateTimeZoneId = "TIME_ZONE";
+    public const string PublishProcessesCompletedIntegrationEventWhenProcessCompletedSubscriptionName = "PUBLISHPROCESSESCOMPLETEDINTEGRATIONEVENT_WHENPROCESSCOMPLETED_SUBSCRIPTIONNAME";
+    public const string IntegrationEventsTopicName = "INTEGRATIONEVENTSTOPICNAME";
+
+    #endregion
+
+    #region Databricks
+
+    public const string DatabricksWorkspaceUrl = "DATABRICKS_WORKSPACE_URL";
+    public const string DatabricksWorkspaceToken = "DATABRICKS_WORKSPACE_TOKEN";
+
+    public const string CalculationStorageConnectionString = "STORAGE_CONNECTION_STRING";
+    public const string CalculationStorageContainerName = "STORAGE_CONTAINER_NAME";
+
+    #endregion
 }
