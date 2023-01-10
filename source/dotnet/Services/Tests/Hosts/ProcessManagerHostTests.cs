@@ -37,6 +37,7 @@ public sealed class ProcessManagerHostTests
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, "UseDevelopmentStorage=true");
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsTopicName, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, placeholderValue);
