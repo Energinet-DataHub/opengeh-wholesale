@@ -48,7 +48,6 @@ def apply(args: MigrationScriptArgs) -> None:
             resolution = match.group(2)
             grid_area = match.group(3)
             current_directory_name = directory.name
-            print(current_directory_name)
 
             directory_client = file_system_client.get_directory_client(
                 directory=current_directory_name

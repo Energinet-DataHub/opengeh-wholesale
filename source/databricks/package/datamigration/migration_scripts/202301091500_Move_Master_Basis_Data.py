@@ -47,7 +47,6 @@ def apply(args: MigrationScriptArgs) -> None:
             batch_id = match.group(1)
             grid_area = match.group(2)
             current_directory_name = directory.name
-            print(current_directory_name)
 
             directory_client = file_system_client.get_directory_client(
                 directory=current_directory_name
