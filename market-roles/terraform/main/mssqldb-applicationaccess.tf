@@ -19,10 +19,8 @@ module "mssql_database_application_access" {
   database_name           = module.mssqldb_marketroles.name
   application_hosts_names = [
                               module.func_receiver.name,
-                              module.func_processing.name,
                             ] 
   depends_on              = [
                               module.func_receiver.name,
-                              module.func_processing.name,
                             ]
 }
