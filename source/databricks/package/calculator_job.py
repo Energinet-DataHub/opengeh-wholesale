@@ -67,7 +67,7 @@ def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
         data_df.withColumnRenamed("GridAreaCode", "grid_area")
         .repartition("grid_area")
         .write.mode("overwrite")
-        .partitionBy("grid_area")
+        .partitionBy("grid_area", "gln")
         .option("header", True)
         .csv(path)
     )
@@ -119,17 +119,17 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
     write_basis_data_to_csv(
         timeseries_quarter_df,
-        f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-quarter",
+        f"{args.process_results_path}/batch_id={args.batch_id}/basis_data/time_series_quarter",
     )
 
     write_basis_data_to_csv(
         timeseries_hour_df,
-        f"{args.process_results_path}/basis-data/batch_id={args.batch_id}/time-series-hour",
+        f"{args.process_results_path}/batch_id={args.batch_id}/basis_data/time_series_hour",
     )
 
     write_basis_data_to_csv(
         master_basis_data_df,
-        f"{args.process_results_path}/master-basis-data/batch_id={args.batch_id}",
+        f"{args.process_results_path}/batch_id={args.batch_id}/basis_data/master_basis_data",
     )
 
     # First repartition to co-locate all rows for a grid area on a single executor.
@@ -141,8 +141,8 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         .withColumn("quantity", col("quantity").cast("string"))
         .repartition("grid_area")
         .write.mode("overwrite")
-        .partitionBy("grid_area")
-        .json(f"{args.process_results_path}/batch_id={args.batch_id}")
+        .partitionBy(["grid_area", "gln", "step"])
+        .json(f"{args.process_results_path}/batch_id={args.batch_id}/result")
     )
 
 

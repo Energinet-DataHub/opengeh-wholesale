@@ -45,6 +45,7 @@ public sealed class ProcessManagerHostTests
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
 
         // Act + Assert
         target.Build();

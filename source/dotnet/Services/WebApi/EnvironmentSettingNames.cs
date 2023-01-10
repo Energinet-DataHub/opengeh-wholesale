@@ -33,5 +33,7 @@ namespace Energinet.DataHub.Wholesale.WebApi
 
         public const string CalculationStorageConnectionString = "STORAGE_CONNECTION_STRING";
         public const string CalculationStorageContainerName = "STORAGE_CONTAINER_NAME";
+
+        public const string DateTimeZoneId = "TIME_ZONE";
     }
 }

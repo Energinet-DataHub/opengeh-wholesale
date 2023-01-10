@@ -70,20 +70,20 @@ public class BatchFileManager : IBatchFileManager
     }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetResultFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/batch_id={batchId}/grid_area={gridAreaCode.Code}/", ".json", $"{gridAreaCode.Code}/Result.json");
+        => ($"calculation-output/batch_id={batchId}/result/grid_area={gridAreaCode.Code}/gln=grid_access_provider/step=production/", ".json", $"{gridAreaCode.Code}/Result.json");
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/basis-data/batch_id={batchId}/time-series-hour/grid_area={gridAreaCode.Code}/",
+        => ($"calculation-output/batch_id={batchId}/basis_data/time_series_hour/grid_area={gridAreaCode.Code}/gln=grid_access_provider/",
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT1H.csv");
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesQuarterBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/basis-data/batch_id={batchId}/time-series-quarter/grid_area={gridAreaCode.Code}/",
+        => ($"calculation-output/batch_id={batchId}/basis_data/time_series_quarter/grid_area={gridAreaCode.Code}/gln=grid_access_provider/",
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT15M.csv");
 
     public static (string Directory, string Extension, string ZipEntryPath) GetMasterBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/master-basis-data/batch_id={batchId}/grid_area={gridAreaCode.Code}/",
+        => ($"calculation-output/batch_id={batchId}/basis_data/master_basis_data/grid_area={gridAreaCode.Code}/gln=grid_access_provider/",
             ".csv",
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
 

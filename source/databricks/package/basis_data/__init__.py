@@ -51,6 +51,7 @@ def get_master_basis_data_df(
                 col("ToDate")
             ),
         )
+        .withColumn("gln", lit("grid_access_provider"))
         .select(
             col("GridAreaCode"),  # column is only used for partitioning
             col("MeteringPointId").alias("METERINGPOINTID"),
@@ -62,6 +63,7 @@ def get_master_basis_data_df(
             col("Type").alias("TYPEOFMP"),
             col("SettlementMethod").alias("SETTLEMENTMETHOD"),
             col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
+            col("gln"),
         )
     )
 
@@ -75,13 +77,13 @@ def get_time_series_basis_data_dfs(
         enriched_time_series_point_df,
         MeteringPointResolution.quarter.value,
         time_zone,
-    )
+    ).withColumn("gln", lit("grid_access_provider"))
 
     time_series_hour_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
         MeteringPointResolution.hour.value,
         time_zone,
-    )
+    ).withColumn("gln", lit("grid_access_provider"))
 
     return (time_series_quarter_basis_data_df, time_series_hour_basis_data_df)
 

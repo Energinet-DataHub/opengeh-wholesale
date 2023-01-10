@@ -16,6 +16,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -118,13 +119,12 @@ public class BatchControllerTests :
 
     private static BatchRequestDto CreateBatchRequestDto()
     {
-        var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z");
-        var periodEnd = DateTimeOffset.Parse("2022-01-31T22:59:59.999Z");
+        var period = Periods.January_EuropeCopenhagen;
         var batchRequest = new BatchRequestDto(
             ProcessType.BalanceFixing,
             new List<string> { "805" },
-            periodStart,
-            periodEnd);
+            period.PeriodStart,
+            period.PeriodEnd);
         return batchRequest;
     }
 }
