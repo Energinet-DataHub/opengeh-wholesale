@@ -18,13 +18,14 @@ from pyspark.sql.functions import col, expr, explode, sum, first, lit
 from package.codelists import (
     MeteringPointResolution,
 )
-
+from typing import Union
 from package.db_logging import debug
 import package.basis_data as basis_data
-import package.steps as steps
 import package.steps.aggregation as agg_steps
 from datetime import timedelta, datetime
 from package.constants import Colname, ResultKeyName
+from package.constants.time_series_type import TimeSeriesType
+from package.constants.actor_type import ActorType
 from package.shared.data_classes import Metadata
 from pyspark.sql.types import (
     DecimalType,
@@ -59,45 +60,51 @@ def calculate_balance_fixing(
 
     # Total production per grid
     total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
-    total_production_per_ga_df = (
-        total_production_per_ga_df.groupBy(Colname.grid_area, Colname.time_window)
-        .agg(
-            sum(Colname.sum_quantity).alias(Colname.quantity),
-            first(Colname.quality).alias(Colname.quality),
-        )
-        .select(
-            Colname.grid_area,
-            Colname.quantity,
-            col(Colname.quality).alias("quality"),
-            col(Colname.time_window_start).alias("quarter_time"),
-        )
-        .orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
+
+    total_production_per_ga_df = _compute_aggregated_sum(
+        total_production_per_ga_df,
+        TimeSeriesType.PRODUCTION,
+        ActorType.GRID_ACCESS_PROVIDER,
     )
 
     # Non-profiled consumption per energy supplier
-    total_consumption_per_ga_and_brp_and_es = agg_steps.aggregate_consumption(
+    consumption_per_ga_and_brp_and_es = agg_steps.aggregate_consumption(
         results, metadata_fake
     )
-    total_consumption_per_ga_and_es = compute_aggregated_sum(
-        total_consumption_per_ga_and_brp_and_es,
-        [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window],
+
+    consumption_per_ga_and_es = _compute_aggregated_sum(
+        consumption_per_ga_and_brp_and_es,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        ActorType.ENERGY_SUPPLIER,
     )
 
-    # total_consumption_per_ga_and_brp_and_es = (
-    #     total_consumption_per_ga_and_brp_and_es.withColumnRenamed(
-    #         Colname.sum_quantity, Colname.quantity
-    #     )
-    # )
-
     return (
-        total_consumption_per_ga_and_es,
+        consumption_per_ga_and_es,
         total_production_per_ga_df,
         time_series_basis_data_df,
         master_basis_data_df,
     )
 
 
-def compute_aggregated_sum(df: DataFrame, groups: list[str]) -> DataFrame:
+def _add_gln_column(result_df: DataFrame, actor_type: ActorType) -> DataFrame:
+
+    if actor_type is ActorType.GRID_ACCESS_PROVIDER:
+        result_df = result_df.withColumn(Colname.gln, lit("grid_access_provider"))
+    elif actor_type is ActorType.ENERGY_SUPPLIER:
+        result_df = result_df.withColumnRenamed("EnergySupplierId", Colname.gln)
+    else:
+        raise NotImplementedError(f"Actor type, {actor_type}, is not supported yet")
+
+    return result_df
+
+
+def _compute_aggregated_sum(
+    df: DataFrame, time_series_type: TimeSeriesType, actor_type: ActorType
+) -> DataFrame:
+
+    df = _add_gln_column(df, actor_type)
+
+    groups = [Colname.grid_area, Colname.gln, Colname.time_window]
 
     df = (
         df.groupBy(groups)
@@ -105,13 +112,15 @@ def compute_aggregated_sum(df: DataFrame, groups: list[str]) -> DataFrame:
             sum(Colname.sum_quantity).alias(Colname.quantity),
             first(Colname.quality).alias(Colname.quality),
         )
+        .orderBy(*groups, ascending=True)
         .select(
             Colname.grid_area,
+            Colname.gln,
             Colname.quantity,
             col(Colname.quality).alias("quality"),
             col(Colname.time_window_start).alias("quarter_time"),
         )
-        # .orderBy(cols=groups, ascending=True)
+        .withColumn("step", lit(time_series_type.value))
     )
 
     return df
