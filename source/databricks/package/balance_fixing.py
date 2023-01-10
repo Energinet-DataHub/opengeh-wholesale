@@ -72,27 +72,49 @@ def calculate_balance_fixing(
             col(Colname.time_window_start).alias("quarter_time"),
         )
         .orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
-        .withColumn("gln", lit("grid_access_provider"))
-        .withColumn("step", lit("production"))
     )
 
-    # Consumption per energy supplier
+    # Non-profiled consumption per energy supplier
     total_consumption_per_ga_and_brp_and_es = agg_steps.aggregate_consumption(
         results, metadata_fake
     )
-
-    total_consumption_per_ga_and_brp_and_es = (
-        total_consumption_per_ga_and_brp_and_es.withColumnRenamed(
-            Colname.sum_quantity, Colname.quantity
-        )
+    total_consumption_per_ga_and_es = compute_aggregated_sum(
+        total_consumption_per_ga_and_brp_and_es,
+        [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window],
     )
 
+    # total_consumption_per_ga_and_brp_and_es = (
+    #     total_consumption_per_ga_and_brp_and_es.withColumnRenamed(
+    #         Colname.sum_quantity, Colname.quantity
+    #     )
+    # )
+
     return (
-        total_consumption_per_ga_and_brp_and_es,
+        total_consumption_per_ga_and_es,
         total_production_per_ga_df,
         time_series_basis_data_df,
         master_basis_data_df,
     )
+
+
+def compute_aggregated_sum(df: DataFrame, groups: list[str]) -> DataFrame:
+
+    df = (
+        df.groupBy(groups)
+        .agg(
+            sum(Colname.sum_quantity).alias(Colname.quantity),
+            first(Colname.quality).alias(Colname.quality),
+        )
+        .select(
+            Colname.grid_area,
+            Colname.quantity,
+            col(Colname.quality).alias("quality"),
+            col(Colname.time_window_start).alias("quarter_time"),
+        )
+        # .orderBy(cols=groups, ascending=True)
+    )
+
+    return df
 
 
 def _get_enriched_time_series_points_df(

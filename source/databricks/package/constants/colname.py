@@ -36,6 +36,7 @@ class Colname:
     event_id = "event_id"
     event_name = "event_name"
     from_date = "FromDate"
+    gln = "gln"
     grid_area = "GridAreaCode"
     grid_loss = "grid_loss"
     gsrn_number = "gsrn_number"

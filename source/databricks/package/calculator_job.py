@@ -19,10 +19,12 @@ from .args_helper import valid_date, valid_list, valid_log_level
 from .datamigration import islocked
 import package.calculation_input as calculation_input
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, lit, shuffle
+from pyspark.sql.functions import col, lit
 from pyspark.sql.types import Row
 from configargparse import argparse
 from package.constants import Colname
+from package.constants.time_series_type import TimeSeriesType
+from package.constants.actor_type import ActorType
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -31,7 +33,6 @@ from package import (
     initialize_spark,
     log,
 )
-from package.schemas import time_series_point_schema, metering_point_period_schema
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -139,33 +140,52 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     # First repartition to co-locate all rows for a grid area on a single executor.
     # This ensures that only one file is being written/created for each grid area
     # When writing/creating the files. The partition by creates a folder for each grid area.
-    # result/
-    production_per_ga_df = production_per_ga_df.withColumn(
-        "step", lit("production")
-    ).withColumn("gln", lit("grid_access_provider"))
+
+    # Total production
+    production_per_ga_df = add_gln_and_time_series_type_to_df(
+        production_per_ga_df, TimeSeriesType.PRODUCTION, ActorType.GRID_ACCESS_PROVIDER
+    )
+
     (
         production_per_ga_df.withColumnRenamed("GridAreaCode", "grid_area")
         .withColumn("quantity", col("quantity").cast("string"))
         .repartition("grid_area")
         .write.mode("overwrite")
-        .partitionBy("grid_area", "gln", "step")
+        .partitionBy("grid_area", Colname.gln, "step")
         .json(path)
     )
 
-    # consumption_per_ga_and_brp_and_es.show()
-
-    consumption_per_ga_and_brp_and_es = consumption_per_ga_and_brp_and_es.withColumn(
-        "step", lit("non_profiled_consumption")
-    ).withColumnRenamed("EnergySupplierId", "gln")
-
+    consumption_per_ga_and_brp_and_es = add_gln_and_time_series_type_to_df(
+        consumption_per_ga_and_brp_and_es,
+        TimeSeriesType.PRODUCTION,
+        ActorType.GRID_ACCESS_PROVIDER,
+    )
     (
         consumption_per_ga_and_brp_and_es.withColumnRenamed("GridAreaCode", "grid_area")
         .withColumn(Colname.quantity, col(Colname.quantity).cast("string"))
         .repartition("grid_area")
         .write.mode("append")
-        .partitionBy("grid_area", "gln", "step")
+        .partitionBy("grid_area", Colname.gln, "step")
         .json(path)
     )
+
+
+def add_gln_and_time_series_type_to_df(
+    result_df: DataFrame, type: TimeSeriesType, actor_type: ActorType
+) -> DataFrame:
+
+    # assign time series type
+    result_df = result_df.withColumn("step", lit(type.value))
+
+    # assign gln
+    if actor_type is ActorType.GRID_ACCESS_PROVIDER:
+        result_df = result_df.withColumn(Colname.gln, lit("grid_access_provider"))
+    elif actor_type is ActorType.ENERGY_SUPPLIER:
+        result_df = result_df.withColumnRenamed("EnergySupplierId", "gln")
+    else:
+        raise NotImplementedError(f"Actor type, {actor_type}, is not supported yet")
+
+    return result_df
 
 
 def get_batch_grid_areas_df(
