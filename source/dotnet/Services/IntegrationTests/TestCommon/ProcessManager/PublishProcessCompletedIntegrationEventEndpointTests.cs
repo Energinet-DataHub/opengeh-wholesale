@@ -52,7 +52,7 @@ public class PublishProcessCompletedIntegrationEventEndpointTests
             using var eventualProcessCompletedIntegrationEvent = await Fixture
                 .ProcessCompletedIntegrationEventListener
                 .ListenForMessageAsync<ProcessCompletedEventDto>(_ => true);
-                //.ListenForMessageByCorrelationIdAsync(processCompletedMessage.CorrelationId);
+                //.ListenForMessageByCorrelationIdAsync(processCompletedMessage.CorrelationId); // TODO BJARKE
 
             // Act
             await Fixture.DomainEventsTopic.SenderClient.SendMessageAsync(processCompletedMessage);

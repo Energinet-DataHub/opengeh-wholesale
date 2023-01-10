@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Infrastructure.Integration.ProcessCompleted;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.WebJobs;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
@@ -24,34 +23,24 @@ public class PublishProcessCompletedIntegrationEventEndpoint
 {
     private const string FunctionName = nameof(PublishProcessCompletedIntegrationEventEndpoint);
     private readonly IJsonSerializer _jsonSerializer;
+    private readonly IProcessApplicationService _processApplicationService;
 
-    public PublishProcessCompletedIntegrationEventEndpoint(IJsonSerializer jsonSerializer)
+    public PublishProcessCompletedIntegrationEventEndpoint(IJsonSerializer jsonSerializer, IProcessApplicationService processApplicationService)
     {
         _jsonSerializer = jsonSerializer;
+        _processApplicationService = processApplicationService;
     }
 
     [Function(FunctionName)]
-    [return: ServiceBus("%" + EnvironmentSettingNames.IntegrationEventsTopicName + "%", Connection = EnvironmentSettingNames.ServiceBusSendConnectionString)]
-    public async Task<ProcessCompleted> RunAsync(
-        [Microsoft.Azure.Functions.Worker.ServiceBusTrigger(
+    public async Task RunAsync(
+        [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
             "%" + EnvironmentSettingNames.PublishProcessesCompletedIntegrationEventWhenProcessCompletedSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
         var processCompletedEvent = await DeserializeByteArrayAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
-        return Map(processCompletedEvent);
-    }
-
-    // TODO: Unit test
-    private static ProcessCompleted Map(ProcessCompletedEventDto processCompletedEvent)
-    {
-        return new ProcessCompleted()
-        {
-            BatchId = processCompletedEvent.BatchId.ToString(),
-            ProcessType = ProcessCompleted.Types.ProcessType.PtBalancefixing,
-            GridAreaCode = processCompletedEvent.GridAreaCode,
-        };
+        await _processApplicationService.PublishProcessCompletedIntegrationEventsAsync(processCompletedEvent).ConfigureAwait(false);
     }
 
     private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)

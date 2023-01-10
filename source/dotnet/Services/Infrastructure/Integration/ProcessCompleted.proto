@@ -15,11 +15,13 @@
 
 syntax = "proto3";
 
-option csharp_namespace = "Energinet.DataHub.Wholesale.Infrastructure.Integration.ProcessCompleted";
+option csharp_namespace = "Energinet.DataHub.Wholesale.Infrastructure.Integration";
 
 /*
  * ProcessCompleted Integration Event.
- * A process is uniquely identified by the batch ID and grid area code together. 
+ * A process is uniquely identified by the batch ID and grid area code together.
+ *
+ * MessageType (see ADR-008) is "ProcessCompleted".
  */
 message ProcessCompleted {
 

@@ -28,6 +28,11 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         _messageTypes = messageTypes;
     }
 
+    public ServiceBusMessage Create<TMessage>(TMessage message)
+    {
+        return CreateServiceBusMessage(message);
+    }
+
     public IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages)
     {
         return messages.Select(CreateServiceBusMessage);
