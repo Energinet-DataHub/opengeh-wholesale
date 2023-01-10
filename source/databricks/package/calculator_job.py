@@ -23,8 +23,6 @@ from pyspark.sql.functions import col, lit
 from pyspark.sql.types import Row
 from configargparse import argparse
 from package.constants import Colname
-from package.constants.time_series_type import TimeSeriesType
-from package.constants.actor_type import ActorType
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -103,7 +101,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
     (
-        consumption_per_ga_and_brp_and_es,
+        consumption_per_ga_and_es,
         production_per_ga_df,
         timeseries_basis_data_df,
         master_basis_data_df,
@@ -142,10 +140,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     # When writing/creating the files. The partition by creates a folder for each grid area.
 
     # Total production
-    production_per_ga_df = add_gln_and_time_series_type_to_df(
-        production_per_ga_df, TimeSeriesType.PRODUCTION, ActorType.GRID_ACCESS_PROVIDER
-    )
-
     (
         production_per_ga_df.withColumnRenamed("GridAreaCode", "grid_area")
         .withColumn("quantity", col("quantity").cast("string"))
@@ -155,37 +149,15 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         .json(path)
     )
 
-    consumption_per_ga_and_brp_and_es = add_gln_and_time_series_type_to_df(
-        consumption_per_ga_and_brp_and_es,
-        TimeSeriesType.PRODUCTION,
-        ActorType.GRID_ACCESS_PROVIDER,
-    )
+    # Non-profiled consumption
     (
-        consumption_per_ga_and_brp_and_es.withColumnRenamed("GridAreaCode", "grid_area")
+        consumption_per_ga_and_es.withColumnRenamed("GridAreaCode", "grid_area")
         .withColumn(Colname.quantity, col(Colname.quantity).cast("string"))
         .repartition("grid_area")
         .write.mode("append")
         .partitionBy("grid_area", Colname.gln, "step")
         .json(path)
     )
-
-
-def add_gln_and_time_series_type_to_df(
-    result_df: DataFrame, type: TimeSeriesType, actor_type: ActorType
-) -> DataFrame:
-
-    # assign time series type
-    result_df = result_df.withColumn("step", lit(type.value))
-
-    # assign gln
-    if actor_type is ActorType.GRID_ACCESS_PROVIDER:
-        result_df = result_df.withColumn(Colname.gln, lit("grid_access_provider"))
-    elif actor_type is ActorType.ENERGY_SUPPLIER:
-        result_df = result_df.withColumnRenamed("EnergySupplierId", "gln")
-    else:
-        raise NotImplementedError(f"Actor type, {actor_type}, is not supported yet")
-
-    return result_df
 
 
 def get_batch_grid_areas_df(
