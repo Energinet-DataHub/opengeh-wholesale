@@ -31,9 +31,8 @@ jobs:
   # Branch policy status check
   #
   infrastructure_ci:
-    uses: Energinet-DataHub/.github/.github/workflows/infrastructure-build-prerelease.yml@v9
+    uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@main
     with:
-      TERRAFORM_WORKING_DIRECTORY: './migrations/terraform/main'
       RELEASE_NAME_PREFIX: 'migrations_infrastructure'
       INFRASTRUCTURE_PATH: './migrations/terraform'
     secrets:

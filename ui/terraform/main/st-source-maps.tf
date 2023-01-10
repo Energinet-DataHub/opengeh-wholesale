@@ -31,8 +31,6 @@ module "st_source_maps" {
       name = "sourcemaps"
     },
   ]
-
-  tags                        = azurerm_resource_group.this.tags
 }
 
 resource "azurerm_role_assignment" "this" {
@@ -47,8 +45,6 @@ module "kvs_st_source_maps_primary_connection_string" {
   name          = "st-sourcemaps-primary-connection-string"
   value         = module.st_source_maps.primary_connection_string
   key_vault_id  = data.azurerm_key_vault.kv_shared_resources.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_st_source_maps_name" {
@@ -57,6 +53,4 @@ module "kvs_st_source_maps_name" {
   name          = "st-sourcemaps-name"
   value         = module.st_source_maps.name
   key_vault_id  = data.azurerm_key_vault.kv_shared_resources.id
-
-  tags          = azurerm_resource_group.this.tags
 }

@@ -141,6 +141,4 @@ module "kvs_app_bff_base_url" {
   name          = "app-bff-base-url"
   value         = "${data.azurerm_key_vault_secret.apim_gateway_url.value}/${module.apima_bff.path}"
   key_vault_id  = data.azurerm_key_vault.kv_shared_resources.id
-
-  tags          = azurerm_resource_group.this.tags
 }

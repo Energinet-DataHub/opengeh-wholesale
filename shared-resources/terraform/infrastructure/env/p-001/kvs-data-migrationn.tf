@@ -17,8 +17,6 @@ module "kvs_sas_token_datamig_charges" {
   name          = "datamig-charges"
   value         = var.sas_token_datamig_charges
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_sas_token_datamig_market_roles" {
@@ -27,8 +25,6 @@ module "kvs_sas_token_datamig_market_roles" {
   name          = "datamig-market-roles"
   value         = var.sas_token_datamig_market_roles
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_sas_token_datamig_metering_point" {
@@ -37,8 +33,6 @@ module "kvs_sas_token_datamig_metering_point" {
   name          = "datamig-metering-point"
   value         = var.sas_token_datamig_metering_point
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_sas_token_datamig_time_series" {
@@ -47,8 +41,6 @@ module "kvs_sas_token_datamig_time_series" {
   name          = "datamig-time-series"
   value         = var.sas_token_datamig_time_series
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_sas_token_datamig_wholesale" {
@@ -57,6 +49,4 @@ module "kvs_sas_token_datamig_wholesale" {
   name          = "datamig-wholesale"
   value         = var.sas_token_datamig_wholesale
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }

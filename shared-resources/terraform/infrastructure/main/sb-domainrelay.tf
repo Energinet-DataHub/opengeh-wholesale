@@ -43,8 +43,6 @@ module "sb_domain_relay" {
       manage  = true
     },
   ]
-
-  tags                              = azurerm_resource_group.this.tags
 }
 
 module "kvs_sb_domain_relay_listen_connection_string" {
@@ -53,8 +51,6 @@ module "kvs_sb_domain_relay_listen_connection_string" {
   name          = "sb-domain-relay-listen-connection-string"
   value         = module.sb_domain_relay.primary_connection_strings["listen"]
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_sb_domain_relay_send_connection_string" {
@@ -63,8 +59,6 @@ module "kvs_sb_domain_relay_send_connection_string" {
   name          = "sb-domain-relay-send-connection-string"
   value         = module.sb_domain_relay.primary_connection_strings["send"]
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_sb_domain_relay_transceiver_connection_string" {
@@ -73,8 +67,6 @@ module "kvs_sb_domain_relay_transceiver_connection_string" {
   name          = "sb-domain-relay-transceiver-connection-string"
   value         = module.sb_domain_relay.primary_connection_strings["transceiver"]
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_sb_domain_relay_manage_connection_string" {
@@ -83,8 +75,6 @@ module "kvs_sb_domain_relay_manage_connection_string" {
   name          = "sb-domain-relay-manage-connection-string"
   value         = module.sb_domain_relay.primary_connection_strings["manage"]
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_sb_domain_relay_id" {
@@ -93,8 +83,6 @@ module "kvs_sb_domain_relay_id" {
   name          = "sb-domain-relay-namespace-id"
   value         = module.sb_domain_relay.id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_sb_domain_relay_name" {
@@ -103,6 +91,4 @@ module "kvs_sb_domain_relay_name" {
   name          = "sb-domain-relay-namespace-name"
   value         = module.sb_domain_relay.name
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }

@@ -46,8 +46,6 @@ module "app_webapi" {
     TOKEN_KEY_VAULT                            = data.azurerm_key_vault.kv_shared_resources.vault_uri
     TOKEN_KEY_NAME                             = azurerm_key_vault_key.token_sign.name
   }
-
-  tags                                       = azurerm_resource_group.this.tags
 }
 
 module "kvs_app_markpart_webapi_base_url" {
@@ -56,8 +54,6 @@ module "kvs_app_markpart_webapi_base_url" {
   name                                            = "app-markpart-webapi-base-url"
   value                                           = "https://${module.app_webapi.default_hostname}"
   key_vault_id                                    = data.azurerm_key_vault.kv_shared_resources.id
-
-  tags                                            = azurerm_resource_group.this.tags
 }
 
 module "kvs_backend_open_id_url" {
@@ -66,6 +62,4 @@ module "kvs_backend_open_id_url" {
   name                                            = "backend-open-id-url"
   value                                           = "https://${module.app_webapi.default_hostname}/.well-known/openid-configuration"
   key_vault_id                                    = data.azurerm_key_vault.kv_shared_resources.id
-
-  tags                                            = azurerm_resource_group.this.tags
 }

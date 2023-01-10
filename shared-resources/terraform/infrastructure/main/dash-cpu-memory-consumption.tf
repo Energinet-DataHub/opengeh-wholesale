@@ -54,6 +54,4 @@ resource "azurerm_portal_dashboard" "datahub_cpu_memory_dashboard" {
         message_archive_webapi_name = "app-webapi-msgarch-${lower(var.environment_short)}-${var.environment_instance}",
         metering_point_webapi_name = "app-webapi-mpt-${lower(var.environment_short)}-${var.environment_instance}"
     })
-  
-  tags                         = azurerm_resource_group.this.tags
 }

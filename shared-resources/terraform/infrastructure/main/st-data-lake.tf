@@ -26,8 +26,6 @@ module "st_data_lake" {
   log_analytics_workspace_id        = module.log_workspace_shared.id
   private_endpoint_subnet_id        = module.snet_private_endpoints.id
   private_dns_resource_group_name   = module.dbw_shared.private_dns_zone_resource_group_name
-
-  tags                              = azurerm_resource_group.this.tags
 }
 
 module "kvs_st_data_lake_primary_connection_string" {
@@ -36,8 +34,6 @@ module "kvs_st_data_lake_primary_connection_string" {
   name          = "st-data-lake-primary-connection-string"
   value         = module.st_data_lake.primary_connection_string
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_st_data_lake_name" {
@@ -46,8 +42,6 @@ module "kvs_st_data_lake_name" {
   name          = "st-data-lake-name"
   value         = module.st_data_lake.name
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_st_data_lake_primary_access_key" {
@@ -56,8 +50,6 @@ module "kvs_st_data_lake_primary_access_key" {
   name          = "st-data-lake-primary-access-key"
   value         = module.st_data_lake.primary_access_key
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 resource "azurerm_role_assignment" "st_datalake_spn" {

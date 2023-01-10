@@ -23,8 +23,6 @@ module "plan_services" {
   os_type                         = "Windows"
   monitor_alerts_action_group_id  = module.ag_primary.id
   sku_name                        = "P1v3"
-
-  tags                            = azurerm_resource_group.this.tags
 }
 
 module "kvs_plan_services_id" {
@@ -33,6 +31,4 @@ module "kvs_plan_services_id" {
   name          = "plan-services-id"
   value         = module.plan_services.id
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }

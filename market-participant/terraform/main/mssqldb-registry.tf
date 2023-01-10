@@ -29,8 +29,6 @@ module "mssqldb_market_participant" {
   elastic_pool_id                     = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
   monitor_alerts_action_group_id      = data.azurerm_key_vault_secret.primary_action_group_id.value
   monitor_alerts_resource_group_name  = azurerm_resource_group.this.name
-
-  tags                                = azurerm_resource_group.this.tags
 }
 
 module "kvs_sql_ms_market_participant_database_name" {
@@ -39,6 +37,4 @@ module "kvs_sql_ms_market_participant_database_name" {
   name          = "mssql-market-participant-database-name"
   value         = module.mssqldb_market_participant.name
   key_vault_id  = data.azurerm_key_vault.kv_shared_resources.id
-
-  tags          = azurerm_resource_group.this.tags
 }
