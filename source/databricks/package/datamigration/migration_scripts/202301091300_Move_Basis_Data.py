@@ -33,30 +33,31 @@ def apply(args: MigrationScriptArgs) -> None:
 
     # Enumerate the directories in the parent folder
     directories = file_system_client.get_paths(path=directory_name)
-    parrent_directory_client = file_system_client.get_directory_client(
+    parent_directory_client = file_system_client.get_directory_client(
         directory=directory_name
     )
 
     # Rename each directory
     for directory in directories:
         match = re.search(
-            r"calculation-output/(batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/(grid_area=\d{3})",
+            r"calculation-output/basis-data/(batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/time-series-(\w*)/(grid_area=\d{3})",
             directory.name,
         )
         if match and directory.is_directory:
             batch_id = match.group(1)
-            grid_area = match.group(2)
+            resolution = match.group(2)
+            grid_area = match.group(3)
             current_directory_name = directory.name
 
             directory_client = file_system_client.get_directory_client(
                 directory=current_directory_name
             )
             new_sub_directory_name = (
-                f"{batch_id}/result/{grid_area}/gln=grid_access_provider"
+                f"{batch_id}/basis_data/time_series_{resolution}/{grid_area}"
             )
-            parrent_directory_client.create_sub_directory(new_sub_directory_name)
+            parent_directory_client.create_sub_directory(new_sub_directory_name)
             new_directory_name = (
-                f"{directory_name}/{new_sub_directory_name}/step=production"
+                f"{directory_name}/{new_sub_directory_name}/gln=grid_access_provider"
             )
             move_and_rename_folder(
                 directory_client=directory_client,
