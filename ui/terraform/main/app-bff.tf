@@ -39,6 +39,4 @@ module "bff" {
     INTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
     BACKEND_SERVICE_APP_ID                      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)"
   }
-
-  tags                                          = azurerm_resource_group.this.tags
 }

@@ -50,8 +50,6 @@ module "st_market_operator_response" {
       name = "meteringpoints-postoffice-reply",
     },
   ]
-
-  tags                              = azurerm_resource_group.this.tags
 }
 
 module "kvs_st_market_operator_response_primary_connection_string" {
@@ -59,8 +57,6 @@ module "kvs_st_market_operator_response_primary_connection_string" {
   name          = "st-marketres-primary-connection-string"
   value         = module.st_market_operator_response.primary_connection_string
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
 
 module "kvs_st_market_operator_response_postofficereply_container_name" {
@@ -69,6 +65,4 @@ module "kvs_st_market_operator_response_postofficereply_container_name" {
   name          = "st-marketres-postofficereply-container-name"
   value         = local.postoffice_reply_container_name
   key_vault_id  = module.kv_shared.id
-
-  tags          = azurerm_resource_group.this.tags
 }
