@@ -33,6 +33,23 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         return messages.Select(CreateServiceBusMessage);
     }
 
+    public static ServiceBusMessage CreateServiceBusMessage<TMessage>(
+        TMessage message,
+        string messageType,
+        string correlationContextId)
+    {
+        return new ServiceBusMessage
+        {
+            Body = new BinaryData(message),
+            Subject = messageType,
+            ApplicationProperties =
+            {
+                new KeyValuePair<string, object>(MessageMetaDataConstants.CorrelationId, correlationContextId),
+                new KeyValuePair<string, object>(MessageMetaDataConstants.MessageType, messageType),
+            },
+        };
+    }
+
     private ServiceBusMessage CreateServiceBusMessage<TMessage>(TMessage message)
     {
         if (!_messageTypes.ContainsKey(typeof(TMessage)))
@@ -40,15 +57,6 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
 
         var messageType = _messageTypes[typeof(TMessage)];
 
-        return new ServiceBusMessage
-        {
-            Body = new BinaryData(message),
-            Subject = messageType,
-            ApplicationProperties =
-            {
-                new KeyValuePair<string, object>(MessageMetaDataConstants.CorrelationId, _correlationContext.Id),
-                new KeyValuePair<string, object>(MessageMetaDataConstants.MessageType, messageType),
-            },
-        };
+        return CreateServiceBusMessage(message, messageType, _correlationContext.Id);
     }
 }
