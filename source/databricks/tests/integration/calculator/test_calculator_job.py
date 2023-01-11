@@ -42,11 +42,10 @@ class DictObj:
 
 @pytest.fixture(scope="session")
 def test_data_job_parameters(
-    databricks_path,
     data_lake_path,
     timestamp_factory,
     worker_id,
-    test_files_folder_path,
+    
 ) -> CalculatorArgs:
     return DictObj(
         {
@@ -150,8 +149,7 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 
 
 def test__result_is_generated_for_requested_grid_areas(
-    spark,
-    test_data_job_parameters,
+    spark: SparkSession,
     data_lake_path,
     source_path,
     worker_id,
@@ -199,7 +197,6 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 
 def test__calculator_result_schema_must_match_contract_with_dotnet(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     source_path,
     worker_id,
@@ -221,7 +218,6 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 
 def test__quantity_is_with_precision_3(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
@@ -254,8 +250,6 @@ def create_file_path_expression(directory_expression, extension):
 
 
 def test__result_file_path_matches_contract(
-    spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
@@ -280,7 +274,6 @@ def test__result_file_path_matches_contract(
 
 def test__creates_hour_csv_with_expected_columns_names(
     spark,
-    test_data_job_parameters,
     data_lake_path,
     executed_calculation_job,
     worker_id,
@@ -301,7 +294,7 @@ def test__creates_hour_csv_with_expected_columns_names(
 
 
 def test__creates_quarter_csv_with_expected_columns_names(
-    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
+    spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -320,7 +313,7 @@ def test__creates_quarter_csv_with_expected_columns_names(
 
 
 def test__creates_csv_per_grid_area(
-    spark, test_data_job_parameters, data_lake_path, executed_calculation_job, worker_id
+    spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -415,8 +408,6 @@ def test__master_basis_data_file_matches_contract(
 
 
 def test__hourly_basis_data_file_matches_contract(
-    spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
@@ -441,8 +432,6 @@ def test__hourly_basis_data_file_matches_contract(
 
 
 def test__quarterly_basis_data_file_matches_contract(
-    spark,
-    test_data_job_parameters,
     data_lake_path,
     find_first_file,
     worker_id,
