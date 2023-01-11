@@ -82,53 +82,12 @@ time_2 = "2022-06-10T13:15:00.000Z"
 
 
 @pytest.mark.parametrize(
-    "period_start, period_end, expected_rows",
+    "from_date, to_date, expected_rows, resolution",
     [
-        ("2022-06-08T22:00:00.000Z", "2022-06-09T22:00:00.000Z", 96),
-        ("2022-06-08T22:00:00.000Z", "2022-06-10T22:00:00.000Z", 192),
-    ],
-)
-def test__given_different_period_start_and_period_end__return_dataframe_with_correct_number_of_rows(
-    raw_time_series_points_factory,
-    metering_point_period_df_factory,
-    timestamp_factory,
-    period_start,
-    period_end,
-    expected_rows,
-):
-    """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
-    expected_rows is the number of rows in the output dataframe when given different parameters,
-    period_start, period_end"""
-
-    # Arrange
-    raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory("2022-06-08T22:15:00.000Z")
-    )
-    metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringPointResolution.quarter.value,
-        from_date=timestamp_factory("2022-06-08T12:00:00.000Z"),
-        to_date=timestamp_factory("2023-06-10T13:00:00.000Z"),
-    )
-
-    # Act
-    actual = _get_enriched_time_series_points_df(
-        raw_time_series_points,
-        metering_point_period_df,
-        timestamp_factory(period_start),
-        timestamp_factory(period_end),
-    )
-
-    # Assert
-    assert actual.count() == expected_rows
-
-
-@pytest.mark.parametrize(
-    "from_date, to_date, expected_rows",
-    [
-        # from_date = time and to_date > time should have 1
-        ("2022-06-15T22:00:00.000Z", "2022-06-16T22:00:00.000Z", 96),
-        # from_date < time and to_date > time should have 1
-        ("2022-06-14T22:00:00.000Z", "2022-06-16T22:00:00.000Z", 192),
+        ("2022-01-01T22:00:00.000Z", "2022-01-02T22:00:00.000Z", 96, "PT15M"),
+        ("2022-01-01T22:00:00.000Z", "2022-01-03T22:00:00.000Z", 192, "PT15M"),
+        ("2022-01-01T22:00:00.000Z", "2022-01-02T22:00:00.000Z", 24, "PT1H"),
+        ("2022-01-01T22:00:00.000Z", "2022-01-03T22:00:00.000Z", 48, "PT1H"),
     ],
 )
 def test__given_different_from_date_and_to_date__return_dataframe_with_correct_number_of_rows(
@@ -138,10 +97,11 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
     from_date,
     to_date,
     expected_rows,
+    resolution,
 ):
     """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
     expected_rows is the number of rows in the output dataframe when given different parameters,
-    from_date and to_date"""
+    FromDate and ToDate on the meteringpoint"""
 
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
@@ -150,7 +110,7 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
     metering_point_period_df = metering_point_period_df_factory(
         from_date=from_date,
         to_date=to_date,
-        resolution=MeteringPointResolution.quarter.value,
+        resolution=resolution,
     )
 
     # Act
@@ -170,19 +130,22 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
 ):
     # Arrange
     start_time = "2022-06-08T22:00:00.000Z"
+    end_time = "2022-06-09T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
     )
 
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringPointResolution.quarter.value
+        resolution=MeteringPointResolution.quarter.value,
+        from_date=start_time,
+        to_date=end_time,
     )
     # Act
     actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
-        timestamp_factory("2022-06-09T22:00:00.000Z"),
+        timestamp_factory(end_time),
     )
 
     # Assert
@@ -198,12 +161,15 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
 ):
     # Arrange
     start_time = "2022-06-08T22:00:00.000Z"
+    end_time = "2022-06-09T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
     )
 
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringPointResolution.hour.value
+        resolution=MeteringPointResolution.hour.value,
+        from_date=start_time,
+        to_date=end_time,
     )
 
     # Act
@@ -211,7 +177,7 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
-        timestamp_factory("2022-06-09T22:00:00.000Z"),
+        timestamp_factory(end_time),
     )
 
     # Assert
@@ -390,23 +356,24 @@ def test__df_has_expected_row_count_according_to_dst(
     assert actual.count() == expected_number_of_rows
 
 
-def test__support_meteringpoint_period_switch_on_resolution(
+def test__support_meteringpoint_period_switch_on_resolution_provides_correct_number_of_periods(
     raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
 ):
     # Arrange
-    start_time = "2022-01-01T22:00:00.000Z"
+    start_time = "2022-01-02T22:00:00.000Z"
+    end_time = "2022-01-03T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(start_time),
     )
 
     metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringPointResolution.quarter.value,
+        resolution=MeteringPointResolution.hour.value,
         from_date="2022-01-01T22:00:00.000Z",
         to_date="2022-01-02T22:00:00.000Z",
     )
 
     second_metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringPointResolution.hour.value,
+        resolution=MeteringPointResolution.quarter.value,
         from_date="2022-01-02T22:00:00.000Z",
         to_date="2022-01-03T22:00:00.000Z",
     )
@@ -416,15 +383,13 @@ def test__support_meteringpoint_period_switch_on_resolution(
         raw_time_series_points,
         metering_point_period_df.union(second_metering_point_period_df),
         timestamp_factory(start_time),
-        timestamp_factory("2022-01-03T22:00:00.000Z"),
+        timestamp_factory(end_time),
     )
-    actual.show()
 
     hour = actual.filter(col("Resolution") == MeteringPointResolution.hour.value)
     quarter = actual.filter(col("Resolution") == MeteringPointResolution.quarter.value)
-    print(actual.count())
-    print(hour.count())
-    print(quarter.count())
 
     # Assert
-    assert 1 == 1
+    assert actual.count() == 120
+    assert hour.count() == 24
+    assert quarter.count() == 96
