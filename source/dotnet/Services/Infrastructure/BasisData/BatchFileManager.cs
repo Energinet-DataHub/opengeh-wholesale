@@ -87,7 +87,7 @@ public class BatchFileManager : IBatchFileManager
             ".csv",
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
 
-    public static string GetZipFileName(Batch batch) => $"calculation-output/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
+    public static string GetZipFileName(Batch batch) => $"calculation-output/batch_id={batch.Id}/zip/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
 
     private async Task<IEnumerable<(Stream FileStream, string EntryPath)>> GetBatchBasisFileStreamsAsync(Batch batch)
     {
