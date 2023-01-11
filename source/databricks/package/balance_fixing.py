@@ -86,15 +86,16 @@ def calculate_balance_fixing(
 
 
 def _compute_aggregated_sum(
-    df: DataFrame, time_series_type: TimeSeriesType, actor_type: ActorType
+    result: DataFrame, time_series_type: TimeSeriesType, actor_type: ActorType
 ) -> DataFrame:
 
-    df = _add_gln_column(df, actor_type)
+    # We need to be able to group by gln
+    result = _add_gln_column(result, actor_type)
 
+    # Perform sum within each combination of (grid_area, gln, time_window)
     groups = [Colname.grid_area, Colname.gln, Colname.time_window]
-
-    df = (
-        df.groupBy(groups)
+    sum_result = (
+        result.groupBy(groups)
         .agg(
             sum(Colname.sum_quantity).alias(Colname.quantity),
             first(Colname.quality).alias(Colname.quality),
@@ -102,15 +103,16 @@ def _compute_aggregated_sum(
         .orderBy(*groups, ascending=True)
     )
 
-    df = df.select(
-        Colname.grid_area,
+    # prepare final result
+    sum_result = sum_result.select(
+        col(Colname.grid_area).alias("grid_area"),
         Colname.gln,
-        Colname.quantity,
+        col(Colname.quantity).alias("quantity").cast("string"),
         col(Colname.quality).alias("quality"),
         col(Colname.time_window_start).alias("quarter_time"),
     ).withColumn("step", lit(time_series_type.value))
 
-    return df
+    return sum_result
 
 
 def _add_gln_column(result_df: DataFrame, actor_type: ActorType) -> DataFrame:

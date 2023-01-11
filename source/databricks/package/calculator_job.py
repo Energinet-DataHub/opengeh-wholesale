@@ -101,7 +101,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
     (
-        consumption_per_ga_and_es,
+        non_profiled_consumption_per_ga_and_es,
         production_per_ga_df,
         timeseries_basis_data_df,
         master_basis_data_df,
@@ -141,9 +141,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
     # Total production
     (
-        production_per_ga_df.withColumnRenamed("GridAreaCode", "grid_area")
-        .withColumn("quantity", col("quantity").cast("string"))
-        .repartition("grid_area")
+        production_per_ga_df.repartition("grid_area")
         .write.mode("overwrite")
         .partitionBy("grid_area", Colname.gln, "step")
         .json(path)
@@ -151,8 +149,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
     # Non-profiled consumption
     (
-        consumption_per_ga_and_es.withColumnRenamed("GridAreaCode", "grid_area")
-        .withColumn("quantity", col("quantity").cast("string"))
+        non_profiled_consumption_per_ga_and_es
         .repartition("grid_area")
         .write.mode("append")
         .partitionBy("grid_area", Colname.gln, "step")
