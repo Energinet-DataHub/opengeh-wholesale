@@ -33,7 +33,7 @@ fi
 #   z parameter to greb
 #   (?m) in regex
 #   pipe to remove NULL
-matchFailedEntryPointTests=$(grep -Pzo '(?m)=+ short test summary info =+\n(FAILED test_entry_points.*\n){5}=+ 5 failed' pytest-results.log | tr -d '\0')
+matchFailedEntryPointTests=$(grep -Pzo '(?m)=+ short test summary info =+\n(FAILED .*test_entry_points.py::.*\n){5}=+ 5 failed' pytest-results.log | tr -d '\0')
 if [ ! -z "$matchFailedEntryPointTests" ]; then
   echo "Only 'entry point tests' failed. We should retry."
   exit 2
