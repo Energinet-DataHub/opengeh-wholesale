@@ -22,3 +22,4 @@ runs:
       run: |
         chmod +x ./.docker/entrypoint.sh
         docker-compose -f .devcontainer/docker-compose.yml run -u root -w //workspaces/opengeh-wholesale wholesale ./.docker/entrypoint.sh
+        echo "Exit code: $?"

@@ -14,15 +14,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Exit immediately with failure status if any command fails
-set -e
 cd source/databricks/tests/
 
 # There env vars are important to ensure that the driver and worker nodes in spark are alligned
 export PYSPARK_PYTHON=/opt/conda/bin/python
 export PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python
 
-coverage run --branch -m pytest -n 2 .
+# Writing output to log with 'tee' cause exit code to be '0' even if tests fails
+coverage run --branch -m pytest -n 2 . | tee pytest-results.log
+# If test summary contains errors we return exit code 2 to signal we want to retry
+matchTestErrors=$(grep -Po '^=+.* [[:digit:]]+ errors.* in .*=+$' pytest-results.log)
+if [ ! -z "$matchTestErrors" ]; then
+  echo "Test errors occured, which is typically caused by network issues (download failure). We should retry."
+  exit 2
+fi
+# If test summary only contains 5 failing 'entry point tests' return exit code 2 to signal we want to retry
+# See https://unix.stackexchange.com/questions/637959/regex-matching-multi-line-search for understanding use of
+#   z parameter to greb
+#   (?m) in regex
+#   pipe to remove NULL
+matchEntryPointTests=$(grep -Pzo '(?m)=+ short test summary info =+\n(FAILED test_entry_points.*\n){5}=+ 5 failed' pytest-results.log | tr -d '\0')
+if [ ! -z "$matchEntryPointTests" ]; then
+  echo "Only 'entry point tests' failed. We should retry."
+  exit 2
+fi
+
+# Exit immediately with failure status if any command fails
+set -e
+
 # Create data for threshold evaluation
 coverage json
 # Create human reader friendly HTML report
