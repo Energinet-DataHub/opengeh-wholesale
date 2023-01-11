@@ -45,7 +45,6 @@ def test_data_job_parameters(
     data_lake_path,
     timestamp_factory,
     worker_id,
-    
 ) -> CalculatorArgs:
     return DictObj(
         {
@@ -109,9 +108,7 @@ def _get_process_manager_parameters(filename):
         )
 
 
-def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
-    databricks_path,
-):
+def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails():
     # Act
     with pytest.raises(SystemExit) as excinfo:
         _get_valid_args_or_throw("--unexpected-arg")
@@ -119,9 +116,8 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
     assert excinfo.value.code == 2
 
 
-def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
-    data_lake_path, source_path, databricks_path
-):
+def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(source_path):
+
     """
     This test works in tandem with a .NET test ensuring that the calculator job accepts
     the arguments that are provided by the calling process manager.
@@ -151,7 +147,6 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 def test__result_is_generated_for_requested_grid_areas(
     spark: SparkSession,
     data_lake_path,
-    source_path,
     worker_id,
     executed_calculation_job,
 ):
@@ -219,7 +214,6 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 def test__quantity_is_with_precision_3(
     spark,
     data_lake_path,
-    find_first_file,
     worker_id,
     executed_calculation_job,
 ):
@@ -384,7 +378,6 @@ def test__creates_master_data_csv_per_grid_area(
 
 
 def test__master_basis_data_file_matches_contract(
-    spark,
     data_lake_path,
     find_first_file,
     worker_id,
