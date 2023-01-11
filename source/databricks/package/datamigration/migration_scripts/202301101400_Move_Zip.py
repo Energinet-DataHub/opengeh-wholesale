@@ -65,6 +65,12 @@ def apply(args: MigrationScriptArgs) -> None:
                 container=container,
             )
 
+    paths = file_system_client.get_paths(path="calculation-output/zip")
+    if len(list(paths)) == 0:
+        basis_data_dir = parent_directory_client.get_sub_directory_client("zip")
+        if basis_data_dir.exists():
+            basis_data_dir.delete_directory()
+
 
 def move_and_rename_folder(
     file_client: DataLakeFileClient,
