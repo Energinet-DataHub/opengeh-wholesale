@@ -19,7 +19,7 @@ from .args_helper import valid_date, valid_list, valid_log_level
 from .datamigration import islocked
 import package.calculation_input as calculation_input
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, lit
+from pyspark.sql.functions import col
 from pyspark.sql.types import Row
 from configargparse import argparse
 from package.constants import Colname
@@ -152,7 +152,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     # Non-profiled consumption
     (
         consumption_per_ga_and_es.withColumnRenamed("GridAreaCode", "grid_area")
-        .withColumn(Colname.quantity, col(Colname.quantity).cast("string"))
+        .withColumn("quantity", col("quantity").cast("string"))
         .repartition("grid_area")
         .write.mode("append")
         .partitionBy("grid_area", Colname.gln, "step")

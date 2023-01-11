@@ -18,7 +18,6 @@ from pyspark.sql.functions import col, expr, explode, sum, first, lit
 from package.codelists import (
     MeteringPointResolution,
 )
-from typing import Union
 from package.db_logging import debug
 import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
@@ -101,15 +100,15 @@ def _compute_aggregated_sum(
             first(Colname.quality).alias(Colname.quality),
         )
         .orderBy(*groups, ascending=True)
-        .select(
-            Colname.grid_area,
-            Colname.gln,
-            Colname.quantity,
-            col(Colname.quality).alias("quality"),
-            col(Colname.time_window_start).alias("quarter_time"),
-        )
-        .withColumn("step", lit(time_series_type.value))
     )
+
+    df = df.select(
+        Colname.grid_area,
+        Colname.gln,
+        Colname.quantity,
+        col(Colname.quality).alias("quality"),
+        col(Colname.time_window_start).alias("quarter_time"),
+    ).withColumn("step", lit(time_series_type.value))
 
     return df
 
@@ -119,7 +118,7 @@ def _add_gln_column(result_df: DataFrame, actor_type: ActorType) -> DataFrame:
     if actor_type is ActorType.GRID_ACCESS_PROVIDER:
         result_df = result_df.withColumn(Colname.gln, lit("grid_access_provider"))
     elif actor_type is ActorType.ENERGY_SUPPLIER:
-        result_df = result_df.withColumnRenamed("EnergySupplierId", Colname.gln)
+        result_df = result_df.withColumnRenamed(Colname.energy_supplier_id, Colname.gln)
     else:
         raise NotImplementedError(f"Actor type, {actor_type}, is not supported yet")
 
