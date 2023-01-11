@@ -23,7 +23,7 @@ using Moq;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application;
+namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessResult;
 
 [UnitTest]
 public class ProcessResultApplicationServiceTests
@@ -103,7 +103,7 @@ public class ProcessResultApplicationServiceTests
     private static ProcessStepResultApplicationService ProcessResultApplicationService()
     {
         var mock = new Mock<IBatchFileManager>();
-        var stream = EmbeddedResources.GetStream("Application.ProcessResult.json");
+        var stream = EmbeddedResources.GetStream("Application.ProcessResult.ProcessResult.json");
         mock.Setup(x => x.GetResultFileStreamAsync(It.IsAny<Guid>(), It.IsAny<GridAreaCode>()))
             .ReturnsAsync(stream);
 
