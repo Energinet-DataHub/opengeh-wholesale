@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Application.Infrastructure;
 
-public interface IProcessApplicationService
+public interface IProcessCompletedIntegrationEventPublisher
 {
-    Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent);
-
-    /// <summary>
-    /// Publish a process completed integration event when a process has completed.
-    /// </summary>
-    Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent);
+    Task PublishAsync(ProcessCompletedEventDto processCompletedEvent);
 }

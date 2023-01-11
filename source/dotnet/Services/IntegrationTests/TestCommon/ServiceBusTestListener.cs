@@ -14,6 +14,7 @@
 
 using System.Text.Json;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
 {
@@ -43,15 +44,15 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
             return result;
         }
 
-        public async Task<EventualServiceBusMessage> ListenForDataAvailableMessageAsync(string correlationId)
+        public async Task<EventualServiceBusMessage> ListenForMessageByCorrelationIdAsync(string correlationId)
         {
             var result = new EventualServiceBusMessage();
             result.MessageAwaiter = await _serviceBusListenerMock
-                .WhenDataAvailableCorrelationId(correlationId)
+                .WhenCorrelationId(correlationId)
                 .VerifyOnceAsync(receivedMessage =>
                 {
                     result.Body = receivedMessage.Body;
-                    result.CorrelationId = (string)receivedMessage.ApplicationProperties["OperationCorrelationId"];
+                    result.CorrelationId = (string)receivedMessage.ApplicationProperties[MessageMetaDataConstants.CorrelationId];
                     return Task.CompletedTask;
                 }).ConfigureAwait(false);
             return result;

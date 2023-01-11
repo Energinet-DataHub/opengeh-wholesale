@@ -13,18 +13,19 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
-public class ProcessCompletedPublisher : IProcessCompletedPublisher
+public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegrationEventPublisher
 {
     private readonly ServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
 
-    public ProcessCompletedPublisher(
+    public ProcessCompletedIntegrationEventPublisher(
         ServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory)
     {
@@ -32,9 +33,20 @@ public class ProcessCompletedPublisher : IProcessCompletedPublisher
         _serviceBusMessageFactory = serviceBusMessageFactory;
     }
 
-    public async Task PublishAsync(List<ProcessCompletedEventDto> completedProcesses)
+    public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
     {
-        var messages = _serviceBusMessageFactory.Create(completedProcesses.AsEnumerable());
-        await _serviceBusSender.SendMessagesAsync(messages).ConfigureAwait(false);
+        var integrationEvent = Map(processCompletedEvent);
+        var message = _serviceBusMessageFactory.Create(integrationEvent);
+        await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
+    }
+
+    private static ProcessCompleted Map(ProcessCompletedEventDto processCompletedEvent)
+    {
+        return new ProcessCompleted
+        {
+            BatchId = processCompletedEvent.BatchId.ToString(),
+            ProcessType = ProcessCompleted.Types.ProcessType.PtBalancefixing, // Will be made dynamic in upcoming PR
+            GridAreaCode = processCompletedEvent.GridAreaCode,
+        };
     }
 }
