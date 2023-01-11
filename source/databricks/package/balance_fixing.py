@@ -86,18 +86,6 @@ def calculate_balance_fixing(
     )
 
 
-def _add_gln_column(result_df: DataFrame, actor_type: ActorType) -> DataFrame:
-
-    if actor_type is ActorType.GRID_ACCESS_PROVIDER:
-        result_df = result_df.withColumn(Colname.gln, lit("grid_access_provider"))
-    elif actor_type is ActorType.ENERGY_SUPPLIER:
-        result_df = result_df.withColumnRenamed("EnergySupplierId", Colname.gln)
-    else:
-        raise NotImplementedError(f"Actor type, {actor_type}, is not supported yet")
-
-    return result_df
-
-
 def _compute_aggregated_sum(
     df: DataFrame, time_series_type: TimeSeriesType, actor_type: ActorType
 ) -> DataFrame:
@@ -124,6 +112,18 @@ def _compute_aggregated_sum(
     )
 
     return df
+
+
+def _add_gln_column(result_df: DataFrame, actor_type: ActorType) -> DataFrame:
+
+    if actor_type is ActorType.GRID_ACCESS_PROVIDER:
+        result_df = result_df.withColumn(Colname.gln, lit("grid_access_provider"))
+    elif actor_type is ActorType.ENERGY_SUPPLIER:
+        result_df = result_df.withColumnRenamed("EnergySupplierId", Colname.gln)
+    else:
+        raise NotImplementedError(f"Actor type, {actor_type}, is not supported yet")
+
+    return result_df
 
 
 def _get_enriched_time_series_points_df(
