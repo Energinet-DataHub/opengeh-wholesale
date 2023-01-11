@@ -31,6 +31,7 @@ limitations under the License.
       <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Timer" Version="4.1.0" />
       <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.7.0" OutputItemType="Analyzer" />
       <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.10.0" />
+      <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="5.8.1" />
       <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.9" />
     </ItemGroup>
     <ItemGroup>
