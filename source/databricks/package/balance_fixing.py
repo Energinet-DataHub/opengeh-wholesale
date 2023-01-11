@@ -93,20 +93,19 @@ def _get_enriched_time_series_points_df(
 
     quarterly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.quarter.value
-    )
+    ).withColumn("ToDate", (col("ToDate") - expr("INTERVAL 1 seconds")))
+
     hourly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.hour.value
-    )
-
-    exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
+    ).withColumn("ToDate", (col("ToDate") - expr("INTERVAL 1 seconds")))
 
     quarterly_times_df = (
-        quarterly_mp_df.select("MeteringPointId")
+        quarterly_mp_df.select("MeteringPointId", "FromDate", "ToDate")
         .distinct()
         .select(
             "MeteringPointId",
             expr(
-                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
+                "sequence(to_timestamp(FromDate), to_timestamp(ToDate), interval 15 minutes)"
             ).alias("quarter_times"),
         )
         .select(
@@ -115,12 +114,12 @@ def _get_enriched_time_series_points_df(
     )
 
     hourly_times_df = (
-        hourly_mp_df.select("MeteringPointId")
+        hourly_mp_df.select("MeteringPointId", "FromDate", "ToDate")
         .distinct()
         .select(
             "MeteringPointId",
             expr(
-                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 1 hour)"
+                "sequence(to_timestamp(FromDate), to_timestamp(ToDate), interval 1 hour)"
             ).alias("times"),
         )
         .select("MeteringPointId", explode("times").alias(Colname.observation_time))
