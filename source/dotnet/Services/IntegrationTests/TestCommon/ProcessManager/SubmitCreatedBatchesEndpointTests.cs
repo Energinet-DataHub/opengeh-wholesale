@@ -60,7 +60,7 @@ public class SubmitCreatedBatchesEndpointTests
                 .BatchCompletedListener
                 .ListenForMessageAsync<BatchCompletedEventDto>(_ => true);
             using var eventualProcessCompletedEvent = await Fixture
-                .SendDataAvailableWhenProcessCompletedListener
+                .ProcessCompletedListener
                 .ListenForMessageAsync<ProcessCompletedEventDto>(e => e.GridAreaCode == gridAreaCode);
 
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here

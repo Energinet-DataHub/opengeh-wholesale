@@ -55,9 +55,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
 
         public TopicResource DomainEventsTopic { get; private set; } = null!;
 
+        public TopicResource IntegrationEventsTopic { get; private set; } = null!;
+
         public ServiceBusTestListener BatchCompletedListener { get; private set; } = null!;
 
-        public ServiceBusTestListener SendDataAvailableWhenProcessCompletedListener { get; private set; } = null!;
+        public ServiceBusTestListener ProcessCompletedListener { get; private set; } = null!;
+
+        public ServiceBusTestListener ProcessCompletedIntegrationEventListener { get; private set; } = null!;
 
         private AzuriteManager AzuriteManager { get; }
 
@@ -102,38 +106,53 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
             await DatabaseManager.CreateDatabaseAsync();
             DatabricksTestManager.BeginListen();
 
-            var batchCompletedEventName = "batch-completed";
+            var batchCompletedEventName = "batch-completed-event-name";
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, batchCompletedEventName);
 
-            var processCompletedEventName = "process-completed";
+            var processCompletedEventName = "process-completed-event-name";
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ProcessCompletedEventName, processCompletedEventName);
 
-            var batchCompletedSubscriptionName = "batch-completed";
-            var sendDataAvailableWhenProcessCompletedSubscriptionName = "process-completed";
+            var batchCompletedSubscriptionName = "batch-completed-subscription";
+            var processCompletedSubscriptionName = "process-completed-subscription";
+            var publishIntegrationEventWhenProcessCompletedSubscriptionName = "process-completed-integration-event-subscription";
 
             DomainEventsTopic = await ServiceBusResourceProvider
                 .BuildTopic("domain-events")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
-                .AddSubscription("zip-basis-data")
+                .AddSubscription("zip-basis-data-subscription")
                 .AddSubjectFilter(batchCompletedEventName)
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName)
-                .AddSubscription("publish-process-completed")
+                .AddSubscription("publish-process-completed-event-subscription")
                 .AddSubjectFilter(batchCompletedEventName)
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName)
+                .AddSubscription("publish-process-completed-integration-event-sub")
+                .AddSubjectFilter(processCompletedEventName)
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.PublishProcessesCompletedIntegrationEventWhenProcessCompletedSubscriptionName)
                 // Subscriptions to observe side effects of the process manager
                 .AddSubscription(batchCompletedSubscriptionName)
                 .AddSubjectFilter(batchCompletedEventName)
-                .AddSubscription(sendDataAvailableWhenProcessCompletedSubscriptionName)
+                .AddSubscription(processCompletedSubscriptionName)
                 .AddSubjectFilter(processCompletedEventName)
+                .CreateAsync();
+
+            // Topic to observe integration events published by the process manager
+            IntegrationEventsTopic = await ServiceBusResourceProvider
+                .BuildTopic("integration-events")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.IntegrationEventsTopicName)
+                .AddSubscription(publishIntegrationEventWhenProcessCompletedSubscriptionName)
                 .CreateAsync();
 
             var batchCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
             await batchCompletedListener.AddTopicSubscriptionListenerAsync(DomainEventsTopic.Name, batchCompletedSubscriptionName);
             BatchCompletedListener = new ServiceBusTestListener(batchCompletedListener);
 
-            var sendDataAvailableWhenProcessCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
-            await sendDataAvailableWhenProcessCompletedListener.AddTopicSubscriptionListenerAsync(DomainEventsTopic.Name, sendDataAvailableWhenProcessCompletedSubscriptionName);
-            SendDataAvailableWhenProcessCompletedListener = new ServiceBusTestListener(sendDataAvailableWhenProcessCompletedListener);
+            var processCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
+            await processCompletedListener.AddTopicSubscriptionListenerAsync(DomainEventsTopic.Name, processCompletedSubscriptionName);
+            ProcessCompletedListener = new ServiceBusTestListener(processCompletedListener);
+
+            var publishIntegrationEventWhenProcessCompletedListener = new ServiceBusListenerMock(ServiceBusResourceProvider.ConnectionString, TestLogger);
+            await publishIntegrationEventWhenProcessCompletedListener.AddTopicSubscriptionListenerAsync(IntegrationEventsTopic.Name, publishIntegrationEventWhenProcessCompletedSubscriptionName);
+            ProcessCompletedIntegrationEventListener = new ServiceBusTestListener(publishIntegrationEventWhenProcessCompletedListener);
 
             // Create storage container - ought to be a Data Lake file system
             var blobContainerClient = new BlobContainerClient(

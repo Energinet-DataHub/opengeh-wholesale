@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
@@ -22,11 +23,16 @@ public class ProcessApplicationService : IProcessApplicationService
 {
     private readonly IBatchRepository _batchRepository;
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
+    private readonly IProcessCompletedIntegrationEventPublisher _processCompletedIntegrationEventPublisher;
 
-    public ProcessApplicationService(IBatchRepository batchRepository, IProcessCompletedPublisher processCompletedPublisher)
+    public ProcessApplicationService(
+        IBatchRepository batchRepository,
+        IProcessCompletedPublisher processCompletedPublisher,
+        IProcessCompletedIntegrationEventPublisher processCompletedIntegrationEventPublisher)
     {
         _batchRepository = batchRepository;
         _processCompletedPublisher = processCompletedPublisher;
+        _processCompletedIntegrationEventPublisher = processCompletedIntegrationEventPublisher;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
@@ -34,6 +40,11 @@ public class ProcessApplicationService : IProcessApplicationService
         var completedBatch = await _batchRepository.GetAsync(batchCompletedEvent.BatchId).ConfigureAwait(false);
         var processCompletedEvents = CreateProcessCompletedEvents(completedBatch);
         await _processCompletedPublisher.PublishAsync(processCompletedEvents).ConfigureAwait(false);
+    }
+
+    public async Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
+    {
+        await _processCompletedIntegrationEventPublisher.PublishAsync(processCompletedEvent).ConfigureAwait(false);
     }
 
     private List<ProcessCompletedEventDto> CreateProcessCompletedEvents(Batch completedBatch)

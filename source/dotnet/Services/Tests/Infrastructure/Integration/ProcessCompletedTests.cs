@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
+using FluentAssertions;
+using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Integration;
 
-public interface IProcessApplicationService
+public class ProcessCompletedTests
 {
-    Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent);
-
-    /// <summary>
-    /// Publish a process completed integration event when a process has completed.
-    /// </summary>
-    Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent);
+    [Fact]
+    public void MessageType_Is_ProcessCompleted()
+    {
+        // This should not be changed as it'll affect external subscribers
+        ProcessCompleted.MessageType.Should().Be("ProcessCompleted");
+    }
 }
