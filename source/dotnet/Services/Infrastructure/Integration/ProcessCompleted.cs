@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
-
-public interface IProcessApplicationService
+public partial class ProcessCompleted
 {
-    Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent);
-
     /// <summary>
-    /// Publish a process completed integration event when a process has completed.
+    /// The message type suitable for ServiceBus subscription filtering in accordance with ADR-008.
     /// </summary>
-    Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent);
+    public const string MessageType = "ProcessCompleted";
 }
