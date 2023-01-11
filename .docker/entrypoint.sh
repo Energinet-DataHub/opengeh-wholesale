@@ -41,7 +41,7 @@ fi
 # If test summary contains other combination of failed tests we return exit code 1 to signal we DO NOT want to retry
 matchFailedTests=$(grep -Po '^=+.* [[:digit:]]+ failed.* in .*=+$' pytest-results.log)
 if [ ! -z "$matchFailedTests" ]; then
-  echo "Tests failed. We should not retry."
+  echo "Not only 'entry point tests' failed. We should not retry."
   exit 1
 fi
 
