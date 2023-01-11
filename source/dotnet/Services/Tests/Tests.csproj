@@ -74,8 +74,8 @@ limitations under the License.
     <EmbeddedResource Include="..\..\..\contracts\internal\quality.json">
       <Link>Sender\Infrastructure\quality.json</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="Application\ProcessResult\ProcessResult.json" />
     <None Remove="Application\JsonNewLineStuff.json" />
-    <EmbeddedResource Include="Application\ProcessResult.json" />
   </ItemGroup>
 
   <ItemGroup>
