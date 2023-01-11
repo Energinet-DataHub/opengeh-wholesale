@@ -37,7 +37,7 @@ public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegr
     {
         var integrationEvent = Map(processCompletedEvent);
         var message = _serviceBusMessageFactory.Create(integrationEvent);
-        await _serviceBusSender.SendMessageAsync(message).ConfigureAwait(false);
+        await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
     private static ProcessCompleted Map(ProcessCompletedEventDto processCompletedEvent)
