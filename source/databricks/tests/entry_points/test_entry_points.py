@@ -37,4 +37,4 @@ def test__entry_point__unlock_storage__returns_0(installed_package):
 
 def test__entry_point__migrate_data_lake__returns_0(installed_package):
     exit_code = subprocess.call(["migrate_data_lake", "-h"])
-    assert exit_code == 1  # TODO: Revert back to 0
+    assert exit_code == 0
