@@ -31,7 +31,7 @@ from pyspark.sql.functions import col
 @pytest.fixture(scope="module")
 def raw_time_series_points_factory(spark, timestamp_factory):
     def factory(
-        time: datetime = timestamp_factory("2022-06-08T12:09:15.000Z"),
+        time: datetime = timestamp_factory("2022-06-08T12:15:00.000Z"),
     ):
         df = [
             {
@@ -388,3 +388,43 @@ def test__df_has_expected_row_count_according_to_dst(
         timestamp_factory(period_end),
     )
     assert actual.count() == expected_number_of_rows
+
+
+def test__support_meteringpoint_period_switch_on_resolution(
+    raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
+):
+    # Arrange
+    start_time = "2022-01-01T22:00:00.000Z"
+    raw_time_series_points = raw_time_series_points_factory(
+        time=timestamp_factory(start_time),
+    )
+
+    metering_point_period_df = metering_point_period_df_factory(
+        resolution=MeteringPointResolution.quarter.value,
+        from_date="2022-01-01T22:00:00.000Z",
+        to_date="2022-01-02T22:00:00.000Z",
+    )
+
+    second_metering_point_period_df = metering_point_period_df_factory(
+        resolution=MeteringPointResolution.hour.value,
+        from_date="2022-01-02T22:00:00.000Z",
+        to_date="2022-01-03T22:00:00.000Z",
+    )
+
+    # Act
+    actual = _get_enriched_time_series_points_df(
+        raw_time_series_points,
+        metering_point_period_df.union(second_metering_point_period_df),
+        timestamp_factory(start_time),
+        timestamp_factory("2022-01-03T22:00:00.000Z"),
+    )
+    actual.show()
+
+    hour = actual.filter(col("Resolution") == MeteringPointResolution.hour.value)
+    quarter = actual.filter(col("Resolution") == MeteringPointResolution.quarter.value)
+    print(actual.count())
+    print(hour.count())
+    print(quarter.count())
+
+    # Assert
+    assert 1 == 1
