@@ -144,22 +144,43 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(sourc
     _get_valid_args_or_throw(command_line_args)
 
 
+def get_time_series_quarter_path(data_lake_path: str, grid_area: str, gln: str) -> str:
+    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area={grid_area}/gln={gln}"
+
+
+def get_time_series_hour_path(data_lake_path: str, grid_area: str, gln: str) -> str:
+    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_hour/grid_area={grid_area}/gln={gln}"
+
+
+def get_master_basis_data_path(data_lake_path: str, grid_area: str, gln: str) -> str:
+    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area={grid_area}/gln={gln}"
+
+
+def get_result_path(
+    data_lake_path: str, grid_area: str, gln: str, time_series_type: str
+) -> str:
+    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/result/grid_area={grid_area}/gln={gln}/step={time_series_type}"
+
+
 def test__result_is_generated_for_requested_grid_areas(
     spark: SparkSession,
     data_lake_path,
     worker_id,
     executed_calculation_job,
 ):
+    data_lake_path = f"{data_lake_path}/{worker_id}"
+
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
     result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln={default_gln}/step=production"
+        get_result_path(data_lake_path, "805", default_gln, "production")
     )
     result_806 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=806/gln={default_gln}/step=production"
+        get_result_path(data_lake_path, "806", default_gln, "production")
     )
+
     assert result_805.count() >= 1, "Calculator job failed to write files"
     assert result_806.count() >= 1, "Calculator job failed to write files"
 
@@ -197,14 +218,16 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
     worker_id,
     executed_calculation_job,
 ):
+    # Arrange
+    data_lake_path = f"{data_lake_path}/{worker_id}"
+    result_path = get_result_path(data_lake_path, "805", default_gln, "production")
+
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln={default_gln}/step=production"
-    )
-    result_805.printSchema()
+    result_805 = spark.read.json(result_path)
+
     assert_contract_matches_schema(
         f"{source_path}/contracts/internal/calculator-result.json",
         result_805.schema,
@@ -217,13 +240,16 @@ def test__quantity_is_with_precision_3(
     worker_id,
     executed_calculation_job,
 ):
+    # Arrange
+    data_lake_path = f"{data_lake_path}/{worker_id}"
+    result_path = get_result_path(data_lake_path, "805", default_gln, "production")
+
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
-    result_805 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln={default_gln}/step=production"
-    )
+    result_805 = spark.read.json(result_path)
+
     import re
 
     assert re.search(r"^\d+\.\d{3}$", result_805.first().quantity)
@@ -272,13 +298,15 @@ def test__creates_hour_csv_with_expected_columns_names(
     executed_calculation_job,
     worker_id,
 ):
+    # Arrange
+    data_lake_path = f"{data_lake_path}/{worker_id}"
+    basis_data_path = get_time_series_hour_path(data_lake_path, "805", default_gln)
+
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_hour/grid_area=805/gln={default_gln}"
-    )
+    actual = spark.read.option("header", "true").csv(basis_data_path)
     assert actual.columns == [
         "METERINGPOINTID",
         "TYPEOFMP",
@@ -290,13 +318,15 @@ def test__creates_hour_csv_with_expected_columns_names(
 def test__creates_quarter_csv_with_expected_columns_names(
     spark, data_lake_path, executed_calculation_job, worker_id
 ):
+    # Arrange
+    data_lake_path = f"{data_lake_path}/{worker_id}"
+    basis_data_path = get_time_series_quarter_path(data_lake_path, "805", default_gln)
+
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area=805/gln={default_gln}"
-    )
+    actual = spark.read.option("header", "true").csv(basis_data_path)
 
     assert actual.columns == [
         "METERINGPOINTID",
@@ -309,17 +339,22 @@ def test__creates_quarter_csv_with_expected_columns_names(
 def test__creates_csv_per_grid_area(
     spark, data_lake_path, executed_calculation_job, worker_id
 ):
+    # Arrange
+    data_lake_path = f"{data_lake_path}/{worker_id}"
+    basis_data_path_805 = get_time_series_quarter_path(
+        data_lake_path, "805", default_gln
+    )
+    basis_data_path_806 = get_time_series_quarter_path(
+        data_lake_path, "806", default_gln
+    )
+
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area=805/gln={default_gln}"
-    )
+    basis_data_805 = spark.read.option("header", "true").csv(basis_data_path_805)
 
-    basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area=806/gln={default_gln}"
-    )
+    basis_data_806 = spark.read.option("header", "true").csv(basis_data_path_806)
 
     assert (
         basis_data_805.count() >= 1
@@ -333,13 +368,15 @@ def test__creates_csv_per_grid_area(
 def test__master_data_csv_with_expected_columns_names(
     spark, data_lake_path, executed_calculation_job, worker_id
 ):
+    # Arrange
+    data_lake_path = f"{data_lake_path}/{worker_id}"
+    basis_data_path = get_master_basis_data_path(data_lake_path, "805", default_gln)
+
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area=805/gln={default_gln}"
-    )
+    actual = spark.read.option("header", "true").csv(basis_data_path)
 
     assert actual.columns == [
         "METERINGPOINTID",
@@ -357,16 +394,17 @@ def test__master_data_csv_with_expected_columns_names(
 def test__creates_master_data_csv_per_grid_area(
     spark, data_lake_path, executed_calculation_job, worker_id
 ):
+    # Arrange
+    data_lake_path = f"{data_lake_path}/{worker_id}"
+    basis_data_path_805 = get_master_basis_data_path(data_lake_path, "805", default_gln)
+    basis_data_path_806 = get_master_basis_data_path(data_lake_path, "806", default_gln)
+
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
-    master_basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area=805/gln={default_gln}"
-    )
+    master_basis_data_805 = spark.read.option("header", "true").csv(basis_data_path_805)
 
-    master_basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area=806/gln={default_gln}"
-    )
+    master_basis_data_806 = spark.read.option("header", "true").csv(basis_data_path_806)
 
     assert (
         master_basis_data_805.count() >= 1
