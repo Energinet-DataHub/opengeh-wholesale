@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.FunctionApp;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using FluentAssertions;
 using Xunit;
@@ -51,7 +56,7 @@ public class PublishProcessCompletedIntegrationEventEndpointTests
             var processCompletedMessage = CreateProcessCompletedEventDtoMessage();
             using var eventualProcessCompletedIntegrationEvent = await Fixture
                 .ProcessCompletedIntegrationEventListener
-                .ListenForMessageAsync<ProcessCompletedEventDto>(_ => true);
+                .ListenForMessageAsync<ProcessCompleted>(_ => true, binaryData => ProcessCompleted.Parser.ParseFrom(binaryData.ToArray()));
                 //.ListenForMessageByCorrelationIdAsync(processCompletedMessage.CorrelationId); // TODO BJARKE
 
             // Act
@@ -74,10 +79,17 @@ public class PublishProcessCompletedIntegrationEventEndpointTests
         private static ServiceBusMessage CreateProcessCompletedEventDtoMessage()
         {
             var messageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName);
-            var processCompleted = new ProcessCompletedEventDto(CreateGridAreaCode(), Guid.NewGuid());
+            var processCompleted = new ProcessCompletedEventDto(
+                CreateGridAreaCode(),
+                Guid.NewGuid(),
+                ProcessType.BalanceFixing,
+                Periods.January_EuropeCopenhagen_Instant.PeriodStart,
+                Periods.January_EuropeCopenhagen_Instant.PeriodEnd);
             var someCorrelationContextId = Guid.NewGuid().ToString();
 
-            return ServiceBusMessageFactory.CreateServiceBusMessage(processCompleted, messageType, someCorrelationContextId);
+            var body = new JsonSerializer().Serialize(processCompleted);
+            var bytes = Encoding.UTF8.GetBytes(body);
+            return ServiceBusMessageFactory.CreateServiceBusMessage(bytes, messageType, someCorrelationContextId);
         }
     }
 }
