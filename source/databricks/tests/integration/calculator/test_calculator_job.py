@@ -28,6 +28,8 @@ executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 grid_area_gln = "grid_area"
 energy_supplier_gln_a = "8100000000108"
 energy_supplier_gln_b = "8100000000109"
+
+
 # Code snippet from https://joelmccune.com/python-dictionary-as-object/
 class DictObj:
     def __init__(self, in_dict: dict):
