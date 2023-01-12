@@ -67,6 +67,7 @@ class Colname:
     start = "start"
     start_datetime = "start_datetime"
     sum_quantity = "sum_quantity"
+    time_series_type = "time_series_type"
     time_window = "time_window"
     time_window_end = "time_window.end"
     time_window_start = "time_window.start"

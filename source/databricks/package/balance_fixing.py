@@ -112,7 +112,7 @@ def _compute_aggregated_sum(
         col(Colname.quantity).alias("quantity").cast("string"),
         col(Colname.quality).alias("quality"),
         col(Colname.time_window_start).alias("quarter_time"),
-    ).withColumn("step", lit(time_series_type.value))
+    ).withColumn(Colname.time_series_type, lit(time_series_type.value))
 
     return sum_result
 
@@ -120,7 +120,7 @@ def _compute_aggregated_sum(
 def _add_gln_column(result_df: DataFrame, result_grouping: ResultGrouping) -> DataFrame:
 
     if result_grouping is ResultGrouping.PER_GRID_AREA:
-        result_df = result_df.withColumn(Colname.gln, lit("grid_access_provider"))
+        result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
     elif result_grouping is ResultGrouping.PER_ENERGY_SUPPLIER:
         result_df = result_df.withColumnRenamed(Colname.energy_supplier_id, Colname.gln)
     else:
