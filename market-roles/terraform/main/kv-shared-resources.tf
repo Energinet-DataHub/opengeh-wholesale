@@ -92,3 +92,8 @@ data "azurerm_key_vault_secret" "sb_integration_events_id" {
   name         = "sb-domain-relay-namespace-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received" {
+  name         = "sbt_domainrelay_integrationevent_received"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
