@@ -94,6 +94,6 @@ data "azurerm_key_vault_secret" "sb_integration_events_id" {
 }
 
 data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received" {
-  name         = "sbt_domainrelay_integrationevent_received"
+  name         = "sbt-domainrelay-integrationevent-received"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
