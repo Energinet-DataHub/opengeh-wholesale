@@ -21,7 +21,7 @@ import re
 
 
 def apply(args: MigrationScriptArgs) -> None:
-    container = "wholesaletest"
+    container = "wholesale"
     directory_name = "calculation-output"
 
     # Get the file system client
