@@ -71,7 +71,7 @@ def calculate_balance_fixing(
         )
         .orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
         .withColumn("gln", lit("grid_area"))
-        .withColumn("step", lit("production"))
+        .withColumn("time_series_type", lit("production"))
     )
 
     return (
