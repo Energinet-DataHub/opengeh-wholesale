@@ -32,9 +32,4 @@ module "app_performancetest" {
   }
 
   tags                                      = azurerm_resource_group.this.tags
-
-  depends_on                                = [
-  
-                                                module.func_receiver.name,
-                                              ]
 }
