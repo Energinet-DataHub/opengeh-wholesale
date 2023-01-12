@@ -24,7 +24,7 @@ from package.schemas import time_series_point_schema, metering_point_period_sche
 from pyspark.sql.functions import lit
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
-default_gln = "grid_access_provider"
+default_gln = "grid_area"
 
 
 # Code snippet from https://joelmccune.com/python-dictionary-as-object/
