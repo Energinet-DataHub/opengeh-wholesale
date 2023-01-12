@@ -159,7 +159,7 @@ def get_master_basis_data_path(data_lake_path: str, grid_area: str, gln: str) ->
 def get_result_path(
     data_lake_path: str, grid_area: str, gln: str, time_series_type: str
 ) -> str:
-    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/result/grid_area={grid_area}/gln={gln}/step={time_series_type}"
+    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/result/grid_area={grid_area}/gln={gln}/time_series_type={time_series_type}"
 
 
 def test__result_is_generated_for_requested_grid_areas(
