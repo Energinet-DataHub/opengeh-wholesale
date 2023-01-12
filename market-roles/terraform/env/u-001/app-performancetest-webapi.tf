@@ -27,13 +27,14 @@ module "app_performancetest" {
   dotnet_framework_version                  = "v6.0"
 
   app_settings                              = {
-     MessagingApi__Hostname                 = module.func_receiver.default_hostname
+     MessagingApi__Hostname                 = module.func_receiver.name
      MessagingApi__Port                     = 443
   }
 
   tags                                      = azurerm_resource_group.this.tags
 
   depends_on                                = [
-                                                module.func_receiver.default_hostname,
+  
+                                                module.func_receiver.name,
                                               ]
 }
