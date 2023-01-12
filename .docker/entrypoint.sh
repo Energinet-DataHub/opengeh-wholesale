@@ -30,7 +30,7 @@ if [ ! -z "$matchTestErrors" ]; then
 fi
 # If test summary only contains 5 failing 'entry point tests' return exit code 2 to signal we want to retry
 # See https://unix.stackexchange.com/questions/637959/regex-matching-multi-line-search for understanding use of
-#   z parameter to greb
+#   z parameter to grep
 #   (?m) in regex
 #   pipe to remove NULL
 matchFailedEntryPointTests=$(grep -Pzo '(?m)=+ short test summary info =+\n(FAILED .*test_entry_points.py::.*\n){5}=+ 5 failed' pytest-results.log | tr -d '\0')
