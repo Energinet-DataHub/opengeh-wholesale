@@ -19,6 +19,6 @@ locals {
   LOCAL_TIMEZONENAME                            = "Europe/Copenhagen"
   
   # Integration event subscription details
-  WHOLESALE_PROCESS_COMPLETED_EVENT_SUBSCRIPTION_NAME = "wholesale-process-completed-event-listener"
+  WHOLESALE_PROCESS_COMPLETED_EVENT_SUBSCRIPTION_NAME = "process-completed"
   WHOLESALE_PROCESS_COMPLETED_EVENT_TYPE_NAME = "ProcessCompleted"
 }
