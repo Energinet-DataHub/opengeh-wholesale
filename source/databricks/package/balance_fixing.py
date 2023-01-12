@@ -70,8 +70,8 @@ def calculate_balance_fixing(
             col(Colname.time_window_start).alias("quarter_time"),
         )
         .orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
-        .withColumn("gln", lit("grid_access_provider"))
-        .withColumn("step", lit("production"))
+        .withColumn("gln", lit("grid_area"))
+        .withColumn("time_series_type", lit("production"))
     )
 
     return (

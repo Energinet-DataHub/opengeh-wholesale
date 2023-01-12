@@ -24,7 +24,7 @@ from package.schemas import time_series_point_schema, metering_point_period_sche
 from pyspark.sql.functions import lit
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
-default_gln = "grid_access_provider"
+default_gln = "grid_area"
 
 
 # Code snippet from https://joelmccune.com/python-dictionary-as-object/
@@ -159,7 +159,7 @@ def get_master_basis_data_path(data_lake_path: str, grid_area: str, gln: str) ->
 def get_result_path(
     data_lake_path: str, grid_area: str, gln: str, time_series_type: str
 ) -> str:
-    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/result/grid_area={grid_area}/gln={gln}/step={time_series_type}"
+    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/result/grid_area={grid_area}/gln={gln}/time_series_type={time_series_type}"
 
 
 def test__result_is_generated_for_requested_grid_areas(
@@ -287,7 +287,7 @@ def test__result_file_path_matches_contract(
     # Assert
     actual_result_file = find_first_file(
         f"{data_lake_path}/{worker_id}",
-        f"calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln={default_gln}/step=production/part-*.json",
+        f"calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln={default_gln}/time_series_type=production/part-*.json",
     )
     assert re.match(expected_path_expression, actual_result_file)
 
