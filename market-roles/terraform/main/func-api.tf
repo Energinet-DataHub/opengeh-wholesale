@@ -44,6 +44,6 @@ module "func_receiver" {
     FEATUREFLAG_ACTORMESSAGEQUEUE                                 = true
     PERFORMANCE_TEST_ENABLED                                      = var.performance_test_enabled
     INTEGRATION_EVENTS_TOPIC_NAME                                 = local.INTEGRATION_EVENTS_TOPIC_NAME
-    BALANCE_FIXING_RESULT_AVAILABLE_EVENT_SUBSCRIPTION_NAME       = local.WHOLESALE_PROCESS_COMPLETED_EVENT_SUBSCRIPTION_NAME
+    BALANCE_FIXING_RESULT_AVAILABLE_EVENT_SUBSCRIPTION_NAME       = module.sbtsub_wholesale_process_completed_event_listener.name
   }
 }
