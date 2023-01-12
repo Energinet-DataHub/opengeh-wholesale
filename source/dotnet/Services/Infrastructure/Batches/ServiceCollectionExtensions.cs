@@ -25,7 +25,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBatchCompletedPublisher(
         this IServiceCollection serviceCollection,
         string serviceBusConnectionString,
-        string batchCompletedTopicName)
+        string batchCompletedTopicName,
+        string messageType)
     {
         serviceCollection.AddScoped<IBatchCompletedPublisher>(provider =>
         {
@@ -33,7 +34,7 @@ public static class ServiceCollectionExtensions
                 .GetRequiredService<TargetedSingleton<ServiceBusSender, BatchCompletedPublisher>>()
                 .Instance;
             var factory = provider.GetRequiredService<IServiceBusMessageFactory>();
-            return new BatchCompletedPublisher(sender, factory);
+            return new BatchCompletedPublisher(sender, factory, messageType);
         });
 
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))

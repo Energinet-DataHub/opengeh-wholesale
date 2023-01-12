@@ -15,6 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.Registration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddProcessCompletedPublisher(
         this IServiceCollection serviceCollection,
         string serviceBusConnectionString,
-        string processCompletedTopicName)
+        string processCompletedTopicName,
+        string messageType)
     {
         serviceCollection.AddScoped<IProcessCompletedPublisher>(provider =>
         {
@@ -34,7 +36,7 @@ public static class ServiceCollectionExtensions
                 .GetRequiredService<TargetedSingleton<ServiceBusSender, ProcessCompletedPublisher>>()
                 .Instance;
             var factory = provider.GetRequiredService<IServiceBusMessageFactory>();
-            return new ProcessCompletedPublisher(sender, factory);
+            return new ProcessCompletedPublisher(sender, factory, messageType);
         });
 
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))

@@ -15,10 +15,9 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
 public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegrationEventPublisher
 {
@@ -36,7 +35,10 @@ public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegr
     public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
     {
         var integrationEvent = Map(processCompletedEvent);
-        var message = _serviceBusMessageFactory.Create(integrationEvent);
+        var messageType = GetMessageType(processCompletedEvent);
+
+        var message = _serviceBusMessageFactory.Create(integrationEvent, messageType);
+
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
@@ -45,8 +47,12 @@ public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegr
         return new ProcessCompleted
         {
             BatchId = processCompletedEvent.BatchId.ToString(),
-            ProcessType = ProcessCompleted.Types.ProcessType.PtBalancefixing, // Will be made dynamic in upcoming PR
             GridAreaCode = processCompletedEvent.GridAreaCode,
         };
+    }
+
+    private string GetMessageType(ProcessCompletedEventDto processCompletedEvent)
+    {
+        return ProcessCompleted.BalanceFixingProcessType; // Will become dependent of the actual process in upcoming PR
     }
 }

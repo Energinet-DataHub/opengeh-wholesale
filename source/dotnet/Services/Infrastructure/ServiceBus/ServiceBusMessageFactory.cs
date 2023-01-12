@@ -20,22 +20,20 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
     private readonly ICorrelationContext _correlationContext;
-    private readonly IDictionary<Type, string> _messageTypes;
 
-    public ServiceBusMessageFactory(ICorrelationContext correlationContext, IDictionary<Type, string> messageTypes)
+    public ServiceBusMessageFactory(ICorrelationContext correlationContext)
     {
         _correlationContext = correlationContext;
-        _messageTypes = messageTypes;
     }
 
-    public ServiceBusMessage Create<TMessage>(TMessage message)
+    public ServiceBusMessage Create<TMessage>(TMessage message, string messageType)
     {
-        return CreateServiceBusMessage(message);
+        return CreateServiceBusMessage(message, messageType);
     }
 
-    public IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages)
+    public IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages, string messageType)
     {
-        return messages.Select(CreateServiceBusMessage);
+        return messages.Select(message => CreateServiceBusMessage(message, messageType));
     }
 
     public static ServiceBusMessage CreateServiceBusMessage<TMessage>(
@@ -55,13 +53,8 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         };
     }
 
-    private ServiceBusMessage CreateServiceBusMessage<TMessage>(TMessage message)
+    private ServiceBusMessage CreateServiceBusMessage<TMessage>(TMessage message, string messageType)
     {
-        if (!_messageTypes.ContainsKey(typeof(TMessage)))
-            throw new NotImplementedException($"No message type identifier has been registered for message of type {typeof(TMessage).FullName}");
-
-        var messageType = _messageTypes[typeof(TMessage)];
-
         return CreateServiceBusMessage(message, messageType, _correlationContext.Id);
     }
 }

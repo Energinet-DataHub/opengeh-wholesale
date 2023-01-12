@@ -23,18 +23,21 @@ public class ProcessCompletedPublisher : IProcessCompletedPublisher
 {
     private readonly ServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
+    private readonly string _messageType;
 
     public ProcessCompletedPublisher(
         ServiceBusSender serviceBusSender,
-        IServiceBusMessageFactory serviceBusMessageFactory)
+        IServiceBusMessageFactory serviceBusMessageFactory,
+        string messageType)
     {
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
+        _messageType = messageType;
     }
 
     public async Task PublishAsync(List<ProcessCompletedEventDto> completedProcesses)
     {
-        var messages = _serviceBusMessageFactory.Create(completedProcesses.AsEnumerable());
+        var messages = _serviceBusMessageFactory.Create(completedProcesses.AsEnumerable(), _messageType);
         await _serviceBusSender.SendMessagesAsync(messages).ConfigureAwait(false);
     }
 }

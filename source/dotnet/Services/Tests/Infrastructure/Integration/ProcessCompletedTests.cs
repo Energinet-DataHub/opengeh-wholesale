@@ -21,9 +21,9 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Integration;
 public class ProcessCompletedTests
 {
     [Fact]
-    public void MessageType_Is_ProcessCompleted()
+    public void MessageType_Is_Correct()
     {
         // This should not be changed as it'll affect external subscribers
-        ProcessCompleted.MessageType.Should().Be("ProcessCompleted");
+        ProcessCompleted.BalanceFixingProcessType.Should().Be("BalanceFixingCompleted");
     }
 }
