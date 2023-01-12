@@ -53,7 +53,7 @@ variable developer_ad_group_name {
 }
 
 variable performance_test_enabled {
-  type          = string
+  type          = bool
   description   = "(Optional) Enables features needed for the Messaging.Api Performance Test"
-  default       = "false"
+  default       = false
 }
