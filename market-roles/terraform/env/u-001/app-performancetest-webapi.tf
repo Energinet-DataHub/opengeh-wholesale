@@ -31,5 +31,9 @@ module "app_performancetest" {
      MessagingApi__Port                     = 443
   }
 
-  tags                                       = azurerm_resource_group.this.tags
+  tags                                      = azurerm_resource_group.this.tags
+
+  depends_on                                = [
+                                                module.func_receiver.default_hostname,
+                                              ]
 }
