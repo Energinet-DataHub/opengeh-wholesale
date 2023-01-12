@@ -32,6 +32,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
@@ -108,6 +109,7 @@ public static class Program
         {
             { typeof(BatchCompletedEventDto), batchCompletedMessageType },
             { typeof(ProcessCompletedEventDto), processCompletedMessageType },
+            { typeof(ProcessCompleted), ProcessCompleted.MessageType },
         };
         serviceCollection.AddScoped<IServiceBusMessageFactory>(provider =>
         {
@@ -135,6 +137,9 @@ public static class Program
         var domainEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
         serviceCollection.AddBatchCompletedPublisher(serviceBusConnectionString, domainEventsTopicName);
         serviceCollection.AddProcessCompletedPublisher(serviceBusConnectionString, domainEventsTopicName);
+
+        var integrationEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
+        serviceCollection.AddProcessCompletedIntegrationEventPublisher(serviceBusConnectionString, integrationEventsTopicName);
 
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         serviceCollection

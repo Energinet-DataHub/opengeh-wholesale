@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
 {
@@ -27,10 +28,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
             return provider.When(_ => true);
         }
 
-        public static DoProvider WhenDataAvailableCorrelationId(this ServiceBusListenerMock provider, string? correlationId = null)
+        public static DoProvider WhenCorrelationId(this ServiceBusListenerMock provider, string? correlationId = null)
         {
             return provider.When(request =>
-                request.ApplicationProperties["OperationCorrelationId"].Equals(correlationId));
+                request.ApplicationProperties[MessageMetaDataConstants.CorrelationId].Equals(correlationId));
         }
     }
 }
