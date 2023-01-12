@@ -17,4 +17,8 @@ locals {
   HUB_MRID                                      = "5790001330552"
   # Note: The following timezone name is using the naming scheme of the TZ Database. See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for list of possible values.
   LOCAL_TIMEZONENAME                            = "Europe/Copenhagen"
+  
+  # Integration event subscription details
+  WHOLESALE_PROCESS_COMPLETED_EVENT_SUBSCRIPTION_NAME = "wholesale-process-completed-event-listener"
+  WHOLESALE_PROCESS_COMPLETED_EVENT_TYPE_NAME = "ProcessCompleted"
 }
