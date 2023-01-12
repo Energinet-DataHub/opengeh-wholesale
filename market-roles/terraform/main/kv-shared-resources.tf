@@ -87,13 +87,7 @@ data "azurerm_key_vault_secret" "sb_domain_relay_namespace_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-# ID of the shared servicebus namespace 
-data "azurerm_key_vault_secret" "sb_integration_events_id" {
-  name         = "sb-domain-relay-namespace-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received" {
-  name         = "sbt-domainrelay-integrationevent-received"
+data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
+  name         = "sbt-sharedres-integrationevent-received-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
