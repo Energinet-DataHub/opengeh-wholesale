@@ -21,10 +21,10 @@ from package.codelists import (
 from package.db_logging import debug
 import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
-from datetime import timedelta, datetime
+from datetime import datetime
 from package.constants import Colname, ResultKeyName
 from package.constants.time_series_type import TimeSeriesType
-from package.constants.actor_type import ActorType
+from package.constants.result_grouping import ResultGrouping
 from package.shared.data_classes import Metadata
 from pyspark.sql.types import (
     DecimalType,
@@ -63,7 +63,7 @@ def calculate_balance_fixing(
     total_production_per_ga_df = _compute_aggregated_sum(
         total_production_per_ga_df,
         TimeSeriesType.PRODUCTION,
-        ActorType.GRID_ACCESS_PROVIDER,
+        ResultGrouping.PER_GRID_AREA,
     )
 
     # Non-profiled consumption per energy supplier
@@ -74,7 +74,7 @@ def calculate_balance_fixing(
     consumption_per_ga_and_es = _compute_aggregated_sum(
         consumption_per_ga_and_brp_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        ActorType.ENERGY_SUPPLIER,
+        ResultGrouping.PER_ENERGY_SUPPLIER,
     )
 
     return (
@@ -86,11 +86,13 @@ def calculate_balance_fixing(
 
 
 def _compute_aggregated_sum(
-    result: DataFrame, time_series_type: TimeSeriesType, actor_type: ActorType
+    result: DataFrame,
+    time_series_type: TimeSeriesType,
+    result_grouping: ResultGrouping,
 ) -> DataFrame:
 
     # We need to be able to group by gln
-    result = _add_gln_column(result, actor_type)
+    result = _add_gln_column(result, result_grouping)
 
     # Perform sum within each combination of (grid_area, gln, time_window)
     groups = [Colname.grid_area, Colname.gln, Colname.time_window]
@@ -115,14 +117,16 @@ def _compute_aggregated_sum(
     return sum_result
 
 
-def _add_gln_column(result_df: DataFrame, actor_type: ActorType) -> DataFrame:
+def _add_gln_column(result_df: DataFrame, result_grouping: ResultGrouping) -> DataFrame:
 
-    if actor_type is ActorType.GRID_ACCESS_PROVIDER:
+    if result_grouping is ResultGrouping.PER_GRID_AREA:
         result_df = result_df.withColumn(Colname.gln, lit("grid_access_provider"))
-    elif actor_type is ActorType.ENERGY_SUPPLIER:
+    elif result_grouping is ResultGrouping.PER_ENERGY_SUPPLIER:
         result_df = result_df.withColumnRenamed(Colname.energy_supplier_id, Colname.gln)
     else:
-        raise NotImplementedError(f"Actor type, {actor_type}, is not supported yet")
+        raise NotImplementedError(
+            f"Result grouping, {result_grouping}, is not supported yet"
+        )
 
     return result_df
 

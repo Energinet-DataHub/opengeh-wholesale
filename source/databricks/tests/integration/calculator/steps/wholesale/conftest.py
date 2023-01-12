@@ -28,7 +28,6 @@
 
 from package.codelists import ChargeType
 from package.schemas.output import (
-    aggregation_result_schema,
     calculate_daily_subscription_price_schema,
     calculate_fee_charge_price_schema,
 )

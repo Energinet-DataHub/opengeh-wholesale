@@ -15,7 +15,6 @@
 from enum import Enum
 
 
-class ActorType(Enum):
-    GRID_ACCESS_PROVIDER = "grid_access_provider"
-    ENERGY_SUPPLIER = "energy_supplier"
-    
+class ResultGrouping(Enum):
+    PER_GRID_AREA = "grid_area"
+    PER_ENERGY_SUPPLIER = "energy_supplier"
