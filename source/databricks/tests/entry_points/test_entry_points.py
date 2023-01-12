@@ -14,9 +14,11 @@
 
 import subprocess
 
+
 # IMPORTANT:
 # If we add/remove tests here, we also update the "retry logic" in '.docker/entrypoint.sh',
 # which dependens on the number of "entry point tests".
+
 
 def test__entry_point__start_calculator__returns_0(installed_package):
     exit_code = subprocess.call(["start_calculator", "-h"])

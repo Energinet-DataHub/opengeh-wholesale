@@ -27,7 +27,7 @@ coverage run --branch -m pytest -n 2 . | tee pytest-results.log
 # Scenario: Test errors (exceptions) occured
 ################################################
 
-# EXAMPLE test summary which our regex can detect:
+# EXAMPLE test summary which our regex can match:
 # ================== 65 passed, 195 errors in 94.15s (0:01:34) ===================
 
 # If test summary contains errors we return exit code 2 to signal we want to retry
@@ -41,7 +41,7 @@ fi
 # Scenario: Only 'entry point tests' failed
 ################################################
 
-# EXAMPLE test summary which our regex can detect:
+# EXAMPLE test summary which our regex can match:
 # =========================== short test summary info ============================
 # FAILED entry_points/test_entry_points.py::test__entry_point__start_calculator__returns_0
 # FAILED entry_points/test_entry_points.py::test__entry_point__uncommitted_migrations_count__returns_0
