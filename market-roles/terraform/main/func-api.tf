@@ -43,5 +43,7 @@ module "func_receiver" {
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
     FEATUREFLAG_ACTORMESSAGEQUEUE                                 = true
     PERFORMANCE_TEST_ENABLED                                      = var.performance_test_enabled
+    INTEGRATION_EVENTS_TOPIC_NAME                                 = local.INTEGRATION_EVENTS_TOPIC_NAME
+    BALANCE_FIXING_RESULT_AVAILABLE_EVENT_SUBSCRIPTION_NAME       = module.sbtsub_wholesale_process_completed_event_listener.name
   }
 }
