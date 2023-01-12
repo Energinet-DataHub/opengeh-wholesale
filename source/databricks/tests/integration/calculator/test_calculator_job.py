@@ -20,6 +20,7 @@ from unittest.mock import patch
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
 from package.calculator_args import CalculatorArgs
+from package.constants.time_series_type import TimeSeriesType
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit
 
@@ -168,21 +169,30 @@ def test__result_is_generated_for_requested_grid_areas(
     worker_id,
     executed_calculation_job,
 ):
+    # Arrange
     data_lake_path = f"{data_lake_path}/{worker_id}"
+
+    expected_ga_gln_type = [
+        ["805", "grid_access_provider", TimeSeriesType.PRODUCTION.value],
+        ["806", "grid_access_provider", TimeSeriesType.PRODUCTION.value],
+        ["805", "8100000000108", TimeSeriesType.NON_PROFILED_CONSUMPTION.value],
+        ["806", "8100000000108", TimeSeriesType.NON_PROFILED_CONSUMPTION.value],
+    ]
 
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    result_805 = spark.read.json(
-        get_result_path(data_lake_path, "805", default_gln, "production")
-    )
-    result_806 = spark.read.json(
-        get_result_path(data_lake_path, "806", default_gln, "production")
-    )
-
-    assert result_805.count() >= 1, "Calculator job failed to write files"
-    assert result_806.count() >= 1, "Calculator job failed to write files"
+    for grid_area, gln, time_series_type in expected_ga_gln_type:
+        result = spark.read.json(
+            get_result_path(
+                data_lake_path,
+                grid_area,
+                gln,
+                time_series_type,
+            )
+        )
+        assert result.count() >= 1, "Calculator job failed to write files"
 
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
