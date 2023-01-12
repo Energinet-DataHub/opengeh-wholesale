@@ -27,7 +27,7 @@ module "app_performancetest" {
   dotnet_framework_version                  = "v6.0"
 
   app_settings                              = {
-     MessagingApi__Hostname                 = module.func_receiver.name
+     MessagingApi__Hostname                 = format("%s%s", module.func_receiver.name, ".azurewebsites.net")
      MessagingApi__Port                     = 443
   }
 
