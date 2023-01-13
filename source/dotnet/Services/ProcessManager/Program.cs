@@ -84,6 +84,7 @@ public static class Program
         services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
+        services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
         services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.codelists import MeteringPointType, MeteringPointResolution, TimeSeriesQuality
+from package.codelists import (
+    MeteringPointType,
+    MeteringPointResolution,
+    TimeSeriesQuality,
+)
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
 from .aggregate_quality import aggregate_total_consumption_quality
@@ -34,9 +38,9 @@ prod_result = "prod_result"
 # Function used to calculate grid loss (step 6)
 def calculate_grid_loss(results: dict, metadata: Metadata) -> DataFrame:
     agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
-    agg_hourly_consumption = results[ResultKeyName.hourly_consumption]
+    agg_hourly_consumption = results[ResultKeyName.non_profiled_consumption]
     agg_flex_consumption = results[ResultKeyName.flex_consumption]
-    agg_production = results[ResultKeyName.hourly_production]
+    agg_production = results[ResultKeyName.production]
     return __calculate_grid_loss_or_residual_ga(
         agg_net_exchange,
         agg_hourly_consumption,
@@ -48,9 +52,9 @@ def calculate_grid_loss(results: dict, metadata: Metadata) -> DataFrame:
 
 def calculate_residual_ga(results: dict, metadata: Metadata) -> DataFrame:
     agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
-    agg_hourly_consumption = results[ResultKeyName.hourly_settled_consumption_ga]
+    agg_hourly_consumption = results[ResultKeyName.non_profiled_consumption_ga]
     agg_flex_consumption = results[ResultKeyName.flex_consumption_ga]
-    agg_production = results[ResultKeyName.hourly_production_ga]
+    agg_production = results[ResultKeyName.production_ga]
     return __calculate_grid_loss_or_residual_ga(
         agg_net_exchange,
         agg_hourly_consumption,
@@ -186,7 +190,7 @@ def calculate_added_grid_loss(results: dict, metadata: Metadata):
 # Function to calculate total consumption (step 21)
 def calculate_total_consumption(results: dict, metadata: Metadata) -> DataFrame:
     agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
-    agg_production = results[ResultKeyName.hourly_production_ga]
+    agg_production = results[ResultKeyName.production_ga]
     result_production = (
         agg_production.selectExpr(
             Colname.grid_area,
