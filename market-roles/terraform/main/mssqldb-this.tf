@@ -17,7 +17,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_marketroles" {
-  source                              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v9"
+  source                              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v10"
 
   name                                = "marketroles"
   project_name                        = var.domain_name_short
