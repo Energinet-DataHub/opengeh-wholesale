@@ -58,7 +58,7 @@
 
     *-vv stands for very verbose and will show a bit more information regarding the tests being run*
 
-    *-s allows the output of a print statement to be displayed in the console aswell as .show statment*
+    *-s allows the output of a print statement to be displayed in the console as well as .show statement*
 
 ## Debugging Tests
 
