@@ -4,7 +4,7 @@
 
 ## Table of content
 
-* [Getting started with Databricks development in Time Series](#getting-started-with-databrick-development-in-time-series)
+* [Getting started with Databricks development in Wholesale](#getting-started-with-databrick-development-in-wholesale)
 * [Running Tests](#running-tests)
 * [Debugging Tests](#debugging-tests)
 * [Styling and Formatting](#styling-and-formatting)
@@ -20,15 +20,15 @@
 
 * #### [Visual Studio Code](https://code.visualstudio.com/#alt-downloads) (system installer)
 
-    * Extension called ***Remote - Containers***
+    * install the extension called [***Dev Containers***](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 ### Get workspace ready for development
 
-* Open ***opengeh-wholesale*** folder in Visual Studio Code
+* Open Visual Studio Code
 
-* Select ***Remote Explorer*** in the left toolbar
+* Go to the ***Remote Explorer*** in the left sidebar
 
-* Click on the ***plus icon*** in the top of the panel to the right of ***Containers*** and select ***Open Current Folder in Container***
+* Click ***Open Folder in Container*** and select the location of ***opengeh-wholesale***
 
 * Wait for the container to build (*This will take a few minutes the first time*) and then you are ready to go
 
@@ -40,12 +40,6 @@
     pytest
     ```
 
-* For more verbose output use
-
-    ```text
-    pytest -vv -s
-    ```
-
 * To run tests in a specific folder simply navigate to the folder in the terminal and use the same command as above
 
 * To run tests in a specific file navigate to the folder where the file is located in the terminal and execute the following command
@@ -54,11 +48,16 @@
     pytest file-name.py
     ```
 
-* You can also run a specific test in the file by executing the following command
+* To run a specific test functions in the file by executing the following command
 
     ```text
     pytest file-name.py::function-name
     ```
+* You can also add flags to any of the above statements. Her are some we commonly use:
+    
+    *-vv stands for very verbose and will show a bit more information regarding the tests being run*
+
+    *-s allows the output of a print statement to be displayed in the console aswell as .show statment*
 
 ## Debugging Tests
 
