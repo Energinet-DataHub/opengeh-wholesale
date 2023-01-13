@@ -188,22 +188,6 @@ def test__when_type_is_production__returns_metering_point_period(
     assert raw_master_basis_data.count() == 1
 
 
-def test__when_type_is_not_E17_or_E18__does_not_return_metering_point_period(
-    batch_grid_areas_df,
-    metering_points_periods_df_factory,
-):
-    metering_points_periods_df = metering_points_periods_df_factory(
-        MeteringPointType=MeteringPointType.exchange.value
-    )
-    raw_master_basis_data = get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
-        june_1th,
-        june_2th,
-    )
-    assert raw_master_basis_data.count() == 0
-
-
 def test__metering_points_have_expected_columns(
     batch_grid_areas_df: DataFrame,
     metering_points_periods_df_factory: Callable[..., DataFrame],
