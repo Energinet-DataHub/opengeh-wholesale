@@ -54,7 +54,6 @@ TSO
 UI
 unittest
 Url
-vv
 VSCode
 Whitespace
 WSL
