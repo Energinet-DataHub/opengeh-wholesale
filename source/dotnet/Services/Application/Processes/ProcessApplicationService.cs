@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
@@ -24,15 +23,18 @@ public class ProcessApplicationService : IProcessApplicationService
     private readonly IBatchRepository _batchRepository;
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
     private readonly IProcessCompletedIntegrationEventPublisher _processCompletedIntegrationEventPublisher;
+    private readonly IProcessTypeMapper _processTypeMapper;
 
     public ProcessApplicationService(
         IBatchRepository batchRepository,
         IProcessCompletedPublisher processCompletedPublisher,
-        IProcessCompletedIntegrationEventPublisher processCompletedIntegrationEventPublisher)
+        IProcessCompletedIntegrationEventPublisher processCompletedIntegrationEventPublisher,
+        IProcessTypeMapper processTypeMapper)
     {
         _batchRepository = batchRepository;
         _processCompletedPublisher = processCompletedPublisher;
         _processCompletedIntegrationEventPublisher = processCompletedIntegrationEventPublisher;
+        _processTypeMapper = processTypeMapper;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
@@ -51,7 +53,13 @@ public class ProcessApplicationService : IProcessApplicationService
     {
         return completedBatch
             .GridAreaCodes
-            .Select(c => new ProcessCompletedEventDto(c.Code, completedBatch.Id))
+            .Select(c =>
+                new ProcessCompletedEventDto(
+                    c.Code,
+                    completedBatch.Id,
+                    _processTypeMapper.MapFrom(completedBatch.ProcessType),
+                    completedBatch.PeriodStart,
+                    completedBatch.PeriodEnd))
             .ToList();
     }
 }
