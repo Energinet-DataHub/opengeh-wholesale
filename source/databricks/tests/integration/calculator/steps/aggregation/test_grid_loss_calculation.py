@@ -519,9 +519,7 @@ def test_grid_loss_calculation(agg_result_factory):
     ] = create_dataframe_from_aggregation_result_schema(
         metadata, agg_result_factory(agg_method=AggregationMethod.flex_consumption)
     )
-    results[
-        ResultKeyName.hourly_production
-    ] = create_dataframe_from_aggregation_result_schema(
+    results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
         metadata, agg_result_factory(agg_method=AggregationMethod.production)
     )
 
@@ -555,7 +553,7 @@ def test_grid_loss_calculation_calculates_correctly_on_grid_area(
         metadata, agg_flex_consumption_factory()
     )
     results[
-        ResultKeyName.hourly_production_ga
+        ResultKeyName.production_ga
     ] = create_dataframe_from_aggregation_result_schema(
         metadata, agg_hourly_production_factory()
     )
