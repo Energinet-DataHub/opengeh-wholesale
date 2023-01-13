@@ -19,9 +19,9 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.steps.aggregation import (
-    aggregate_hourly_settled_consumption_ga_es,
-    aggregate_hourly_settled_consumption_ga_brp,
-    aggregate_hourly_settled_consumption_ga,
+    aggregate_non_profiled_consumption_ga_es,
+    aggregate_non_profiled_consumption_ga_brp,
+    aggregate_non_profiled_consumption_ga,
 )
 from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
@@ -135,15 +135,15 @@ def agg_result_factory(spark, settled_schema):
     return factory
 
 
-def test_hourly_settled_consumption_summarizes_correctly_on_grid_area_within_same_time_window(
+def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_time_window(
     agg_result_factory,
 ):
     results = {}
     results[
-        ResultKeyName.hourly_consumption
+        ResultKeyName.non_profiled_consumption
     ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
 
-    aggregated_df = aggregate_hourly_settled_consumption_ga(results, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga(results, metadata).sort(
         Colname.grid_area, Colname.time_window
     )
 
@@ -158,15 +158,15 @@ def test_hourly_settled_consumption_summarizes_correctly_on_grid_area_within_sam
     )
 
 
-def test_hourly_settled_consumption_summarizes_correctly_on_grid_area_with_different_time_window(
+def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_different_time_window(
     agg_result_factory,
 ):
     results = {}
     results[
-        ResultKeyName.hourly_consumption
+        ResultKeyName.non_profiled_consumption
     ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
 
-    aggregated_df = aggregate_hourly_settled_consumption_ga(results, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga(results, metadata).sort(
         Colname.grid_area, Colname.time_window
     )
 
@@ -181,15 +181,15 @@ def test_hourly_settled_consumption_summarizes_correctly_on_grid_area_with_diffe
     )
 
 
-def test_hourly_settled_consumption_summarizes_correctly_on_grid_area_with_same_time_window_as_other_grid_area(
+def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_time_window_as_other_grid_area(
     agg_result_factory,
 ):
     results = {}
     results[
-        ResultKeyName.hourly_consumption
+        ResultKeyName.non_profiled_consumption
     ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
 
-    aggregated_df = aggregate_hourly_settled_consumption_ga(results, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga(results, metadata).sort(
         Colname.grid_area, Colname.time_window
     )
 
@@ -207,9 +207,9 @@ def test_hourly_settled_consumption_summarizes_correctly_on_grid_area_with_same_
 def test_production_calculation_per_ga_and_es(agg_result_factory):
     results = {}
     results[
-        ResultKeyName.hourly_consumption
+        ResultKeyName.non_profiled_consumption
     ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
-    aggregated_df = aggregate_hourly_settled_consumption_ga_es(results, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga_es(results, metadata).sort(
         Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
     )
     aggregated_df_collect = aggregated_df.collect()
@@ -227,9 +227,9 @@ def test_production_calculation_per_ga_and_es(agg_result_factory):
 def test_production_calculation_per_ga_and_brp(agg_result_factory):
     results = {}
     results[
-        ResultKeyName.hourly_consumption
+        ResultKeyName.non_profiled_consumption
     ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
-    aggregated_df = aggregate_hourly_settled_consumption_ga_brp(results, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga_brp(results, metadata).sort(
         Colname.grid_area, Colname.balance_responsible_id, Colname.time_window
     )
     aggregated_df_collect = aggregated_df.collect()
@@ -245,9 +245,9 @@ def test_production_calculation_per_ga_and_brp(agg_result_factory):
 def test_production_calculation_per_ga(agg_result_factory):
     results = {}
     results[
-        ResultKeyName.hourly_consumption
+        ResultKeyName.non_profiled_consumption
     ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
-    aggregated_df = aggregate_hourly_settled_consumption_ga(results, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga(results, metadata).sort(
         Colname.grid_area, Colname.time_window
     )
     aggregated_df_collect = aggregated_df.collect()

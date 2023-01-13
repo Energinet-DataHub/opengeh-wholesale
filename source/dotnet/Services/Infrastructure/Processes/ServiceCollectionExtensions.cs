@@ -63,7 +63,8 @@ public static class ServiceCollectionExtensions
                 .GetRequiredService<TargetedSingleton<ServiceBusSender, ProcessCompletedIntegrationEventPublisher>>()
                 .Instance;
             var factory = provider.GetRequiredService<IServiceBusMessageFactory>();
-            return new ProcessCompletedIntegrationEventPublisher(sender, factory);
+            var mapper = provider.GetRequiredService<IProcessCompletedIntegrationEventMapper>();
+            return new ProcessCompletedIntegrationEventPublisher(sender, factory, mapper);
         });
 
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))

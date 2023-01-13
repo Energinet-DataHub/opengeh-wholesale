@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches;
 
-public interface IBatchCompletedPublisher
+namespace Energinet.DataHub.Wholesale.Application.Processes;
+
+public interface IProcessCompletedEventDtoFactory
 {
-    Task PublishAsync(IEnumerable<BatchCompletedEventDto> batchCompletedEvents);
+    List<ProcessCompletedEventDto> CreateFromBatchCompletedEvent(BatchCompletedEventDto batchCompletedEvent);
 }

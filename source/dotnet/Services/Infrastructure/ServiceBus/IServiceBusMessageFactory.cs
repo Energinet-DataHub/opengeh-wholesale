@@ -18,7 +18,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public interface IServiceBusMessageFactory
 {
-    ServiceBusMessage Create<TMessage>(TMessage message, string messageType);
+    ServiceBusMessage Create(byte[] body, string messageType);
+
+    ServiceBusMessage Create<TMessage>(TMessage message);
 
     IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages, string messageType);
 }

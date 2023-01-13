@@ -16,6 +16,7 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
+// TODO BJARKE: Change namespace to Energinet.DataHub.Wholesale.Events
 option csharp_namespace = "Energinet.DataHub.Wholesale.Infrastructure.Integration";
 
 /*

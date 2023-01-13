@@ -12,6 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Contracts;
+using NodaTime;
 
-public sealed record ProcessCompletedEventDto(string GridAreaCode, Guid BatchId);
+namespace Energinet.DataHub.Wholesale.Application.Processes;
+
+public sealed record ProcessCompletedEventDto(
+    string GridAreaCode,
+    Guid BatchId,
+    ProcessType ProcessType,
+    Instant PeriodStart,
+    Instant PeriodEnd);

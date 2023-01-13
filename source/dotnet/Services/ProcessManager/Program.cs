@@ -83,6 +83,8 @@ public static class Program
         services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
+        services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
+        services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IBasisDataApplicationService, BasisDataApplicationService>();
@@ -129,6 +131,7 @@ public static class Program
 
         var integrationEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
         serviceCollection.AddProcessCompletedIntegrationEventPublisher(serviceBusConnectionString, integrationEventsTopicName);
+        serviceCollection.AddScoped<IProcessCompletedIntegrationEventMapper, ProcessCompletedIntegrationEventMapper>();
 
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         serviceCollection

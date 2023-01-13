@@ -14,8 +14,9 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+using Google.Protobuf;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
@@ -23,36 +24,22 @@ public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegr
 {
     private readonly ServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
+    private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
 
     public ProcessCompletedIntegrationEventPublisher(
         ServiceBusSender serviceBusSender,
-        IServiceBusMessageFactory serviceBusMessageFactory)
+        IServiceBusMessageFactory serviceBusMessageFactory,
+        IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper)
     {
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
+        _processCompletedIntegrationEventMapper = processCompletedIntegrationEventMapper;
     }
 
     public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
     {
-        var integrationEvent = Map(processCompletedEvent);
-        var messageType = GetMessageType(processCompletedEvent);
-
-        var message = _serviceBusMessageFactory.Create(integrationEvent, messageType);
-
+        var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEvent);
+        var message = _serviceBusMessageFactory.Create(integrationEvent.ToByteArray(), ProcessCompleted.MessageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
-    }
-
-    private static ProcessCompleted Map(ProcessCompletedEventDto processCompletedEvent)
-    {
-        return new ProcessCompleted
-        {
-            BatchId = processCompletedEvent.BatchId.ToString(),
-            GridAreaCode = processCompletedEvent.GridAreaCode,
-        };
-    }
-
-    private string GetMessageType(ProcessCompletedEventDto processCompletedEvent)
-    {
-        return ProcessCompleted.BalanceFixingProcessType; // Will become dependent of the actual process in upcoming PR
     }
 }
