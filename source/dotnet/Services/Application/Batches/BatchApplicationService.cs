@@ -15,9 +15,7 @@
 using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using NodaTime;
-using ProcessType = Energinet.DataHub.Wholesale.Contracts.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
@@ -81,7 +79,8 @@ public class BatchApplicationService : IBatchApplicationService
     public async Task UpdateExecutionStateAsync()
     {
         var completedBatches = await _batchExecutionStateHandler.UpdateExecutionStateAsync(_batchRepository, _calculatorJobRunner).ConfigureAwait(false);
-        var batchCompletedEvents = completedBatches.Select(b => new BatchCompletedEventDto(b.Id));
+        var batchCompletedEvents = completedBatches.Select(
+            b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), b.ProcessType, b.PeriodStart, b.PeriodEnd));
 
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
         await _batchCompletedPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
