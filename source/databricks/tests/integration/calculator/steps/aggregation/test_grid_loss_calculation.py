@@ -510,7 +510,7 @@ def test_grid_loss_calculation(agg_result_factory):
         metadata, agg_result_factory(agg_method=AggregationMethod.net_exchange)
     )
     results[
-        ResultKeyName.hourly_consumption
+        ResultKeyName.non_profiled_consumption
     ] = create_dataframe_from_aggregation_result_schema(
         metadata, agg_result_factory(agg_method=AggregationMethod.hourly_consumption)
     )
@@ -545,7 +545,7 @@ def test_grid_loss_calculation_calculates_correctly_on_grid_area(
         metadata, agg_net_exchange_factory()
     )
     results[
-        ResultKeyName.hourly_settled_consumption_ga
+        ResultKeyName.non_profiled_consumption_ga
     ] = create_dataframe_from_aggregation_result_schema(
         metadata, agg_hourly_consumption_factory()
     )

@@ -18,7 +18,7 @@ class ResultKeyName:
     grid_loss_sys_cor_master_data = 1
     net_exchange_per_neighbour = 10
     net_exchange_per_ga = 20
-    hourly_consumption = 30
+    non_profiled_consumption = 30
     flex_consumption = 40
     hourly_production = 50
     grid_loss = 60
@@ -29,13 +29,13 @@ class ResultKeyName:
     flex_consumption_with_grid_loss = 110
     hourly_production_with_system_correction_and_grid_loss = 120
     hourly_production_ga_es = 130
-    hourly_settled_consumption_ga_es = 140
+    non_profiled_consumption_ga_es = 140
     flex_consumption_ga_es = 150
     hourly_production_ga_brp = 160
-    hourly_settled_consumption_ga_brp = 170
+    non_profiled_consumption_ga_brp = 170
     flex_consumption_ga_brp = 180
     hourly_production_ga = 190
-    hourly_settled_consumption_ga = 200
+    non_profiled_consumption_ga = 200
     flex_consumption_ga = 210
     total_consumption = 220
     residual_ga = 230
