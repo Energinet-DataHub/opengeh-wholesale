@@ -89,38 +89,6 @@ def calculate_balance_fixing(
     )
 
 
-def _compute_aggregated_sum(
-    result: DataFrame,
-    time_series_type: TimeSeriesType,
-    result_grouping: ResultGrouping,
-) -> DataFrame:
-
-    # We need to be able to group by gln
-    result = _add_gln_column(result, result_grouping)
-
-    # Perform sum within each combination of (grid_area, gln, time_window)
-    groups = [Colname.grid_area, Colname.gln, Colname.time_window]
-    sum_result = (
-        result.groupBy(groups)
-        .agg(
-            sum(Colname.sum_quantity).alias(Colname.quantity),
-            first(Colname.quality).alias(Colname.quality),
-        )
-        .orderBy(*groups, ascending=True)
-    )
-
-    # prepare final result
-    sum_result = sum_result.select(
-        col(Colname.grid_area).alias("grid_area"),
-        Colname.gln,
-        col(Colname.quantity).alias("quantity").cast("string"),
-        col(Colname.quality).alias("quality"),
-        col(Colname.time_window_start).alias("quarter_time"),
-    ).withColumn(Colname.time_series_type, lit(time_series_type.value))
-
-    return sum_result
-
-
 def _prepare_result_for_output(
     result_df: DataFrame,
     time_series_type: TimeSeriesType,
@@ -154,20 +122,6 @@ def _add_gln_and_time_series_type(
     result_df = result_df.withColumn(
         Colname.time_series_type, lit(time_series_type.value)
     )
-
-    if result_grouping is ResultGrouping.PER_GRID_AREA:
-        result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
-    elif result_grouping is ResultGrouping.PER_ENERGY_SUPPLIER:
-        result_df = result_df.withColumnRenamed(Colname.energy_supplier_id, Colname.gln)
-    else:
-        raise NotImplementedError(
-            f"Result grouping, {result_grouping}, is not supported yet"
-        )
-
-    return result_df
-
-
-def _add_gln_column(result_df: DataFrame, result_grouping: ResultGrouping) -> DataFrame:
 
     if result_grouping is ResultGrouping.PER_GRID_AREA:
         result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
