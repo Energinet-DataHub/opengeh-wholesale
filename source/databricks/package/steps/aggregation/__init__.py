@@ -16,7 +16,7 @@ from .aggregation_initializer import get_time_series_dataframe
 from .aggregators import (
     aggregate_net_exchange_per_ga,
     aggregate_net_exchange_per_neighbour_ga,
-    aggregate_consumption,
+    aggregate_non_profiled_consumption,
     aggregate_flex_consumption,
     aggregate_production,
     aggregate_per_ga_and_brp_and_es,

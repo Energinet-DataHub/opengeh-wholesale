@@ -77,7 +77,9 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
             for period in periods:
                 df_array.append(
                     {
-                        Colname.balance_responsible_id: period[Colname.balance_responsible_id]
+                        Colname.balance_responsible_id: period[
+                            Colname.balance_responsible_id
+                        ]
                         if (Colname.balance_responsible_id in period)
                         else BalanceResponsibleId,
                         Colname.metering_point_id: period[Colname.metering_point_id]
@@ -184,22 +186,6 @@ def test__when_type_is_production__returns_metering_point_period(
         june_2th,
     )
     assert raw_master_basis_data.count() == 1
-
-
-def test__when_type_is_not_E18__does_not_returns_metering_point_period(
-        batch_grid_areas_df,
-        metering_points_periods_df_factory,
-):
-    metering_points_periods_df = metering_points_periods_df_factory(
-        MeteringPointType=MeteringPointType.consumption.value
-    )
-    raw_master_basis_data = get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
-        june_1th,
-        june_2th,
-    )
-    assert raw_master_basis_data.count() == 0
 
 
 def test__metering_points_have_expected_columns(
