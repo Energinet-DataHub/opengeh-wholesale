@@ -22,6 +22,7 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
 from configargparse import argparse
+from package.constants import Colname
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -30,7 +31,6 @@ from package import (
     initialize_spark,
     log,
 )
-from package.schemas import time_series_point_schema, metering_point_period_schema
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -101,7 +101,8 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
     (
-        result_df,
+        non_profiled_consumption_per_ga_and_es,
+        production_per_ga_df,
         timeseries_basis_data_df,
         master_basis_data_df,
     ) = calculate_balance_fixing(
@@ -132,17 +133,27 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         f"{args.process_results_path}/batch_id={args.batch_id}/basis_data/master_basis_data",
     )
 
+    path = f"{args.process_results_path}/batch_id={args.batch_id}/result"
+
     # First repartition to co-locate all rows for a grid area on a single executor.
     # This ensures that only one file is being written/created for each grid area
     # When writing/creating the files. The partition by creates a folder for each grid area.
-    # result/
+
+    # Total production
     (
-        result_df.withColumnRenamed("GridAreaCode", "grid_area")
-        .withColumn("quantity", col("quantity").cast("string"))
-        .repartition("grid_area")
+        production_per_ga_df.repartition("grid_area")
         .write.mode("overwrite")
-        .partitionBy(["grid_area", "gln", "time_series_type"])
-        .json(f"{args.process_results_path}/batch_id={args.batch_id}/result")
+        .partitionBy("grid_area", Colname.gln, Colname.time_series_type)
+        .json(path)
+    )
+
+    # Non-profiled consumption
+    (
+        non_profiled_consumption_per_ga_and_es
+        .repartition("grid_area")
+        .write.mode("append")
+        .partitionBy("grid_area", Colname.gln, Colname.time_series_type)
+        .json(path)
     )
 
 
