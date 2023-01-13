@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using NodaTime;
+using Energinet.DataHub.Wholesale.Application.Batches;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Application.Processes;
 
-public sealed record BatchCompletedEventDto(
-    Guid BatchId,
-    List<string> GridAreaCodes,
-    ProcessType ProcessType,
-    Instant PeriodStart,
-    Instant PeriodEnd);
+public interface IProcessCompletedEventDtoFactory
+{
+    List<ProcessCompletedEventDto> CreateFromBatchCompletedEvent(BatchCompletedEventDto batchCompletedEvent);
+}
