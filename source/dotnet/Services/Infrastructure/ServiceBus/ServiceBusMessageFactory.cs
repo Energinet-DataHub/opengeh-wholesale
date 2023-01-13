@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+using Energinet.DataHub.Core.JsonSerialization;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
@@ -21,11 +23,18 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
     private readonly ICorrelationContext _correlationContext;
     private readonly IDictionary<Type, string> _messageTypes;
+    private readonly IJsonSerializer _jsonSerializer;
 
-    public ServiceBusMessageFactory(ICorrelationContext correlationContext, IDictionary<Type, string> messageTypes)
+    public ServiceBusMessageFactory(ICorrelationContext correlationContext, IDictionary<Type, string> messageTypes, IJsonSerializer jsonSerializer)
     {
         _correlationContext = correlationContext;
         _messageTypes = messageTypes;
+        _jsonSerializer = jsonSerializer;
+    }
+
+    public ServiceBusMessage Create(byte[] body, string messageType)
+    {
+        return CreateServiceBusMessage(body, messageType, _correlationContext.Id);
     }
 
     public ServiceBusMessage Create<TMessage>(TMessage message)
@@ -38,14 +47,14 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         return messages.Select(CreateServiceBusMessage);
     }
 
-    public static ServiceBusMessage CreateServiceBusMessage<TMessage>(
-        TMessage message,
+    public static ServiceBusMessage CreateServiceBusMessage(
+        byte[] body,
         string messageType,
         string correlationContextId)
     {
         return new ServiceBusMessage
         {
-            Body = new BinaryData(message),
+            Body = new BinaryData(body),
             Subject = messageType,
             ApplicationProperties =
             {
@@ -62,6 +71,8 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
 
         var messageType = _messageTypes[typeof(TMessage)];
 
-        return CreateServiceBusMessage(message, messageType, _correlationContext.Id);
+        var body = _jsonSerializer.Serialize(message);
+        var bytes = Encoding.UTF8.GetBytes(body);
+        return CreateServiceBusMessage(bytes, messageType, _correlationContext.Id);
     }
 }

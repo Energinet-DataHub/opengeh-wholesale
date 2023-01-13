@@ -253,9 +253,7 @@ def test_grid_area_system_correction_is_added_to_system_correction_energy_respon
     sys_cor_row_factory,
 ):
     results = {}
-    results[
-        ResultKeyName.hourly_production
-    ] = create_dataframe_from_aggregation_result_schema(
+    results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
         metadata, hourly_production_result_row_factory(supplier="A")
     )
 
@@ -285,9 +283,7 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     sys_cor_row_factory,
 ):
     results = {}
-    results[
-        ResultKeyName.hourly_production
-    ] = create_dataframe_from_aggregation_result_schema(
+    results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
         metadata, hourly_production_result_row_factory(supplier="A")
     )
 
@@ -321,9 +317,7 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     hp_row_2 = hourly_production_result_row_factory(supplier="B")
     hp_row_3 = hourly_production_result_row_factory(supplier="C")
 
-    results[
-        ResultKeyName.hourly_production
-    ] = create_dataframe_from_aggregation_result_schema(
+    results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
         metadata, hp_row_1.union(hp_row_2).union(hp_row_3)
     )
 
@@ -375,9 +369,7 @@ def test_correct_system_correction_entry_is_used_to_determine_energy_responsible
         supplier="B", time_window=time_window_3
     )
 
-    results[
-        ResultKeyName.hourly_production
-    ] = create_dataframe_from_aggregation_result_schema(
+    results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
         metadata, hp_row_1.union(hp_row_2).union(hp_row_3)
     )
 

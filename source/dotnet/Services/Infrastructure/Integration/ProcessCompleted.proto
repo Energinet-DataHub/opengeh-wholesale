@@ -14,7 +14,9 @@
  */
 
 syntax = "proto3";
+import "google/protobuf/timestamp.proto";
 
+// TODO BJARKE: Change namespace to Energinet.DataHub.Wholesale.Events
 option csharp_namespace = "Energinet.DataHub.Wholesale.Infrastructure.Integration";
 
 /*
@@ -52,4 +54,17 @@ message ProcessCompleted {
    * The process type.
    */
   ProcessType process_type = 3;
+
+  /*
+   * The beginning of the calculation period.
+   * The time is included in the period and is identical to the time of the first time series point
+   * in the process time series type results.
+   */
+  google.protobuf.Timestamp period_start_utc = 4;
+
+  /*
+   * The end of the calculation period.
+   * The time is excluded from the period.
+   */
+  google.protobuf.Timestamp period_end_utc = 5;
 }
