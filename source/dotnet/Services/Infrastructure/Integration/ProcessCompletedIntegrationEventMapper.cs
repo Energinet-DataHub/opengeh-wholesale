@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
