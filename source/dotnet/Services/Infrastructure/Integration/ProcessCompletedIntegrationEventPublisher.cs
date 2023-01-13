@@ -15,6 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Google.Protobuf;
 
@@ -39,7 +40,15 @@ public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegr
     public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
     {
         var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEvent);
-        var message = _serviceBusMessageFactory.Create(integrationEvent.ToByteArray(), ProcessCompleted.MessageType);
+        var messageType = GetMessageType(processCompletedEvent.ProcessType);
+        var message = _serviceBusMessageFactory.Create(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
+
+    private string GetMessageType(ProcessType processType) =>
+        processType switch
+        {
+            ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
+            _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
+        };
 }

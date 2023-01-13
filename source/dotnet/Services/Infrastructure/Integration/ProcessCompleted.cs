@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 public partial class ProcessCompleted
 {
     /// <summary>
-    /// The message type suitable for ServiceBus subscription filtering in accordance with ADR-008.
+    /// The message type for balance-fixing-completed transport message meta data in accordance with ADR-008.
     /// </summary>
-    public const string MessageType = "ProcessCompleted";
+    public const string BalanceFixingProcessType = "BalanceFixingCompleted";
 }
