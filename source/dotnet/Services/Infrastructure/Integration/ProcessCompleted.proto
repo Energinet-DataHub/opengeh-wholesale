@@ -23,7 +23,8 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Infrastructure.Integratio
  * ProcessCompleted Integration Event.
  * A process is uniquely identified by the batch ID and grid area code together.
  *
- * MessageType (see ADR-008) is "ProcessCompleted".
+ * The process type is provided in the MessageType, which is available in the message meta data according to ADR-008.
+ * See file `./ProcessCompleted.cs` for currently supported process types.
  */
 message ProcessCompleted {
 
@@ -44,27 +45,15 @@ message ProcessCompleted {
   string grid_area_code = 2;
 
   /*
-   * Process types.
-   */
-  enum ProcessType {
-    PT_BALANCEFIXING = 0; // A balance fixing process
-  }
-
-  /*
-   * The process type.
-   */
-  ProcessType process_type = 3;
-
-  /*
-   * The beginning of the calculation period.
+   * The begining of the calculation period.
    * The time is included in the period and is identical to the time of the first time series point
    * in the process time series type results.
    */
-  google.protobuf.Timestamp period_start_utc = 4;
+  google.protobuf.Timestamp period_start_utc = 3;
 
   /*
    * The end of the calculation period.
    * The time is excluded from the period.
    */
-  google.protobuf.Timestamp period_end_utc = 5;
+  google.protobuf.Timestamp period_end_utc = 4;
 }

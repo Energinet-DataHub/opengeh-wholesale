@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes;
-using Energinet.DataHub.Wholesale.Contracts;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
@@ -24,18 +23,9 @@ public class ProcessCompletedIntegrationEventMapper : IProcessCompletedIntegrati
         return new ProcessCompleted
         {
             BatchId = processCompletedEvent.BatchId.ToString(),
-            ProcessType = GetProcessType(processCompletedEvent),
             GridAreaCode = processCompletedEvent.GridAreaCode,
             PeriodStartUtc = processCompletedEvent.PeriodStart.ToTimestamp(),
             PeriodEndUtc = processCompletedEvent.PeriodEnd.ToTimestamp(),
         };
     }
-
-    private static ProcessCompleted.Types.ProcessType GetProcessType(ProcessCompletedEventDto processCompletedEvent) =>
-        processCompletedEvent.ProcessType switch
-        {
-            ProcessType.BalanceFixing => ProcessCompleted.Types.ProcessType.PtBalancefixing,
-            _ => throw new NotImplementedException(
-                $"Cannot map process type '{processCompletedEvent.ProcessType.ToString()}'"),
-        };
 }

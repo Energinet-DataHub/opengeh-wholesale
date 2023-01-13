@@ -20,7 +20,5 @@ public interface IServiceBusMessageFactory
 {
     ServiceBusMessage Create(byte[] body, string messageType);
 
-    ServiceBusMessage Create<TMessage>(TMessage message);
-
-    IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages);
+    IEnumerable<ServiceBusMessage> Create(IEnumerable<byte[]> bodies, string messageType);
 }
