@@ -14,6 +14,7 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Moq;
@@ -23,6 +24,17 @@ namespace Energinet.DataHub.Wholesale.Tests.Application.Processes;
 
 public class ProcessApplicationServiceTest
 {
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task PublishProcessCompletedEventsAsync_Publishes(
+        BatchCompletedEventDto batchCompleted,
+        [Frozen] Mock<IProcessCompletedPublisher> publisherMock,
+        ProcessApplicationService sut)
+    {
+        await sut.PublishProcessCompletedEventsAsync(batchCompleted);
+        publisherMock.Verify(publisher => publisher.PublishAsync(It.IsAny<List<ProcessCompletedEventDto>>()), Times.Once);
+    }
+
     [Theory]
     [InlineAutoMoqData]
     public async Task PublishProcessCompletedIntegrationEventsAsync_Publishes(
