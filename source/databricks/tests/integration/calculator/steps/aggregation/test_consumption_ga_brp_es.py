@@ -15,7 +15,7 @@ from decimal import Decimal
 from datetime import datetime
 from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import (
-    aggregate_consumption,
+    aggregate_non_profiled_consumption,
     aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
@@ -141,7 +141,7 @@ def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
         point_type=e_18
     )
-    aggregated_df = aggregate_consumption(results, metadata)
+    aggregated_df = aggregate_non_profiled_consumption(results, metadata)
     assert aggregated_df.count() == 0
 
 
@@ -156,7 +156,7 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
     row1_df = time_series_row_factory(quantity=Decimal(1))
     row2_df = time_series_row_factory(quantity=Decimal(2))
     results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
-    aggregated_df = aggregate_consumption(results, metadata)
+    aggregated_df = aggregate_non_profiled_consumption(results, metadata)
 
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
@@ -190,7 +190,9 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
     row1_df = time_series_row_factory()
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
     results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
-    aggregated_df = aggregate_consumption(results, metadata).sort(Colname.time_window)
+    aggregated_df = aggregate_non_profiled_consumption(results, metadata).sort(
+        Colname.time_window
+    )
 
     assert aggregated_df.count() == 2
 
@@ -232,7 +234,7 @@ def test_consumption_supplier_aggregator_returns_correct_schema(
     """
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory()
-    aggregated_df = aggregate_consumption(results, metadata)
+    aggregated_df = aggregate_non_profiled_consumption(results, metadata)
     assert aggregated_df.schema == aggregation_result_schema
 
 
@@ -263,5 +265,5 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
 def test_expected_schema(time_series_row_factory):
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory()
-    aggregated_df = aggregate_consumption(results, metadata)
+    aggregated_df = aggregate_non_profiled_consumption(results, metadata)
     assert aggregated_df.schema == aggregation_result_schema
