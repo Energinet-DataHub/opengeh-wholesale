@@ -53,28 +53,32 @@ def calculate_balance_fixing(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
+    metadata_fake = Metadata("1", "1", "1", "1")
+
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_point_df
-    metadata_fake = Metadata("1", "1", "1", "1")
+    results[ResultKeyName.non_profiled_consumption] = agg_steps.aggregate_consumption(
+        results, metadata_fake
+    )
+
+    # Non-profiled consumption per energy supplier
+    consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
+        results, metadata_fake
+    )
+
+    consumption_per_ga_and_es = _prepare_result_for_output(
+        consumption_per_ga_and_es,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        ResultGrouping.PER_ENERGY_SUPPLIER,
+    )
 
     # Total production per grid
     total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
 
-    total_production_per_ga_df = _compute_aggregated_sum(
+    total_production_per_ga_df = _prepare_result_for_output(
         total_production_per_ga_df,
         TimeSeriesType.PRODUCTION,
         ResultGrouping.PER_GRID_AREA,
-    )
-
-    # Non-profiled consumption per energy supplier
-    consumption_per_ga_and_brp_and_es = agg_steps.aggregate_consumption(
-        results, metadata_fake
-    )
-
-    consumption_per_ga_and_es = _compute_aggregated_sum(
-        consumption_per_ga_and_brp_and_es,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        ResultGrouping.PER_ENERGY_SUPPLIER,
     )
 
     return (
@@ -115,6 +119,52 @@ def _compute_aggregated_sum(
     ).withColumn(Colname.time_series_type, lit(time_series_type.value))
 
     return sum_result
+
+
+def _prepare_result_for_output(
+    result_df: DataFrame,
+    time_series_type: TimeSeriesType,
+    result_grouping: ResultGrouping,
+) -> DataFrame:
+
+    result_df = _add_gln_and_time_series_type(
+        result_df,
+        result_grouping,
+        time_series_type,
+    )
+
+    result_df = result_df.select(
+        col(Colname.grid_area).alias("grid_area"),
+        Colname.gln,
+        Colname.time_series_type,
+        col(Colname.sum_quantity).alias("quantity").cast("string"),
+        col(Colname.quality).alias("quality"),
+        col(Colname.time_window_start).alias("quarter_time"),
+    )
+
+    return result_df
+
+
+def _add_gln_and_time_series_type(
+    result_df: DataFrame,
+    result_grouping: ResultGrouping,
+    time_series_type: TimeSeriesType,
+) -> DataFrame:
+
+    result_df = result_df.withColumn(
+        Colname.time_series_type, lit(time_series_type.value)
+    )
+
+    if result_grouping is ResultGrouping.PER_GRID_AREA:
+        result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
+    elif result_grouping is ResultGrouping.PER_ENERGY_SUPPLIER:
+        result_df = result_df.withColumnRenamed(Colname.energy_supplier_id, Colname.gln)
+    else:
+        raise NotImplementedError(
+            f"Result grouping, {result_grouping}, is not supported yet"
+        )
+
+    return result_df
 
 
 def _add_gln_column(result_df: DataFrame, result_grouping: ResultGrouping) -> DataFrame:
