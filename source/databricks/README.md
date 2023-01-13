@@ -53,8 +53,9 @@
     ```text
     pytest file-name.py::function-name
     ```
+
 * You can also add flags to any of the above statements. Her are some we commonly use:
-    
+
     *-vv stands for very verbose and will show a bit more information regarding the tests being run*
 
     *-s allows the output of a print statement to be displayed in the console aswell as .show statment*
