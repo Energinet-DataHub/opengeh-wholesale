@@ -16,6 +16,7 @@ DDQ
 DDX
 DDZ
 debugz
+Dev
 dequeue
 dk
 Dockerfile
