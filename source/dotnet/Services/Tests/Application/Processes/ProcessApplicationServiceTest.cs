@@ -16,7 +16,6 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.Processes;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
 using Moq;
 using Xunit;
 

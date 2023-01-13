@@ -14,8 +14,8 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Moq;
 using Xunit;
@@ -29,12 +29,17 @@ public class ProcessCompletedIntegrationEventPublisherTests
     [Theory]
     [InlineAutoMoqData]
     public async Task PublishAsync_Publishes(
+        ProcessCompleted processCompleted,
         ProcessCompletedEventDto eventDto,
-        Mock<IServiceBusMessageFactory> factory)
+        Mock<IServiceBusMessageFactory> factoryMock,
+        Mock<IProcessCompletedIntegrationEventMapper> mapperMock)
     {
         // Arrange
         var senderMock = new Mock<TestServiceBusSender>();
-        var sut = new ProcessCompletedIntegrationEventPublisher(senderMock.Object, factory.Object);
+        mapperMock
+            .Setup(mapper => mapper.MapFrom(eventDto))
+            .Returns(processCompleted);
+        var sut = new ProcessCompletedIntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object);
 
         // Act
         await sut.PublishAsync(eventDto);
