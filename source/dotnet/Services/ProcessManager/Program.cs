@@ -31,6 +31,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;

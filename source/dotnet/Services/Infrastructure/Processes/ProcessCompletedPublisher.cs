@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
@@ -23,20 +25,28 @@ public class ProcessCompletedPublisher : IProcessCompletedPublisher
     private readonly ServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly string _messageType;
+    private readonly IJsonSerializer _jsonSerializer;
 
     public ProcessCompletedPublisher(
         ServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory,
-        string messageType)
+        string messageType,
+        IJsonSerializer jsonSerializer)
     {
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
         _messageType = messageType;
+        _jsonSerializer = jsonSerializer;
     }
 
     public async Task PublishAsync(List<ProcessCompletedEventDto> completedProcesses)
     {
-        var messages = _serviceBusMessageFactory.Create(completedProcesses.AsEnumerable(), _messageType);
+        var bodies = completedProcesses
+            .Select(events => _jsonSerializer.Serialize(events))
+            .Select(body => Encoding.UTF8.GetBytes(body));
+
+        var messages = _serviceBusMessageFactory.Create(bodies, _messageType);
+
         await _serviceBusSender.SendMessagesAsync(messages).ConfigureAwait(false);
     }
 }

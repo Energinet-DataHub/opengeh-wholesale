@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Registration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
@@ -34,7 +35,8 @@ public static class ServiceCollectionExtensions
                 .GetRequiredService<TargetedSingleton<ServiceBusSender, BatchCompletedPublisher>>()
                 .Instance;
             var factory = provider.GetRequiredService<IServiceBusMessageFactory>();
-            return new BatchCompletedPublisher(sender, factory, messageType);
+            var serializer = provider.GetRequiredService<IJsonSerializer>();
+            return new BatchCompletedPublisher(sender, factory, messageType, serializer);
         });
 
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))
