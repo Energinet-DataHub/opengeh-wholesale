@@ -300,7 +300,7 @@ def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_fa
         metadata, agg_net_exchange_factory()
     )
     results[
-        ResultKeyName.hourly_production_ga
+        ResultKeyName.production_ga
     ] = create_dataframe_from_aggregation_result_schema(
         metadata, agg_production_factory()
     )
@@ -363,7 +363,7 @@ def test_aggregated_quality(
         metadata, agg_total_net_exchange_factory(ex_quality)
     )
     results[
-        ResultKeyName.hourly_production_ga
+        ResultKeyName.production_ga
     ] = create_dataframe_from_aggregation_result_schema(
         metadata, agg_total_production_factory(prod_quality)
     )
