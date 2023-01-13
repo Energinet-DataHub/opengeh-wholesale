@@ -12,9 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+using Google.Protobuf.WellKnownTypes;
+using NodaTime;
 
-public interface IBatchCompletedPublisher
+namespace Energinet.DataHub.Wholesale.Infrastructure
 {
-    Task PublishAsync(IEnumerable<BatchCompletedEventDto> batchCompletedEvents);
+    public static class InstantExtensions
+    {
+        public static Timestamp ToTimestamp(this Instant instant)
+        {
+            return Timestamp.FromDateTimeOffset(instant.ToDateTimeOffset());
+        }
+    }
 }

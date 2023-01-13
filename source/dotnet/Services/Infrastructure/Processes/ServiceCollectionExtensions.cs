@@ -15,6 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.Registration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,7 +62,8 @@ public static class ServiceCollectionExtensions
                 .GetRequiredService<TargetedSingleton<ServiceBusSender, ProcessCompletedIntegrationEventPublisher>>()
                 .Instance;
             var factory = provider.GetRequiredService<IServiceBusMessageFactory>();
-            return new ProcessCompletedIntegrationEventPublisher(sender, factory);
+            var mapper = provider.GetRequiredService<IProcessCompletedIntegrationEventMapper>();
+            return new ProcessCompletedIntegrationEventPublisher(sender, factory, mapper);
         });
 
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))

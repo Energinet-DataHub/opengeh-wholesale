@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
@@ -29,13 +29,15 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
 
         public async Task<EventualServiceBusMessage> ListenForMessageAsync<TMessage>(Func<TMessage, bool> predicate)
         {
+            TMessage Parser(BinaryData binaryData) => new JsonSerializer().Deserialize<TMessage>(binaryData.ToString());
+            return await ListenForMessageAsync(predicate, Parser);
+        }
+
+        public async Task<EventualServiceBusMessage> ListenForMessageAsync<TMessage>(Func<TMessage, bool> predicate, Func<BinaryData, TMessage> parser)
+        {
             var result = new EventualServiceBusMessage();
             result.MessageAwaiter = await _serviceBusListenerMock
-                .When(message =>
-                {
-                    var deserializedMessage = JsonSerializer.Deserialize<TMessage>(message.Body);
-                    return predicate(deserializedMessage!);
-                })
+                .When(message => predicate(parser(message.Body)))
                 .VerifyOnceAsync(message =>
                 {
                     result.Body = message.Body;
