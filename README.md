@@ -24,7 +24,7 @@ The wholesale domain is in charge of doing calculations on the time series sent 
 The main calculations the domain is responsible to process are consumption, production, exchange between grid areas and the current grid loss within a grid area.  
 All calculations return a result for grid area, balance responsible parties and energy suppliers.
 
-The times series sent to DataHub is processed and prepared for calculations in the [migration domain](https://github.com/Energinet-DataHub/opengeh-migration).
+The times series sent to DataHub is processed and prepared for calculations in the (private) migration domain.
 
 The calculated results are packaged and forwarded to the legitimate market participants:
 
@@ -83,10 +83,10 @@ Please note that we have provided a [Dictionary](https://github.com/Energinet-Da
 ## Integrating
 
 The wholesale domain publishes an integration event when a process has completed. The events contains the data defined by the
-[ProcessCompleted.proto](source/dotnet/Contracts/ProcessCompleted.proto) ProtoBuf contract.
+[`ProcessCompleted.proto`](source/dotnet/Contracts/ProcessCompleted.proto) Google Protocol Buffers contract.
 
-The process type is specified in the message type meta data of the transport messages according to ADR-008.
+The process type is specified in the message type meta data of the transport messages according to `ADR-008`.
 
-The set of supported process types can be found in [ProcessCompleted.cs](source/dotnet/Contracts/ProcessCompleted.cs).
+The set of supported process types can be found in [`ProcessCompleted.cs`](source/dotnet/Contracts/ProcessCompleted.cs).
 
 Process results can be fetched using [the wholesale web API](source/dotnet/Services/WebApi/).
