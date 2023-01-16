@@ -22,6 +22,7 @@ on:
     paths:
       - source/dotnet/Contracts/**
       - source/dotnet/Packages/Client/**
+      - source/dotnet/Packages/Contracts/**
       - .github/workflows/packages-publish.yml
   # Build, test, pack
   # Executed if package folder or build scripts has changed; including if documentation or tests has changed
@@ -87,6 +88,11 @@ jobs:
         with:
           PROJECT_PATH: './source/dotnet/Packages/Client/Client.csproj'
 
+      - name: Pack Contracts project
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v9
+        with:
+          PROJECT_PATH: './source/dotnet/Packages/Contracts/Contracts.csproj'
+
       - name: Package content or build has changed
         id: changed-content
         uses: tj-actions/changed-files@v17.2
@@ -94,6 +100,7 @@ jobs:
           files: |
             source/dotnet/Contracts/**/*.*
             source/dotnet/Packages/Client/**/*.*
+            source/dotnet/Packages/Contracts/**/*.*
             .github/workflows/packages-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
