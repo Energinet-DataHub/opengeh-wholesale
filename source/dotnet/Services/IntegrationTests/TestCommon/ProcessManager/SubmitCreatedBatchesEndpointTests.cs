@@ -54,11 +54,11 @@ public class SubmitCreatedBatchesEndpointTests
         {
             // Arrange
             var gridAreaCode = CreateGridAreaCode();
-            await CreateAndSavePendingBatch(gridAreaCode);
+            var batchId = await CreateAndSavePendingBatch(gridAreaCode);
 
             using var eventualBatchCompletedEvent = await Fixture
                 .BatchCompletedListener
-                .ListenForMessageAsync<BatchCompletedEventDto>(_ => true);
+                .ListenForMessageAsync<BatchCompletedEventDto>(b => b.BatchId == batchId);
             using var eventualProcessCompletedEvent = await Fixture
                 .ProcessCompletedListener
                 .ListenForMessageAsync<ProcessCompletedEventDto>(e => e.GridAreaCode == gridAreaCode);
