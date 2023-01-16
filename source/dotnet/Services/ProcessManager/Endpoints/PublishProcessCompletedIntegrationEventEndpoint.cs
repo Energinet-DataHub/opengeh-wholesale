@@ -38,16 +38,7 @@ public class PublishProcessCompletedIntegrationEventEndpoint
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
-        var processCompletedEvent = await DeserializeByteArrayAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
+        var processCompletedEvent = await _jsonSerializer.DeserializeAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
         await _processApplicationService.PublishProcessCompletedIntegrationEventsAsync(processCompletedEvent).ConfigureAwait(false);
-    }
-
-    private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)
-    {
-        var stream = new MemoryStream(data);
-        await using (stream.ConfigureAwait(false))
-        {
-            return (T)await _jsonSerializer.DeserializeAsync(stream, typeof(T)).ConfigureAwait(false);
-        }
     }
 }
