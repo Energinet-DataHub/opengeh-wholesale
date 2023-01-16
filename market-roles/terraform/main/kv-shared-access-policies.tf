@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 module "kv_shared_access_policy_func_receiver" {
-  source                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-access-policy?ref=7.0.0"
+  source                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-access-policy?ref=v10"
 
   key_vault_id              = data.azurerm_key_vault.kv_shared_resources.id
   app_identity              = module.func_receiver.identity.0

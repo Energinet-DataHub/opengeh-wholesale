@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 module "app_performancetest" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v9"
+  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v10"
 
   name                                      = "performancetest"
   project_name                              = var.domain_name_short
@@ -27,9 +27,7 @@ module "app_performancetest" {
   dotnet_framework_version                  = "v6.0"
 
   app_settings                              = {
-     MessagingApi__Hostname                 = module.func_receiver.default_hostname
+     MessagingApi__Hostname                 = "${module.func_receiver.name}.azurewebsites.net"
      MessagingApi__Port                     = 443
   }
-
-  tags                                       = azurerm_resource_group.this.tags
 }
