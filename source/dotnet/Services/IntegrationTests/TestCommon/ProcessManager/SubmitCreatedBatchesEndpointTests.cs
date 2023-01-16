@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
@@ -60,7 +60,7 @@ public class SubmitCreatedBatchesEndpointTests
                 .BatchCompletedListener
                 .ListenForMessageAsync<BatchCompletedEventDto>(_ => true);
             using var eventualProcessCompletedEvent = await Fixture
-                .SendDataAvailableWhenProcessCompletedListener
+                .ProcessCompletedListener
                 .ListenForMessageAsync<ProcessCompletedEventDto>(e => e.GridAreaCode == gridAreaCode);
 
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here

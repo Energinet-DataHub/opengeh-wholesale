@@ -1,0 +1,59 @@
+/* Copyright 2020 Energinet DataHub A/S
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License2");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+// TODO BJARKE: Change namespace to Energinet.DataHub.Wholesale.Events
+option csharp_namespace = "Energinet.DataHub.Wholesale.Infrastructure.Integration";
+
+/*
+ * ProcessCompleted Integration Event.
+ * A process is uniquely identified by the batch ID and grid area code together.
+ *
+ * The process type is provided in the MessageType, which is available in the message meta data according to ADR-008.
+ * See file `./ProcessCompleted.cs` for currently supported process types.
+ */
+message ProcessCompleted {
+
+  /*
+   * The ID of the batch containing the process.
+   * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
+   * Example: 65801e3c-5131-426e-b1bb-7b186349c996
+   */ 
+  string batch_id = 1;
+
+  /*
+   * The grid area code uniquely defining the process in the batch.
+   * The grid area code is a 3 character string consisting solely of digits.
+   * Examples:
+   *   543
+   *   020
+   */
+  string grid_area_code = 2;
+
+  /*
+   * The begining of the calculation period.
+   * The time is included in the period and is identical to the time of the first time series point
+   * in the process time series type results.
+   */
+  google.protobuf.Timestamp period_start_utc = 3;
+
+  /*
+   * The end of the calculation period.
+   * The time is excluded from the period.
+   */
+  google.protobuf.Timestamp period_end_utc = 4;
+}

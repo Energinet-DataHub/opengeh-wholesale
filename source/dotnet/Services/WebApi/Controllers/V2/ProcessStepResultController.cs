@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
@@ -31,6 +32,7 @@ public class ProcessStepResultController : ControllerBase
         _processStepResultApplicationService = processStepResultApplicationService;
     }
 
+    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDto processStepResultRequestDto)

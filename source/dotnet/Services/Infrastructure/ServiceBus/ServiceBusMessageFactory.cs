@@ -20,33 +20,37 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
     private readonly ICorrelationContext _correlationContext;
-    private readonly IDictionary<Type, string> _messageTypes;
 
-    public ServiceBusMessageFactory(ICorrelationContext correlationContext, IDictionary<Type, string> messageTypes)
+    public ServiceBusMessageFactory(ICorrelationContext correlationContext)
     {
         _correlationContext = correlationContext;
-        _messageTypes = messageTypes;
     }
 
-    public IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages)
+    public ServiceBusMessage Create(byte[] body, string messageType)
     {
-        return messages.Select(CreateServiceBusMessage);
+        return CreateServiceBusMessage(body, messageType, _correlationContext.Id);
     }
 
-    private ServiceBusMessage CreateServiceBusMessage<TMessage>(TMessage message)
+    public IEnumerable<ServiceBusMessage> Create(IEnumerable<byte[]> messages, string messageType)
     {
-        if (!_messageTypes.ContainsKey(typeof(TMessage)))
-            throw new NotImplementedException($"No message type identifier has been registered for message of type {typeof(TMessage).FullName}");
+        return messages.Select(message => CreateServiceBusMessage(message, messageType, _correlationContext.Id));
+    }
 
-        var messageType = _messageTypes[typeof(TMessage)];
-
+    /// <summary>
+    /// This method is made public to use it in integration test(s) for simplicity.
+    /// </summary>
+    public static ServiceBusMessage CreateServiceBusMessage(
+        byte[] body,
+        string messageType,
+        string correlationContextId)
+    {
         return new ServiceBusMessage
         {
-            Body = new BinaryData(message),
+            Body = new BinaryData(body),
             Subject = messageType,
             ApplicationProperties =
             {
-                new KeyValuePair<string, object>(MessageMetaDataConstants.CorrelationId, _correlationContext.Id),
+                new KeyValuePair<string, object>(MessageMetaDataConstants.CorrelationId, correlationContextId),
                 new KeyValuePair<string, object>(MessageMetaDataConstants.MessageType, messageType),
             },
         };

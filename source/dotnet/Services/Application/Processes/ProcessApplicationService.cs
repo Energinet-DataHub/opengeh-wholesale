@@ -13,34 +13,34 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Contracts.WholesaleProcess;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Application.Infrastructure;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
 public class ProcessApplicationService : IProcessApplicationService
 {
-    private readonly IBatchRepository _batchRepository;
     private readonly IProcessCompletedPublisher _processCompletedPublisher;
+    private readonly IProcessCompletedIntegrationEventPublisher _processCompletedIntegrationEventPublisher;
+    private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
 
-    public ProcessApplicationService(IBatchRepository batchRepository, IProcessCompletedPublisher processCompletedPublisher)
+    public ProcessApplicationService(
+        IProcessCompletedPublisher processCompletedPublisher,
+        IProcessCompletedIntegrationEventPublisher processCompletedIntegrationEventPublisher,
+        IProcessCompletedEventDtoFactory processCompletedEventDtoFactory)
     {
-        _batchRepository = batchRepository;
         _processCompletedPublisher = processCompletedPublisher;
+        _processCompletedIntegrationEventPublisher = processCompletedIntegrationEventPublisher;
+        _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
     {
-        var completedBatch = await _batchRepository.GetAsync(batchCompletedEvent.BatchId).ConfigureAwait(false);
-        var processCompletedEvents = CreateProcessCompletedEvents(completedBatch);
+        var processCompletedEvents = _processCompletedEventDtoFactory.CreateFromBatchCompletedEvent(batchCompletedEvent);
         await _processCompletedPublisher.PublishAsync(processCompletedEvents).ConfigureAwait(false);
     }
 
-    private List<ProcessCompletedEventDto> CreateProcessCompletedEvents(Batch completedBatch)
+    public async Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
-        return completedBatch
-            .GridAreaCodes
-            .Select(c => new ProcessCompletedEventDto(c.Code, completedBatch.Id))
-            .ToList();
+        await _processCompletedIntegrationEventPublisher.PublishAsync(processCompletedEvent).ConfigureAwait(false);
     }
 }

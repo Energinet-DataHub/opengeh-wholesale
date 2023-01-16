@@ -18,13 +18,13 @@ from pyspark.sql.functions import col, expr, explode, sum, first, lit
 from package.codelists import (
     MeteringPointResolution,
 )
-
 from package.db_logging import debug
 import package.basis_data as basis_data
-import package.steps as steps
 import package.steps.aggregation as agg_steps
-from datetime import timedelta, datetime
+from datetime import datetime
 from package.constants import Colname, ResultKeyName
+from package.constants.time_series_type import TimeSeriesType
+from package.constants.result_grouping import ResultGrouping
 from package.shared.data_classes import Metadata
 from pyspark.sql.types import (
     DecimalType,
@@ -37,7 +37,7 @@ def calculate_balance_fixing(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
-) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
+) -> tuple[DataFrame, DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         timeseries_points,
         metering_points_periods_df,
@@ -53,32 +53,86 @@ def calculate_balance_fixing(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
+    metadata_fake = Metadata("1", "1", "1", "1")
+
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_point_df
-    metadata_fake = Metadata("1", "1", "1", "1")
+    results[
+        ResultKeyName.non_profiled_consumption
+    ] = agg_steps.aggregate_non_profiled_consumption(results, metadata_fake)
+
+    # Non-profiled consumption per energy supplier
+    consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
+        results, metadata_fake
+    )
+
+    consumption_per_ga_and_es = _prepare_result_for_output(
+        consumption_per_ga_and_es,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        ResultGrouping.PER_ENERGY_SUPPLIER,
+    )
+
+    # Total production per grid
     total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
-    total_production_per_ga_df = (
-        total_production_per_ga_df.groupBy(Colname.grid_area, Colname.time_window)
-        .agg(
-            sum(Colname.sum_quantity).alias(Colname.quantity),
-            first(Colname.quality).alias(Colname.quality),
-        )
-        .select(
-            Colname.grid_area,
-            Colname.quantity,
-            col(Colname.quality).alias("quality"),
-            col(Colname.time_window_start).alias("quarter_time"),
-        )
-        .orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
-        .withColumn("gln", lit("grid_access_provider"))
-        .withColumn("step", lit("production"))
+
+    total_production_per_ga_df = _prepare_result_for_output(
+        total_production_per_ga_df,
+        TimeSeriesType.PRODUCTION,
+        ResultGrouping.PER_GRID_AREA,
     )
 
     return (
+        consumption_per_ga_and_es,
         total_production_per_ga_df,
         time_series_basis_data_df,
         master_basis_data_df,
     )
+
+
+def _prepare_result_for_output(
+    result_df: DataFrame,
+    time_series_type: TimeSeriesType,
+    result_grouping: ResultGrouping,
+) -> DataFrame:
+
+    result_df = _add_gln_and_time_series_type(
+        result_df,
+        result_grouping,
+        time_series_type,
+    )
+
+    result_df = result_df.select(
+        col(Colname.grid_area).alias("grid_area"),
+        Colname.gln,
+        Colname.time_series_type,
+        col(Colname.sum_quantity).alias("quantity").cast("string"),
+        col(Colname.quality).alias("quality"),
+        col(Colname.time_window_start).alias("quarter_time"),
+    )
+
+    return result_df
+
+
+def _add_gln_and_time_series_type(
+    result_df: DataFrame,
+    result_grouping: ResultGrouping,
+    time_series_type: TimeSeriesType,
+) -> DataFrame:
+
+    result_df = result_df.withColumn(
+        Colname.time_series_type, lit(time_series_type.value)
+    )
+
+    if result_grouping is ResultGrouping.PER_GRID_AREA:
+        result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
+    elif result_grouping is ResultGrouping.PER_ENERGY_SUPPLIER:
+        result_df = result_df.withColumnRenamed(Colname.energy_supplier_id, Colname.gln)
+    else:
+        raise NotImplementedError(
+            f"Result grouping, {result_grouping}, is not supported yet"
+        )
+
+    return result_df
 
 
 def _get_enriched_time_series_points_df(
@@ -93,20 +147,19 @@ def _get_enriched_time_series_points_df(
 
     quarterly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.quarter.value
-    )
+    ).withColumn("ToDate", (col("ToDate") - expr("INTERVAL 1 seconds")))
+
     hourly_mp_df = master_basis_data_df.where(
         col("Resolution") == MeteringPointResolution.hour.value
-    )
-
-    exclusive_period_end_datetime = period_end_datetime - timedelta(milliseconds=1)
+    ).withColumn("ToDate", (col("ToDate") - expr("INTERVAL 1 seconds")))
 
     quarterly_times_df = (
-        quarterly_mp_df.select("MeteringPointId")
+        quarterly_mp_df.select("MeteringPointId", "FromDate", "ToDate")
         .distinct()
         .select(
             "MeteringPointId",
             expr(
-                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 15 minutes)"
+                "sequence(to_timestamp(FromDate), to_timestamp(ToDate), interval 15 minutes)"
             ).alias("quarter_times"),
         )
         .select(
@@ -115,12 +168,12 @@ def _get_enriched_time_series_points_df(
     )
 
     hourly_times_df = (
-        hourly_mp_df.select("MeteringPointId")
+        hourly_mp_df.select("MeteringPointId", "FromDate", "ToDate")
         .distinct()
         .select(
             "MeteringPointId",
             expr(
-                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{exclusive_period_end_datetime}'), interval 1 hour)"
+                "sequence(to_timestamp(FromDate), to_timestamp(ToDate), interval 1 hour)"
             ).alias("times"),
         )
         .select("MeteringPointId", explode("times").alias(Colname.observation_time))

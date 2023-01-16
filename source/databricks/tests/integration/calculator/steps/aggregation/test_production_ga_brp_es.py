@@ -331,8 +331,6 @@ def test__quarterly_and_hourly_sums_correctly(
     result_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
     )
-    result_df.printSchema()
-    result_df.show()
     sum_quant = result_df.agg(sum(Colname.sum_quantity).alias("sum_quant"))
     assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity
 
