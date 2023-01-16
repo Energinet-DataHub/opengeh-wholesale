@@ -175,6 +175,8 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName);
         var batchCompletedSubscriptionZipBasisData =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName);
+        var integrationEventsTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
 
         serviceCollection
             .AddHealthChecks()
@@ -202,6 +204,10 @@ public static class Program
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
                 EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
-                EnvironmentSettingNames.CalculationStorageContainerName.Val());
+                EnvironmentSettingNames.CalculationStorageContainerName.Val())
+            .AddAzureServiceBusTopic(
+                connectionString: serviceBusConnectionString,
+                topicName: integrationEventsTopicName,
+                name: "IntegrationEventsTopicExists");
     }
 }
