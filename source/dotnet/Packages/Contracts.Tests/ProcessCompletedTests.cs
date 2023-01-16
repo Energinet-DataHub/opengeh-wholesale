@@ -23,7 +23,7 @@ public class UnitTest1
     [Fact]
     public void ProcessCompleted_HasCorrectNamespace()
     {
-        // Be careful to change the namespace as it is publicly available
+        // Be careful to change the namespace as it is public available
         typeof(ProcessCompleted).Namespace.Should().Be("Energinet.DataHub.Wholesale.Contracts.Events");
     }
 
