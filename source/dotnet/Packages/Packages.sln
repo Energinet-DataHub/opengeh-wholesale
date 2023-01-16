@@ -2,17 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{A67891B8-279A-4104-8BB9-4CDB23B49E16}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "documents", "documents", "{54D044E2-3C8B-4A65-8237-545850CE807E}"
-	ProjectSection(SolutionItems) = preProject
-		documents\documentation.md = documents\documentation.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "release-notes", "release-notes", "{B8A1829B-81DB-49A0-B110-CBF39A6F006F}"
-	ProjectSection(SolutionItems) = preProject
-		documents\release-notes\release-notes.md = documents\release-notes\release-notes.md
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Tests", "Client.Tests\Client.Tests.csproj", "{88BA1EA8-B7F4-417D-A30F-D73532196647}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{56830F1C-D882-4609-AF7C-7FAAD35E1EAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts.Tests", "Contracts.Tests\Contracts.Tests.csproj", "{8835FB0D-391A-40C6-BB67-27B66845A5B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,8 +22,15 @@ Global
 		{88BA1EA8-B7F4-417D-A30F-D73532196647}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88BA1EA8-B7F4-417D-A30F-D73532196647}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88BA1EA8-B7F4-417D-A30F-D73532196647}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56830F1C-D882-4609-AF7C-7FAAD35E1EAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56830F1C-D882-4609-AF7C-7FAAD35E1EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56830F1C-D882-4609-AF7C-7FAAD35E1EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56830F1C-D882-4609-AF7C-7FAAD35E1EAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8835FB0D-391A-40C6-BB67-27B66845A5B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8835FB0D-391A-40C6-BB67-27B66845A5B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8835FB0D-391A-40C6-BB67-27B66845A5B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8835FB0D-391A-40C6-BB67-27B66845A5B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B8A1829B-81DB-49A0-B110-CBF39A6F006F} = {54D044E2-3C8B-4A65-8237-545850CE807E}
 	EndGlobalSection
 EndGlobal
