@@ -44,7 +44,7 @@ limitations under the License.
     </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="**/*.proto">
+    <Protobuf Include="../../Contracts/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
@@ -52,6 +52,18 @@ limitations under the License.
       <OutputDir>obj\contracts</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Contracts\ProcessCompleted.cs">
+      <Link>Integration\ProcessCompleted.cs</Link>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\Contracts\ProcessCompleted.proto">
+      <Link>Integration\ProcessCompleted.proto</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

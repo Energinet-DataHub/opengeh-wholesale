@@ -1,0 +1,99 @@
+<!--
+Copyright 2020 Energinet DataHub A/S
+
+Licensed under the Apache License, Version 2.0 (the "License2");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Energinet.DataHub.Wholesale.Contracts</RootNamespace>
+    </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.21.12" />
+    <PackageReference Include="Grpc.Tools" Version="2.51.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <PropertyGroup>
+      <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
+      <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>
+      <Title>Wholesale Contracts</Title>
+      <Company>Energinet-DataHub</Company>
+      <Authors>Energinet-DataHub</Authors>
+      <PackageProjectUrl>https://github.com/Energinet-DataHub</PackageProjectUrl>
+      <RepositoryUrl>https://github.com/Energinet-DataHub/opengeh-wholesale</RepositoryUrl>
+      <!-- PackageReleaseNotes:
+        Is shown in Azure DevOps artifacts Release Notes section.
+      -->
+      <PackageReleaseNotes>
+        [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/release-notes/release-notes.md)
+        [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/documentation.md)
+      </PackageReleaseNotes>
+      <!-- PackageDescription:
+        Is shown in GitHub packages "About this package" section,
+        and in Visual Studio package manager view.
+      -->
+      <PackageDescription>
+        [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/release-notes/release-notes.md)
+        [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/documentation.md)
+      </PackageDescription>
+      <Description>A package containing contracts for integrations with the wholesale domain in Energinet.DataHub.</Description>
+      <PackageTags>energinet;datahub;wholesale</PackageTags>
+      <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+      <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    </PropertyGroup>
+  
+    <PropertyGroup>
+      <GenerateDocumentationFile>true</GenerateDocumentationFile>
+      <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+      <NoWarn>$(NoWarn);</NoWarn>
+    </PropertyGroup>
+  
+    <!-- Enable Source Link (https://github.com/dotnet/sourcelink/blob/master/README.md) -->
+    <PropertyGroup>
+      <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+      <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Include="..\..\Contracts\ProcessCompleted.cs">
+        <Link>ProcessCompleted.cs</Link>
+      </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\..\Contracts\ProcessCompleted.proto">
+        <Link>ProcessCompleted.proto</Link>
+      </Content>
+    </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="../../Contracts/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <CompileOutputs>True</CompileOutputs>
+      <OutputDir>obj\contracts</OutputDir>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+  </ItemGroup>
+
+</Project>

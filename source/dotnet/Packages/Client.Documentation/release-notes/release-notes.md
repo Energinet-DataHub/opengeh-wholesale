@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 4.1.1
+
+Internal refactoring. No changed behavior.
+
 ## Version 4.1.0
 
 Changes to `BatchDtoV2`.
