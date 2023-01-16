@@ -46,7 +46,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
             return result;
         }
 
-        public async Task<EventualServiceBusMessage> ListenForMessageByCorrelationIdAsync(string correlationId)
+        public async Task<EventualServiceBusMessage> ListenForMessageAsync(string correlationId)
         {
             var result = new EventualServiceBusMessage();
             result.MessageAwaiter = await _serviceBusListenerMock
