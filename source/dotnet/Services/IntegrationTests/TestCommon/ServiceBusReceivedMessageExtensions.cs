@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus
+using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+
+namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
 {
-    public static class MessageMetaDataConstants
+    public static class ServiceBusReceivedMessageExtensions
     {
-        public const string OperationCorrelationId = "OperationCorrelationId";
-        public const string OperationTimestamp = "OperationTimestamp";
-        public const string MessageVersion = "MessageVersion";
-        public const string MessageType = "MessageType";
-        public const string EventIdentification = "EventIdentification";
+        public static string GetOperationCorrelationId(this ServiceBusReceivedMessage serviceBusMessage)
+        {
+            return serviceBusMessage.ApplicationProperties[MessageMetaDataConstants.OperationCorrelationId].ToString()!;
+        }
     }
 }
