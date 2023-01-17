@@ -35,7 +35,7 @@ time_series_point_schema = StructType(
         # GSRN (18 characters) that uniquely identifies the metering point
         # Example: 578710000000000103
         StructField(Colname.metering_point_id, StringType(), False),
-        # Energy quantity for the given observation time.
+        # Energy quantity in kWh for the given observation time.
         # Null when quality is missing.
         # Example: 1234.534217
         StructField(Colname.quantity, DecimalType(18, 6), True),

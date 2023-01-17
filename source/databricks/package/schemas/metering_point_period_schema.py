@@ -42,7 +42,7 @@ metering_point_period_schema = StructType(
         # Used in balance fixing and settlement.
         # Example: 578710000000000103
         StructField("MeteringPointId", StringType(), False),
-        # "E17" (consumption) | "E18" (production) | "E20" (exchange) | "D01"-"D99" (child)
+        # "E17" (consumption) | "E18" (production) | "E20" (exchange) | "D01"-"D16", "D19", "D21"-"D98" (child)
         # Used in balance fixing and settlement. However, child metering points are only used in settlement.
         # Example: E20
         StructField("Type", StringType(), False),
