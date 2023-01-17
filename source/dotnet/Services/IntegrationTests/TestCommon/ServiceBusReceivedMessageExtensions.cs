@@ -12,25 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
 {
-    /// <summary>
-    /// Actually service bus listener mock extensions, but we want to separate the fluent API
-    /// and make it stand out on its own.
-    /// </summary>
-    public static class WhenProviderExtensions
+    public static class ServiceBusReceivedMessageExtensions
     {
-        public static DoProvider WhenAny(this ServiceBusListenerMock provider)
+        /// <summary>
+        /// Gets the OperationCorrelationId on the ServiceBusReceivedMessage from its ApplicationProperties. Throws an exception if the value is not set.
+        /// </summary>
+        /// <param name="serviceBusMessage"></param>
+        public static string GetOperationCorrelationId(this ServiceBusReceivedMessage serviceBusMessage)
         {
-            return provider.When(_ => true);
-        }
-
-        public static DoProvider WhenOperationCorrelationId(this ServiceBusListenerMock provider, string? operationCorrelationId = null)
-        {
-            return provider.When(request => request.GetOperationCorrelationId().Equals(operationCorrelationId));
+            return serviceBusMessage.ApplicationProperties[MessageMetaDataConstants.OperationCorrelationId].ToString()!;
         }
     }
 }
