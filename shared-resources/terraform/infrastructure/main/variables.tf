@@ -153,3 +153,9 @@ variable ad_group_directory_reader {
   description   = "(Optional) Name of a Active Directory group with the Directory Reader permission."
   default       = ""
 }
+
+variable hosted_deployagent_public_ip_range {
+  type          = string
+  description   = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources such as Keyvaults"
+  default       = ""
+}
