@@ -18,9 +18,6 @@ from pyspark.sql.functions import (
     col,
     when,
 )
-from package.codelists import (
-    MeteringPointType,
-)
 from package.constants import Colname
 from package.db_logging import debug
 from datetime import datetime

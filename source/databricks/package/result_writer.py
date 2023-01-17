@@ -12,54 +12,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-import configargparse
-from .calculator_args import CalculatorArgs
-from .args_helper import valid_date, valid_list, valid_log_level
-from .datamigration import islocked
-import package.calculation_input as calculation_input
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col
-from pyspark.sql.types import Row
-from configargparse import argparse
-from package.constants import Colname
-from package import (
-    calculate_balance_fixing,
-    db_logging,
-    debug,
-    infrastructure,
-    initialize_spark,
-    log,
-)
+# import sys
+# import configargparse
+# from .calculator_args import CalculatorArgs
+# from .args_helper import valid_date, valid_list, valid_log_level
+# from .datamigration import islocked
+# import package.calculation_input as calculation_input
+# from pyspark.sql import DataFrame, SparkSession
+# from pyspark.sql.functions import col
+# from pyspark.sql.types import Row
+# from configargparse import argparse
+# from package.constants import Colname
+# from package import (
+#     calculate_balance_fixing,
+#     db_logging,
+#     debug,
+#     infrastructure,
+#     initialize_spark,
+#     log,
+# )
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
-    p = configargparse.ArgParser(
-        description="Performs domain calculations for submitted batches",
-        formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
-    )
+class ResultWriter:
+    def __init__(
+        self,
+        batch_id: str,
+        results_path: str,
+    ):
+        self.batch_id = batch_id
+        self.result_path = results_path
 
-    # Infrastructure settings
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--time-zone", type=str, required=True)
+        # self.file_system_client = DataLakeServiceClient(
+        #     data_storage_account_url, data_storage_account_key
+        # ).get_file_system_client(container_name)
 
-    # Run parameters
-    p.add("--batch-id", type=str, required=True)
-    p.add("--batch-grid-areas", type=valid_list, required=True)
-    p.add("--batch-period-start-datetime", type=valid_date, required=True)
-    p.add("--batch-period-end-datetime", type=valid_date, required=True)
-    p.add("--log-level", type=valid_log_level, help="debug|information", required=True)
-
-    args, unknown_args = p.parse_known_args(args=command_line_args)
-    if len(unknown_args):
-        unknown_args_text = ", ".join(unknown_args)
-        raise Exception(f"Unknown args: {unknown_args_text}")
-
-    if type(args.batch_grid_areas) is not list:
-        raise Exception("Grid areas must be a list")
-
-    return args
+    def download_file(self, file_name: str) -> bytes:
+        file_client = self.file_system_client.get_file_client(file_name)
+        download = file_client.download_file()
+        downloaded_bytes = download.readall()
+        return downloaded_bytes
 
 
 def write_basis_data_to_csv(data_df: DataFrame, path: str) -> None:
