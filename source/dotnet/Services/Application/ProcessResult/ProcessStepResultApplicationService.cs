@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using System.Text.Json;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Contracts;
@@ -69,7 +70,7 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
         var pointsDto = points.Select(
                 point => new TimeSeriesPointDto(
                     DateTimeOffset.Parse(point.quarter_time),
-                    decimal.Parse(point.quantity),
+                    decimal.Parse(point.quantity, CultureInfo.InvariantCulture),
                     point.quality))
             .ToList();
 

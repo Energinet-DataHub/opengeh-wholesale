@@ -65,6 +65,23 @@ public class ProcessResultApplicationServiceTests
     }
 
     [Fact]
+    public async Task GetResultAsync_Quantity_IsRead()
+    {
+        // Arrange
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
+
+        // Assert
+        actual.TimeSeriesPoints.First().Quantity.Should().Be(1.000m);
+    }
+
+    [Fact]
     public async Task GetResultAsync_Quality_IsRead()
     {
         // Arrange
