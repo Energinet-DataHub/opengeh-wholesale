@@ -252,6 +252,7 @@ def aggregate_per_ga_and_brp_and_es(
             sum("quarter_quantity").alias(Colname.sum_quantity),
             collect_set("Quality"),
         )
+        # TODO: What about calculated (A06)?
         .withColumn(
             "Quality",
             when(

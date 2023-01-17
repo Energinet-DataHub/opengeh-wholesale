@@ -17,8 +17,10 @@ namespace Energinet.DataHub.Wholesale.Contracts;
 /// <summary>
 /// TimeSeriesPoint
 /// </summary>
-/// <param name="Time"></param>
-/// <param name="Quantity">Quantity should have a scale of 3</param>
+/// <param name="Time">The observation time for the measured 'Quantity'</param>
+/// <param name="Quantity">Quantity has a scale of 3</param>
+/// <param name="Quality">Any of the following values: "A02" (missing), "A03" (estimated), "A04" (measured), "A06" (calculated)</param>
 public sealed record TimeSeriesPointDto(
     DateTimeOffset Time,
-    decimal Quantity);
+    decimal Quantity,
+    string Quality);
