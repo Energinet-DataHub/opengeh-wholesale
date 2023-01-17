@@ -18,21 +18,39 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public static class ServiceBusMessageExtensions
 {
+    /// <summary>
+    /// Sets the OperationCorrelationId on the ServiceBusMessage in its ApplicationProperties. Throws an exception if the value already is set.
+    /// </summary>
+    /// <param name="serviceBusMessage"></param>
+    /// <param name="operationCorrelationId"></param>
     public static void SetOperationCorrelationId(this ServiceBusMessage serviceBusMessage, string operationCorrelationId)
     {
         serviceBusMessage.ApplicationProperties.Add(MessageMetaDataConstants.OperationCorrelationId, operationCorrelationId);
     }
 
+    /// <summary>
+    /// Gets the OperationCorrelationId on the ServiceBusMessage from its ApplicationProperties. Throws an exception if the value is not set.
+    /// </summary>
+    /// <param name="serviceBusMessage"></param>
     public static string GetOperationCorrelationId(this ServiceBusMessage serviceBusMessage)
     {
         return serviceBusMessage.ApplicationProperties[MessageMetaDataConstants.OperationCorrelationId].ToString()!;
     }
 
+    /// <summary>
+    /// Sets the MessageType on the ServiceBusMessage in its ApplicationProperties. Throws an exception if the value already is set.
+    /// </summary>
+    /// <param name="serviceBusMessage"></param>
+    /// <param name="messageType"></param>
     public static void SetMessageType(this ServiceBusMessage serviceBusMessage, string messageType)
     {
         serviceBusMessage.ApplicationProperties.Add(MessageMetaDataConstants.MessageType, messageType);
     }
 
+    /// <summary>
+    /// Gets the MessageType on the ServiceBusMessage from its ApplicationProperties. Throws an exception if the value is not set.
+    /// </summary>
+    /// <param name="serviceBusMessage"></param>
     public static string GetMessageType(this ServiceBusMessage serviceBusMessage)
     {
         return serviceBusMessage.ApplicationProperties[MessageMetaDataConstants.MessageType].ToString()!;

@@ -19,6 +19,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
 {
     public static class ServiceBusReceivedMessageExtensions
     {
+        /// <summary>
+        /// Gets the OperationCorrelationId on the ServiceBusReceivedMessage from its ApplicationProperties. Throws an exception if the value is not set.
+        /// </summary>
+        /// <param name="serviceBusMessage"></param>
         public static string GetOperationCorrelationId(this ServiceBusReceivedMessage serviceBusMessage)
         {
             return serviceBusMessage.ApplicationProperties[MessageMetaDataConstants.OperationCorrelationId].ToString()!;
