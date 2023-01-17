@@ -2,7 +2,7 @@
 
 ## Version 4.2.0
 
-Add quality to process time series type results. See `TimeSeriesPointDto.Quality`. 
+Add quality to process time series type results. See `TimeSeriesPointDto.Quality`.
 
 ## Version 4.1.1
 
