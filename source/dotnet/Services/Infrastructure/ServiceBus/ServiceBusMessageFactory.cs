@@ -42,17 +42,15 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
     public static ServiceBusMessage CreateServiceBusMessage(
         byte[] body,
         string messageType,
-        string correlationContextId)
+        string operationCorrelationId)
     {
-        return new ServiceBusMessage
+        var serviceBusMessage = new ServiceBusMessage
         {
             Body = new BinaryData(body),
             Subject = messageType,
-            ApplicationProperties =
-            {
-                new KeyValuePair<string, object>(MessageMetaDataConstants.CorrelationId, correlationContextId),
-                new KeyValuePair<string, object>(MessageMetaDataConstants.MessageType, messageType),
-            },
         };
+        serviceBusMessage.SetOperationCorrelationId(operationCorrelationId);
+        serviceBusMessage.SetMessageType(messageType);
+        return serviceBusMessage;
     }
 }

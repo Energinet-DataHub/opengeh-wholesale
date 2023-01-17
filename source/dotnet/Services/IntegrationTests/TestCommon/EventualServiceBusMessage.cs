@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
 
         public BinaryData? Body { get; set; }
 
-        public string? CorrelationId { get; set; }
+        public string? OperationCorrelationId { get; set; }
 
         public void Dispose()
         {

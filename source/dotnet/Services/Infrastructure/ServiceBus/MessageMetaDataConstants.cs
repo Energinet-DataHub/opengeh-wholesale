@@ -14,9 +14,13 @@
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus
 {
+    /// <summary>
+    /// These constants represents the required meta data for integration events described here:
+    /// https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md
+    /// </summary>
     public static class MessageMetaDataConstants
     {
-        public const string CorrelationId = "OperationCorrelationId";
+        public const string OperationCorrelationId = "OperationCorrelationId";
         public const string OperationTimestamp = "OperationTimestamp";
         public const string MessageVersion = "MessageVersion";
         public const string MessageType = "MessageType";

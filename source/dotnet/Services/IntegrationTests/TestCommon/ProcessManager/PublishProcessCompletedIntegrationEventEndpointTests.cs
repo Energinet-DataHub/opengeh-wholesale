@@ -53,9 +53,8 @@ public class PublishProcessCompletedIntegrationEventEndpointTests
         {
             // Arrange
             var processCompletedMessage = CreateProcessCompletedEventDtoMessage();
-            var correlationId = processCompletedMessage.ApplicationProperties[MessageMetaDataConstants.CorrelationId].ToString()!;
             using var eventualProcessCompletedIntegrationEvent = await Fixture
-                .ProcessCompletedIntegrationEventListener.ListenForMessageAsync(correlationId);
+                .ProcessCompletedIntegrationEventListener.ListenForMessageAsync(processCompletedMessage.GetOperationCorrelationId());
 
             // Act
             await Fixture.DomainEventsTopic.SenderClient.SendMessageAsync(processCompletedMessage);
