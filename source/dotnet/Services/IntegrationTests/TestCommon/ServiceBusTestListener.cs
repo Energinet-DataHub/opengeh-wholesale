@@ -46,15 +46,15 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
             return result;
         }
 
-        public async Task<EventualServiceBusMessage> ListenForMessageAsync(string correlationId)
+        public async Task<EventualServiceBusMessage> ListenForMessageAsync(string operationCorrelationId)
         {
             var result = new EventualServiceBusMessage();
             result.MessageAwaiter = await _serviceBusListenerMock
-                .WhenCorrelationId(correlationId)
+                .WhenOperationCorrelationId(operationCorrelationId)
                 .VerifyOnceAsync(receivedMessage =>
                 {
                     result.Body = receivedMessage.Body;
-                    result.CorrelationId = (string)receivedMessage.ApplicationProperties[MessageMetaDataConstants.CorrelationId];
+                    result.OperationCorrelationId = receivedMessage.GetOperationCorrelationId();
                     return Task.CompletedTask;
                 }).ConfigureAwait(false);
             return result;
