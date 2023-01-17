@@ -23,7 +23,8 @@ from pyspark.sql import DataFrame, SparkSession
 # from pyspark.sql.functions import col
 # from pyspark.sql.types import Row
 # from configargparse import argparse
-# from package.constants import Colname
+from package.constants import Colname
+
 # from package import (
 #     calculate_balance_fixing,
 #     db_logging,
@@ -43,17 +44,29 @@ class ResultWriter:
         self.batch_id = batch_id
         self.result_path = results_path
 
-    def write_basis_data(self, data_df: DataFrame) -> None:
-        data_df.withColumnRenamed("GridAreaCode", "grid_area")
+    def write_basis_data(
+        self,
+        master_basis_data_df: DataFrame,
+        timeseries_quarter_df: DataFrame,
+        timeseries_hour_df: DataFrame,
+    ) -> None:
 
         basis_data_directory = f"{self.result_path}/batch_id={self.batch_id}/basis_data"
 
-        self._write_basis_data_to_csv(f"{basis_data_directory}/time_series_quarter")
-        self._write_basis_data_to_csv(f"{basis_data_directory}/time_series_hour")
-        self._write_basis_data_to_csv(f"{basis_data_directory}/master_basis_data")
+        self._write_basis_data_to_csv(
+            f"{basis_data_directory}/time_series_quarter", timeseries_quarter_df
+        )
+        self._write_basis_data_to_csv(
+            f"{basis_data_directory}/time_series_hour", timeseries_hour_df
+        )
+        self._write_basis_data_to_csv(
+            f"{basis_data_directory}/master_basis_data", master_basis_data_df
+        )
 
-    def _write_basis_data_to_csv(self, path: str) -> None:
-        data_df.repartition("grid_area").write.mode("overwrite").partitionBy(
+    def _write_basis_data_to_csv(self, path: str, df: DataFrame) -> None:
+        df.withColumnRenamed("GridAreaCode", "grid_area")
+
+        df.repartition("grid_area").write.mode("overwrite").partitionBy(
             "grid_area", Colname.gln
         ).option("header", True).csv(path)
 
