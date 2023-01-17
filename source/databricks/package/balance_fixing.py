@@ -73,7 +73,8 @@ def calculate_balance_fixing(
     )
 
     # Total production per grid
-    total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
+    production = agg_steps.aggregate_production(results, metadata_fake)
+    total_production_per_ga_df = agg_steps.aggregate_production(production, metadata_fake)
 
     total_production_per_ga_df = _prepare_result_for_output(
         total_production_per_ga_df,

@@ -435,6 +435,14 @@ def aggregate_production_ga(results: dict, metadata: Metadata) -> DataFrame:
     )
 
 
+def aggregate_production_ga_2(df: DataFrame, metadata: Metadata) -> DataFrame:
+    return __aggregate_per_ga(
+        df,
+        MeteringPointType.production,
+        metadata,
+    )
+
+
 def aggregate_non_profiled_consumption_ga(
     results: dict, metadata: Metadata
 ) -> DataFrame:
