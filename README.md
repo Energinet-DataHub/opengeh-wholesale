@@ -85,7 +85,7 @@ Please note that we have provided a [Dictionary](https://github.com/Energinet-Da
 The wholesale domain publishes an integration event when a process has completed. The events contains the data defined by the
 [`ProcessCompleted.proto`](source/dotnet/Contracts/ProcessCompleted.proto) Google Protocol Buffers contract.
 
-The process type is specified in the message type meta data of the transport messages according to [ADR-008](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md)
+The process type is specified in the message type meta data of the transport messages according to [`ADR-008`](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md)
 
 The set of supported process types can be found in [`ProcessCompleted.cs`](source/dotnet/Contracts/ProcessCompleted.cs).
 
