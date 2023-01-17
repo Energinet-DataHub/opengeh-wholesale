@@ -12,32 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
+from datetime import datetime
 
-from pyspark.sql.functions import col, expr, explode, sum, first, lit
-from package.codelists import (
-    MeteringPointResolution,
-)
-from package.db_logging import debug
 import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
-from datetime import datetime
+from package.codelists import MeteringPointResolution
 from package.constants import Colname, ResultKeyName
-from package.constants.time_series_type import TimeSeriesType
 from package.constants.result_grouping import ResultGrouping
+from package.constants.time_series_type import TimeSeriesType
+from package.db_logging import debug
+from package.result_writer import ResultWriter
 from package.shared.data_classes import Metadata
-from pyspark.sql.types import (
-    DecimalType,
-)
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import col, explode, expr, first, lit, sum
+from pyspark.sql.types import DecimalType
 
 
 def calculate_balance_fixing(
+    result_writer: ResultWriter,
     metering_points_periods_df: DataFrame,
     timeseries_points: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
-) -> tuple[DataFrame, DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
+) -> None:
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         timeseries_points,
         metering_points_periods_df,
@@ -81,12 +79,13 @@ def calculate_balance_fixing(
         ResultGrouping.PER_GRID_AREA,
     )
 
-    return (
-        consumption_per_ga_and_es,
-        total_production_per_ga_df,
-        time_series_basis_data_df,
-        master_basis_data_df,
+    # Write to file(s)
+    (timeseries_quarter_df, timeseries_hour_df) = time_series_basis_data_df
+    result_writer.write_basis_data_to_file(
+        master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
     )
+    result_writer.write_result_to_file(total_production_per_ga_df)
+    result_writer.write_result_to_file(consumption_per_ga_and_es)
 
 
 def _prepare_result_for_output(
