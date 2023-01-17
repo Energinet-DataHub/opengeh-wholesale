@@ -13,4 +13,5 @@
 # limitations under the License.
 module "mssqldb_marketroles" {
   developer_ad_group_name     = var.developer_ad_group_name
+  max_size_gb                 = 10
 }
