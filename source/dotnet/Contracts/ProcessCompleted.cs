@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
+// DO NOT CHANGE - this namespace is exposed publicly in the Contracts package
+namespace Energinet.DataHub.Wholesale.Contracts.Events;
 
 public partial class ProcessCompleted
 {

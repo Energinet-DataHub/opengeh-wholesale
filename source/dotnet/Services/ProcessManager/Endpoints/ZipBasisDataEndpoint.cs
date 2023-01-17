@@ -39,16 +39,7 @@ public class ZipBasisDataEndpoint
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
-        var batchCompletedEvent = await DeserializeByteArrayAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
+        var batchCompletedEvent = await _jsonSerializer.DeserializeAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
         await _basisDataApplicationService.ZipBasisDataAsync(batchCompletedEvent).ConfigureAwait(false);
-    }
-
-    private async Task<T> DeserializeByteArrayAsync<T>(byte[] data)
-    {
-        var stream = new MemoryStream(data);
-        await using (stream.ConfigureAwait(false))
-        {
-            return (T)await _jsonSerializer.DeserializeAsync(stream, typeof(T)).ConfigureAwait(false);
-        }
     }
 }
