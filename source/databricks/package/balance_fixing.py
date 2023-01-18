@@ -24,7 +24,7 @@ from package.db_logging import debug
 from package.process_result_writer import ProcessResultWriter
 from package.shared.data_classes import Metadata
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, explode, expr, lit
+from pyspark.sql.functions import col, explode, expr, lit, first
 from pyspark.sql.types import DecimalType
 
 
