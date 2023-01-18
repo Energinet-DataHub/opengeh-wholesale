@@ -60,6 +60,9 @@ def calculate_balance_fixing(
     results[
         ResultKeyName.non_profiled_consumption
     ] = agg_steps.aggregate_non_profiled_consumption(results, metadata_fake)
+    production_per_ga_and_brp_and_es = agg_steps.aggregate_production(
+        results, metadata_fake
+    )
 
     # Non-profiled consumption per energy supplier
     consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
@@ -73,7 +76,9 @@ def calculate_balance_fixing(
     )
 
     # Total production per grid
-    total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
+    total_production_per_ga_df = agg_steps.aggregate_production_ga(
+        production_per_ga_and_brp_and_es, metadata_fake
+    )
 
     total_production_per_ga_df = _prepare_result_for_output(
         total_production_per_ga_df,

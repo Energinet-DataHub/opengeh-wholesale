@@ -427,9 +427,9 @@ def __aggregate_per_ga_and_brp(
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def aggregate_production_ga(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga(production: DataFrame, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga(
-        results[ResultKeyName.production_with_system_correction_and_grid_loss],
+        production,
         MeteringPointType.production,
         metadata,
     )
