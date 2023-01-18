@@ -90,11 +90,11 @@ def calculate_balance_fixing(
 
     # Write to file(s)
     (timeseries_quarter_df, timeseries_hour_df) = time_series_basis_data_df
-    result_writer.write_basis_data_to_file(
+    result_writer.write_basis_data(
         master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
     )
-    result_writer.write_result_to_file(total_production_per_ga_df)
-    result_writer.write_result_to_file(consumption_per_ga_and_es)
+    result_writer.write_result(total_production_per_ga_df)
+    result_writer.write_result(consumption_per_ga_and_es)
 
 
 def _prepare_result_for_output(
