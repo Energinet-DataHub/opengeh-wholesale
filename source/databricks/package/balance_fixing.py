@@ -80,7 +80,7 @@ def calculate_balance_fixing(
     total_production_per_ga_df = total_production_per_per_ga_and_brp_and_es.groupBy(
         Colname.grid_area, Colname.time_window
     ).agg(
-        sum(Colname.sum_quantity).alias(Colname.quantity),
+        sum(Colname.sum_quantity).alias(Colname.sum_quantity),
         first(Colname.quality).alias(Colname.quality),
     )
 
