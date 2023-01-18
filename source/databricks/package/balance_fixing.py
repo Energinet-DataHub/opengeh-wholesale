@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-from pyspark.sql.functions import col, expr, explode, sum, first, lit, agg
+from pyspark.sql.functions import col, expr, explode, sum, first, lit
 from package.codelists import (
     MeteringPointResolution,
 )
