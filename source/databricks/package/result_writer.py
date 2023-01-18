@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from package.constants import Colname
 
 
-class ProcessResultWriter:
+class ResultWriter:
     def __init__(
         self,
         batch_id: str,
@@ -24,7 +24,7 @@ class ProcessResultWriter:
     ):
         self.batch_directory = f"{results_path}/batch_id={batch_id}"
 
-    def write_basis_data(
+    def write_basis_data_to_file(
         self,
         master_basis_data_df: DataFrame,
         timeseries_quarter_df: DataFrame,
@@ -43,7 +43,7 @@ class ProcessResultWriter:
             f"{basis_data_directory}/master_basis_data", master_basis_data_df
         )
 
-    def write_result(self, result_df: DataFrame) -> None:
+    def write_result_to_file(self, result_df: DataFrame) -> None:
         result_data_directory = f"{self.batch_directory}/result"
 
         # First repartition to co-locate all rows for a grid area on a single executor.

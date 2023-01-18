@@ -21,7 +21,7 @@ from package.constants import Colname, ResultKeyName
 from package.constants.result_grouping import ResultGrouping
 from package.constants.time_series_type import TimeSeriesType
 from package.db_logging import debug
-from package.process_result_writer import ProcessResultWriter
+from package.result_writer import ResultWriter
 from package.shared.data_classes import Metadata
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, explode, expr, lit, first
@@ -29,7 +29,7 @@ from pyspark.sql.types import DecimalType
 
 
 def calculate_balance_fixing(
-    process_result_writer: ProcessResultWriter,
+    result_writer: ResultWriter,
     metering_points_periods_df: DataFrame,
     timeseries_points: DataFrame,
     period_start_datetime: datetime,
@@ -90,11 +90,11 @@ def calculate_balance_fixing(
 
     # Write to file(s)
     (timeseries_quarter_df, timeseries_hour_df) = time_series_basis_data_df
-    process_result_writer.write_basis_data(
+    result_writer.write_basis_data_to_file(
         master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
     )
-    process_result_writer.write_result(total_production_per_ga_df)
-    process_result_writer.write_result(consumption_per_ga_and_es)
+    result_writer.write_result_to_file(total_production_per_ga_df)
+    result_writer.write_result_to_file(consumption_per_ga_and_es)
 
 
 def _prepare_result_for_output(
