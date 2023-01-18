@@ -19,14 +19,12 @@ from .args_helper import valid_date, valid_list, valid_log_level
 from .datamigration import islocked
 import package.calculation_input as calculation_input
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col
 from pyspark.sql.types import Row
 from configargparse import argparse
-from package.result_writer import ResultWriter
+from package.process_result_writer import ProcessResultWriter
 from package import (
     calculate_balance_fixing,
     db_logging,
-    debug,
     infrastructure,
     initialize_spark,
     log,
@@ -89,10 +87,12 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_period_end_datetime,
     )
 
-    result_writer = ResultWriter(args.batch_id, args.process_results_path)
+    process_result_writer = ProcessResultWriter(
+        args.batch_id, args.process_results_path
+    )
 
     calculate_balance_fixing(
-        result_writer,
+        process_result_writer,
         metering_point_periods_df,
         timeseries_points_df,
         args.batch_period_start_datetime,
