@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import DataFrame
 from package.constants import Colname
 
 
-class ResultWriter:
+class CalculationOutputWriter:
     def __init__(
         self,
         batch_id: str,
