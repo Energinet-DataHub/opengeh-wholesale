@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
 
-/// <summary>
-/// Time series point.
-/// Immutable value object.
-/// </summary>
-/// <param name="Time"></param>
-/// <param name="Quantity">In kWh.</param>
-/// <param name="Quality"></param>
-public sealed record TimeSeriesPoint(DateTimeOffset Time, decimal Quantity, string Quality);
+namespace Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
+
+public interface IProcessActorResultRepository
+{
+    Task<ProcessActorResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode);
+}

@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
 using FluentAssertions;
 using Moq;
@@ -35,9 +36,9 @@ public class ProcessResultApplicationServiceTests
         ProcessStepResultRequestDto request,
         ProcessActorResult result,
         ProcessStepResultDto resultDto,
-        [Frozen] Mock<IProcessOutputRepository> repositoryMock,
+        [Frozen] Mock<IProcessActorResultRepository> repositoryMock,
         [Frozen] Mock<IProcessActorResultMapper> mapperMock,
-        ProcessStepResultApplicationService sut)
+        ProcessActorResultApplicationService sut)
     {
         // Arrange
         request.SetPrivateProperty(dto => dto.GridAreaCode, "123");

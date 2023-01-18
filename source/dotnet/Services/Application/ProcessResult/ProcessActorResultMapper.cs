@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;

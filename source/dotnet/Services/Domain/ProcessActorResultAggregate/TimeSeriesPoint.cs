@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
-
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
+namespace Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
 
 /// <summary>
-/// This class provides the ability to retrieve a calculated result for a given step for a batch.
+/// Time series point.
+/// Immutable value object.
 /// </summary>
-public interface IProcessStepResultApplicationService
-{
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
-}
+/// <param name="Time"></param>
+/// <param name="Quantity">In kWh.</param>
+/// <param name="Quality"></param>
+public sealed record TimeSeriesPoint(DateTimeOffset Time, decimal Quantity, string Quality);

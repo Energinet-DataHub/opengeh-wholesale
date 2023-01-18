@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+namespace Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
 
 /// <summary>
 /// Result data from a specific actor in a process.

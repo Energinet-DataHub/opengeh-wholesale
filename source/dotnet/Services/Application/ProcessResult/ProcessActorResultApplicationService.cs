@@ -12,31 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
-using System.Text.Json;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
 /// <summary>
 /// This class provides the ability to retrieve a calculated result for a given step for a batch.
 /// </summary>
-public class ProcessStepResultApplicationService : IProcessStepResultApplicationService
+public class ProcessActorResultApplicationService : IProcessActorResultApplicationService
 {
-    private readonly IProcessOutputRepository _processOutputRepository;
+    private readonly IProcessActorResultRepository _processActorResultRepository;
     private readonly IProcessActorResultMapper _processActorResultMapper;
 
-    public ProcessStepResultApplicationService(IProcessOutputRepository processOutputRepository, IProcessActorResultMapper processActorResultMapper)
+    public ProcessActorResultApplicationService(IProcessActorResultRepository processActorResultRepository, IProcessActorResultMapper processActorResultMapper)
     {
-        _processOutputRepository = processOutputRepository;
+        _processActorResultRepository = processActorResultRepository;
         _processActorResultMapper = processActorResultMapper;
     }
 
     public async Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto)
     {
-        var processActorResult = await _processOutputRepository.GetAsync(
+        var processActorResult = await _processActorResultRepository.GetAsync(
                 processStepResultRequestDto.BatchId,
                 new GridAreaCode(processStepResultRequestDto.GridAreaCode))
             .ConfigureAwait(false);

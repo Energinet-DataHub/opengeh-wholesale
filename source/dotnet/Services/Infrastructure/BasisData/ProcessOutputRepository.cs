@@ -19,11 +19,12 @@ using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
-public class ProcessOutputRepository : IProcessOutputRepository
+public class ProcessOutputRepository : IProcessOutputRepository, IProcessActorResultRepository
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
