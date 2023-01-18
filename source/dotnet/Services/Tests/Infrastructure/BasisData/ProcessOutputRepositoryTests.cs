@@ -30,11 +30,11 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BasisData;
 
 [UnitTest]
-public class BatchFileManagerTests
+public class ProcessOutputRepositoryTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task GetResultFileStreamAsync_ReturnsStream(
+    public async Task GetAsync_ReturnsProcessActorResult(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
@@ -60,10 +60,10 @@ public class BatchFileManagerTests
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
 
         // Act
-        var actual = await sut.GetResultFileStreamAsync(Guid.NewGuid(), new GridAreaCode("123"));
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"));
 
         // Assert
         actual.Should().BeSameAs(stream.Object);
@@ -91,11 +91,11 @@ public class BatchFileManagerTests
             .ReturnsAsync(responseMock.Object);
         responseMock.Setup(res => res.Value).Returns(true);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetResultFileStreamAsync(Guid.NewGuid(), new GridAreaCode("123")))
+            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123")))
             .Should()
             .ThrowAsync<InvalidOperationException>();
     }
@@ -115,11 +115,11 @@ public class BatchFileManagerTests
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
             .ReturnsAsync(responseMock.Object);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetResultFileStreamAsync(Guid.NewGuid(), new GridAreaCode("123")))
+            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123")))
             .Should()
             .ThrowAsync<Exception>();
     }
@@ -156,11 +156,11 @@ public class BatchFileManagerTests
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
             .ReturnsAsync(responseMock.Object);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetResultFileStreamAsync(Guid.NewGuid(), new GridAreaCode("123")))
+            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123")))
             .Should()
             .ThrowAsync<Exception>();
     }
@@ -175,7 +175,7 @@ public class BatchFileManagerTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = BatchFileManager.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual = ProcessOutputRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -193,7 +193,7 @@ public class BatchFileManagerTests
 
         // Act
         var actual =
-            BatchFileManager.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
+            ProcessOutputRepository.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -211,7 +211,7 @@ public class BatchFileManagerTests
 
         // Act
         var actual =
-            BatchFileManager.GetTimeSeriesHourBasisDataFileSpecification(
+            ProcessOutputRepository.GetTimeSeriesHourBasisDataFileSpecification(
                 new Guid(batchId),
                 new GridAreaCode(gridAreaCode));
 
@@ -231,7 +231,7 @@ public class BatchFileManagerTests
 
         // Act
         var actual =
-            BatchFileManager.GetTimeSeriesQuarterBasisDataFileSpecification(
+            ProcessOutputRepository.GetTimeSeriesQuarterBasisDataFileSpecification(
                 new Guid(batchId),
                 new GridAreaCode(gridAreaCode));
 
@@ -283,7 +283,7 @@ public class BatchFileManagerTests
                     basisDataBuffer)),
             null!);
         dataLakeFileClientMock.Setup(x => x.ReadAsync()).ReturnsAsync(fileDownloadResponse);
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
         var batch = new BatchBuilder().Build();
 
         // Act
@@ -319,12 +319,63 @@ public class BatchFileManagerTests
             .Setup(x => x.OpenWriteAsync(default, null, default))
             .ReturnsAsync(stream.Object);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
 
         // Act & Assert
         await sut.Invoking(s => s.CreateBasisDataZipAsync(completedBatch)).Should().NotThrowAsync();
     }
 
+    // [Fact]
+    // public async Task GetResultAsync_Time_IsRead()
+    // {
+    //     // Arrange
+    //     var expected = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
+    //     var sut = ProcessResultApplicationService();
+    //
+    //     // Act
+    //     var actual = await sut.GetResultAsync(
+    //         new ProcessStepResultRequestDto(
+    //             Guid.NewGuid(),
+    //             GridAreaCode,
+    //             ProcessStepType.AggregateProductionPerGridArea));
+    //
+    //     // Assert
+    //     actual.TimeSeriesPoints[1].Time.Should().Be(expected);
+    // }
+    //
+    // [Fact]
+    // public async Task GetResultAsync_Quantity_IsRead()
+    // {
+    //     // Arrange
+    //     var sut = ProcessResultApplicationService();
+    //
+    //     // Act
+    //     var actual = await sut.GetResultAsync(
+    //         new ProcessStepResultRequestDto(
+    //             Guid.NewGuid(),
+    //             GridAreaCode,
+    //             ProcessStepType.AggregateProductionPerGridArea));
+    //
+    //     // Assert
+    //     actual.TimeSeriesPoints.First().Quantity.Should().Be(1.000m);
+    // }
+    //
+    // [Fact]
+    // public async Task GetResultAsync_Quality_IsRead()
+    // {
+    //     // Arrange
+    //     var sut = ProcessResultApplicationService();
+    //
+    //     // Act
+    //     var actual = await sut.GetResultAsync(
+    //         new ProcessStepResultRequestDto(
+    //             Guid.NewGuid(),
+    //             GridAreaCode,
+    //             ProcessStepType.AggregateProductionPerGridArea));
+    //
+    //     // Assert
+    //     actual.TimeSeriesPoints.First().Quality.Should().Be("A04");
+    // }
     private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
     {
         var pathItem = DataLakeModelFactory
