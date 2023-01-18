@@ -28,5 +28,5 @@ module "kv_shared" {
     module.snet_vnet_integrations.id,
     data.azurerm_subnet.deployment_agents_subnet.id
   ]
-  ip_rules = split(",", var.hosted_deployagent_public_ip_range)
+  ip_rules = var.hosted_deployagent_public_ip_range
 }

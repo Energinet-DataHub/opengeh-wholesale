@@ -157,5 +157,5 @@ variable ad_group_directory_reader {
 variable hosted_deployagent_public_ip_range {
   type          = string
   description   = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources such as Keyvaults"
-  default       = ""
+  default       = null
 }
