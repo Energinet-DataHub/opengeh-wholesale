@@ -73,7 +73,16 @@ def calculate_balance_fixing(
     )
 
     # Total production per grid
-    total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
+    total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
+        results, metadata_fake
+    )
+    # Sum within a grid area
+    total_production_per_ga_df = total_production_per_per_ga_and_brp_and_es.groupBy(
+        Colname.grid_area, Colname.time_window
+    ).agg(
+        sum(Colname.sum_quantity).alias(Colname.sum_quantity),
+        first(Colname.quality).alias(Colname.quality),
+    )
 
     total_production_per_ga_df = _prepare_result_for_output(
         total_production_per_ga_df,
