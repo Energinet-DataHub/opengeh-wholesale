@@ -54,6 +54,12 @@ limitations under the License.
     <Compile Include="..\..\Contracts\ProcessStepResultRequestDto.cs">
       <Link>ProcessResult\ProcessStepResultRequestDto.cs</Link>
     </Compile>
+    <Compile Include="..\..\Contracts\ProcessResultRequestDto.cs">
+      <Link>ProcessResult\ProcessResultRequestDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\TimeSeriesType.cs">
+      <Link>ProcessResult\TimeSeriesType.cs</Link>
+    </Compile>
     <Compile Include="..\..\Contracts\ProcessStepType.cs">
       <Link>Batches\ProcessStepType.cs</Link>
     </Compile>
@@ -65,6 +71,15 @@ limitations under the License.
     </Compile>
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Batches\BatchState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\BatchActorType.cs">
+      <Link>Batches\BatchActorType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\BatchActorDto.cs">
+      <Link>Batches\BatchActorDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\BatchActorsRequestDto.cs">
+      <Link>Batches\BatchActorsRequestDto.cs</Link>
     </Compile>
   </ItemGroup>
 
