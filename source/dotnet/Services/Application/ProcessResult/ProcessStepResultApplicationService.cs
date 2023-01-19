@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using System.Text.Json;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Contracts;
@@ -40,18 +41,7 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
 
         var points = await GetPointsFromJsonStreamAsync(resultStream).ConfigureAwait(false);
 
-        var pointsDto = points.Select(
-                point => new TimeSeriesPointDto(
-                    DateTimeOffset.Parse(point.quarter_time),
-                    decimal.Parse(point.quantity)))
-            .ToList();
-
-        return new ProcessStepResultDto(
-            ProcessStepMeteringPointType.Production,
-            pointsDto.Sum(x => x.Quantity),
-            pointsDto.Min(x => x.Quantity),
-            pointsDto.Max(x => x.Quantity),
-            pointsDto.ToArray());
+        return MapToProcessStepResultDto(points);
     }
 
     private static async Task<List<ProcessResultPoint>> GetPointsFromJsonStreamAsync(Stream resultStream)
@@ -73,5 +63,22 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
         }
 
         return list;
+    }
+
+    private static ProcessStepResultDto MapToProcessStepResultDto(List<ProcessResultPoint> points)
+    {
+        var pointsDto = points.Select(
+                point => new TimeSeriesPointDto(
+                    DateTimeOffset.Parse(point.quarter_time),
+                    decimal.Parse(point.quantity, CultureInfo.InvariantCulture),
+                    point.quality))
+            .ToList();
+
+        return new ProcessStepResultDto(
+            ProcessStepMeteringPointType.Production,
+            pointsDto.Sum(x => x.Quantity),
+            pointsDto.Min(x => x.Quantity),
+            pointsDto.Max(x => x.Quantity),
+            pointsDto.ToArray());
     }
 }

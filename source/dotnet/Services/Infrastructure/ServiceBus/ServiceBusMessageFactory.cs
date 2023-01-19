@@ -12,24 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Core.JsonSerialization;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
     private readonly ICorrelationContext _correlationContext;
-    private readonly IDictionary<Type, string> _messageTypes;
-    private readonly IJsonSerializer _jsonSerializer;
 
-    public ServiceBusMessageFactory(ICorrelationContext correlationContext, IDictionary<Type, string> messageTypes, IJsonSerializer jsonSerializer)
+    public ServiceBusMessageFactory(ICorrelationContext correlationContext)
     {
         _correlationContext = correlationContext;
-        _messageTypes = messageTypes;
-        _jsonSerializer = jsonSerializer;
     }
 
     public ServiceBusMessage Create(byte[] body, string messageType)
@@ -37,42 +31,26 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         return CreateServiceBusMessage(body, messageType, _correlationContext.Id);
     }
 
-    public ServiceBusMessage Create<TMessage>(TMessage message)
+    public IEnumerable<ServiceBusMessage> Create(IEnumerable<byte[]> messages, string messageType)
     {
-        return CreateServiceBusMessage(message);
+        return messages.Select(message => CreateServiceBusMessage(message, messageType, _correlationContext.Id));
     }
 
-    public IEnumerable<ServiceBusMessage> Create<TMessage>(IEnumerable<TMessage> messages)
-    {
-        return messages.Select(CreateServiceBusMessage);
-    }
-
+    /// <summary>
+    /// This method is made public to use it in integration test(s) for simplicity.
+    /// </summary>
     public static ServiceBusMessage CreateServiceBusMessage(
         byte[] body,
         string messageType,
-        string correlationContextId)
+        string operationCorrelationId)
     {
-        return new ServiceBusMessage
+        var serviceBusMessage = new ServiceBusMessage
         {
             Body = new BinaryData(body),
             Subject = messageType,
-            ApplicationProperties =
-            {
-                new KeyValuePair<string, object>(MessageMetaDataConstants.CorrelationId, correlationContextId),
-                new KeyValuePair<string, object>(MessageMetaDataConstants.MessageType, messageType),
-            },
         };
-    }
-
-    private ServiceBusMessage CreateServiceBusMessage<TMessage>(TMessage message)
-    {
-        if (!_messageTypes.ContainsKey(typeof(TMessage)))
-            throw new NotImplementedException($"No message type identifier has been registered for message of type {typeof(TMessage).FullName}");
-
-        var messageType = _messageTypes[typeof(TMessage)];
-
-        var body = _jsonSerializer.Serialize(message);
-        var bytes = Encoding.UTF8.GetBytes(body);
-        return CreateServiceBusMessage(bytes, messageType, _correlationContext.Id);
+        serviceBusMessage.SetOperationCorrelationId(operationCorrelationId);
+        serviceBusMessage.SetMessageType(messageType);
+        return serviceBusMessage;
     }
 }

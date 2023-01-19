@@ -12,18 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Infrastructure;
 using FluentAssertions;
+using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Integration;
-
-public class ProcessCompletedTests
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure
 {
-    [Fact]
-    public void MessageType_Is_Correct()
+    public class InstantExtensionsTests
     {
-        // This should not be changed as it'll affect external subscribers
-        ProcessCompleted.BalanceFixingProcessType.Should().Be("BalanceFixingCompleted");
+        [Theory]
+        [InlineData(2021, 10, 12, 14, 27, 59)]
+        public void IsEndDefault_ReturnsExpectedResult(int year, int month, int day, int hour, int minute, int second)
+        {
+            var instant = Instant.FromUtc(year, month, day, hour, minute, second);
+
+            var actual = instant.ToTimestamp();
+
+            actual.ToDateTimeOffset().Should().Be(instant.ToDateTimeOffset());
+        }
     }
 }

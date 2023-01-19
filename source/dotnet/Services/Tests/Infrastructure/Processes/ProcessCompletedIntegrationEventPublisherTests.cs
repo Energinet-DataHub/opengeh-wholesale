@@ -15,9 +15,12 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Moq;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Processes;
@@ -48,5 +51,49 @@ public class ProcessCompletedIntegrationEventPublisherTests
         senderMock.Verify(
             sender => sender.SendMessageAsync(It.IsAny<ServiceBusMessage>(), It.IsAny<CancellationToken>()),
             Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData(ProcessType.BalanceFixing, ProcessCompleted.BalanceFixingProcessType)]
+    public async Task PublishAsync_PublishesWithCorrectMessageType(
+        ProcessType processType,
+        string expectedMessageType,
+        ProcessCompleted processCompleted,
+        Mock<IServiceBusMessageFactory> factoryMock,
+        Mock<IProcessCompletedIntegrationEventMapper> mapperMock)
+    {
+        // Arrange
+        var eventDto = CreateProcessCompletedEventDto(processType);
+        var senderMock = new Mock<TestServiceBusSender>();
+        mapperMock
+            .Setup(mapper => mapper.MapFrom(eventDto))
+            .Returns(processCompleted);
+        factoryMock
+            .Setup(factory => factory.Create(It.IsAny<byte[]>(), expectedMessageType))
+            .Returns(new ServiceBusMessage
+            {
+                ApplicationProperties = { { MessageMetaDataConstants.MessageType, expectedMessageType } },
+            });
+        var sut = new ProcessCompletedIntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object);
+
+        // Act
+        await sut.PublishAsync(eventDto);
+
+        // Assert
+        senderMock.Verify(
+            sender => sender.SendMessageAsync(
+                It.Is<ServiceBusMessage>(message => (string)message.ApplicationProperties[MessageMetaDataConstants.MessageType] == expectedMessageType),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    private static ProcessCompletedEventDto CreateProcessCompletedEventDto(ProcessType processType)
+    {
+        return new ProcessCompletedEventDto(
+            "some-grid-area",
+            Guid.NewGuid(),
+            processType,
+            Instant.MinValue,
+            Instant.MinValue);
     }
 }

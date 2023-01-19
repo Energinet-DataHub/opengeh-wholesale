@@ -104,20 +104,7 @@ public static class Program
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
-        var batchCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName);
-        var processCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName);
-        var messageTypes = new Dictionary<Type, string>
-        {
-            { typeof(BatchCompletedEventDto), batchCompletedMessageType },
-            { typeof(ProcessCompletedEventDto), processCompletedMessageType },
-            { typeof(ProcessCompleted), ProcessCompleted.MessageType },
-        };
-        serviceCollection.AddScoped<IServiceBusMessageFactory>(provider =>
-        {
-            var correlationContext = provider.GetRequiredService<ICorrelationContext>();
-            var jsonSerializer = provider.GetRequiredService<IJsonSerializer>();
-            return new ServiceBusMessageFactory(correlationContext, messageTypes, jsonSerializer);
-        });
+        serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
@@ -137,8 +124,11 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusSendConnectionString);
 
         var domainEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
-        serviceCollection.AddBatchCompletedPublisher(serviceBusConnectionString, domainEventsTopicName);
-        serviceCollection.AddProcessCompletedPublisher(serviceBusConnectionString, domainEventsTopicName);
+
+        var batchCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName);
+        var processCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName);
+        serviceCollection.AddBatchCompletedPublisher(serviceBusConnectionString, domainEventsTopicName, batchCompletedMessageType);
+        serviceCollection.AddProcessCompletedPublisher(serviceBusConnectionString, domainEventsTopicName, processCompletedMessageType);
 
         var integrationEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
         serviceCollection.AddProcessCompletedIntegrationEventPublisher(serviceBusConnectionString, integrationEventsTopicName);
@@ -185,6 +175,8 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName);
         var batchCompletedSubscriptionZipBasisData =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName);
+        var integrationEventsTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
 
         serviceCollection
             .AddHealthChecks()
@@ -212,6 +204,10 @@ public static class Program
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
                 EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
-                EnvironmentSettingNames.CalculationStorageContainerName.Val());
+                EnvironmentSettingNames.CalculationStorageContainerName.Val())
+            .AddAzureServiceBusTopic(
+                connectionString: serviceBusConnectionString,
+                topicName: integrationEventsTopicName,
+                name: "IntegrationEventsTopicExists");
     }
 }

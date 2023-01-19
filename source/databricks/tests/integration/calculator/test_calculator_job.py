@@ -58,9 +58,9 @@ def test_data_job_parameters(
             "batch_id": executed_batch_id,
             "batch_grid_areas": [805, 806],
             "batch_period_start_datetime": timestamp_factory(
-                "2018-01-01T22:00:00.000Z"
+                "2018-01-01T23:00:00.000Z"
             ),
-            "batch_period_end_datetime": timestamp_factory("2018-01-03T22:00:00.000Z"),
+            "batch_period_end_datetime": timestamp_factory("2018-01-03T23:00:00.000Z"),
             "time_zone": "Europe/Copenhagen",
         }
     )
@@ -318,6 +318,24 @@ def test__result_file_path_matches_contract(
         f"calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln={grid_area_gln}/time_series_type=production/part-*.json",
     )
     assert re.match(expected_path_expression, actual_result_file)
+
+
+def test__result_file_has_correct_number_of_rows_based_on_period(
+    spark,
+    data_lake_path,
+    worker_id,
+    executed_calculation_job,
+):
+    # Arrange
+    data_lake_path = f"{data_lake_path}/{worker_id}"
+    result_path = get_result_path(
+        data_lake_path, "806", "grid_area", TimeSeriesType.PRODUCTION.value
+    )
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Assert
+    production_806 = spark.read.json(result_path)
+    assert production_806.count() == 192  # period is from 01-01 -> 01-03
 
 
 def test__creates_hour_csv_with_expected_columns_names(

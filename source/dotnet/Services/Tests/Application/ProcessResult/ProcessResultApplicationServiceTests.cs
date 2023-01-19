@@ -47,6 +47,58 @@ public class ProcessResultApplicationServiceTests
     }
 
     [Fact]
+    public async Task GetResultAsync_Time_IsRead()
+    {
+        // Arrange
+        var expected = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
+
+        // Assert
+        actual.TimeSeriesPoints[1].Time.Should().Be(expected);
+    }
+
+    [Fact]
+    public async Task GetResultAsync_Quantity_IsRead()
+    {
+        // Arrange
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
+
+        // Assert
+        actual.TimeSeriesPoints.First().Quantity.Should().Be(1.000m);
+    }
+
+    [Fact]
+    public async Task GetResultAsync_Quality_IsRead()
+    {
+        // Arrange
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
+
+        // Assert
+        actual.TimeSeriesPoints.First().Quality.Should().Be("A04");
+    }
+
+    [Fact]
     public async Task GetResultAsync_Max_IsMaxQuantity()
     {
         // Arrange

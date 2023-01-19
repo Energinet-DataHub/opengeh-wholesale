@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Batches;
@@ -22,18 +25,29 @@ public class BatchCompletedPublisher : IBatchCompletedPublisher
 {
     private readonly ServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
+    private readonly string _messageType;
+    private readonly IJsonSerializer _jsonSerializer;
 
     public BatchCompletedPublisher(
         ServiceBusSender serviceBusSender,
-        IServiceBusMessageFactory serviceBusMessageFactory)
+        IServiceBusMessageFactory serviceBusMessageFactory,
+        string messageType,
+        IJsonSerializer jsonSerializer)
     {
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
+        _messageType = messageType;
+        _jsonSerializer = jsonSerializer;
     }
 
     public async Task PublishAsync(IEnumerable<BatchCompletedEventDto> batchCompletedEvents)
     {
-        var messages = _serviceBusMessageFactory.Create(batchCompletedEvents);
+        var bodies = batchCompletedEvents
+            .Select(events => _jsonSerializer.Serialize(events))
+            .Select(body => Encoding.UTF8.GetBytes(body));
+
+        var messages = _serviceBusMessageFactory.Create(bodies, _messageType);
+
         await _serviceBusSender.SendMessagesAsync(messages).ConfigureAwait(false);
     }
 }

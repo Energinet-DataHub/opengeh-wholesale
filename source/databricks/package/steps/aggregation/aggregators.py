@@ -165,8 +165,8 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
     return create_dataframe_from_aggregation_result_schema(metadata, resultDf)
 
 
-# Function to aggregate hourly consumption per grid area, balance responsible party and energy supplier (step 3)
-def aggregate_consumption(results: dict, metadata: Metadata) -> DataFrame:
+# Function to aggregate non-profiled consumption per grid area, balance responsible party and energy supplier (step 3)
+def aggregate_non_profiled_consumption(results: dict, metadata: Metadata) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe]
     return aggregate_per_ga_and_brp_and_es(
         df,
@@ -252,6 +252,7 @@ def aggregate_per_ga_and_brp_and_es(
             sum("quarter_quantity").alias(Colname.sum_quantity),
             collect_set("Quality"),
         )
+        # TODO: What about calculated (A06)?
         .withColumn(
             "Quality",
             when(
