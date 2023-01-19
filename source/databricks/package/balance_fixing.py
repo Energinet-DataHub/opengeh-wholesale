@@ -53,10 +53,10 @@ def calculate_balance_fixing(
     )
 
     metadata_fake = Metadata("1", "1", "1", "1")
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_point_df
 
-    calculate_production(results, metadata_fake, calculation_output_writer)
+    calculate_production(
+        enriched_time_series_point_df, metadata_fake, calculation_output_writer
+    )
 
     calculate_non_profiled_consumption(
         enriched_time_series_point_df, metadata_fake, calculation_output_writer
@@ -88,13 +88,13 @@ def create_and_write_basis_data(
 
 
 def calculate_production(
-    results: dict,
+    enriched_time_series: DataFrame,
     metadata: Metadata,
     calculation_output_writer: CalculationOutputWriter,
 ) -> None:
-    # Total production per grid
+    
     total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
-        results, metadata
+        enriched_time_series, metadata
     )
     total_production_per_ga_df = total_production_per_per_ga_and_brp_and_es.groupBy(
         Colname.grid_area, Colname.time_window

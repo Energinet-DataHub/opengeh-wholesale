@@ -182,12 +182,11 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_differe
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_time_window_as_other_grid_area(
     agg_result_factory,
 ):
-    results = {}
-    results[
-        ResultKeyName.non_profiled_consumption
-    ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
+    consumption = create_dataframe_from_aggregation_result_schema(
+        metadata, agg_result_factory()
+    )
 
-    aggregated_df = aggregate_non_profiled_consumption_ga(results, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption, metadata).sort(
         Colname.grid_area, Colname.time_window
     )
 
@@ -203,10 +202,12 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_ti
 
 
 def test_production_calculation_per_ga_and_es(agg_result_factory):
-    consumption = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
-    aggregated_df = aggregate_non_profiled_consumption_ga_es(consumption, metadata).sort(
-        Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
+    consumption = create_dataframe_from_aggregation_result_schema(
+        metadata, agg_result_factory()
     )
+    aggregated_df = aggregate_non_profiled_consumption_ga_es(
+        consumption, metadata
+    ).sort(Colname.grid_area, Colname.energy_supplier_id, Colname.time_window)
     aggregated_df_collect = aggregated_df.collect()
     assert aggregated_df_collect[0][Colname.balance_responsible_id] is None
     assert aggregated_df_collect[0][Colname.grid_area] == "1"
@@ -238,11 +239,10 @@ def test_production_calculation_per_ga_and_brp(agg_result_factory):
 
 
 def test_production_calculation_per_ga(agg_result_factory):
-    results = {}
-    results[
-        ResultKeyName.non_profiled_consumption
-    ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
-    aggregated_df = aggregate_non_profiled_consumption_ga(results, metadata).sort(
+    consumption = create_dataframe_from_aggregation_result_schema(
+        metadata, agg_result_factory()
+    )
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption, metadata).sort(
         Colname.grid_area, Colname.time_window
     )
     aggregated_df_collect = aggregated_df.collect()

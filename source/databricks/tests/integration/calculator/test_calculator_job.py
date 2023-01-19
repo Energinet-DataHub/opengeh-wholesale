@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os import rmdir, path
+from os import path
+from shutil import rmtree
 import re
 from pyspark.sql import SparkSession
 import pytest
@@ -82,7 +83,7 @@ def executed_calculation_job(
 
     if path.isdir(test_data_job_parameters.process_results_path):
         # Since we are appending the result dataframes we must ensure that the path is removed before executing the tests
-        rmdir(test_data_job_parameters.process_results_path)
+        rmtree(test_data_job_parameters.process_results_path)
 
     metering_points_df = spark.read.csv(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",

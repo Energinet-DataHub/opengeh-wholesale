@@ -189,10 +189,11 @@ def aggregate_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
 
 
 # Function to aggregate hourly production per grid area, balance responsible party and energy supplier (step 5)
-def aggregate_production(results: dict, metadata: Metadata) -> DataFrame:
-    df = results[ResultKeyName.aggregation_base_dataframe]
+def aggregate_production(
+    enriched_time_series: DataFrame, metadata: Metadata
+) -> DataFrame:
     return aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
+        enriched_time_series, MeteringPointType.production, None, metadata
     )
 
 
