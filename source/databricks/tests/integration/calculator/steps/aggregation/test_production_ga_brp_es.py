@@ -154,11 +154,10 @@ def test_production_aggregator_filters_out_incorrect_point_type(
     """
     Aggregator should filter out all non "E18" MarketEvaluationPointType rows
     """
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_factory(
+    enriched_time_series = enriched_time_series_factory(
         metering_point_type=metering_point_type
     )
-    aggregated_df = aggregate_production(results, metadata)
+    aggregated_df = aggregate_production(enriched_time_series, metadata)
     assert aggregated_df.count() == 0
 
 
@@ -171,9 +170,9 @@ def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
     """
     row1_df = enriched_time_series_factory(quantity=Decimal(1))
     row2_df = enriched_time_series_factory(quantity=Decimal(2))
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
-    aggregated_df = aggregate_production(results, metadata)
+
+    enriched_time_series = row1_df.union(row2_df)
+    aggregated_df = aggregate_production(enriched_time_series, metadata)
 
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
@@ -202,9 +201,8 @@ def test_production_aggregator_returns_distinct_rows_for_observations_in_differe
     """
     row1_df = enriched_time_series_factory()
     row2_df = enriched_time_series_factory(obs_time_string="2020-01-01T01:00:00.000Z")
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
-    aggregated_df = aggregate_production(results, metadata)
+    time_series = row1_df.union(row2_df)
+    aggregated_df = aggregate_production(time_series, metadata)
 
     assert aggregated_df.count() == 2
 
@@ -244,9 +242,8 @@ def test_production_aggregator_returns_correct_schema(
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
     and time window (from the quarter-hour resolution specified in the aggregator).
     """
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_factory()
-    aggregated_df = aggregate_production(results, metadata)
+    time_series = enriched_time_series_factory()
+    aggregated_df = aggregate_production(time_series, metadata)
     assert aggregated_df.schema == aggregation_result_schema
 
 
