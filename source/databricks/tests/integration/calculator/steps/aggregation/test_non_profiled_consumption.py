@@ -138,12 +138,11 @@ def agg_result_factory(spark, settled_schema):
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_time_window(
     agg_result_factory,
 ):
-    results = {}
-    results[
-        ResultKeyName.non_profiled_consumption
-    ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
+    consumption = create_dataframe_from_aggregation_result_schema(
+        metadata, agg_result_factory()
+    )
 
-    aggregated_df = aggregate_non_profiled_consumption_ga(results, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption, metadata).sort(
         Colname.grid_area, Colname.time_window
     )
 
@@ -161,12 +160,11 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_different_time_window(
     agg_result_factory,
 ):
-    results = {}
-    results[
-        ResultKeyName.non_profiled_consumption
-    ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
+    consumption = create_dataframe_from_aggregation_result_schema(
+        metadata, agg_result_factory()
+    )
 
-    aggregated_df = aggregate_non_profiled_consumption_ga(results, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption, metadata).sort(
         Colname.grid_area, Colname.time_window
     )
 
@@ -205,11 +203,8 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_ti
 
 
 def test_production_calculation_per_ga_and_es(agg_result_factory):
-    results = {}
-    results[
-        ResultKeyName.non_profiled_consumption
-    ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
-    aggregated_df = aggregate_non_profiled_consumption_ga_es(results, metadata).sort(
+    consumption = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
+    aggregated_df = aggregate_non_profiled_consumption_ga_es(consumption, metadata).sort(
         Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
     )
     aggregated_df_collect = aggregated_df.collect()

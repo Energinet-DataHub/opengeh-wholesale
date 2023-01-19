@@ -52,18 +52,14 @@ def calculate_balance_fixing(
         time_zone,
     )
 
-    # This
     metadata_fake = Metadata("1", "1", "1", "1")
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_point_df
-    results[
-        ResultKeyName.non_profiled_consumption
-    ] = agg_steps.aggregate_non_profiled_consumption(results, metadata_fake)
 
     calculate_production(results, metadata_fake, calculation_output_writer)
 
     calculate_non_profiled_consumption(
-        results, metadata_fake, calculation_output_writer
+        enriched_time_series_point_df, metadata_fake, calculation_output_writer
     )
 
 
@@ -117,14 +113,18 @@ def calculate_production(
 
 
 def calculate_non_profiled_consumption(
-    results: dict,
+    enriched_time_series_point_df: DataFrame,
     metadata: Metadata,
     calculation_output_writer: CalculationOutputWriter,
 ) -> None:
 
+    consumption = agg_steps.aggregate_non_profiled_consumption(
+        enriched_time_series_point_df, metadata
+    )
+
     # Non-profiled consumption per energy supplier
     consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
-        results, metadata
+        consumption, metadata
     )
 
     consumption_per_ga_and_es = _prepare_result_for_output(
