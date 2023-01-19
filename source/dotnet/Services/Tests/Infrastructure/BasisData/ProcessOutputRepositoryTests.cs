@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using System.Text;
 using AutoFixture.Xunit2;
 using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
@@ -32,42 +35,53 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BasisData;
 [UnitTest]
 public class ProcessOutputRepositoryTests
 {
-    // [Theory]
-    // [AutoMoqData]
-    // public async Task GetAsync_ReturnsProcessActorResult(
-    //     [Frozen] Mock<IStreamZipper> streamZipperMock,
-    //     [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
-    //     [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
-    //     [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
-    //     [Frozen] Mock<Response<bool>> responseMock)
-    // {
-    //     // Arrange
-    //     const string pathWithKnownExtension = "my_file.json";
-    //     var asyncPageable = CreateAsyncPageableWithOnePathItem(pathWithKnownExtension);
-    //     var stream = new Mock<Stream>();
-    //
-    //     dataLakeDirectoryClientMock
-    //         .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
-    //         .Returns(asyncPageable);
-    //     responseMock.Setup(res => res.Value).Returns(true);
-    //     dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-    //         .ReturnsAsync(responseMock.Object);
-    //     dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
-    //         .Returns(dataLakeDirectoryClientMock.Object);
-    //     dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(pathWithKnownExtension))
-    //         .Returns(dataLakeFileClientMock.Object);
-    //     dataLakeFileClientMock
-    //         .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
-    //         .ReturnsAsync(stream.Object);
-    //
-    //     var sut = new ProcessOutputRepository(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
-    //
-    //     // Act
-    //     var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"));
-    //
-    //     // Assert
-    //     actual.Should().BeSameAs(stream.Object);
-    // }
+    [Theory]
+    [AutoMoqData]
+    public async Task GetAsync_ReturnsProcessActorResult(
+        [Frozen] Mock<IStreamZipper> streamZipperMock,
+        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
+        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
+        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
+        [Frozen] Mock<Response<bool>> responseMock)
+    {
+        // Arrange
+        const string pathWithKnownExtension = "my_file.json";
+        var asyncPageable = CreateAsyncPageableWithOnePathItem(pathWithKnownExtension);
+        var stream = new Mock<Stream>();
+
+        dataLakeDirectoryClientMock
+            .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
+            .Returns(asyncPageable);
+        responseMock.Setup(res => res.Value).Returns(true);
+        dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
+            .ReturnsAsync(responseMock.Object);
+        dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
+            .Returns(dataLakeDirectoryClientMock.Object);
+        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(pathWithKnownExtension))
+            .Returns(dataLakeFileClientMock.Object);
+        dataLakeFileClientMock
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
+            .ReturnsAsync(stream.Object);
+        var processResultPoint = new ProcessResultPoint("1.00", "A04", "2022-05-31T22:00:00");
+        processResultFactoryMock.Setup(x => x.GetPointsFromJsonStreamAsync(stream.Object))
+            .ReturnsAsync(new List<ProcessResultPoint>
+            {
+                processResultPoint,
+            });
+
+        var sut = new ProcessOutputRepository(dataLakeFileSystemClientMock.Object, streamZipperMock.Object, processResultFactoryMock.Object);
+
+        // Act
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"));
+
+        // Assert
+        var timeSeriesPoint = actual.TimeSeriesPoints.First();
+        timeSeriesPoint.Quality.Should().Be(processResultPoint.quality);
+        timeSeriesPoint.Quantity.Should().Be(decimal.Parse(processResultPoint.quantity, CultureInfo.InvariantCulture));
+        timeSeriesPoint.Time.Should().Be(DateTimeOffset.Parse(processResultPoint.quarter_time));
+    }
+
     [Theory]
     [AutoMoqData]
     public async Task GetResultFileStreamAsync_WhenDirectoryDoesNotExist_ThrowsException(
@@ -324,57 +338,58 @@ public class ProcessOutputRepositoryTests
         await sut.Invoking(s => s.CreateBasisDataZipAsync(completedBatch)).Should().NotThrowAsync();
     }
 
-    // [Fact]
-    // public async Task GetResultAsync_Time_IsRead()
-    // {
-    //     // Arrange
-    //     var expected = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
-    //     var sut = ProcessResultApplicationService();
-    //
-    //     // Act
-    //     var actual = await sut.GetResultAsync(
-    //         new ProcessStepResultRequestDto(
-    //             Guid.NewGuid(),
-    //             GridAreaCode,
-    //             ProcessStepType.AggregateProductionPerGridArea));
-    //
-    //     // Assert
-    //     actual.TimeSeriesPoints[1].Time.Should().Be(expected);
-    // }
-    //
-    // [Fact]
-    // public async Task GetResultAsync_Quantity_IsRead()
-    // {
-    //     // Arrange
-    //     var sut = ProcessResultApplicationService();
-    //
-    //     // Act
-    //     var actual = await sut.GetResultAsync(
-    //         new ProcessStepResultRequestDto(
-    //             Guid.NewGuid(),
-    //             GridAreaCode,
-    //             ProcessStepType.AggregateProductionPerGridArea));
-    //
-    //     // Assert
-    //     actual.TimeSeriesPoints.First().Quantity.Should().Be(1.000m);
-    // }
-    //
-    // [Fact]
-    // public async Task GetResultAsync_Quality_IsRead()
-    // {
-    //     // Arrange
-    //     var sut = ProcessResultApplicationService();
-    //
-    //     // Act
-    //     var actual = await sut.GetResultAsync(
-    //         new ProcessStepResultRequestDto(
-    //             Guid.NewGuid(),
-    //             GridAreaCode,
-    //             ProcessStepType.AggregateProductionPerGridArea));
-    //
-    //     // Assert
-    //     actual.TimeSeriesPoints.First().Quality.Should().Be("A04");
-    // }
+    [Fact]
+    public async Task GetResultAsync_Time_IsRead()
+    {
+        // Arrange
+        var expected = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
+
+        // Assert
+        actual.TimeSeriesPoints[1].Time.Should().Be(expected);
+    }
+
+    [Fact]
+    public async Task GetResultAsync_Quantity_IsRead()
+    {
+        // Arrange
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
+
+        // Assert
+        actual.TimeSeriesPoints.First().Quantity.Should().Be(1.000m);
+    }
+
+    [Fact]
+    public async Task GetResultAsync_Quality_IsRead()
+    {
+        // Arrange
+        var sut = ProcessResultApplicationService();
+
+        // Act
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                Guid.NewGuid(),
+                GridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
+
+        // Assert
+        actual.TimeSeriesPoints.First().Quality.Should().Be("A04");
+    }
+
     private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
     {
         var pathItem = DataLakeModelFactory

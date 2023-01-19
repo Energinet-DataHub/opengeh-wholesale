@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
@@ -30,11 +31,16 @@ public class ProcessOutputRepository : IProcessOutputRepository, IProcessActorRe
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
     private readonly IStreamZipper _streamZipper;
+    private readonly IProcessResultPointFactory _processResultPointFactory;
 
-    public ProcessOutputRepository(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper)
+    public ProcessOutputRepository(
+        DataLakeFileSystemClient dataLakeFileSystemClient,
+        IStreamZipper streamZipper,
+        IProcessResultPointFactory processResultPointFactory)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _streamZipper = streamZipper;
+        _processResultPointFactory = processResultPointFactory;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         {
             GetResultFileSpecification,
@@ -64,7 +70,7 @@ public class ProcessOutputRepository : IProcessOutputRepository, IProcessActorRe
         }
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
-        var points = await GetPointsFromJsonStreamAsync(resultStream).ConfigureAwait(false);
+        var points = await _processResultPointFactory.GetPointsFromJsonStreamAsync(resultStream).ConfigureAwait(false);
 
         return MapToProcessStepResultDto(points);
     }
@@ -152,27 +158,6 @@ public class ProcessOutputRepository : IProcessOutputRepository, IProcessActorRe
     {
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(fileName);
         return dataLakeFileClient.OpenWriteAsync(false);
-    }
-
-    private static async Task<List<ProcessResultPoint>> GetPointsFromJsonStreamAsync(Stream resultStream)
-    {
-        var list = new List<ProcessResultPoint>();
-
-        var streamer = new StreamReader(resultStream);
-
-        var nextline = await streamer.ReadLineAsync().ConfigureAwait(false);
-        while (nextline != null)
-        {
-            var dto = JsonSerializer.Deserialize<ProcessResultPoint>(
-                nextline,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            if (dto != null)
-                list.Add(dto);
-
-            nextline = await streamer.ReadLineAsync().ConfigureAwait(false);
-        }
-
-        return list;
     }
 
     private static ProcessActorResult MapToProcessStepResultDto(List<ProcessResultPoint> points)

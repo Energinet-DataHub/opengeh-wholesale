@@ -147,10 +147,12 @@ public static class Program
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
+        serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
         serviceCollection.AddScoped<IProcessOutputRepository>(
             provider => new ProcessOutputRepository(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
-                provider.GetRequiredService<IStreamZipper>()));
+                provider.GetRequiredService<IStreamZipper>(),
+                provider.GetRequiredService<IProcessResultPointFactory>()));
     }
 
     private static void DateTime(IServiceCollection serviceCollection)
