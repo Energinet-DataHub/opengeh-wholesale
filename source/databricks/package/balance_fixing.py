@@ -12,32 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
+from datetime import datetime
 
-from pyspark.sql.functions import col, expr, explode, sum, first, lit
-from package.codelists import (
-    MeteringPointResolution,
-)
-from package.db_logging import debug
 import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
-from datetime import datetime
+from package.codelists import MeteringPointResolution
 from package.constants import Colname, ResultKeyName
-from package.constants.time_series_type import TimeSeriesType
 from package.constants.result_grouping import ResultGrouping
+from package.constants.time_series_type import TimeSeriesType
+from package.db_logging import debug
+from package.calculation_output_writer import CalculationOutputWriter
 from package.shared.data_classes import Metadata
-from pyspark.sql.types import (
-    DecimalType,
-)
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import col, explode, expr, first, lit, sum
+from pyspark.sql.types import DecimalType
 
 
 def calculate_balance_fixing(
+    calculation_output_writer: CalculationOutputWriter,
     metering_points_periods_df: DataFrame,
     timeseries_points: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
-) -> tuple[DataFrame, DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
+) -> None:
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         timeseries_points,
         metering_points_periods_df,
@@ -73,7 +71,16 @@ def calculate_balance_fixing(
     )
 
     # Total production per grid
-    total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
+    total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
+        results, metadata_fake
+    )
+    # Sum within a grid area
+    total_production_per_ga_df = total_production_per_per_ga_and_brp_and_es.groupBy(
+        Colname.grid_area, Colname.time_window
+    ).agg(
+        sum(Colname.sum_quantity).alias(Colname.sum_quantity),
+        first(Colname.quality).alias(Colname.quality),
+    )
 
     total_production_per_ga_df = _prepare_result_for_output(
         total_production_per_ga_df,
@@ -81,12 +88,13 @@ def calculate_balance_fixing(
         ResultGrouping.PER_GRID_AREA,
     )
 
-    return (
-        consumption_per_ga_and_es,
-        total_production_per_ga_df,
-        time_series_basis_data_df,
-        master_basis_data_df,
+    # Write to file(s)
+    (timeseries_quarter_df, timeseries_hour_df) = time_series_basis_data_df
+    calculation_output_writer.write_basis_data(
+        master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
     )
+    calculation_output_writer.write_result(total_production_per_ga_df)
+    calculation_output_writer.write_result(consumption_per_ga_and_es)
 
 
 def _prepare_result_for_output(

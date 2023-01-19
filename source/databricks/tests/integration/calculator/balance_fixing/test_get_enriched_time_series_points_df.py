@@ -356,40 +356,87 @@ def test__df_has_expected_row_count_according_to_dst(
     assert actual.count() == expected_number_of_rows
 
 
+@pytest.mark.parametrize(
+    "from_date, to_date, from_date_hour_mp, to_date_hour_mp, from_date_quarter_mp, to_date_quarter_mp, total, quarterly, hourly",
+    [
+        (
+            "2022-01-01T22:00:00.000Z",  # from_date
+            "2022-01-03T22:00:00.000Z",  # to_date
+            "2022-01-01T22:00:00.000Z",  # from_date_hour_mp
+            "2022-01-02T22:00:00.000Z",  # to_date_hour_mp
+            "2022-01-02T22:00:00.000Z",  # from_date_quarter_mp
+            "2022-01-03T22:00:00.000Z",  # to_date_quarter_mp
+            120,  # total
+            96,  # quarterly
+            24,  # hourly
+        ),
+        (
+            "2022-01-01T22:00:00.000Z",  # from_date
+            "2022-01-04T22:00:00.000Z",  # to_date
+            "2022-01-01T22:00:00.000Z",  # from_date_hour_mp
+            "2022-01-03T22:00:00.000Z",  # to_date_hour_mp
+            "2022-01-03T22:00:00.000Z",  # from_date_quarter_mp
+            "2022-01-04T22:00:00.000Z",  # to_date_quarter_mp
+            144,  # total
+            96,  # quarterly
+            48,  # hourly
+        ),
+        (
+            "2022-01-01T22:00:00.000Z",  # from_date
+            "2022-01-05T22:00:00.000Z",  # to_date
+            "2022-01-01T22:00:00.000Z",  # from_date_hour_mp
+            "2022-01-03T22:00:00.000Z",  # to_date_hour_mp
+            "2022-01-03T22:00:00.000Z",  # from_date_quarter_mp
+            "2022-01-05T22:00:00.000Z",  # to_date_quarter_mp
+            240,  # total
+            192,  # quarterly
+            48,  # hourly
+        ),
+    ],
+)
 def test__support_meteringpoint_period_switch_on_resolution_provides_correct_number_of_periods(
-    raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
+    raw_time_series_points_factory,
+    metering_point_period_df_factory,
+    timestamp_factory,
+    from_date,
+    to_date,
+    from_date_hour_mp,
+    to_date_hour_mp,
+    from_date_quarter_mp,
+    to_date_quarter_mp,
+    total,
+    quarterly,
+    hourly,
 ):
     # Arrange
-    start_time = "2022-01-02T22:00:00.000Z"
-    end_time = "2022-01-03T22:00:00.000Z"
     raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory(start_time),
+        time=timestamp_factory(from_date),
     )
 
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.hour.value,
-        from_date="2022-01-01T22:00:00.000Z",
-        to_date="2022-01-02T22:00:00.000Z",
+        from_date=from_date_hour_mp,
+        to_date=to_date_hour_mp,
     )
 
     second_metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.quarter.value,
-        from_date="2022-01-02T22:00:00.000Z",
-        to_date="2022-01-03T22:00:00.000Z",
+        from_date=from_date_quarter_mp,
+        to_date=to_date_quarter_mp,
     )
 
     # Act
     actual = _get_enriched_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df.union(second_metering_point_period_df),
-        timestamp_factory(start_time),
-        timestamp_factory(end_time),
+        timestamp_factory(from_date),
+        timestamp_factory(to_date),
     )
 
     hour = actual.filter(col("Resolution") == MeteringPointResolution.hour.value)
     quarter = actual.filter(col("Resolution") == MeteringPointResolution.quarter.value)
 
     # Assert
-    assert actual.count() == 120
-    assert hour.count() == 24
-    assert quarter.count() == 96
+    assert actual.count() == total
+    assert hour.count() == hourly
+    assert quarter.count() == quarterly

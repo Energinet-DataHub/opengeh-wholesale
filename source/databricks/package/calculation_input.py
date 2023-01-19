@@ -41,10 +41,16 @@ def get_metering_point_periods_df(
         "inner",
     )
 
-    metering_point_periods_df = metering_points_in_grid_area.where(
-        col(Colname.from_date) < period_end_datetime
-    ).where(
-        col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start_datetime)
+    metering_point_periods_df = (
+        metering_points_in_grid_area.where(col(Colname.from_date) < period_end_datetime)
+        .where(
+            col(Colname.to_date).isNull()
+            | (col(Colname.to_date) > period_start_datetime)
+        )
+        .where(
+            (col(Colname.metering_point_type) == MeteringPointType.production.value)
+            | (col(Colname.metering_point_type) == MeteringPointType.consumption.value)
+        )
     )
 
     master_basis_data_df = metering_point_periods_df.withColumn(
