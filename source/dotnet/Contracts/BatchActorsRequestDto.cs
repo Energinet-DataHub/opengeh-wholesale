@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts;
 
-public sealed record BatchActorsRequestDto(Guid BatchId, string GridAreaCode, BatchActorType ActorType);
+public sealed record BatchActorsRequestDto(Guid BatchId, string GridAreaCode, TimeSeriesType TimeSeriesType, BatchActorType ActorType);
