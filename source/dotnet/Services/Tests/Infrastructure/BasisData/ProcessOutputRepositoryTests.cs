@@ -21,7 +21,10 @@ using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Application.ProcessResult;
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
@@ -338,56 +341,35 @@ public class ProcessOutputRepositoryTests
         await sut.Invoking(s => s.CreateBasisDataZipAsync(completedBatch)).Should().NotThrowAsync();
     }
 
-    [Fact]
-    public async Task GetResultAsync_Time_IsRead()
+    [Theory]
+    [AutoMoqData]
+    public async Task GetResultAsync_TimeSeriesPoint_IsRead(
+        [Frozen] Mock<IProcessActorResultRepository> processActorResultRepositoryMock)
     {
         // Arrange
-        var expected = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
-        var sut = ProcessResultApplicationService();
+        var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
+        var quantity = 1.000m;
+        var quality = "A04";
+
+        const string gridAreaCode = "805";
+        var batchId = Guid.NewGuid();
+
+        var sut = new ProcessActorResultApplicationService(processActorResultRepositoryMock.Object, new ProcessActorResultMapper());
+
+        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode)))
+            .ReturnsAsync(new ProcessActorResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         // Act
         var actual = await sut.GetResultAsync(
             new ProcessStepResultRequestDto(
-                Guid.NewGuid(),
-                GridAreaCode,
+                batchId,
+                gridAreaCode,
                 ProcessStepType.AggregateProductionPerGridArea));
 
         // Assert
-        actual.TimeSeriesPoints[1].Time.Should().Be(expected);
-    }
-
-    [Fact]
-    public async Task GetResultAsync_Quantity_IsRead()
-    {
-        // Arrange
-        var sut = ProcessResultApplicationService();
-
-        // Act
-        var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
-                Guid.NewGuid(),
-                GridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
-
-        // Assert
-        actual.TimeSeriesPoints.First().Quantity.Should().Be(1.000m);
-    }
-
-    [Fact]
-    public async Task GetResultAsync_Quality_IsRead()
-    {
-        // Arrange
-        var sut = ProcessResultApplicationService();
-
-        // Act
-        var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
-                Guid.NewGuid(),
-                GridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
-
-        // Assert
-        actual.TimeSeriesPoints.First().Quality.Should().Be("A04");
+        actual.TimeSeriesPoints.First().Time.Should().Be(time);
+        actual.TimeSeriesPoints.First().Quantity.Should().Be(quantity);
+        actual.TimeSeriesPoints.First().Quality.Should().Be(quality);
     }
 
     private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
