@@ -92,7 +92,7 @@ def calculate_production(
     metadata: Metadata,
     calculation_output_writer: CalculationOutputWriter,
 ) -> None:
-    
+
     total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
         enriched_time_series, metadata
     )
