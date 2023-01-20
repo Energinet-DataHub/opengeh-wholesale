@@ -14,31 +14,31 @@
 
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
 /// <summary>
 /// This class provides the ability to retrieve a calculated result for a given step for a batch.
 /// </summary>
-public class ProcessActorResultApplicationService : IProcessActorResultApplicationService
+public class ProcessStepResultApplicationService : IProcessStepResultApplicationService
 {
-    private readonly IProcessActorResultRepository _processActorResultRepository;
-    private readonly IProcessActorResultMapper _processActorResultMapper;
+    private readonly IProcessStepResultRepository _processStepResultRepository;
+    private readonly IProcessStepResultMapper _processStepResultMapper;
 
-    public ProcessActorResultApplicationService(IProcessActorResultRepository processActorResultRepository, IProcessActorResultMapper processActorResultMapper)
+    public ProcessStepResultApplicationService(IProcessStepResultRepository processStepResultRepository, IProcessStepResultMapper processStepResultMapper)
     {
-        _processActorResultRepository = processActorResultRepository;
-        _processActorResultMapper = processActorResultMapper;
+        _processStepResultRepository = processStepResultRepository;
+        _processStepResultMapper = processStepResultMapper;
     }
 
     public async Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto)
     {
-        var processActorResult = await _processActorResultRepository.GetAsync(
+        var processActorResult = await _processStepResultRepository.GetAsync(
                 processStepResultRequestDto.BatchId,
                 new GridAreaCode(processStepResultRequestDto.GridAreaCode))
             .ConfigureAwait(false);
 
-        return _processActorResultMapper.MapToDto(processActorResult);
+        return _processStepResultMapper.MapToDto(processActorResult);
     }
 }

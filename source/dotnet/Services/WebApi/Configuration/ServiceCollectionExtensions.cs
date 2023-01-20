@@ -22,8 +22,8 @@ using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -85,9 +85,9 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobRunner>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobParametersFactory>(_ => null!); // Unused in the use cases of this app
-        services.AddScoped<IProcessActorResultApplicationService, ProcessActorResultApplicationService>();
-        services.AddScoped<IProcessActorResultMapper, ProcessActorResultMapper>();
-        services.AddScoped<IProcessActorResultRepository, ProcessOutputRepository>();
+        services.AddScoped<IProcessStepResultApplicationService, ProcessStepResultApplicationService>();
+        services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
+        services.AddScoped<IProcessStepResultRepository, ProcessOutputRepository>();
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
 
         services.ConfigureDateTime();

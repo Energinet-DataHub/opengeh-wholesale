@@ -13,23 +13,22 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
-public class ProcessActorResultMapper : IProcessActorResultMapper
+public class ProcessStepResultMapper : IProcessStepResultMapper
 {
-    public ProcessStepResultDto MapToDto(ProcessActorResult processActorResult)
+    public ProcessStepResultDto MapToDto(ProcessStepResult processStepResult)
     {
-        ArgumentNullException.ThrowIfNull(processActorResult);
+        ArgumentNullException.ThrowIfNull(processStepResult);
 
         return new ProcessStepResultDto(
             ProcessStepMeteringPointType.Production,
-            processActorResult.Sum,
-            processActorResult.Min,
-            processActorResult.Max,
-            processActorResult
+            processStepResult.Sum,
+            processStepResult.Min,
+            processStepResult.Max,
+            processStepResult
                 .TimeSeriesPoints
                 .Select(MapTimeSeriesPointToDto)
                 .ToArray());

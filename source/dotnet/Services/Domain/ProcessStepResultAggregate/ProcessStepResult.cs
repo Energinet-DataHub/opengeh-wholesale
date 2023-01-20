@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
+namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 /// <summary>
-/// Result data from a specific actor in a process.
+/// Result data from a specific step in a process.
 /// </summary>
-public sealed class ProcessActorResult
+public sealed class ProcessStepResult
 {
-    public ProcessActorResult(TimeSeriesPoint[] timeSeriesPoints)
+    public ProcessStepResult(TimeSeriesPoint[] timeSeriesPoints)
     {
         if (timeSeriesPoints.Length == 0)
             throw new ArgumentException("Time series points empty");

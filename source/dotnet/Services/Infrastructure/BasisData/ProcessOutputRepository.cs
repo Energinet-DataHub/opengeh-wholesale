@@ -19,13 +19,13 @@ using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
-public class ProcessOutputRepository : IProcessOutputRepository, IProcessActorResultRepository
+public class ProcessOutputRepository : IProcessOutputRepository, IProcessStepResultRepository
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
@@ -60,7 +60,7 @@ public class ProcessOutputRepository : IProcessOutputRepository, IProcessActorRe
             await _streamZipper.ZipAsync(batchBasisFileStreams, zipStream).ConfigureAwait(false);
     }
 
-    public async Task<ProcessActorResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode)
+    public async Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
         var (directory, extension, _) = GetResultFileSpecification(batchId, gridAreaCode);
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
@@ -160,7 +160,7 @@ public class ProcessOutputRepository : IProcessOutputRepository, IProcessActorRe
         return dataLakeFileClient.OpenWriteAsync(false);
     }
 
-    private static ProcessActorResult MapToProcessStepResultDto(List<ProcessResultPoint> points)
+    private static ProcessStepResult MapToProcessStepResultDto(List<ProcessResultPoint> points)
     {
         var pointsDto = points.Select(
                 point => new TimeSeriesPoint(
@@ -169,6 +169,6 @@ public class ProcessOutputRepository : IProcessOutputRepository, IProcessActorRe
                     point.quality))
             .ToList();
 
-        return new ProcessActorResult(pointsDto.ToArray());
+        return new ProcessStepResult(pointsDto.ToArray());
     }
 }

@@ -25,11 +25,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 public class ProcessStepResultController : ControllerBase
 {
     private const string Version = "2.0";
-    private readonly IProcessActorResultApplicationService _processActorResultApplicationService;
+    private readonly IProcessStepResultApplicationService _processStepResultApplicationService;
 
-    public ProcessStepResultController(IProcessActorResultApplicationService processActorResultApplicationService)
+    public ProcessStepResultController(IProcessStepResultApplicationService processStepResultApplicationService)
     {
-        _processActorResultApplicationService = processActorResultApplicationService;
+        _processStepResultApplicationService = processStepResultApplicationService;
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class ProcessStepResultController : ControllerBase
     [MapToApiVersion("2.1")]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDto processStepResultRequestDto)
     {
-        var resultDto = await _processActorResultApplicationService.GetResultAsync(processStepResultRequestDto).ConfigureAwait(false);
+        var resultDto = await _processStepResultApplicationService.GetResultAsync(processStepResultRequestDto).ConfigureAwait(false);
         return Ok(resultDto);
     }
 }

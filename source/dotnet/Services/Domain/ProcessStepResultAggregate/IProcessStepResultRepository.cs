@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
+namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-public interface IProcessActorResultMapper
+public interface IProcessStepResultRepository
 {
-    ProcessStepResultDto MapToDto(ProcessActorResult processActorResult);
+    Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode);
 }

@@ -15,33 +15,32 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessResult;
 
-public class ProcessActorResultMapperTests
+public class ProcessStepMapperTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public void MapToDto_WhenNull_ThrowsArgumentNullException(ProcessActorResultMapper sut)
+    public void MapToDto_WhenNull_ThrowsArgumentNullException(ProcessStepResultMapper sut)
     {
         Assert.Throws<ArgumentNullException>(() => sut.MapToDto(null!));
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public void MapToDto_ReturnsDto(ProcessActorResultMapper sut, ProcessActorResult processActorResult)
+    public void MapToDto_ReturnsDto(ProcessStepResultMapper sut, ProcessStepResult processStepResult)
     {
         var expected = new ProcessStepResultDto(
             ProcessStepMeteringPointType.Production,
-            processActorResult.Sum,
-            processActorResult.Min,
-            processActorResult.Max,
-            processActorResult.TimeSeriesPoints.Select(point => new TimeSeriesPointDto(point.Time, point.Quantity, point.Quality)).ToArray());
-        var actual = sut.MapToDto(processActorResult);
+            processStepResult.Sum,
+            processStepResult.Min,
+            processStepResult.Max,
+            processStepResult.TimeSeriesPoints.Select(point => new TimeSeriesPointDto(point.Time, point.Quantity, point.Quality)).ToArray());
+        var actual = sut.MapToDto(processStepResult);
         actual.Should().BeEquivalentTo(expected);
     }
 }

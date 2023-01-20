@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
+namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
-public interface IProcessActorResultRepository
+/// <summary>
+/// This class provides the ability to retrieve a calculated result for a given step for a batch.
+/// </summary>
+public interface IProcessStepResultApplicationService
 {
-    Task<ProcessActorResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode);
+    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
 }

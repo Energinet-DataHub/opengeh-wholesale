@@ -12,26 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.ProcessActorResultAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Domain.ProcessActorResultAggregate;
+namespace Energinet.DataHub.Wholesale.Tests.Domain.ProcessStepResultAggregate;
 
-public class ProcessActorResultAggregateTests
+public class ProcessStepResultAggregateTests
 {
     [Fact]
     public void Ctor_WhenNoPoints_ThrowsArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => new ProcessActorResult(new TimeSeriesPoint[] { }));
+        Assert.Throws<ArgumentException>(() => new ProcessStepResult(new TimeSeriesPoint[] { }));
     }
 
     [Theory]
     [MemberData(nameof(Data))]
     public void CalculatedProperties_ReturnsExpectedValue(List<TimeSeriesPoint> points, decimal expectedMin, decimal expectedMax, decimal expectedSum)
     {
-        var sut = new ProcessActorResult(points.ToArray());
+        var sut = new ProcessStepResult(points.ToArray());
         sut.Min.Should().Be(expectedMin);
         sut.Max.Should().Be(expectedMax);
         sut.Sum.Should().Be(expectedSum);

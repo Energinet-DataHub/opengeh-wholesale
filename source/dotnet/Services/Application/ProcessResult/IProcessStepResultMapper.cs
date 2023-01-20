@@ -13,13 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
-/// <summary>
-/// This class provides the ability to retrieve a calculated result for a given step for a batch.
-/// </summary>
-public interface IProcessActorResultApplicationService
+public interface IProcessStepResultMapper
 {
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
+    ProcessStepResultDto MapToDto(ProcessStepResult processStepResult);
 }
