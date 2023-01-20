@@ -19,6 +19,10 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 public class ProcessResultPointFactory : IProcessResultPointFactory
 {
+    /// <summary>
+    /// Creates a List of ProcessResultPoint.
+    /// </summary>
+    /// <param name="resultStream">The stream must be a .json file in the 'json newline' format.</param>
     public async Task<List<ProcessResultPoint>> GetPointsFromJsonStreamAsync(Stream resultStream)
     {
         var list = new List<ProcessResultPoint>();
