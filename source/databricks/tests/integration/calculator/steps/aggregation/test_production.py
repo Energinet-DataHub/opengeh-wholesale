@@ -140,11 +140,12 @@ def test_production_calculation_per_ga_and_brp(test_data_factory):
 
 
 def test_production_calculation_per_ga(test_data_factory):
-    results = {}
-    results[
-        ResultKeyName.production_with_system_correction_and_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_production_ga(results, metadata).sort(Colname.grid_area)
+    production_with_system_correction_and_grid_loss = (
+        create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
+    )
+    result = aggregate_production_ga(
+        production_with_system_correction_and_grid_loss, metadata
+    ).sort(Colname.grid_area)
     result_collect = result.collect()
     assert result_collect[0][Colname.balance_responsible_id] is None
     assert result_collect[0][Colname.energy_supplier_id] is None
