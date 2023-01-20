@@ -44,6 +44,7 @@ class CalculationOutputWriter:
         )
 
     def write_result(self, result_df: DataFrame) -> None:
+
         result_data_directory = f"{self.batch_directory}/result"
 
         # First repartition to co-locate all rows for a grid area on a single executor.

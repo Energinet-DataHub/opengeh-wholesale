@@ -137,11 +137,8 @@ def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
     """
     Aggregator should filter out all non "E17" MarketEvaluationPointType rows
     """
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory(
-        point_type=e_18
-    )
-    aggregated_df = aggregate_non_profiled_consumption(results, metadata)
+    time_series = time_series_row_factory(point_type=e_18)
+    aggregated_df = aggregate_non_profiled_consumption(time_series, metadata)
     assert aggregated_df.count() == 0
 
 
@@ -152,11 +149,10 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
     same quarter hour time window
     """
-    results = {}
     row1_df = time_series_row_factory(quantity=Decimal(1))
     row2_df = time_series_row_factory(quantity=Decimal(2))
-    results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
-    aggregated_df = aggregate_non_profiled_consumption(results, metadata)
+    time_series = row1_df.union(row2_df)
+    aggregated_df = aggregate_non_profiled_consumption(time_series, metadata)
 
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
@@ -186,11 +182,10 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
     diff_obs_time = datetime.strptime(
         "2020-01-01T01:00:00+0000", date_time_formatting_string
     )
-    results = {}
     row1_df = time_series_row_factory()
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
-    results[ResultKeyName.aggregation_base_dataframe] = row1_df.union(row2_df)
-    aggregated_df = aggregate_non_profiled_consumption(results, metadata).sort(
+    time_series = row1_df.union(row2_df)
+    aggregated_df = aggregate_non_profiled_consumption(time_series, metadata).sort(
         Colname.time_window
     )
 
@@ -232,9 +227,8 @@ def test_consumption_supplier_aggregator_returns_correct_schema(
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
     and time window (from the quarter-hour resolution specified in the aggregator).
     """
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory()
-    aggregated_df = aggregate_non_profiled_consumption(results, metadata)
+    time_series = time_series_row_factory()
+    aggregated_df = aggregate_non_profiled_consumption(time_series, metadata)
     assert aggregated_df.schema == aggregation_result_schema
 
 
@@ -263,7 +257,6 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
 
 
 def test_expected_schema(time_series_row_factory):
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_row_factory()
-    aggregated_df = aggregate_non_profiled_consumption(results, metadata)
+    time_series = time_series_row_factory()
+    aggregated_df = aggregate_non_profiled_consumption(time_series, metadata)
     assert aggregated_df.schema == aggregation_result_schema

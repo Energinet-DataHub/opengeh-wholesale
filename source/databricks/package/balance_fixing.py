@@ -44,7 +44,38 @@ def calculate_balance_fixing(
         period_end_datetime,
     )
 
-    time_series_basis_data_df = basis_data.get_time_series_basis_data_dfs(
+    create_and_write_basis_data(
+        calculation_output_writer,
+        metering_points_periods_df,
+        enriched_time_series_point_df,
+        period_start_datetime,
+        period_end_datetime,
+        time_zone,
+    )
+
+    metadata_fake = Metadata("1", "1", "1", "1")
+
+    calculate_production(
+        enriched_time_series_point_df, metadata_fake, calculation_output_writer
+    )
+
+    calculate_non_profiled_consumption(
+        enriched_time_series_point_df, metadata_fake, calculation_output_writer
+    )
+
+
+def create_and_write_basis_data(
+    calculation_output_writer: CalculationOutputWriter,
+    metering_points_periods_df: DataFrame,
+    enriched_time_series_point_df: DataFrame,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+    time_zone: str,
+) -> None:
+    (
+        timeseries_quarter_df,
+        timeseries_hour_df,
+    ) = basis_data.get_time_series_basis_data_dfs(
         enriched_time_series_point_df, time_zone
     )
 
@@ -52,37 +83,21 @@ def calculate_balance_fixing(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
-    metadata_fake = Metadata("1", "1", "1", "1")
-
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_point_df
-    results[
-        ResultKeyName.non_profiled_consumption
-    ] = agg_steps.aggregate_non_profiled_consumption(results, metadata_fake)
-
-    # Non-profiled consumption per energy supplier
-    consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
-        results, metadata_fake
+    calculation_output_writer.write_basis_data(
+        master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
     )
 
-    consumption_per_ga_and_es = _prepare_result_for_output(
-        consumption_per_ga_and_es,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        ResultGrouping.PER_ENERGY_SUPPLIER,
-    )
 
-    actors_df = _create_actors_df(
-        consumption_per_ga_and_es,
-        ActorType.EnergySupplier,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-    )
-    calculation_output_writer.write_actors(actors_df)
 
-    # Total production per grid
+def calculate_production(
+    enriched_time_series: DataFrame,
+    metadata: Metadata,
+    calculation_output_writer: CalculationOutputWriter,
+) -> None:
+
     total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
-        results, metadata_fake
+        enriched_time_series, metadata
     )
-    # Sum within a grid area
     total_production_per_ga_df = total_production_per_per_ga_and_brp_and_es.groupBy(
         Colname.grid_area, Colname.time_window
     ).agg(
@@ -96,13 +111,38 @@ def calculate_balance_fixing(
         ResultGrouping.PER_GRID_AREA,
     )
 
-    # Write to file(s)
-    (timeseries_quarter_df, timeseries_hour_df) = time_series_basis_data_df
-    calculation_output_writer.write_basis_data(
-        master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
-    )
     calculation_output_writer.write_result(total_production_per_ga_df)
+
+
+def calculate_non_profiled_consumption(
+    enriched_time_series_point_df: DataFrame,
+    metadata: Metadata,
+    calculation_output_writer: CalculationOutputWriter,
+) -> None:
+
+    consumption = agg_steps.aggregate_non_profiled_consumption(
+        enriched_time_series_point_df, metadata
+    )
+
+    # Non-profiled consumption per energy supplier
+    consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
+        consumption, metadata
+    )
+
+    consumption_per_ga_and_es = _prepare_result_for_output(
+        consumption_per_ga_and_es,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        ResultGrouping.PER_ENERGY_SUPPLIER,
+    )
+
     calculation_output_writer.write_result(consumption_per_ga_and_es)
+    
+    actors_df = _create_actors_df(
+        consumption_per_ga_and_es,
+        ActorType.EnergySupplier,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+    )
+    calculation_output_writer.write_actors(actors_df)
 
 
 def _prepare_result_for_output(

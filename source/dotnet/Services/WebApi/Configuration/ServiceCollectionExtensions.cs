@@ -22,10 +22,13 @@ using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
@@ -65,8 +68,9 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
         services.AddScoped<IBasisDataApplicationService, BasisDataApplicationService>();
-        services.AddScoped<IBatchFileManager, BatchFileManager>();
+        services.AddScoped<IProcessOutputRepository, ProcessOutputRepository>();
         services.AddScoped<IStreamZipper, StreamZipper>();
+        services.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
@@ -82,6 +86,8 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICalculatorJobRunner>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobParametersFactory>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IProcessStepResultApplicationService, ProcessStepResultApplicationService>();
+        services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
+        services.AddScoped<IProcessStepResultRepository, ProcessOutputRepository>();
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
 
         services.ConfigureDateTime();

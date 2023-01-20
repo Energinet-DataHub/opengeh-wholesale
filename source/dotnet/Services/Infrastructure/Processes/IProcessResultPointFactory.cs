@@ -12,20 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Application.ProcessResult;
 
-namespace Energinet.DataHub.Wholesale.Application.Infrastructure;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
-public interface IBatchFileManager
+/// <summary>
+/// Interface is for mocking
+/// </summary>
+public interface IProcessResultPointFactory
 {
-    /// <summary>
-    /// Create zip archives for each process in the batch.
-    /// The archive contains the basis data files and the result file.
-    /// </summary>
-    Task CreateBasisDataZipAsync(Batch completedBatch);
-
-    Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode);
-
-    Task<Stream> GetZippedBasisDataStreamAsync(Batch batch);
+    Task<List<ProcessResultPoint>> GetPointsFromJsonStreamAsync(Stream resultStream);
 }
