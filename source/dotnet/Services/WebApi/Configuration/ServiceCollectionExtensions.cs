@@ -28,6 +28,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
@@ -69,6 +70,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IBasisDataApplicationService, BasisDataApplicationService>();
         services.AddScoped<IProcessOutputRepository, ProcessOutputRepository>();
         services.AddScoped<IStreamZipper, StreamZipper>();
+        services.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
