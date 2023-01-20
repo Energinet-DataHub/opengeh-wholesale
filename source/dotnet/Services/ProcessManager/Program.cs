@@ -28,6 +28,7 @@ using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
@@ -146,10 +147,12 @@ public static class Program
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<IBatchFileManager>(
-            provider => new BatchFileManager(
+        serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
+        serviceCollection.AddScoped<IProcessOutputRepository>(
+            provider => new ProcessOutputRepository(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
-                provider.GetRequiredService<IStreamZipper>()));
+                provider.GetRequiredService<IStreamZipper>(),
+                provider.GetRequiredService<IProcessResultPointFactory>()));
     }
 
     private static void DateTime(IServiceCollection serviceCollection)

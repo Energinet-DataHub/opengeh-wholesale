@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.TestCommon.FluentAssertionsExtensions;
-using Energinet.DataHub.Wholesale.Application.Infrastructure;
+using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
 using Moq;
+using Test.Core;
 using Xunit;
 using Xunit.Categories;
 
@@ -28,138 +30,28 @@ namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessResult;
 [UnitTest]
 public class ProcessResultApplicationServiceTests
 {
-    private const string GridAreaCode = "805";
-
-    [Fact]
-    public async Task GetResultAsync_WhenCalled_ReturnsProcessResultDtoFromJson()
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetResultAsync_ReturnsDto(
+        ProcessStepResultRequestDto request,
+        ProcessStepResult result,
+        ProcessStepResultDto resultDto,
+        [Frozen] Mock<IProcessStepResultRepository> repositoryMock,
+        [Frozen] Mock<IProcessStepResultMapper> mapperMock,
+        ProcessStepResultApplicationService sut)
     {
         // Arrange
-        var sut = ProcessResultApplicationService();
+        request.SetPrivateProperty(dto => dto.GridAreaCode, "123");
+        repositoryMock
+            .Setup(repository => repository.GetAsync(request.BatchId, new GridAreaCode(request.GridAreaCode)))
+            .ReturnsAsync(() => result);
+        mapperMock
+            .Setup(mapper => mapper.MapToDto(result))
+            .Returns(() => resultDto);
 
         // Act
-        var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
-                Guid.NewGuid(),
-                GridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
+        var actual = await sut.GetResultAsync(request);
 
-        actual.Should().NotContainNullsOrEmptyEnumerables();
-    }
-
-    [Fact]
-    public async Task GetResultAsync_Time_IsRead()
-    {
-        // Arrange
-        var expected = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
-        var sut = ProcessResultApplicationService();
-
-        // Act
-        var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
-                Guid.NewGuid(),
-                GridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
-
-        // Assert
-        actual.TimeSeriesPoints[1].Time.Should().Be(expected);
-    }
-
-    [Fact]
-    public async Task GetResultAsync_Quantity_IsRead()
-    {
-        // Arrange
-        var sut = ProcessResultApplicationService();
-
-        // Act
-        var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
-                Guid.NewGuid(),
-                GridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
-
-        // Assert
-        actual.TimeSeriesPoints.First().Quantity.Should().Be(1.000m);
-    }
-
-    [Fact]
-    public async Task GetResultAsync_Quality_IsRead()
-    {
-        // Arrange
-        var sut = ProcessResultApplicationService();
-
-        // Act
-        var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
-                Guid.NewGuid(),
-                GridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
-
-        // Assert
-        actual.TimeSeriesPoints.First().Quality.Should().Be("A04");
-    }
-
-    [Fact]
-    public async Task GetResultAsync_Max_IsMaxQuantity()
-    {
-        // Arrange
-        var sut = ProcessResultApplicationService();
-
-        // Act
-        var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
-                Guid.NewGuid(),
-                GridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
-
-        actual.Should().NotBeNull();
-
-        actual.Max.Should().Be(actual.TimeSeriesPoints.Max(x => x.Quantity));
-    }
-
-    [Fact]
-    public async Task GetResultAsync_Min_IsMinQuantity()
-    {
-        // Arrange
-        var sut = ProcessResultApplicationService();
-
-        // Act
-        var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
-                Guid.NewGuid(),
-                GridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
-
-        actual.Should().NotBeNull();
-
-        actual.Min.Should().Be(actual.TimeSeriesPoints.Min(x => x.Quantity));
-    }
-
-    [Fact]
-    public async Task GetResultAsync_Sum_IsSumQuantity()
-    {
-        // Arrange
-        var sut = ProcessResultApplicationService();
-
-        // Act
-        var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
-                Guid.NewGuid(),
-                GridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
-
-        actual.Should().NotBeNull();
-
-        actual.Sum.Should().Be(actual.TimeSeriesPoints.Sum(x => x.Quantity));
-    }
-
-    private static ProcessStepResultApplicationService ProcessResultApplicationService()
-    {
-        var mock = new Mock<IBatchFileManager>();
-        var stream = EmbeddedResources.GetStream("Application.ProcessResult.ProcessResult.json");
-        mock.Setup(x => x.GetResultFileStreamAsync(It.IsAny<Guid>(), It.IsAny<GridAreaCode>()))
-            .ReturnsAsync(stream);
-
-        var sut = new ProcessStepResultApplicationService(mock.Object);
-        return sut;
+        actual.Should().BeEquivalentTo(resultDto);
     }
 }

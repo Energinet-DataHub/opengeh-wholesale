@@ -12,24 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
+using System.Text.Json;
 using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Wholesale.Application.Infrastructure;
+using Energinet.DataHub.Wholesale.Application.ProcessResult;
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
-public class BatchFileManager : IBatchFileManager
+public class ProcessOutputRepository : IProcessOutputRepository, IProcessStepResultRepository
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
     private readonly IStreamZipper _streamZipper;
+    private readonly IProcessResultPointFactory _processResultPointFactory;
 
-    public BatchFileManager(DataLakeFileSystemClient dataLakeFileSystemClient, IStreamZipper streamZipper)
+    public ProcessOutputRepository(
+        DataLakeFileSystemClient dataLakeFileSystemClient,
+        IStreamZipper streamZipper,
+        IProcessResultPointFactory processResultPointFactory)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _streamZipper = streamZipper;
+        _processResultPointFactory = processResultPointFactory;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         {
             GetResultFileSpecification,
@@ -49,7 +60,7 @@ public class BatchFileManager : IBatchFileManager
             await _streamZipper.ZipAsync(batchBasisFileStreams, zipStream).ConfigureAwait(false);
     }
 
-    public async Task<Stream> GetResultFileStreamAsync(Guid batchId, GridAreaCode gridAreaCode)
+    public async Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
         var (directory, extension, _) = GetResultFileSpecification(batchId, gridAreaCode);
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
@@ -58,7 +69,10 @@ public class BatchFileManager : IBatchFileManager
             throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
         }
 
-        return await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
+        var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
+        var points = await _processResultPointFactory.GetPointsFromJsonStreamAsync(resultStream).ConfigureAwait(false);
+
+        return MapToProcessStepResultDto(points);
     }
 
     public async Task<Stream> GetZippedBasisDataStreamAsync(Batch batch)
@@ -144,5 +158,17 @@ public class BatchFileManager : IBatchFileManager
     {
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(fileName);
         return dataLakeFileClient.OpenWriteAsync(false);
+    }
+
+    private static ProcessStepResult MapToProcessStepResultDto(List<ProcessResultPoint> points)
+    {
+        var pointsDto = points.Select(
+                point => new TimeSeriesPoint(
+                    DateTimeOffset.Parse(point.quarter_time),
+                    decimal.Parse(point.quantity, CultureInfo.InvariantCulture),
+                    point.quality))
+            .ToList();
+
+        return new ProcessStepResult(pointsDto.ToArray());
     }
 }

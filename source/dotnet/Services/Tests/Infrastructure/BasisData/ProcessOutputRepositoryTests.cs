@@ -12,15 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using System.Text;
 using AutoFixture.Xunit2;
 using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Application.ProcessResult;
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
@@ -30,12 +34,13 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BasisData;
 
 [UnitTest]
-public class BatchFileManagerTests
+public class ProcessOutputRepositoryTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task GetResultFileStreamAsync_ReturnsStream(
+    public async Task GetAsync_ReturnsProcessActorResult(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
+        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
@@ -59,20 +64,30 @@ public class BatchFileManagerTests
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
+        var processResultPoint = new ProcessResultPoint("1.00", "A04", "2022-05-31T22:00:00");
+        processResultFactoryMock.Setup(x => x.GetPointsFromJsonStreamAsync(stream.Object))
+            .ReturnsAsync(new List<ProcessResultPoint>
+            {
+                processResultPoint,
+            });
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(
+            dataLakeFileSystemClientMock.Object,
+            streamZipperMock.Object,
+            processResultFactoryMock.Object);
 
         // Act
-        var actual = await sut.GetResultFileStreamAsync(Guid.NewGuid(), new GridAreaCode("123"));
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"));
 
         // Assert
-        actual.Should().BeSameAs(stream.Object);
+        actual.Should().NotBeNull();
     }
 
     [Theory]
     [AutoMoqData]
     public async Task GetResultFileStreamAsync_WhenDirectoryDoesNotExist_ThrowsException(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
+        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<Response<bool>> responseMock)
@@ -91,11 +106,14 @@ public class BatchFileManagerTests
             .ReturnsAsync(responseMock.Object);
         responseMock.Setup(res => res.Value).Returns(true);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(
+            dataLakeFileSystemClientMock.Object,
+            streamZipperMock.Object,
+            processResultFactoryMock.Object);
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetResultFileStreamAsync(Guid.NewGuid(), new GridAreaCode("123")))
+            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123")))
             .Should()
             .ThrowAsync<InvalidOperationException>();
     }
@@ -104,6 +122,7 @@ public class BatchFileManagerTests
     [AutoMoqData]
     public async Task GetResultFileStreamAsync_WhenNoFileClientFound_ThrowsException(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
+        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<Response<bool>> responseMock)
@@ -115,11 +134,14 @@ public class BatchFileManagerTests
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
             .ReturnsAsync(responseMock.Object);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(
+            dataLakeFileSystemClientMock.Object,
+            streamZipperMock.Object,
+            processResultFactoryMock.Object);
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetResultFileStreamAsync(Guid.NewGuid(), new GridAreaCode("123")))
+            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123")))
             .Should()
             .ThrowAsync<Exception>();
     }
@@ -128,6 +150,7 @@ public class BatchFileManagerTests
     [AutoMoqData]
     public async Task GetResultFileStreamAsync_WhenFileExtensionNotFound_ThrowException(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
+        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<Response<bool>> responseMock)
@@ -156,11 +179,14 @@ public class BatchFileManagerTests
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
             .ReturnsAsync(responseMock.Object);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(
+            dataLakeFileSystemClientMock.Object,
+            streamZipperMock.Object,
+            processResultFactoryMock.Object);
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetResultFileStreamAsync(Guid.NewGuid(), new GridAreaCode("123")))
+            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123")))
             .Should()
             .ThrowAsync<Exception>();
     }
@@ -175,7 +201,7 @@ public class BatchFileManagerTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = BatchFileManager.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
+        var actual = ProcessOutputRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -193,7 +219,7 @@ public class BatchFileManagerTests
 
         // Act
         var actual =
-            BatchFileManager.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
+            ProcessOutputRepository.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -211,7 +237,7 @@ public class BatchFileManagerTests
 
         // Act
         var actual =
-            BatchFileManager.GetTimeSeriesHourBasisDataFileSpecification(
+            ProcessOutputRepository.GetTimeSeriesHourBasisDataFileSpecification(
                 new Guid(batchId),
                 new GridAreaCode(gridAreaCode));
 
@@ -231,7 +257,7 @@ public class BatchFileManagerTests
 
         // Act
         var actual =
-            BatchFileManager.GetTimeSeriesQuarterBasisDataFileSpecification(
+            ProcessOutputRepository.GetTimeSeriesQuarterBasisDataFileSpecification(
                 new Guid(batchId),
                 new GridAreaCode(gridAreaCode));
 
@@ -244,6 +270,7 @@ public class BatchFileManagerTests
     [AutoMoqData]
     public async Task GetZippedBasisDataStreamAsync_WhenGivenBatch_ReturnCorrectStream(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
+        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock)
     {
@@ -283,7 +310,10 @@ public class BatchFileManagerTests
                     basisDataBuffer)),
             null!);
         dataLakeFileClientMock.Setup(x => x.ReadAsync()).ReturnsAsync(fileDownloadResponse);
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(
+            dataLakeFileSystemClientMock.Object,
+            streamZipperMock.Object,
+            processResultFactoryMock.Object);
         var batch = new BatchBuilder().Build();
 
         // Act
@@ -298,6 +328,7 @@ public class BatchFileManagerTests
     [AutoMoqData]
     public async Task CreateBasisDataZipAsync_CreatesZipFile_WhenDataDirectoryIsNotFound(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
+        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
@@ -319,10 +350,44 @@ public class BatchFileManagerTests
             .Setup(x => x.OpenWriteAsync(default, null, default))
             .ReturnsAsync(stream.Object);
 
-        var sut = new BatchFileManager(dataLakeFileSystemClientMock.Object, streamZipperMock.Object);
+        var sut = new ProcessOutputRepository(
+            dataLakeFileSystemClientMock.Object,
+            streamZipperMock.Object,
+            processResultFactoryMock.Object);
 
         // Act & Assert
         await sut.Invoking(s => s.CreateBasisDataZipAsync(completedBatch)).Should().NotThrowAsync();
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task GetResultAsync_TimeSeriesPoint_IsRead(
+        [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock)
+    {
+        // Arrange
+        var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
+        var quantity = 1.000m;
+        var quality = "A04";
+
+        const string gridAreaCode = "805";
+        var batchId = Guid.NewGuid();
+
+        var sut = new ProcessStepResultApplicationService(processActorResultRepositoryMock.Object, new ProcessStepResultMapper());
+
+        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode)))
+            .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
+
+        // Act
+        var actual = await sut.GetResultAsync(
+            new ProcessStepResultRequestDto(
+                batchId,
+                gridAreaCode,
+                ProcessStepType.AggregateProductionPerGridArea));
+
+        // Assert
+        actual.TimeSeriesPoints.First().Time.Should().Be(time);
+        actual.TimeSeriesPoints.First().Quantity.Should().Be(quantity);
+        actual.TimeSeriesPoints.First().Quality.Should().Be(quality);
     }
 
     private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
