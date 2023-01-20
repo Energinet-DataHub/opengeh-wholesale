@@ -166,10 +166,11 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
 
 
 # Function to aggregate non-profiled consumption per grid area, balance responsible party and energy supplier (step 3)
-def aggregate_non_profiled_consumption(results: dict, metadata: Metadata) -> DataFrame:
-    df = results[ResultKeyName.aggregation_base_dataframe]
+def aggregate_non_profiled_consumption(
+    enriched_time_series: DataFrame, metadata: Metadata
+) -> DataFrame:
     return aggregate_per_ga_and_brp_and_es(
-        df,
+        enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.non_profiled,
         metadata,
@@ -188,10 +189,11 @@ def aggregate_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
 
 
 # Function to aggregate hourly production per grid area, balance responsible party and energy supplier (step 5)
-def aggregate_production(results: dict, metadata: Metadata) -> DataFrame:
-    df = results[ResultKeyName.aggregation_base_dataframe]
+def aggregate_production(
+    enriched_time_series: DataFrame, metadata: Metadata
+) -> DataFrame:
     return aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
+        enriched_time_series, MeteringPointType.production, None, metadata
     )
 
 
@@ -324,10 +326,10 @@ def aggregate_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
 
 
 def aggregate_non_profiled_consumption_ga_es(
-    results: dict, metadata: Metadata
+    non_profiled_consumption: DataFrame, metadata: Metadata
 ) -> DataFrame:
     return __aggregate_per_ga_and_es(
-        results[ResultKeyName.non_profiled_consumption],
+        non_profiled_consumption,
         MeteringPointType.consumption,
         metadata,
     )
@@ -427,19 +429,19 @@ def __aggregate_per_ga_and_brp(
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def aggregate_production_ga(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga(production: DataFrame, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga(
-        results[ResultKeyName.production_with_system_correction_and_grid_loss],
+        production,
         MeteringPointType.production,
         metadata,
     )
 
 
 def aggregate_non_profiled_consumption_ga(
-    results: dict, metadata: Metadata
+    consumption: DataFrame, metadata: Metadata
 ) -> DataFrame:
     return __aggregate_per_ga(
-        results[ResultKeyName.non_profiled_consumption],
+        consumption,
         MeteringPointType.consumption,
         metadata,
     )
