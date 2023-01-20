@@ -20,6 +20,7 @@ from package.codelists import MeteringPointResolution
 from package.constants import Colname, ResultKeyName
 from package.constants.result_grouping import ResultGrouping
 from package.constants.time_series_type import TimeSeriesType
+from package.constants.actor_type import ActorType
 from package.db_logging import debug
 from package.calculation_output_writer import CalculationOutputWriter
 from package.shared.data_classes import Metadata
@@ -69,6 +70,13 @@ def calculate_balance_fixing(
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         ResultGrouping.PER_ENERGY_SUPPLIER,
     )
+
+    actors_df = _create_actors_df(
+        consumption_per_ga_and_es,
+        ActorType.EnergySupplier,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+    )
+    calculation_output_writer.write_actors(actors_df)
 
     # Total production per grid
     total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
@@ -143,86 +151,22 @@ def _add_gln_and_time_series_type(
     return result_df
 
 
-def _prepare_result_for_output(
+def _create_actors_df(
     result_df: DataFrame,
+    actor_type: ActorType,
     time_series_type: TimeSeriesType,
-    result_grouping: ResultGrouping,
 ) -> DataFrame:
 
-    result_df = _add_gln_and_time_series_type(
-        result_df,
-        result_grouping,
-        time_series_type,
-    )
+    result_df.withColumn(Colname.actor_type, lit(actor_type.value))
+    result_df.withColumn(Colname.time_series_type, lit(time_series_type.value))
 
-    result_df = result_df.select(
-        col(Colname.grid_area).alias("grid_area"),
+    actors_df = result_df.select(
+        "grid_area",
         Colname.gln,
         Colname.time_series_type,
-        col(Colname.sum_quantity).alias("quantity").cast("string"),
-        col(Colname.quality).alias("quality"),
-        col(Colname.time_window_start).alias("quarter_time"),
-    )
+    ).distinct()
 
-    return (
-        total_production_per_ga_df,
-        TimeSeriesType.PRODUCTION,
-        ResultGrouping.PER_GRID_AREA,
-    )
-
-    # Write to file(s)
-    (timeseries_quarter_df, timeseries_hour_df) = time_series_basis_data_df
-    calculation_output_writer.write_basis_data(
-        master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
-    )
-    calculation_output_writer.write_result(total_production_per_ga_df)
-    calculation_output_writer.write_result(consumption_per_ga_and_es)
-
-
-def _prepare_result_for_output(
-    result_df: DataFrame,
-    time_series_type: TimeSeriesType,
-    result_grouping: ResultGrouping,
-) -> DataFrame:
-
-    result_df = _add_gln_and_time_series_type(
-        result_df,
-        result_grouping,
-        time_series_type,
-    )
-
-    result_df = result_df.select(
-        col(Colname.grid_area).alias("grid_area"),
-        Colname.gln,
-        Colname.time_series_type,
-        col(Colname.sum_quantity).alias("quantity").cast("string"),
-        col(Colname.quality).alias("quality"),
-        col(Colname.time_window_start).alias("quarter_time"),
-    )
-
-    return result_df
-
-
-def _add_gln_and_time_series_type(
-    result_df: DataFrame,
-    result_grouping: ResultGrouping,
-    time_series_type: TimeSeriesType,
-) -> DataFrame:
-
-    result_df = result_df.withColumn(
-        Colname.time_series_type, lit(time_series_type.value)
-    )
-
-    if result_grouping is ResultGrouping.PER_GRID_AREA:
-        result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
-    elif result_grouping is ResultGrouping.PER_ENERGY_SUPPLIER:
-        result_df = result_df.withColumnRenamed(Colname.energy_supplier_id, Colname.gln)
-    else:
-        raise NotImplementedError(
-            f"Result grouping, {result_grouping}, is not supported yet"
-        )
-
-    return result_df
+    return actors_df
 
 
 def _get_enriched_time_series_points_df(

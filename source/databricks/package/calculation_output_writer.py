@@ -56,6 +56,16 @@ class CalculationOutputWriter:
             .json(result_data_directory)
         )
 
+    def write_actors(self, actors: DataFrame) -> None:
+
+        actors_directory = f"{self.batch_directory}/actors"
+        (
+            actors.repartition("grid_area")
+            .write.mode("append")
+            .partitionBy("grid_area", Colname.time_series_type, Colname.actor_type)
+            .json(actors_directory)
+        )
+
     def _write_basis_data_to_csv(self, path: str, df: DataFrame) -> None:
         df = df.withColumnRenamed("GridAreaCode", "grid_area")
 
