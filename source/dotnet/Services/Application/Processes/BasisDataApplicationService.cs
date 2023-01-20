@@ -15,26 +15,27 @@
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
 public class BasisDataApplicationService : IBasisDataApplicationService
 {
     private readonly IBatchRepository _batchRepository;
-    private readonly IBatchFileManager _batchFileManager;
+    private readonly IProcessOutputRepository _processOutputRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public BasisDataApplicationService(IBatchRepository batchRepository, IBatchFileManager batchFileManager, IUnitOfWork unitOfWork)
+    public BasisDataApplicationService(IBatchRepository batchRepository, IProcessOutputRepository processOutputRepository, IUnitOfWork unitOfWork)
     {
         _batchRepository = batchRepository;
-        _batchFileManager = batchFileManager;
+        _processOutputRepository = processOutputRepository;
         _unitOfWork = unitOfWork;
     }
 
     public async Task ZipBasisDataAsync(BatchCompletedEventDto batchCompletedEvent)
     {
         var batch = await _batchRepository.GetAsync(batchCompletedEvent.BatchId).ConfigureAwait(false);
-        await _batchFileManager.CreateBasisDataZipAsync(batch).ConfigureAwait(false);
+        await _processOutputRepository.CreateBasisDataZipAsync(batch).ConfigureAwait(false);
         batch.IsBasisDataDownloadAvailable = true;
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
@@ -42,6 +43,6 @@ public class BasisDataApplicationService : IBasisDataApplicationService
     public async Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId)
     {
         var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
-        return await _batchFileManager.GetZippedBasisDataStreamAsync(batch).ConfigureAwait(false);
+        return await _processOutputRepository.GetZippedBasisDataStreamAsync(batch).ConfigureAwait(false);
     }
 }
