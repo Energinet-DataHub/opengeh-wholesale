@@ -81,12 +81,6 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Model\BatchState.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\ProcessDto.cs">
-      <Link>Dtos\ProcessDto.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepDto.cs">
-      <Link>Dtos\ProcessStepDto.cs</Link>
-    </Compile>
     <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
       <Link>Dtos\ProcessStepMeteringPointType.cs</Link>
     </Compile>
