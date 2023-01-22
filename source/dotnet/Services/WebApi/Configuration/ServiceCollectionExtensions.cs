@@ -87,7 +87,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICalculatorJobParametersFactory>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IProcessStepResultApplicationService, ProcessStepResultApplicationService>();
         services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
-        services.AddScoped<IProcessStepResultRepository, ProcessOutputRepository>();
+        services.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
 
         services.ConfigureDateTime();

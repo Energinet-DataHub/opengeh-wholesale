@@ -20,6 +20,7 @@ using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
@@ -73,7 +74,7 @@ public class ServiceCollectionConfigurator
             var fileDescriptorProviders =
                 new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
                 {
-                    ProcessOutputRepository.GetResultFileSpecification,
+                    ProcessStepResultRepository.GetResultFileSpecification,
                     ProcessOutputRepository.GetTimeSeriesHourBasisDataFileSpecification,
                     ProcessOutputRepository.GetTimeSeriesQuarterBasisDataFileSpecification,
                     ProcessOutputRepository.GetMasterBasisDataFileSpecification,

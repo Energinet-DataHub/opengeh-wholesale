@@ -12,38 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
-using System.Text.Json;
 using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
-using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 
-public class ProcessOutputRepository : IProcessOutputRepository, IProcessStepResultRepository
+public class ProcessOutputRepository : IProcessOutputRepository
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
     private readonly IStreamZipper _streamZipper;
-    private readonly IProcessResultPointFactory _processResultPointFactory;
 
     public ProcessOutputRepository(
         DataLakeFileSystemClient dataLakeFileSystemClient,
-        IStreamZipper streamZipper,
-        IProcessResultPointFactory processResultPointFactory)
+        IStreamZipper streamZipper)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _streamZipper = streamZipper;
-        _processResultPointFactory = processResultPointFactory;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         {
-            GetResultFileSpecification,
+            ProcessStepResultRepository.GetResultFileSpecification,
             GetTimeSeriesHourBasisDataFileSpecification,
             GetTimeSeriesQuarterBasisDataFileSpecification,
             GetMasterBasisDataFileSpecification,
@@ -60,21 +52,6 @@ public class ProcessOutputRepository : IProcessOutputRepository, IProcessStepRes
             await _streamZipper.ZipAsync(batchBasisFileStreams, zipStream).ConfigureAwait(false);
     }
 
-    public async Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode)
-    {
-        var (directory, extension, _) = GetResultFileSpecification(batchId, gridAreaCode);
-        var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
-        if (dataLakeFileClient == null)
-        {
-            throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
-        }
-
-        var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
-        var points = await _processResultPointFactory.GetPointsFromJsonStreamAsync(resultStream).ConfigureAwait(false);
-
-        return MapToProcessStepResultDto(points);
-    }
-
     public async Task<Stream> GetZippedBasisDataStreamAsync(Batch batch)
     {
         var zipFileName = GetZipFileName(batch);
@@ -82,9 +59,6 @@ public class ProcessOutputRepository : IProcessOutputRepository, IProcessStepRes
         var stream = (await dataLakeFileClient.ReadAsync().ConfigureAwait(false)).Value.Content;
         return stream;
     }
-
-    public static (string Directory, string Extension, string ZipEntryPath) GetResultFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/batch_id={batchId}/result/grid_area={gridAreaCode.Code}/gln=grid_area/time_series_type=production/", ".json", $"{gridAreaCode.Code}/Result.json");
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
         => ($"calculation-output/batch_id={batchId}/basis_data/time_series_hour/grid_area={gridAreaCode.Code}/gln=grid_area/",
@@ -158,17 +132,5 @@ public class ProcessOutputRepository : IProcessOutputRepository, IProcessStepRes
     {
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(fileName);
         return dataLakeFileClient.OpenWriteAsync(false);
-    }
-
-    private static ProcessStepResult MapToProcessStepResultDto(List<ProcessResultPoint> points)
-    {
-        var pointsDto = points.Select(
-                point => new TimeSeriesPoint(
-                    DateTimeOffset.Parse(point.quarter_time),
-                    decimal.Parse(point.quantity, CultureInfo.InvariantCulture),
-                    point.quality))
-            .ToList();
-
-        return new ProcessStepResult(pointsDto.ToArray());
     }
 }
