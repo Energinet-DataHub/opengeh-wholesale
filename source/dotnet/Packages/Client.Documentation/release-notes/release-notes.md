@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 4.2.2
+
+Add PeriodStart and PeriodEnd to ProcessStepResultDto
+
 ## Version 4.2.1
 
 Remove unused types.
