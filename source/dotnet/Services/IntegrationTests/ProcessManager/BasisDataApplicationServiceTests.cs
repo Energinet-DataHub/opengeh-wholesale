@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
@@ -67,7 +68,7 @@ public sealed class BasisDataApplicationServiceTests
         var zipExtractDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         ZipFile.ExtractToDirectory(zipFileName, zipExtractDirectory);
 
-        var (resultDir, _, resultPath) = ProcessOutputRepository.GetResultFileSpecification(batch.Id, batch.GridAreaCodes.Single());
+        var (resultDir, _, resultPath) = ProcessStepResultRepository.GetResultFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, resultPath)).Should().BeTrue();
         var resultContent = File.ReadLines(Path.Combine(zipExtractDirectory, resultPath)).First();
         resultContent.Should().BeEquivalentTo(resultDir);

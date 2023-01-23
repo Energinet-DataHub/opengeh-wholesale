@@ -23,12 +23,13 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.CalculationJobs;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
-using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
@@ -147,12 +148,12 @@ public static class Program
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
+        serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
         serviceCollection.AddScoped<IProcessOutputRepository>(
             provider => new ProcessOutputRepository(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
-                provider.GetRequiredService<IStreamZipper>(),
-                provider.GetRequiredService<IProcessResultPointFactory>()));
+                provider.GetRequiredService<IStreamZipper>()));
     }
 
     private static void DateTime(IServiceCollection serviceCollection)

@@ -17,8 +17,8 @@ using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.CalculationJobs;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
-using Energinet.DataHub.Wholesale.Application.JobRunner;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -87,7 +87,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICalculatorJobParametersFactory>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IProcessStepResultApplicationService, ProcessStepResultApplicationService>();
         services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
-        services.AddScoped<IProcessStepResultRepository, ProcessOutputRepository>();
+        services.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
 
         services.ConfigureDateTime();

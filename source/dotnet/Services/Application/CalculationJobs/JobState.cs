@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Application.CalculationJobs;
 
-public sealed record ProcessDto(
-    ProcessType Type,
-    string GridAreaCode,
-    ProcessStepDto[] ProcessSteps);
+public enum JobState
+{
+    Pending,
+    Running,
+    Completed,
+    Canceled,
+    Failed,
+}

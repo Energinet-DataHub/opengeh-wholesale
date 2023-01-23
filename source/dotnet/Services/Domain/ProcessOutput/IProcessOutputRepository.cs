@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
 namespace Energinet.DataHub.Wholesale.Domain.ProcessOutput;
 
