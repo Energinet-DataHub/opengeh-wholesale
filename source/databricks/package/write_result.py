@@ -40,8 +40,8 @@ class ProcessStepResultWriter:
 
         self._write_result_df(result_df)
 
-        actors_df = self._get_actors_df(result_df, result_grouping)
-        self._write_actors(actors_df)
+        if self._do_write_actors_file(result_grouping):
+            self._write_actors(result_df, result_grouping)
 
     def _prepare_result_for_output(
         self,
@@ -91,32 +91,6 @@ class ProcessStepResultWriter:
 
         return result_df
 
-    def _get_actors_df(
-        self, result_df: DataFrame, result_grouping: ResultGrouping
-    ) -> DataFrame:
-
-        actors_df = result_df.select(
-            "grid_area",
-            Colname.gln,
-            Colname.time_series_type,
-        ).distinct()
-
-        actor_type = self._map(result_grouping)
-
-        actors_df.withColumn(Colname.actor_type, lit(actor_type.value))
-
-        return actors_df
-
-    def _write_actors(self, actors_df: DataFrame) -> None:
-
-        actors_directory = f"{self.output_path}/actors"
-        (
-            actors_df.repartition("grid_area")
-            .write.mode("append")
-            .partitionBy("grid_area", Colname.time_series_type, Colname.actor_type)
-            .json(actors_directory)
-        )
-
     def _write_result_df(self, result_df: DataFrame) -> None:
 
         result_data_directory = f"{self.output_path}/result"
@@ -130,6 +104,41 @@ class ProcessStepResultWriter:
             .partitionBy("grid_area", Colname.gln, Colname.time_series_type)
             .json(result_data_directory)
         )
+
+    def _write_actors(
+        self, result_df: DataFrame, result_grouping: ResultGrouping
+    ) -> None:
+
+        actors_df = self._get_actors_df(result_df, result_grouping)
+        actors_df.show(100)
+
+        actors_directory = f"{self.output_path}/actors"
+
+        (
+            actors_df.repartition("grid_area")
+            .write.mode("append")
+            .partitionBy("grid_area", Colname.time_series_type, Colname.actor_type)
+            .json(actors_directory)
+        )
+
+    def _get_actors_df(
+        self, result_df: DataFrame, result_grouping: ResultGrouping
+    ) -> DataFrame:
+
+        actors_df = result_df.select(
+            "grid_area",
+            Colname.gln,
+            Colname.time_series_type,
+        ).distinct()
+
+        actor_type = self._map(result_grouping)
+
+        actors_df = actors_df.withColumn(Colname.actor_type, lit(actor_type.value))
+
+        return actors_df
+
+    def _do_write_actors_file(self, result_grouping: ResultGrouping) -> bool:
+        return result_grouping is ResultGrouping.PER_ENERGY_SUPPLIER
 
     def _map(self, result_grouping: ResultGrouping) -> ActorType:
 
