@@ -52,6 +52,14 @@ module "kvs_st_data_lake_primary_access_key" {
   key_vault_id  = module.kv_shared.id
 }
 
+module "kvs_st_data_lake_id" {
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+
+  name          = "st-data-lake-id"
+  value         = module.st_data_lake.id
+  key_vault_id  = module.kv_shared.id
+}
+
 resource "azurerm_role_assignment" "st_datalake_spn" {
   scope                = module.st_data_lake.id
   role_definition_name = "Storage Blob Data Contributor"
