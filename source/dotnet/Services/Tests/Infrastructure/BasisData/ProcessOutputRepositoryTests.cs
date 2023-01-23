@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
 using System.Text;
 using AutoFixture.Xunit2;
 using Azure;
@@ -24,7 +23,6 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
@@ -36,178 +34,6 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BasisData;
 [UnitTest]
 public class ProcessOutputRepositoryTests
 {
-    [Theory]
-    [AutoMoqData]
-    public async Task GetAsync_ReturnsProcessActorResult(
-        [Frozen] Mock<IStreamZipper> streamZipperMock,
-        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
-        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
-        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
-        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
-        [Frozen] Mock<Response<bool>> responseMock)
-    {
-        // Arrange
-        const string pathWithKnownExtension = "my_file.json";
-        var asyncPageable = CreateAsyncPageableWithOnePathItem(pathWithKnownExtension);
-        var stream = new Mock<Stream>();
-
-        dataLakeDirectoryClientMock
-            .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
-            .Returns(asyncPageable);
-        responseMock.Setup(res => res.Value).Returns(true);
-        dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(responseMock.Object);
-        dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
-            .Returns(dataLakeDirectoryClientMock.Object);
-        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(pathWithKnownExtension))
-            .Returns(dataLakeFileClientMock.Object);
-        dataLakeFileClientMock
-            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
-            .ReturnsAsync(stream.Object);
-        var processResultPoint = new ProcessResultPoint("1.00", "A04", "2022-05-31T22:00:00");
-        processResultFactoryMock.Setup(x => x.GetPointsFromJsonStreamAsync(stream.Object))
-            .ReturnsAsync(new List<ProcessResultPoint>
-            {
-                processResultPoint,
-            });
-
-        var sut = new ProcessOutputRepository(
-            dataLakeFileSystemClientMock.Object,
-            streamZipperMock.Object,
-            processResultFactoryMock.Object);
-
-        // Act
-        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"));
-
-        // Assert
-        actual.Should().NotBeNull();
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public async Task GetResultFileStreamAsync_WhenDirectoryDoesNotExist_ThrowsException(
-        [Frozen] Mock<IStreamZipper> streamZipperMock,
-        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
-        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
-        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
-        [Frozen] Mock<Response<bool>> responseMock)
-    {
-        // Arrange
-        var asyncPageable = CreateAsyncPageableWithOnePathItem("my_file.json");
-
-        dataLakeDirectoryClientMock
-            .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
-            .Returns(asyncPageable);
-        dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
-            .Returns(dataLakeDirectoryClientMock.Object);
-        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(It.IsAny<string>()))
-            .Returns((Func<DataLakeFileClient>)null!);
-        dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(responseMock.Object);
-        responseMock.Setup(res => res.Value).Returns(true);
-
-        var sut = new ProcessOutputRepository(
-            dataLakeFileSystemClientMock.Object,
-            streamZipperMock.Object,
-            processResultFactoryMock.Object);
-
-        // Act and Assert
-        await sut
-            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123")))
-            .Should()
-            .ThrowAsync<InvalidOperationException>();
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public async Task GetResultFileStreamAsync_WhenNoFileClientFound_ThrowsException(
-        [Frozen] Mock<IStreamZipper> streamZipperMock,
-        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
-        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
-        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
-        [Frozen] Mock<Response<bool>> responseMock)
-    {
-        // Arrange
-        responseMock.Setup(res => res.Value).Returns(true);
-        dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
-            .Returns(dataLakeDirectoryClientMock.Object);
-        dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(responseMock.Object);
-
-        var sut = new ProcessOutputRepository(
-            dataLakeFileSystemClientMock.Object,
-            streamZipperMock.Object,
-            processResultFactoryMock.Object);
-
-        // Act and Assert
-        await sut
-            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123")))
-            .Should()
-            .ThrowAsync<Exception>();
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public async Task GetResultFileStreamAsync_WhenFileExtensionNotFound_ThrowException(
-        [Frozen] Mock<IStreamZipper> streamZipperMock,
-        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
-        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
-        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
-        [Frozen] Mock<Response<bool>> responseMock)
-    {
-        // Arrange
-        const string pathWithUnknownExtension = "my_file.xxx";
-        var pathItem = DataLakeModelFactory.PathItem(
-            pathWithUnknownExtension,
-            false,
-            DateTimeOffset.Now,
-            ETag.All,
-            1,
-            "owner",
-            "group",
-            "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
-        var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
-
-        dataLakeDirectoryClientMock
-            .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
-            .Returns(asyncPageable);
-        responseMock.Setup(res => res.Value).Returns(true);
-        dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
-            .Returns(dataLakeDirectoryClientMock.Object);
-
-        dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(responseMock.Object);
-
-        var sut = new ProcessOutputRepository(
-            dataLakeFileSystemClientMock.Object,
-            streamZipperMock.Object,
-            processResultFactoryMock.Object);
-
-        // Act and Assert
-        await sut
-            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123")))
-            .Should()
-            .ThrowAsync<Exception>();
-    }
-
-    [Fact]
-    public static async Task GetResultFileSpecification_MatchesContract()
-    {
-        // Arrange
-        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
-        const string gridAreaCode = "123";
-        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
-        var expected = calculationFilePathsContract.ResultFile;
-
-        // Act
-        var actual = ProcessOutputRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
-
-        // Assert
-        actual.Extension.Should().Be(expected.Extension);
-        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
-    }
-
     [Fact]
     public static async Task GetMasterBasisDataFileSpecification_MatchesContract()
     {
@@ -270,7 +96,6 @@ public class ProcessOutputRepositoryTests
     [AutoMoqData]
     public async Task GetZippedBasisDataStreamAsync_WhenGivenBatch_ReturnCorrectStream(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
-        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock)
     {
@@ -312,8 +137,7 @@ public class ProcessOutputRepositoryTests
         dataLakeFileClientMock.Setup(x => x.ReadAsync()).ReturnsAsync(fileDownloadResponse);
         var sut = new ProcessOutputRepository(
             dataLakeFileSystemClientMock.Object,
-            streamZipperMock.Object,
-            processResultFactoryMock.Object);
+            streamZipperMock.Object);
         var batch = new BatchBuilder().Build();
 
         // Act
@@ -328,7 +152,6 @@ public class ProcessOutputRepositoryTests
     [AutoMoqData]
     public async Task CreateBasisDataZipAsync_CreatesZipFile_WhenDataDirectoryIsNotFound(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
-        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
@@ -352,8 +175,7 @@ public class ProcessOutputRepositoryTests
 
         var sut = new ProcessOutputRepository(
             dataLakeFileSystemClientMock.Object,
-            streamZipperMock.Object,
-            processResultFactoryMock.Object);
+            streamZipperMock.Object);
 
         // Act & Assert
         await sut.Invoking(s => s.CreateBasisDataZipAsync(completedBatch)).Should().NotThrowAsync();
@@ -388,14 +210,5 @@ public class ProcessOutputRepositoryTests
         actual.TimeSeriesPoints.First().Time.Should().Be(time);
         actual.TimeSeriesPoints.First().Quantity.Should().Be(quantity);
         actual.TimeSeriesPoints.First().Quality.Should().Be(quality);
-    }
-
-    private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
-    {
-        var pathItem = DataLakeModelFactory
-            .PathItem(path, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
-        var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
-        return asyncPageable;
     }
 }
