@@ -25,7 +25,7 @@ from package.constants import Colname
 from package.constants.time_series_type import TimeSeriesType
 
 # from package.shared.data_classes import Metadata
-from package.actor_list import (
+from source.databricks.package.result_writer import (
     _get_actors_df,
 )
 from pyspark.sql.types import (
@@ -89,9 +89,6 @@ def test__get_actors__returns_distinct_rows(spark: SparkSession) -> None:
 
     # Assert
     assert actors_df.count() == 2
-    
-    
-    
 
 
 # def test_get_actor_list__(spark: SparkSession) -> None:
