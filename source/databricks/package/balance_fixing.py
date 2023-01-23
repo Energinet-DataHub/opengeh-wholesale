@@ -16,19 +16,16 @@ from datetime import datetime
 
 import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
-from package.write_result import ProcessStepResultWriter
-from package.write_basis_data import BasisDataWriter
 from package.codelists import MeteringPointResolution
 from package.constants import Colname
-
-from package.constants.result_grouping import ResultGrouping
+from package.constants.actor_type import ActorType
 from package.constants.time_series_type import TimeSeriesType
-
-# from package.constants.actor_type import ActorType
 from package.db_logging import debug
 from package.shared.data_classes import Metadata
+from package.write_basis_data import BasisDataWriter
+from package.write_process_step_result import ProcessStepResultWriter
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, explode, expr, first, lit, sum
+from pyspark.sql.functions import col, explode, expr, first, sum
 from pyspark.sql.types import DecimalType
 
 
@@ -116,7 +113,7 @@ def calculate_production(
     result_writer.write(
         total_production_per_ga_df,
         TimeSeriesType.PRODUCTION,
-        ResultGrouping.PER_GRID_AREA,
+        ActorType.NONE,
     )
 
 
@@ -138,7 +135,7 @@ def calculate_non_profiled_consumption(
     result_writer.write(
         consumption_per_ga_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        ResultGrouping.PER_ENERGY_SUPPLIER,
+        ActorType.ENERGY_SUPPLIER,
     )
 
 

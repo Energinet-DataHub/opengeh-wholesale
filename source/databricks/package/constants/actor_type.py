@@ -16,4 +16,5 @@ from enum import Enum
 
 
 class ActorType(Enum):
+    NONE = "none",
     ENERGY_SUPPLIER = "energy_supplier"
