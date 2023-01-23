@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 4.2.1
+
+Remove unused types.
+
 ## Version 4.2.0
 
 Add quality to process time series type results. See `TimeSeriesPointDto.Quality`.
