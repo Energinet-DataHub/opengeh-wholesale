@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 1.0.3
+
+Add `PeriodStart` and `PeriodEnd` to `ProcessStepResultDto`
+
 ## Version 1.0.2
 
 No functional changes.
