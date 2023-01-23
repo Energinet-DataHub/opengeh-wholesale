@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Application.CalculationJobs;
 
-namespace Energinet.DataHub.Wholesale.Application.JobRunner;
-
-public interface ICalculatorJobParametersFactory
+public enum JobState
 {
-    IEnumerable<string> CreateParameters(Batch batch);
+    Pending,
+    Running,
+    Completed,
+    Canceled,
+    Failed,
 }
