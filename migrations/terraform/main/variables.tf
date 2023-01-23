@@ -36,12 +36,6 @@ variable domain_name_short {
   description   = "Shortest possible edition of the domain name."
 }
 
-variable azure_spn_secret {
-  type          = string
-  description   = "Azure service principle secret"
-  default       = ""      
-}
-
 variable shared_resources_keyvault_name {
   type          = string
   description   = "Name of the Key Vault, that contains the shared secrets"
