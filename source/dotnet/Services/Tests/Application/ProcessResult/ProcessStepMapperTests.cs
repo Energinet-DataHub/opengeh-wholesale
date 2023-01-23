@@ -15,7 +15,9 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Xunit;
 
@@ -27,20 +29,23 @@ public class ProcessStepMapperTests
     [InlineAutoMoqData]
     public void MapToDto_WhenNull_ThrowsArgumentNullException(ProcessStepResultMapper sut)
     {
-        Assert.Throws<ArgumentNullException>(() => sut.MapToDto(null!));
+        Assert.Throws<ArgumentNullException>(() => sut.MapToDto(null!, null!));
     }
 
     [Theory]
     [InlineAutoMoqData]
     public void MapToDto_ReturnsDto(ProcessStepResultMapper sut, ProcessStepResult processStepResult)
     {
+        var batch = new BatchBuilder().Build();
         var expected = new ProcessStepResultDto(
             ProcessStepMeteringPointType.Production,
             processStepResult.Sum,
             processStepResult.Min,
             processStepResult.Max,
-            processStepResult.TimeSeriesPoints.Select(point => new TimeSeriesPointDto(point.Time, point.Quantity, point.Quality)).ToArray());
-        var actual = sut.MapToDto(processStepResult);
+            processStepResult.TimeSeriesPoints.Select(point => new TimeSeriesPointDto(point.Time, point.Quantity, point.Quality)).ToArray(),
+            batch.PeriodStart.ToDateTimeOffset(),
+            batch.PeriodEnd.ToDateTimeOffset());
+        var actual = sut.MapToDto(processStepResult, batch);
         actual.Should().BeEquivalentTo(expected);
     }
 }

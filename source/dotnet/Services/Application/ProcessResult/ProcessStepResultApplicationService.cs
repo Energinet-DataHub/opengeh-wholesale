@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
@@ -25,11 +26,13 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
 {
     private readonly IProcessStepResultRepository _processStepResultRepository;
     private readonly IProcessStepResultMapper _processStepResultMapper;
+    private readonly IBatchRepository _batchRepository;
 
-    public ProcessStepResultApplicationService(IProcessStepResultRepository processStepResultRepository, IProcessStepResultMapper processStepResultMapper)
+    public ProcessStepResultApplicationService(IProcessStepResultRepository processStepResultRepository, IProcessStepResultMapper processStepResultMapper, IBatchRepository batchRepository)
     {
         _processStepResultRepository = processStepResultRepository;
         _processStepResultMapper = processStepResultMapper;
+        _batchRepository = batchRepository;
     }
 
     public async Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto)
@@ -38,7 +41,7 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
                 processStepResultRequestDto.BatchId,
                 new GridAreaCode(processStepResultRequestDto.GridAreaCode))
             .ConfigureAwait(false);
-
-        return _processStepResultMapper.MapToDto(processActorResult);
+        var batch = await _batchRepository.GetAsync(processStepResultRequestDto.BatchId).ConfigureAwait(false);
+        return _processStepResultMapper.MapToDto(processActorResult, batch);
     }
 }
