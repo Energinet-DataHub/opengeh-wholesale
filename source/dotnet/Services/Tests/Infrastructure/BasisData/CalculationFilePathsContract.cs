@@ -37,6 +37,8 @@ public class CalculationFilePathsContract
 
     public ContractFile ResultFile { get; set; } = null!;
 
+    public ContractFile ActorsFile { get; set; } = null!;
+
     public static async Task<CalculationFilePathsContract> GetAsync()
     {
         await using var stream = EmbeddedResources.GetStream("Infrastructure.BasisData.calculation-file-paths.yml");
