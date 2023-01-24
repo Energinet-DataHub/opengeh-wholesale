@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 
 namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
 

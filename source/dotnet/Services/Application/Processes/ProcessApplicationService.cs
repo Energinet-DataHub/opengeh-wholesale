@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Infrastructure;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 

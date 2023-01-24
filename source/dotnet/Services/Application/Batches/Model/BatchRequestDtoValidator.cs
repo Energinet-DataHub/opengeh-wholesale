@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using NodaTime;
 using NodaTime.Extensions;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
 
 public class BatchRequestDtoValidator : IBatchRequestDtoValidator
 {

@@ -34,46 +34,46 @@ limitations under the License.
 
   <ItemGroup>
     <Compile Include="..\..\Contracts\BatchRequestDto.cs">
-      <Link>Batches\BatchRequestDto.cs</Link>
+      <Link>Batches\Model\BatchRequestDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchSearchDto.cs">
-      <Link>Batches\BatchSearchDto.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
-      <Link>ProcessResult\ProcessStepMeteringPointType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
-      <Link>ProcessResult\ProcessStepResultDto.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepResultRequestDto.cs">
-      <Link>ProcessResult\ProcessStepResultRequestDto.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessResultRequestDto.cs">
-      <Link>ProcessResult\ProcessResultRequestDto.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\TimeSeriesType.cs">
-      <Link>ProcessResult\TimeSeriesType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepType.cs">
-      <Link>ProcessResult\ProcessStepType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessType.cs">
-      <Link>Processes\ProcessType.cs</Link>
+      <Link>Batches\Model\BatchSearchDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchState.cs">
-      <Link>Batches\BatchState.cs</Link>
+      <Link>Batches\Model\BatchState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
+      <Link>ProcessResult\Model\ProcessStepMeteringPointType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
+      <Link>ProcessResult\Model\ProcessStepResultDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepResultRequestDto.cs">
+      <Link>ProcessResult\Model\ProcessStepResultRequestDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessResultRequestDto.cs">
+      <Link>ProcessResult\Model\ProcessResultRequestDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\TimeSeriesType.cs">
+      <Link>ProcessResult\Model\TimeSeriesType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepType.cs">
+      <Link>ProcessResult\Model\ProcessStepType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessType.cs">
+      <Link>Processes\Model\ProcessType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\TimeSeriesPointDto.cs">
-      <Link>ProcessResult\TimeSeriesPointDto.cs</Link>
+      <Link>ProcessResult\Model\TimeSeriesPointDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchActorType.cs">
-      <Link>Batches\BatchActorType.cs</Link>
+      <Link>Batches\Model\BatchActorType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchActorDto.cs">
-      <Link>Batches\BatchActorDto.cs</Link>
+      <Link>Batches\Model\BatchActorDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchActorsRequestDto.cs">
-      <Link>Batches\BatchActorsRequestDto.cs</Link>
+      <Link>Batches\Model\BatchActorsRequestDto.cs</Link>
     </Compile>
   </ItemGroup>
 
