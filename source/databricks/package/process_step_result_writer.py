@@ -31,6 +31,10 @@ class ProcessStepResultWriter:
     ) -> None:
 
         result_df = self._add_gln_without_market_role(result_df)
+        result_df = self._prepare_result_for_output(
+            result_df,
+            time_series_type,
+        )
         self._write_result_df(result_df, time_series_type)
 
     def write_per_ga_per_actor(
@@ -41,6 +45,10 @@ class ProcessStepResultWriter:
     ) -> None:
 
         result_df = self._add_gln(result_df, market_role)
+        result_df = self._prepare_result_for_output(
+            result_df,
+            time_series_type,
+        )
         self._write_result_df(result_df, time_series_type)
         self._write_actors(result_df, market_role)
 
@@ -90,11 +98,6 @@ class ProcessStepResultWriter:
     def _write_result_df(
         self, result_df: DataFrame, time_series_type: TimeSeriesType
     ) -> None:
-
-        result_df = self._prepare_result_for_output(
-            result_df,
-            time_series_type,
-        )
 
         result_data_directory = f"{self.__output_path}/result"
 
