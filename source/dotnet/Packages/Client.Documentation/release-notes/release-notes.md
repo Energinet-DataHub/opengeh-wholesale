@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.0
+
+Namespaces has changed.
+
 ## Version 4.2.2
 
 Bump version as part of pipeline change.

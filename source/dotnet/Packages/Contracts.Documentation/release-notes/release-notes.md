@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 2.0.0
+
+Namespaces has changed.
+
 ## Version 1.0.3
 
 Bump version as part of pipeline change.
