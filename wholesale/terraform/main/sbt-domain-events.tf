@@ -19,9 +19,9 @@ module "sbt_domain_events" {
   namespace_id        = data.azurerm_key_vault_secret.sb_integration_events_id.value
 }
 
-module "sbtsub_zip_basis_data_when_batch_completed" {
+module "sbtsub_create_settlement_reports_when_batch_completed" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v10"
-  name                = local.ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME
+  name                = local.CREATE_SETTLEMENT_REPORTS_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME
   project_name        = var.domain_name_short
   topic_id            = module.sbt_domain_events.id
   max_delivery_count  = 10
