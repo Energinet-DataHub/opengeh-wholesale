@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
@@ -85,6 +86,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IBatchDtoV2Mapper, BatchDtoV2Mapper>();
+        services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculationDomainService>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculatorJobParametersFactory>(_ => null!); // Unused in the use cases of this app
