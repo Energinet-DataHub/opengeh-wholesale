@@ -45,7 +45,7 @@ def calculate_balance_fixing(
         period_end_datetime,
     )
 
-    create_and_write_basis_data(
+    _create_and_write_basis_data(
         output_path,
         metering_points_periods_df,
         enriched_time_series_point_df,
@@ -54,10 +54,10 @@ def calculate_balance_fixing(
         time_zone,
     )
 
-    calculate(output_path, enriched_time_series_point_df)
+    _calculate(output_path, enriched_time_series_point_df)
 
 
-def create_and_write_basis_data(
+def _create_and_write_basis_data(
     output_path: str,
     metering_points_periods_df: DataFrame,
     enriched_time_series_point_df: DataFrame,
@@ -76,25 +76,25 @@ def create_and_write_basis_data(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
-    base_data_writer = BasisDataWriter(output_path)
-    base_data_writer.write(
+    basis_data_writer = BasisDataWriter(output_path)
+    basis_data_writer.write(
         master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
     )
 
 
-def calculate(output_path: str, enriched_time_series_point_df: DataFrame) -> None:
+def _calculate(output_path: str, enriched_time_series_point_df: DataFrame) -> None:
 
     result_writer = ProcessStepResultWriter(output_path)
     metadata_fake = Metadata("1", "1", "1", "1")
 
-    calculate_production(result_writer, enriched_time_series_point_df, metadata_fake)
+    _calculate_production(result_writer, enriched_time_series_point_df, metadata_fake)
 
-    calculate_non_profiled_consumption(
+    _calculate_non_profiled_consumption(
         result_writer, enriched_time_series_point_df, metadata_fake
     )
 
 
-def calculate_production(
+def _calculate_production(
     result_writer: ProcessStepResultWriter,
     enriched_time_series: DataFrame,
     metadata: Metadata,
@@ -110,14 +110,10 @@ def calculate_production(
         first(Colname.quality).alias(Colname.quality),
     )
 
-    result_writer.write(
-        total_production_per_ga_df,
-        TimeSeriesType.PRODUCTION,
-        ActorType.NONE,
-    )
+    result_writer.write_per_ga(total_production_per_ga_df, TimeSeriesType.PRODUCTION)
 
 
-def calculate_non_profiled_consumption(
+def _calculate_non_profiled_consumption(
     result_writer: ProcessStepResultWriter,
     enriched_time_series_point_df: DataFrame,
     metadata: Metadata,
@@ -132,7 +128,7 @@ def calculate_non_profiled_consumption(
         consumption, metadata
     )
 
-    result_writer.write(
+    result_writer.write_per_ga_per_actor(
         consumption_per_ga_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.ENERGY_SUPPLIER,

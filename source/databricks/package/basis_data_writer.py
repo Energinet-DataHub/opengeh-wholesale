@@ -21,7 +21,7 @@ class BasisDataWriter:
         self,
         output_path: str,
     ):
-        self.output_path = output_path
+        self.__output_path = output_path
 
     def write(
         self,
@@ -30,7 +30,7 @@ class BasisDataWriter:
         timeseries_hour_df: DataFrame,
     ) -> None:
 
-        basis_data_directory = f"{self.output_path}/basis_data"
+        basis_data_directory = f"{self.__output_path}/basis_data"
 
         self._write_basis_data_to_csv(
             f"{basis_data_directory}/time_series_quarter", timeseries_quarter_df

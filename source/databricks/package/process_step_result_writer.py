@@ -24,9 +24,24 @@ class ProcessStepResultWriter:
         self,
         output_path: str,
     ):
-        self.output_path = output_path
+        self.__output_path = output_path
 
-    def write(
+    def write_per_ga(
+        self, result_df: DataFrame, time_series_type: TimeSeriesType
+    ) -> None:
+
+        self._write(result_df, time_series_type, MarketRole.NONE)
+
+    def write_per_ga_per_actor(
+        self,
+        result_df: DataFrame,
+        time_series_type: TimeSeriesType,
+        market_role: MarketRole,
+    ) -> None:
+
+        self._write(result_df, time_series_type, market_role)
+
+    def _write(
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
@@ -92,7 +107,7 @@ class ProcessStepResultWriter:
 
     def _write_result_df(self, result_df: DataFrame) -> None:
 
-        result_data_directory = f"{self.output_path}/result"
+        result_data_directory = f"{self.__output_path}/result"
 
         # First repartition to co-locate all rows for a grid area on a single executor.
         # This ensures that only one file is being written/created for each grid area

@@ -232,13 +232,11 @@ def test__when_result_is_per_energy_supplier__actor_list_is_generated(
 
 
 def test__when_result_is_only_per_grid_area__no_actor_list_is_generated(
-    spark: SparkSession,
     data_lake_path: str,
     worker_id: str,
     executed_calculation_job: None,
 ) -> None:
-    print(type(worker_id))
-    print(type(executed_calculation_job))
+
     # Arrange
     time_series_type = TimeSeriesType.PRODUCTION
     output_path = (
