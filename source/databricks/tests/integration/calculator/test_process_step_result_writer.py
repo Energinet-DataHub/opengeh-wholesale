@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pytest
+from os import path
 from package.process_step_result_writer import ProcessStepResultWriter
 from package.constants.time_series_type import TimeSeriesType
 from package.constants.market_role import MarketRole
@@ -49,39 +50,63 @@ def result_schema() -> StructType:
     )
 
 
-def test__write_per_ga_per_actor__has_expected_gln(
-    spark: SparkSession, tmpdir, result_schema
-) -> None:
-
-    # Arrange
-    data = [
+def create_result_row(
+    grid_area: str,
+    energy_supplier_id: str,
+    quantity: str = "1.1",
+    quality: TimeSeriesQuality = TimeSeriesQuality.measured,
+) -> list:
+    row = [
         {
-            Colname.grid_area: "805",
-            Colname.sum_quantity: Decimal("1.1"),
-            Colname.quality: TimeSeriesQuality.calculated.value,
+            Colname.grid_area: grid_area,
+            Colname.sum_quantity: Decimal(quantity),
+            Colname.quality: quality.value,
             Colname.resolution: MeteringPointResolution.quarter.value,
             Colname.time_window: {
                 Colname.start: datetime(2020, 1, 1, 0, 0),
                 Colname.end: datetime(2020, 1, 1, 1, 0),
             },
-            Colname.energy_supplier_id: "123456",
+            Colname.energy_supplier_id: energy_supplier_id,
         }
     ]
-    result_df = spark.createDataFrame(data, schema=result_schema)
+
+    return row
+
+
+def get_actors_path(
+    output_path: str, grid_area: str, time_series_type: str, market_role: MarketRole
+) -> str:
+    return f"{output_path}/actors/grid_area={grid_area}/time_series_type={time_series_type.value}/market_role={market_role.value}"
+
+
+def test__write_per_ga_per_actor__has_expected_gln(
+    spark: SparkSession, tmpdir, result_schema
+) -> None:
+
+    # Arrange
+    grid_area_805 = "805"
+    es_id_1 = "123"
+    es_id_2 = "234"
+    time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
+    market_role = MarketRole.ENERGY_SUPPLIER
+    rows = []
+    rows.append(create_result_row(grid_area=grid_area_805, energy_supplier_id=es_id_1))
+    rows.append(create_result_row(grid_area=grid_area_805, energy_supplier_id=es_id_2))
+    row1 = create_result_row(grid_area=grid_area_805, energy_supplier_id=es_id_1)
+    result_df = spark.createDataFrame(row1, schema=result_schema)
+
     sut = ProcessStepResultWriter(tmpdir)
 
     # file_name = tmpdir.join("test_file.txt")
-    # file_name.write("This is a test file.")
 
     # Act
-    sut.write_per_ga_per_actor(
-        result_df, TimeSeriesType.PRODUCTION, MarketRole.ENERGY_SUPPLIER
-    )
+    sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
 
     # Assert
-    tmpdir.
+    folder = get_actors_path(tmpdir, grid_area_805, time_series_type, market_role)
+    print(folder)
 
-    # assert file_name.read() == "This is a test file."
+    assert path.exists(folder)
 
 
 # def get_result_path(
