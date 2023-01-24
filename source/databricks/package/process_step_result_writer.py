@@ -35,7 +35,7 @@ class ProcessStepResultWriter:
             result_df,
             time_series_type,
         )
-        self._write_result_df(result_df, time_series_type)
+        self._write_result_df(result_df)
 
     def write_per_ga_per_actor(
         self,
@@ -49,7 +49,7 @@ class ProcessStepResultWriter:
             result_df,
             time_series_type,
         )
-        self._write_result_df(result_df, time_series_type)
+        self._write_result_df(result_df)
         self._write_actors(result_df, market_role)
 
     def _prepare_result_for_output(
@@ -95,9 +95,7 @@ class ProcessStepResultWriter:
         result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
         return result_df
 
-    def _write_result_df(
-        self, result_df: DataFrame, time_series_type: TimeSeriesType
-    ) -> None:
+    def _write_result_df(self, result_df: DataFrame) -> None:
 
         result_data_directory = f"{self.__output_path}/result"
 
