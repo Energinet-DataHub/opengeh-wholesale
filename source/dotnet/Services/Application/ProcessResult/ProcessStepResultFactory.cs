@@ -13,13 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
-public class ProcessStepResultMapper : IProcessStepResultMapper
+public class ProcessStepResultFactory : IProcessStepResultFactory
 {
-    public ProcessStepResultDto MapToDto(ProcessStepResult processStepResult)
+    public ProcessStepResultDto Create(ProcessStepResult processStepResult, Batch batch)
     {
         ArgumentNullException.ThrowIfNull(processStepResult);
 
@@ -31,7 +32,9 @@ public class ProcessStepResultMapper : IProcessStepResultMapper
             processStepResult
                 .TimeSeriesPoints
                 .Select(MapTimeSeriesPointToDto)
-                .ToArray());
+                .ToArray(),
+            batch.PeriodStart.ToDateTimeOffset(),
+            batch.PeriodEnd.ToDateTimeOffset());
     }
 
     private static TimeSeriesPointDto MapTimeSeriesPointToDto(TimeSeriesPoint point)

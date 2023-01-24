@@ -22,9 +22,13 @@ namespace Energinet.DataHub.Wholesale.Contracts;
 /// <param name="Min">Min should have a scale of 3</param>
 /// <param name="Max">Max should have a scale of 3</param>
 /// <param name="TimeSeriesPoints"></param>
+/// <param name="PeriodStart">Period start in UTC time.</param>
+/// <param name="PeriodEnd">Period end in UTC time.</param>
 public sealed record ProcessStepResultDto(
     ProcessStepMeteringPointType ProcessStepMeteringPointType,
     decimal Sum,
     decimal Min,
     decimal Max,
-    TimeSeriesPointDto[] TimeSeriesPoints);
+    TimeSeriesPointDto[] TimeSeriesPoints,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd);

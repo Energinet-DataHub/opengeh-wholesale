@@ -19,9 +19,11 @@ using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Tests.Infrastructure.BasisData;
 using FluentAssertions;
 using Moq;
@@ -35,7 +37,7 @@ public class ProcessStepResultRepositoryTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task GetAsync_ReturnsProcessActorResult(
+    public async Task GetAsync_ReturnsProcessStepResult(
         [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
@@ -200,7 +202,8 @@ public class ProcessStepResultRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetResultAsync_TimeSeriesPoint_IsRead(
-        [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock)
+        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock)
     {
         // Arrange
         var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
@@ -210,10 +213,14 @@ public class ProcessStepResultRepositoryTests
         const string gridAreaCode = "805";
         var batchId = Guid.NewGuid();
 
-        var sut = new ProcessStepResultApplicationService(processActorResultRepositoryMock.Object, new ProcessStepResultMapper());
+        var batch = new BatchBuilder().Build();
 
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode)))
+        var sut = new ProcessStepResultApplicationService(processStepResultRepositoryMock.Object, new ProcessStepResultFactory(), batchRepositoryMock.Object);
+
+        processStepResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode)))
             .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
+
+        batchRepositoryMock.Setup(b => b.GetAsync(batchId)).ReturnsAsync(() => batch);
 
         // Act
         var actual = await sut.GetResultAsync(

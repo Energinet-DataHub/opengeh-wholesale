@@ -16,9 +16,11 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
 using Test.Core;
@@ -37,16 +39,21 @@ public class ProcessResultApplicationServiceTests
         ProcessStepResult result,
         ProcessStepResultDto resultDto,
         [Frozen] Mock<IProcessStepResultRepository> repositoryMock,
-        [Frozen] Mock<IProcessStepResultMapper> mapperMock,
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<IProcessStepResultFactory> mapperMock,
         ProcessStepResultApplicationService sut)
     {
         // Arrange
+        var batch = new BatchBuilder().Build();
         request.SetPrivateProperty(dto => dto.GridAreaCode, "123");
         repositoryMock
             .Setup(repository => repository.GetAsync(request.BatchId, new GridAreaCode(request.GridAreaCode)))
             .ReturnsAsync(() => result);
+        batchRepositoryMock
+            .Setup(batchRepository => batchRepository.GetAsync(request.BatchId))
+            .ReturnsAsync(() => batch);
         mapperMock
-            .Setup(mapper => mapper.MapToDto(result))
+            .Setup(mapper => mapper.Create(result, batch))
             .Returns(() => resultDto);
 
         // Act
