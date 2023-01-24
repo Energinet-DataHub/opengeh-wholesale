@@ -19,20 +19,11 @@ on:
   push:
     branches:
       - main
-    paths:
-      - source/dotnet/Contracts/**
-      - source/dotnet/Packages/Client/**
-      - source/dotnet/Packages/Contracts/**
-      - .github/workflows/packages-publish.yml
   # Build, test, pack
   # Executed if package folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
       - main
-    paths:
-      - source/dotnet/Contracts/**
-      - source/dotnet/Packages/**
-      - .github/workflows/packages-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
@@ -54,8 +45,20 @@ permissions:
 
 jobs:
 
-  build_and_publish:
+  #
+  # Detect changes to start relevant jobs
+  #
 
+  changes:
+    uses: ./.github/workflows/detect-changes.yml
+
+  #
+  # Build package and publish
+  #
+
+  build_and_publish:
+    needs: changes
+    if: ${{ needs.changes.outputs.nuget == 'true' }}
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
