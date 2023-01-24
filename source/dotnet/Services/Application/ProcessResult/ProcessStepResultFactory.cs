@@ -18,9 +18,9 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
-public class ProcessStepResultMapper : IProcessStepResultMapper
+public class ProcessStepResultFactory : IProcessStepResultFactory
 {
-    public ProcessStepResultDto MapToDto(ProcessStepResult processStepResult, Batch batch)
+    public ProcessStepResultDto Create(ProcessStepResult processStepResult, Batch batch)
     {
         ArgumentNullException.ThrowIfNull(processStepResult);
 

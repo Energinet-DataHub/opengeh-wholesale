@@ -27,14 +27,14 @@ public class ProcessStepMapperTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public void MapToDto_WhenNull_ThrowsArgumentNullException(ProcessStepResultMapper sut)
+    public void MapToDto_WhenNull_ThrowsArgumentNullException(ProcessStepResultFactory sut)
     {
-        Assert.Throws<ArgumentNullException>(() => sut.MapToDto(null!, null!));
+        Assert.Throws<ArgumentNullException>(() => sut.Create(null!, null!));
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public void MapToDto_ReturnsDto(ProcessStepResultMapper sut, ProcessStepResult processStepResult)
+    public void MapToDto_ReturnsDto(ProcessStepResultFactory sut, ProcessStepResult processStepResult)
     {
         var batch = new BatchBuilder().Build();
         var expected = new ProcessStepResultDto(
@@ -45,7 +45,7 @@ public class ProcessStepMapperTests
             processStepResult.TimeSeriesPoints.Select(point => new TimeSeriesPointDto(point.Time, point.Quantity, point.Quality)).ToArray(),
             batch.PeriodStart.ToDateTimeOffset(),
             batch.PeriodEnd.ToDateTimeOffset());
-        var actual = sut.MapToDto(processStepResult, batch);
+        var actual = sut.Create(processStepResult, batch);
         actual.Should().BeEquivalentTo(expected);
     }
 }

@@ -198,7 +198,7 @@ public class ProcessOutputRepositoryTests
 
         var batch = new BatchBuilder().Build();
 
-        var sut = new ProcessStepResultApplicationService(processActorResultRepositoryMock.Object, new ProcessStepResultMapper(), batchRepositoryMock.Object);
+        var sut = new ProcessStepResultApplicationService(processActorResultRepositoryMock.Object, new ProcessStepResultFactory(), batchRepositoryMock.Object);
 
         processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode)))
             .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));

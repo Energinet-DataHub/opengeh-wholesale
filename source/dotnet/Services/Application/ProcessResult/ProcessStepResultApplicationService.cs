@@ -25,13 +25,13 @@ namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 public class ProcessStepResultApplicationService : IProcessStepResultApplicationService
 {
     private readonly IProcessStepResultRepository _processStepResultRepository;
-    private readonly IProcessStepResultMapper _processStepResultMapper;
+    private readonly IProcessStepResultFactory _processStepResultFactory;
     private readonly IBatchRepository _batchRepository;
 
-    public ProcessStepResultApplicationService(IProcessStepResultRepository processStepResultRepository, IProcessStepResultMapper processStepResultMapper, IBatchRepository batchRepository)
+    public ProcessStepResultApplicationService(IProcessStepResultRepository processStepResultRepository, IProcessStepResultFactory processStepResultFactory, IBatchRepository batchRepository)
     {
         _processStepResultRepository = processStepResultRepository;
-        _processStepResultMapper = processStepResultMapper;
+        _processStepResultFactory = processStepResultFactory;
         _batchRepository = batchRepository;
     }
 
@@ -42,6 +42,6 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
                 new GridAreaCode(processStepResultRequestDto.GridAreaCode))
             .ConfigureAwait(false);
         var batch = await _batchRepository.GetAsync(processStepResultRequestDto.BatchId).ConfigureAwait(false);
-        return _processStepResultMapper.MapToDto(processActorResult, batch);
+        return _processStepResultFactory.Create(processActorResult, batch);
     }
 }

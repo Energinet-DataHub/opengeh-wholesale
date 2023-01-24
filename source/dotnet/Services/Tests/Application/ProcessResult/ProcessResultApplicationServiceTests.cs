@@ -40,7 +40,7 @@ public class ProcessResultApplicationServiceTests
         ProcessStepResultDto resultDto,
         [Frozen] Mock<IProcessStepResultRepository> repositoryMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-        [Frozen] Mock<IProcessStepResultMapper> mapperMock,
+        [Frozen] Mock<IProcessStepResultFactory> mapperMock,
         ProcessStepResultApplicationService sut)
     {
         // Arrange
@@ -53,7 +53,7 @@ public class ProcessResultApplicationServiceTests
             .Setup(batchRepository => batchRepository.GetAsync(request.BatchId))
             .ReturnsAsync(() => batch);
         mapperMock
-            .Setup(mapper => mapper.MapToDto(result, batch))
+            .Setup(mapper => mapper.Create(result, batch))
             .Returns(() => resultDto);
 
         // Act
