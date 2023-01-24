@@ -2,7 +2,7 @@
 
 ## Version 5.0.1
 
-Bump version as part of pipeline change.
+No functional changes.
 
 ## Version 5.0.0
 
