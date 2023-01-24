@@ -22,7 +22,7 @@ public interface ISettlementReportRepository
     /// Create zip archives for each process in the batch.
     /// The archive contains the basis data files and the result file.
     /// </summary>
-    Task CreateSettlementReportAsync(Batch completedBatch);
+    Task CreateSettlementReportsAsync(Batch completedBatch);
 
     Task<SettlementReport> GetSettlementReportAsync(Batch batch);
 }

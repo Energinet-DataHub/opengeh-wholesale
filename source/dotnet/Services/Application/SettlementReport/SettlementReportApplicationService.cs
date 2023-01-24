@@ -34,7 +34,7 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
     public async Task CreateSettlementReportAsync(BatchCompletedEventDto batchCompletedEvent)
     {
         var batch = await _batchRepository.GetAsync(batchCompletedEvent.BatchId).ConfigureAwait(false);
-        await _settlementReportRepository.CreateSettlementReportAsync(batch).ConfigureAwait(false);
+        await _settlementReportRepository.CreateSettlementReportsAsync(batch).ConfigureAwait(false);
         batch.AreSettlementReportsCreated = true;
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }

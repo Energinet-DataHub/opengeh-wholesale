@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.SettlementReport;
+namespace Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 
 public class SettlementReportRepository : ISettlementReportRepository
 {
@@ -42,7 +42,7 @@ public class SettlementReportRepository : ISettlementReportRepository
         };
     }
 
-    public async Task CreateSettlementReportAsync(Batch completedBatch)
+    public async Task CreateSettlementReportsAsync(Batch completedBatch)
     {
         var batchBasisFileStreams = await GetBatchBasisFileStreamsAsync(completedBatch).ConfigureAwait(false);
 
@@ -52,12 +52,12 @@ public class SettlementReportRepository : ISettlementReportRepository
             await _streamZipper.ZipAsync(batchBasisFileStreams, zipStream).ConfigureAwait(false);
     }
 
-    public async Task<Domain.SettlementReportAggregate.SettlementReport> GetSettlementReportAsync(Batch batch)
+    public async Task<SettlementReport> GetSettlementReportAsync(Batch batch)
     {
         var zipFileName = GetZipFileName(batch);
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(zipFileName);
         var stream = (await dataLakeFileClient.ReadAsync().ConfigureAwait(false)).Value.Content;
-        return new Domain.SettlementReportAggregate.SettlementReport(stream);
+        return new SettlementReport(stream);
     }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)

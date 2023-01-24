@@ -22,7 +22,7 @@ using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.SettlementReport;
+using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
@@ -179,7 +179,7 @@ public class SettlementReportRepositoryTests
             streamZipperMock.Object);
 
         // Act & Assert
-        await sut.Invoking(s => s.CreateSettlementReportAsync(completedBatch)).Should().NotThrowAsync();
+        await sut.Invoking(s => s.CreateSettlementReportsAsync(completedBatch)).Should().NotThrowAsync();
     }
 
     [Theory]

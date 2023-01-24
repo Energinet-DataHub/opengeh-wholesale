@@ -20,7 +20,7 @@ using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.Infrastructure.SettlementReport;
+using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
