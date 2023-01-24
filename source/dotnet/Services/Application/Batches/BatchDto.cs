@@ -27,5 +27,5 @@ public sealed record BatchDto(
     DateTimeOffset? ExecutionTimeStart,
     DateTimeOffset? ExecutionTimeEnd,
     BatchState ExecutionState,
-    bool IsBasisDataDownloadAvailable,
+    bool AreSettlementReportsCreated,
     string[] GridAreaCodes);

@@ -12,17 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Application.Batches;
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
 
-public interface IProcessOutputRepository
+public interface ISettlementReportApplicationService
 {
-    /// <summary>
-    /// Create zip archives for each process in the batch.
-    /// The archive contains the basis data files and the result file.
-    /// </summary>
-    Task CreateBasisDataZipAsync(Batch completedBatch);
+    Task CreateSettlementReportAsync(BatchCompletedEventDto batchCompletedEvent);
 
-    Task<Stream> GetZippedBasisDataStreamAsync(Batch batch);
+    Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId);
 }

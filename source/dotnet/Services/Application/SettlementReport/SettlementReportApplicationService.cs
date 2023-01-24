@@ -13,36 +13,36 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
 
-public class BasisDataApplicationService : IBasisDataApplicationService
+public class SettlementReportApplicationService : ISettlementReportApplicationService
 {
     private readonly IBatchRepository _batchRepository;
-    private readonly IProcessOutputRepository _processOutputRepository;
+    private readonly ISettlementReportRepository _settlementReportRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public BasisDataApplicationService(IBatchRepository batchRepository, IProcessOutputRepository processOutputRepository, IUnitOfWork unitOfWork)
+    public SettlementReportApplicationService(IBatchRepository batchRepository, ISettlementReportRepository settlementReportRepository, IUnitOfWork unitOfWork)
     {
         _batchRepository = batchRepository;
-        _processOutputRepository = processOutputRepository;
+        _settlementReportRepository = settlementReportRepository;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task ZipBasisDataAsync(BatchCompletedEventDto batchCompletedEvent)
+    public async Task CreateSettlementReportAsync(BatchCompletedEventDto batchCompletedEvent)
     {
         var batch = await _batchRepository.GetAsync(batchCompletedEvent.BatchId).ConfigureAwait(false);
-        await _processOutputRepository.CreateBasisDataZipAsync(batch).ConfigureAwait(false);
-        batch.IsBasisDataDownloadAvailable = true;
+        await _settlementReportRepository.CreateSettlementReportsAsync(batch).ConfigureAwait(false);
+        batch.AreSettlementReportsCreated = true;
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId)
+    public async Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId)
     {
         var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
-        return await _processOutputRepository.GetZippedBasisDataStreamAsync(batch).ConfigureAwait(false);
+        var report = await _settlementReportRepository.GetSettlementReportAsync(batch).ConfigureAwait(false);
+        return new SettlementReportDto(report.Stream);
     }
 }

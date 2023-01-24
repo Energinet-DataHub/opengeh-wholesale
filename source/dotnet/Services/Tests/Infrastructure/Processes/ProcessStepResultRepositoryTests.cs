@@ -22,7 +22,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.Tests.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
 using Xunit;

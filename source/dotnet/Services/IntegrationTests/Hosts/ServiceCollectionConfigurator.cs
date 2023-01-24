@@ -19,8 +19,8 @@ using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
@@ -40,7 +40,7 @@ public class ServiceCollectionConfigurator
     private (Batch Batch, string ZipFileName)? _withBasisDataFilesForBatch;
 
     /// <summary>
-    /// Configure the service collection to support the methods of the <see cref="ProcessOutputRepository"/>
+    /// Configure the service collection to support the methods of the <see cref="SettlementReportRepository"/>
     /// for the given batch. The batch must exist in the database.
     /// </summary>
     public ServiceCollectionConfigurator WithBatchFileManagerForBatch(Batch batch, string zipFileName)
@@ -60,7 +60,7 @@ public class ServiceCollectionConfigurator
     }
 
     /// <summary>
-    /// Add the configuration needed to use the <see cref="ProcessOutputRepository"/>
+    /// Add the configuration needed to use the <see cref="SettlementReportRepository"/>
     /// for the <see cref="Batch"/> specified in <see cref="WithBatchFileManagerForBatch"/>.
     /// </summary>
     private void ConfigureBasisDataFilesForBatch(IServiceCollection serviceCollection)
@@ -75,9 +75,9 @@ public class ServiceCollectionConfigurator
                 new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
                 {
                     ProcessStepResultRepository.GetResultFileSpecification,
-                    ProcessOutputRepository.GetTimeSeriesHourBasisDataFileSpecification,
-                    ProcessOutputRepository.GetTimeSeriesQuarterBasisDataFileSpecification,
-                    ProcessOutputRepository.GetMasterBasisDataFileSpecification,
+                    SettlementReportRepository.GetTimeSeriesHourBasisDataFileSpecification,
+                    SettlementReportRepository.GetTimeSeriesQuarterBasisDataFileSpecification,
+                    SettlementReportRepository.GetMasterBasisDataFileSpecification,
                 };
 
             // Mock each basis data files for the process
@@ -169,7 +169,7 @@ public class ServiceCollectionConfigurator
             .Setup(client => client.OpenWriteAsync(false, null, default))
             .ReturnsAsync(() => File.OpenWrite(_withBasisDataFilesForBatch.Value.ZipFileName));
         dataLakeFileSystemClientMock
-            .Setup(client => client.GetFileClient(ProcessOutputRepository.GetZipFileName(_withBasisDataFilesForBatch.Value.Batch)))
+            .Setup(client => client.GetFileClient(SettlementReportRepository.GetZipFileName(_withBasisDataFilesForBatch.Value.Batch)))
             .Returns(zipFileClient.Object);
     }
 }
