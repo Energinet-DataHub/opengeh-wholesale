@@ -24,12 +24,13 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Application.CalculationJobs;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
+using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
@@ -85,12 +86,12 @@ public static class Program
     private static void Applications(IServiceCollection services)
     {
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
-        services.AddScoped<IBatchExecutionStateHandler, BatchExecutionStateHandler>();
+        services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
         services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
+        services.AddScoped<ICalculationDomainService, DatabricksCalculationDomainService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
     }

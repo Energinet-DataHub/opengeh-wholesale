@@ -24,7 +24,7 @@ using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application;
+namespace Energinet.DataHub.Wholesale.Tests.Application.Batches;
 
 [UnitTest]
 public class BatchApplicationServiceTests

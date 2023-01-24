@@ -12,21 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
-using Energinet.DataHub.Wholesale.Tests.TestHelpers;
-using Xunit;
-using Xunit.Categories;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application;
+namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
-[UnitTest]
-public sealed class ProcessResultPointTests
+public interface ICalculationDomainService
 {
-    [Fact]
-    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
-    {
-        await using var stream = EmbeddedResources.GetStream("Sender.Infrastructure.Calculator.calculator-result.json");
+    Task<CalculationState> GetJobStateAsync(JobRunId jobRunId);
 
-        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<ProcessResultPoint>(stream);
-    }
+    /// <summary>
+    /// Start job.
+    /// </summary>
+    /// <param name="jobParameters">
+    /// Parameters must be on the form "--param-name=param-value".
+    /// Further details about the format depends on the actual job runner implementation.
+    /// </param>
+    Task<JobRunId> SubmitJobAsync(IEnumerable<string> jobParameters);
 }
