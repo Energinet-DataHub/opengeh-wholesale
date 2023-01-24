@@ -14,9 +14,9 @@
 
 using Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Application.Processes.Model;
 
-public interface IBatchRequestDtoValidator
+public interface IProcessTypeMapper
 {
-    bool IsValid(BatchRequestDto batchRequestDto, out IEnumerable<string> errorMessages);
+    ProcessType MapFrom(Domain.ProcessAggregate.ProcessType processType);
 }
