@@ -104,7 +104,8 @@ jobs:
     needs: [
       build_and_publish,
     ]
-    if: github.event_name == 'pull_request'
+    if: |
+      always()
     steps:
       - name: Verify if merge is allowed
         run: |
