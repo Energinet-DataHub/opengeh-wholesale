@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 
 public sealed class DatabricksCalculationDomainService : ICalculationDomainService
 {
@@ -32,7 +32,7 @@ public sealed class DatabricksCalculationDomainService : ICalculationDomainServi
         _wheelClient = wheelClient;
     }
 
-    public async Task<JobRunId> SubmitJobAsync(IEnumerable<string> jobParameters)
+    public async Task<JobRunId> StartAsync(IEnumerable<string> jobParameters)
     {
         var calculatorJob = await _databricksCalculatorJobSelector
             .GetAsync()
@@ -48,7 +48,7 @@ public sealed class DatabricksCalculationDomainService : ICalculationDomainServi
         return new JobRunId(runId.RunId);
     }
 
-    public async Task<CalculationState> GetJobStateAsync(JobRunId jobRunId)
+    public async Task<CalculationState> GetStatusAsync(JobRunId jobRunId)
     {
         var runState = await _wheelClient
             .Jobs

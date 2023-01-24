@@ -17,12 +17,12 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
+using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Microsoft.Azure.Databricks.Client;
 using Moq;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.JobRunner;
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Calculations;
 
 public class DatabricksCalculatorJobRunnerTests
 {
@@ -53,7 +53,7 @@ public class DatabricksCalculatorJobRunnerTests
         var jobRunId = new JobRunId(1);
         var runState = new Run { State = new RunState { LifeCycleState = runLifeCycleState, ResultState = runResultState } };
         databricksWheelClientMock.Setup(x => x.Jobs.RunsGet(jobRunId.Id, CancellationToken.None)).ReturnsAsync(runState);
-        var jobState = await sut.GetJobStateAsync(jobRunId);
+        var jobState = await sut.GetStatusAsync(jobRunId);
         Assert.Equal(expectedCalculationState, jobState);
     }
 }

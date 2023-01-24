@@ -13,22 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public class DatabricksCalculatorJobParametersFactory : ICalculatorJobParametersFactory
+/// <summary>
+/// This is an infrastructure concern. It cannot, however, currently be moved to infrastructure
+/// due to problems listed in <see cref="BatchApplicationService.UpdateExecutionStateAsync"/>.
+/// </summary>
+public interface ICalculationParametersFactory
 {
-    public IEnumerable<string> CreateParameters(Batch batch)
-    {
-        var gridAreas = string.Join(", ", batch.GridAreaCodes.Select(c => c.Code));
-
-        return new List<string>
-        {
-            $"--batch-id={batch.Id}",
-            $"--batch-grid-areas=[{gridAreas}]",
-            $"--batch-period-start-datetime={batch.PeriodStart}",
-            $"--batch-period-end-datetime={batch.OpenPeriodEnd}",
-        };
-    }
+    IEnumerable<string> CreateParameters(Batch batch);
 }

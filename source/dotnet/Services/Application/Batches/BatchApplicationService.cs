@@ -28,7 +28,7 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICalculationDomainService _calculationDomainService;
-    private readonly ICalculatorJobParametersFactory _calculatorJobParametersFactory;
+    private readonly ICalculationParametersFactory _calculationParametersFactory;
     private readonly IBatchExecutionStateDomainService _batchExecutionStateDomainService;
     private readonly IBatchDtoMapper _batchDtoMapper;
     private readonly IProcessTypeMapper _processTypeMapper;
@@ -38,7 +38,7 @@ public class BatchApplicationService : IBatchApplicationService
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         ICalculationDomainService calculationDomainService,
-        ICalculatorJobParametersFactory calculatorJobParametersFactory,
+        ICalculationParametersFactory calculationParametersFactory,
         IBatchExecutionStateDomainService batchExecutionStateDomainService,
         IBatchDtoMapper batchDtoMapper,
         IProcessTypeMapper processTypeMapper)
@@ -47,7 +47,7 @@ public class BatchApplicationService : IBatchApplicationService
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _calculationDomainService = calculationDomainService;
-        _calculatorJobParametersFactory = calculatorJobParametersFactory;
+        _calculationParametersFactory = calculationParametersFactory;
         _batchExecutionStateDomainService = batchExecutionStateDomainService;
         _batchDtoMapper = batchDtoMapper;
         _processTypeMapper = processTypeMapper;
@@ -70,10 +70,11 @@ public class BatchApplicationService : IBatchApplicationService
         // TODO: Problems with this code:
         // - Multiple unit of work commits. What if something fails? There should probably be exactly none or one commit per use case
         // - This complexity belongs to a domain service, but it can't be moved to a domain service because of the unit of work dependency
+        // - ICalculationParametersFactory is an infrastructure concern, but can't be moved to infra due to this code
         foreach (var batch in batches)
         {
-            var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);
-            var jobRunId = await _calculationDomainService.SubmitJobAsync(jobParameters).ConfigureAwait(false);
+            var jobParameters = _calculationParametersFactory.CreateParameters(batch);
+            var jobRunId = await _calculationDomainService.StartAsync(jobParameters).ConfigureAwait(false);
             batch.MarkAsSubmitted(jobRunId);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }

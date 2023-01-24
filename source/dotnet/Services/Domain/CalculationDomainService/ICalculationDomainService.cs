@@ -16,9 +16,13 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
+/// <summary>
+/// The implementation of this domain service is located in infrastructure as it is tightly coupled to Databricks.
+/// It may be worth splitting the implementation in a domains service part and auxiliary infrastructure services.
+/// </summary>
 public interface ICalculationDomainService
 {
-    Task<CalculationState> GetJobStateAsync(JobRunId jobRunId);
+    Task<CalculationState> GetStatusAsync(JobRunId jobRunId);
 
     /// <summary>
     /// Start job.
@@ -27,5 +31,5 @@ public interface ICalculationDomainService
     /// Parameters must be on the form "--param-name=param-value".
     /// Further details about the format depends on the actual job runner implementation.
     /// </param>
-    Task<JobRunId> SubmitJobAsync(IEnumerable<string> jobParameters);
+    Task<JobRunId> StartAsync(IEnumerable<string> jobParameters);
 }

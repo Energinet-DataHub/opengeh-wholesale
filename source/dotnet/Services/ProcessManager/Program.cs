@@ -34,9 +34,9 @@ using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
-using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
@@ -141,7 +141,7 @@ public static class Program
 
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         serviceCollection
-            .AddScoped<ICalculatorJobParametersFactory, DatabricksCalculatorJobParametersFactory>();
+            .AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
         serviceCollection.AddSingleton(_ =>
         {

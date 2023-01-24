@@ -60,7 +60,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
             try
             {
                 var jobState = await _calculationDomainService
-                    .GetJobStateAsync(batch.RunId!)
+                    .GetStatusAsync(batch.RunId!)
                     .ConfigureAwait(false);
 
                 var executionState = MapState(jobState);

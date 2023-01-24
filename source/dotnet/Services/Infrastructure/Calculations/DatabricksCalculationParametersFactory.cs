@@ -12,11 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 
-public interface ICalculatorJobParametersFactory
+public class DatabricksCalculationParametersFactory : ICalculationParametersFactory
 {
-    IEnumerable<string> CreateParameters(Batch batch);
+    public IEnumerable<string> CreateParameters(Batch batch)
+    {
+        var gridAreas = string.Join(", ", batch.GridAreaCodes.Select(c => c.Code));
+
+        return new List<string>
+        {
+            $"--batch-id={batch.Id}",
+            $"--batch-grid-areas=[{gridAreas}]",
+            $"--batch-period-start-datetime={batch.PeriodStart}",
+            $"--batch-period-end-datetime={batch.OpenPeriodEnd}",
+        };
+    }
 }
