@@ -15,6 +15,5 @@
 from enum import Enum
 
 
-class ActorType(Enum):
-    NONE = "none",
+class MarketRole(Enum):
     ENERGY_SUPPLIER = "energy_supplier"

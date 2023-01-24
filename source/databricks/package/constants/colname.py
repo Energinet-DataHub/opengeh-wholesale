@@ -14,7 +14,7 @@
 
 
 class Colname:
-    actor_type = "actor_type"
+    market_role = "market_role"
     added_grid_loss = "added_grid_loss"
     added_system_correction = "added_system_correction"
     aggregated_quality = "aggregated_quality"

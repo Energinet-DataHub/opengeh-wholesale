@@ -18,12 +18,12 @@ import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
 from package.codelists import MeteringPointResolution
 from package.constants import Colname
-from package.constants.actor_type import ActorType
+from package.constants.market_role import MarketRole
 from package.constants.time_series_type import TimeSeriesType
 from package.db_logging import debug
 from package.shared.data_classes import Metadata
-from package.write_basis_data import BasisDataWriter
-from package.write_process_step_result import ProcessStepResultWriter
+from package.basis_data_writer import BasisDataWriter
+from package.process_step_result_writer import ProcessStepResultWriter
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, explode, expr, first, sum
 from pyspark.sql.types import DecimalType
@@ -135,7 +135,7 @@ def calculate_non_profiled_consumption(
     result_writer.write(
         consumption_per_ga_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        ActorType.ENERGY_SUPPLIER,
+        MarketRole.ENERGY_SUPPLIER,
     )
 
 

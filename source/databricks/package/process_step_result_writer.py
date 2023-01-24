@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame
 from package.constants import Colname
 from package.constants.time_series_type import TimeSeriesType
-from package.constants.actor_type import ActorType
+from package.constants.market_role import MarketRole
 from pyspark.sql.functions import col, lit
 
 
@@ -30,28 +30,28 @@ class ProcessStepResultWriter:
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
-        actor_type: ActorType,
+        market_role: MarketRole,
     ) -> None:
 
         result_df = self._prepare_result_for_output(
-            result_df, time_series_type, actor_type
+            result_df, time_series_type, market_role
         )
 
         self._write_result_df(result_df)
 
-        if actor_type is not ActorType.NONE:
-            self._write_actors(result_df, actor_type)
+        if market_role is not MarketRole.NONE:
+            self._write_actors(result_df, market_role)
 
     def _prepare_result_for_output(
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
-        actor_type: ActorType,
+        market_role: MarketRole,
     ) -> DataFrame:
 
         result_df = self._add_gln_and_time_series_type(
             result_df,
-            actor_type,
+            market_role,
             time_series_type,
         )
 
@@ -69,7 +69,7 @@ class ProcessStepResultWriter:
     def _add_gln_and_time_series_type(
         self,
         result_df: DataFrame,
-        actor_type: ActorType,
+        market_role: MarketRole,
         time_series_type: TimeSeriesType,
     ) -> DataFrame:
 
@@ -77,14 +77,16 @@ class ProcessStepResultWriter:
             Colname.time_series_type, lit(time_series_type.value)
         )
 
-        if actor_type is ActorType.NONE:
+        if market_role is MarketRole.NONE:
             result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
-        elif actor_type is ActorType.ENERGY_SUPPLIER:
+        elif market_role is MarketRole.ENERGY_SUPPLIER:
             result_df = result_df.withColumnRenamed(
                 Colname.energy_supplier_id, Colname.gln
             )
         else:
-            raise NotImplementedError(f"Actor type, {actor_type}, is not supported yet")
+            raise NotImplementedError(
+                f"Market role, {market_role}, is not supported yet"
+            )
 
         return result_df
 
@@ -102,20 +104,20 @@ class ProcessStepResultWriter:
             .json(result_data_directory)
         )
 
-    def _write_actors(self, result_df: DataFrame, actor_type: ActorType) -> None:
+    def _write_actors(self, result_df: DataFrame, market_role: MarketRole) -> None:
 
-        actors_df = self._get_actors_df(result_df, actor_type)
+        actors_df = self._get_actors(result_df, market_role)
 
         actors_directory = f"{self.output_path}/actors"
 
         (
             actors_df.repartition("grid_area")
             .write.mode("append")
-            .partitionBy("grid_area", Colname.time_series_type, Colname.actor_type)
+            .partitionBy("grid_area", Colname.time_series_type, Colname.market_role)
             .json(actors_directory)
         )
 
-    def _get_actors_df(self, result_df: DataFrame, actor_type: ActorType) -> DataFrame:
+    def _get_actors(self, result_df: DataFrame, market_role: MarketRole) -> DataFrame:
 
         actors_df = result_df.select(
             "grid_area",
@@ -123,6 +125,6 @@ class ProcessStepResultWriter:
             Colname.time_series_type,
         ).distinct()
 
-        actors_df = actors_df.withColumn(Colname.actor_type, lit(actor_type.value))
+        actors_df = actors_df.withColumn(Colname.market_role, lit(market_role.value))
 
         return actors_df
