@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts;
 
-public sealed record ProcessResultRequestDto(Guid BatchId, string GridAreaCode, TimeSeriesType TimeSeriesType, string? Gln);
+public sealed record ProcessStepResultRequestDtoV2(Guid BatchId, string GridAreaCode, TimeSeriesType TimeSeriesType, string Gln);

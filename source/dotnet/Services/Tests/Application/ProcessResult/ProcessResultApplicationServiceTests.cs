@@ -23,6 +23,7 @@ using Moq;
 using Test.Core;
 using Xunit;
 using Xunit.Categories;
+using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessResult;
 
@@ -42,7 +43,7 @@ public class ProcessResultApplicationServiceTests
         // Arrange
         request.SetPrivateProperty(dto => dto.GridAreaCode, "123");
         repositoryMock
-            .Setup(repository => repository.GetAsync(request.BatchId, new GridAreaCode(request.GridAreaCode)))
+            .Setup(repository => repository.GetAsync(request.BatchId, new GridAreaCode(request.GridAreaCode), TimeSeriesType.production, "grid_area"))
             .ReturnsAsync(() => result);
         mapperMock
             .Setup(mapper => mapper.MapToDto(result))

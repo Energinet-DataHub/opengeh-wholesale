@@ -34,9 +34,9 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         _processResultPointFactory = processResultPointFactory;
     }
 
-    public async Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode)
+    public async Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string gln)
     {
-        var (directory, extension, _) = GetResultFileSpecification(batchId, gridAreaCode);
+        var (directory, extension, _) = GetResultFileSpecification(batchId, gridAreaCode, timeSeriesType, gln);
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
         if (dataLakeFileClient == null)
         {
@@ -49,8 +49,8 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         return MapToProcessStepResultDto(points);
     }
 
-    public static (string Directory, string Extension, string ZipEntryPath) GetResultFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/batch_id={batchId}/result/grid_area={gridAreaCode.Code}/gln=grid_area/time_series_type=production/", ".json", $"{gridAreaCode.Code}/Result.json");
+    public static (string Directory, string Extension, string ZipEntryPath) GetResultFileSpecification(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string gln)
+        => ($"calculation-output/batch_id={batchId}/result/grid_area={gridAreaCode.Code}/gln={gln}/time_series_type={timeSeriesType}/", ".json", $"{gridAreaCode.Code}/Result.json");
 
     /// <summary>
     /// Search for a file by a given extension in a blob directory.

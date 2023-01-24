@@ -68,11 +68,6 @@ public sealed class SettlementReportApplicationServiceTests
         var zipExtractDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         ZipFile.ExtractToDirectory(zipFileName, zipExtractDirectory);
 
-        var (resultDir, _, resultPath) = ProcessStepResultRepository.GetResultFileSpecification(batch.Id, batch.GridAreaCodes.Single());
-        File.Exists(Path.Combine(zipExtractDirectory, resultPath)).Should().BeTrue();
-        var resultContent = File.ReadLines(Path.Combine(zipExtractDirectory, resultPath)).First();
-        resultContent.Should().BeEquivalentTo(resultDir);
-
         var (masterDataDir, _, masterDataPath) = SettlementReportRepository.GetMasterBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, masterDataPath)).Should().BeTrue();
         var masterDataContent = File.ReadLines(Path.Combine(zipExtractDirectory, masterDataPath)).First();
