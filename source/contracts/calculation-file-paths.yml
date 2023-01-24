@@ -8,6 +8,11 @@ result_file:
     directory_expression: calculation-output/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/result/grid_area=\d{3}/gln=.*/time_series_type=.*/
     extension: .json
 
+actors_file:
+    # Example: calculation-output/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/actors/grid_area=806/time_series_type=non_profiled_consumption/actor_type=energy_supplier
+    directory_expression: calculation-output/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/actors/grid_area=\d{3}/time_series_type=.*/actor_type=.*/
+    extension: .json
+
 time_series_hour_basis_data_file:
     # Example: calculation-output/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/basis_data/time-series-hour/grid_area=806/gln=grid_area/
     directory_expression: calculation-output/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/basis_data/time_series_hour/grid_area=\d{3}/gln=.*/
