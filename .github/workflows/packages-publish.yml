@@ -97,3 +97,24 @@ jobs:
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
           NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
           NUPKG_RECURSE_PATH: 'source/dotnet/Packages'
+
+  #
+  # Branch policy status check
+  #
+
+  allow_merge:
+    runs-on: ubuntu-latest
+    needs: [
+      build_and_publish,
+    ]
+    if: github.event_name = 'pull_request'
+    steps:
+      - name: Verify if merge is allowed
+        run: |
+          echo "${{ toJSON(needs) }}"
+
+          if [[ ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }} = true ]]; then
+              echo "Failed"
+              exit 1
+          fi
+
