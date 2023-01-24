@@ -61,3 +61,8 @@ jobs:
             - '.github/actions/dotnet-*/**'
             - 'source/contracts/**'
             - 'source/dotnet/!(Packages/**)/**'
+          nuget:
+            - 'source/dotnet/Contracts/**'
+            - 'source/dotnet/Packages/**'
+            - '.github/workflows/detect-changes.yml'
+            - '.github/workflows/packages-publish.yml'
