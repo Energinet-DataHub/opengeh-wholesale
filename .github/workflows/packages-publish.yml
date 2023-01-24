@@ -63,10 +63,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v9
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v10
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v9
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v10
         with:
           USE_AZURE_FUNCTIONS_TOOLS: 'true'
           NODE_VERSION: '16'
@@ -74,7 +74,7 @@ jobs:
           AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v9
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
           SOLUTION_FILE_PATH: './source/dotnet/Packages/Packages.sln'
           CODE_COVERAGE_FLAGS: packages
@@ -84,12 +84,12 @@ jobs:
           AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
 
       - name: Pack Client project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v9
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
           PROJECT_PATH: './source/dotnet/Packages/Client/Client.csproj'
 
       - name: Pack Contracts project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v9
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
           PROJECT_PATH: './source/dotnet/Packages/Contracts/Contracts.csproj'
 
@@ -104,7 +104,7 @@ jobs:
             .github/workflows/packages-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v9
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v10
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
