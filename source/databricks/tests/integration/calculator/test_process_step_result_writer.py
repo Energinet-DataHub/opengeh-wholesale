@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from os import path
+from os import path, PathLike
 from package.process_step_result_writer import ProcessStepResultWriter
 from package.constants.time_series_type import TimeSeriesType
 from package.constants.market_role import MarketRole
@@ -79,8 +79,32 @@ def get_actors_path(
     return f"{output_path}/actors/grid_area={grid_area}/time_series_type={time_series_type.value}/market_role={market_role.value}"
 
 
+def test__write_per_ga_per_actor__expected_folder_exists(
+    spark: SparkSession, tmpdir: PathLike, result_schema: StructType
+) -> None:
+
+    # Arrange
+    grid_area_805 = "805"
+    time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
+    market_role = MarketRole.ENERGY_SUPPLIER
+    expected_folder = get_actors_path(
+        tmpdir, grid_area_805, time_series_type, market_role
+    )
+    row = create_result_row(grid_area=grid_area_805, energy_supplier_id="123")
+    result_df = spark.createDataFrame(row, schema=result_schema)
+
+    sut = ProcessStepResultWriter(tmpdir)
+
+    # Act
+    sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
+
+    # Assert
+
+    assert path.exists(expected_folder)
+
+
 def test__write_per_ga_per_actor__has_expected_gln(
-    spark: SparkSession, tmpdir, result_schema
+    spark: SparkSession, tmpdir: PathLike, result_schema: StructType
 ) -> None:
 
     # Arrange
@@ -89,24 +113,23 @@ def test__write_per_ga_per_actor__has_expected_gln(
     es_id_2 = "234"
     time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
     market_role = MarketRole.ENERGY_SUPPLIER
+    expected_folder = get_actors_path(
+        tmpdir, grid_area_805, time_series_type, market_role
+    )
+
     rows = []
     rows.append(create_result_row(grid_area=grid_area_805, energy_supplier_id=es_id_1))
     rows.append(create_result_row(grid_area=grid_area_805, energy_supplier_id=es_id_2))
-    row1 = create_result_row(grid_area=grid_area_805, energy_supplier_id=es_id_1)
     result_df = spark.createDataFrame(row1, schema=result_schema)
 
     sut = ProcessStepResultWriter(tmpdir)
-
-    # file_name = tmpdir.join("test_file.txt")
 
     # Act
     sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
 
     # Assert
-    folder = get_actors_path(tmpdir, grid_area_805, time_series_type, market_role)
-    print(folder)
 
-    assert path.exists(folder)
+    assert path.exists(expected_folder)
 
 
 # def get_result_path(
