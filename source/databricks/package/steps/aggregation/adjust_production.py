@@ -29,7 +29,7 @@ adjusted_sum_quantity = "adjusted_sum_quantity"
 
 # step 11
 def adjust_production(results: dict, metadata: Metadata) -> DataFrame:
-    hourly_production_result_df = results[ResultKeyName.hourly_production]
+    hourly_production_result_df = results[ResultKeyName.production]
     added_system_correction_result_df = results[ResultKeyName.added_system_correction]
     sys_cor_df = results[ResultKeyName.grid_loss_sys_cor_master_data]
     # select columns from dataframe that contains information about metering points registered as SystemCorrection to use in join.

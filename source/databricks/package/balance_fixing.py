@@ -12,32 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
+from datetime import datetime
 
-from pyspark.sql.functions import col, expr, explode, sum, first, lit
-from package.codelists import (
-    MeteringPointResolution,
-)
-
-from package.db_logging import debug
 import package.basis_data as basis_data
-import package.steps as steps
 import package.steps.aggregation as agg_steps
-from datetime import timedelta, datetime
+from package.codelists import MeteringPointResolution
 from package.constants import Colname, ResultKeyName
+from package.constants.result_grouping import ResultGrouping
+from package.constants.time_series_type import TimeSeriesType
+from package.db_logging import debug
+from package.calculation_output_writer import CalculationOutputWriter
 from package.shared.data_classes import Metadata
-from pyspark.sql.types import (
-    DecimalType,
-)
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import col, explode, expr, first, lit, sum
+from pyspark.sql.types import DecimalType
 
 
 def calculate_balance_fixing(
+    calculation_output_writer: CalculationOutputWriter,
     metering_points_periods_df: DataFrame,
     timeseries_points: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
-) -> tuple[DataFrame, tuple[DataFrame, DataFrame], DataFrame]:
+) -> None:
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         timeseries_points,
         metering_points_periods_df,
@@ -45,7 +43,38 @@ def calculate_balance_fixing(
         period_end_datetime,
     )
 
-    time_series_basis_data_df = basis_data.get_time_series_basis_data_dfs(
+    create_and_write_basis_data(
+        calculation_output_writer,
+        metering_points_periods_df,
+        enriched_time_series_point_df,
+        period_start_datetime,
+        period_end_datetime,
+        time_zone,
+    )
+
+    metadata_fake = Metadata("1", "1", "1", "1")
+
+    calculate_production(
+        enriched_time_series_point_df, metadata_fake, calculation_output_writer
+    )
+
+    calculate_non_profiled_consumption(
+        enriched_time_series_point_df, metadata_fake, calculation_output_writer
+    )
+
+
+def create_and_write_basis_data(
+    calculation_output_writer: CalculationOutputWriter,
+    metering_points_periods_df: DataFrame,
+    enriched_time_series_point_df: DataFrame,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+    time_zone: str,
+) -> None:
+    (
+        timeseries_quarter_df,
+        timeseries_hour_df,
+    ) = basis_data.get_time_series_basis_data_dfs(
         enriched_time_series_point_df, time_zone
     )
 
@@ -53,32 +82,104 @@ def calculate_balance_fixing(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = enriched_time_series_point_df
-    metadata_fake = Metadata("1", "1", "1", "1")
-    total_production_per_ga_df = agg_steps.aggregate_production(results, metadata_fake)
-    total_production_per_ga_df = (
-        total_production_per_ga_df.groupBy(Colname.grid_area, Colname.time_window)
-        .agg(
-            sum(Colname.sum_quantity).alias(Colname.quantity),
-            first(Colname.quality).alias(Colname.quality),
-        )
-        .select(
-            Colname.grid_area,
-            Colname.quantity,
-            col(Colname.quality).alias("quality"),
-            col(Colname.time_window_start).alias("quarter_time"),
-        )
-        .orderBy(col(Colname.grid_area).asc(), col(Colname.time_window).asc())
-        .withColumn("gln", lit("grid_area"))
-        .withColumn("time_series_type", lit("production"))
+    calculation_output_writer.write_basis_data(
+        master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
     )
 
-    return (
-        total_production_per_ga_df,
-        time_series_basis_data_df,
-        master_basis_data_df,
+
+def calculate_production(
+    enriched_time_series: DataFrame,
+    metadata: Metadata,
+    calculation_output_writer: CalculationOutputWriter,
+) -> None:
+
+    total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
+        enriched_time_series, metadata
     )
+    total_production_per_ga_df = total_production_per_per_ga_and_brp_and_es.groupBy(
+        Colname.grid_area, Colname.time_window
+    ).agg(
+        sum(Colname.sum_quantity).alias(Colname.sum_quantity),
+        first(Colname.quality).alias(Colname.quality),
+    )
+
+    total_production_per_ga_df = _prepare_result_for_output(
+        total_production_per_ga_df,
+        TimeSeriesType.PRODUCTION,
+        ResultGrouping.PER_GRID_AREA,
+    )
+
+    calculation_output_writer.write_result(total_production_per_ga_df)
+
+
+def calculate_non_profiled_consumption(
+    enriched_time_series_point_df: DataFrame,
+    metadata: Metadata,
+    calculation_output_writer: CalculationOutputWriter,
+) -> None:
+
+    consumption = agg_steps.aggregate_non_profiled_consumption(
+        enriched_time_series_point_df, metadata
+    )
+
+    # Non-profiled consumption per energy supplier
+    consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
+        consumption, metadata
+    )
+
+    consumption_per_ga_and_es = _prepare_result_for_output(
+        consumption_per_ga_and_es,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        ResultGrouping.PER_ENERGY_SUPPLIER,
+    )
+
+    calculation_output_writer.write_result(consumption_per_ga_and_es)
+
+
+def _prepare_result_for_output(
+    result_df: DataFrame,
+    time_series_type: TimeSeriesType,
+    result_grouping: ResultGrouping,
+) -> DataFrame:
+
+    result_df = _add_gln_and_time_series_type(
+        result_df,
+        result_grouping,
+        time_series_type,
+    )
+
+    result_df = result_df.select(
+        col(Colname.grid_area).alias("grid_area"),
+        Colname.gln,
+        Colname.time_series_type,
+        col(Colname.sum_quantity).alias("quantity").cast("string"),
+        col(Colname.quality).alias("quality"),
+        col(Colname.time_window_start).alias("quarter_time"),
+    )
+
+    return result_df
+
+
+def _add_gln_and_time_series_type(
+    result_df: DataFrame,
+    result_grouping: ResultGrouping,
+    time_series_type: TimeSeriesType,
+) -> DataFrame:
+
+    result_df = result_df.withColumn(
+        Colname.time_series_type, lit(time_series_type.value)
+    )
+
+    if result_grouping is ResultGrouping.PER_GRID_AREA:
+        result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
+    elif result_grouping is ResultGrouping.PER_ENERGY_SUPPLIER:
+        result_df = result_df.withColumnRenamed(Colname.energy_supplier_id, Colname.gln)
+    else:
+        raise NotImplementedError(
+            f"Result grouping, {result_grouping}, is not supported yet"
+        )
+
+    return result_df
 
 
 def _get_enriched_time_series_points_df(

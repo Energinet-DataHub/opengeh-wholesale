@@ -19,7 +19,6 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
-using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.FunctionApp;
@@ -55,9 +54,7 @@ public class PublishProcessCompletedIntegrationEventEndpointTests
             // Arrange
             var processCompletedMessage = CreateProcessCompletedEventDtoMessage();
             using var eventualProcessCompletedIntegrationEvent = await Fixture
-                .ProcessCompletedIntegrationEventListener
-                .ListenForMessageAsync<ProcessCompleted>(_ => true, binaryData => ProcessCompleted.Parser.ParseFrom(binaryData.ToArray()));
-                //.ListenForMessageByCorrelationIdAsync(processCompletedMessage.CorrelationId); // TODO BJARKE
+                .ProcessCompletedIntegrationEventListener.ListenForMessageAsync(processCompletedMessage.GetOperationCorrelationId());
 
             // Act
             await Fixture.DomainEventsTopic.SenderClient.SendMessageAsync(processCompletedMessage);

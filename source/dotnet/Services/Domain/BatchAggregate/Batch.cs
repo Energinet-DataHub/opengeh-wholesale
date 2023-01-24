@@ -41,7 +41,7 @@ public class Batch
         PeriodEnd = periodEnd;
         ExecutionTimeStart = executionTimeStart;
         ExecutionTimeEnd = null;
-        IsBasisDataDownloadAvailable = false;
+        AreSettlementReportsCreated = false;
     }
 
     /// <summary>
@@ -122,7 +122,7 @@ public class Batch
     /// </summary>
     public Instant OpenPeriodEnd => PeriodEnd.Plus(Duration.FromMilliseconds(1));
 
-    public bool IsBasisDataDownloadAvailable { get; set; }
+    public bool AreSettlementReportsCreated { get; set; }
 
     public void MarkAsSubmitted(JobRunId jobRunId)
     {

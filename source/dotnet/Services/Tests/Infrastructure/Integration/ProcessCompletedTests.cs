@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using FluentAssertions;
 using Xunit;
 
@@ -21,9 +21,9 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Integration;
 public class ProcessCompletedTests
 {
     [Fact]
-    public void MessageType_Is_ProcessCompleted()
+    public void MessageType_Is_Correct()
     {
         // This should not be changed as it'll affect external subscribers
-        ProcessCompleted.MessageType.Should().Be("ProcessCompleted");
+        ProcessCompleted.BalanceFixingProcessType.Should().Be("BalanceFixingCompleted");
     }
 }

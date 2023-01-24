@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json;
-using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
@@ -24,54 +23,22 @@ namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 /// </summary>
 public class ProcessStepResultApplicationService : IProcessStepResultApplicationService
 {
-    private readonly IBatchFileManager _batchFileManager;
+    private readonly IProcessStepResultRepository _processStepResultRepository;
+    private readonly IProcessStepResultMapper _processStepResultMapper;
 
-    public ProcessStepResultApplicationService(IBatchFileManager batchFileManager)
+    public ProcessStepResultApplicationService(IProcessStepResultRepository processStepResultRepository, IProcessStepResultMapper processStepResultMapper)
     {
-        _batchFileManager = batchFileManager;
+        _processStepResultRepository = processStepResultRepository;
+        _processStepResultMapper = processStepResultMapper;
     }
 
     public async Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto)
     {
-        var resultStream = await _batchFileManager.GetResultFileStreamAsync(
+        var processActorResult = await _processStepResultRepository.GetAsync(
                 processStepResultRequestDto.BatchId,
                 new GridAreaCode(processStepResultRequestDto.GridAreaCode))
             .ConfigureAwait(false);
 
-        var points = await GetPointsFromJsonStreamAsync(resultStream).ConfigureAwait(false);
-
-        var pointsDto = points.Select(
-                point => new TimeSeriesPointDto(
-                    DateTimeOffset.Parse(point.quarter_time),
-                    decimal.Parse(point.quantity)))
-            .ToList();
-
-        return new ProcessStepResultDto(
-            ProcessStepMeteringPointType.Production,
-            pointsDto.Sum(x => x.Quantity),
-            pointsDto.Min(x => x.Quantity),
-            pointsDto.Max(x => x.Quantity),
-            pointsDto.ToArray());
-    }
-
-    private static async Task<List<ProcessResultPoint>> GetPointsFromJsonStreamAsync(Stream resultStream)
-    {
-        var list = new List<ProcessResultPoint>();
-
-        var streamer = new StreamReader(resultStream);
-
-        var nextline = await streamer.ReadLineAsync().ConfigureAwait(false);
-        while (nextline != null)
-        {
-            var dto = JsonSerializer.Deserialize<ProcessResultPoint>(
-                nextline,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            if (dto != null)
-                list.Add(dto);
-
-            nextline = await streamer.ReadLineAsync().ConfigureAwait(false);
-        }
-
-        return list;
+        return _processStepResultMapper.MapToDto(processActorResult);
     }
 }

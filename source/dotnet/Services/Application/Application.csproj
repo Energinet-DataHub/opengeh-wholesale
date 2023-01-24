@@ -40,16 +40,10 @@ limitations under the License.
       <Link>Batches\BatchSearchDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
-      <Link>Batches\ProcessStepMeteringPointType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessDto.cs">
-      <Link>Batches\ProcessDto.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepDto.cs">
-      <Link>Batches\ProcessStepDto.cs</Link>
+      <Link>ProcessResult\ProcessStepMeteringPointType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
-      <Link>Batches\ProcessStepResultDto.cs</Link>
+      <Link>ProcessResult\ProcessStepResultDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepResultRequestDto.cs">
       <Link>ProcessResult\ProcessStepResultRequestDto.cs</Link>
@@ -61,16 +55,16 @@ limitations under the License.
       <Link>ProcessResult\TimeSeriesType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepType.cs">
-      <Link>Batches\ProcessStepType.cs</Link>
+      <Link>ProcessResult\ProcessStepType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessType.cs">
       <Link>Processes\ProcessType.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\TimeSeriesPointDto.cs">
-      <Link>Batches\TimeSeriesPointDto.cs</Link>
-    </Compile>
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Batches\BatchState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\TimeSeriesPointDto.cs">
+      <Link>ProcessResult\TimeSeriesPointDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchActorType.cs">
       <Link>Batches\BatchActorType.cs</Link>

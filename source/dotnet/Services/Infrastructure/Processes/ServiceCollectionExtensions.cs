@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
@@ -27,7 +28,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddProcessCompletedPublisher(
         this IServiceCollection serviceCollection,
         string serviceBusConnectionString,
-        string processCompletedTopicName)
+        string processCompletedTopicName,
+        string messageType)
     {
         serviceCollection.AddScoped<IProcessCompletedPublisher>(provider =>
         {
@@ -35,7 +37,8 @@ public static class ServiceCollectionExtensions
                 .GetRequiredService<TargetedSingleton<ServiceBusSender, ProcessCompletedPublisher>>()
                 .Instance;
             var factory = provider.GetRequiredService<IServiceBusMessageFactory>();
-            return new ProcessCompletedPublisher(sender, factory);
+            var serializer = provider.GetRequiredService<IJsonSerializer>();
+            return new ProcessCompletedPublisher(sender, factory, messageType, serializer);
         });
 
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))

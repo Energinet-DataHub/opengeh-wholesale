@@ -24,7 +24,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Client</PackageId>
-    <PackageVersion>4.1.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>4.2.2$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Client</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -34,16 +34,16 @@ limitations under the License.
       Is shown in Azure DevOps artifacts Release Notes section.
     -->
     <PackageReleaseNotes>
-      [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/documents/release-notes/release-notes.md)
-      [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/documents/documentation.md)
+      [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Client/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Client/documents/documentation.md)
     </PackageReleaseNotes>
     <!-- PackageDescription:
       Is shown in GitHub packages "About this package" section,
       and in Visual Studio package manager view.
     -->
     <PackageDescription>
-      [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/documents/release-notes/release-notes.md)
-      [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/documents/documentation.md)
+      [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Client/documents/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Client/documents/documentation.md)
     </PackageDescription>
     <Description>A package containing client functionality to integrate with the wholesale domain in Energinet.DataHub.</Description>
     <PackageTags>energinet;datahub;wholesale</PackageTags>
@@ -81,12 +81,6 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Model\BatchState.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\ProcessDto.cs">
-      <Link>Dtos\ProcessDto.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepDto.cs">
-      <Link>Dtos\ProcessStepDto.cs</Link>
-    </Compile>
     <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
       <Link>Dtos\ProcessStepMeteringPointType.cs</Link>
     </Compile>
@@ -120,5 +114,6 @@ limitations under the License.
         <Compile Include="..\..\Contracts\BatchActorsRequestDto.cs">
       <Link>Dtos\BatchActorsRequestDto.cs</Link>
     </Compile>
+    <Compile Remove="documents\**" />
   </ItemGroup>
 </Project>

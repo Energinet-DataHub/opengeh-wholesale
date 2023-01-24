@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
             AuthorizationConfiguration = new AuthorizationConfiguration(
                 "u002",
                 "integrationtest.local.settings.json",
-                "AZURE_SECRETS_KEYVAULT_URL");
+                "AZURE_B2CSECRETS_KEYVAULT_URL");
 
             ServiceBusResourceProvider = new ServiceBusResourceProvider(
                 IntegrationTestConfiguration.ServiceBusConnectionString,
@@ -121,7 +121,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
                 .AddSubscription("zip-basis-data-subscription")
                 .AddSubjectFilter(batchCompletedEventName)
-                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName)
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName)
                 .AddSubscription("publish-process-completed-event-subscription")
                 .AddSubjectFilter(batchCompletedEventName)
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName)

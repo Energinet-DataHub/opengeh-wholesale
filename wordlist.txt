@@ -16,7 +16,9 @@ DDQ
 DDX
 DDZ
 debugz
+Dev
 dequeue
+deserialization
 dk
 Dockerfile
 EDI

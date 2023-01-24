@@ -28,10 +28,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
             return provider.When(_ => true);
         }
 
-        public static DoProvider WhenCorrelationId(this ServiceBusListenerMock provider, string? correlationId = null)
+        public static DoProvider WhenOperationCorrelationId(this ServiceBusListenerMock provider, string? operationCorrelationId = null)
         {
-            return provider.When(request =>
-                request.ApplicationProperties[MessageMetaDataConstants.CorrelationId].Equals(correlationId));
+            return provider.When(request => request.GetOperationCorrelationId().Equals(operationCorrelationId));
         }
     }
 }

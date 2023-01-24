@@ -30,7 +30,7 @@ public class BatchDtoMapper : IBatchDtoMapper
             batch.ExecutionTimeStart.ToDateTimeOffset(),
             batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
             MapState(batch.ExecutionState),
-            batch.IsBasisDataDownloadAvailable,
+            batch.AreSettlementReportsCreated,
             MapGridAreaCodes(batch.GridAreaCodes));
     }
 
