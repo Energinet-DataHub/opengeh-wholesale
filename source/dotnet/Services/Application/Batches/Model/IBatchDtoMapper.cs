@@ -12,18 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
 
-public class ProcessTypeMapper : IProcessTypeMapper
+public interface IBatchDtoMapper
 {
-    public ProcessType MapFrom(Domain.ProcessAggregate.ProcessType processType)
-    {
-        return processType switch
-        {
-            Domain.ProcessAggregate.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
-        };
-    }
+    BatchDto Map(Batch batch);
 }
