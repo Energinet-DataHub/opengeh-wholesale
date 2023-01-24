@@ -19,11 +19,20 @@ on:
   push:
     branches:
       - main
+    paths:
+      - source/dotnet/Contracts/**
+      - source/dotnet/Packages/Client/**
+      - source/dotnet/Packages/Contracts/**
+      - .github/workflows/packages-publish.yml
   # Build, test, pack
   # Executed if package folder or build scripts has changed; including if documentation or tests has changed
   pull_request:
     branches:
       - main
+    paths:
+      - source/dotnet/Contracts/**
+      - source/dotnet/Packages/**
+      - .github/workflows/packages-publish.yml
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
@@ -31,6 +40,13 @@ on:
 env:
   # Conditions
   PUSH_PACKAGES: ${{ github.event_name != 'pull_request' }}
+  # Variables necessary to manage Azure resources for tests (similar to local use of 'integrationtest.local.settings.json')
+  AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+  AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
+  # Set value used by 'AzuriteManager'
+  AzuriteBlobFolderPath: '${{ github.workspace }}\node_modules\.bin\'
+  # Overrides settings in 'functionhost.settings.json'
+  FunctionAppHostPath: '${{ github.workspace }}\node_modules\azure-functions-core-tools\bin\func.dll'
 
 permissions:
   id-token: write
@@ -38,20 +54,8 @@ permissions:
 
 jobs:
 
-  #
-  # Detect changes to start relevant jobs
-  #
-
-  changes:
-    uses: ./.github/workflows/detect-changes.yml
-
-  #
-  # Build package and publish
-  #
-
   build_and_publish:
-    needs: changes
-    if: ${{ needs.changes.outputs.nuget == 'true' }}
+
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
@@ -59,24 +63,33 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v10
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v9
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v10
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v9
+        with:
+          USE_AZURE_FUNCTIONS_TOOLS: 'true'
+          NODE_VERSION: '16'
+          AZURITE_VERSION: '3.15.0'
+          AZURE_FUNCTIONS_CORE_TOOLS_VERSION: '4.0.3971'
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v9
         with:
           SOLUTION_FILE_PATH: './source/dotnet/Packages/Packages.sln'
           CODE_COVERAGE_FLAGS: packages
+          AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
 
       - name: Pack Client project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v9
         with:
           PROJECT_PATH: './source/dotnet/Packages/Client/Client.csproj'
 
       - name: Pack Contracts project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v9
         with:
           PROJECT_PATH: './source/dotnet/Packages/Contracts/Contracts.csproj'
 
@@ -91,7 +104,7 @@ jobs:
             .github/workflows/packages-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v10
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v9
         with:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
@@ -117,4 +130,5 @@ jobs:
               echo "Failed"
               exit 1
           fi
+
 
