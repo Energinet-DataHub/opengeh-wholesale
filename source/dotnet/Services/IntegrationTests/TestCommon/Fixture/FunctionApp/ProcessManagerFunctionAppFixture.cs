@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
             AuthorizationConfiguration = new AuthorizationConfiguration(
                 "u002",
                 "integrationtest.local.settings.json",
-                "AZURE_SECRETS_KEYVAULT_URL");
+                "AZURE_B2CSECRETS_KEYVAULT_URL");
 
             ServiceBusResourceProvider = new ServiceBusResourceProvider(
                 IntegrationTestConfiguration.ServiceBusConnectionString,
