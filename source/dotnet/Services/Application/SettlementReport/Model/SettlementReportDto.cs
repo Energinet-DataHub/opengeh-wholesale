@@ -12,18 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
-
-public class ProcessTypeMapper : IProcessTypeMapper
-{
-    public ProcessType MapFrom(Domain.ProcessAggregate.ProcessType processType)
-    {
-        return processType switch
-        {
-            Domain.ProcessAggregate.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
-        };
-    }
-}
+public record SettlementReportDto(Stream Stream);

@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
+namespace Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
 
 public interface IProcessStepResultMapper
 {

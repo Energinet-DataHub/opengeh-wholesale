@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
-using NodaTime;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 
-public sealed record ProcessCompletedEventDto(
-    string GridAreaCode,
-    Guid BatchId,
-    ProcessType ProcessType,
-    Instant PeriodStart,
-    Instant PeriodEnd);
+public interface ISettlementReportRepository
+{
+    /// <summary>
+    /// Create zip archives for each process in the batch.
+    /// The archive contains the basis data files and the result file.
+    /// </summary>
+    Task CreateSettlementReportsAsync(Batch completedBatch);
+
+    Task<SettlementReport> GetSettlementReportAsync(Batch batch);
+}

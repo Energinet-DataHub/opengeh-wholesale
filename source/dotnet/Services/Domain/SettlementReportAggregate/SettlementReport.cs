@@ -12,11 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
-
-public interface IProcessCompletedEventDtoFactory
-{
-    List<ProcessCompletedEventDto> CreateFromBatchCompletedEvent(BatchCompletedEventDto batchCompletedEvent);
-}
+public record SettlementReport(Stream Stream);

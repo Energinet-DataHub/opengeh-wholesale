@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
 
-public interface IProcessOutputRepository
+public interface IBatchRequestDtoValidator
 {
-    /// <summary>
-    /// Create zip archives for each process in the batch.
-    /// The archive contains the basis data files and the result file.
-    /// </summary>
-    Task CreateBasisDataZipAsync(Batch completedBatch);
-
-    Task<Stream> GetZippedBasisDataStreamAsync(Batch batch);
+    bool IsValid(BatchRequestDto batchRequestDto, out IEnumerable<string> errorMessages);
 }

@@ -36,7 +36,7 @@ public static class EnvironmentSettingNames
     public const string ServiceBusListenConnectionString = "SERVICE_BUS_LISTEN_CONNECTION_STRING";
 
     public const string DomainEventsTopicName = "DOMAIN_EVENTS_TOPIC_NAME";
-    public const string ZipBasisDataWhenCompletedBatchSubscriptionName = "ZIP_BASIS_DATA_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME";
+    public const string CreateSettlementReportsWhenCompletedBatchSubscriptionName = "CREATE_SETTLEMENT_REPORTS_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME";
     public const string PublishProcessesCompletedWhenCompletedBatchSubscriptionName = "PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME";
 
     public const string BatchCompletedEventName = "BATCH_COMPLETED_EVENT_NAME";

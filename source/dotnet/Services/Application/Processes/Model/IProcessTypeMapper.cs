@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using NodaTime;
+using Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Application.Processes.Model;
 
-public sealed record BatchCompletedEventDto(
-    Guid BatchId,
-    List<string> GridAreaCodes,
-    ProcessType ProcessType,
-    Instant PeriodStart,
-    Instant PeriodEnd);
+public interface IProcessTypeMapper
+{
+    ProcessType MapFrom(Domain.ProcessAggregate.ProcessType processType);
+}

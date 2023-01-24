@@ -14,32 +14,33 @@
 
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class ZipBasisDataEndpoint
+public class CreateSettlementReportsEndpoint
 {
-    private const string FunctionName = nameof(ZipBasisDataEndpoint);
+    private const string FunctionName = nameof(CreateSettlementReportsEndpoint);
     private readonly IJsonSerializer _jsonSerializer;
-    private readonly IBasisDataApplicationService _basisDataApplicationService;
+    private readonly ISettlementReportApplicationService _settlementReportApplicationService;
 
-    public ZipBasisDataEndpoint(IJsonSerializer jsonSerializer, IBasisDataApplicationService basisDataApplicationService)
+    public CreateSettlementReportsEndpoint(IJsonSerializer jsonSerializer, ISettlementReportApplicationService settlementReportApplicationService)
     {
         _jsonSerializer = jsonSerializer;
-        _basisDataApplicationService = basisDataApplicationService;
+        _settlementReportApplicationService = settlementReportApplicationService;
     }
 
     [Function(FunctionName)]
     public async Task RunAsync(
         [ServiceBusTrigger(
             "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
-            "%" + EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName + "%",
+            "%" + EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
         var batchCompletedEvent = await _jsonSerializer.DeserializeAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
-        await _basisDataApplicationService.ZipBasisDataAsync(batchCompletedEvent).ConfigureAwait(false);
+        await _settlementReportApplicationService.CreateSettlementReportAsync(batchCompletedEvent).ConfigureAwait(false);
     }
 }

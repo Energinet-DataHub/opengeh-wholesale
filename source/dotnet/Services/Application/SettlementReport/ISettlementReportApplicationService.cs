@@ -12,11 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
 
-public interface IBatchRequestDtoValidator
+public interface ISettlementReportApplicationService
 {
-    bool IsValid(BatchRequestDto batchRequestDto, out IEnumerable<string> errorMessages);
+    Task CreateSettlementReportAsync(BatchCompletedEventDto batchCompletedEvent);
+
+    Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId);
 }

@@ -19,20 +19,21 @@ using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
+using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BasisData;
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
 
 [UnitTest]
-public class ProcessOutputRepositoryTests
+public class SettlementReportRepositoryTests
 {
     [Fact]
     public static async Task GetMasterBasisDataFileSpecification_MatchesContract()
@@ -45,7 +46,7 @@ public class ProcessOutputRepositoryTests
 
         // Act
         var actual =
-            ProcessOutputRepository.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
+            SettlementReportRepository.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -63,7 +64,7 @@ public class ProcessOutputRepositoryTests
 
         // Act
         var actual =
-            ProcessOutputRepository.GetTimeSeriesHourBasisDataFileSpecification(
+            SettlementReportRepository.GetTimeSeriesHourBasisDataFileSpecification(
                 new Guid(batchId),
                 new GridAreaCode(gridAreaCode));
 
@@ -83,7 +84,7 @@ public class ProcessOutputRepositoryTests
 
         // Act
         var actual =
-            ProcessOutputRepository.GetTimeSeriesQuarterBasisDataFileSpecification(
+            SettlementReportRepository.GetTimeSeriesQuarterBasisDataFileSpecification(
                 new Guid(batchId),
                 new GridAreaCode(gridAreaCode));
 
@@ -94,7 +95,7 @@ public class ProcessOutputRepositoryTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetZippedBasisDataStreamAsync_WhenGivenBatch_ReturnCorrectStream(
+    public async Task GetSettlementReportAsync_WhenGivenBatch_ReturnCorrectStream(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock)
@@ -135,13 +136,14 @@ public class ProcessOutputRepositoryTests
                     basisDataBuffer)),
             null!);
         dataLakeFileClientMock.Setup(x => x.ReadAsync()).ReturnsAsync(fileDownloadResponse);
-        var sut = new ProcessOutputRepository(
+        var sut = new SettlementReportRepository(
             dataLakeFileSystemClientMock.Object,
             streamZipperMock.Object);
         var batch = new BatchBuilder().Build();
 
         // Act
-        var actual = await new StreamReader(await sut.GetZippedBasisDataStreamAsync(batch).ConfigureAwait(false))
+        var report = await sut.GetSettlementReportAsync(batch).ConfigureAwait(false);
+        var actual = await new StreamReader(report.Stream)
             .ReadLineAsync();
 
         // Assert
@@ -150,7 +152,7 @@ public class ProcessOutputRepositoryTests
 
     [Theory]
     [AutoMoqData]
-    public async Task CreateBasisDataZipAsync_CreatesZipFile_WhenDataDirectoryIsNotFound(
+    public async Task CreateSettlementReportAsync_CreatesSettlementReportFile_WhenDataDirectoryIsNotFound(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
@@ -173,12 +175,12 @@ public class ProcessOutputRepositoryTests
             .Setup(x => x.OpenWriteAsync(default, null, default))
             .ReturnsAsync(stream.Object);
 
-        var sut = new ProcessOutputRepository(
+        var sut = new SettlementReportRepository(
             dataLakeFileSystemClientMock.Object,
             streamZipperMock.Object);
 
         // Act & Assert
-        await sut.Invoking(s => s.CreateBasisDataZipAsync(completedBatch)).Should().NotThrowAsync();
+        await sut.Invoking(s => s.CreateSettlementReportsAsync(completedBatch)).Should().NotThrowAsync();
     }
 
     [Theory]

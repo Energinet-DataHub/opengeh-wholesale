@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
@@ -28,7 +29,7 @@ public class BatchDtoV2Mapper : IBatchDtoV2Mapper
             batchDto.ExecutionTimeStart,
             batchDto.ExecutionTimeEnd,
             batchDto.ExecutionState,
-            batchDto.IsBasisDataDownloadAvailable,
+            batchDto.AreSettlementReportsCreated,
             batchDto.GridAreaCodes);
     }
 }

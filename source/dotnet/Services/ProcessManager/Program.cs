@@ -23,14 +23,15 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.CalculationJobs;
-using Energinet.DataHub.Wholesale.Application.Infrastructure;
 using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
@@ -39,6 +40,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -90,7 +92,7 @@ public static class Program
         services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         services.AddScoped<ICalculatorJobRunner, DatabricksCalculatorJobRunner>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IBasisDataApplicationService, BasisDataApplicationService>();
+        services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
     }
 
     private static void Domains(IServiceCollection services)
@@ -150,8 +152,8 @@ public static class Program
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
-        serviceCollection.AddScoped<IProcessOutputRepository>(
-            provider => new ProcessOutputRepository(
+        serviceCollection.AddScoped<ISettlementReportRepository>(
+            provider => new SettlementReportRepository(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
     }
@@ -178,7 +180,7 @@ public static class Program
         var batchCompletedSubscriptionPublishProcessesCompleted =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName);
         var batchCompletedSubscriptionZipBasisData =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName);
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName);
         var integrationEventsTopicName =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
 
