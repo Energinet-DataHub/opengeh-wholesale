@@ -15,19 +15,19 @@
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+namespace Energinet.DataHub.Wholesale.Infrastructure.SettlementReport;
 
-public class ProcessOutputRepository : IProcessOutputRepository
+public class SettlementReportRepository : ISettlementReportRepository
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>> _fileIdentifierProviders;
 
     private readonly IStreamZipper _streamZipper;
 
-    public ProcessOutputRepository(
+    public SettlementReportRepository(
         DataLakeFileSystemClient dataLakeFileSystemClient,
         IStreamZipper streamZipper)
     {
@@ -42,7 +42,7 @@ public class ProcessOutputRepository : IProcessOutputRepository
         };
     }
 
-    public async Task CreateBasisDataZipAsync(Batch completedBatch)
+    public async Task CreateSettlementReportAsync(Batch completedBatch)
     {
         var batchBasisFileStreams = await GetBatchBasisFileStreamsAsync(completedBatch).ConfigureAwait(false);
 
@@ -52,12 +52,12 @@ public class ProcessOutputRepository : IProcessOutputRepository
             await _streamZipper.ZipAsync(batchBasisFileStreams, zipStream).ConfigureAwait(false);
     }
 
-    public async Task<Stream> GetZippedBasisDataStreamAsync(Batch batch)
+    public async Task<Domain.SettlementReportAggregate.SettlementReport> GetSettlementReportAsync(Batch batch)
     {
         var zipFileName = GetZipFileName(batch);
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(zipFileName);
         var stream = (await dataLakeFileClient.ReadAsync().ConfigureAwait(false)).Value.Content;
-        return stream;
+        return new Domain.SettlementReportAggregate.SettlementReport(stream);
     }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)

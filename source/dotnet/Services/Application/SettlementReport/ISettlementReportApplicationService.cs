@@ -14,11 +14,11 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
 
-public interface IBasisDataApplicationService
+public interface ISettlementReportApplicationService
 {
-    Task ZipBasisDataAsync(BatchCompletedEventDto batchCompletedEvent);
+    Task CreateSettlementReportAsync(BatchCompletedEventDto batchCompletedEvent);
 
-    Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId);
+    Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId);
 }

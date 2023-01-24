@@ -16,12 +16,12 @@ using System.IO.Compression;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.BasisData;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.Infrastructure.SettlementReport;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
@@ -34,11 +34,11 @@ using Xunit;
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
 [Collection(nameof(ProcessManagerIntegrationTestHost))]
-public sealed class BasisDataApplicationServiceTests
+public sealed class SettlementReportApplicationServiceTests
 {
     private readonly ProcessManagerDatabaseFixture _processManagerDatabaseFixture;
 
-    public BasisDataApplicationServiceTests(ProcessManagerDatabaseFixture processManagerDatabaseFixture)
+    public SettlementReportApplicationServiceTests(ProcessManagerDatabaseFixture processManagerDatabaseFixture)
     {
         _processManagerDatabaseFixture = processManagerDatabaseFixture;
     }
@@ -59,10 +59,10 @@ public sealed class BasisDataApplicationServiceTests
 
         await using var scope = host.BeginScope();
         await AddBatchToDatabase(scope, batch);
-        var sut = scope.ServiceProvider.GetRequiredService<IBasisDataApplicationService>();
+        var sut = scope.ServiceProvider.GetRequiredService<ISettlementReportApplicationService>();
 
         // Act
-        await sut.ZipBasisDataAsync(batchCompletedEvent);
+        await sut.CreateSettlementReportAsync(batchCompletedEvent);
 
         // Assert
         var zipExtractDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
@@ -73,17 +73,17 @@ public sealed class BasisDataApplicationServiceTests
         var resultContent = File.ReadLines(Path.Combine(zipExtractDirectory, resultPath)).First();
         resultContent.Should().BeEquivalentTo(resultDir);
 
-        var (masterDataDir, _, masterDataPath) = ProcessOutputRepository.GetMasterBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
+        var (masterDataDir, _, masterDataPath) = SettlementReportRepository.GetMasterBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, masterDataPath)).Should().BeTrue();
         var masterDataContent = File.ReadLines(Path.Combine(zipExtractDirectory, masterDataPath)).First();
         masterDataContent.Should().BeEquivalentTo(masterDataDir);
 
-        var (quarterDir, _, quarterPath) = ProcessOutputRepository.GetTimeSeriesQuarterBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
+        var (quarterDir, _, quarterPath) = SettlementReportRepository.GetTimeSeriesQuarterBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, quarterPath)).Should().BeTrue();
         var quarterContent = File.ReadLines(Path.Combine(zipExtractDirectory, quarterPath)).First();
         quarterContent.Should().BeEquivalentTo(quarterDir);
 
-        var (hourDir, _, hourPath) = ProcessOutputRepository.GetTimeSeriesHourBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
+        var (hourDir, _, hourPath) = SettlementReportRepository.GetTimeSeriesHourBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, hourPath)).Should().BeTrue();
         var hourContent = File.ReadLines(Path.Combine(zipExtractDirectory, hourPath)).First();
         hourContent.Should().BeEquivalentTo(hourDir);

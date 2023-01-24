@@ -14,15 +14,15 @@
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessOutput;
+namespace Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 
-public interface IProcessOutputRepository
+public interface ISettlementReportRepository
 {
     /// <summary>
     /// Create zip archives for each process in the batch.
     /// The archive contains the basis data files and the result file.
     /// </summary>
-    Task CreateBasisDataZipAsync(Batch completedBatch);
+    Task CreateSettlementReportAsync(Batch completedBatch);
 
-    Task<Stream> GetZippedBasisDataStreamAsync(Batch batch);
+    Task<SettlementReport> GetSettlementReportAsync(Batch batch);
 }

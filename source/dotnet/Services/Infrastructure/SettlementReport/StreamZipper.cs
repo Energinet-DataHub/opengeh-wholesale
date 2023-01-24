@@ -14,7 +14,7 @@
 
 using System.IO.Compression;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.BasisData;
+namespace Energinet.DataHub.Wholesale.Infrastructure.SettlementReport;
 
 public class StreamZipper : IStreamZipper
 {

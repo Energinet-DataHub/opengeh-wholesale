@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,18 +31,18 @@ public class BatchController : ControllerBase
     private const string Version = "2.0";
     private readonly IBatchApplicationService _batchApplicationService;
     private readonly IBatchDtoV2Mapper _batchDtoV2Mapper;
-    private readonly IBasisDataApplicationService _basisDataApplicationService;
+    private readonly ISettlementReportApplicationService _settlementReportApplicationService;
     private readonly IBatchRequestDtoValidator _batchRequestDtoValidator;
 
     public BatchController(
         IBatchApplicationService batchApplicationService,
         IBatchDtoV2Mapper batchDtoV2Mapper,
-        IBasisDataApplicationService basisDataApplicationService,
+        ISettlementReportApplicationService settlementReportApplicationService,
         IBatchRequestDtoValidator batchRequestDtoValidator)
     {
         _batchApplicationService = batchApplicationService;
         _batchDtoV2Mapper = batchDtoV2Mapper;
-        _basisDataApplicationService = basisDataApplicationService;
+        _settlementReportApplicationService = settlementReportApplicationService;
         _batchRequestDtoValidator = batchRequestDtoValidator;
     }
 
@@ -75,14 +76,14 @@ public class BatchController : ControllerBase
     }
 
     /// <summary>
-    /// Returns a stream containing the zipped basis data for a batch matching <paramref name="batchId"/>
+    /// Returns a stream containing the settlement report for a batch matching <paramref name="batchId"/>
     /// </summary>
     /// <param name="batchId">BatchId</param>
     [HttpPost("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
-    public async Task<IActionResult> ZipBasisDataAsync([FromBody] Guid batchId)
+    public async Task<IActionResult> GetSettlementReportAsync([FromBody] Guid batchId)
     {
-        var stream = await _basisDataApplicationService.GetZippedBasisDataStreamAsync(batchId).ConfigureAwait(false);
+        var stream = await _settlementReportApplicationService.GetSettlementReportAsync(batchId).ConfigureAwait(false);
         return Ok(stream);
     }
 
