@@ -31,6 +31,7 @@ limitations under the License.
       <EmbeddedResource Include="Scripts\202209131440_Alter_Batch_Period.sql" />
       <EmbeddedResource Include="Scripts\202209191000_Add_Batch_Execution_Time.sql" />
       <EmbeddedResource Include="Scripts\202210261230_Add_IsBatchDataDownloadAvailable.sql" />
+      <EmbeddedResource Include="Scripts\202301241200_Rename_To_Batch_AreSettlementReportsCreated.sql" />
     </ItemGroup>
 
     <ItemGroup>

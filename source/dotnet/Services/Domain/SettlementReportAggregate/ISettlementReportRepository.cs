@@ -12,23 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
+namespace Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 
-public class BatchDtoV2Mapper : IBatchDtoV2Mapper
+public interface ISettlementReportRepository
 {
-    public BatchDtoV2 Map(BatchDto batchDto)
-    {
-        return new BatchDtoV2(
-            batchDto.BatchId,
-            batchDto.PeriodStart,
-            batchDto.PeriodEnd,
-            batchDto.ExecutionTimeStart,
-            batchDto.ExecutionTimeEnd,
-            batchDto.ExecutionState,
-            batchDto.AreSettlementReportsCreated,
-            batchDto.GridAreaCodes);
-    }
+    /// <summary>
+    /// Create zip archives for each process in the batch.
+    /// The archive contains the basis data files and the result file.
+    /// </summary>
+    Task CreateSettlementReportsAsync(Batch completedBatch);
+
+    Task<SettlementReport> GetSettlementReportAsync(Batch batch);
 }

@@ -121,7 +121,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
                 .AddSubscription("zip-basis-data-subscription")
                 .AddSubjectFilter(batchCompletedEventName)
-                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.ZipBasisDataWhenCompletedBatchSubscriptionName)
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName)
                 .AddSubscription("publish-process-completed-event-subscription")
                 .AddSubjectFilter(batchCompletedEventName)
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName)

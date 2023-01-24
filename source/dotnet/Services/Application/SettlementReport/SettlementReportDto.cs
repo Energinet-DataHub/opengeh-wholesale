@@ -12,23 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
-
-public class BatchDtoV2Mapper : IBatchDtoV2Mapper
-{
-    public BatchDtoV2 Map(BatchDto batchDto)
-    {
-        return new BatchDtoV2(
-            batchDto.BatchId,
-            batchDto.PeriodStart,
-            batchDto.PeriodEnd,
-            batchDto.ExecutionTimeStart,
-            batchDto.ExecutionTimeEnd,
-            batchDto.ExecutionState,
-            batchDto.AreSettlementReportsCreated,
-            batchDto.GridAreaCodes);
-    }
-}
+public record SettlementReportDto(Stream Stream);

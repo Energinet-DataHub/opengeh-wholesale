@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BasisData;
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
 
 /// <summary>
 /// Represents the contract of calculation files between .NET and Databricks applications.
