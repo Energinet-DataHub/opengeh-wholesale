@@ -30,7 +30,8 @@ class ProcessStepResultWriter:
         self, result_df: DataFrame, time_series_type: TimeSeriesType
     ) -> None:
 
-        self._write(result_df, time_series_type, MarketRole.NONE)
+        result_df = self._add_gln_without_market_role(result_df)
+        self._write_result_df(result_df, time_series_type)
 
     def write_per_ga_per_actor(
         self,
@@ -39,35 +40,16 @@ class ProcessStepResultWriter:
         market_role: MarketRole,
     ) -> None:
 
-        self._write(result_df, time_series_type, market_role)
-
-    def _write(
-        self,
-        result_df: DataFrame,
-        time_series_type: TimeSeriesType,
-        market_role: MarketRole,
-    ) -> None:
-
-        result_df = self._prepare_result_for_output(
-            result_df, time_series_type, market_role
-        )
-
-        self._write_result_df(result_df)
-
-        if market_role is not MarketRole.NONE:
-            self._write_actors(result_df, market_role)
+        result_df = self._add_gln(result_df, market_role)
+        self._write_result_df(result_df, time_series_type)
+        self._write_actors(result_df, market_role)
 
     def _prepare_result_for_output(
-        self,
-        result_df: DataFrame,
-        time_series_type: TimeSeriesType,
-        market_role: MarketRole,
+        self, result_df: DataFrame, time_series_type: TimeSeriesType
     ) -> DataFrame:
 
-        result_df = self._add_gln_and_time_series_type(
-            result_df,
-            market_role,
-            time_series_type,
+        result_df = result_df.withColumn(
+            Colname.time_series_type, lit(time_series_type.value)
         )
 
         result_df = result_df.select(
@@ -81,20 +63,13 @@ class ProcessStepResultWriter:
 
         return result_df
 
-    def _add_gln_and_time_series_type(
+    def _add_gln(
         self,
         result_df: DataFrame,
         market_role: MarketRole,
-        time_series_type: TimeSeriesType,
     ) -> DataFrame:
 
-        result_df = result_df.withColumn(
-            Colname.time_series_type, lit(time_series_type.value)
-        )
-
-        if market_role is MarketRole.NONE:
-            result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
-        elif market_role is MarketRole.ENERGY_SUPPLIER:
+        if market_role is MarketRole.ENERGY_SUPPLIER:
             result_df = result_df.withColumnRenamed(
                 Colname.energy_supplier_id, Colname.gln
             )
@@ -105,7 +80,21 @@ class ProcessStepResultWriter:
 
         return result_df
 
-    def _write_result_df(self, result_df: DataFrame) -> None:
+    def _add_gln_without_market_role(
+        self,
+        result_df: DataFrame,
+    ) -> DataFrame:
+        result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
+        return result_df
+
+    def _write_result_df(
+        self, result_df: DataFrame, time_series_type: TimeSeriesType
+    ) -> None:
+
+        result_df = self._prepare_result_for_output(
+            result_df,
+            time_series_type,
+        )
 
         result_data_directory = f"{self.__output_path}/result"
 
@@ -123,7 +112,7 @@ class ProcessStepResultWriter:
 
         actors_df = self._get_actors(result_df, market_role)
 
-        actors_directory = f"{self.output_path}/actors"
+        actors_directory = f"{self.__output_path}/actors"
 
         (
             actors_df.repartition("grid_area")
