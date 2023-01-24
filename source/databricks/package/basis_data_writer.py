@@ -16,22 +16,21 @@ from pyspark.sql import DataFrame
 from package.constants import Colname
 
 
-class CalculationOutputWriter:
+class BasisDataWriter:
     def __init__(
         self,
-        batch_id: str,
-        results_path: str,
+        output_path: str,
     ):
-        self.batch_directory = f"{results_path}/batch_id={batch_id}"
+        self.__output_path = output_path
 
-    def write_basis_data(
+    def write(
         self,
         master_basis_data_df: DataFrame,
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
 
-        basis_data_directory = f"{self.batch_directory}/basis_data"
+        basis_data_directory = f"{self.__output_path}/basis_data"
 
         self._write_basis_data_to_csv(
             f"{basis_data_directory}/time_series_quarter", timeseries_quarter_df
@@ -41,20 +40,6 @@ class CalculationOutputWriter:
         )
         self._write_basis_data_to_csv(
             f"{basis_data_directory}/master_basis_data", master_basis_data_df
-        )
-
-    def write_result(self, result_df: DataFrame) -> None:
-
-        result_data_directory = f"{self.batch_directory}/result"
-
-        # First repartition to co-locate all rows for a grid area on a single executor.
-        # This ensures that only one file is being written/created for each grid area
-        # When writing/creating the files. The partition by creates a folder for each grid area.
-        (
-            result_df.repartition("grid_area")
-            .write.mode("append")
-            .partitionBy("grid_area", Colname.gln, Colname.time_series_type)
-            .json(result_data_directory)
         )
 
     def _write_basis_data_to_csv(self, path: str, df: DataFrame) -> None:
