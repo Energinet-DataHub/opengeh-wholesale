@@ -37,11 +37,11 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
 
     public async Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto)
     {
-        var processActorResult = await _processStepResultRepository.GetAsync(
+        var processStepResult = await _processStepResultRepository.GetAsync(
                 processStepResultRequestDto.BatchId,
                 new GridAreaCode(processStepResultRequestDto.GridAreaCode))
             .ConfigureAwait(false);
         var batch = await _batchRepository.GetAsync(processStepResultRequestDto.BatchId).ConfigureAwait(false);
-        return _processStepResultFactory.Create(processActorResult, batch);
+        return _processStepResultFactory.Create(processStepResult, batch);
     }
 }
