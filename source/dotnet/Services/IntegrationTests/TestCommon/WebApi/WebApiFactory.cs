@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 
@@ -50,8 +52,20 @@ public class WebApiFactory : WebApplicationFactory<Startup>
             {
                 services.AddSingleton<IAuthorizationHandler>(new AllowAnonymous());
             }
+
+            services.AddScoped(
+                provider =>
+                    SettlementReportApplicationServiceMock != null
+                    ? SettlementReportApplicationServiceMock.Object
+                    : provider.GetRequiredService<ISettlementReportApplicationService>());
         });
     }
+
+    /// <summary>
+    /// Allow configuring the behaviour of <see cref="ISettlementReportApplicationService"/> by providing a custom <see cref="Moq.Mock{ISettlementReportApplicationService}" /> mock.
+    /// NOTE: This will only work as expected as long as no tests are executed in parallel.
+    /// </summary>
+    public Mock<ISettlementReportApplicationService>? SettlementReportApplicationServiceMock { get; set; }
 
     private sealed class AllowAnonymous : IAuthorizationHandler
     {
