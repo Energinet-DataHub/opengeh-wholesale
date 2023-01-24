@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
+namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
 
-public interface IProcessStepResultMapper
+public interface IBatchRequestDtoValidator
 {
-    ProcessStepResultDto MapToDto(ProcessStepResult processStepResult);
+    bool IsValid(BatchRequestDto batchRequestDto, out IEnumerable<string> errorMessages);
 }

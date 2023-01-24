@@ -38,6 +38,7 @@ LocalDB
 MDR
 MessageHub
 Moq
+Namespaces
 NuGet
 opengeh
 opengeh-wholesale
