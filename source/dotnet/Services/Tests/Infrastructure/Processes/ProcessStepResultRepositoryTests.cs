@@ -37,7 +37,7 @@ public class ProcessStepResultRepositoryTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task GetAsync_ReturnsProcessActorResult(
+    public async Task GetAsync_ReturnsProcessStepResult(
         [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
@@ -202,7 +202,7 @@ public class ProcessStepResultRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetResultAsync_TimeSeriesPoint_IsRead(
-        [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock,
+        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock)
     {
         // Arrange
@@ -215,9 +215,9 @@ public class ProcessStepResultRepositoryTests
 
         var batch = new BatchBuilder().Build();
 
-        var sut = new ProcessStepResultApplicationService(processActorResultRepositoryMock.Object, new ProcessStepResultFactory(), batchRepositoryMock.Object);
+        var sut = new ProcessStepResultApplicationService(processStepResultRepositoryMock.Object, new ProcessStepResultFactory(), batchRepositoryMock.Object);
 
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode)))
+        processStepResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode)))
             .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         batchRepositoryMock.Setup(b => b.GetAsync(batchId)).ReturnsAsync(() => batch);
