@@ -67,7 +67,9 @@ public class BatchApplicationService : IBatchApplicationService
     {
         var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
 
-        // TODO BJARKE: Delegate to domain service
+        // TODO: Problems with this code:
+        // - Multiple unit of work commits. What if something fails? There should probably be exactly none or one commit per use case
+        // - This complexity belongs to a domain service, but it can't be moved to a domain service because of the unit of work dependency
         foreach (var batch in batches)
         {
             var jobParameters = _calculatorJobParametersFactory.CreateParameters(batch);

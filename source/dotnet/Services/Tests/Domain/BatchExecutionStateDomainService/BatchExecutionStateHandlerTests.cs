@@ -14,6 +14,8 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
@@ -98,65 +100,97 @@ public class BatchExecutionStateDomainServiceTests
         batch.ExecutionState.Should().Be(BatchExecutionState.Created);
     }
 
-    // [Theory]
-    // [InlineAutoMoqData]
-    // public async Task UpdateExecutionState_ToCompleted(
-    //     [Frozen] Mock<IClock> clockMock,
-    //     [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-    //     [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-    //     Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
-    // {
-    //     // Arrange
-    //     var batch1 = new BatchBuilder().WithStatePending().Build();
-    //     var batch2 = new BatchBuilder().WithStateExecuting().Build();
-    //     var batches = new List<Batch>() { batch1, batch2 };
-    //     var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart.Plus(Duration.FromDays(2));
-    //     clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
-    //
-    //     batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
-    //         .ReturnsAsync(batches);
-    //     calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch2.RunId!))
-    //         .ReturnsAsync(CalculationState.Completed);
-    //
-    //     // Act
-    //     var completedBatches =
-    //         (await sut.UpdateExecutionStateAsync()).ToList();
-    //
-    //     // Assert
-    //     completedBatches.Should().ContainSingle();
-    //     completedBatches.First().Should().Be(batch2);
-    // }
-    //
-    // [Theory]
-    // [InlineAutoMoqData]
-    // public async Task UpdateExecutionState_When_JobRunnerThrowsException_Then_SkipBatch(
-    //     [Frozen] Mock<IClock> clockMock,
-    //     [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-    //     [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-    //     Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
-    // {
-    //     // Arrange
-    //     var batch1 = new BatchBuilder().WithStateSubmitted().Build();
-    //     var batch2 = new BatchBuilder().WithStateSubmitted().Build();
-    //     var batch3 = new BatchBuilder().WithStateSubmitted().Build();
-    //     var batches = new List<Batch>() { batch1, batch2, batch3 };
-    //
-    //     var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart.Plus(Duration.FromDays(2));
-    //     clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
-    //     batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
-    //         .ReturnsAsync(batches);
-    //     calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch1.RunId!))
-    //         .ReturnsAsync(CalculationState.Completed);
-    //     calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch2.RunId!)).ThrowsAsync(default);
-    //     calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch3.RunId!))
-    //         .ReturnsAsync(CalculationState.Completed);
-    //
-    //     // Act
-    //     var completedBatches =
-    //         (await sut.UpdateExecutionStateAsync()).ToList();
-    //
-    //     // Assert
-    //     completedBatches.Should().Contain(new[] { batch1, batch3 });
-    //     completedBatches.Should().NotContain(batch2);
-    // }
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task UpdateExecutionState_ToCompleted(
+        [Frozen] Mock<IClock> clockMock,
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
+        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+    {
+        // Arrange
+        var batch1 = new BatchBuilder().WithStatePending().Build();
+        var batch2 = new BatchBuilder().WithStateExecuting().Build();
+        var batches = new List<Batch>() { batch1, batch2 };
+        var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart.Plus(Duration.FromDays(2));
+        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
+
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+            .ReturnsAsync(batches);
+        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch2.RunId!))
+            .ReturnsAsync(CalculationState.Completed);
+
+        // Act
+        await sut.UpdateExecutionStateAsync();
+
+        // Assert
+        batch2.ExecutionState.Should().Be(BatchExecutionState.Completed);
+        batch1.ExecutionState.Should().Be(BatchExecutionState.Pending); // Unchanged
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task UpdateExecutionState_WhenCompleting_PublishedEvent(
+        [Frozen] Mock<IClock> clockMock,
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
+        [Frozen] Mock<IBatchCompletedPublisher> batchCompletedPublisherMock,
+        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+    {
+        // Arrange
+        var batch1 = new BatchBuilder().WithStatePending().Build();
+        var batch2 = new BatchBuilder().WithStateExecuting().Build();
+        var batches = new List<Batch>() { batch1, batch2 };
+        var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart.Plus(Duration.FromDays(2));
+        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+            .ReturnsAsync(batches);
+        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch2.RunId!))
+            .ReturnsAsync(CalculationState.Completed);
+
+        // Act
+        await sut.UpdateExecutionStateAsync();
+
+        // Assert
+        batchCompletedPublisherMock
+            .Verify(
+                publisher => publisher.PublishAsync(It.Is<IEnumerable<BatchCompletedEventDto>>(events => events.Single().BatchId == batch2.Id)),
+                Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task UpdateExecutionState_When_JobRunnerThrowsException_Then_SkipBatch(
+        [Frozen] Mock<IClock> clockMock,
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
+        [Frozen] Mock<IBatchCompletedPublisher> batchCompletedPublisherMock,
+        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+    {
+        // Arrange
+        var batch1 = new BatchBuilder().WithStateSubmitted().Build();
+        var batch2 = new BatchBuilder().WithStateSubmitted().Build();
+        var batch3 = new BatchBuilder().WithStateSubmitted().Build();
+        var batches = new List<Batch>() { batch1, batch2, batch3 };
+
+        var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart.Plus(Duration.FromDays(2));
+        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+            .ReturnsAsync(batches);
+        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch1.RunId!))
+            .ReturnsAsync(CalculationState.Completed);
+        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch2.RunId!)).ThrowsAsync(default);
+        calculatorJobRunnerMock.Setup(runner => runner.GetJobStateAsync(batch3.RunId!))
+            .ReturnsAsync(CalculationState.Completed);
+
+        // Act
+        await sut.UpdateExecutionStateAsync();
+
+        // Assert: Events was published for batch1 and batch3, but not for batch2
+        batchCompletedPublisherMock
+            .Verify(
+                publisher => publisher.PublishAsync(It.Is<IEnumerable<BatchCompletedEventDto>>(
+                    events => events.Any(e => e.BatchId == batch1.Id) && events.Any(e => e.BatchId == batch3.Id) && events.All(e => e.BatchId != batch2.Id))),
+                Times.Once);
+    }
 }
