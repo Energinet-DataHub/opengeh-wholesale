@@ -15,6 +15,5 @@
 from enum import Enum
 
 
-class ResultGrouping(Enum):
-    PER_GRID_AREA = "grid_area"
-    PER_ENERGY_SUPPLIER = "energy_supplier"
+class MarketRole(Enum):
+    ENERGY_SUPPLIER = "energy_supplier"
