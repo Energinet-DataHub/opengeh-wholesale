@@ -12,42 +12,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.using Energinet.DataHub.Wholesale.Application.JobRunner;
 
-using Energinet.DataHub.Wholesale.Application.CalculationJobs;
+using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 
-public class BatchExecutionStateHandler : IBatchExecutionStateHandler
+public class BatchExecutionStateDomainService : IBatchExecutionStateDomainService
 {
+    private readonly IBatchRepository _batchRepository;
+    private readonly ICalculationDomainService _calculationDomainService;
     private readonly ILogger _logger;
     private readonly IClock _clock;
+    private readonly IBatchCompletedPublisher _batchCompletedPublisher;
 
-    public BatchExecutionStateHandler(ILogger<BatchExecutionStateHandler> logger, IClock clock)
+    public BatchExecutionStateDomainService(
+        IBatchRepository batchRepository,
+        ICalculationDomainService calculationDomainService,
+        ILogger<BatchExecutionStateDomainService> logger,
+        IClock clock,
+        IBatchCompletedPublisher batchCompletedPublisher)
     {
+        _batchRepository = batchRepository;
+        _calculationDomainService = calculationDomainService;
         _logger = logger;
         _clock = clock;
+        _batchCompletedPublisher = batchCompletedPublisher;
     }
 
     /// <summary>
-    /// Update the execution states in the batch repository by mapping the job states from the runs <see cref="ICalculatorJobRunner"/>
+    /// Update the execution states in the batch repository by mapping the job states from the runs <see cref="ICalculationDomainService"/>
     /// </summary>
     /// <returns>Batches that have been completed</returns>
-    public async Task<IEnumerable<Batch>> UpdateExecutionStateAsync(IBatchRepository batchRepository, ICalculatorJobRunner calculatorJobRunner)
+    public async Task UpdateExecutionStateAsync()
     {
         var completedBatches = new List<Batch>();
         var states = new List<BatchExecutionState>
         {
             BatchExecutionState.Submitted, BatchExecutionState.Pending, BatchExecutionState.Executing,
         };
-        var activeBatches = await batchRepository.GetByStatesAsync(states).ConfigureAwait(false);
+        var activeBatches = await _batchRepository.GetByStatesAsync(states).ConfigureAwait(false);
         foreach (var batch in activeBatches)
         {
             try
             {
-                var jobState = await calculatorJobRunner
-                    .GetJobStateAsync(batch.RunId!)
+                var jobState = await _calculationDomainService
+                    .GetStatusAsync(batch.RunId!)
                     .ConfigureAwait(false);
 
                 var executionState = MapState(jobState);
@@ -62,19 +75,21 @@ public class BatchExecutionStateHandler : IBatchExecutionStateHandler
             }
         }
 
-        return completedBatches;
+        var batchCompletedEvents = completedBatches.Select(
+            b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), b.ProcessType, b.PeriodStart, b.PeriodEnd));
+        await _batchCompletedPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
     }
 
-    private static BatchExecutionState MapState(JobState jobState)
+    private static BatchExecutionState MapState(CalculationState calculationState)
     {
-        return jobState switch
+        return calculationState switch
         {
-            JobState.Pending => BatchExecutionState.Pending,
-            JobState.Running => BatchExecutionState.Executing,
-            JobState.Completed => BatchExecutionState.Completed,
-            JobState.Canceled => BatchExecutionState.Canceled,
-            JobState.Failed => BatchExecutionState.Failed,
-            _ => throw new ArgumentOutOfRangeException(nameof(jobState), jobState, "Unexpected JobState."),
+            CalculationState.Pending => BatchExecutionState.Pending,
+            CalculationState.Running => BatchExecutionState.Executing,
+            CalculationState.Completed => BatchExecutionState.Completed,
+            CalculationState.Canceled => BatchExecutionState.Canceled,
+            CalculationState.Failed => BatchExecutionState.Failed,
+            _ => throw new ArgumentOutOfRangeException(nameof(calculationState), calculationState, "Unexpected JobState."),
         };
     }
 

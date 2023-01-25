@@ -12,13 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Application.ProcessResult;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Xunit;
+using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes.Model;
+namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessResult.Model;
 
-public interface IProcessTypeMapper
+[UnitTest]
+public sealed class ProcessResultPointTests
 {
-    ProcessType MapFrom(Domain.ProcessAggregate.ProcessType processType);
+    [Fact]
+    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
+    {
+        await using var stream = EmbeddedResources.GetStream("Sender.Infrastructure.Calculator.calculator-result.json");
 
-    Domain.ProcessAggregate.ProcessType MapFrom(ProcessType processType);
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<ProcessResultPoint>(stream);
+    }
 }
