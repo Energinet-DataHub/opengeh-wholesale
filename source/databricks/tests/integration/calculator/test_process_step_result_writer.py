@@ -132,31 +132,6 @@ def test__write_per_ga_per_actor__actors_folder_is_created(
     assert actors_directory.exists()
 
 
-# def test__write_per_ga_per_actor__expected_folder_exists(
-#     spark: SparkSession, tmpdir: Path
-# ) -> None:
-
-#     # Arrange
-#     output_path = str(tmpdir)
-#     grid_area_805 = "805"
-#     time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
-#     market_role = MarketRole.ENERGY_SUPPLIER
-#     expected_path = _get_actors_path(
-#         output_path, grid_area_805, time_series_type, market_role
-#     )
-#     row = []
-#     row.append(_create_result_row(grid_area=grid_area_805, energy_supplier_id="123"))
-#     result_df = spark.createDataFrame(data=row, schema=_get_result_schema())
-
-#     sut = ProcessStepResultWriter(output_path)
-
-#     # Act
-#     sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
-
-#     # Assert
-#     assert Path.exists(expected_path)
-
-
 def test__write_per_ga_per_actor__actors_file_has_expected_gln(
     spark: SparkSession, tmpdir: Path
 ) -> None:
