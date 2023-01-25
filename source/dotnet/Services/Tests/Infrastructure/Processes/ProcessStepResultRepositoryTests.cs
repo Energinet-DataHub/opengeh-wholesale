@@ -203,7 +203,7 @@ public class ProcessStepResultRepositoryTests
     [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
     [InlineData(TimeSeriesType.Consumption, "consumption")]
     [InlineData(TimeSeriesType.Production, "production")]
-    public static Task GetResultFileSpecification_DirectoryContainsCorrectlyMappedTimeSeriesTypeString(TimeSeriesType timeSeriesType, string expectedTimeSeriesType)
+    public void GetResultFileSpecification_DirectoryContainsCorrectlyMappedTimeSeriesTypeString(TimeSeriesType timeSeriesType, string expectedTimeSeriesType)
     {
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
