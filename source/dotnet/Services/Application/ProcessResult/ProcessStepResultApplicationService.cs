@@ -51,14 +51,14 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
         var processActorResult = await _processStepResultRepository.GetAsync(
                 processStepResultRequestDtoV2.BatchId,
                 new GridAreaCode(processStepResultRequestDtoV2.GridAreaCode),
-                Map(processStepResultRequestDtoV2.TimeSeriesType),
+                MapTimeSeriesType(processStepResultRequestDtoV2.TimeSeriesType),
                 processStepResultRequestDtoV2.Gln)
             .ConfigureAwait(false);
 
         return _processStepResultMapper.MapToDto(processActorResult);
     }
 
-    private static TimeSeriesType Map(Contracts.TimeSeriesType timeSeriesType)
+    private static TimeSeriesType MapTimeSeriesType(Contracts.TimeSeriesType timeSeriesType)
     {
         switch (timeSeriesType)
         {
