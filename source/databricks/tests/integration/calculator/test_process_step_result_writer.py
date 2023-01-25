@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import pytest
-from os import path, PathLike
+import json
+from os import path
+from pathlib import Path
 from package.process_step_result_writer import ProcessStepResultWriter
 from package.constants.time_series_type import TimeSeriesType
 from package.constants.market_role import MarketRole
@@ -23,11 +25,6 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql import DataFrame, SparkSession
 from decimal import Decimal
 from datetime import datetime
-
-# executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
-# grid_area_gln = "grid_area"
-# energy_supplier_gln_a = "8100000000108"
-# energy_supplier_gln_b = "8100000000109"
 
 
 @pytest.fixture(scope="module")
@@ -46,7 +43,6 @@ def result_schema() -> StructType:
         .add(Colname.quality, StringType())
         .add(Colname.resolution, StringType())
         .add(Colname.energy_supplier_id, StringType())
-        # .add(Colname.metering_point_type, StringType())
     )
 
 
@@ -55,81 +51,128 @@ def create_result_row(
     energy_supplier_id: str,
     quantity: str = "1.1",
     quality: TimeSeriesQuality = TimeSeriesQuality.measured,
-) -> list:
-    row = [
-        {
-            Colname.grid_area: grid_area,
-            Colname.sum_quantity: Decimal(quantity),
-            Colname.quality: quality.value,
-            Colname.resolution: MeteringPointResolution.quarter.value,
-            Colname.time_window: {
-                Colname.start: datetime(2020, 1, 1, 0, 0),
-                Colname.end: datetime(2020, 1, 1, 1, 0),
-            },
-            Colname.energy_supplier_id: energy_supplier_id,
-        }
-    ]
+) -> dict:
+    row = {
+        Colname.grid_area: grid_area,
+        Colname.sum_quantity: Decimal(quantity),
+        Colname.quality: quality.value,
+        Colname.resolution: MeteringPointResolution.quarter.value,
+        Colname.time_window: {
+            Colname.start: datetime(2020, 1, 1, 0, 0),
+            Colname.end: datetime(2020, 1, 1, 1, 0),
+        },
+        Colname.energy_supplier_id: energy_supplier_id,
+    }
 
     return row
 
 
 def get_actors_path(
-    output_path: str, grid_area: str, time_series_type: str, market_role: MarketRole
+    output_path: str,
+    grid_area: str,
+    time_series_type: TimeSeriesType,
+    market_role: MarketRole,
 ) -> str:
     return f"{output_path}/actors/grid_area={grid_area}/time_series_type={time_series_type.value}/market_role={market_role.value}"
 
 
+# def get_actors_file_name(
+#     output_path: str,
+#     grid_area: str,
+#     time_series_type: TimeSeriesType,
+#     market_role: MarketRole,
+# ):
+
+#     file_path = (
+#         f"{get_actors_path(output_path, grid_area,time_series_type, market_role)}/part-*.json",
+#     )
+
+def get_gln_from() -> :
+    actors_json_805 = find_first_file(actors_path_805, "part-*.json")
+
+    actual_gln = []
+    with open(actors_json_805, "r") as json_file:
+        for line in json_file:
+            json_data = json.loads(line)
+            actual_gln.append(json_data[Colname.gln])
+
 def test__write_per_ga_per_actor__expected_folder_exists(
-    spark: SparkSession, tmpdir: PathLike, result_schema: StructType
+    spark: SparkSession, tmpdir: Path, result_schema: StructType
 ) -> None:
 
     # Arrange
+    output_path = str(tmpdir)
     grid_area_805 = "805"
     time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
     market_role = MarketRole.ENERGY_SUPPLIER
-    expected_folder = get_actors_path(
-        tmpdir, grid_area_805, time_series_type, market_role
+    expected_path = get_actors_path(
+        output_path, grid_area_805, time_series_type, market_role
     )
-    row = create_result_row(grid_area=grid_area_805, energy_supplier_id="123")
-    result_df = spark.createDataFrame(row, schema=result_schema)
+    row = []
+    row.append(create_result_row(grid_area=grid_area_805, energy_supplier_id="123"))
+    result_df = spark.createDataFrame(data=row, schema=result_schema)
 
-    sut = ProcessStepResultWriter(tmpdir)
+    sut = ProcessStepResultWriter(output_path)
 
     # Act
     sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
 
     # Assert
+    assert path.exists(expected_path)
 
-    assert path.exists(expected_folder)
 
-
-def test__write_per_ga_per_actor__has_expected_gln(
-    spark: SparkSession, tmpdir: PathLike, result_schema: StructType
+def test__write_per_ga_per_actor__actors_file_has_expected_gln(
+    spark: SparkSession, tmpdir: Path, result_schema: StructType, find_first_file
 ) -> None:
 
     # Arrange
-    grid_area_805 = "805"
-    es_id_1 = "123"
-    es_id_2 = "234"
+    output_path = str(tmpdir)
+    es_id_1 = "123"  # goes into grid area 805
+    es_id_2 = "234"  # goes into grid area 805 and 806
+    es_id_3 = "345"  # goes into grid area 806
     time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
     market_role = MarketRole.ENERGY_SUPPLIER
-    expected_folder = get_actors_path(
-        tmpdir, grid_area_805, time_series_type, market_role
-    )
+    actors_path_805 = get_actors_path(output_path, "805", time_series_type, market_role)
+    actors_path_806 = get_actors_path(output_path, "806", time_series_type, market_role)
 
     rows = []
-    rows.append(create_result_row(grid_area=grid_area_805, energy_supplier_id=es_id_1))
-    rows.append(create_result_row(grid_area=grid_area_805, energy_supplier_id=es_id_2))
-    result_df = spark.createDataFrame(row1, schema=result_schema)
+    rows.append(create_result_row(grid_area="805", energy_supplier_id=es_id_1))
+    rows.append(create_result_row(grid_area="805", energy_supplier_id=es_id_2))
+    rows.append(create_result_row(grid_area="806", energy_supplier_id=es_id_2))
+    rows.append(create_result_row(grid_area="806", energy_supplier_id=es_id_3))
 
-    sut = ProcessStepResultWriter(tmpdir)
+    result_df = spark.createDataFrame(rows, schema=result_schema)
+
+    sut = ProcessStepResultWriter(output_path)
 
     # Act
     sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
 
     # Assert
+    actors_json_805 = find_first_file(actors_path_805, "part-*.json")
 
-    assert path.exists(expected_folder)
+    actual_gln = []
+    with open(actors_json_805, "r") as json_file:
+        for line in json_file:
+            json_data = json.loads(line)
+            actual_gln.append(json_data[Colname.gln])
+
+    print(actual_gln)
+
+    # f = open(actors_json_805)
+
+    # # returns JSON object as
+    # # a dictionary
+
+    # data = json.loads(f)
+
+    # # Iterating through the json
+    # # list
+    # for i in data["gln"]:
+    #     print(i)
+
+    # # Closing file
+    # f.close()
 
 
 # def get_result_path(
