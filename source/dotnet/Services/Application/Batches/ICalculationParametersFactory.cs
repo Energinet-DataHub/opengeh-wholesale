@@ -12,11 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public interface IDatabricksCalculatorJobSelector
+/// <summary>
+/// This is an infrastructure concern. It cannot, however, currently be moved to infrastructure
+/// due to problems listed in <see cref="BatchApplicationService.UpdateExecutionStateAsync"/>.
+/// </summary>
+public interface ICalculationParametersFactory
 {
-    Task<WheelJob> GetAsync();
+    IEnumerable<string> CreateParameters(Batch batch);
 }

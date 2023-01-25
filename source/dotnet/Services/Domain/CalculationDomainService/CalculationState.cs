@@ -10,16 +10,15 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.using Energinet.DataHub.Wholesale.Application.JobRunner;
+// limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.CalculationJobs;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
-
-public interface IBatchExecutionStateHandler
+public enum CalculationState
 {
-    Task<IEnumerable<Batch>> UpdateExecutionStateAsync(
-        IBatchRepository batchRepository,
-        ICalculatorJobRunner calculatorJobRunner);
+    Pending,
+    Running,
+    Completed,
+    Canceled,
+    Failed,
 }
