@@ -1,6 +1,6 @@
 # Wholesale Contracts Release notes
 
-## Version 2.0.1
+## Version 2.0.2
 
 Rename `ProcessProcessResultRequestDto` to `ProcessStepResultRequestDtoV2`
 
