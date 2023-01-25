@@ -98,4 +98,15 @@ public class WholesaleClient : IWholesaleClient
         var batch = await response.Content.ReadFromJsonAsync<ProcessStepResultDto>().ConfigureAwait(false);
         return batch;
     }
+
+    public async Task<BatchActorDto[]?> GetBatchActorsAsync(BatchActorRequestDto batchActorRequestDto)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"v1/actor", batchActorRequestDto).ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
+
+        var batch = await response.Content.ReadFromJsonAsync<BatchActorDto[]>().ConfigureAwait(false);
+        return batch;
+    }
 }
