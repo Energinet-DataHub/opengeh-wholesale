@@ -16,9 +16,7 @@ namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 public enum TimeSeriesType
 {
-#pragma warning disable SA1300
-    non_profiled_consumption,
-    consumption,
-    production,
-#pragma warning restore SA1300
+    NonProfiledConsumption = 1,
+    Consumption = 2,
+    Production = 3,
 }

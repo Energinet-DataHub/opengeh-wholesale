@@ -22,6 +22,10 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 public class ProcessStepResultRepository : IProcessStepResultRepository
 {
+    private const string NonProfiledConsumption = "non_profiled_consumption";
+    private const string Consumption = "consumption";
+    private const string Production = "production";
+
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
 
     private readonly IProcessResultPointFactory _processResultPointFactory;
@@ -50,7 +54,18 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
     }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetResultFileSpecification(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string gln)
-        => ($"calculation-output/batch_id={batchId}/result/grid_area={gridAreaCode.Code}/gln={gln}/time_series_type={timeSeriesType}/", ".json", $"{gridAreaCode.Code}/Result.json");
+        => ($"calculation-output/batch_id={batchId}/result/grid_area={gridAreaCode.Code}/gln={gln}/time_series_type={MapTimeSeriesType(timeSeriesType)}/", ".json", $"{gridAreaCode.Code}/Result.json");
+
+    private static string MapTimeSeriesType(TimeSeriesType timeSeriesType)
+    {
+        return timeSeriesType switch
+        {
+            TimeSeriesType.NonProfiledConsumption => NonProfiledConsumption,
+            TimeSeriesType.Consumption => Consumption,
+            TimeSeriesType.Production => Production,
+            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
+        };
+    }
 
     /// <summary>
     /// Search for a file by a given extension in a blob directory.
