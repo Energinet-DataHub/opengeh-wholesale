@@ -39,7 +39,7 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
         var processActorResult = await _processStepResultRepository.GetAsync(
                 processStepResultRequestDto.BatchId,
                 new GridAreaCode(processStepResultRequestDto.GridAreaCode),
-                TimeSeriesType.production,
+                TimeSeriesType.Production,
                 "grid_area")
             .ConfigureAwait(false);
 
@@ -60,16 +60,12 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
 
     private static TimeSeriesType MapTimeSeriesType(Contracts.TimeSeriesType timeSeriesType)
     {
-        switch (timeSeriesType)
+        return timeSeriesType switch
         {
-            case Contracts.TimeSeriesType.NonProfiledConsumption:
-                return TimeSeriesType.non_profiled_consumption;
-            case Contracts.TimeSeriesType.FlexConsumption:
-                return TimeSeriesType.consumption;
-            case Contracts.TimeSeriesType.Production:
-                return TimeSeriesType.production;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null);
-        }
+            Contracts.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
+            Contracts.TimeSeriesType.FlexConsumption => TimeSeriesType.Consumption,
+            Contracts.TimeSeriesType.Production => TimeSeriesType.Production,
+            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
+        };
     }
 }

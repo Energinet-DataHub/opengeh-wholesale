@@ -74,7 +74,7 @@ public class ProcessStepResultRepositoryTests
             processResultFactoryMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.production, "grid_area");
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, "grid_area");
 
         // Assert
         actual.Should().NotBeNull();
@@ -108,7 +108,7 @@ public class ProcessStepResultRepositoryTests
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.production, "grid_area"))
+            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, "grid_area"))
             .Should()
             .ThrowAsync<InvalidOperationException>();
     }
@@ -134,7 +134,7 @@ public class ProcessStepResultRepositoryTests
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.production, "grid_area"))
+            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, "grid_area"))
             .Should()
             .ThrowAsync<Exception>();
     }
@@ -177,7 +177,7 @@ public class ProcessStepResultRepositoryTests
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.production, "grid_area"))
+            .Invoking(s => s.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, "grid_area"))
             .Should()
             .ThrowAsync<Exception>();
     }
@@ -192,7 +192,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.production, "grid_area");
+        var actual = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area");
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -214,7 +214,7 @@ public class ProcessStepResultRepositoryTests
 
         var sut = new ProcessStepResultApplicationService(processActorResultRepositoryMock.Object, new ProcessStepResultMapper());
 
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.production, "grid_area"))
+        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area"))
             .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         // Act
