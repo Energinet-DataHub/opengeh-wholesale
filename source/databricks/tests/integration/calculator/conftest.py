@@ -15,29 +15,6 @@
 import pytest
 import glob
 import os
-from pathlib import Path
-from typing import Callable
-
-
-@pytest.fixture(scope="session")
-def json_lines_reader() -> Callable[[str], str]:
-    def f(path: str) -> str:
-        return Path(path).read_text()
-
-    return f
-
-
-# @pytest.fixture(scope="session")
-# def find_first_file() -> Callable[[str, str], str]:
-#     "The path of the first file matching the pattern."
-
-#     def f(path: str, pattern: str) -> str:
-#         os.chdir(path)
-#         for file_path in glob.glob(pattern):
-#             return file_path
-#         raise Exception("Target test file not found.")
-
-#     return f
 
 
 def find_first_file(path: str, pattern: str) -> str:
