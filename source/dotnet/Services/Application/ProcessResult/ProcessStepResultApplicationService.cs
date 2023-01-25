@@ -62,7 +62,7 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
     {
         switch (timeSeriesType)
         {
-            case Contracts.TimeSeriesType.NonProfiled:
+            case Contracts.TimeSeriesType.NonProfiledConsumption:
                 return TimeSeriesType.non_profiled_consumption;
             case Contracts.TimeSeriesType.FlexConsumption:
                 return TimeSeriesType.consumption;

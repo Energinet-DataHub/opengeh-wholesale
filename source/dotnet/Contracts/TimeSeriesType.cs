@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.Contracts;
 
 public enum TimeSeriesType
 {
-    NonProfiled = 1,
+    NonProfiledConsumption = 1,
     FlexConsumption = 2,
     Production = 3,
 }
