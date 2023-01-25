@@ -51,8 +51,8 @@ limitations under the License.
     <Compile Include="..\..\Contracts\ProcessStepResultRequestDto.cs">
       <Link>ProcessResult\Model\ProcessStepResultRequestDto.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\ProcessResultRequestDto.cs">
-      <Link>ProcessResult\Model\ProcessResultRequestDto.cs</Link>
+    <Compile Include="..\..\Contracts\ProcessStepResultRequestDtoV2.cs">
+      <Link>ProcessResult\Model\ProcessStepResultRequestDtoV2.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\TimeSeriesType.cs">
       <Link>ProcessResult\Model\TimeSeriesType.cs</Link>

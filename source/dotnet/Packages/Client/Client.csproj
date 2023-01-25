@@ -90,8 +90,8 @@ limitations under the License.
     <Compile Include="..\..\Contracts\ProcessStepResultRequestDto.cs">
       <Link>Dtos\ProcessStepResultRequestDto.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\ProcessResultRequestDto.cs">
-      <Link>Dtos\ProcessResultRequestDto.cs</Link>
+    <Compile Include="..\..\Contracts\ProcessStepResultRequestDtoV2.cs">
+      <Link>Dtos\ProcessStepResultRequestDtoV2.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepType.cs">
       <Link>Model\ProcessStepType.cs</Link>
