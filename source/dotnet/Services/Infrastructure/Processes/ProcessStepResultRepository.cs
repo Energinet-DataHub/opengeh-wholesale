@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 public class ProcessStepResultRepository : IProcessStepResultRepository
 {
     // These strings represents how write our results from spark.
-    // They should only be changed in tandem with changing how we write down the results.
+    // They should only be changed with changing how we write down the results.
     private const string NonProfiledConsumption = "non_profiled_consumption";
     private const string Consumption = "consumption";
     private const string Production = "production";
