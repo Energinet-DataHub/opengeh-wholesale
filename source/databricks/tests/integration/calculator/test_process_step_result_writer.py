@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
 import json
 from pathlib import Path
 from package.process_step_result_writer import ProcessStepResultWriter
@@ -25,6 +24,9 @@ from pyspark.sql import SparkSession
 from decimal import Decimal
 from datetime import datetime
 from conftest import find_first_file
+
+
+ACTORS_FOLDER = "actors"
 
 
 def _get_result_schema() -> StructType:
@@ -72,7 +74,7 @@ def _get_actors_path(
     time_series_type: TimeSeriesType,
     market_role: MarketRole,
 ) -> str:
-    return f"{output_path}/actors/grid_area={grid_area}/time_series_type={time_series_type.value}/market_role={market_role.value}"
+    return f"{output_path}/{ACTORS_FOLDER}/grid_area={grid_area}/time_series_type={time_series_type.value}/market_role={market_role.value}"
 
 
 def _get_gln_from_actors_file(
@@ -85,6 +87,7 @@ def _get_gln_from_actors_file(
     actors_path = _get_actors_path(
         output_path, grid_area, time_series_type, market_role
     )
+    print(actors_path)
     actors_json = find_first_file(actors_path, "part-*.json")
 
     gln = []
@@ -96,29 +99,63 @@ def _get_gln_from_actors_file(
     return gln
 
 
-def test__write_per_ga_per_actor__expected_folder_exists(
-    spark: SparkSession, tmpdir: Path
+def test__write_per_ga__does_not_write_actor_data(spark: SparkSession, tmpdir) -> None:
+
+    # Arrange
+    actors_directory = Path.joinpath(Path(tmpdir), ACTORS_FOLDER)
+    row = [_create_result_row(grid_area="805", energy_supplier_id="123")]
+    result_df = spark.createDataFrame(data=row, schema=_get_result_schema())
+    sut = ProcessStepResultWriter(str(tmpdir))
+
+    # Act
+    sut.write_per_ga(result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION)
+
+    # Assert
+    assert not actors_directory.exists()
+
+
+def test__write_per_ga_per_actor__actors_folder_is_created(
+    spark: SparkSession, tmpdir
 ) -> None:
 
     # Arrange
-    output_path = str(tmpdir)
-    grid_area_805 = "805"
-    time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
-    market_role = MarketRole.ENERGY_SUPPLIER
-    expected_path = _get_actors_path(
-        output_path, grid_area_805, time_series_type, market_role
-    )
-    row = []
-    row.append(_create_result_row(grid_area=grid_area_805, energy_supplier_id="123"))
+    actors_directory = Path.joinpath(Path(tmpdir), ACTORS_FOLDER)
+    row = [_create_result_row(grid_area="805", energy_supplier_id="123")]
     result_df = spark.createDataFrame(data=row, schema=_get_result_schema())
-
-    sut = ProcessStepResultWriter(output_path)
+    sut = ProcessStepResultWriter(str(tmpdir))
 
     # Act
-    sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
+    sut.write_per_ga_per_actor(
+        result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION, MarketRole.ENERGY_SUPPLIER
+    )
 
     # Assert
-    assert Path.exists(expected_path)
+    assert actors_directory.exists()
+
+
+# def test__write_per_ga_per_actor__expected_folder_exists(
+#     spark: SparkSession, tmpdir: Path
+# ) -> None:
+
+#     # Arrange
+#     output_path = str(tmpdir)
+#     grid_area_805 = "805"
+#     time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
+#     market_role = MarketRole.ENERGY_SUPPLIER
+#     expected_path = _get_actors_path(
+#         output_path, grid_area_805, time_series_type, market_role
+#     )
+#     row = []
+#     row.append(_create_result_row(grid_area=grid_area_805, energy_supplier_id="123"))
+#     result_df = spark.createDataFrame(data=row, schema=_get_result_schema())
+
+#     sut = ProcessStepResultWriter(output_path)
+
+#     # Act
+#     sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
+
+#     # Assert
+#     assert Path.exists(expected_path)
 
 
 def test__write_per_ga_per_actor__actors_file_has_expected_gln(
