@@ -100,19 +100,4 @@ public class BatchController : ControllerBase
         var batchDtoV2 = _batchDtoV2Mapper.Map(batchDto);
         return Ok(batchDtoV2);
     }
-
-    /// <summary>
-    /// Returns a list of actors
-    /// </summary>
-    /// <param name="batchActorsRequestDto">BatchActorsRequestDto</param>
-    [HttpPost("Actors")]
-    [MapToApiVersion(Version)]
-    public async Task<IActionResult> GetActorsAsync([FromBody] BatchActorsRequestDto batchActorsRequestDto)
-    {
-        await Task.Delay(1000).ConfigureAwait(true);
-        // var batchDto = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
-        // var batchDtoV2 = _batchDtoV2Mapper.Map(batchDto);
-        var actorList = new BatchActorDto[] { new BatchActorDto("1234"), new BatchActorDto("5678") };
-        return Ok(actorList);
-    }
 }
