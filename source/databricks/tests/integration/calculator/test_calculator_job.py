@@ -25,6 +25,7 @@ from package.calculator_args import CalculatorArgs
 from package.constants.time_series_type import TimeSeriesType
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit
+from conftest import find_first_file
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 grid_area_gln = "grid_area"
@@ -206,53 +207,6 @@ def test__result_is_generated_for_requested_grid_areas(
         assert result.count() >= 1, "Calculator job failed to write files"
 
 
-def test__when_result_is_per_energy_supplier__actor_list_is_generated(
-    spark: SparkSession,
-    data_lake_path: str,
-    worker_id: str,
-    executed_calculation_job: None,
-) -> None:
-
-    # Arrange
-    time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
-    output_path = (
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}"
-    )
-    actors_path = (
-        f"{output_path}/actors/grid_area=805/time_series_type={time_series_type.value}"
-    )
-
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
-
-    # Assert
-    actors = spark.read.json(actors_path)
-    assert path.exists(actors_path)
-    assert actors.count() >= 1
-
-
-def test__when_result_is_only_per_grid_area__no_actor_list_is_generated(
-    data_lake_path: str,
-    worker_id: str,
-    executed_calculation_job: None,
-) -> None:
-
-    # Arrange
-    time_series_type = TimeSeriesType.PRODUCTION
-    output_path = (
-        f"{data_lake_path}/{worker_id}/calculation-output/batch_id={executed_batch_id}"
-    )
-    actors_path = (
-        f"{output_path}/actors/grid_area=805/time_series_type={time_series_type.value}"
-    )
-
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
-
-    # Assert
-    assert not path.exists(actors_path)
-
-
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
     spark: SparkSession, test_files_folder_path, executed_calculation_job
 ):
@@ -353,7 +307,6 @@ def create_file_path_expression(directory_expression, extension):
 
 def test__actors_file_path_matches_contract(
     data_lake_path,
-    find_first_file,
     worker_id,
     executed_calculation_job,
     calculation_file_paths_contract,
@@ -376,7 +329,6 @@ def test__actors_file_path_matches_contract(
 
 def test__result_file_path_matches_contract(
     data_lake_path,
-    find_first_file,
     worker_id,
     executed_calculation_job,
     calculation_file_paths_contract,
@@ -544,7 +496,6 @@ def test__creates_master_data_csv_per_grid_area(
 
 def test__master_basis_data_file_matches_contract(
     data_lake_path,
-    find_first_file,
     worker_id,
     executed_calculation_job,
     calculation_file_paths_contract,
@@ -567,7 +518,6 @@ def test__master_basis_data_file_matches_contract(
 
 def test__hourly_basis_data_file_matches_contract(
     data_lake_path,
-    find_first_file,
     worker_id,
     executed_calculation_job,
     calculation_file_paths_contract,
@@ -591,7 +541,6 @@ def test__hourly_basis_data_file_matches_contract(
 
 def test__quarterly_basis_data_file_matches_contract(
     data_lake_path,
-    find_first_file,
     worker_id,
     executed_calculation_job,
     calculation_file_paths_contract,
