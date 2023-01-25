@@ -105,15 +105,6 @@ limitations under the License.
     <Compile Include="..\..\Contracts\TimeSeriesType.cs">
       <Link>Dtos\TimeSeriesType.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\BatchActorType.cs">
-      <Link>Dtos\BatchActorType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\BatchActorDto.cs">
-      <Link>Dtos\BatchActorDto.cs</Link>
-    </Compile>
-        <Compile Include="..\..\Contracts\BatchActorsRequestDto.cs">
-      <Link>Dtos\BatchActorsRequestDto.cs</Link>
-    </Compile>
     <Compile Remove="documents\**" />
   </ItemGroup>
 </Project>
