@@ -101,7 +101,7 @@ public class WholesaleClient : IWholesaleClient
         return batch;
     }
 
-    public async Task<ProcessStepResultDto?> GetProcessResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
+    public async Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
     {
         var response = await _httpClient.PostAsJsonAsync($"v2/ProcessResult", processStepResultRequestDtoV2).ConfigureAwait(false);
 

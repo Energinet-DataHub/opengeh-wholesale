@@ -39,5 +39,5 @@ public interface IWholesaleClient
 
     Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
 
-    Task<ProcessStepResultDto?> GetProcessResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
+    Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
 }
