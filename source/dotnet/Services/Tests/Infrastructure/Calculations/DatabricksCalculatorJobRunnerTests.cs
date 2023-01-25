@@ -48,7 +48,7 @@ public class DatabricksCalculatorJobRunnerTests
         RunLifeCycleState runLifeCycleState,
         RunResultState runResultState,
         [Frozen] Mock<IDatabricksWheelClient> databricksWheelClientMock,
-        DatabricksCalculationDomainService sut)
+        DatabricksCalculationInfrastructureService sut)
     {
         var jobRunId = new JobRunId(1);
         var runState = new Run { State = new RunState { LifeCycleState = runLifeCycleState, ResultState = runResultState } };
