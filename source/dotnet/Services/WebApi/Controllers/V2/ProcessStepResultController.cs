@@ -44,4 +44,13 @@ public class ProcessStepResultController : ControllerBase
         var resultDto = await _processStepResultApplicationService.GetResultAsync(processStepResultRequestDto).ConfigureAwait(false);
         return Ok(resultDto);
     }
+
+    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
+    [HttpPost]
+    [MapToApiVersion("2.2")]
+    public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
+    {
+        var resultDto = await _processStepResultApplicationService.GetResultAsync(processStepResultRequestDtoV2).ConfigureAwait(false);
+        return Ok(resultDto);
+    }
 }

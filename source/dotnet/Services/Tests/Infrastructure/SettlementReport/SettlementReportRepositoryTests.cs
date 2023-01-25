@@ -29,6 +29,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
+using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
 
@@ -198,7 +199,7 @@ public class SettlementReportRepositoryTests
 
         var sut = new ProcessStepResultApplicationService(processActorResultRepositoryMock.Object, new ProcessStepResultMapper());
 
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode)))
+        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area"))
             .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         // Act

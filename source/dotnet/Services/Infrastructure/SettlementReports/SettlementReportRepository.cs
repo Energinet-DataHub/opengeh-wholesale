@@ -35,7 +35,6 @@ public class SettlementReportRepository : ISettlementReportRepository
         _streamZipper = streamZipper;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         {
-            ProcessStepResultRepository.GetResultFileSpecification,
             GetTimeSeriesHourBasisDataFileSpecification,
             GetTimeSeriesQuarterBasisDataFileSpecification,
             GetMasterBasisDataFileSpecification,
