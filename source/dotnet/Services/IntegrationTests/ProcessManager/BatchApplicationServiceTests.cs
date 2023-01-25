@@ -57,7 +57,7 @@ public sealed class BatchApplicationServiceTests
     }
 
     [Fact]
-    public async Task When_RunIsPending_Then_BatchIsPending()
+    public async Task Given_BatchIsSubmitted_When_UpdatedExecutionStateIsExecuted_Then_BatchIsPending()
     {
         // Arrange
         using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
@@ -72,11 +72,13 @@ public sealed class BatchApplicationServiceTests
 
         const string gridAreaCode = "123";
 
-        // Act
         await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
         await target.StartSubmittingAsync();
+
+        // Act
         await target.UpdateExecutionStateAsync();
 
+        // Assert
         using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
         await using var readScope = readHost.BeginScope();
         var repository = readScope.ServiceProvider.GetRequiredService<IBatchRepository>();
