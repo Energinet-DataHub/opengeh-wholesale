@@ -68,7 +68,7 @@ public class SubmitCreatedBatchesEndpointTests
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
             // Assert: Await timer triggered endpoints has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(SubmitCreatedBatchesEndpoint));
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartCalculationEndpoint));
 
             // clear log to ensure that initial run of UpdateBatchExecutionStateEndpoint does not count.
             Fixture.HostManager.ClearHostLog();
@@ -97,7 +97,7 @@ public class SubmitCreatedBatchesEndpointTests
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
             // Assert: Await timer triggered endpoints has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(SubmitCreatedBatchesEndpoint));
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartCalculationEndpoint));
 
             // clear log to ensure that initial run of UpdateBatchExecutionStateEndpoint does not count.
             Fixture.HostManager.ClearHostLog();

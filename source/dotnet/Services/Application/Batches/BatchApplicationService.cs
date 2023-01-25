@@ -32,6 +32,7 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchExecutionStateDomainService _batchExecutionStateDomainService;
     private readonly IBatchDtoMapper _batchDtoMapper;
     private readonly IProcessTypeMapper _processTypeMapper;
+    private readonly IBatchCreatedPublisher _batchCreatedPublisher;
 
     public BatchApplicationService(
         IBatchFactory batchFactory,
@@ -41,7 +42,8 @@ public class BatchApplicationService : IBatchApplicationService
         ICalculationParametersFactory calculationParametersFactory,
         IBatchExecutionStateDomainService batchExecutionStateDomainService,
         IBatchDtoMapper batchDtoMapper,
-        IProcessTypeMapper processTypeMapper)
+        IProcessTypeMapper processTypeMapper,
+        IBatchCreatedPublisher batchCreatedPublisher)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
@@ -51,6 +53,7 @@ public class BatchApplicationService : IBatchApplicationService
         _batchExecutionStateDomainService = batchExecutionStateDomainService;
         _batchDtoMapper = batchDtoMapper;
         _processTypeMapper = processTypeMapper;
+        _batchCreatedPublisher = batchCreatedPublisher;
     }
 
     public async Task<Guid> CreateAsync(BatchRequestDto batchRequestDto)
@@ -58,12 +61,13 @@ public class BatchApplicationService : IBatchApplicationService
         var processType = _processTypeMapper.MapFrom(batchRequestDto.ProcessType);
         var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
+        await _batchCreatedPublisher.PublishAsync(new BatchCreatedEventDto(batch.Id));
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
         return batch.Id;
     }
 
-    public async Task StartSubmittingAsync()
+    public async Task StartCalculationAsync(Guid batchId)
     {
         var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
 

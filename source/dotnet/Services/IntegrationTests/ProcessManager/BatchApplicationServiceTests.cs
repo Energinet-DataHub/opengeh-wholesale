@@ -74,7 +74,7 @@ public sealed class BatchApplicationServiceTests
 
         // Act
         await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
-        await target.StartSubmittingAsync();
+        await target.StartCalculationAsync();
         await target.UpdateExecutionStateAsync();
 
         using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
@@ -104,7 +104,7 @@ public sealed class BatchApplicationServiceTests
 
         // Act
         await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
-        await target.StartSubmittingAsync();
+        await target.StartCalculationAsync();
         await target.UpdateExecutionStateAsync();
 
         using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
@@ -134,7 +134,7 @@ public sealed class BatchApplicationServiceTests
 
         // Act
         await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
-        await target.StartSubmittingAsync();
+        await target.StartCalculationAsync();
         await target.UpdateExecutionStateAsync();
 
         using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);

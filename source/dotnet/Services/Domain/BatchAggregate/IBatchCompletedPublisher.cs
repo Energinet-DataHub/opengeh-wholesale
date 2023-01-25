@@ -12,16 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
-
-public interface ISettlementReportApplicationService
+public interface IBatchCompletedPublisher
 {
-    Task CreateSettlementReportAsync(BatchCompletedEventDto batchCompletedEvent);
-
-    Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId);
+    Task PublishAsync(IEnumerable<BatchCompletedEventDto> batchCompletedEvents);
 }

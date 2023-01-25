@@ -12,33 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class SubmitCreatedBatchesEndpoint
+public class StartCalculationEndpoint
 {
     private readonly IBatchApplicationService _batchApplicationService;
-    private readonly ICorrelationContext _correlationContext;
+    private readonly IJsonSerializer _jsonSerializer;
 
-    public SubmitCreatedBatchesEndpoint(IBatchApplicationService batchApplicationService, ICorrelationContext correlationContext)
+    public StartCalculationEndpoint(IBatchApplicationService batchApplicationService, IJsonSerializer jsonSerializer)
     {
         _batchApplicationService = batchApplicationService;
-        _correlationContext = correlationContext;
+        _jsonSerializer = jsonSerializer;
     }
 
-    // Executes every 10 seconds (see the [TimerTrigger] below)
-    [Function(nameof(SubmitCreatedBatchesEndpoint))]
+    [Function(nameof(StartCalculationEndpoint))]
     public async Task RunAsync(
-        [TimerTrigger("*/10 * * * * *")] TimerInfo timerInfo,
-        FunctionContext context)
+        [ServiceBusTrigger(
+            "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
+            "%" + EnvironmentSettingNames.StartCalculationWhenBatchCreatedSubscriptionName + "%",
+            Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
+        byte[] message)
     {
-        // CorrelationIdMiddleware does not currently support timer triggered functions,
-        // so we need to add a correlation ID ourselves
-        _correlationContext.SetId(Guid.NewGuid().ToString());
-
-        await _batchApplicationService.StartSubmittingAsync().ConfigureAwait(false);
+        var batchCreatedEvent = await _jsonSerializer.DeserializeAsync<BatchCreatedEventDto>(message).ConfigureAwait(false);
+        await _batchApplicationService.StartCalculationAsync(batchCreatedEvent.BatchId).ConfigureAwait(false);
     }
 }

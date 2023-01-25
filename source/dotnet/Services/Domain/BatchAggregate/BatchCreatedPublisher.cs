@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
+namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
-
-public interface IBatchCompletedPublisher
+public class BatchCreatedPublisher : IBatchCreatedPublisher
 {
-    Task PublishAsync(IEnumerable<BatchCompletedEventDto> batchCompletedEvents);
+    public Task PublishAsync(BatchCreatedEventDto batchCreatedEventDto)
+    {
+        throw new NotImplementedException();
+    }
 }

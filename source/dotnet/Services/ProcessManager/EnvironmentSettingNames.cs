@@ -43,6 +43,7 @@ public static class EnvironmentSettingNames
     public const string ProcessCompletedEventName = "PROCESS_COMPLETED_EVENT_NAME";
 
     public const string PublishProcessesCompletedIntegrationEventWhenProcessCompletedSubscriptionName = "PUBLISH_PROCESSESCOMPLETEDINTEGRATIONEVENT_WHEN_PROCESSCOMPLETED_SUBSCRIPTION_NAME";
+    public const string StartCalculationWhenBatchCreatedSubscriptionName = "START_CALCULATION_WHEN_BATCH_CREATED_SUBSCRIPTION_NAME";
     public const string IntegrationEventsTopicName = "INTEGRATIONEVENTS_TOPIC_NAME";
 
     #endregion

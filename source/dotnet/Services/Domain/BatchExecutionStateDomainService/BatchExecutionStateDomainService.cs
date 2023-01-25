@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.using Energinet.DataHub.Wholesale.Application.JobRunner;
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Microsoft.Extensions.Logging;

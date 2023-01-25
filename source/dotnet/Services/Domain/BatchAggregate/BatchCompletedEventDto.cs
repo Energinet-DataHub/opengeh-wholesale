@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
+namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public sealed record BatchCompletedEventDto(
     Guid BatchId,
