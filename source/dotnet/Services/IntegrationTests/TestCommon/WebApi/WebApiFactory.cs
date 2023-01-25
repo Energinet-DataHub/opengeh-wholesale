@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -55,9 +58,15 @@ public class WebApiFactory : WebApplicationFactory<Startup>
 
             services.AddScoped(
                 provider =>
-                    SettlementReportApplicationServiceMock != null
-                    ? SettlementReportApplicationServiceMock.Object
-                    : provider.GetRequiredService<ISettlementReportApplicationService>());
+                {
+                    if (SettlementReportApplicationServiceMock != null)
+                        return SettlementReportApplicationServiceMock.Object;
+
+                    var batchRepository = provider.GetRequiredService<IBatchRepository>();
+                    var settlementReportRepository = provider.GetRequiredService<ISettlementReportRepository>();
+                    var unitOfWork = provider.GetRequiredService<IUnitOfWork>();
+                    return new SettlementReportApplicationService(batchRepository, settlementReportRepository, unitOfWork);
+                });
         });
     }
 
