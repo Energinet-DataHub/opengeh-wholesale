@@ -16,21 +16,21 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.JobRunner;
+using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using FluentAssertions;
 using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.JobRunner;
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Calculations;
 
 public class DatabricksCalculatorJobParametersFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
     public void CreateParameters_MatchesExpectationOfDatabricksJob(
-        DatabricksCalculatorJobParametersFactory sut)
+        DatabricksCalculationParametersFactory sut)
     {
         // Arrange
         var batch = new Batch(

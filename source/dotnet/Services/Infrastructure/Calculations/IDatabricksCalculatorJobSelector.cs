@@ -12,21 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
-using Energinet.DataHub.Wholesale.Tests.TestHelpers;
-using Xunit;
-using Xunit.Categories;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 
-[UnitTest]
-public sealed class ProcessResultPointTests
+public interface IDatabricksCalculatorJobSelector
 {
-    [Fact]
-    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
-    {
-        await using var stream = EmbeddedResources.GetStream("Sender.Infrastructure.Calculator.calculator-result.json");
-
-        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<ProcessResultPoint>(stream);
-    }
+    Task<WheelJob> GetAsync();
 }
