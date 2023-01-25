@@ -12,21 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchActor;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using MarketRoleType = Energinet.DataHub.Wholesale.Contracts.MarketRoleType;
 
 namespace Energinet.DataHub.Wholesale.Application.BatchActor;
 
 public class BatchActorApplicationService : IBatchActorApplicationService
 {
-    public BatchActorApplicationService(IProcessStepResultRepository)
-    {
+    private readonly IBatchActorRepository _batchActorRepository;
 
+    public BatchActorApplicationService(IBatchActorRepository batchActorRepository)
+    {
+        _batchActorRepository = batchActorRepository;
     }
 
-    public Task<BatchActorDto> GetAsync(BatchActorRequestDto batchActorRequestDto)
+    public async Task<BatchActorDto[]> GetAsync(BatchActorRequestDto batchActorRequestDto)
     {
-        throw new NotImplementedException();
+        var actors = await _batchActorRepository.GetAsync(
+            batchActorRequestDto.BatchId,
+            new GridAreaCode(batchActorRequestDto.GridAreaCode),
+            TimeSeriesTypeMapper.Map(batchActorRequestDto.Type),
+            Map(batchActorRequestDto.MarketRoleType)).ConfigureAwait(false);
+
+        return actors.Select(x => new BatchActorDto(x.Gln)).ToArray();
+    }
+
+    private Domain.BatchActor.MarketRoleType Map(MarketRoleType marketRoleType)
+    {
+        switch (marketRoleType)
+        {
+            case MarketRoleType.EnergySupplier:
+                return Domain.BatchActor.MarketRoleType.EnergySupplier;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(marketRoleType), marketRoleType, null);
+        }
     }
 }

@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.BatchActor;
+namespace Energinet.DataHub.Wholesale.Domain.BatchActor;
 
-public interface IBatchActorApplicationService
+public interface IBatchActorRepository
 {
-    Task<BatchActorDto[]> GetAsync(BatchActorRequestDto batchActorRequestDto);
+    Task<BatchActor[]> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, MarketRoleType marketRoleType);
 }

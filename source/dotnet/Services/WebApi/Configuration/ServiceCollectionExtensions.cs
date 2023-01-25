@@ -16,6 +16,7 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Application.BatchActor;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.Processes;
@@ -28,6 +29,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
@@ -94,6 +96,8 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
         services.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
+        services.AddScoped<DataLakeRepositoryBase>();
+        services.AddScoped<IBatchActorApplicationService, BatchActorApplicationService>();
 
         services.ConfigureDateTime();
     }

@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Domain.BatchActor;
 
-namespace Energinet.DataHub.Wholesale.Application.BatchActor;
-
-public interface IBatchActorApplicationService
+public enum MarketRoleType
 {
-    Task<BatchActorDto[]> GetAsync(BatchActorRequestDto batchActorRequestDto);
+    EnergySupplier = 0,
 }

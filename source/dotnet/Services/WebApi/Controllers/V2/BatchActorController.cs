@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.BatchActor;
 using Energinet.DataHub.Wholesale.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,17 +25,19 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 public class BatchActorController : ControllerBase
 {
     private const string Version = "1.0";
+    private readonly IBatchActorApplicationService _batchActorApplicationService;
 
-    public BatchActorController()
+    public BatchActorController(IBatchActorApplicationService batchActorApplicationService)
     {
+        _batchActorApplicationService = batchActorApplicationService;
     }
 
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
     [MapToApiVersion(Version)]
-    public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDto processStepResultRequestDto)
+    public async Task<IActionResult> GetAsync([FromBody] BatchActorRequestDto batchActorRequestDto)
     {
-        var resultDto = await _processStepResultApplicationService.GetResultAsync(processStepResultRequestDto).ConfigureAwait(false);
+        var resultDto = await _batchActorApplicationService.GetAsync(batchActorRequestDto).ConfigureAwait(false);
         return Ok(resultDto);
     }
 }
