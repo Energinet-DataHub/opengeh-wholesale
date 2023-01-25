@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
 
@@ -37,9 +38,34 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
     {
         var processActorResult = await _processStepResultRepository.GetAsync(
                 processStepResultRequestDto.BatchId,
-                new GridAreaCode(processStepResultRequestDto.GridAreaCode))
+                new GridAreaCode(processStepResultRequestDto.GridAreaCode),
+                TimeSeriesType.Production,
+                "grid_area")
             .ConfigureAwait(false);
 
         return _processStepResultMapper.MapToDto(processActorResult);
+    }
+
+    public async Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
+    {
+        var processActorResult = await _processStepResultRepository.GetAsync(
+                processStepResultRequestDtoV2.BatchId,
+                new GridAreaCode(processStepResultRequestDtoV2.GridAreaCode),
+                MapTimeSeriesType(processStepResultRequestDtoV2.TimeSeriesType),
+                processStepResultRequestDtoV2.Gln)
+            .ConfigureAwait(false);
+
+        return _processStepResultMapper.MapToDto(processActorResult);
+    }
+
+    private static TimeSeriesType MapTimeSeriesType(Contracts.TimeSeriesType timeSeriesType)
+    {
+        return timeSeriesType switch
+        {
+            Contracts.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
+            Contracts.TimeSeriesType.FlexConsumption => TimeSeriesType.Consumption,
+            Contracts.TimeSeriesType.Production => TimeSeriesType.Production,
+            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
+        };
     }
 }
