@@ -12,14 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.using Energinet.DataHub.Wholesale.Application.JobRunner;
 
-using Energinet.DataHub.Wholesale.Application.CalculationJobs;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
-
-public interface IBatchExecutionStateHandler
+public interface IBatchExecutionStateDomainService
 {
-    Task<IEnumerable<Batch>> UpdateExecutionStateAsync(
-        IBatchRepository batchRepository,
-        ICalculatorJobRunner calculatorJobRunner);
+    Task UpdateExecutionStateAsync();
 }

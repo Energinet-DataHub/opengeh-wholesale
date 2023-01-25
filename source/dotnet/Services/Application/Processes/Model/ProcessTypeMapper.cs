@@ -18,12 +18,17 @@ namespace Energinet.DataHub.Wholesale.Application.Processes.Model;
 
 public class ProcessTypeMapper : IProcessTypeMapper
 {
-    public ProcessType MapFrom(Domain.ProcessAggregate.ProcessType processType)
-    {
-        return processType switch
+    public ProcessType MapFrom(Domain.ProcessAggregate.ProcessType processType) =>
+        processType switch
         {
             Domain.ProcessAggregate.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
             _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
         };
-    }
+
+    public Domain.ProcessAggregate.ProcessType MapFrom(ProcessType processType) =>
+        processType switch
+        {
+            ProcessType.BalanceFixing => Domain.ProcessAggregate.ProcessType.BalanceFixing,
+            _ => throw new NotImplementedException($"Cannot map process type '{processType}'"),
+        };
 }

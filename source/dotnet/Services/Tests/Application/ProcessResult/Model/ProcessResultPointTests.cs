@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Application.ProcessResult;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Xunit;
+using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
+namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessResult.Model;
 
-/// <summary>
-/// This class provides the ability to retrieve a calculated result for a given step for a batch.
-/// </summary>
-public interface IProcessStepResultApplicationService
+[UnitTest]
+public sealed class ProcessResultPointTests
 {
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
+    [Fact]
+    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
+    {
+        await using var stream = EmbeddedResources.GetStream("Sender.Infrastructure.Calculator.calculator-result.json");
 
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<ProcessResultPoint>(stream);
+    }
 }
