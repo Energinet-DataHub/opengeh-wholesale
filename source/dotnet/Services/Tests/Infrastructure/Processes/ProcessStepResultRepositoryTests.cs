@@ -200,6 +200,23 @@ public class ProcessStepResultRepositoryTests
     }
 
     [Theory]
+    [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
+    [InlineData(TimeSeriesType.Consumption, "consumption")]
+    [InlineData(TimeSeriesType.Production, "production")]
+    public static Task GetResultFileSpecification_DirectoryContainsCorrectlyMappedTimeSeriesTypeString(TimeSeriesType timeSeriesType, string expectedTimeSeriesType)
+    {
+        // Arrange
+        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string gridAreaCode = "123";
+
+        // Act
+        var actual = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, "grid_area");
+
+        // Assert
+        actual.Directory.Should().Contain(expectedTimeSeriesType);
+    }
+
+    [Theory]
     [AutoMoqData]
     public async Task GetResultAsync_TimeSeriesPoint_IsRead(
         [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock)
