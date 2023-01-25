@@ -19,4 +19,6 @@ namespace Energinet.DataHub.Wholesale.Application.Processes.Model;
 public interface IProcessTypeMapper
 {
     ProcessType MapFrom(Domain.ProcessAggregate.ProcessType processType);
+
+    Domain.ProcessAggregate.ProcessType MapFrom(ProcessType processType);
 }

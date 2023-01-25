@@ -22,6 +22,12 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 public class ProcessStepResultRepository : IProcessStepResultRepository
 {
+    // These strings represents how write our results from spark.
+    // They should only be changed with changing how we write down the results.
+    private const string NonProfiledConsumption = "non_profiled_consumption";
+    private const string Consumption = "consumption";
+    private const string Production = "production";
+
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
 
     private readonly IProcessResultPointFactory _processResultPointFactory;
@@ -34,9 +40,9 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         _processResultPointFactory = processResultPointFactory;
     }
 
-    public async Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode)
+    public async Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string gln)
     {
-        var (directory, extension, _) = GetResultFileSpecification(batchId, gridAreaCode);
+        var (directory, extension, _) = GetResultFileSpecification(batchId, gridAreaCode, timeSeriesType, gln);
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
         if (dataLakeFileClient == null)
         {
@@ -49,8 +55,19 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         return MapToProcessStepResultDto(points);
     }
 
-    public static (string Directory, string Extension, string ZipEntryPath) GetResultFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/batch_id={batchId}/result/grid_area={gridAreaCode.Code}/gln=grid_area/time_series_type=production/", ".json", $"{gridAreaCode.Code}/Result.json");
+    public static (string Directory, string Extension, string ZipEntryPath) GetResultFileSpecification(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string gln)
+        => ($"calculation-output/batch_id={batchId}/result/grid_area={gridAreaCode.Code}/gln={gln}/time_series_type={MapTimeSeriesType(timeSeriesType)}/", ".json", $"{gridAreaCode.Code}/Result.json");
+
+    private static string MapTimeSeriesType(TimeSeriesType timeSeriesType)
+    {
+        return timeSeriesType switch
+        {
+            TimeSeriesType.NonProfiledConsumption => NonProfiledConsumption,
+            TimeSeriesType.Consumption => Consumption,
+            TimeSeriesType.Production => Production,
+            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
+        };
+    }
 
     /// <summary>
     /// Search for a file by a given extension in a blob directory.

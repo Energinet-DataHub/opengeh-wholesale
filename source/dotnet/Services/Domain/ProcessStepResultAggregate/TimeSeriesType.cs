@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.CalculationJobs;
-
-public interface ICalculatorJobParametersFactory
+public enum TimeSeriesType
 {
-    IEnumerable<string> CreateParameters(Batch batch);
+    NonProfiledConsumption = 1,
+    Consumption = 2,
+    Production = 3,
 }
