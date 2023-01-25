@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 2.0.1
+
+No functional changes.
+
 ## Version 2.0.0
 
 Namespaces has changed.
