@@ -26,6 +26,7 @@ module "st_data_lake" {
   log_analytics_workspace_id        = module.log_workspace_shared.id
   private_endpoint_subnet_id        = module.snet_private_endpoints.id
   private_dns_resource_group_name   = module.dbw_shared.private_dns_zone_resource_group_name
+  ip_rules                          = var.hosted_deployagent_public_ip_range
 }
 
 module "kvs_st_data_lake_primary_connection_string" {

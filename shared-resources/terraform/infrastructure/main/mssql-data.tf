@@ -37,6 +37,8 @@ module "mssql_data" {
   log_analytics_workspace_id      = module.log_workspace_shared.id
 
   elastic_pool_max_size_gb        = 100
+  public_network_access_enabled   = true
+  
 
   # If using DTU model then see pool limits based on SKU here: https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-elastic-pools?view=azuresql#standard-elastic-pool-limits
   elastic_pool_sku                = {
@@ -49,6 +51,15 @@ module "mssql_data" {
     min_capacity = 0
     max_capacity = 10
   }
+}
+
+resource "azurerm_mssql_firewall_rule" "github_largerunner" {
+  count         = length(split(",", var.hosted_deployagent_public_ip_range))
+
+  name             = "github_largerunner_${count.index}"
+  server_id        = module.mssql_data.id
+  start_ip_address = cidrhost(split(",", var.hosted_deployagent_public_ip_range)[count.index], 0)  #First IP in range
+  end_ip_address   = cidrhost(split(",", var.hosted_deployagent_public_ip_range)[count.index], -1) #Last IP in range
 }
 
 resource "random_password" "mssql_administrator_login_password" {
