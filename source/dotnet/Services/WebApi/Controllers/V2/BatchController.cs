@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Contracts;
 using Microsoft.AspNetCore.Mvc;
@@ -80,12 +79,13 @@ public class BatchController : ControllerBase
     /// Returns a stream containing the settlement report for a batch matching <paramref name="batchId"/>
     /// </summary>
     /// <param name="batchId">BatchId</param>
+    [Obsolete("Use HTTP GET /v2_3/settlementreport")]
     [HttpPost("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> GetSettlementReportAsync([FromBody] Guid batchId)
     {
-        var stream = await _settlementReportApplicationService.GetSettlementReportAsync(batchId).ConfigureAwait(false);
-        return Ok(stream);
+        var report = await _settlementReportApplicationService.GetSettlementReportAsync(batchId).ConfigureAwait(false);
+        return Ok(report.Stream);
     }
 
     /// <summary>
