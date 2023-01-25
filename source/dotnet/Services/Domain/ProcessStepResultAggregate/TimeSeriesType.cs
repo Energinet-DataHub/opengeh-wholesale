@@ -12,16 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
-
-/// <summary>
-/// This class provides the ability to retrieve a calculated result for a given step for a batch.
-/// </summary>
-public interface IProcessStepResultApplicationService
+public enum TimeSeriesType
 {
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
-
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
+    NonProfiledConsumption = 1,
+    Consumption = 2,
+    Production = 3,
 }

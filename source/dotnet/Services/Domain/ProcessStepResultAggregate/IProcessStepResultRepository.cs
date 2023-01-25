@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 public interface IProcessStepResultRepository
 {
-    Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode);
+    Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string gln);
 }

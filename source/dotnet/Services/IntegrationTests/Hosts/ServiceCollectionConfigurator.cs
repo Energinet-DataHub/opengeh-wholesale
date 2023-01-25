@@ -74,7 +74,6 @@ public class ServiceCollectionConfigurator
             var fileDescriptorProviders =
                 new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
                 {
-                    ProcessStepResultRepository.GetResultFileSpecification,
                     SettlementReportRepository.GetTimeSeriesHourBasisDataFileSpecification,
                     SettlementReportRepository.GetTimeSeriesQuarterBasisDataFileSpecification,
                     SettlementReportRepository.GetMasterBasisDataFileSpecification,

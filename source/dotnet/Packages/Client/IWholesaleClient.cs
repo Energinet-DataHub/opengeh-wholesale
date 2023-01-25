@@ -36,4 +36,6 @@ public interface IWholesaleClient
     Task<BatchDtoV2?> GetBatchAsync(Guid batchId);
 
     Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
+
+    Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
 }

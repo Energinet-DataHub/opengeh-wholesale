@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.2
+
+Rename `ProcessProcessResultRequestDto` to `ProcessStepResultRequestDtoV2`
+
 ## Version 5.0.1
 
 No functional changes.
