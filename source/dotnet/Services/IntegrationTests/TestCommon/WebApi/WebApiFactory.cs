@@ -62,7 +62,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     }
 
     /// <summary>
-    /// Allow configuring the behaviour of <see cref="ISettlementReportApplicationService"/> by providing a custom <see cref="Moq.Mock{ISettlementReportApplicationService}" /> mock.
+    /// Allow configuring the behaviour of the <see cref="ISettlementReportApplicationService"/> by providing a custom <see cref="Moq.Mock{ISettlementReportApplicationService}" /> mock.
     /// NOTE: This will only work as expected as long as no tests are executed in parallel.
     /// </summary>
     public Mock<ISettlementReportApplicationService>? SettlementReportApplicationServiceMock { get; set; }
