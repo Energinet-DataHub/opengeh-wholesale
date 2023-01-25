@@ -11,16 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import pytest
-import glob
-import os
-
-
-def find_first_file(path: str, pattern: str) -> str:
-    "The path of the first file matching the pattern."
-
-    os.chdir(path)
-    for file_path in glob.glob(pattern):
-        return file_path
-    raise Exception("Target test file not found.")

@@ -23,7 +23,7 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql import SparkSession
 from decimal import Decimal
 from datetime import datetime
-from conftest import find_first_file
+from tests.helpers.file_utils import find_first_file
 
 
 ACTORS_FOLDER = "actors"
@@ -87,7 +87,6 @@ def _get_gln_from_actors_file(
     actors_path = _get_actors_path(
         output_path, grid_area, time_series_type, market_role
     )
-    print(actors_path)
     actors_json = find_first_file(actors_path, "part-*.json")
 
     gln = []

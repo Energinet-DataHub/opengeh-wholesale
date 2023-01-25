@@ -25,7 +25,8 @@ from package.calculator_args import CalculatorArgs
 from package.constants.time_series_type import TimeSeriesType
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit
-from conftest import find_first_file
+from tests.helpers.file_utils import find_first_file, create_file_path_expression
+
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 grid_area_gln = "grid_area"
@@ -295,14 +296,6 @@ def test__quantity_is_with_precision_3(
 def calculation_file_paths_contract(source_path):
     with open(f"{source_path}/contracts/calculation-file-paths.yml", "r") as stream:
         return DictObj(yaml.safe_load(stream))
-
-
-def create_file_path_expression(directory_expression, extension):
-    """Create file path regular expression from a directory expression
-    and a file extension.
-    The remaining base file name can be one or more characters except for forward slash ("/").
-    """
-    return f"{directory_expression}[^/]+{extension}"
 
 
 def test__actors_file_path_matches_contract(
