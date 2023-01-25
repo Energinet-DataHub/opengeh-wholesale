@@ -16,18 +16,7 @@ import pytest
 import glob
 import os
 from pathlib import Path
-from pyspark.sql.types import (
-    DecimalType,
-    StructType,
-    StructField,
-    StringType,
-    TimestampType,
-    IntegerType,
-    LongType,
-)
-from pyspark.sql.functions import col
 from typing import Callable
-from pyspark.sql import SparkSession
 
 
 @pytest.fixture(scope="session")
@@ -38,14 +27,23 @@ def json_lines_reader() -> Callable[[str], str]:
     return f
 
 
-@pytest.fixture(scope="session")
-def find_first_file() -> Callable[[str, str], str]:
+# @pytest.fixture(scope="session")
+# def find_first_file() -> Callable[[str, str], str]:
+#     "The path of the first file matching the pattern."
+
+#     def f(path: str, pattern: str) -> str:
+#         os.chdir(path)
+#         for file_path in glob.glob(pattern):
+#             return file_path
+#         raise Exception("Target test file not found.")
+
+#     return f
+
+
+def find_first_file(path: str, pattern: str) -> str:
     "The path of the first file matching the pattern."
 
-    def f(path: str, pattern: str) -> str:
-        os.chdir(path)
-        for filePath in glob.glob(pattern):
-            return filePath
-        raise Exception("Target test file not found.")
-
-    return f
+    os.chdir(path)
+    for file_path in glob.glob(pattern):
+        return file_path
+    raise Exception("Target test file not found.")

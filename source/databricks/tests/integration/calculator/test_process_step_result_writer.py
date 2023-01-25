@@ -25,6 +25,7 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql import DataFrame, SparkSession
 from decimal import Decimal
 from datetime import datetime
+from conftest import find_first_file
 
 
 @pytest.fixture(scope="module")
@@ -87,14 +88,25 @@ def get_actors_path(
 #         f"{get_actors_path(output_path, grid_area,time_series_type, market_role)}/part-*.json",
 #     )
 
-def get_gln_from() -> :
-    actors_json_805 = find_first_file(actors_path_805, "part-*.json")
 
-    actual_gln = []
-    with open(actors_json_805, "r") as json_file:
+def get_gln_from_actors_file(
+    output_path: str,
+    grid_area: str,
+    time_series_type: TimeSeriesType,
+    market_role: MarketRole,
+) -> list[str]:
+
+    actors_path = get_actors_path(output_path, grid_area, time_series_type, market_role)
+    actors_json = find_first_file(actors_path, "part-*.json")
+
+    gln = []
+    with open(actors_json, "r") as json_file:
         for line in json_file:
             json_data = json.loads(line)
-            actual_gln.append(json_data[Colname.gln])
+            gln.append(json_data[Colname.gln])
+
+    return gln
+
 
 def test__write_per_ga_per_actor__expected_folder_exists(
     spark: SparkSession, tmpdir: Path, result_schema: StructType
@@ -122,25 +134,29 @@ def test__write_per_ga_per_actor__expected_folder_exists(
 
 
 def test__write_per_ga_per_actor__actors_file_has_expected_gln(
-    spark: SparkSession, tmpdir: Path, result_schema: StructType, find_first_file
+    spark: SparkSession, tmpdir: Path, result_schema: StructType
 ) -> None:
 
     # Arrange
     output_path = str(tmpdir)
-    es_id_1 = "123"  # goes into grid area 805
-    es_id_2 = "234"  # goes into grid area 805 and 806
-    es_id_3 = "345"  # goes into grid area 806
+    expected_gln_805 = ["123", "234"]
+    expected_gln_806 = ["123", "345"]
     time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
     market_role = MarketRole.ENERGY_SUPPLIER
-    actors_path_805 = get_actors_path(output_path, "805", time_series_type, market_role)
-    actors_path_806 = get_actors_path(output_path, "806", time_series_type, market_role)
 
     rows = []
-    rows.append(create_result_row(grid_area="805", energy_supplier_id=es_id_1))
-    rows.append(create_result_row(grid_area="805", energy_supplier_id=es_id_2))
-    rows.append(create_result_row(grid_area="806", energy_supplier_id=es_id_2))
-    rows.append(create_result_row(grid_area="806", energy_supplier_id=es_id_3))
-
+    rows.append(
+        create_result_row(grid_area="805", energy_supplier_id=expected_gln_805[0])
+    )
+    rows.append(
+        create_result_row(grid_area="805", energy_supplier_id=expected_gln_805[1])
+    )
+    rows.append(
+        create_result_row(grid_area="806", energy_supplier_id=expected_gln_806[0])
+    )
+    rows.append(
+        create_result_row(grid_area="806", energy_supplier_id=expected_gln_806[1])
+    )
     result_df = spark.createDataFrame(rows, schema=result_schema)
 
     sut = ProcessStepResultWriter(output_path)
@@ -149,30 +165,16 @@ def test__write_per_ga_per_actor__actors_file_has_expected_gln(
     sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
 
     # Assert
-    actors_json_805 = find_first_file(actors_path_805, "part-*.json")
+    actual_gln_805 = get_gln_from_actors_file(
+        output_path, "805", time_series_type, market_role
+    )
+    actual_gln_806 = get_gln_from_actors_file(
+        output_path, "806", time_series_type, market_role
+    )
 
-    actual_gln = []
-    with open(actors_json_805, "r") as json_file:
-        for line in json_file:
-            json_data = json.loads(line)
-            actual_gln.append(json_data[Colname.gln])
-
-    print(actual_gln)
-
-    # f = open(actors_json_805)
-
-    # # returns JSON object as
-    # # a dictionary
-
-    # data = json.loads(f)
-
-    # # Iterating through the json
-    # # list
-    # for i in data["gln"]:
-    #     print(i)
-
-    # # Closing file
-    # f.close()
+    assert set(actual_gln_805) == set(expected_gln_805) and set(actual_gln_806) == set(
+        expected_gln_806
+    )
 
 
 # def get_result_path(
