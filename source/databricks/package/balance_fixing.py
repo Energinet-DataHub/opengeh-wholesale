@@ -17,25 +17,27 @@ from datetime import datetime
 import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
 from package.codelists import MeteringPointResolution
-from package.constants import Colname, ResultKeyName
-from package.constants.result_grouping import ResultGrouping
+from package.constants import Colname
+from package.constants.market_role import MarketRole
 from package.constants.time_series_type import TimeSeriesType
 from package.db_logging import debug
-from package.calculation_output_writer import CalculationOutputWriter
 from package.shared.data_classes import Metadata
+from package.basis_data_writer import BasisDataWriter
+from package.process_step_result_writer import ProcessStepResultWriter
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, explode, expr, first, lit, sum
+from pyspark.sql.functions import col, explode, expr, first, sum
 from pyspark.sql.types import DecimalType
 
 
 def calculate_balance_fixing(
-    calculation_output_writer: CalculationOutputWriter,
+    output_path: str,
     metering_points_periods_df: DataFrame,
     timeseries_points: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
 ) -> None:
+
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         timeseries_points,
         metering_points_periods_df,
@@ -43,8 +45,8 @@ def calculate_balance_fixing(
         period_end_datetime,
     )
 
-    create_and_write_basis_data(
-        calculation_output_writer,
+    _create_and_write_basis_data(
+        output_path,
         metering_points_periods_df,
         enriched_time_series_point_df,
         period_start_datetime,
@@ -52,19 +54,11 @@ def calculate_balance_fixing(
         time_zone,
     )
 
-    metadata_fake = Metadata("1", "1", "1", "1")
-
-    calculate_production(
-        enriched_time_series_point_df, metadata_fake, calculation_output_writer
-    )
-
-    calculate_non_profiled_consumption(
-        enriched_time_series_point_df, metadata_fake, calculation_output_writer
-    )
+    _calculate(output_path, enriched_time_series_point_df)
 
 
-def create_and_write_basis_data(
-    calculation_output_writer: CalculationOutputWriter,
+def _create_and_write_basis_data(
+    output_path: str,
     metering_points_periods_df: DataFrame,
     enriched_time_series_point_df: DataFrame,
     period_start_datetime: datetime,
@@ -82,15 +76,28 @@ def create_and_write_basis_data(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
-    calculation_output_writer.write_basis_data(
+    basis_data_writer = BasisDataWriter(output_path)
+    basis_data_writer.write(
         master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
     )
 
 
-def calculate_production(
+def _calculate(output_path: str, enriched_time_series_point_df: DataFrame) -> None:
+
+    result_writer = ProcessStepResultWriter(output_path)
+    metadata_fake = Metadata("1", "1", "1", "1")
+
+    _calculate_production(result_writer, enriched_time_series_point_df, metadata_fake)
+
+    _calculate_non_profiled_consumption(
+        result_writer, enriched_time_series_point_df, metadata_fake
+    )
+
+
+def _calculate_production(
+    result_writer: ProcessStepResultWriter,
     enriched_time_series: DataFrame,
     metadata: Metadata,
-    calculation_output_writer: CalculationOutputWriter,
 ) -> None:
 
     total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
@@ -103,19 +110,13 @@ def calculate_production(
         first(Colname.quality).alias(Colname.quality),
     )
 
-    total_production_per_ga_df = _prepare_result_for_output(
-        total_production_per_ga_df,
-        TimeSeriesType.PRODUCTION,
-        ResultGrouping.PER_GRID_AREA,
-    )
-
-    calculation_output_writer.write_result(total_production_per_ga_df)
+    result_writer.write_per_ga(total_production_per_ga_df, TimeSeriesType.PRODUCTION)
 
 
-def calculate_non_profiled_consumption(
+def _calculate_non_profiled_consumption(
+    result_writer: ProcessStepResultWriter,
     enriched_time_series_point_df: DataFrame,
     metadata: Metadata,
-    calculation_output_writer: CalculationOutputWriter,
 ) -> None:
 
     consumption = agg_steps.aggregate_non_profiled_consumption(
@@ -127,59 +128,11 @@ def calculate_non_profiled_consumption(
         consumption, metadata
     )
 
-    consumption_per_ga_and_es = _prepare_result_for_output(
+    result_writer.write_per_ga_per_actor(
         consumption_per_ga_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        ResultGrouping.PER_ENERGY_SUPPLIER,
+        MarketRole.ENERGY_SUPPLIER,
     )
-
-    calculation_output_writer.write_result(consumption_per_ga_and_es)
-
-
-def _prepare_result_for_output(
-    result_df: DataFrame,
-    time_series_type: TimeSeriesType,
-    result_grouping: ResultGrouping,
-) -> DataFrame:
-
-    result_df = _add_gln_and_time_series_type(
-        result_df,
-        result_grouping,
-        time_series_type,
-    )
-
-    result_df = result_df.select(
-        col(Colname.grid_area).alias("grid_area"),
-        Colname.gln,
-        Colname.time_series_type,
-        col(Colname.sum_quantity).alias("quantity").cast("string"),
-        col(Colname.quality).alias("quality"),
-        col(Colname.time_window_start).alias("quarter_time"),
-    )
-
-    return result_df
-
-
-def _add_gln_and_time_series_type(
-    result_df: DataFrame,
-    result_grouping: ResultGrouping,
-    time_series_type: TimeSeriesType,
-) -> DataFrame:
-
-    result_df = result_df.withColumn(
-        Colname.time_series_type, lit(time_series_type.value)
-    )
-
-    if result_grouping is ResultGrouping.PER_GRID_AREA:
-        result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
-    elif result_grouping is ResultGrouping.PER_ENERGY_SUPPLIER:
-        result_df = result_df.withColumnRenamed(Colname.energy_supplier_id, Colname.gln)
-    else:
-        raise NotImplementedError(
-            f"Result grouping, {result_grouping}, is not supported yet"
-        )
-
-    return result_df
 
 
 def _get_enriched_time_series_points_df(
