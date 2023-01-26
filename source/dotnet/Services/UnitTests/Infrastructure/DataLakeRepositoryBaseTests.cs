@@ -39,7 +39,7 @@ public class DatalakeRepositoryBaseTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task GetResultFileStreamAsync_WhenDirectoryDoesNotExist_ThrowsException(
+    public async Task GetDataLakeFileClientAsync_WhenDirectoryDoesNotExist_ThrowsException(
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<Response<bool>> responseMock)
@@ -61,7 +61,7 @@ public class DatalakeRepositoryBaseTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetResultFileStreamAsync_WhenFileExtensionNotFound_ThrowException(
+    public async Task GetDataLakeFileClientAsync_WhenFileExtensionNotFound_ThrowException(
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<Response<bool>> responseMock)
