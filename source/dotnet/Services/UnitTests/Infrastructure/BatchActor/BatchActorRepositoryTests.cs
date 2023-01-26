@@ -36,7 +36,7 @@ public class BatchActorRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetAsync_ReturnsBatchActor(
-        [Frozen] Mock<DataLakeTypeFactory> dataLakeTypeFactoryMock,
+        [Frozen] Mock<IDataLakeTypeFactory> dataLakeTypeFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
