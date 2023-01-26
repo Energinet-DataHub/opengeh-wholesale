@@ -19,6 +19,7 @@ using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 using Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
@@ -35,7 +36,7 @@ public class BatchActorRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetAsync_ReturnsBatchActor(
-        [Frozen] Mock<IBatchActorFactory> batchActorFactoryMock,
+        [Frozen] Mock<DataLakeTypeFactory> dataLakeTypeFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
@@ -60,7 +61,7 @@ public class BatchActorRepositoryTests
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
         var batchActor = new Wholesale.Infrastructure.BatchActor.BatchActor("AnyGln");
-        batchActorFactoryMock.Setup(x => x.GetBatchActorFromJsonStreamAsync(stream.Object))
+        dataLakeTypeFactoryMock.Setup(x => x.GetTypeFromJsonStreamAsync<Wholesale.Infrastructure.BatchActor.BatchActor>(stream.Object))
             .ReturnsAsync(new List<Wholesale.Infrastructure.BatchActor.BatchActor>
             {
                 batchActor,
@@ -68,7 +69,7 @@ public class BatchActorRepositoryTests
 
         var sut = new BatchActorRepository(
             dataLakeFileSystemClientMock.Object,
-            batchActorFactoryMock.Object);
+            dataLakeTypeFactoryMock.Object);
 
         // Act
         var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRoleType.EnergySupplier);

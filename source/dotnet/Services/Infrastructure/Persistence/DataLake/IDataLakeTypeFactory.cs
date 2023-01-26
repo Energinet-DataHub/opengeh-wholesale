@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 
-public interface IBatchActorFactory
+public interface IDataLakeTypeFactory
 {
     /// <summary>
-    /// Creates a List of BatchActors.
+    /// Creates a List of T.
     /// </summary>
     /// <param name="resultStream">The stream must be a .json file in the 'json newline' format.</param>
-    Task<List<BatchActor>> GetBatchActorFromJsonStreamAsync(Stream resultStream);
+    Task<List<T>> GetTypeFromJsonStreamAsync<T>(Stream resultStream);
 }

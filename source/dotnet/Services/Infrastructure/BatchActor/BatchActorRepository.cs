@@ -16,20 +16,21 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Domain.BatchActor;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 
 public class BatchActorRepository : DataLakeRepositoryBase, IBatchActorRepository
 {
-    private readonly IBatchActorFactory _batchActorFactory;
+    private readonly IDataLakeTypeFactory _dataLakeTypeFactory;
 
     public BatchActorRepository(
         DataLakeFileSystemClient dataLakeFileSystemClient,
-        IBatchActorFactory batchActorFactory)
+        IDataLakeTypeFactory dataLakeTypeFactory)
         : base(dataLakeFileSystemClient)
     {
-        _batchActorFactory = batchActorFactory;
+        _dataLakeTypeFactory = dataLakeTypeFactory;
     }
 
     public async Task<Domain.BatchActor.BatchActor[]> GetAsync(
@@ -42,7 +43,7 @@ public class BatchActorRepository : DataLakeRepositoryBase, IBatchActorRepositor
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
-        var actors = await _batchActorFactory.GetBatchActorFromJsonStreamAsync(resultStream).ConfigureAwait(false);
+        var actors = await _dataLakeTypeFactory.GetTypeFromJsonStreamAsync<BatchActor>(resultStream).ConfigureAwait(false);
 
         return MapToBatchActor(actors);
     }

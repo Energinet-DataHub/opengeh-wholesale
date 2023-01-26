@@ -13,26 +13,25 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 
-public class BatchActorFactory : IBatchActorFactory
+public class DataLakeTypeFactory : IDataLakeTypeFactory
 {
     /// <summary>
-    /// Creates a List of BatchActors.
+    /// Creates a List of T.
     /// </summary>
     /// <param name="resultStream">The stream must be a .json file in the 'json newline' format.</param>
-    public async Task<List<BatchActor>> GetBatchActorFromJsonStreamAsync(Stream resultStream)
+    public async Task<List<T>> GetTypeFromJsonStreamAsync<T>(Stream resultStream)
     {
-        var list = new List<BatchActor>();
+        var list = new List<T>();
 
         var streamer = new StreamReader(resultStream);
 
         var nextline = await streamer.ReadLineAsync().ConfigureAwait(false);
         while (nextline != null)
         {
-            var dto = JsonSerializer.Deserialize<BatchActor>(
+            var dto = JsonSerializer.Deserialize<T>(
                 nextline,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (dto != null)

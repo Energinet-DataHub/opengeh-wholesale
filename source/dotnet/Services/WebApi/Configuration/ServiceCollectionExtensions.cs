@@ -35,6 +35,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
@@ -101,7 +102,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<DataLakeRepositoryBase>();
         services.AddScoped<IBatchActorApplicationService, BatchActorApplicationService>();
         services.AddScoped<IBatchActorRepository, BatchActorRepository>();
-        services.AddScoped<IBatchActorFactory, BatchActorFactory>();
+        services.AddScoped<IDataLakeTypeFactory, DataLakeTypeFactory>();
 
         services.ConfigureDateTime();
     }

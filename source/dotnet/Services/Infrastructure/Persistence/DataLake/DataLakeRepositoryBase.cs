@@ -14,7 +14,7 @@
 
 using Azure.Storage.Files.DataLake;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 
 public class DataLakeRepositoryBase
 {
