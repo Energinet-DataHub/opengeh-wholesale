@@ -89,13 +89,13 @@ jobs:
       AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
       AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
 
-  # Run all tests in 'Tests.dll'
+  # Run all tests in 'UnitTests.dll'
   dotnet_ci_test_tests:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\Tests\bin\Release\net6.0\Energinet.DataHub.Wholesale.Tests.dll'
+      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\UnitTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.UnitTests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 20
 
   #
