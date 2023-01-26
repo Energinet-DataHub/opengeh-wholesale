@@ -37,7 +37,7 @@ public class BatchActorApplicationService : IBatchActorApplicationService
             TimeSeriesTypeMapper.Map(batchActorRequestDto.Type),
             Map(batchActorRequestDto.MarketRoleType)).ConfigureAwait(false);
 
-        return actors.Select(x => new BatchActorDto(x.Gln)).ToArray();
+        return actors.Select(batchActor => new BatchActorDto(batchActor.Gln)).ToArray();
     }
 
     private static Domain.BatchActor.MarketRoleType Map(MarketRoleType marketRoleType)

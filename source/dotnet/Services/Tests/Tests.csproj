@@ -84,4 +84,10 @@ limitations under the License.
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\contracts\internal\calculator-actor.json">
+      <Link>Infrastructure\BatchActor\calculator-actor.json</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
