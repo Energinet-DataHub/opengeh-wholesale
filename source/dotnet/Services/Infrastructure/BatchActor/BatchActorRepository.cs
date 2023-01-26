@@ -16,6 +16,7 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Domain.BatchActor;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 
@@ -31,9 +32,13 @@ public class BatchActorRepository : DataLakeRepositoryBase, IBatchActorRepositor
         _batchActorFactory = batchActorFactory;
     }
 
-    public async Task<Domain.BatchActor.BatchActor[]> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, MarketRoleType marketRoleType)
+    public async Task<Domain.BatchActor.BatchActor[]> GetAsync(
+        Guid batchId,
+        GridAreaCode gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        MarketRoleType marketRoleType)
     {
-        var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode.Code, timeSeriesType, marketRoleType);
+        var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType, marketRoleType);
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
@@ -42,12 +47,16 @@ public class BatchActorRepository : DataLakeRepositoryBase, IBatchActorRepositor
         return MapToBatchActor(actors);
     }
 
-    public static (string Directory, string Extension) GetActorListFileSpecification(Guid batchId, string gridAreaCode, TimeSeriesType type, MarketRoleType marketRoleType)
+    public static (string Directory, string Extension) GetActorListFileSpecification(
+        Guid batchId,
+        GridAreaCode gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        MarketRoleType marketRoleType)
     {
-        return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode}/time_series_type={type}/market_role={marketRoleType}/", ".json");
+        return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode.Code}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/market_role={MarketRoleTypeMapper.Map(marketRoleType)}/", ".json");
     }
 
-    private Domain.BatchActor.BatchActor[] MapToBatchActor(List<BatchActor> actors)
+    private static Domain.BatchActor.BatchActor[] MapToBatchActor(IEnumerable<BatchActor> actors)
     {
         return actors.Select(actor => new Domain.BatchActor.BatchActor(actor.gln)).ToArray();
     }

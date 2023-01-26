@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
-public class TimeSeriesTypeMapper
+public static class TimeSeriesTypeMapper
 {
     // These strings represents how write our results from spark.
     // They should only be changed with changing how we write down the results.
