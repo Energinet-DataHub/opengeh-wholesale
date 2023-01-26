@@ -79,7 +79,6 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<IStreamZipper, StreamZipper>();
-        services.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);

@@ -39,6 +39,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
@@ -152,7 +153,7 @@ public static class Program
         });
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
-        serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
+        serviceCollection.AddScoped<IDataLakeTypeFactory, DataLakeTypeFactory>();
         serviceCollection.AddScoped<ISettlementReportRepository>(
             provider => new SettlementReportRepository(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),

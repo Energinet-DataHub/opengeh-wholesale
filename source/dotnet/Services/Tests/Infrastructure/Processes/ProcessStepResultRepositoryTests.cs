@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
 using FluentAssertions;
@@ -38,7 +39,7 @@ public class ProcessStepResultRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetAsync_ReturnsProcessActorResult(
-        [Frozen] Mock<IProcessResultPointFactory> processResultFactoryMock,
+        [Frozen] Mock<IDataLakeTypeFactory> datalakeTypeFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
@@ -63,7 +64,7 @@ public class ProcessStepResultRepositoryTests
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
         var processResultPoint = new ProcessResultPoint("1.00", "A04", "2022-05-31T22:00:00");
-        processResultFactoryMock.Setup(x => x.GetPointsFromJsonStreamAsync(stream.Object))
+        datalakeTypeFactoryMock.Setup(x => x.GetTypeFromJsonStreamAsync<ProcessResultPoint>(stream.Object))
             .ReturnsAsync(new List<ProcessResultPoint>
             {
                 processResultPoint,
@@ -71,7 +72,7 @@ public class ProcessStepResultRepositoryTests
 
         var sut = new ProcessStepResultRepository(
             dataLakeFileSystemClientMock.Object,
-            processResultFactoryMock.Object);
+            datalakeTypeFactoryMock.Object);
 
         // Act
         var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, "grid_area");
