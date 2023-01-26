@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 [Route("v{version:apiVersion}/[controller]")]
 public class BatchActorController : ControllerBase
 {
-    private const string Version = "1.0";
+    private const string Version = "2.0";
     private readonly IBatchActorApplicationService _batchActorApplicationService;
 
     public BatchActorController(IBatchActorApplicationService batchActorApplicationService)

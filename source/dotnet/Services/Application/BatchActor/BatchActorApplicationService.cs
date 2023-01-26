@@ -40,7 +40,7 @@ public class BatchActorApplicationService : IBatchActorApplicationService
         return actors.Select(x => new BatchActorDto(x.Gln)).ToArray();
     }
 
-    private Domain.BatchActor.MarketRoleType Map(MarketRoleType marketRoleType)
+    private static Domain.BatchActor.MarketRoleType Map(MarketRoleType marketRoleType)
     {
         switch (marketRoleType)
         {

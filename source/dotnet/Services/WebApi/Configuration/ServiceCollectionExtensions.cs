@@ -24,12 +24,14 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.Domain.BatchActor;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
+using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
@@ -98,6 +100,8 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
         services.AddScoped<DataLakeRepositoryBase>();
         services.AddScoped<IBatchActorApplicationService, BatchActorApplicationService>();
+        services.AddScoped<IBatchActorRepository, BatchActorRepository>();
+        services.AddScoped<IBatchActorFactory, BatchActorFactory>();
 
         services.ConfigureDateTime();
     }
