@@ -21,29 +21,34 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 
 public class BatchActorRepository : DataLakeRepositoryBase, IBatchActorRepository
 {
+    private readonly IBatchActorFactory _batchActorFactory;
+
     public BatchActorRepository(
-        DataLakeFileSystemClient dataLakeFileSystemClient)
+        DataLakeFileSystemClient dataLakeFileSystemClient,
+        IBatchActorFactory batchActorFactory)
         : base(dataLakeFileSystemClient)
     {
+        _batchActorFactory = batchActorFactory;
     }
 
     public async Task<Domain.BatchActor.BatchActor[]> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, MarketRoleType marketRoleType)
     {
         var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode.Code, timeSeriesType, marketRoleType);
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
-        if (dataLakeFileClient == null)
-        {
-            throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
-        }
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
-        var actors = await _batchActorFactory.GetPointsFromJsonStreamAsync(resultStream).ConfigureAwait(false);
+        var actors = await _batchActorFactory.GetBatchActorFromJsonStreamAsync(resultStream).ConfigureAwait(false);
 
-        return MapToBatchActortDto(actors);
+        return MapToBatchActor(actors);
     }
 
     public static (string Directory, string Extension) GetActorListFileSpecification(Guid batchId, string gridAreaCode, TimeSeriesType type, MarketRoleType marketRoleType)
     {
         return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode}/time_series_type={type}/market_role={marketRoleType}/", ".json");
+    }
+
+    private Domain.BatchActor.BatchActor[] MapToBatchActor(List<BatchActor> actors)
+    {
+        return actors.Select(actor => new Domain.BatchActor.BatchActor(actor.gln)).ToArray();
     }
 }

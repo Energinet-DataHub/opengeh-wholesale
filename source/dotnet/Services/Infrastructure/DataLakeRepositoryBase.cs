@@ -1,4 +1,4 @@
-//  Copyright 2020 Energinet DataHub A/S
+﻿//  Copyright 2020 Energinet DataHub A/S
 //
 //  Licensed under the Apache License, Version 2.0 (the "License2");
 //  you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@ using Azure.Storage.Files.DataLake;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure;
 
-public abstract class DataLakeRepositoryBase
+public class DataLakeRepositoryBase
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
 
-    protected DataLakeRepositoryBase(DataLakeFileSystemClient dataLakeFileSystemClient)
+    public DataLakeRepositoryBase(DataLakeFileSystemClient dataLakeFileSystemClient)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
     }
@@ -31,12 +31,12 @@ public abstract class DataLakeRepositoryBase
     /// <param name="directory"></param>
     /// <param name="extension"></param>
     /// <returns>The first file with matching file extension. If no directory was found, return null</returns>
-    protected async Task<DataLakeFileClient?> GetDataLakeFileClientAsync(string directory, string extension)
+    public async Task<DataLakeFileClient> GetDataLakeFileClientAsync(string directory, string extension)
     {
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
         var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
         if (!directoryExists.Value)
-            return null;
+            throw new InvalidOperationException($"No directory was found on path: {directory}");
 
         await foreach (var pathItem in directoryClient.GetPathsAsync())
         {
