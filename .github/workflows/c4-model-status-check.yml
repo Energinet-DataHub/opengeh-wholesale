@@ -1,0 +1,25 @@
+name: C4 Model Branch Policy Status Check
+
+# DESCRIPTION:
+#
+# This workflow is used to ensure we can merge a PR where we only make changes to
+# artifacts within the 'c4-model' folder. It means we use the workflow to manipulate
+# the branch policy status check.
+
+on:
+  workflow_call:
+    inputs:
+      OPERATING_SYSTEM:
+        required: false
+        default: 'ubuntu-22.04'
+        type: string
+
+jobs:
+  create_prerelease:
+    runs-on: ${{ inputs.OPERATING_SYSTEM }}
+    steps:
+      - name: Print message
+        shell: bash
+        run: |
+          echo "Approved!"
+

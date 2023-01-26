@@ -1,0 +1,21 @@
+#
+# This workflow is used to ensure we can merge a PR where we only make changes to
+# artifacts within the 'c4-model' folder. It means we use the workflow to manipulate
+# the branch policy status check.
+#
+name: C4 Model CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - c4-model/**
+      - .github/workflows/c4-model-*.yml
+
+jobs:
+  #
+  # Branch policy status check
+  #
+  infrastructure_ci:
+    uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/c4-model-status-check.yml@main
