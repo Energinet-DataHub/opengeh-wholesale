@@ -23,14 +23,14 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 public class ProcessStepResultRepository : DataLakeRepositoryBase, IProcessStepResultRepository
 {
-    private readonly IProcessResultPointFactory _processResultPointFactory;
+    private readonly IDataLakeTypeFactory _dataLakeTypeFactory;
 
     public ProcessStepResultRepository(
         DataLakeFileSystemClient dataLakeFileSystemClient,
-        IProcessResultPointFactory processResultPointFactory)
+        IDataLakeTypeFactory dataLakeTypeFactory)
         : base(dataLakeFileSystemClient)
     {
-        _processResultPointFactory = processResultPointFactory;
+        _dataLakeTypeFactory = dataLakeTypeFactory;
     }
 
     public async Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string gln)
@@ -43,7 +43,7 @@ public class ProcessStepResultRepository : DataLakeRepositoryBase, IProcessStepR
         }
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
-        var points = await _processResultPointFactory.GetPointsFromJsonStreamAsync(resultStream).ConfigureAwait(false);
+        var points = await _dataLakeTypeFactory.GetTypeFromJsonStreamAsync<ProcessResultPoint>(resultStream).ConfigureAwait(false);
 
         return MapToProcessStepResultDto(points);
     }
