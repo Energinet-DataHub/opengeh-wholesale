@@ -37,7 +37,7 @@ public class BatchActorController : ControllerBase
     [MapToApiVersion(Version)]
     public async Task<IActionResult> GetAsync([FromBody] BatchActorRequestDto batchActorRequestDto)
     {
-        var resultDto = await _batchActorApplicationService.GetAsync(batchActorRequestDto).ConfigureAwait(false);
-        return Ok(resultDto);
+        var batchActorDtos = await _batchActorApplicationService.GetAsync(batchActorRequestDto).ConfigureAwait(false);
+        return Ok(batchActorDtos);
     }
 }

@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Application.BatchActor;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.Domain.BatchActor;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.WebApi;
@@ -67,6 +69,15 @@ public class WebApiFactory : WebApplicationFactory<Startup>
                     var unitOfWork = provider.GetRequiredService<IUnitOfWork>();
                     return new SettlementReportApplicationService(batchRepository, settlementReportRepository, unitOfWork);
                 });
+
+            services.AddScoped(
+                provider =>
+                {
+                    if (BatchActorApplicationServiceMock != null)
+                        return BatchActorApplicationServiceMock.Object;
+
+                    return new BatchActorApplicationService(provider.GetRequiredService<IBatchActorRepository>());
+                });
         });
     }
 
@@ -75,6 +86,8 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     /// NOTE: This will only work as expected as long as no tests are executed in parallel.
     /// </summary>
     public Mock<ISettlementReportApplicationService>? SettlementReportApplicationServiceMock { get; set; }
+
+    public Mock<IBatchActorApplicationService>? BatchActorApplicationServiceMock { get; set; }
 
     private sealed class AllowAnonymous : IAuthorizationHandler
     {
