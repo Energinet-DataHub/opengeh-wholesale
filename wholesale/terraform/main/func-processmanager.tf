@@ -18,6 +18,7 @@ module "func_processmanager" {
   health_check_alert_enabled                = var.enable_health_check_alerts
   dotnet_framework_version                  = "6"
   use_dotnet_isolated_runtime               = true
+  ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
 
   app_settings                              = {
     TIME_ZONE                                                          = local.TIME_ZONE
