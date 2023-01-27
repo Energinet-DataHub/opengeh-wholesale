@@ -23,28 +23,10 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql import SparkSession
 from decimal import Decimal
 from datetime import datetime
-from tests.helpers.file_utils import find_first_file
+from tests.helpers.file_utils import find_single_file
 
 
 ACTORS_FOLDER = "actors"
-
-
-def _get_result_schema() -> StructType:
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType(20, 1))
-        .add(Colname.quality, StringType())
-        .add(Colname.resolution, StringType())
-        .add(Colname.energy_supplier_id, StringType())
-    )
 
 
 def _create_result_row(
@@ -87,7 +69,7 @@ def _get_gln_from_actors_file(
     actors_path = _get_actors_path(
         output_path, grid_area, time_series_type, market_role
     )
-    actors_json = find_first_file(actors_path, "part-*.json")
+    actors_json = find_single_file(actors_path, "part-*.json")
 
     gln = []
     with open(actors_json, "r") as json_file:
@@ -103,7 +85,7 @@ def test__write_per_ga__does_not_write_actor_data(spark: SparkSession, tmpdir) -
     # Arrange
     actors_directory = Path.joinpath(Path(tmpdir), ACTORS_FOLDER)
     row = [_create_result_row(grid_area="805", energy_supplier_id="123")]
-    result_df = spark.createDataFrame(data=row, schema=_get_result_schema())
+    result_df = spark.createDataFrame(data=row)
     sut = ProcessStepResultWriter(str(tmpdir))
 
     # Act
@@ -120,7 +102,7 @@ def test__write_per_ga_per_actor__actors_folder_is_created(
     # Arrange
     actors_directory = Path.joinpath(Path(tmpdir), ACTORS_FOLDER)
     row = [_create_result_row(grid_area="805", energy_supplier_id="123")]
-    result_df = spark.createDataFrame(data=row, schema=_get_result_schema())
+    result_df = spark.createDataFrame(data=row)
     sut = ProcessStepResultWriter(str(tmpdir))
 
     # Act
@@ -156,7 +138,7 @@ def test__write_per_ga_per_actor__actors_file_has_expected_gln(
     rows.append(
         _create_result_row(grid_area="806", energy_supplier_id=expected_gln_806[1])
     )
-    result_df = spark.createDataFrame(rows, schema=_get_result_schema())
+    result_df = spark.createDataFrame(rows)
 
     sut = ProcessStepResultWriter(output_path)
 

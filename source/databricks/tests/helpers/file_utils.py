@@ -16,7 +16,7 @@ import glob
 import os
 
 
-def find_first_file(path: str, pattern: str) -> str:
+def find_single_file(path: str, pattern: str) -> str:
     "The path of the first file matching the Unix style pathname pattern expansion (globbing)."
 
     os.chdir(path)
