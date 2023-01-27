@@ -16,9 +16,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
-public interface ICalculationDomainService
+public interface ICalculationParametersFactory
 {
-    Task<CalculationState> GetStatusAsync(JobRunId jobRunId);
-
-    Task StartAsync(Guid batchId);
+    IEnumerable<string> CreateParameters(Batch batch);
 }

@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 

@@ -69,21 +69,7 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task StartCalculationAsync(Guid batchId)
     {
-        // TODO General error management
-        // - Log exception with custom data? Exception types mapping to HTTP codes
-        // - How do we debug errors? How do we get the information we need across systems to debug?
-        // - How do we recover from an error? How to we support the customer afterwards?
-        // TODO: Problems with this code:
-        // - OK Multiple unit of work commits. What if something fails? There should probably be exactly none or one commit per use case
-        // - This complexity belongs to a domain service, but it can't be moved to a domain service because of the unit of work dependency
-        // - ICalculationParametersFactory is an infrastructure concern, but can't be moved to infra due to this code
-        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
-        var jobParameters = _calculationParametersFactory.CreateParameters(batch);
-        var jobRunId = await _calculationDomainService.StartAsync(jobParameters).ConfigureAwait(false);
-        batch.MarkAsSubmitted(jobRunId);
-
-        // TODO var calculationId =  await _calculationDomainService.StartAsync(batch);
-        // TODO in domain service: batch.SubmittedToCalculationEngine(calculationId);
+        await _calculationDomainService.StartAsync(batchId).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 

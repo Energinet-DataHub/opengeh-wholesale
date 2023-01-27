@@ -14,13 +14,11 @@
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
-/// <summary>
-/// This is an infrastructure concern. It cannot, however, currently be moved to infrastructure
-/// due to problems listed in <see cref="BatchApplicationService.UpdateExecutionStateAsync"/>.
-/// </summary>
-public interface ICalculationParametersFactory
+public interface IDatabricksCalculationInfrastructureService
 {
-    IEnumerable<string> CreateParameters(Batch batch);
+    Task<JobRunId> StartAsync(IEnumerable<string> jobParameters);
+
+    Task<CalculationState> GetStatusAsync(JobRunId jobRunId);
 }

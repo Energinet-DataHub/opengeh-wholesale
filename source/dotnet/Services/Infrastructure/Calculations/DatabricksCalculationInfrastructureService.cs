@@ -19,7 +19,7 @@ using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 
-public sealed class DatabricksCalculationInfrastructureService : ICalculationDomainService
+public sealed class DatabricksCalculationInfrastructureService : IDatabricksCalculationInfrastructureService
 {
     private readonly IDatabricksCalculatorJobSelector _databricksCalculatorJobSelector;
     private readonly IDatabricksWheelClient _wheelClient;
