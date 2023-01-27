@@ -33,6 +33,7 @@ from tests.helpers.assert_calculation_file_path import (
 from tests.helpers.file_utils import find_file, create_file_path_expression
 
 
+import package.infrastructure as infra
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 grid_area_gln = "grid_area"
 energy_supplier_gln_a = "8100000000108"
