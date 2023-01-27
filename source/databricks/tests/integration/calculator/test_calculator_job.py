@@ -343,7 +343,7 @@ def test__result_file_path_matches_contract(
         f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.json"
     )
     assert_file_path_match_contract(
-        contracts_path, actual_result_file, CalculationFileType.ActorsFile
+        contracts_path, actual_result_file, CalculationFileType.ResultFile
     )
 
 
