@@ -22,7 +22,7 @@ from package.codelists import TimeSeriesQuality, MeteringPointResolution
 from pyspark.sql import SparkSession
 from decimal import Decimal
 from datetime import datetime
-from tests.helpers.file_utils import find_single_file
+from tests.helpers.file_utils import find_file
 from unittest.mock import patch
 
 ACTORS_FOLDER = "actors"
@@ -68,7 +68,7 @@ def _get_gln_from_actors_file(
     actors_path = _get_actors_path(
         output_path, grid_area, time_series_type, market_role
     )
-    actors_json = find_single_file(actors_path, "part-*.json")
+    actors_json = find_file(actors_path, "part-*.json")
 
     gln = []
     with open(actors_json, "r") as json_file:
@@ -77,23 +77,6 @@ def _get_gln_from_actors_file(
             gln.append(json_data[Colname.gln])
 
     return gln
-
-
-# @patch("package.file_writers.process_step_result_writer.actors_writer")
-# def test__write_per_ga__does_not_write_actor_data(
-#     mock_actors_writer, spark: SparkSession, tmpdir
-# ) -> None:
-
-#     # Arrange
-#     row = [_create_result_row(grid_area="805", energy_supplier_id="123")]
-#     result_df = spark.createDataFrame(data=row)
-#     sut = ProcessStepResultWriter(str(tmpdir))
-
-#     # Act
-#     sut.write_per_ga(result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION)
-
-#     # Assert
-#     mock_actors_writer.assert_not_called()
 
 
 @patch("package.file_writers.process_step_result_writer.actors_writer")

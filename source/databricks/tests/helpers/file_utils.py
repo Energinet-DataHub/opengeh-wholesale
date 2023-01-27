@@ -16,16 +16,17 @@ import glob
 import os
 
 
-def find_single_file(path: str, pattern: str) -> str:
-    "The path of the first file matching the Unix style pathname pattern expansion (globbing)."
-
+def find_file(path: str, pattern: str) -> str:
+    """The path of the first file matching the Unix style pathname pattern expansion (globbing).
+    Raises an exception if no file is found.
+    """
     os.chdir(path)
     for file_path in glob.glob(pattern):
         return file_path
     raise Exception("Target test file not found.")
 
 
-def create_file_path_expression(directory_expression, extension):
+def create_file_path_expression(directory_expression: str, extension: str) -> str:
     """Create file path regular expression from a directory expression
     and a file extension.
     The remaining base file name can be one or more characters except for forward slash ("/").
