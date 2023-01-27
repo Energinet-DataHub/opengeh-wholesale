@@ -106,7 +106,6 @@ public class WholesaleClient : IWholesaleClient
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
 
-        var batch = await response.Content.ReadFromJsonAsync<BatchActorDto[]>().ConfigureAwait(false);
-        return batch;
+        return await response.Content.ReadFromJsonAsync<BatchActorDto[]>().ConfigureAwait(false);
     }
 }
