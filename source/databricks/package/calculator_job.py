@@ -87,10 +87,8 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_period_end_datetime,
     )
 
-    output_path = f"{args.process_results_path}/batch_id={args.batch_id}"
-
     calculate_balance_fixing(
-        output_path,
+        args.wholesale_container_path,
         metering_point_periods_df,
         timeseries_points_df,
         args.batch_period_start_datetime,
@@ -144,9 +142,6 @@ def _start(command_line_args: list[str]) -> None:
     calculator_args = CalculatorArgs(
         data_storage_account_name=args.data_storage_account_name,
         data_storage_account_key=args.data_storage_account_key,
-        process_results_path=infrastructure.get_process_results_path(
-            args.data_storage_account_name
-        ),
         wholesale_container_path=infrastructure.get_wholesale_container_path(
             args.data_storage_account_name
         ),

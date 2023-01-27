@@ -28,6 +28,7 @@ from pyspark.sql.functions import lit
 from tests.helpers.file_utils import find_file, create_file_path_expression
 
 
+import package.infrastructure as infra
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 grid_area_gln = "grid_area"
 energy_supplier_gln_a = "8100000000108"
@@ -58,7 +59,6 @@ def test_data_job_parameters(
             "data_storage_account_name": "foo",
             "data_storage_account_key": "foo",
             "wholesale_container_path": f"{data_lake_path}",
-            "process_results_path": f"{data_lake_path}/{worker_id}/calculation-output",
             "batch_id": executed_batch_id,
             "batch_grid_areas": [805, 806],
             "batch_period_start_datetime": timestamp_factory(
@@ -83,9 +83,10 @@ def executed_calculation_job(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    if path.isdir(test_data_job_parameters.process_results_path):
+    output_path = f"{data_lake_path}/{infra.OUTPUT_FOLDER}"
+    if path.isdir(output_path):
         # Since we are appending the result dataframes we must ensure that the path is removed before executing the tests
-        rmtree(test_data_job_parameters.process_results_path)
+        rmtree(output_path)
 
     metering_points_df = spark.read.csv(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
@@ -154,24 +155,6 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(sourc
 
     # Act and Assert
     _get_valid_args_or_throw(command_line_args)
-
-
-def get_time_series_quarter_path(data_lake_path: str, grid_area: str, gln: str) -> str:
-    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area={grid_area}/gln={gln}"
-
-
-def get_time_series_hour_path(data_lake_path: str, grid_area: str, gln: str) -> str:
-    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_hour/grid_area={grid_area}/gln={gln}"
-
-
-def get_master_basis_data_path(data_lake_path: str, grid_area: str, gln: str) -> str:
-    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area={grid_area}/gln={gln}"
-
-
-def get_result_path(
-    data_lake_path: str, grid_area: str, gln: str, time_series_type: str
-) -> str:
-    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/result/grid_area={grid_area}/gln={gln}/time_series_type={time_series_type}"
 
 
 def test__result_is_generated_for_requested_grid_areas(
