@@ -29,13 +29,13 @@ public class BatchActorApplicationService : IBatchActorApplicationService
         _batchActorRepository = batchActorRepository;
     }
 
-    public async Task<BatchActorDto[]> GetAsync(BatchActorRequestDto batchActorRequestDto)
+    public async Task<BatchActorDto[]> GetAsync(ProcessStepActorsRequest processStepActorsRequest)
     {
         var actors = await _batchActorRepository.GetAsync(
-            batchActorRequestDto.BatchId,
-            new GridAreaCode(batchActorRequestDto.GridAreaCode),
-            TimeSeriesTypeMapper.Map(batchActorRequestDto.Type),
-            Map(batchActorRequestDto.MarketRoleType)).ConfigureAwait(false);
+            processStepActorsRequest.BatchId,
+            new GridAreaCode(processStepActorsRequest.GridAreaCode),
+            TimeSeriesTypeMapper.Map(processStepActorsRequest.Type),
+            Map(processStepActorsRequest.MarketRoleType)).ConfigureAwait(false);
 
         return actors.Select(batchActor => new BatchActorDto(batchActor.Gln)).ToArray();
     }

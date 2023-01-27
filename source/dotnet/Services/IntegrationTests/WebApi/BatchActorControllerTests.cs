@@ -60,17 +60,17 @@ public class BatchActorControllerTests :
     [InlineAutoMoqData]
     public async Task GetAsync_ReturnsBatchActorDtos(
         Mock<IBatchActorApplicationService> mock,
-        BatchActorRequestDto requestDto,
+        ProcessStepActorsRequest request,
         BatchActorDto batchActorDto)
     {
         // Arrange
         mock
-            .Setup(service => service.GetAsync(requestDto))
+            .Setup(service => service.GetAsync(request))
             .ReturnsAsync(new[] { batchActorDto });
         _factory.BatchActorApplicationServiceMock = mock;
 
         // Act
-        var actualContent = await _client.PostAsJsonAsync($"/v2.0/actor", requestDto);
+        var actualContent = await _client.PostAsJsonAsync($"/v2.0/actor", request);
 
         // Assert
         actualContent.Should().NotBeNull();

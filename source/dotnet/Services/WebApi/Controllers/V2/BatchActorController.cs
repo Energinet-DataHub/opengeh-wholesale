@@ -35,9 +35,9 @@ public class BatchActorController : ControllerBase
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
     [MapToApiVersion(Version)]
-    public async Task<IActionResult> GetAsync([FromBody] BatchActorRequestDto batchActorRequestDto)
+    public async Task<IActionResult> GetAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
     {
-        var batchActorDtos = await _batchActorApplicationService.GetAsync(batchActorRequestDto).ConfigureAwait(false);
+        var batchActorDtos = await _batchActorApplicationService.GetAsync(processStepActorsRequest).ConfigureAwait(false);
         return Ok(batchActorDtos);
     }
 }

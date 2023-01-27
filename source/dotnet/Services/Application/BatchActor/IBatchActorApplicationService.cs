@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Application.BatchActor;
 
 public interface IBatchActorApplicationService
 {
-    Task<BatchActorDto[]> GetAsync(BatchActorRequestDto batchActorRequestDto);
+    Task<BatchActorDto[]> GetAsync(ProcessStepActorsRequest processStepActorsRequest);
 }
