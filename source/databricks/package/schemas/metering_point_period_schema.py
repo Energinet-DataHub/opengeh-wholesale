@@ -27,7 +27,7 @@ Periods (given by `FromDate` and `ToDate`) must not overlap and must not have ga
 
 Only periods meeting the following requirements are included:
 - metering point is connected (E22) or disconnected (E23)
-- metering point has energy supplier
+- metering point has energy supplier if it is not exchange (E20)
 
 Data must be stored in a Delta table.
 The table holds all consumption, production, exchange, and child metering points.
