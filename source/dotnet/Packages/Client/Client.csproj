@@ -72,9 +72,6 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchActorDto.cs">
       <Link>Dtos\BatchActorDto.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\BatchActorRequestDto.cs">
-      <Link>Dtos\BatchActorRequestDto.cs</Link>
-    </Compile>
     <Compile Include="..\..\Contracts\BatchDtoV2.cs">
       <Link>Dtos\BatchDtoV2.cs</Link>
     </Compile>
@@ -89,6 +86,9 @@ limitations under the License.
     </Compile>
     <Compile Include="..\..\Contracts\MarketRoleType.cs">
       <Link>Dtos\MarketRoleType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepActorsRequest.cs">
+      <Link>Dtos\ProcessStepActorsRequest.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
       <Link>Dtos\ProcessStepMeteringPointType.cs</Link>

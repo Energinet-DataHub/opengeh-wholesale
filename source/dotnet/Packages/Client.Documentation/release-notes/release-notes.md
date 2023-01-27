@@ -2,7 +2,7 @@
 
 ## Version 5.0.3
 
-Add `GetBatchActorsAsync`
+Added `GetProcessStepActorsAsync`
 
 ## Version 5.0.2
 

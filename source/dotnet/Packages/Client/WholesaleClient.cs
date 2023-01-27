@@ -99,9 +99,9 @@ public class WholesaleClient : IWholesaleClient
         return batch;
     }
 
-    public async Task<BatchActorDto[]?> GetBatchActorsAsync(BatchActorRequestDto batchActorRequestDto)
+    public async Task<BatchActorDto[]?> GetProcessStepActorsAsync(ProcessStepActorsRequest processStepActorsRequest)
     {
-        var response = await _httpClient.PostAsJsonAsync($"v2/actor", batchActorRequestDto).ConfigureAwait(false);
+        var response = await _httpClient.PostAsJsonAsync($"v2/actor", processStepActorsRequest).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
