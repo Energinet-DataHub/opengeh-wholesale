@@ -25,7 +25,7 @@ from package.calculator_args import CalculatorArgs
 from package.constants.time_series_type import TimeSeriesType
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit
-from tests.helpers.file_utils import find_first_file, create_file_path_expression
+from tests.helpers.file_utils import find_single_file, create_file_path_expression
 
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -313,7 +313,7 @@ def test__actors_file_path_matches_contract(
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
-    actual_result_file = find_first_file(
+    actual_result_file = find_single_file(
         f"{data_lake_path}/{worker_id}",
         f"calculation-output/batch_id={executed_batch_id}/actors/grid_area=805/time_series_type=non_profiled_consumption/market_role=energy_supplier/part-*.json",
     )
@@ -335,7 +335,7 @@ def test__result_file_path_matches_contract(
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
-    actual_result_file = find_first_file(
+    actual_result_file = find_single_file(
         f"{data_lake_path}/{worker_id}",
         f"calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln={grid_area_gln}/time_series_type=production/part-*.json",
     )
@@ -502,7 +502,7 @@ def test__master_basis_data_file_matches_contract(
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
-    actual_file_path = find_first_file(
+    actual_file_path = find_single_file(
         f"{data_lake_path}/{worker_id}/",
         f"calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area=805/gln={grid_area_gln}/part-*.csv",
     )
@@ -525,7 +525,7 @@ def test__hourly_basis_data_file_matches_contract(
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
-    actual_file_path = find_first_file(
+    actual_file_path = find_single_file(
         f"{data_lake_path}/{worker_id}",
         f"calculation-output/batch_id={executed_batch_id}/basis_data/time_series_hour/grid_area=805/gln={grid_area_gln}/part-*.csv",
     )
@@ -548,7 +548,7 @@ def test__quarterly_basis_data_file_matches_contract(
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
-    actual_file_path = find_first_file(
+    actual_file_path = find_single_file(
         f"{data_lake_path}/{worker_id}",
         f"calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area=805/gln={grid_area_gln}/part-*.csv",
     )
