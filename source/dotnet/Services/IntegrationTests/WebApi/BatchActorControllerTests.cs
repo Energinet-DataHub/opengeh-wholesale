@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.BatchActor;
@@ -58,7 +59,7 @@ public class BatchActorControllerTests :
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsBatchActorDtos(
+    public async Task ExpectedUrl_Should_ReturnOk(
         Mock<IActorApplicationService> mock,
         ProcessStepActorsRequest request,
         BatchActorDto batchActorDto)
@@ -70,9 +71,10 @@ public class BatchActorControllerTests :
         _factory.ActorApplicationServiceMock = mock;
 
         // Act
-        var actualContent = await _client.PostAsJsonAsync($"/v2.0/actor", request);
+        const string expectedUrl = "/v2.0/actor";
+        var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
 
         // Assert
-        actualContent.Should().NotBeNull();
+        actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

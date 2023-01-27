@@ -101,7 +101,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<DataLakeRepositoryBase>();
         services.AddScoped<IActorApplicationService, ActorApplicationService>();
         services.AddScoped<IActorRepository, ActorRepository>();
-        services.AddScoped<IDataLakeTypeFactory, DataLakeTypeFactory>();
+        services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
 
         services.ConfigureDateTime();
     }

@@ -39,7 +39,7 @@ public class ProcessStepResultRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetAsync_ReturnsProcessActorResult(
-        [Frozen] Mock<IDataLakeTypeFactory> datalakeTypeFactoryMock,
+        [Frozen] Mock<IJsonNewlineSerializer> datalakeTypeFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
@@ -64,7 +64,7 @@ public class ProcessStepResultRepositoryTests
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
         var processResultPoint = new ProcessResultPoint("1.00", "A04", "2022-05-31T22:00:00");
-        datalakeTypeFactoryMock.Setup(x => x.GetTypeFromJsonStreamAsync<ProcessResultPoint>(stream.Object))
+        datalakeTypeFactoryMock.Setup(x => x.DeserializeAsync<ProcessResultPoint>(stream.Object))
             .ReturnsAsync(new List<ProcessResultPoint>
             {
                 processResultPoint,

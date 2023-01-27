@@ -23,14 +23,14 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 
 public class ActorRepository : DataLakeRepositoryBase, IActorRepository
 {
-    private readonly IDataLakeTypeFactory _dataLakeTypeFactory;
+    private readonly IJsonNewlineSerializer _jsonNewlineSerializer;
 
     public ActorRepository(
         DataLakeFileSystemClient dataLakeFileSystemClient,
-        IDataLakeTypeFactory dataLakeTypeFactory)
+        IJsonNewlineSerializer jsonNewlineSerializer)
         : base(dataLakeFileSystemClient)
     {
-        _dataLakeTypeFactory = dataLakeTypeFactory;
+        _jsonNewlineSerializer = jsonNewlineSerializer;
     }
 
     public async Task<Domain.Actor.Actor[]> GetAsync(
@@ -43,7 +43,7 @@ public class ActorRepository : DataLakeRepositoryBase, IActorRepository
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
-        var actors = await _dataLakeTypeFactory.GetTypeFromJsonStreamAsync<Actor>(resultStream).ConfigureAwait(false);
+        var actors = await _jsonNewlineSerializer.DeserializeAsync<Actor>(resultStream).ConfigureAwait(false);
 
         return MapToBatchActor(actors);
     }

@@ -36,7 +36,7 @@ public class ActorRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetAsync_ReturnsBatchActor(
-        [Frozen] Mock<IDataLakeTypeFactory> dataLakeTypeFactoryMock,
+        [Frozen] Mock<IJsonNewlineSerializer> dataLakeTypeFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
@@ -61,7 +61,7 @@ public class ActorRepositoryTests
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
         var batchActor = new Actor("AnyGln");
-        dataLakeTypeFactoryMock.Setup(x => x.GetTypeFromJsonStreamAsync<Actor>(stream.Object))
+        dataLakeTypeFactoryMock.Setup(x => x.DeserializeAsync<Actor>(stream.Object))
             .ReturnsAsync(new List<Actor>
             {
                 batchActor,

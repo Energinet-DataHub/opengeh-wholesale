@@ -14,11 +14,11 @@
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 
-public interface IDataLakeTypeFactory
+public interface IJsonNewlineSerializer
 {
     /// <summary>
-    /// Creates a List of T.
+    /// Returns  a <see cref="List{T}"/> of object type <typeparamref name="T"/>
     /// </summary>
-    /// <param name="resultStream">The stream must be a .json file in the 'json newline' format.</param>
-    Task<List<T>> GetTypeFromJsonStreamAsync<T>(Stream resultStream);
+    /// <param name="resultStream"></param>
+    Task<List<T>> DeserializeAsync<T>(Stream resultStream);
 }
