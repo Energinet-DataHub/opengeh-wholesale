@@ -111,7 +111,7 @@ def test__write_per_ga__does_not_call_actors_writer(
 
     # Assert
     mock_actors_writer.write.assert_not_called()
-    
+
 
 @patch("package.file_writers.process_step_result_writer.actors_writer")
 def test__write_per_ga_per_actor__calls_actors_writer(
