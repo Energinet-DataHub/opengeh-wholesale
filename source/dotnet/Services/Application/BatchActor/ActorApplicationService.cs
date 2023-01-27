@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.Actor;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using MarketRoleType = Energinet.DataHub.Wholesale.Contracts.MarketRoleType;
 
 namespace Energinet.DataHub.Wholesale.Application.BatchActor;
 
@@ -35,19 +34,8 @@ public class ActorApplicationService : IActorApplicationService
             processStepActorsRequest.BatchId,
             new GridAreaCode(processStepActorsRequest.GridAreaCode),
             TimeSeriesTypeMapper.Map(processStepActorsRequest.Type),
-            Map(processStepActorsRequest.MarketRoleType)).ConfigureAwait(false);
+            MarketRoleTypeMapper.Map(processStepActorsRequest.MarketRoleType)).ConfigureAwait(false);
 
         return actors.Select(batchActor => new BatchActorDto(batchActor.Gln)).ToArray();
-    }
-
-    private static Domain.Actor.MarketRoleType Map(MarketRoleType marketRoleType)
-    {
-        switch (marketRoleType)
-        {
-            case MarketRoleType.EnergySupplier:
-                return Domain.Actor.MarketRoleType.EnergySupplier;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(marketRoleType), marketRoleType, null);
-        }
     }
 }
