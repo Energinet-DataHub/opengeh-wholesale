@@ -72,3 +72,7 @@ def get_master_basis_data_relative_path(batch_id: str, grid_area: str, gln: str)
 
 def _get_batch_path(batch_id: str) -> str:
     return f"{OUTPUT_FOLDER}/batch_id={batch_id}"
+
+
+def _get_batch_folder(container_root_path: str, batch_id: str) -> str:
+    return f"{container_root_path}/{OUTPUT_FOLDER}/batch_id={batch_id}"

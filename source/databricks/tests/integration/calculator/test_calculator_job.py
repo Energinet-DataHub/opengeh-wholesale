@@ -25,6 +25,7 @@ from package.constants.market_role import MarketRole
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit
+from tests.helpers.file_utils import find_first_file
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
