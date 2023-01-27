@@ -23,17 +23,22 @@ public sealed class DatabricksCalculationInfrastructureService : IDatabricksCalc
 {
     private readonly IDatabricksCalculatorJobSelector _databricksCalculatorJobSelector;
     private readonly IDatabricksWheelClient _wheelClient;
+    private readonly ICalculationParametersFactory _calculationParametersFactory;
 
     public DatabricksCalculationInfrastructureService(
         IDatabricksCalculatorJobSelector databricksCalculatorJobSelector,
-        IDatabricksWheelClient wheelClient)
+        IDatabricksWheelClient wheelClient,
+        ICalculationParametersFactory calculationParametersFactory)
     {
         _databricksCalculatorJobSelector = databricksCalculatorJobSelector;
         _wheelClient = wheelClient;
+        _calculationParametersFactory = calculationParametersFactory;
     }
 
-    public async Task<JobRunId> StartAsync(IEnumerable<string> jobParameters)
+    public async Task<JobRunId> StartAsync(Batch batch)
     {
+        var jobParameters = _calculationParametersFactory.CreateParameters(batch);
+
         var calculatorJob = await _databricksCalculatorJobSelector
             .GetAsync()
             .ConfigureAwait(false);

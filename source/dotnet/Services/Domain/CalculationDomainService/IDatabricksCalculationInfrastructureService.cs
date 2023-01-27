@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
 public interface IDatabricksCalculationInfrastructureService
 {
-    Task<JobRunId> StartAsync(IEnumerable<string> jobParameters);
+    Task<JobRunId> StartAsync(Batch batch);
 
     Task<CalculationState> GetStatusAsync(JobRunId jobRunId);
 }

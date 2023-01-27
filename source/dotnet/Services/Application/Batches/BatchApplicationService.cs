@@ -28,7 +28,6 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICalculationDomainService _calculationDomainService;
-    private readonly ICalculationParametersFactory _calculationParametersFactory;
     private readonly IBatchExecutionStateDomainService _batchExecutionStateDomainService;
     private readonly IBatchDtoMapper _batchDtoMapper;
     private readonly IProcessTypeMapper _processTypeMapper;
@@ -39,7 +38,6 @@ public class BatchApplicationService : IBatchApplicationService
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         ICalculationDomainService calculationDomainService,
-        ICalculationParametersFactory calculationParametersFactory,
         IBatchExecutionStateDomainService batchExecutionStateDomainService,
         IBatchDtoMapper batchDtoMapper,
         IProcessTypeMapper processTypeMapper,
@@ -49,7 +47,6 @@ public class BatchApplicationService : IBatchApplicationService
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _calculationDomainService = calculationDomainService;
-        _calculationParametersFactory = calculationParametersFactory;
         _batchExecutionStateDomainService = batchExecutionStateDomainService;
         _batchDtoMapper = batchDtoMapper;
         _processTypeMapper = processTypeMapper;

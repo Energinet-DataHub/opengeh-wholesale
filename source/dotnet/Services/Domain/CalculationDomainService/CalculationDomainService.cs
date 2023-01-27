@@ -19,16 +19,13 @@ namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 public class CalculationDomainService : ICalculationDomainService
 {
     private readonly IBatchRepository _batchRepository;
-    private readonly ICalculationParametersFactory _calculationParametersFactory;
     private readonly IDatabricksCalculationInfrastructureService _databricksCalculationInfrastructureService;
 
     public CalculationDomainService(
         IBatchRepository batchRepository,
-        ICalculationParametersFactory calculationParametersFactory,
         IDatabricksCalculationInfrastructureService databricksCalculationInfrastructureService)
     {
         _batchRepository = batchRepository;
-        _calculationParametersFactory = calculationParametersFactory;
         _databricksCalculationInfrastructureService = databricksCalculationInfrastructureService;
     }
 
@@ -40,8 +37,7 @@ public class CalculationDomainService : ICalculationDomainService
     public async Task StartAsync(Guid batchId)
     {
         var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
-        var jobParameters = _calculationParametersFactory.CreateParameters(batch);
-        var jobRunId = await _databricksCalculationInfrastructureService.StartAsync(jobParameters).ConfigureAwait(false);
+        var jobRunId = await _databricksCalculationInfrastructureService.StartAsync(batch).ConfigureAwait(false);
         batch.MarkAsSubmitted(jobRunId);
     }
 }

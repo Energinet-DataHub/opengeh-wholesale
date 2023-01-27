@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 
 public interface ICalculationParametersFactory
 {
