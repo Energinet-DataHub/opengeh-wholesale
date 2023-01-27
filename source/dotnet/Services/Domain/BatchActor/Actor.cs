@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchActor;
 
-public record BatchActor(string Gln);
+public record Actor(string Gln);

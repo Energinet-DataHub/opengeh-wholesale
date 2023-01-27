@@ -100,7 +100,7 @@ public class ProcessStepResultRepositoryTests
 
     [Theory]
     [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
-    [InlineData(TimeSeriesType.Consumption, "consumption")]
+    [InlineData(TimeSeriesType.FlexConsumption, "consumption")]
     [InlineData(TimeSeriesType.Production, "production")]
     public void GetResultFileSpecification_DirectoryContainsCorrectlyMappedTimeSeriesTypeString(TimeSeriesType timeSeriesType, string expectedTimeSeriesType)
     {

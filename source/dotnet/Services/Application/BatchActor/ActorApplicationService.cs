@@ -20,18 +20,18 @@ using MarketRoleType = Energinet.DataHub.Wholesale.Contracts.MarketRoleType;
 
 namespace Energinet.DataHub.Wholesale.Application.BatchActor;
 
-public class BatchActorApplicationService : IBatchActorApplicationService
+public class ActorApplicationService : IActorApplicationService
 {
-    private readonly IBatchActorRepository _batchActorRepository;
+    private readonly IActorRepository _actorRepository;
 
-    public BatchActorApplicationService(IBatchActorRepository batchActorRepository)
+    public ActorApplicationService(IActorRepository actorRepository)
     {
-        _batchActorRepository = batchActorRepository;
+        _actorRepository = actorRepository;
     }
 
     public async Task<BatchActorDto[]> GetAsync(ProcessStepActorsRequest processStepActorsRequest)
     {
-        var actors = await _batchActorRepository.GetAsync(
+        var actors = await _actorRepository.GetAsync(
             processStepActorsRequest.BatchId,
             new GridAreaCode(processStepActorsRequest.GridAreaCode),
             TimeSeriesTypeMapper.Map(processStepActorsRequest.Type),

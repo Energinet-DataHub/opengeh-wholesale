@@ -73,10 +73,10 @@ public class WebApiFactory : WebApplicationFactory<Startup>
             services.AddScoped(
                 provider =>
                 {
-                    if (BatchActorApplicationServiceMock != null)
-                        return BatchActorApplicationServiceMock.Object;
+                    if (ActorApplicationServiceMock != null)
+                        return ActorApplicationServiceMock.Object;
 
-                    return new BatchActorApplicationService(provider.GetRequiredService<IBatchActorRepository>());
+                    return new ActorApplicationService(provider.GetRequiredService<IActorRepository>());
                 });
         });
     }
@@ -87,7 +87,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     /// </summary>
     public Mock<ISettlementReportApplicationService>? SettlementReportApplicationServiceMock { get; set; }
 
-    public Mock<IBatchActorApplicationService>? BatchActorApplicationServiceMock { get; set; }
+    public Mock<IActorApplicationService>? ActorApplicationServiceMock { get; set; }
 
     private sealed class AllowAnonymous : IAuthorizationHandler
     {

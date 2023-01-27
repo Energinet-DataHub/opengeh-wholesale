@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Processes;
 public class TimeSeriesTypeMapperTests
 {
     [Theory]
-    [InlineData(TimeSeriesType.Consumption, "consumption")]
+    [InlineData(TimeSeriesType.FlexConsumption, "consumption")]
     [InlineData(TimeSeriesType.Production, "production")]
     [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
     public void WhenMapIsCalled_ThenCorrectStringIsReturned(TimeSeriesType type, string expected)

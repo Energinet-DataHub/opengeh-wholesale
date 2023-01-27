@@ -23,7 +23,7 @@ public class TimeSeriesTypeMapper
         return timeSeriesType switch
         {
             Contracts.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
-            Contracts.TimeSeriesType.FlexConsumption => TimeSeriesType.Consumption,
+            Contracts.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
             Contracts.TimeSeriesType.Production => TimeSeriesType.Production,
             _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
         };

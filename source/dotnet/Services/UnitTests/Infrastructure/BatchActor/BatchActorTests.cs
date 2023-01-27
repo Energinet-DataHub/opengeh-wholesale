@@ -24,8 +24,8 @@ public class BatchActorTests
     [Fact]
     public async Task PropertyNamesAndTypesMatchContractWithCalculator()
     {
-        await using var stream = EmbeddedResources.GetStream("Infrastructure.BatchActor.calculator-actor.json");
+        await using var stream = EmbeddedResources.GetStream("Infrastructure.Actor.calculator-actor.json");
 
-        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<Wholesale.Infrastructure.BatchActor.BatchActor>(stream);
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<Wholesale.Infrastructure.BatchActor.Actor>(stream);
     }
 }

@@ -31,7 +31,7 @@ using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggre
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BatchActor;
 
 [UnitTest]
-public class BatchActorRepositoryTests
+public class ActorRepositoryTests
 {
     [Theory]
     [AutoMoqData]
@@ -60,14 +60,14 @@ public class BatchActorRepositoryTests
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
-        var batchActor = new Wholesale.Infrastructure.BatchActor.BatchActor("AnyGln");
-        dataLakeTypeFactoryMock.Setup(x => x.GetTypeFromJsonStreamAsync<Wholesale.Infrastructure.BatchActor.BatchActor>(stream.Object))
-            .ReturnsAsync(new List<Wholesale.Infrastructure.BatchActor.BatchActor>
+        var batchActor = new Wholesale.Infrastructure.BatchActor.Actor("AnyGln");
+        dataLakeTypeFactoryMock.Setup(x => x.GetTypeFromJsonStreamAsync<Wholesale.Infrastructure.BatchActor.Actor>(stream.Object))
+            .ReturnsAsync(new List<Wholesale.Infrastructure.BatchActor.Actor>
             {
                 batchActor,
             });
 
-        var sut = new BatchActorRepository(
+        var sut = new ActorRepository(
             dataLakeFileSystemClientMock.Object,
             dataLakeTypeFactoryMock.Object);
 
@@ -80,7 +80,7 @@ public class BatchActorRepositoryTests
 
     [Theory]
     [InlineData(TimeSeriesType.NonProfiledConsumption)]
-    [InlineData(TimeSeriesType.Consumption)]
+    [InlineData(TimeSeriesType.FlexConsumption)]
     [InlineData(TimeSeriesType.Production)]
     public static async Task GetActorFileSpecification_MatchesContract(TimeSeriesType timeSeriesType)
     {
@@ -91,7 +91,7 @@ public class BatchActorRepositoryTests
         var expected = calculationFilePathsContract.ActorsFile;
 
         // Act
-        var actual = BatchActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, MarketRoleType.EnergySupplier);
+        var actual = ActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, MarketRoleType.EnergySupplier);
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);

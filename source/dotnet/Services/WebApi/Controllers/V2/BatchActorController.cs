@@ -25,11 +25,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 public class BatchActorController : ControllerBase
 {
     private const string Version = "2.0";
-    private readonly IBatchActorApplicationService _batchActorApplicationService;
+    private readonly IActorApplicationService _actorApplicationService;
 
-    public BatchActorController(IBatchActorApplicationService batchActorApplicationService)
+    public BatchActorController(IActorApplicationService actorApplicationService)
     {
-        _batchActorApplicationService = batchActorApplicationService;
+        _actorApplicationService = actorApplicationService;
     }
 
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
@@ -37,7 +37,7 @@ public class BatchActorController : ControllerBase
     [MapToApiVersion(Version)]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
     {
-        var batchActorDtos = await _batchActorApplicationService.GetAsync(processStepActorsRequest).ConfigureAwait(false);
+        var batchActorDtos = await _actorApplicationService.GetAsync(processStepActorsRequest).ConfigureAwait(false);
         return Ok(batchActorDtos);
     }
 }

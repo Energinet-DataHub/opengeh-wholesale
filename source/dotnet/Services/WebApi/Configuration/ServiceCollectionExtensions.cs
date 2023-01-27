@@ -99,8 +99,8 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
         services.AddScoped<DataLakeRepositoryBase>();
-        services.AddScoped<IBatchActorApplicationService, BatchActorApplicationService>();
-        services.AddScoped<IBatchActorRepository, BatchActorRepository>();
+        services.AddScoped<IActorApplicationService, ActorApplicationService>();
+        services.AddScoped<IActorRepository, ActorRepository>();
         services.AddScoped<IDataLakeTypeFactory, DataLakeTypeFactory>();
 
         services.ConfigureDateTime();

@@ -29,7 +29,7 @@ public static class TimeSeriesTypeMapper
         return timeSeriesType switch
         {
             TimeSeriesType.NonProfiledConsumption => NonProfiledConsumption,
-            TimeSeriesType.Consumption => Consumption,
+            TimeSeriesType.FlexConsumption => Consumption,
             TimeSeriesType.Production => Production,
             _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
         };

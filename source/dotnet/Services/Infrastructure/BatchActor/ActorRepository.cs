@@ -21,11 +21,11 @@ using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 
-public class BatchActorRepository : DataLakeRepositoryBase, IBatchActorRepository
+public class ActorRepository : DataLakeRepositoryBase, IActorRepository
 {
     private readonly IDataLakeTypeFactory _dataLakeTypeFactory;
 
-    public BatchActorRepository(
+    public ActorRepository(
         DataLakeFileSystemClient dataLakeFileSystemClient,
         IDataLakeTypeFactory dataLakeTypeFactory)
         : base(dataLakeFileSystemClient)
@@ -33,7 +33,7 @@ public class BatchActorRepository : DataLakeRepositoryBase, IBatchActorRepositor
         _dataLakeTypeFactory = dataLakeTypeFactory;
     }
 
-    public async Task<Domain.BatchActor.BatchActor[]> GetAsync(
+    public async Task<Domain.BatchActor.Actor[]> GetAsync(
         Guid batchId,
         GridAreaCode gridAreaCode,
         TimeSeriesType timeSeriesType,
@@ -43,7 +43,7 @@ public class BatchActorRepository : DataLakeRepositoryBase, IBatchActorRepositor
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
-        var actors = await _dataLakeTypeFactory.GetTypeFromJsonStreamAsync<BatchActor>(resultStream).ConfigureAwait(false);
+        var actors = await _dataLakeTypeFactory.GetTypeFromJsonStreamAsync<Actor>(resultStream).ConfigureAwait(false);
 
         return MapToBatchActor(actors);
     }
@@ -57,8 +57,8 @@ public class BatchActorRepository : DataLakeRepositoryBase, IBatchActorRepositor
         return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode.Code}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/market_role={MarketRoleTypeMapper.Map(marketRoleType)}/", ".json");
     }
 
-    private static Domain.BatchActor.BatchActor[] MapToBatchActor(IEnumerable<BatchActor> actors)
+    private static Domain.BatchActor.Actor[] MapToBatchActor(IEnumerable<Actor> actors)
     {
-        return actors.Select(actor => new Domain.BatchActor.BatchActor(actor.gln)).ToArray();
+        return actors.Select(actor => new Domain.BatchActor.Actor(actor.gln)).ToArray();
     }
 }
