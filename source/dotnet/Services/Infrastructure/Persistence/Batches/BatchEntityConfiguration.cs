@@ -39,9 +39,9 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
         builder.Property(b => b.ExecutionTimeStart);
         builder.Property(b => b.ExecutionTimeEnd);
         builder.Property(b => b.AreSettlementReportsCreated);
-        builder.Property(b => b.RunId).HasConversion(
+        builder.Property(b => b.CalculationId).HasConversion(
             jobId => jobId == null ? (long?)null : jobId.Id,
-            jobId => jobId == null ? null : new JobRunId(jobId.Value));
+            jobId => jobId == null ? null : new CalculationId(jobId.Value));
 
         // Grid area IDs are stored as a JSON array
         var gridAreaCodes = builder.Metadata

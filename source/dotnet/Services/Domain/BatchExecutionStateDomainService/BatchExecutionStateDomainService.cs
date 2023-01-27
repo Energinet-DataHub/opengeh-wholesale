@@ -58,7 +58,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
             try
             {
                 var jobState = await _calculationDomainService
-                    .GetStatusAsync(batch.RunId!)
+                    .GetStatusAsync(batch.CalculationId!)
                     .ConfigureAwait(false);
 
                 var executionState = MapState(jobState);
@@ -69,7 +69,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {BatchRunId}", batch.RunId);
+                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {BatchRunId}", batch.CalculationId);
             }
         }
 

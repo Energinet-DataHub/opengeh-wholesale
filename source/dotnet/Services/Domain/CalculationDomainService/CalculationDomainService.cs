@@ -19,25 +19,25 @@ namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 public class CalculationDomainService : ICalculationDomainService
 {
     private readonly IBatchRepository _batchRepository;
-    private readonly IDatabricksCalculationInfrastructureService _databricksCalculationInfrastructureService;
+    private readonly ICalculationEngineClient _calculationEngineClient;
 
     public CalculationDomainService(
         IBatchRepository batchRepository,
-        IDatabricksCalculationInfrastructureService databricksCalculationInfrastructureService)
+        ICalculationEngineClient calculationEngineClient)
     {
         _batchRepository = batchRepository;
-        _databricksCalculationInfrastructureService = databricksCalculationInfrastructureService;
+        _calculationEngineClient = calculationEngineClient;
     }
 
-    public async Task<CalculationState> GetStatusAsync(JobRunId jobRunId)
+    public async Task<CalculationState> GetStatusAsync(CalculationId calculationId)
     {
-        return await _databricksCalculationInfrastructureService.GetStatusAsync(jobRunId).ConfigureAwait(false);
+        return await _calculationEngineClient.GetStatusAsync(calculationId).ConfigureAwait(false);
     }
 
     public async Task StartAsync(Guid batchId)
     {
         var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
-        var jobRunId = await _databricksCalculationInfrastructureService.StartAsync(batch).ConfigureAwait(false);
-        batch.MarkAsSubmitted(jobRunId);
+        var calculationId = await _calculationEngineClient.StartAsync(batch).ConfigureAwait(false);
+        batch.MarkAsSubmitted(calculationId);
     }
 }

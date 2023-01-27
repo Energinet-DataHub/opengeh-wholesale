@@ -83,7 +83,7 @@ public sealed class BatchApplicationServiceTests
         // Assert: Verify that batch is now pending.
         var pending = await repository.GetPendingAsync();
         var createdBatch = pending.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
-        Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
+        Assert.Equal(DummyJobId, createdBatch.CalculationId!.Id);
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public sealed class BatchApplicationServiceTests
         // Assert: Verify that batch is now executing.
         var executing = await repository.GetExecutingAsync();
         var createdBatch = executing.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
-        Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
+        Assert.Equal(DummyJobId, createdBatch.CalculationId!.Id);
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public sealed class BatchApplicationServiceTests
         // Assert: Verify that batch is now completed.
         var completed = await repository.GetCompletedAsync();
         var createdBatch = completed.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
-        Assert.Equal(DummyJobId, createdBatch.RunId!.Id);
+        Assert.Equal(DummyJobId, createdBatch.CalculationId!.Id);
     }
 
     private void ServiceCollection(IServiceCollection collection)

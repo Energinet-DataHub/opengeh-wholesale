@@ -19,13 +19,13 @@ using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 
-public sealed class DatabricksCalculationInfrastructureService : IDatabricksCalculationInfrastructureService
+public sealed class CalculationEngineClient : ICalculationEngineClient
 {
     private readonly IDatabricksCalculatorJobSelector _databricksCalculatorJobSelector;
     private readonly IDatabricksWheelClient _wheelClient;
     private readonly ICalculationParametersFactory _calculationParametersFactory;
 
-    public DatabricksCalculationInfrastructureService(
+    public CalculationEngineClient(
         IDatabricksCalculatorJobSelector databricksCalculatorJobSelector,
         IDatabricksWheelClient wheelClient,
         ICalculationParametersFactory calculationParametersFactory)
@@ -35,7 +35,7 @@ public sealed class DatabricksCalculationInfrastructureService : IDatabricksCalc
         _calculationParametersFactory = calculationParametersFactory;
     }
 
-    public async Task<JobRunId> StartAsync(Batch batch)
+    public async Task<CalculationId> StartAsync(Batch batch)
     {
         var jobParameters = _calculationParametersFactory.CreateParameters(batch);
 
@@ -50,14 +50,14 @@ public sealed class DatabricksCalculationInfrastructureService : IDatabricksCalc
             .RunNow(calculatorJob.JobId, runParameters)
             .ConfigureAwait(false);
 
-        return new JobRunId(runId.RunId);
+        return new CalculationId(runId.RunId);
     }
 
-    public async Task<CalculationState> GetStatusAsync(JobRunId jobRunId)
+    public async Task<CalculationState> GetStatusAsync(CalculationId calculationId)
     {
         var runState = await _wheelClient
             .Jobs
-            .RunsGet(jobRunId.Id)
+            .RunsGet(calculationId.Id)
             .ConfigureAwait(false);
 
         return runState.State.LifeCycleState switch

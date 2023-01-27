@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
 public interface ICalculationDomainService
 {
-    Task<CalculationState> GetStatusAsync(JobRunId jobRunId);
+    Task<CalculationState> GetStatusAsync(CalculationId calculationId);
 
     Task StartAsync(Guid batchId);
 }

@@ -12,13 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
-
-public interface IDatabricksCalculationInfrastructureService
-{
-    Task<JobRunId> StartAsync(Batch batch);
-
-    Task<CalculationState> GetStatusAsync(JobRunId jobRunId);
-}
+public sealed record CalculationId(long Id);

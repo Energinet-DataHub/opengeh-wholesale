@@ -102,7 +102,7 @@ public class Batch
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
-    public JobRunId? RunId { get; private set; }
+    public CalculationId? CalculationId { get; private set; }
 
     /// <summary>
     /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
@@ -124,13 +124,13 @@ public class Batch
 
     public bool AreSettlementReportsCreated { get; set; }
 
-    public void MarkAsSubmitted(JobRunId jobRunId)
+    public void MarkAsSubmitted(CalculationId calculationId)
     {
-        ArgumentNullException.ThrowIfNull(jobRunId);
+        ArgumentNullException.ThrowIfNull(calculationId);
         if (ExecutionState is BatchExecutionState.Submitted or BatchExecutionState.Pending
             or BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Submitted);
-        RunId = jobRunId;
+        CalculationId = calculationId;
         ExecutionState = BatchExecutionState.Submitted;
     }
 
@@ -173,7 +173,7 @@ public class Batch
     }
 
     /// <summary>
-    /// Reset a batch. This will ensure that it will be picked up and run again in a new job run.
+    /// Reset a batch. This will ensure that it will be picked up and run again in a new calculation.
     /// </summary>
     public void Reset()
     {

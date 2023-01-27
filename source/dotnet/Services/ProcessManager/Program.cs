@@ -92,7 +92,7 @@ public static class Program
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
         services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         services.AddScoped<ICalculationDomainService, CalculationDomainService>();
-        services.AddScoped<IDatabricksCalculationInfrastructureService, DatabricksCalculationInfrastructureService>();
+        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
     }

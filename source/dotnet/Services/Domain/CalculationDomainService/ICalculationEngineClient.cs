@@ -12,6 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-public sealed record JobRunId(long Id);
+namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+
+public interface ICalculationEngineClient
+{
+    Task<CalculationId> StartAsync(Batch batch);
+
+    Task<CalculationState> GetStatusAsync(CalculationId calculationId);
+}

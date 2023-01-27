@@ -83,7 +83,7 @@ public class BatchDtoMapperTests
     {
         // Arrange
         var batch = new BatchBuilder().Build();
-        var expectedRunId = new JobRunId(111);
+        var expectedRunId = new CalculationId(111);
         batch.MarkAsSubmitted(expectedRunId);
 
         // Act
