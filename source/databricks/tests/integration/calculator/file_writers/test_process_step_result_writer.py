@@ -113,25 +113,6 @@ def test__write_per_ga__does_not_call_actors_writer(
     mock_actors_writer.write.assert_not_called()
 
 
-@patch("package.file_writers.process_step_result_writer.actors_writer")
-def test__write_per_ga_per_actor__calls_actors_writer(
-    mock_actors_writer, spark: SparkSession, tmpdir
-) -> None:
-
-    # Arrange
-    row = [_create_result_row(grid_area="805", energy_supplier_id="123")]
-    result_df = spark.createDataFrame(data=row)
-    sut = ProcessStepResultWriter(str(tmpdir))
-
-    # Act
-    sut.write_per_ga_per_actor(
-        result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION, MarketRole.ENERGY_SUPPLIER
-    )
-
-    # Assert
-    mock_actors_writer.write.assert_called_once()
-
-
 def test__write_per_ga_per_actor__actors_file_has_expected_gln(
     spark: SparkSession, tmpdir: Path
 ) -> None:
@@ -171,6 +152,9 @@ def test__write_per_ga_per_actor__actors_file_has_expected_gln(
         output_path, "806", time_series_type, market_role
     )
 
+    assert len(actual_gln_805) == len(expected_gln_805) and len(actual_gln_806) == len(
+        expected_gln_806
+    )
     assert set(actual_gln_805) == set(expected_gln_805) and set(actual_gln_806) == set(
         expected_gln_806
     )
