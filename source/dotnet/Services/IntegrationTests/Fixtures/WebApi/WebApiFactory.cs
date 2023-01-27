@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.BatchActor;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.Domain.BatchActor;
+using Energinet.DataHub.Wholesale.Domain.Actor;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.WebApi;

@@ -25,7 +25,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using MarketRoleType = Energinet.DataHub.Wholesale.Domain.BatchActor.MarketRoleType;
+using MarketRoleType = Energinet.DataHub.Wholesale.Domain.Actor.MarketRoleType;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BatchActor;
@@ -60,9 +60,9 @@ public class ActorRepositoryTests
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
-        var batchActor = new Wholesale.Infrastructure.BatchActor.Actor("AnyGln");
-        dataLakeTypeFactoryMock.Setup(x => x.GetTypeFromJsonStreamAsync<Wholesale.Infrastructure.BatchActor.Actor>(stream.Object))
-            .ReturnsAsync(new List<Wholesale.Infrastructure.BatchActor.Actor>
+        var batchActor = new Actor("AnyGln");
+        dataLakeTypeFactoryMock.Setup(x => x.GetTypeFromJsonStreamAsync<Actor>(stream.Object))
+            .ReturnsAsync(new List<Actor>
             {
                 batchActor,
             });
@@ -82,7 +82,7 @@ public class ActorRepositoryTests
     [InlineData(TimeSeriesType.NonProfiledConsumption)]
     [InlineData(TimeSeriesType.FlexConsumption)]
     [InlineData(TimeSeriesType.Production)]
-    public static async Task GetActorFileSpecification_MatchesContract(TimeSeriesType timeSeriesType)
+    public static async Task GetActorFileSpecijnjvvvfication_MatchesContract(TimeSeriesType timeSeriesType)
     {
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";

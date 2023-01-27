@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
 
-public class TimeSeriesTypeMapper
+public static class TimeSeriesTypeMapper
 {
     public static TimeSeriesType Map(Contracts.TimeSeriesType timeSeriesType)
     {
