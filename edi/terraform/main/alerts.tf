@@ -54,7 +54,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "edi_internal_commands_al
     action_group            = [azurerm_monitor_action_group.edi.id]
   }
   data_source_id            = data.azurerm_key_vault_secret.appi_shared_id.value
-  description               = "One or more market roles internal commands couldn't be processed."
+  description               = "One or more EDI internal commands couldn't be processed."
   enabled                   = true
   query                     = <<-QUERY
   traces

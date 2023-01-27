@@ -1,6 +1,6 @@
 output ms_edi_connection_string {
   description = "Connectionstring to the database in the shared sql server"
-  value = local.MS_EDI_CONNECTION_STRING_SQL_AUTH 
+  value = local.CONNECTION_STRING_SQL_AUTH 
   sensitive = true
 }
 

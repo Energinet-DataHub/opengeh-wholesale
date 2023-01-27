@@ -23,11 +23,6 @@ data "azurerm_key_vault_secret" "mssql_data_url" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "mssql_market_participant_database_name" {
-  name         = "mssql-market-participant-database-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "appi_instrumentation_key" {
   name         = "appi-shared-instrumentation-key"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
