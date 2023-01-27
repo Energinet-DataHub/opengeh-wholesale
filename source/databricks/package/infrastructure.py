@@ -16,7 +16,6 @@
 
 from package.constants.time_series_type import TimeSeriesType
 from package.constants.market_role import MarketRole
-from enum import Enum
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
 
@@ -70,6 +69,8 @@ def get_time_series_hour_path(
     return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_hour/grid_area={grid_area}/gln={gln}"
 
 
+def get_container_root_path(storage_account_name: str) -> str:
+    return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/"
 def get_master_basis_data_path(
     container_root_path: str, batch_id: str, grid_area: str, gln: str
 ) -> str:
@@ -78,4 +79,8 @@ def get_master_basis_data_path(
 
 
 def _get_batch_path(container_root_path: str, batch_id: str) -> str:
+    return f"{container_root_path}/{OUTPUT_FOLDER}/batch_id={batch_id}"
+
+
+def _get_batch_folder(container_root_path: str, batch_id: str) -> str:
     return f"{container_root_path}/{OUTPUT_FOLDER}/batch_id={batch_id}"
