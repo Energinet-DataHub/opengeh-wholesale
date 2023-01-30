@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Globalization;
-using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
