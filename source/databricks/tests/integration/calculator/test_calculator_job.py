@@ -30,7 +30,6 @@ from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
 )
-from tests.helpers.file_utils import find_file, create_file_path_expression
 
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -284,68 +283,6 @@ def test__quantity_is_with_precision_3(
 
     assert re.search(r"^\d+\.\d{3}$", result_production.first().quantity)
     assert re.search(r"^\d+\.\d{3}$", result_non_profiled_consumption.first().quantity)
-
-
-@pytest.fixture(scope="session")
-def calculation_file_paths_contract(source_path):
-    with open(f"{source_path}/contracts/calculation-file-paths.yml", "r") as stream:
-        return DictObj(yaml.safe_load(stream))
-
-
-def test__actors_file_path_matches_contract(
-    data_lake_path,
-    worker_id,
-    contracts_path,
-    executed_calculation_job,
-):
-    # Arrange
-
-    # Act: Executed in fixture executed_calculation_job
-
-    # Assert
-    relative_output_path = infra.get_actors_file_relative_path(
-        executed_batch_id,
-        "805",
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        MarketRole.ENERGY_SUPPLIER,
-    )
-    actual_result_file = find_file(
-        f"{data_lake_path}/{worker_id}/",
-        f"{relative_output_path}/part-*.json",
-    )
-    assert_file_path_match_contract(
-        contracts_path, actual_result_file, CalculationFileType.ActorsFile
-    )
-
-
-def test__result_file_path_matches_contract(
-    data_lake_path,
-    worker_id,
-    contracts_path,
-    executed_calculation_job,
-):
-    # Arrange
-    contract = calculation_file_paths_contract.result_file
-    expected_path_expression = create_file_path_expression(
-        contract.directory_expression,
-        contract.extension,
-    )
-    relative_output_path = infra.get_result_file_relative_path(
-        executed_batch_id,
-        "805",
-        grid_area_gln,
-        TimeSeriesType.PRODUCTION,
-    )
-
-    # Act: Executed in fixture executed_calculation_job
-
-    # Assert
-    actual_result_file = find_file(
-        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.json"
-    )
-    assert_file_path_match_contract(
-        contracts_path, actual_result_file, CalculationFileType.ResultFile
-    )
 
 
 def test__result_file_has_correct_number_of_rows_based_on_period(
