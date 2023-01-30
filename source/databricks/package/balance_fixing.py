@@ -105,7 +105,9 @@ def _calculate_production(
     production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
         enriched_time_series, metadata
     )
-    production_per_ga = agg_steps.aggregate_production_ga(production_per_per_ga_and_brp_and_es)
+    production_per_ga = agg_steps.aggregate_production_ga(
+        production_per_per_ga_and_brp_and_es, metadata
+    )
 
     result_writer.write_per_ga(production_per_ga, TimeSeriesType.PRODUCTION)
 
