@@ -26,7 +26,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 using Xunit.Categories;
-using MarketRoleType = Energinet.DataHub.Wholesale.Domain.Actor.MarketRoleType;
+using MarketRole = Energinet.DataHub.Wholesale.Domain.Actor.MarketRole;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Tests.Application.Actor;
@@ -46,7 +46,7 @@ public class ActorApplicationServiceTests
             batchId,
             "805",
             Contracts.TimeSeriesType.Production,
-            Contracts.MarketRoleType.EnergySupplier);
+            Contracts.MarketRole.EnergySupplier);
 
         var glnNumber = "AnyGlnNumber";
         actorRepositoryMock
@@ -54,7 +54,7 @@ public class ActorApplicationServiceTests
                 actorsRequest.BatchId,
                 new GridAreaCode(actorsRequest.GridAreaCode),
                 TimeSeriesType.Production,
-                MarketRoleType.EnergySupplier)).ReturnsAsync(new Wholesale.Domain.Actor.Actor[] { new(glnNumber) });
+                MarketRole.EnergySupplier)).ReturnsAsync(new Wholesale.Domain.Actor.Actor[] { new(glnNumber) });
 
         // Act
         var batchActorDtos = await sut.GetAsync(actorsRequest);

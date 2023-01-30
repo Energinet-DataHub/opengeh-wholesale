@@ -18,14 +18,14 @@ namespace Energinet.DataHub.Wholesale.Application.BatchActor;
 
 public static class MarketRoleTypeMapper
 {
-    public static Domain.Actor.MarketRoleType Map(MarketRoleType marketRoleType)
+    public static Domain.Actor.MarketRole Map(MarketRole marketRole)
     {
-        switch (marketRoleType)
+        switch (marketRole)
         {
-            case MarketRoleType.EnergySupplier:
-                return Domain.Actor.MarketRoleType.EnergySupplier;
+            case MarketRole.EnergySupplier:
+                return Domain.Actor.MarketRole.EnergySupplier;
             default:
-                throw new ArgumentOutOfRangeException(nameof(marketRoleType), marketRoleType, null);
+                throw new ArgumentOutOfRangeException(nameof(marketRole), marketRole, null);
         }
     }
 }

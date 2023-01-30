@@ -37,9 +37,9 @@ public class ActorRepository : DataLakeRepositoryBase, IActorRepository
         Guid batchId,
         GridAreaCode gridAreaCode,
         TimeSeriesType timeSeriesType,
-        MarketRoleType marketRoleType)
+        MarketRole marketRole)
     {
-        var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType, marketRoleType);
+        var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType, marketRole);
         var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
@@ -52,9 +52,9 @@ public class ActorRepository : DataLakeRepositoryBase, IActorRepository
         Guid batchId,
         GridAreaCode gridAreaCode,
         TimeSeriesType timeSeriesType,
-        MarketRoleType marketRoleType)
+        MarketRole marketRole)
     {
-        return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode.Code}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/market_role={MarketRoleTypeMapper.Map(marketRoleType)}/", ".json");
+        return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode.Code}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/market_role={MarketRoleTypeMapper.Map(marketRole)}/", ".json");
     }
 
     private static Domain.Actor.Actor[] MapToBatchActor(IEnumerable<Actor> actors)

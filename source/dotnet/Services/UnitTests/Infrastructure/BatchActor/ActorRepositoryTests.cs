@@ -17,6 +17,7 @@ using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Domain.Actor;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
@@ -25,7 +26,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using MarketRoleType = Energinet.DataHub.Wholesale.Domain.Actor.MarketRoleType;
+using Actor = Energinet.DataHub.Wholesale.Infrastructure.BatchActor.Actor;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BatchActor;
@@ -72,7 +73,7 @@ public class ActorRepositoryTests
             dataLakeTypeFactoryMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRoleType.EnergySupplier);
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRole.EnergySupplier);
 
         // Assert
         actual.Should().NotBeNull();
@@ -91,7 +92,7 @@ public class ActorRepositoryTests
         var expected = calculationFilePathsContract.ActorsFile;
 
         // Act
-        var actual = ActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, MarketRoleType.EnergySupplier);
+        var actual = ActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, MarketRole.EnergySupplier);
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);

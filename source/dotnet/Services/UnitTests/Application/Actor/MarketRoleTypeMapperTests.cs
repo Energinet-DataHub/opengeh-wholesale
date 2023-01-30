@@ -26,7 +26,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 using Xunit.Categories;
-using MarketRoleType = Energinet.DataHub.Wholesale.Domain.Actor.MarketRoleType;
+using MarketRole = Energinet.DataHub.Wholesale.Domain.Actor.MarketRole;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Tests.Application.Actor;
@@ -35,10 +35,10 @@ namespace Energinet.DataHub.Wholesale.Tests.Application.Actor;
 public class MarketRoleTypeMapperTests
 {
     [Theory]
-    [InlineData(Contracts.MarketRoleType.EnergySupplier, MarketRoleType.EnergySupplier)]
+    [InlineData(Contracts.MarketRole.EnergySupplier, MarketRole.EnergySupplier)]
     public void Map_Returns_CorrectMarketRoleType(
-        Contracts.MarketRoleType input,
-        MarketRoleType expected)
+        Contracts.MarketRole input,
+        MarketRole expected)
     {
         MarketRoleTypeMapper.Map(input).Should().Be(expected);
     }

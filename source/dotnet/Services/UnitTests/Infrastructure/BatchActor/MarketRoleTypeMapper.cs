@@ -24,10 +24,10 @@ namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BatchActor;
 public class MarketRoleTypeMapperTests
 {
     [Theory]
-    [InlineData(MarketRoleType.EnergySupplier, "energy_supplier")]
-    public void WhenMapIsCalled_ThenCorrectStringIsReturned(MarketRoleType type, string expected)
+    [InlineData(MarketRole.EnergySupplier, "energy_supplier")]
+    public void WhenMapIsCalled_ThenCorrectStringIsReturned(MarketRole type, string expected)
     {
-        var marketRoleTypes = Enum.GetValues(typeof(MarketRoleType)).Cast<MarketRoleType>();
+        var marketRoleTypes = Enum.GetValues(typeof(MarketRole)).Cast<MarketRole>();
         foreach (var marketRoleType in marketRoleTypes)
         {
             var actual = MarketRoleTypeMapper.Map(marketRoleType);

@@ -22,14 +22,14 @@ public static class MarketRoleTypeMapper
     // They should only be changed with changing how we write down the actors.
     private const string EnergySupplier = "energy_supplier";
 
-    public static string Map(MarketRoleType marketRoleType)
+    public static string Map(MarketRole marketRole)
     {
-        switch (marketRoleType)
+        switch (marketRole)
         {
-            case MarketRoleType.EnergySupplier:
+            case MarketRole.EnergySupplier:
                 return EnergySupplier;
             default:
-                throw new ArgumentOutOfRangeException(nameof(marketRoleType), marketRoleType, null);
+                throw new ArgumentOutOfRangeException(nameof(marketRole), marketRole, null);
         }
     }
 }

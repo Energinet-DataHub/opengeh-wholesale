@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts;
 
-public sealed record ProcessStepActorsRequest(Guid BatchId, string GridAreaCode, TimeSeriesType Type, MarketRoleType MarketRoleType);
+public sealed record ProcessStepActorsRequest(Guid BatchId, string GridAreaCode, TimeSeriesType Type, MarketRole MarketRole);

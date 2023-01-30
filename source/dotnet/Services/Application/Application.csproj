@@ -45,8 +45,8 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Batches\Model\BatchState.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\MarketRoleType.cs">
-      <Link>ProcessResult\Model\MarketRoleType.cs</Link>
+    <Compile Include="..\..\Contracts\MarketRole.cs">
+      <Link>ProcessResult\Model\MarketRole.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepActorsRequest.cs">
       <Link>ProcessResult\Model\ProcessStepActorsRequest.cs</Link>
