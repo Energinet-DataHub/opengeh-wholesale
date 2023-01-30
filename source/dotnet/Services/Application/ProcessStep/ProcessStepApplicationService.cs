@@ -12,26 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
+using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
+namespace Energinet.DataHub.Wholesale.Application.ProcessStep;
 
 /// <summary>
 /// This class provides the ability to retrieve a calculated result for a given step for a batch.
 /// </summary>
-public class ProcessStepResultApplicationService : IProcessStepResultApplicationService
+public class ProcessStepApplicationService : IProcessStepApplicationService
 {
     private readonly IProcessStepResultRepository _processStepResultRepository;
     private readonly IProcessStepResultMapper _processStepResultMapper;
+    private readonly IActorRepository _actorRepository;
 
-    public ProcessStepResultApplicationService(IProcessStepResultRepository processStepResultRepository, IProcessStepResultMapper processStepResultMapper)
+    public ProcessStepApplicationService(
+        IProcessStepResultRepository processStepResultRepository,
+        IProcessStepResultMapper processStepResultMapper,
+        IActorRepository actorRepository)
     {
         _processStepResultRepository = processStepResultRepository;
         _processStepResultMapper = processStepResultMapper;
+        _actorRepository = actorRepository;
+    }
+
+    public async Task<WholesaleActorDto[]> GetActorsAsync(ProcessStepActorsRequest processStepActorsRequest)
+    {
+        var actors = await _actorRepository.GetAsync(
+            processStepActorsRequest.BatchId,
+            new GridAreaCode(processStepActorsRequest.GridAreaCode),
+            TimeSeriesTypeMapper.Map(processStepActorsRequest.Type),
+            MarketRoleMapper.Map(processStepActorsRequest.MarketRole)).ConfigureAwait(false);
+
+        return actors.Select(batchActor => new WholesaleActorDto(batchActor.Gln)).ToArray();
     }
 
     public async Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto)
@@ -51,21 +68,10 @@ public class ProcessStepResultApplicationService : IProcessStepResultApplication
         var processActorResult = await _processStepResultRepository.GetAsync(
                 processStepResultRequestDtoV2.BatchId,
                 new GridAreaCode(processStepResultRequestDtoV2.GridAreaCode),
-                MapTimeSeriesType(processStepResultRequestDtoV2.TimeSeriesType),
+                TimeSeriesTypeMapper.Map(processStepResultRequestDtoV2.TimeSeriesType),
                 processStepResultRequestDtoV2.Gln)
             .ConfigureAwait(false);
 
         return _processStepResultMapper.MapToDto(processActorResult);
-    }
-
-    private static TimeSeriesType MapTimeSeriesType(Contracts.TimeSeriesType timeSeriesType)
-    {
-        return timeSeriesType switch
-        {
-            Contracts.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
-            Contracts.TimeSeriesType.FlexConsumption => TimeSeriesType.Consumption,
-            Contracts.TimeSeriesType.Production => TimeSeriesType.Production,
-            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
-        };
     }
 }

@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult;
-
-/// <summary>
-/// This class provides the ability to retrieve a calculated result for a given step for a batch.
-/// </summary>
-public interface IProcessStepResultApplicationService
+public interface IJsonNewlineSerializer
 {
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
-
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
+    /// <summary>
+    /// Returns  a <see cref="List{T}"/> of object type <typeparamref name="T"/>
+    /// </summary>
+    /// <param name="resultStream"></param>
+    Task<List<T>> DeserializeAsync<T>(Stream resultStream);
 }

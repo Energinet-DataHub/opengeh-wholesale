@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
+using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessResult.Model;
+namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessStep.Model;
 
 public class ProcessStepMapperTests
 {

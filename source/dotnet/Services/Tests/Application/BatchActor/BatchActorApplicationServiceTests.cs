@@ -14,45 +14,43 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
-using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
+using Energinet.DataHub.Wholesale.Application.BatchActor;
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.BatchActor;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
 using Moq;
 using Test.Core;
 using Xunit;
 using Xunit.Categories;
+using MarketRoleType = Energinet.DataHub.Wholesale.Domain.BatchActor.MarketRoleType;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessResult;
+namespace Energinet.DataHub.Wholesale.Tests.Application.BatchActor;
 
 [UnitTest]
-public class ProcessResultApplicationServiceTests
+public class BatchActorApplicationServiceTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetResultAsync_ReturnsDto(
-        ProcessStepResultRequestDto request,
-        ProcessStepResult result,
-        ProcessStepResultDto resultDto,
-        [Frozen] Mock<IProcessStepResultRepository> repositoryMock,
-        [Frozen] Mock<IProcessStepResultMapper> mapperMock,
-        ProcessStepResultApplicationService sut)
+    public async Task GetAsync_ReturnBatchActorWithGln(
+        BatchActorRequestDto request,
+        Wholesale.Domain.BatchActor.BatchActor actor,
+        [Frozen] Mock<IBatchActorRepository> repositoryMock,
+        BatchActorApplicationService sut)
     {
         // Arrange
         request.SetPrivateProperty(dto => dto.GridAreaCode, "123");
+        request.SetPrivateProperty(dto => dto.Type, Contracts.TimeSeriesType.Production);
+        request.SetPrivateProperty(dto => dto.MarketRoleType, Contracts.MarketRoleType.EnergySupplier);
+
         repositoryMock
-            .Setup(repository => repository.GetAsync(request.BatchId, new GridAreaCode(request.GridAreaCode), TimeSeriesType.Production, "grid_area"))
-            .ReturnsAsync(() => result);
-        mapperMock
-            .Setup(mapper => mapper.MapToDto(result))
-            .Returns(() => resultDto);
+            .Setup(repository => repository.GetAsync(request.BatchId, new GridAreaCode(request.GridAreaCode), TimeSeriesType.Production, MarketRoleType.EnergySupplier))
+            .ReturnsAsync(() => new[] { actor });
 
         // Act
-        var actual = await sut.GetResultAsync(request);
+        var actual = await sut.GetAsync(request);
 
-        actual.Should().BeEquivalentTo(resultDto);
+        actual.First().Gln.Should().Be(actor.Gln);
     }
 }

@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
-using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
+using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
+using MarketRole = Energinet.DataHub.Wholesale.Domain.ActorAggregate.MarketRole;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessResult.Model;
+namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessStep.Model;
 
 [UnitTest]
-public sealed class ProcessResultPointTests
+public class MarketRoleMapperTests
 {
-    [Fact]
-    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
+    [Theory]
+    [InlineData(Contracts.MarketRole.EnergySupplier, MarketRole.EnergySupplier)]
+    public void Map_Returns_CorrectMarketRole(
+        Contracts.MarketRole input,
+        MarketRole expected)
     {
-        await using var stream = EmbeddedResources.GetStream("Sender.Infrastructure.Calculator.calculator-result.json");
-
-        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<ProcessResultPoint>(stream);
+        MarketRoleMapper.Map(input).Should().Be(expected);
     }
 }

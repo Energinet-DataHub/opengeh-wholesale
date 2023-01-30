@@ -13,30 +13,26 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.Infrastructure;
 
-public class ProcessResultPointFactory : IProcessResultPointFactory
+public class JsonNewlineSerializer : IJsonNewlineSerializer
 {
-    /// <summary>
-    /// Creates a List of ProcessResultPoint.
-    /// </summary>
-    /// <param name="resultStream">The stream must be a .json file in the 'json newline' format.</param>
-    public async Task<List<ProcessResultPoint>> GetPointsFromJsonStreamAsync(Stream resultStream)
+    public async Task<List<T>> DeserializeAsync<T>(Stream resultStream)
     {
-        var list = new List<ProcessResultPoint>();
+        var list = new List<T>();
 
         var streamer = new StreamReader(resultStream);
 
         var nextline = await streamer.ReadLineAsync().ConfigureAwait(false);
         while (nextline != null)
         {
-            var dto = JsonSerializer.Deserialize<ProcessResultPoint>(
+            var item = JsonSerializer.Deserialize<T>(
                 nextline,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            if (dto != null)
-                list.Add(dto);
+            if (item != null)
+                list.Add(item);
 
             nextline = await streamer.ReadLineAsync().ConfigureAwait(false);
         }

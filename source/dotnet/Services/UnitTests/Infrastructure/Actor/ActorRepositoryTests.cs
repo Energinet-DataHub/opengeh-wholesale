@@ -17,31 +17,29 @@ using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
-using Energinet.DataHub.Wholesale.Application.ProcessStep;
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
+using Actor = Energinet.DataHub.Wholesale.Infrastructure.BatchActor.Actor;
 using DataLakeFileClient = Azure.Storage.Files.DataLake.DataLakeFileClient;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Actor;
 
 [UnitTest]
-public class ProcessStepResultRepositoryTests
+public class ActorRepositoryTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task GetAsync_ReturnsProcessActorResult(
-        [Frozen] Mock<IJsonNewlineSerializer> datalakeTypeFactoryMock,
+    public async Task GetAsync_ReturnsBatchActor(
+        [Frozen] Mock<IJsonNewlineSerializer> dataLakeTypeFactoryMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
@@ -68,56 +66,44 @@ public class ProcessStepResultRepositoryTests
             .ReturnsAsync(stream.Object);
         dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(dataLakeFileClientMock.Object);
-        var processResultPoint = new ProcessResultPoint("1.00", "A04", "2022-05-31T22:00:00");
-        datalakeTypeFactoryMock.Setup(x => x.DeserializeAsync<ProcessResultPoint>(stream.Object))
-            .ReturnsAsync(new List<ProcessResultPoint>
+        dataLakeTypeFactoryMock.Setup(x => x.DeserializeAsync<Wholesale.Domain.ActorAggregate.Actor>(stream.Object))
+            .ReturnsAsync(new List<Wholesale.Domain.ActorAggregate.Actor>());
+        var batchActor = new Wholesale.Domain.ActorAggregate.Actor("AnyGln");
+        dataLakeTypeFactoryMock.Setup(x => x.DeserializeAsync<Wholesale.Domain.ActorAggregate.Actor>(stream.Object))
+            .ReturnsAsync(new List<Wholesale.Domain.ActorAggregate.Actor>
             {
-                processResultPoint,
+                batchActor,
             });
 
-        var sut = new ProcessStepResultRepository(
+        var sut = new ActorRepository(
             dataLakeClientMock.Object,
-            datalakeTypeFactoryMock.Object);
+            dataLakeTypeFactoryMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, "grid_area");
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRole.EnergySupplier);
 
         // Assert
         actual.Should().NotBeNull();
     }
 
-    [Fact]
-    public static async Task GetResultFileSpecification_MatchesContract()
+    [Theory]
+    [InlineData(TimeSeriesType.NonProfiledConsumption)]
+    [InlineData(TimeSeriesType.FlexConsumption)]
+    [InlineData(TimeSeriesType.Production)]
+    public static async Task GetActorFileSpecification_MatchesContract(TimeSeriesType timeSeriesType)
     {
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
-        var expected = calculationFilePathsContract.ResultFile;
+        var expected = calculationFilePathsContract.ActorsFile;
 
         // Act
-        var actual = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area");
+        var actual = ActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, MarketRole.EnergySupplier);
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
         actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
-    }
-
-    [Theory]
-    [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
-    [InlineData(TimeSeriesType.FlexConsumption, "consumption")]
-    [InlineData(TimeSeriesType.Production, "production")]
-    public void GetResultFileSpecification_DirectoryContainsCorrectlyMappedTimeSeriesTypeString(TimeSeriesType timeSeriesType, string expectedTimeSeriesType)
-    {
-        // Arrange
-        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
-        const string gridAreaCode = "123";
-
-        // Act
-        var actual = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, "grid_area");
-
-        // Assert
-        actual.Directory.Should().Contain(expectedTimeSeriesType);
     }
 
     private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)

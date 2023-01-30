@@ -20,17 +20,22 @@ using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
-using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
+using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure;
+using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
@@ -74,7 +79,6 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<IStreamZipper, StreamZipper>();
-        services.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
@@ -90,10 +94,13 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculationDomainService>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
-        services.AddScoped<IProcessStepResultApplicationService, ProcessStepResultApplicationService>();
+        services.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
         services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
         services.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
+        services.AddScoped<IDataLakeClient, DataLakeClient>();
+        services.AddScoped<IActorRepository, ActorRepository>();
+        services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
 
         services.ConfigureDateTime();
     }

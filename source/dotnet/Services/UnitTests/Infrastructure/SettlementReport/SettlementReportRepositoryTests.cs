@@ -18,9 +18,10 @@ using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
-using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
+using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
@@ -187,7 +188,8 @@ public class SettlementReportRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetResultAsync_TimeSeriesPoint_IsRead(
-        [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock)
+        [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock,
+        [Frozen] Mock<IActorRepository> actorRepositoryMock)
     {
         // Arrange
         var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
@@ -197,7 +199,10 @@ public class SettlementReportRepositoryTests
         const string gridAreaCode = "805";
         var batchId = Guid.NewGuid();
 
-        var sut = new ProcessStepResultApplicationService(processActorResultRepositoryMock.Object, new ProcessStepResultMapper());
+        var sut = new ProcessStepApplicationService(
+            processActorResultRepositoryMock.Object,
+            new ProcessStepResultMapper(),
+            actorRepositoryMock.Object);
 
         processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area"))
             .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
