@@ -67,7 +67,7 @@ public class ProcessStepControllerTests :
     {
         // Arrange
         mock
-            .Setup(service => service.GetAsync(request))
+            .Setup(service => service.GetActorsAsync(request))
             .ReturnsAsync(new[] { wholesaleActorDto });
         _factory.ProcessStepApplicationServiceMock = mock;
 

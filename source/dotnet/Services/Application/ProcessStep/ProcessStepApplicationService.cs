@@ -40,7 +40,7 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
         _actorRepository = actorRepository;
     }
 
-    public async Task<WholesaleActorDto[]> GetAsync(ProcessStepActorsRequest processStepActorsRequest)
+    public async Task<WholesaleActorDto[]> GetActorsAsync(ProcessStepActorsRequest processStepActorsRequest)
     {
         var actors = await _actorRepository.GetAsync(
             processStepActorsRequest.BatchId,

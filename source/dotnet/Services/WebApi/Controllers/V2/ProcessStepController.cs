@@ -38,7 +38,7 @@ public class ProcessStepController : ControllerBase
     [MapToApiVersion("2.3")]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
     {
-        var actors = await _processStepApplicationService.GetAsync(processStepActorsRequest).ConfigureAwait(false);
+        var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
         return Ok(actors);
     }
 
