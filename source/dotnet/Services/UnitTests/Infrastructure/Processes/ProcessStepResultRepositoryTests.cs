@@ -29,6 +29,7 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
+using DataLakeFileClient = Azure.Storage.Files.DataLake.DataLakeFileClient;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Processes;
@@ -43,7 +44,8 @@ public class ProcessStepResultRepositoryTests
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
-        [Frozen] Mock<Response<bool>> responseMock)
+        [Frozen] Mock<Response<bool>> responseMock,
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
         const string pathWithKnownExtension = "my_file.json";
@@ -63,6 +65,8 @@ public class ProcessStepResultRepositoryTests
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(dataLakeFileClientMock.Object);
         var processResultPoint = new ProcessResultPoint("1.00", "A04", "2022-05-31T22:00:00");
         datalakeTypeFactoryMock.Setup(x => x.DeserializeAsync<ProcessResultPoint>(stream.Object))
             .ReturnsAsync(new List<ProcessResultPoint>
@@ -71,7 +75,7 @@ public class ProcessStepResultRepositoryTests
             });
 
         var sut = new ProcessStepResultRepository(
-            dataLakeFileSystemClientMock.Object,
+            dataLakeClientMock.Object,
             datalakeTypeFactoryMock.Object);
 
         // Act

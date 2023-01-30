@@ -97,7 +97,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
         services.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
-        services.AddScoped<DataLakeRepositoryBase>();
+        services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IActorRepository, ActorRepository>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
 

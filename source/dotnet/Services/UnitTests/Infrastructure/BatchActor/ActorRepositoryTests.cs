@@ -27,6 +27,7 @@ using Moq;
 using Xunit;
 using Xunit.Categories;
 using Actor = Energinet.DataHub.Wholesale.Infrastructure.BatchActor.Actor;
+using DataLakeFileClient = Azure.Storage.Files.DataLake.DataLakeFileClient;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BatchActor;
@@ -41,7 +42,8 @@ public class ActorRepositoryTests
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
-        [Frozen] Mock<Response<bool>> responseMock)
+        [Frozen] Mock<Response<bool>> responseMock,
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
         const string pathWithKnownExtension = "my_file.json";
@@ -61,6 +63,8 @@ public class ActorRepositoryTests
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(dataLakeFileClientMock.Object);
         var batchActor = new Actor("AnyGln");
         dataLakeTypeFactoryMock.Setup(x => x.DeserializeAsync<Actor>(stream.Object))
             .ReturnsAsync(new List<Actor>
@@ -69,7 +73,7 @@ public class ActorRepositoryTests
             });
 
         var sut = new ActorRepository(
-            dataLakeFileSystemClientMock.Object,
+            dataLakeClientMock.Object,
             dataLakeTypeFactoryMock.Object);
 
         // Act

@@ -21,22 +21,23 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
-public class ProcessStepResultRepository : DataLakeRepositoryBase, IProcessStepResultRepository
+public class ProcessStepResultRepository : IProcessStepResultRepository
 {
+    private readonly IDataLakeClient _dataLakeClient;
     private readonly IJsonNewlineSerializer _jsonNewlineSerializer;
 
     public ProcessStepResultRepository(
-        DataLakeFileSystemClient dataLakeFileSystemClient,
+        IDataLakeClient dataLakeClient,
         IJsonNewlineSerializer jsonNewlineSerializer)
-        : base(dataLakeFileSystemClient)
     {
+        _dataLakeClient = dataLakeClient;
         _jsonNewlineSerializer = jsonNewlineSerializer;
     }
 
     public async Task<ProcessStepResult> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string gln)
     {
         var (directory, extension, _) = GetResultFileSpecification(batchId, gridAreaCode, timeSeriesType, gln);
-        var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
+        var dataLakeFileClient = await _dataLakeClient.GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
         if (dataLakeFileClient == null)
         {
             throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");

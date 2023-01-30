@@ -16,11 +16,11 @@ using Azure.Storage.Files.DataLake;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 
-public class DataLakeRepositoryBase
+public class DataLakeClient : IDataLakeClient
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
 
-    public DataLakeRepositoryBase(DataLakeFileSystemClient dataLakeFileSystemClient)
+    public DataLakeClient(DataLakeFileSystemClient dataLakeFileSystemClient)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
     }
