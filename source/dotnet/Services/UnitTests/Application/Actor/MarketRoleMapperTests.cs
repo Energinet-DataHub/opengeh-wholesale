@@ -32,11 +32,11 @@ using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggre
 namespace Energinet.DataHub.Wholesale.Tests.Application.Actor;
 
 [UnitTest]
-public class MarketRoleTypeMapperTests
+public class MarketRoleMapperTests
 {
     [Theory]
     [InlineData(Contracts.MarketRole.EnergySupplier, MarketRole.EnergySupplier)]
-    public void Map_Returns_CorrectMarketRoleType(
+    public void Map_Returns_CorrectMarketRole(
         Contracts.MarketRole input,
         MarketRole expected)
     {

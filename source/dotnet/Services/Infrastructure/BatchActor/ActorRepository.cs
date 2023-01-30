@@ -54,7 +54,7 @@ public class ActorRepository : DataLakeRepositoryBase, IActorRepository
         TimeSeriesType timeSeriesType,
         MarketRole marketRole)
     {
-        return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode.Code}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/market_role={MarketRoleTypeMapper.Map(marketRole)}/", ".json");
+        return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode.Code}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/market_role={MarketRoleMapper.Map(marketRole)}/", ".json");
     }
 
     private static Domain.Actor.Actor[] MapToBatchActor(IEnumerable<Actor> actors)

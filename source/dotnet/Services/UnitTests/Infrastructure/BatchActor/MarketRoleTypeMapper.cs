@@ -21,17 +21,17 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BatchActor;
 
 [UnitTest]
-public class MarketRoleTypeMapperTests
+public class MarketRoleMapperTests
 {
     [Theory]
     [InlineData(MarketRole.EnergySupplier, "energy_supplier")]
-    public void WhenMapIsCalled_ThenCorrectStringIsReturned(MarketRole type, string expected)
+    public void WhenMapIsCalled_ThenCorrectStringIsReturned(MarketRole role, string expected)
     {
-        var marketRoleTypes = Enum.GetValues(typeof(MarketRole)).Cast<MarketRole>();
-        foreach (var marketRoleType in marketRoleTypes)
+        var marketRoles = Enum.GetValues(typeof(MarketRole)).Cast<MarketRole>();
+        foreach (var marketRole in marketRoles)
         {
-            var actual = MarketRoleTypeMapper.Map(marketRoleType);
-            if (marketRoleType == type)
+            var actual = MarketRoleMapper.Map(marketRole);
+            if (marketRole == role)
                 actual.Should().Be(expected);
         }
     }

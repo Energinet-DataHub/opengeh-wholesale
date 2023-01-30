@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Domain.Actor;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 
-public static class MarketRoleTypeMapper
+public static class MarketRoleMapper
 {
     // These strings represents where actors for witch results were generated are written from spark.
     // They should only be changed with changing how we write down the actors.
