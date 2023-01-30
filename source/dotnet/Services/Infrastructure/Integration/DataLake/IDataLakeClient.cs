@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
+using Azure.Storage.Files.DataLake;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 
-/// <summary>
-/// Interface is for mocking
-/// </summary>
-public interface IProcessResultPointFactory
+public interface IDataLakeClient
 {
-    Task<List<ProcessResultPoint>> GetPointsFromJsonStreamAsync(Stream resultStream);
+    Task<DataLakeFileClient> GetDataLakeFileClientAsync(string directory, string extension);
 }

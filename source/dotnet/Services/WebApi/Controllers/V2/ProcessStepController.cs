@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,15 +21,25 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 
 [ApiController]
 [ApiVersion(Version)]
-[Route("v{version:apiVersion}/[controller]")]
-public class ProcessStepResultController : ControllerBase
+// "ProcessStepResult" hardcoded instead of "[controller]" to avoid breaking changes due to rename of class
+[Route("v{version:apiVersion}/ProcessStepResult")]
+public class ProcessStepController : ControllerBase
 {
     private const string Version = "2.0";
-    private readonly IProcessStepResultApplicationService _processStepResultApplicationService;
+    private readonly IProcessStepApplicationService _processStepApplicationService;
 
-    public ProcessStepResultController(IProcessStepResultApplicationService processStepResultApplicationService)
+    public ProcessStepController(IProcessStepApplicationService processStepApplicationService)
     {
-        _processStepResultApplicationService = processStepResultApplicationService;
+        _processStepApplicationService = processStepApplicationService;
+    }
+
+    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
+    [HttpPost]
+    [MapToApiVersion("2.3")]
+    public async Task<IActionResult> GetAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
+    {
+        var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
+        return Ok(actors);
     }
 
     /// <summary>
@@ -41,7 +51,7 @@ public class ProcessStepResultController : ControllerBase
     [MapToApiVersion("2.1")]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDto processStepResultRequestDto)
     {
-        var resultDto = await _processStepResultApplicationService.GetResultAsync(processStepResultRequestDto).ConfigureAwait(false);
+        var resultDto = await _processStepApplicationService.GetResultAsync(processStepResultRequestDto).ConfigureAwait(false);
         return Ok(resultDto);
     }
 
@@ -50,7 +60,7 @@ public class ProcessStepResultController : ControllerBase
     [MapToApiVersion("2.2")]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
     {
-        var resultDto = await _processStepResultApplicationService.GetResultAsync(processStepResultRequestDtoV2).ConfigureAwait(false);
+        var resultDto = await _processStepApplicationService.GetResultAsync(processStepResultRequestDtoV2).ConfigureAwait(false);
         return Ok(resultDto);
     }
 }

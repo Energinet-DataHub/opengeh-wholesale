@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.3
+
+Added `GetProcessStepActorsAsync`
+
 ## Version 5.0.2
 
 Rename `ProcessProcessResultRequestDto` to `ProcessStepResultRequestDtoV2`

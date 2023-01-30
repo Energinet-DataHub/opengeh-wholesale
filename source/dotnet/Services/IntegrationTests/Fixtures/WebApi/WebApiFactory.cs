@@ -13,8 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
+using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +27,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
 
 /// <summary>
 /// When we execute the tests on build agents we use the builded output (assemblies).
@@ -67,6 +71,18 @@ public class WebApiFactory : WebApplicationFactory<Startup>
                     var unitOfWork = provider.GetRequiredService<IUnitOfWork>();
                     return new SettlementReportApplicationService(batchRepository, settlementReportRepository, unitOfWork);
                 });
+
+            services.AddScoped(
+                provider =>
+                {
+                    if (ProcessStepApplicationServiceMock != null)
+                        return ProcessStepApplicationServiceMock.Object;
+
+                    return new ProcessStepApplicationService(
+                        provider.GetRequiredService<IProcessStepResultRepository>(),
+                        provider.GetRequiredService<IProcessStepResultMapper>(),
+                        provider.GetRequiredService<IActorRepository>());
+                });
         });
     }
 
@@ -75,6 +91,8 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     /// NOTE: This will only work as expected as long as no tests are executed in parallel.
     /// </summary>
     public Mock<ISettlementReportApplicationService>? SettlementReportApplicationServiceMock { get; set; }
+
+    public Mock<IProcessStepApplicationService>? ProcessStepApplicationServiceMock { get; set; }
 
     private sealed class AllowAnonymous : IAuthorizationHandler
     {
