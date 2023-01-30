@@ -23,6 +23,8 @@ from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
 from package.calculator_args import CalculatorArgs
 from package.constants.time_series_type import TimeSeriesType
+from package.constants.market_role import MarketRole
+import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit
 from tests.helpers.file_utils import find_file, create_file_path_expression
@@ -57,8 +59,7 @@ def test_data_job_parameters(
         {
             "data_storage_account_name": "foo",
             "data_storage_account_key": "foo",
-            "wholesale_container_path": f"{data_lake_path}",
-            "process_results_path": f"{data_lake_path}/{worker_id}/calculation-output",
+            "wholesale_container_path": f"{data_lake_path}/{worker_id}",
             "batch_id": executed_batch_id,
             "batch_grid_areas": [805, 806],
             "batch_period_start_datetime": timestamp_factory(
@@ -76,6 +77,7 @@ def executed_calculation_job(
     test_data_job_parameters,
     test_files_folder_path,
     data_lake_path,
+    worker_id,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -83,9 +85,10 @@ def executed_calculation_job(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    if path.isdir(test_data_job_parameters.process_results_path):
+    output_path = f"{data_lake_path}{worker_id}/{infra.OUTPUT_FOLDER}"
+    if path.isdir(output_path):
         # Since we are appending the result dataframes we must ensure that the path is removed before executing the tests
-        rmtree(test_data_job_parameters.process_results_path)
+        rmtree(output_path)
 
     metering_points_df = spark.read.csv(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
@@ -93,7 +96,7 @@ def executed_calculation_job(
         schema=metering_point_period_schema,
     ).withColumn("gln", lit(grid_area_gln))
     metering_points_df.write.format("delta").save(
-        f"{data_lake_path}/calculation-input-v2/metering-point-periods",
+        f"{data_lake_path}/{worker_id}/calculation-input-v2/metering-point-periods",
         mode="overwrite",
     )
     timeseries_points_df = spark.read.csv(
@@ -103,7 +106,8 @@ def executed_calculation_job(
     ).withColumn("gln", lit(grid_area_gln))
 
     timeseries_points_df.write.format("delta").save(
-        f"{data_lake_path}/calculation-input-v2/time-series-points", mode="overwrite"
+        f"{data_lake_path}/{worker_id}/calculation-input-v2/time-series-points",
+        mode="overwrite",
     )
 
     _start_calculator(spark, test_data_job_parameters)
@@ -156,24 +160,6 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(sourc
     _get_valid_args_or_throw(command_line_args)
 
 
-def get_time_series_quarter_path(data_lake_path: str, grid_area: str, gln: str) -> str:
-    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area={grid_area}/gln={gln}"
-
-
-def get_time_series_hour_path(data_lake_path: str, grid_area: str, gln: str) -> str:
-    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/basis_data/time_series_hour/grid_area={grid_area}/gln={gln}"
-
-
-def get_master_basis_data_path(data_lake_path: str, grid_area: str, gln: str) -> str:
-    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area={grid_area}/gln={gln}"
-
-
-def get_result_path(
-    data_lake_path: str, grid_area: str, gln: str, time_series_type: str
-) -> str:
-    return f"{data_lake_path}/calculation-output/batch_id={executed_batch_id}/result/grid_area={grid_area}/gln={gln}/time_series_type={time_series_type}"
-
-
 def test__result_is_generated_for_requested_grid_areas(
     spark: SparkSession,
     data_lake_path,
@@ -181,15 +167,13 @@ def test__result_is_generated_for_requested_grid_areas(
     executed_calculation_job,
 ):
     # Arrange
-    data_lake_path = f"{data_lake_path}/{worker_id}"
-
     expected_ga_gln_type = [
-        ["805", grid_area_gln, TimeSeriesType.PRODUCTION.value],
-        ["806", grid_area_gln, TimeSeriesType.PRODUCTION.value],
-        ["805", energy_supplier_gln_a, TimeSeriesType.NON_PROFILED_CONSUMPTION.value],
-        ["806", energy_supplier_gln_a, TimeSeriesType.NON_PROFILED_CONSUMPTION.value],
-        ["805", energy_supplier_gln_b, TimeSeriesType.NON_PROFILED_CONSUMPTION.value],
-        ["806", energy_supplier_gln_b, TimeSeriesType.NON_PROFILED_CONSUMPTION.value],
+        ["805", grid_area_gln, TimeSeriesType.PRODUCTION],
+        ["806", grid_area_gln, TimeSeriesType.PRODUCTION],
+        ["805", energy_supplier_gln_a, TimeSeriesType.NON_PROFILED_CONSUMPTION],
+        ["806", energy_supplier_gln_a, TimeSeriesType.NON_PROFILED_CONSUMPTION],
+        ["805", energy_supplier_gln_b, TimeSeriesType.NON_PROFILED_CONSUMPTION],
+        ["806", energy_supplier_gln_b, TimeSeriesType.NON_PROFILED_CONSUMPTION],
     ]
 
     # Act
@@ -197,14 +181,13 @@ def test__result_is_generated_for_requested_grid_areas(
 
     # Assert
     for grid_area, gln, time_series_type in expected_ga_gln_type:
-        result = spark.read.json(
-            get_result_path(
-                data_lake_path,
-                grid_area,
-                gln,
-                time_series_type,
-            )
+        result_path = infra.get_result_file_relative_path(
+            executed_batch_id,
+            grid_area,
+            gln,
+            time_series_type,
         )
+        result = spark.read.json(f"{data_lake_path}/{worker_id}/{result_path}")
         assert result.count() >= 1, "Calculator job failed to write files"
 
 
@@ -242,10 +225,13 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
     executed_calculation_job,
 ):
     # Arrange
-    data_lake_path = f"{data_lake_path}/{worker_id}"
-    result_path = get_result_path(
-        data_lake_path, "805", grid_area_gln, TimeSeriesType.PRODUCTION.value
+    result_relative_path = infra.get_result_file_relative_path(
+        executed_batch_id,
+        "805",
+        grid_area_gln,
+        TimeSeriesType.PRODUCTION,
     )
+    result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -266,24 +252,29 @@ def test__quantity_is_with_precision_3(
     executed_calculation_job,
 ):
     # Arrange
-    data_lake_path = f"{data_lake_path}/{worker_id}"
-    result_path_production = get_result_path(
-        data_lake_path, "805", grid_area_gln, TimeSeriesType.PRODUCTION.value
+    result_relative_path_production = infra.get_result_file_relative_path(
+        executed_batch_id,
+        "805",
+        grid_area_gln,
+        TimeSeriesType.PRODUCTION,
     )
-    result_path_non_profiled_consumption = get_result_path(
-        data_lake_path,
+
+    result_relative_path_non_profiled_consumption = infra.get_result_file_relative_path(
+        executed_batch_id,
         "805",
         energy_supplier_gln_a,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
     )
 
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
-    result_production = spark.read.json(result_path_production)
+    result_production = spark.read.json(
+        f"{data_lake_path}/{worker_id}/{result_relative_path_production}"
+    )
     result_non_profiled_consumption = spark.read.json(
-        result_path_non_profiled_consumption
+        f"{data_lake_path}/{worker_id}/{result_relative_path_non_profiled_consumption}"
     )
 
     import re
@@ -313,9 +304,15 @@ def test__actors_file_path_matches_contract(
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
+    relative_output_path = infra.get_actors_file_relative_path(
+        executed_batch_id,
+        "805",
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        MarketRole.ENERGY_SUPPLIER,
+    )
     actual_result_file = find_file(
-        f"{data_lake_path}/{worker_id}",
-        f"calculation-output/batch_id={executed_batch_id}/actors/grid_area=805/time_series_type=non_profiled_consumption/market_role=energy_supplier/part-*.json",
+        f"{data_lake_path}/{worker_id}/",
+        f"{relative_output_path}/part-*.json",
     )
     assert re.match(expected_path_expression, actual_result_file)
 
@@ -332,13 +329,20 @@ def test__result_file_path_matches_contract(
         contract.directory_expression,
         contract.extension,
     )
+    relative_output_path = infra.get_result_file_relative_path(
+        executed_batch_id,
+        "805",
+        grid_area_gln,
+        TimeSeriesType.PRODUCTION,
+    )
+
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
     actual_result_file = find_file(
-        f"{data_lake_path}/{worker_id}",
-        f"calculation-output/batch_id={executed_batch_id}/result/grid_area=805/gln={grid_area_gln}/time_series_type=production/part-*.json",
+        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.json"
     )
+
     assert re.match(expected_path_expression, actual_result_file)
 
 
@@ -349,14 +353,20 @@ def test__result_file_has_correct_number_of_rows_based_on_period(
     executed_calculation_job,
 ):
     # Arrange
-    data_lake_path = f"{data_lake_path}/{worker_id}"
-    result_path = get_result_path(
-        data_lake_path, "806", "grid_area", TimeSeriesType.PRODUCTION.value
+    result_relative_path = infra.get_result_file_relative_path(
+        executed_batch_id,
+        "806",
+        grid_area_gln,
+        TimeSeriesType.PRODUCTION,
     )
+
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
     # Assert
-    production_806 = spark.read.json(result_path)
+    production_806 = spark.read.json(
+        f"{data_lake_path}/{worker_id}/{result_relative_path}"
+    )
     assert production_806.count() == 192  # period is from 01-01 -> 01-03
 
 
@@ -367,14 +377,17 @@ def test__creates_hour_csv_with_expected_columns_names(
     worker_id,
 ):
     # Arrange
-    data_lake_path = f"{data_lake_path}/{worker_id}"
-    basis_data_path = get_time_series_hour_path(data_lake_path, "805", grid_area_gln)
+    basis_data_relative_path = infra.get_time_series_hour_relative_path(
+        executed_batch_id, "805", grid_area_gln
+    )
 
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    actual = spark.read.option("header", "true").csv(basis_data_path)
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path}"
+    )
     assert actual.columns == [
         "METERINGPOINTID",
         "TYPEOFMP",
@@ -387,14 +400,17 @@ def test__creates_quarter_csv_with_expected_columns_names(
     spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Arrange
-    data_lake_path = f"{data_lake_path}/{worker_id}"
-    basis_data_path = get_time_series_quarter_path(data_lake_path, "805", grid_area_gln)
+    relative_path = infra.get_time_series_quarter_relative_path(
+        executed_batch_id, "805", grid_area_gln
+    )
 
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    actual = spark.read.option("header", "true").csv(basis_data_path)
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{relative_path}"
+    )
 
     assert actual.columns == [
         "METERINGPOINTID",
@@ -408,21 +424,24 @@ def test__creates_csv_per_grid_area(
     spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Arrange
-    data_lake_path = f"{data_lake_path}/{worker_id}"
-    basis_data_path_805 = get_time_series_quarter_path(
-        data_lake_path, "805", grid_area_gln
+    basis_data_relative_path_805 = infra.get_time_series_quarter_relative_path(
+        executed_batch_id, "805", grid_area_gln
     )
-    basis_data_path_806 = get_time_series_quarter_path(
-        data_lake_path, "806", grid_area_gln
+    basis_data_relative_path_806 = infra.get_time_series_quarter_relative_path(
+        executed_batch_id, "806", grid_area_gln
     )
 
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    basis_data_805 = spark.read.option("header", "true").csv(basis_data_path_805)
+    basis_data_805 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_805}"
+    )
 
-    basis_data_806 = spark.read.option("header", "true").csv(basis_data_path_806)
+    basis_data_806 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_806}"
+    )
 
     assert (
         basis_data_805.count() >= 1
@@ -437,14 +456,17 @@ def test__master_data_csv_with_expected_columns_names(
     spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Arrange
-    data_lake_path = f"{data_lake_path}/{worker_id}"
-    basis_data_path = get_master_basis_data_path(data_lake_path, "805", grid_area_gln)
+    basis_data_path = infra.get_master_basis_data_relative_path(
+        executed_batch_id, "805", grid_area_gln
+    )
 
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    actual = spark.read.option("header", "true").csv(basis_data_path)
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_path}"
+    )
 
     assert actual.columns == [
         "METERINGPOINTID",
@@ -463,20 +485,23 @@ def test__creates_master_data_csv_per_grid_area(
     spark, data_lake_path, executed_calculation_job, worker_id
 ):
     # Arrange
-    data_lake_path = f"{data_lake_path}/{worker_id}"
-    basis_data_path_805 = get_master_basis_data_path(
-        data_lake_path, "805", grid_area_gln
+    basis_data_path_805 = infra.get_master_basis_data_relative_path(
+        executed_batch_id, "805", grid_area_gln
     )
-    basis_data_path_806 = get_master_basis_data_path(
-        data_lake_path, "806", grid_area_gln
+    basis_data_path_806 = infra.get_master_basis_data_relative_path(
+        executed_batch_id, "806", grid_area_gln
     )
 
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
-    master_basis_data_805 = spark.read.option("header", "true").csv(basis_data_path_805)
+    master_basis_data_805 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_path_805}"
+    )
 
-    master_basis_data_806 = spark.read.option("header", "true").csv(basis_data_path_806)
+    master_basis_data_806 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_path_806}"
+    )
 
     assert (
         master_basis_data_805.count() >= 1
@@ -499,12 +524,16 @@ def test__master_basis_data_file_matches_contract(
         contract.directory_expression,
         contract.extension,
     )
+    master_basis_datea_path = infra.get_master_basis_data_relative_path(
+        executed_batch_id, "805", grid_area_gln
+    )
+
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
     actual_file_path = find_file(
         f"{data_lake_path}/{worker_id}/",
-        f"calculation-output/batch_id={executed_batch_id}/basis_data/master_basis_data/grid_area=805/gln={grid_area_gln}/part-*.csv",
+        f"{master_basis_datea_path}/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
 
@@ -521,13 +550,15 @@ def test__hourly_basis_data_file_matches_contract(
         contract.directory_expression,
         contract.extension,
     )
+    relative_output_path = infra.get_time_series_hour_relative_path(
+        executed_batch_id, "805", grid_area_gln
+    )
 
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
     actual_file_path = find_file(
-        f"{data_lake_path}/{worker_id}",
-        f"calculation-output/batch_id={executed_batch_id}/basis_data/time_series_hour/grid_area=805/gln={grid_area_gln}/part-*.csv",
+        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
     )
     assert re.match(expected_path_expression, actual_file_path)
 
@@ -544,13 +575,14 @@ def test__quarterly_basis_data_file_matches_contract(
         contract.directory_expression,
         contract.extension,
     )
-
+    relative_output_path = infra.get_time_series_quarter_relative_path(
+        executed_batch_id, "805", grid_area_gln
+    )
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
     actual_file_path = find_file(
-        f"{data_lake_path}/{worker_id}",
-        f"calculation-output/batch_id={executed_batch_id}/basis_data/time_series_quarter/grid_area=805/gln={grid_area_gln}/part-*.csv",
+        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
     )
     assert re.match(expected_path_expression, actual_file_path)
 

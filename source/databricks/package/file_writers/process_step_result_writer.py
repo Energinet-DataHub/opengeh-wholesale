@@ -21,10 +21,7 @@ from package.file_writers import actors_writer
 
 
 class ProcessStepResultWriter:
-    def __init__(
-        self,
-        output_path: str,
-    ):
+    def __init__(self, output_path: str):
         self.__output_path = output_path
 
     def write_per_ga(
