@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure;
 
