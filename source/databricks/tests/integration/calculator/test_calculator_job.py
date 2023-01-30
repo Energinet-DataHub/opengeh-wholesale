@@ -61,7 +61,7 @@ def test_data_job_parameters(
         {
             "data_storage_account_name": "foo",
             "data_storage_account_key": "foo",
-            "wholesale_container_path": f"{data_lake_path}",
+            "wholesale_container_path": f"{data_lake_path}/{worker_id}",
             "batch_id": executed_batch_id,
             "batch_grid_areas": [805, 806],
             "batch_period_start_datetime": timestamp_factory(
@@ -79,6 +79,7 @@ def executed_calculation_job(
     test_data_job_parameters,
     test_files_folder_path,
     data_lake_path,
+    worker_id,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -97,7 +98,7 @@ def executed_calculation_job(
         schema=metering_point_period_schema,
     ).withColumn("gln", lit(grid_area_gln))
     metering_points_df.write.format("delta").save(
-        f"{data_lake_path}/calculation-input-v2/metering-point-periods",
+        f"{data_lake_path}/{worker_id}/calculation-input-v2/metering-point-periods",
         mode="overwrite",
     )
     timeseries_points_df = spark.read.csv(
@@ -107,7 +108,8 @@ def executed_calculation_job(
     ).withColumn("gln", lit(grid_area_gln))
 
     timeseries_points_df.write.format("delta").save(
-        f"{data_lake_path}/calculation-input-v2/time-series-points", mode="overwrite"
+        f"{data_lake_path}/{worker_id}/calculation-input-v2/time-series-points",
+        mode="overwrite",
     )
 
     _start_calculator(spark, test_data_job_parameters)

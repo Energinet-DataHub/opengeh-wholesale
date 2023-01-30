@@ -29,6 +29,10 @@ from package import (
     initialize_spark,
     log,
 )
+from package.file_writers.basis_data_writer import BasisDataWriter
+from package.file_writers.process_step_result_writer import (
+    ProcessStepResultWriter,
+)
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -87,8 +91,13 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_period_end_datetime,
     )
 
+    output_path = f"{args.wholesale_container_path}/{infrastructure.OUTPUT_FOLDER}/batch_id={args.batch_id}"
+    result_writer = ProcessStepResultWriter(output_path)
+    basis_data_writer = BasisDataWriter(output_path)
+
     calculate_balance_fixing(
-        args.wholesale_container_path,
+        basis_data_writer,
+        result_writer,
         metering_point_periods_df,
         timeseries_points_df,
         args.batch_period_start_datetime,
