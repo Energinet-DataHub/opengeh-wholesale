@@ -79,19 +79,10 @@ public class ActorRepositoryTests
         var expected = calculationFilePathsContract.ActorsFile;
 
         // Act
-        var actual = ActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, MarketRole.EnergySupplier);
+        var (directory, extension) = ActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, MarketRole.EnergySupplier);
 
         // Assert
-        actual.Extension.Should().Be(expected.Extension);
-        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
-    }
-
-    private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
-    {
-        var pathItem = DataLakeModelFactory
-            .PathItem(path, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
-        var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
-        return asyncPageable;
+        extension.Should().Be(expected.Extension);
+        directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 }

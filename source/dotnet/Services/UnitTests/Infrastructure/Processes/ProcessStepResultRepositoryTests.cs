@@ -81,11 +81,11 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area");
+        var (directory, extension, _) = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area");
 
         // Assert
-        actual.Extension.Should().Be(expected.Extension);
-        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
+        extension.Should().Be(expected.Extension);
+        directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Theory]
@@ -99,18 +99,9 @@ public class ProcessStepResultRepositoryTests
         const string gridAreaCode = "123";
 
         // Act
-        var actual = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, "grid_area");
+        var (directory, _, _) = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, "grid_area");
 
         // Assert
-        actual.Directory.Should().Contain(expectedTimeSeriesType);
-    }
-
-    private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
-    {
-        var pathItem = DataLakeModelFactory
-            .PathItem(path, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
-        var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
-        return asyncPageable;
+        directory.Should().Contain(expectedTimeSeriesType);
     }
 }
