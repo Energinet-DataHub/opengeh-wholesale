@@ -17,6 +17,6 @@ namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 public enum TimeSeriesType
 {
     NonProfiledConsumption = 1,
-    Consumption = 2,
+    FlexConsumption = 2,
     Production = 3,
 }

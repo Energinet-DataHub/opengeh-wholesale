@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
-    IntegerType,
     StructField,
     StringType,
     TimestampType,
@@ -26,7 +25,10 @@ Schema for metering point periods input data used by the calculator job.
 Metering point periods are used in balance fixing and settlement. Some fields are only used in settlement. See each field for details.
 Periods (given by `FromDate` and `ToDate`) must not overlap and must not have gaps in between.
 
-Only periods where metering points are connected (E22) or disconnected (E23) are included.
+Only periods meeting the following requirements are included:
+- metering point is connected (E22) or disconnected (E23)
+- metering point (E17 and E18) has energy supplier
+- child metering points where parent has energy supplier
 
 Data must be stored in a Delta table.
 The table holds all consumption, production, exchange, and child metering points.
@@ -53,7 +55,6 @@ metering_point_period_schema = StructType(
         # "E02" (non-profiled)| "D01" (flex)
         # When metering point is not a consumption (E17) metering point the value is null. Otherwise it must have a value.
         # Used in balance fixing and settlement.
-        #
         # Example: D01
         StructField("SettlementMethod", StringType(), True),
         # 3 character grid area code uniquely identifying the grid area. All characters must be digits (0-9).
