@@ -29,11 +29,11 @@ public class TimeSeriesTypeMapperTests
     [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
     public void WhenMapIsCalled_ThenCorrectStringIsReturned(TimeSeriesType type, string expected)
     {
-        var marketRoleTypes = Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>();
-        foreach (var marketRoleType in marketRoleTypes)
+        var timeSeriesTypes = Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>();
+        foreach (var timeSeriesType in timeSeriesTypes)
         {
-            var actual = TimeSeriesTypeMapper.Map(marketRoleType);
-            if (marketRoleType == type)
+            var actual = TimeSeriesTypeMapper.Map(timeSeriesType);
+            if (timeSeriesType == type)
                 actual.Should().Be(expected);
         }
     }
