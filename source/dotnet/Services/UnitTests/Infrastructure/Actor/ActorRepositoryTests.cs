@@ -39,45 +39,25 @@ public class ActorRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetAsync_ReturnsBatchActor(
-        [Frozen] Mock<IJsonNewlineSerializer> dataLakeTypeFactoryMock,
-        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
-        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
+        [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
-        [Frozen] Mock<Response<bool>> responseMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
-        const string pathWithKnownExtension = "my_file.json";
-        var asyncPageable = CreateAsyncPageableWithOnePathItem(pathWithKnownExtension);
         var stream = new Mock<Stream>();
 
-        dataLakeDirectoryClientMock
-            .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
-            .Returns(asyncPageable);
-        responseMock.Setup(res => res.Value).Returns(true);
-        dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(responseMock.Object);
-        dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
-            .Returns(dataLakeDirectoryClientMock.Object);
-        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(pathWithKnownExtension))
-            .Returns(dataLakeFileClientMock.Object);
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
         dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(dataLakeFileClientMock.Object);
-        dataLakeTypeFactoryMock.Setup(x => x.DeserializeAsync<Wholesale.Domain.ActorAggregate.Actor>(stream.Object))
+
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Wholesale.Domain.ActorAggregate.Actor>(stream.Object))
             .ReturnsAsync(new List<Wholesale.Domain.ActorAggregate.Actor>());
-        var batchActor = new Wholesale.Domain.ActorAggregate.Actor("AnyGln");
-        dataLakeTypeFactoryMock.Setup(x => x.DeserializeAsync<Wholesale.Domain.ActorAggregate.Actor>(stream.Object))
-            .ReturnsAsync(new List<Wholesale.Domain.ActorAggregate.Actor>
-            {
-                batchActor,
-            });
 
         var sut = new ActorRepository(
             dataLakeClientMock.Object,
-            dataLakeTypeFactoryMock.Object);
+            jsonNewlineSerializerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRole.EnergySupplier);

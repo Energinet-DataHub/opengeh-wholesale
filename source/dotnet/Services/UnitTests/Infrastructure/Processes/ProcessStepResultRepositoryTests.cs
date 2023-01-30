@@ -41,35 +41,20 @@ public class ProcessStepResultRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetAsync_ReturnsProcessActorResult(
-        [Frozen] Mock<IJsonNewlineSerializer> datalakeTypeFactoryMock,
-        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
-        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
+        [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
-        [Frozen] Mock<Response<bool>> responseMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
-        const string pathWithKnownExtension = "my_file.json";
-        var asyncPageable = CreateAsyncPageableWithOnePathItem(pathWithKnownExtension);
         var stream = new Mock<Stream>();
 
-        dataLakeDirectoryClientMock
-            .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
-            .Returns(asyncPageable);
-        responseMock.Setup(res => res.Value).Returns(true);
-        dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(responseMock.Object);
-        dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
-            .Returns(dataLakeDirectoryClientMock.Object);
-        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(pathWithKnownExtension))
-            .Returns(dataLakeFileClientMock.Object);
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
         dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(dataLakeFileClientMock.Object);
         var processResultPoint = new ProcessResultPoint("1.00", "A04", "2022-05-31T22:00:00");
-        datalakeTypeFactoryMock.Setup(x => x.DeserializeAsync<ProcessResultPoint>(stream.Object))
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ProcessResultPoint>(stream.Object))
             .ReturnsAsync(new List<ProcessResultPoint>
             {
                 processResultPoint,
@@ -77,7 +62,7 @@ public class ProcessStepResultRepositoryTests
 
         var sut = new ProcessStepResultRepository(
             dataLakeClientMock.Object,
-            datalakeTypeFactoryMock.Object);
+            jsonNewlineSerializerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, "grid_area");
