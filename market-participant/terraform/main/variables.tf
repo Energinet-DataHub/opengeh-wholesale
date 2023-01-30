@@ -73,3 +73,9 @@ variable developer_ad_group_name {
   description   = "(Optional) Name of the AD group containing developers to have read access to SQL database."
   default       = ""
 }
+
+variable hosted_deployagent_public_ip_range {
+  type          = string
+  description   = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
+  default       = null
+}

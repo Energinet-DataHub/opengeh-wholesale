@@ -15,6 +15,7 @@ module "app_webapi" {
   health_check_alert_action_group_id        = data.azurerm_key_vault_secret.primary_action_group_id.value
   health_check_alert_enabled                = var.enable_health_check_alerts
   dotnet_framework_version                  = "v6.0"
+  ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
 
   app_settings                              = {
     EXTERNAL_OPEN_ID_URL                       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
