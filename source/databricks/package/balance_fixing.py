@@ -32,8 +32,7 @@ from pyspark.sql.types import DecimalType
 
 
 def calculate_balance_fixing(
-    basis_data_writer: BasisDataWriter,
-    process_step_result_writer: ProcessStepResultWriter,
+    output_path: str,
     metering_points_periods_df: DataFrame,
     timeseries_points: DataFrame,
     period_start_datetime: datetime,
@@ -49,7 +48,7 @@ def calculate_balance_fixing(
     )
 
     _create_and_write_basis_data(
-        basis_data_writer,
+        output_path,
         metering_points_periods_df,
         enriched_time_series_point_df,
         period_start_datetime,
@@ -57,11 +56,11 @@ def calculate_balance_fixing(
         time_zone,
     )
 
-    _calculate(process_step_result_writer, enriched_time_series_point_df)
+    _calculate(output_path, enriched_time_series_point_df)
 
 
 def _create_and_write_basis_data(
-    basis_data_writer: BasisDataWriter,    
+    output_path: str,
     metering_points_periods_df: DataFrame,
     enriched_time_series_point_df: DataFrame,
     period_start_datetime: datetime,
@@ -79,20 +78,21 @@ def _create_and_write_basis_data(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
+    basis_data_writer = BasisDataWriter(output_path)
     basis_data_writer.write(
         master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
     )
 
 
-def _calculate(process_step_result_writer: ProcessStepResultWriter, 
-    enriched_time_series_point_df: DataFrame) -> None:
-    
+def _calculate(output_path: str, enriched_time_series_point_df: DataFrame) -> None:
+
+    result_writer = ProcessStepResultWriter(output_path)
     metadata_fake = Metadata("1", "1", "1", "1")
 
-    _calculate_production(process_step_result_writer, enriched_time_series_point_df, metadata_fake)
+    _calculate_production(result_writer, enriched_time_series_point_df, metadata_fake)
 
     _calculate_non_profiled_consumption(
-        process_step_result_writer, enriched_time_series_point_df, metadata_fake
+        result_writer, enriched_time_series_point_df, metadata_fake
     )
 
 

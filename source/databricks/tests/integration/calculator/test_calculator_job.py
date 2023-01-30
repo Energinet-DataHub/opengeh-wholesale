@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
-import glob
+
 from os import path
 from shutil import rmtree
 import re
@@ -25,12 +24,11 @@ from package.calculator_job import _get_valid_args_or_throw, _start_calculator, 
 from package.calculator_args import CalculatorArgs
 from package.constants.time_series_type import TimeSeriesType
 from package.constants.market_role import MarketRole
+import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit
 from tests.helpers.file_utils import find_file, create_file_path_expression
 
-
-import package.infrastructure as infra
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 grid_area_gln = "grid_area"
@@ -87,7 +85,7 @@ def executed_calculation_job(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    output_path = f"{data_lake_path}/{infra.OUTPUT_FOLDER}"
+    output_path = f"{data_lake_path}{worker_id}/{infra.OUTPUT_FOLDER}"
     if path.isdir(output_path):
         # Since we are appending the result dataframes we must ensure that the path is removed before executing the tests
         rmtree(output_path)
