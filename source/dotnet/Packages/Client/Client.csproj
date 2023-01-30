@@ -69,8 +69,8 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Contracts\BatchActorDto.cs">
-      <Link>Dtos\BatchActorDto.cs</Link>
+    <Compile Include="..\..\Contracts\WholesaleActorDto.cs">
+      <Link>Dtos\WholesaleActorDto.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchDtoV2.cs">
       <Link>Dtos\BatchDtoV2.cs</Link>

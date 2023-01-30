@@ -14,4 +14,11 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts;
 
-public sealed record BatchActorDto(string Gln);
+/// <summary>
+/// The desired name of this type is "ActorDto". That now, however, causes problems
+/// regarding the front-end as it is also used in the wholesale API, which in turn is used
+/// in the published wholesale NuGet package, which is used to generate DTOs in
+/// the front-end. In the front-end the name "ActorDto" has already been taken.
+/// </summary>
+/// <param name="Gln"></param>
+public sealed record WholesaleActorDto(string Gln);

@@ -62,12 +62,12 @@ public class BatchActorControllerTests :
     public async Task ExpectedUrl_Should_ReturnOk(
         Mock<IActorApplicationService> mock,
         ProcessStepActorsRequest request,
-        BatchActorDto batchActorDto)
+        WholesaleActorDto wholesaleActorDto)
     {
         // Arrange
         mock
             .Setup(service => service.GetAsync(request))
-            .ReturnsAsync(new[] { batchActorDto });
+            .ReturnsAsync(new[] { wholesaleActorDto });
         _factory.ActorApplicationServiceMock = mock;
 
         // Act

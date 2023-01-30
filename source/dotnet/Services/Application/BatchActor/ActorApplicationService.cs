@@ -28,7 +28,7 @@ public class ActorApplicationService : IActorApplicationService
         _actorRepository = actorRepository;
     }
 
-    public async Task<BatchActorDto[]> GetAsync(ProcessStepActorsRequest processStepActorsRequest)
+    public async Task<WholesaleActorDto[]> GetAsync(ProcessStepActorsRequest processStepActorsRequest)
     {
         var actors = await _actorRepository.GetAsync(
             processStepActorsRequest.BatchId,
@@ -36,6 +36,6 @@ public class ActorApplicationService : IActorApplicationService
             TimeSeriesTypeMapper.Map(processStepActorsRequest.Type),
             MarketRoleTypeMapper.Map(processStepActorsRequest.MarketRoleType)).ConfigureAwait(false);
 
-        return actors.Select(batchActor => new BatchActorDto(batchActor.Gln)).ToArray();
+        return actors.Select(batchActor => new WholesaleActorDto(batchActor.Gln)).ToArray();
     }
 }
