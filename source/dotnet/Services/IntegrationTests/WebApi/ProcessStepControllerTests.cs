@@ -60,105 +60,121 @@ public class ProcessStepControllerTests :
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetActorsAsync_POST_V2_3_ReturnsOk(
-        Mock<IProcessStepApplicationService> mock,
-        ProcessStepActorsRequest request)
+    public async Task GetActorsAsync_POST_V2_3_ReturnsExpectedResponse(
+        Mock<IProcessStepApplicationService> applicationServiceMock,
+        ProcessStepActorsRequest request,
+        WholesaleActorDto expectedActor)
     {
         // Arrange
         const string expectedUrl = "/v2.3/processstepresult";
-        mock
+        applicationServiceMock
             .Setup(service => service.GetActorsAsync(request))
-            .ReturnsAsync(Array.Empty<WholesaleActorDto>());
-        _factory.ProcessStepApplicationServiceMock = mock;
+            .ReturnsAsync(() => new[] { expectedActor });
+        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
 
-        // Assert
+        // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert: Response body
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<List<WholesaleActorDto>>();
+        actualActors!.Single().Should().BeEquivalentTo(expectedActor);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetResultAsync_POST_V2_ReturnsOk(
-        Mock<IProcessStepApplicationService> mock,
+    public async Task GetResultAsync_POST_V2_ReturnsExpectedResponse(
+        Mock<IProcessStepApplicationService> applicationServiceMock,
         ProcessStepResultRequestDto request,
-        ProcessStepResultDto result)
+        ProcessStepResultDto expectedProcessStepResult)
     {
         // Arrange
-        mock
+        applicationServiceMock
             .Setup(service => service.GetResultAsync(request))
-            .ReturnsAsync(() => result);
-        _factory.ProcessStepApplicationServiceMock = mock;
+            .ReturnsAsync(() => expectedProcessStepResult);
+        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         const string expectedUrl = "/v2/processstepresult";
         var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
 
-        // Assert
+        // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert: Response body
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
+        actualActors.Should().BeEquivalentTo(expectedProcessStepResult);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetResultAsync_POST_V2_0_ReturnsOk(
-        Mock<IProcessStepApplicationService> mock,
+    public async Task GetResultAsync_POST_V2_0_ReturnsExpectedResponse(
+        Mock<IProcessStepApplicationService> applicationServiceMock,
         ProcessStepResultRequestDto request,
-        ProcessStepResultDto result)
+        ProcessStepResultDto expectedProcessStepResult)
     {
         // Arrange
-        mock
+        applicationServiceMock
             .Setup(service => service.GetResultAsync(request))
-            .ReturnsAsync(() => result);
-        _factory.ProcessStepApplicationServiceMock = mock;
+            .ReturnsAsync(() => expectedProcessStepResult);
+        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         const string expectedUrl = "/v2.0/processstepresult";
         var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
 
-        // Assert
+        // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert: Response body
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
+        actualActors.Should().BeEquivalentTo(expectedProcessStepResult);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetResultAsync_POST_V2_1_ReturnsOk(
-        Mock<IProcessStepApplicationService> mock,
+    public async Task GetResultAsync_POST_V2_1_ReturnsExpectedResponse(
+        Mock<IProcessStepApplicationService> applicationServiceMock,
         ProcessStepResultRequestDto request,
-        ProcessStepResultDto result)
+        ProcessStepResultDto expectedProcessStepResult)
     {
         // Arrange
-        mock
+        applicationServiceMock
             .Setup(service => service.GetResultAsync(request))
-            .ReturnsAsync(() => result);
-        _factory.ProcessStepApplicationServiceMock = mock;
+            .ReturnsAsync(() => expectedProcessStepResult);
+        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         const string expectedUrl = "/v2.1/processstepresult";
         var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
 
-        // Assert
+        // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert: Response body
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
+        actualActors.Should().BeEquivalentTo(expectedProcessStepResult);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetResultAsync_POST_V2_2_ReturnsOk(
-        Mock<IProcessStepApplicationService> mock,
+    public async Task GetResultAsync_POST_V2_2_ReturnsExpectedResponse(
+        Mock<IProcessStepApplicationService> applicationServiceMock,
         ProcessStepResultRequestDtoV2 request,
-        ProcessStepResultDto result)
+        ProcessStepResultDto expectedProcessStepResult)
     {
         // Arrange
-        mock
+        applicationServiceMock
             .Setup(service => service.GetResultAsync(request))
-            .ReturnsAsync(() => result);
-        _factory.ProcessStepApplicationServiceMock = mock;
+            .ReturnsAsync(() => expectedProcessStepResult);
+        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         const string expectedUrl = "/v2.2/processstepresult";
         var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
 
-        // Assert
+        // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert: Response body
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
+        actualActors.Should().BeEquivalentTo(expectedProcessStepResult);
     }
 }
