@@ -17,6 +17,7 @@ from package.constants import Colname
 from package.constants.time_series_type import TimeSeriesType
 from package.constants.market_role import MarketRole
 from pyspark.sql.functions import col, lit
+from package.file_writers import actors_writer
 
 
 class ProcessStepResultWriter:
@@ -50,7 +51,7 @@ class ProcessStepResultWriter:
             time_series_type,
         )
         self._write_result_df(result_df)
-        self._write_actors(result_df, market_role)
+        actors_writer.write(self.__output_path, result_df, market_role)
 
     def _prepare_result_for_output(
         self, result_df: DataFrame, time_series_type: TimeSeriesType
@@ -108,28 +109,3 @@ class ProcessStepResultWriter:
             .partitionBy("grid_area", Colname.gln, Colname.time_series_type)
             .json(result_data_directory)
         )
-
-    def _write_actors(self, result_df: DataFrame, market_role: MarketRole) -> None:
-
-        actors_df = self._get_actors(result_df, market_role)
-
-        actors_directory = f"{self.__output_path}/actors"
-
-        (
-            actors_df.repartition("grid_area")
-            .write.mode("append")
-            .partitionBy("grid_area", Colname.time_series_type, Colname.market_role)
-            .json(actors_directory)
-        )
-
-    def _get_actors(self, result_df: DataFrame, market_role: MarketRole) -> DataFrame:
-
-        actors_df = result_df.select(
-            "grid_area",
-            Colname.gln,
-            Colname.time_series_type,
-        ).distinct()
-
-        actors_df = actors_df.withColumn(Colname.market_role, lit(market_role.value))
-
-        return actors_df

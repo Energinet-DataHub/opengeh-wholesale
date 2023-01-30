@@ -117,6 +117,7 @@ public static class Program
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
+        serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
 
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);

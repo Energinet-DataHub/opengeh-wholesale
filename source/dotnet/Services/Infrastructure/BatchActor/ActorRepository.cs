@@ -21,15 +21,16 @@ using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 
-public class ActorRepository : DataLakeRepositoryBase, IActorRepository
+public class ActorRepository : IActorRepository
 {
+    private readonly IDataLakeClient _dataLakeClient;
     private readonly IJsonNewlineSerializer _jsonNewlineSerializer;
 
     public ActorRepository(
-        DataLakeFileSystemClient dataLakeFileSystemClient,
+        IDataLakeClient dataLakeClient,
         IJsonNewlineSerializer jsonNewlineSerializer)
-        : base(dataLakeFileSystemClient)
     {
+        _dataLakeClient = dataLakeClient;
         _jsonNewlineSerializer = jsonNewlineSerializer;
     }
 
@@ -40,7 +41,7 @@ public class ActorRepository : DataLakeRepositoryBase, IActorRepository
         MarketRole marketRole)
     {
         var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType, marketRole);
-        var dataLakeFileClient = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
+        var dataLakeFileClient = await _dataLakeClient.GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
         var actors = await _jsonNewlineSerializer.DeserializeAsync<Actor>(resultStream).ConfigureAwait(false);

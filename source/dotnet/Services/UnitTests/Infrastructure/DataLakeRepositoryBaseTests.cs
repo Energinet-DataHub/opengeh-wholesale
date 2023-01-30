@@ -41,7 +41,7 @@ public class DatalakeRepositoryBaseTests
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
             .ReturnsAsync(responseMock.Object);
         responseMock.Setup(res => res.Value).Returns(false);
-        var sut = new DataLakeRepositoryBase(dataLakeFileSystemClientMock.Object);
+        var sut = new DataLakeClient(dataLakeFileSystemClientMock.Object);
 
         // Act and Assert
         await sut
@@ -69,7 +69,7 @@ public class DatalakeRepositoryBaseTests
             .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
             .Returns(asyncPageableWithOnePathItem);
 
-        var sut = new DataLakeRepositoryBase(dataLakeFileSystemClientMock.Object);
+        var sut = new DataLakeClient(dataLakeFileSystemClientMock.Object);
 
         // Act and Assert
         await sut
