@@ -17,7 +17,7 @@ using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Domain.Actor;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
@@ -26,10 +26,9 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using Actor = Energinet.DataHub.Wholesale.Infrastructure.BatchActor.Actor;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BatchActor;
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Actor;
 
 [UnitTest]
 public class ActorRepositoryTests
@@ -61,9 +60,9 @@ public class ActorRepositoryTests
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
-        var batchActor = new Actor("AnyGln");
-        dataLakeTypeFactoryMock.Setup(x => x.DeserializeAsync<Actor>(stream.Object))
-            .ReturnsAsync(new List<Actor>
+        var batchActor = new Wholesale.Domain.ActorAggregate.Actor("AnyGln");
+        dataLakeTypeFactoryMock.Setup(x => x.DeserializeAsync<Wholesale.Domain.ActorAggregate.Actor>(stream.Object))
+            .ReturnsAsync(new List<Wholesale.Domain.ActorAggregate.Actor>
             {
                 batchActor,
             });
@@ -83,7 +82,7 @@ public class ActorRepositoryTests
     [InlineData(TimeSeriesType.NonProfiledConsumption)]
     [InlineData(TimeSeriesType.FlexConsumption)]
     [InlineData(TimeSeriesType.Production)]
-    public static async Task GetActorFileSpecijnjvvvfication_MatchesContract(TimeSeriesType timeSeriesType)
+    public static async Task GetActorFileSpecification_MatchesContract(TimeSeriesType timeSeriesType)
     {
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";

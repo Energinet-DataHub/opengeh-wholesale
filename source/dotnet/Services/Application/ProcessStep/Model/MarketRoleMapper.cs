@@ -18,12 +18,12 @@ namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 
 public static class MarketRoleMapper
 {
-    public static Domain.Actor.MarketRole Map(MarketRole marketRole)
+    public static Domain.ActorAggregate.MarketRole Map(MarketRole marketRole)
     {
         switch (marketRole)
         {
             case MarketRole.EnergySupplier:
-                return Domain.Actor.MarketRole.EnergySupplier;
+                return Domain.ActorAggregate.MarketRole.EnergySupplier;
             default:
                 throw new ArgumentOutOfRangeException(nameof(marketRole), marketRole, null);
         }

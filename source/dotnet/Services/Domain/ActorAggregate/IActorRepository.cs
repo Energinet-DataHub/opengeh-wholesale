@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Domain.Actor;
+namespace Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 
 public interface IActorRepository
 {

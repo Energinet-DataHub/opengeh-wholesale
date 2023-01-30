@@ -34,11 +34,11 @@ public class ProcessStepResultController : ControllerBase
 
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
-    [MapToApiVersion(Version)]
+    [MapToApiVersion("2.3")]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
     {
-        var batchActorDtos = await _processStepApplicationService.GetAsync(processStepActorsRequest).ConfigureAwait(false);
-        return Ok(batchActorDtos);
+        var actors = await _processStepApplicationService.GetAsync(processStepActorsRequest).ConfigureAwait(false);
+        return Ok(actors);
     }
 
     /// <summary>

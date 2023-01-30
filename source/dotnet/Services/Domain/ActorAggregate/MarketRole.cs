@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.Actor;
+namespace Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 
-public record Actor(string Gln);
+public enum MarketRole
+{
+    EnergySupplier = 0,
+}
