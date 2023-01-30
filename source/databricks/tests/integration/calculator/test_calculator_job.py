@@ -141,10 +141,10 @@ def dummy_job_parameters(source_path: str) -> list[str]:
         "information",
     ]
     command_line_args.extend(process_manager_parameters)
-    
+
     return command_line_args
 
-    
+
 def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails():
     # Act
     with pytest.raises(SystemExit) as excinfo:
@@ -161,7 +161,7 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(dummy
     """
 
     # Arrange
-   
+
     # Act and Assert
     _get_valid_args_or_throw(dummy_job_parameters)
 
@@ -611,10 +611,9 @@ def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked, mock_args_
 def test__start__start_calculator_called_without_exceptions(mock_start_calculator, mock_is_locked, mock_init_spark, dummy_job_parameters):
     # Arrange
     mock_is_locked.return_value = False
-        
+
     # Act
     _start(dummy_job_parameters)
-    
+
     # Assert
     mock_start_calculator.assert_called_once()
-   
