@@ -12,11 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Application.ProcessResult;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Xunit;
+using Xunit.Categories;
 
-public enum TimeSeriesType
+namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessStep.Model;
+
+[UnitTest]
+public sealed class ProcessResultPointTests
 {
-    NonProfiledConsumption = 1,
-    FlexConsumption = 2,
-    Production = 3,
+    [Fact]
+    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
+    {
+        await using var stream = EmbeddedResources.GetStream("Sender.Infrastructure.Calculator.calculator-result.json");
+
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<ProcessResultPoint>(stream);
+    }
 }

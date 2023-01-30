@@ -12,11 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Xunit;
+using Xunit.Categories;
 
-public enum TimeSeriesType
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Actor;
+
+[UnitTest]
+public class ActorTests
 {
-    NonProfiledConsumption = 1,
-    FlexConsumption = 2,
-    Production = 3,
+    [Fact]
+    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
+    {
+        await using var stream = EmbeddedResources.GetStream("Infrastructure.Actor.calculator-actor.json");
+
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<Wholesale.Infrastructure.BatchActor.Actor>(stream);
+    }
 }

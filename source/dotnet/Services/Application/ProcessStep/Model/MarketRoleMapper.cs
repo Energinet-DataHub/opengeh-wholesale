@@ -12,11 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Contracts;
 
-public enum TimeSeriesType
+namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
+
+public static class MarketRoleMapper
 {
-    NonProfiledConsumption = 1,
-    FlexConsumption = 2,
-    Production = 3,
+    public static Domain.ActorAggregate.MarketRole Map(MarketRole marketRole)
+    {
+        switch (marketRole)
+        {
+            case MarketRole.EnergySupplier:
+                return Domain.ActorAggregate.MarketRole.EnergySupplier;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(marketRole), marketRole, null);
+        }
+    }
 }

@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-public enum TimeSeriesType
+namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
+
+public interface IProcessStepResultMapper
 {
-    NonProfiledConsumption = 1,
-    FlexConsumption = 2,
-    Production = 3,
+    ProcessStepResultDto MapToDto(ProcessStepResult processStepResult);
 }
