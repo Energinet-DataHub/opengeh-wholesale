@@ -41,6 +41,7 @@ public class DataLakeClientTests
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
             .ReturnsAsync(responseMock.Object);
         responseMock.Setup(res => res.Value).Returns(false);
+
         var sut = new DataLakeClient(dataLakeFileSystemClientMock.Object);
 
         // Act and Assert
@@ -59,7 +60,9 @@ public class DataLakeClientTests
     {
         // Arrange
         const string pathWithUnknownExtension = "my_file.xxx";
+
         var asyncPageableWithOnePathItem = CreateAsyncPageableWithOnePathItem(pathWithUnknownExtension);
+
         dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
             .Returns(dataLakeDirectoryClientMock.Object);
         dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
@@ -90,7 +93,9 @@ public class DataLakeClientTests
         const string fileName = "my_file";
         const string fileExtension = ".json";
         const string pathWithUnknownExtension = $"{fileName}{fileExtension}";
+
         var asyncPageableWithOnePathItem = CreateAsyncPageableWithOnePathItem(pathWithUnknownExtension);
+
         dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(fileName))
             .Returns(dataLakeDirectoryClientMock.Object);
         dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(pathWithUnknownExtension))

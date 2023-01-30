@@ -41,35 +41,20 @@ public class ProcessStepResultRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetAsync_ReturnsProcessActorResult(
-        [Frozen] Mock<IJsonNewlineSerializer> datalakeTypeFactoryMock,
-        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
-        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
+        [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
-        [Frozen] Mock<Response<bool>> responseMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
-        const string pathWithKnownExtension = "my_file.json";
-        var asyncPageable = CreateAsyncPageableWithOnePathItem(pathWithKnownExtension);
         var stream = new Mock<Stream>();
 
-        dataLakeDirectoryClientMock
-            .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
-            .Returns(asyncPageable);
-        responseMock.Setup(res => res.Value).Returns(true);
-        dataLakeDirectoryClientMock.Setup(dirClient => dirClient.ExistsAsync(default))
-            .ReturnsAsync(responseMock.Object);
-        dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
-            .Returns(dataLakeDirectoryClientMock.Object);
-        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(pathWithKnownExtension))
-            .Returns(dataLakeFileClientMock.Object);
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
         dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(dataLakeFileClientMock.Object);
         var processResultPoint = new ProcessResultPoint("1.00", "A04", "2022-05-31T22:00:00");
-        datalakeTypeFactoryMock.Setup(x => x.DeserializeAsync<ProcessResultPoint>(stream.Object))
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ProcessResultPoint>(stream.Object))
             .ReturnsAsync(new List<ProcessResultPoint>
             {
                 processResultPoint,
@@ -77,7 +62,7 @@ public class ProcessStepResultRepositoryTests
 
         var sut = new ProcessStepResultRepository(
             dataLakeClientMock.Object,
-            datalakeTypeFactoryMock.Object);
+            jsonNewlineSerializerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, "grid_area");
@@ -96,11 +81,11 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area");
+        var (directory, extension, _) = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area");
 
         // Assert
-        actual.Extension.Should().Be(expected.Extension);
-        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
+        extension.Should().Be(expected.Extension);
+        directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Theory]
@@ -114,18 +99,9 @@ public class ProcessStepResultRepositoryTests
         const string gridAreaCode = "123";
 
         // Act
-        var actual = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, "grid_area");
+        var (directory, _, _) = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, "grid_area");
 
         // Assert
-        actual.Directory.Should().Contain(expectedTimeSeriesType);
-    }
-
-    private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
-    {
-        var pathItem = DataLakeModelFactory
-            .PathItem(path, false, DateTimeOffset.Now, ETag.All, 1, "owner", "group", "permissions");
-        var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
-        var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
-        return asyncPageable;
+        directory.Should().Contain(expectedTimeSeriesType);
     }
 }
