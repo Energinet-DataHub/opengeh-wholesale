@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
+using System.Net;
+using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
 
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class SettlementReportControllerTests :
+public class ProcessStepControllerTests :
     WebApiTestBase<WholesaleWebApiFixture>,
     IClassFixture<WholesaleWebApiFixture>,
     IClassFixture<WebApiFactory>,
@@ -35,7 +37,7 @@ public class SettlementReportControllerTests :
     private readonly HttpClient _client;
     private readonly WebApiFactory _factory;
 
-    public SettlementReportControllerTests(
+    public ProcessStepControllerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
@@ -58,23 +60,22 @@ public class SettlementReportControllerTests :
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsSettlementReport(
-        Mock<ISettlementReportApplicationService> mock,
-        string settlementReportContent)
+    public async Task ExpectedUrl_Should_ReturnOk(
+        Mock<IProcessStepApplicationService> mock,
+        ProcessStepActorsRequest request,
+        WholesaleActorDto wholesaleActorDto)
     {
         // Arrange
-        var batchId = Guid.NewGuid();
-        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(settlementReportContent));
-        var settlementReport = new SettlementReportDto(stream);
         mock
-            .Setup(service => service.GetSettlementReportAsync(batchId))
-            .ReturnsAsync(settlementReport);
-        _factory.SettlementReportApplicationServiceMock = mock;
+            .Setup(service => service.GetActorsAsync(request))
+            .ReturnsAsync(new[] { wholesaleActorDto });
+        _factory.ProcessStepApplicationServiceMock = mock;
 
         // Act
-        var actualContent = await _client.GetStringAsync($"/v2.3/settlementreport?batchId={batchId.ToString()}");
+        const string expectedUrl = "/v2.3/processstepresult";
+        var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
 
         // Assert
-        actualContent.Should().Be(settlementReportContent);
+        actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

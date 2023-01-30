@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+namespace Energinet.DataHub.Wholesale.Contracts;
 
-public enum TimeSeriesType
-{
-    NonProfiledConsumption = 1,
-    FlexConsumption = 2,
-    Production = 3,
-}
+/// <summary>
+/// The desired name of this type is "ActorDto". That now, however, causes problems
+/// regarding the front-end as it is also used in the wholesale API, which in turn is used
+/// in the published wholesale NuGet package, which is used to generate DTOs in
+/// the front-end. In the front-end the name "ActorDto" has already been taken.
+/// </summary>
+/// <param name="Gln"></param>
+public sealed record WholesaleActorDto(string Gln);
