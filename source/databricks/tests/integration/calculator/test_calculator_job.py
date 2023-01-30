@@ -559,7 +559,7 @@ def test__hourly_basis_data_file_matches_contract(
     # Assert
     actual_file_path = find_file(
         f"{data_lake_path}/{worker_id}",
-        f"{relative_output_path}}/part-*.csv",
+        f"{relative_output_path}/part-*.csv",
     )
     assert re.match(expected_path_expression, actual_file_path)
 
