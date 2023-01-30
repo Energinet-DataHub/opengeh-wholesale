@@ -14,7 +14,7 @@
 
 using Azure.Storage.Files.DataLake;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 
 public class DataLakeClient : IDataLakeClient
 {

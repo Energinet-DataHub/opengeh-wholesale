@@ -17,6 +17,7 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
