@@ -72,7 +72,7 @@ public class ProcessStepApplicationServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsActors(
+    public async Task GetActorsAsync_WhenNoActors_ReturnsEmptyCollection(
         Guid batchId,
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
         ProcessStepApplicationService sut)
@@ -84,19 +84,47 @@ public class ProcessStepApplicationServiceTests
             Contracts.TimeSeriesType.Production,
             Contracts.MarketRole.EnergySupplier);
 
-        var glnNumber = "AnyGlnNumber";
         actorRepositoryMock
             .Setup(x => x.GetAsync(
                 actorsRequest.BatchId,
                 new GridAreaCode(actorsRequest.GridAreaCode),
                 TimeSeriesType.Production,
-                MarketRole.EnergySupplier)).ReturnsAsync(new Actor[] { new(glnNumber) });
+                MarketRole.EnergySupplier)).ReturnsAsync(new Actor[] { });
 
         // Act
-        var actors = await sut.GetAsync(actorsRequest);
+        var actors = await sut.GetActorsAsync(actorsRequest);
 
         // Assert
-        actors.Single().Gln.Should().Be(glnNumber);
+        actors.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetActorsAsync_ReturnsActors(
+        Guid batchId,
+        [Frozen] Mock<IActorRepository> actorRepositoryMock,
+        ProcessStepApplicationService sut)
+    {
+        // Arrange
+        var actorsRequest = new ProcessStepActorsRequest(
+            batchId,
+            "805",
+            Contracts.TimeSeriesType.Production,
+            Contracts.MarketRole.EnergySupplier);
+
+        var expectedGlnNumber = "ExpectedGlnNumber";
+        actorRepositoryMock
+            .Setup(x => x.GetAsync(
+                actorsRequest.BatchId,
+                new GridAreaCode(actorsRequest.GridAreaCode),
+                TimeSeriesType.Production,
+                MarketRole.EnergySupplier)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
+
+        // Act
+        var actors = await sut.GetActorsAsync(actorsRequest);
+
+        // Assert
+        actors.Single().Gln.Should().Be(expectedGlnNumber);
     }
 
     [Theory]

@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Application.ProcessStep;
 /// </summary>
 public interface IProcessStepApplicationService
 {
-    Task<WholesaleActorDto[]> GetAsync(ProcessStepActorsRequest processStepActorsRequest);
+    Task<WholesaleActorDto[]> GetActorsAsync(ProcessStepActorsRequest processStepActorsRequest);
 
     Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
 
