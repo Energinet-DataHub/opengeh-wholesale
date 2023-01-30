@@ -16,6 +16,7 @@ using System.Text;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
 using FluentAssertions;
 using Moq;

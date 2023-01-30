@@ -14,9 +14,16 @@
 
 using Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Application.BatchActor;
+namespace Energinet.DataHub.Wholesale.Application.ProcessStep;
 
-public interface IActorApplicationService
+/// <summary>
+/// This class provides the ability to retrieve a calculated result for a given step for a batch.
+/// </summary>
+public interface IProcessStepApplicationService
 {
     Task<WholesaleActorDto[]> GetAsync(ProcessStepActorsRequest processStepActorsRequest);
+
+    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
+
+    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
 }

@@ -33,8 +33,29 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Contracts\WholesaleActorDto.cs">
-      <Link>ProcessResult\Model\WholesaleActorDto.cs</Link>
+    <Compile Include="..\..\Contracts\ProcessStepActorsRequest.cs">
+      <Link>ProcessStep\Model\ProcessStepActorsRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
+      <Link>ProcessStep\Model\ProcessStepMeteringPointType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
+      <Link>ProcessStep\Model\ProcessStepResultDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepResultRequestDto.cs">
+      <Link>ProcessStep\Model\ProcessStepResultRequestDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepResultRequestDtoV2.cs">
+      <Link>ProcessStep\Model\ProcessStepResultRequestDtoV2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepType.cs">
+      <Link>ProcessStep\Model\ProcessStepType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\TimeSeriesPointDto.cs">
+      <Link>ProcessStep\Model\TimeSeriesPointDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\TimeSeriesType.cs">
+      <Link>ProcessStep\Model\TimeSeriesType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchRequestDto.cs">
       <Link>Batches\Model\BatchRequestDto.cs</Link>
@@ -46,34 +67,13 @@ limitations under the License.
       <Link>Batches\Model\BatchState.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\MarketRole.cs">
-      <Link>ProcessResult\Model\MarketRole.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepActorsRequest.cs">
-      <Link>ProcessResult\Model\ProcessStepActorsRequest.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
-      <Link>ProcessResult\Model\ProcessStepMeteringPointType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
-      <Link>ProcessResult\Model\ProcessStepResultDto.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepResultRequestDto.cs">
-      <Link>ProcessResult\Model\ProcessStepResultRequestDto.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepResultRequestDtoV2.cs">
-      <Link>ProcessResult\Model\ProcessStepResultRequestDtoV2.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\TimeSeriesType.cs">
-      <Link>ProcessResult\Model\TimeSeriesType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepType.cs">
-      <Link>ProcessResult\Model\ProcessStepType.cs</Link>
+      <Link>ProcessStep\Model\MarketRole.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessType.cs">
       <Link>Processes\Model\ProcessType.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\TimeSeriesPointDto.cs">
-      <Link>ProcessResult\Model\TimeSeriesPointDto.cs</Link>
+    <Compile Include="..\..\Contracts\WholesaleActorDto.cs">
+      <Link>ProcessStep\Model\WholesaleActorDto.cs</Link>
     </Compile>
   </ItemGroup>
 

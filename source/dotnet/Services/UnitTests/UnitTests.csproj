@@ -74,7 +74,7 @@ limitations under the License.
     <EmbeddedResource Include="..\..\..\contracts\internal\quality.json">
       <Link>Sender\Infrastructure\quality.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="Application\ProcessResult\Model\ProcessResult.json" />
+    <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
     <None Remove="Application\JsonNewLineStuff.json" />
     <None Remove="Infrastructure\BatchActor\actor-list.json" />
     <EmbeddedResource Include="Infrastructure\BatchActor\actor-list.json" />
@@ -90,6 +90,10 @@ limitations under the License.
     <EmbeddedResource Include="..\..\..\contracts\internal\calculator-actor.json">
       <Link>Infrastructure\BatchActor\calculator-actor.json</Link>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Application\Actor" />
   </ItemGroup>
 
 </Project>

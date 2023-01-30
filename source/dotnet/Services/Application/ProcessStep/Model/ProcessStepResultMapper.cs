@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
+namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 
 public class ProcessStepResultMapper : IProcessStepResultMapper
 {

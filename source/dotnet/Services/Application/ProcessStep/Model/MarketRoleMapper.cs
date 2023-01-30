@@ -13,11 +13,19 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
+namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 
-public interface IProcessStepResultMapper
+public static class MarketRoleMapper
 {
-    ProcessStepResultDto MapToDto(ProcessStepResult processStepResult);
+    public static Domain.Actor.MarketRole Map(MarketRole marketRole)
+    {
+        switch (marketRole)
+        {
+            case MarketRole.EnergySupplier:
+                return Domain.Actor.MarketRole.EnergySupplier;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(marketRole), marketRole, null);
+        }
+    }
 }

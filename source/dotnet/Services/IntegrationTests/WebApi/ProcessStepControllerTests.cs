@@ -15,8 +15,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.BatchActor;
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 using FluentAssertions;
@@ -27,7 +28,7 @@ using Xunit.Abstractions;
 namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
 
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class BatchActorControllerTests :
+public class ProcessStepControllerTests :
     WebApiTestBase<WholesaleWebApiFixture>,
     IClassFixture<WholesaleWebApiFixture>,
     IClassFixture<WebApiFactory>,
@@ -36,7 +37,7 @@ public class BatchActorControllerTests :
     private readonly HttpClient _client;
     private readonly WebApiFactory _factory;
 
-    public BatchActorControllerTests(
+    public ProcessStepControllerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
@@ -60,7 +61,7 @@ public class BatchActorControllerTests :
     [Theory]
     [InlineAutoMoqData]
     public async Task ExpectedUrl_Should_ReturnOk(
-        Mock<IActorApplicationService> mock,
+        Mock<IProcessStepApplicationService> mock,
         ProcessStepActorsRequest request,
         WholesaleActorDto wholesaleActorDto)
     {
@@ -68,7 +69,7 @@ public class BatchActorControllerTests :
         mock
             .Setup(service => service.GetAsync(request))
             .ReturnsAsync(new[] { wholesaleActorDto });
-        _factory.ActorApplicationServiceMock = mock;
+        _factory.ProcessStepApplicationServiceMock = mock;
 
         // Act
         const string expectedUrl = "/v2.0/actor";

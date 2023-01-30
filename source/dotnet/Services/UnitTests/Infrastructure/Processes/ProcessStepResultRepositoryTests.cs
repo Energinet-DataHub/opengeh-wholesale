@@ -18,7 +18,7 @@ using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessResult;
-using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
@@ -113,37 +113,6 @@ public class ProcessStepResultRepositoryTests
 
         // Assert
         actual.Directory.Should().Contain(expectedTimeSeriesType);
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public async Task GetResultAsync_TimeSeriesPoint_IsRead(
-        [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock)
-    {
-        // Arrange
-        var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
-        var quantity = 1.000m;
-        var quality = "A04";
-
-        const string gridAreaCode = "805";
-        var batchId = Guid.NewGuid();
-
-        var sut = new ProcessStepResultApplicationService(processActorResultRepositoryMock.Object, new ProcessStepResultMapper());
-
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area"))
-            .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
-
-        // Act
-        var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
-                batchId,
-                gridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
-
-        // Assert
-        actual.TimeSeriesPoints.First().Time.Should().Be(time);
-        actual.TimeSeriesPoints.First().Quantity.Should().Be(quantity);
-        actual.TimeSeriesPoints.First().Quality.Should().Be(quality);
     }
 
     private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)

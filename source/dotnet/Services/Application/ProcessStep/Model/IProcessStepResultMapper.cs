@@ -12,20 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
+namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 
-public static class TimeSeriesTypeMapper
+public interface IProcessStepResultMapper
 {
-    public static TimeSeriesType Map(Contracts.TimeSeriesType timeSeriesType)
-    {
-        return timeSeriesType switch
-        {
-            Contracts.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
-            Contracts.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
-            Contracts.TimeSeriesType.Production => TimeSeriesType.Production,
-            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
-        };
-    }
+    ProcessStepResultDto MapToDto(ProcessStepResult processStepResult);
 }

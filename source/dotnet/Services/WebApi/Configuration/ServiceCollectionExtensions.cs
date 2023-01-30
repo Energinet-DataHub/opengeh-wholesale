@@ -16,13 +16,12 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.BatchActor;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Application.ProcessResult;
-using Energinet.DataHub.Wholesale.Application.ProcessResult.Model;
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
+using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Domain.Actor;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -94,12 +93,11 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculationDomainService>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
-        services.AddScoped<IProcessStepResultApplicationService, ProcessStepResultApplicationService>();
+        services.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
         services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
         services.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
         services.AddScoped<DataLakeRepositoryBase>();
-        services.AddScoped<IActorApplicationService, ActorApplicationService>();
         services.AddScoped<IActorRepository, ActorRepository>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
 
