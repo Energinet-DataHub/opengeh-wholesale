@@ -32,6 +32,9 @@ from tests.helpers.assert_calculation_file_path import (
 from tests.helpers.file_utils import find_file
 
 ACTORS_FOLDER = "actors"
+DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
+DEFAULT_GRID_AREA = "105"
+DEFAULT_ENERGY_SUPPLIER_ID = "987654321"
 
 
 def _create_result_row(
@@ -83,9 +86,13 @@ def test__write_per_ga__does_not_call_actors_writer(
 ) -> None:
 
     # Arrange
-    row = [_create_result_row(grid_area="805", energy_supplier_id="123")]
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA, energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID
+        )
+    ]
     result_df = spark.createDataFrame(data=row)
-    sut = ProcessStepResultWriter(str(tmpdir), "1234")
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act
     sut.write_per_ga(result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION)
@@ -100,7 +107,6 @@ def test__write_per_ga_per_actor__actors_file_has_expected_gln(
 
     # Arrange
     output_path = str(tmpdir)
-    batch_id = "321"
     expected_gln_805 = ["123", "234"]
     expected_gln_806 = ["123", "345"]
     time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
@@ -121,17 +127,17 @@ def test__write_per_ga_per_actor__actors_file_has_expected_gln(
     )
     result_df = spark.createDataFrame(rows)
 
-    sut = ProcessStepResultWriter(output_path, batch_id)
+    sut = ProcessStepResultWriter(output_path, DEFAULT_BATCH_ID)
 
     # Act
     sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
 
     # Assert
     actual_gln_805 = _get_gln_from_actors_file(
-        output_path, batch_id, "805", time_series_type, market_role
+        output_path, DEFAULT_BATCH_ID, "805", time_series_type, market_role
     )
     actual_gln_806 = _get_gln_from_actors_file(
-        output_path, batch_id, "806", time_series_type, market_role
+        output_path, DEFAULT_BATCH_ID, "806", time_series_type, market_role
     )
 
     assert len(actual_gln_805) == len(expected_gln_805) and len(actual_gln_806) == len(
@@ -148,11 +154,19 @@ def test__write_per_ga_per_actor__actors_file_path_matches_contract(
     tmpdir,
 ) -> None:
     # Arrange
-    batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
-    grid_area = "105"
-    row = [_create_result_row(grid_area=grid_area, energy_supplier_id="123")]
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA, energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID
+        )
+    ]
     result_df = spark.createDataFrame(data=row)
-    sut = ProcessStepResultWriter(str(tmpdir), batch_id)
+    relative_output_path = infra.get_actors_file_relative_path(
+        DEFAULT_BATCH_ID,
+        DEFAULT_GRID_AREA,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        MarketRole.ENERGY_SUPPLIER,
+    )
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act
     sut.write_per_ga_per_actor(
@@ -160,12 +174,6 @@ def test__write_per_ga_per_actor__actors_file_path_matches_contract(
     )
 
     # Assert
-    relative_output_path = infra.get_actors_file_relative_path(
-        batch_id,
-        grid_area,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        MarketRole.ENERGY_SUPPLIER,
-    )
     actual_result_file = find_file(
         f"{str(tmpdir)}/",
         f"{relative_output_path}/part-*.json",
@@ -175,31 +183,36 @@ def test__write_per_ga_per_actor__actors_file_path_matches_contract(
     )
 
 
-# def test__result_file_path_matches_contract(
-#     data_lake_path,
-#     worker_id,
-#     contracts_path,
-#     executed_calculation_job,
-# ):
-#     # Arrange
-#     contract = calculation_file_paths_contract.result_file
-#     expected_path_expression = create_file_path_expression(
-#         contract.directory_expression,
-#         contract.extension,
-#     )
-#     relative_output_path = infra.get_result_file_relative_path(
-#         executed_batch_id,
-#         "805",
-#         grid_area_gln,
-#         TimeSeriesType.PRODUCTION,
-#     )
+def test__write_per_ga_per_actor__result_file_path_matches_contract(
+    spark: SparkSession,
+    contracts_path: str,
+    tmpdir,
+):
+    # Arrange
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA, energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID
+        )
+    ]
+    result_df = spark.createDataFrame(data=row)
+    relative_output_path = infra.get_result_file_relative_path(
+        DEFAULT_BATCH_ID,
+        DEFAULT_GRID_AREA,
+        DEFAULT_ENERGY_SUPPLIER_ID,
+        TimeSeriesType.PRODUCTION,
+    )
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-#     # Act: Executed in fixture executed_calculation_job
+    # Act: Executed in fixture executed_calculation_job
+    sut.write_per_ga_per_actor(
+        result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION, MarketRole.ENERGY_SUPPLIER
+    )
 
-#     # Assert
-#     actual_result_file = find_file(
-#         f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.json"
-#     )
-#     assert_file_path_match_contract(
-#         contracts_path, actual_result_file, CalculationFileType.ResultFile
-#     )
+    # Assert
+    actual_result_file = find_file(
+        f"{str(tmpdir)}/",
+        f"{relative_output_path}/part-*.json",
+    )
+    assert_file_path_match_contract(
+        contracts_path, actual_result_file, CalculationFileType.ResultFile
+    )
