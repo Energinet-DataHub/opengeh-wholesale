@@ -16,10 +16,10 @@ using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BatchActor;
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Actor;
 
 [UnitTest]
-public class BatchActorTests
+public class ActorTests
 {
     [Fact]
     public async Task PropertyNamesAndTypesMatchContractWithCalculator()

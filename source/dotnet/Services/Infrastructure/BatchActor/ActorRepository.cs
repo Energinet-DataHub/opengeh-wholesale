@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Wholesale.Domain.Actor;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
@@ -34,7 +34,7 @@ public class ActorRepository : IActorRepository
         _jsonNewlineSerializer = jsonNewlineSerializer;
     }
 
-    public async Task<Domain.Actor.Actor[]> GetAsync(
+    public async Task<Domain.ActorAggregate.Actor[]> GetAsync(
         Guid batchId,
         GridAreaCode gridAreaCode,
         TimeSeriesType timeSeriesType,
@@ -58,8 +58,8 @@ public class ActorRepository : IActorRepository
         return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode.Code}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/market_role={MarketRoleMapper.Map(marketRole)}/", ".json");
     }
 
-    private static Domain.Actor.Actor[] MapToBatchActor(IEnumerable<Actor> actors)
+    private static Domain.ActorAggregate.Actor[] MapToBatchActor(IEnumerable<Actor> actors)
     {
-        return actors.Select(actor => new Domain.Actor.Actor(actor.gln)).ToArray();
+        return actors.Select(actor => new Domain.ActorAggregate.Actor(actor.gln)).ToArray();
     }
 }

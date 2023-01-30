@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.Actor;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.BatchActor;
+namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Actor;
 
 [UnitTest]
 public class MarketRoleMapperTests

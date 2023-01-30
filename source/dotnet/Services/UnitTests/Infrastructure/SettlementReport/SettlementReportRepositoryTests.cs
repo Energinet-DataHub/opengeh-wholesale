@@ -21,7 +21,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.Actor;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;

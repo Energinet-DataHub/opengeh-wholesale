@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.Actor;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;

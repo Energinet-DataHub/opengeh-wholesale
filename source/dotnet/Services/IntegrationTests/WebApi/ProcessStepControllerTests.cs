@@ -72,7 +72,7 @@ public class ProcessStepControllerTests :
         _factory.ProcessStepApplicationServiceMock = mock;
 
         // Act
-        const string expectedUrl = "/v2.0/actor";
+        const string expectedUrl = "/v2.3/processstepresult";
         var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
 
         // Assert

@@ -17,7 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.Actor;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
@@ -25,8 +25,8 @@ using Moq;
 using Test.Core;
 using Xunit;
 using Xunit.Categories;
-using Actor = Energinet.DataHub.Wholesale.Domain.Actor.Actor;
-using MarketRole = Energinet.DataHub.Wholesale.Domain.Actor.MarketRole;
+using Actor = Energinet.DataHub.Wholesale.Domain.ActorAggregate.Actor;
+using MarketRole = Energinet.DataHub.Wholesale.Domain.ActorAggregate.MarketRole;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessStep;
@@ -96,7 +96,7 @@ public class ProcessStepApplicationServiceTests
         var actors = await sut.GetAsync(actorsRequest);
 
         // Assert
-        actors.First().Gln.Should().Be(glnNumber);
+        actors.Single().Gln.Should().Be(glnNumber);
     }
 
     [Theory]

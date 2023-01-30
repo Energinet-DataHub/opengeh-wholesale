@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
-using MarketRole = Energinet.DataHub.Wholesale.Domain.Actor.MarketRole;
+using MarketRole = Energinet.DataHub.Wholesale.Domain.ActorAggregate.MarketRole;
 
 namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessStep.Model;
 
