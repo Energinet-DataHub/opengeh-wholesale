@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 
 namespace Energinet.DataHub.Wholesale.Application.BatchActor;
 
-public static class MarketRoleTypeMapper
+public static class MarketRoleMapper
 {
     public static Domain.Actor.MarketRole Map(MarketRole marketRole)
     {

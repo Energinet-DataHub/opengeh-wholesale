@@ -40,6 +40,6 @@ public class MarketRoleTypeMapperTests
         Contracts.MarketRole input,
         MarketRole expected)
     {
-        MarketRoleTypeMapper.Map(input).Should().Be(expected);
+        MarketRoleMapper.Map(input).Should().Be(expected);
     }
 }

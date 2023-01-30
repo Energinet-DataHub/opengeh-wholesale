@@ -34,7 +34,7 @@ public class ActorApplicationService : IActorApplicationService
             processStepActorsRequest.BatchId,
             new GridAreaCode(processStepActorsRequest.GridAreaCode),
             TimeSeriesTypeMapper.Map(processStepActorsRequest.Type),
-            MarketRoleTypeMapper.Map(processStepActorsRequest.MarketRole)).ConfigureAwait(false);
+            MarketRoleMapper.Map(processStepActorsRequest.MarketRole)).ConfigureAwait(false);
 
         return actors.Select(batchActor => new WholesaleActorDto(batchActor.Gln)).ToArray();
     }
