@@ -105,8 +105,10 @@ def _calculate_production(
     total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
         enriched_time_series, metadata
     )
+
+    agg_steps.agg
     total_production_per_ga_df = total_production_per_per_ga_and_brp_and_es.groupBy(
-        Colname.grid_area, Colname.time_window
+        Colname.grid_area, Colname.time_window, Colname.quality,
     ).agg(
         sum(Colname.sum_quantity).alias(Colname.sum_quantity),
         first(Colname.quality).alias(Colname.quality),
