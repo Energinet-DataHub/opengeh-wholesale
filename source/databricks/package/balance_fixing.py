@@ -102,17 +102,14 @@ def _calculate_production(
     metadata: Metadata,
 ) -> None:
 
-    total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
+    production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
         enriched_time_series, metadata
     )
-    total_production_per_ga_df = total_production_per_per_ga_and_brp_and_es.groupBy(
-        Colname.grid_area, Colname.time_window
-    ).agg(
-        sum(Colname.sum_quantity).alias(Colname.sum_quantity),
-        first(Colname.quality).alias(Colname.quality),
+    production_per_ga = agg_steps.aggregate_production_ga(
+        production_per_per_ga_and_brp_and_es, metadata
     )
 
-    result_writer.write_per_ga(total_production_per_ga_df, TimeSeriesType.PRODUCTION)
+    result_writer.write_per_ga(production_per_ga, TimeSeriesType.PRODUCTION)
 
 
 def _calculate_non_profiled_consumption(
