@@ -54,9 +54,4 @@ def assert_file_path_match_contract(
         extension,
     )
 
-    print("start debug")
-    print(expected_path_expression)
-    print(actual_file_path)
-    print("end debug")
-
     assert re.match(expected_path_expression, actual_file_path)
