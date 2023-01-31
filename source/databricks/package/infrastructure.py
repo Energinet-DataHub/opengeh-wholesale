@@ -39,7 +39,7 @@ def get_result_file_relative_path(
     gln: str,
     time_series_type: TimeSeriesType,
 ) -> str:
-    batch_path = _get_batch_path(batch_id)
+    batch_path = get_batch_relative_path(batch_id)
     return f"{batch_path}/{RESULT_FOLDER}/grid_area={grid_area}/gln={gln}/time_series_type={time_series_type.value}"
 
 
@@ -49,26 +49,26 @@ def get_actors_file_relative_path(
     time_series_type: TimeSeriesType,
     market_role: MarketRole,
 ) -> str:
-    batch_path = _get_batch_path(batch_id)
+    batch_path = get_batch_relative_path(batch_id)
     return f"{batch_path}/{ACTORS_FOLDER}/grid_area={grid_area}/time_series_type={time_series_type.value}/market_role={market_role.value}"
 
 
 def get_time_series_quarter_relative_path(
     batch_id: str, grid_area: str, gln: str
 ) -> str:
-    batch_path = _get_batch_path(batch_id)
+    batch_path = get_batch_relative_path(batch_id)
     return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_quarter/grid_area={grid_area}/gln={gln}"
 
 
 def get_time_series_hour_relative_path(batch_id: str, grid_area: str, gln: str) -> str:
-    batch_path = _get_batch_path(batch_id)
+    batch_path = get_batch_relative_path(batch_id)
     return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_hour/grid_area={grid_area}/gln={gln}"
 
 
 def get_master_basis_data_relative_path(batch_id: str, grid_area: str, gln: str) -> str:
-    batch_path = _get_batch_path(batch_id)
+    batch_path = get_batch_relative_path(batch_id)
     return f"{batch_path}/{BASIS_DATA_FOLDER}/master_basis_data/grid_area={grid_area}/gln={gln}"
 
 
-def _get_batch_path(batch_id: str) -> str:
+def get_batch_relative_path(batch_id: str) -> str:
     return f"{OUTPUT_FOLDER}/batch_id={batch_id}"

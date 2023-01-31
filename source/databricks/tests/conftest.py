@@ -90,6 +90,17 @@ def databricks_path(source_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
+def contracts_path(source_path: str) -> str:
+    """
+    Returns the source/contract folder path.
+    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
+    The correctness also relies on the prerequisite that this function is actually located in a
+    file located directly in the integration tests folder.
+    """
+    return f"{source_path}/contracts"
+
+
+@pytest.fixture(scope="session")
 def timestamp_factory() -> Callable[[str], Optional[datetime]]:
     "Creates timestamp from utc string in correct format yyyy-mm-ddThh:mm:ss.nnnZ"
 
