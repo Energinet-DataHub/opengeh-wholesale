@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Text;
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
@@ -22,13 +21,13 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Batches;
 
 public class BatchCompletedPublisher : IBatchCompletedPublisher
 {
-    private readonly ServiceBusSender _serviceBusSender;
+    private readonly DomainEventTopicServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly string _messageType;
     private readonly IJsonSerializer _jsonSerializer;
 
     public BatchCompletedPublisher(
-        ServiceBusSender serviceBusSender,
+        DomainEventTopicServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory,
         string messageType,
         IJsonSerializer jsonSerializer)
@@ -46,7 +45,6 @@ public class BatchCompletedPublisher : IBatchCompletedPublisher
             .Select(body => Encoding.UTF8.GetBytes(body));
 
         var messages = _serviceBusMessageFactory.Create(bodies, _messageType);
-
         await _serviceBusSender.SendMessagesAsync(messages).ConfigureAwait(false);
     }
 }

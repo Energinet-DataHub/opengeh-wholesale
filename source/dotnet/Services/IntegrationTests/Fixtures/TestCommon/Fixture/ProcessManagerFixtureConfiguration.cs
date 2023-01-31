@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Xunit;

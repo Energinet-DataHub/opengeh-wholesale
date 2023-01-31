@@ -60,7 +60,6 @@ public class BatchApplicationService : IBatchApplicationService
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _batchCreatedPublisher.PublishAsync(new BatchCreatedEventDto(batch.Id)).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
-
         return batch.Id;
     }
 

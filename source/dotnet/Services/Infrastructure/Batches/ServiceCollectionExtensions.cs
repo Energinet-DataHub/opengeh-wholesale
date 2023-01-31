@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Batches;
-
+/*
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddBatchCompletedPublisher(
@@ -51,4 +51,4 @@ public static class ServiceCollectionExtensions
 
         return serviceCollection;
     }
-}
+}*/

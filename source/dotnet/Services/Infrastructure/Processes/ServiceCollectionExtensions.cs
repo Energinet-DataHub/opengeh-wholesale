@@ -21,7 +21,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
-
+/*
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddProcessCompletedPublisher(
@@ -80,4 +80,4 @@ public static class ServiceCollectionExtensions
 
         return serviceCollection;
     }
-}
+}*/

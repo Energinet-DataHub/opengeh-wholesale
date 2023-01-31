@@ -20,7 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 
 public sealed class ProcessManagerIntegrationTestHost : IDisposable
 {

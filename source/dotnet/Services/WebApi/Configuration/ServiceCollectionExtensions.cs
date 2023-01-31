@@ -37,6 +37,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 using Microsoft.EntityFrameworkCore;
@@ -101,6 +102,9 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IActorRepository, ActorRepository>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
+
+        services.AddScoped<DomainEventTopicServiceBusSender>();
+        services.AddScoped<IntegrationEventTopicServiceBusSender>();
 
         services.ConfigureDateTime();
     }

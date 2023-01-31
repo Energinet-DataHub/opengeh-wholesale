@@ -17,6 +17,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
@@ -29,7 +30,7 @@ public class ProcessCompletedPublisher : IProcessCompletedPublisher
     private readonly IJsonSerializer _jsonSerializer;
 
     public ProcessCompletedPublisher(
-        ServiceBusSender serviceBusSender,
+        DomainEventTopicServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory,
         string messageType,
         IJsonSerializer jsonSerializer)

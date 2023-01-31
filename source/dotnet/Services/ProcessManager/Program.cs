@@ -97,6 +97,8 @@ public static class Program
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
+        services.AddScoped<IBatchCompletedPublisher, BatchCompletedPublisher>();
+        services.AddScoped<DomainEventTopicServiceBusSender>();
     }
 
     private static void Domains(IServiceCollection services)
@@ -136,11 +138,10 @@ public static class Program
 
         var batchCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName);
         var processCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName);
-        serviceCollection.AddBatchCompletedPublisher(serviceBusConnectionString, domainEventsTopicName, batchCompletedMessageType);
-        serviceCollection.AddProcessCompletedPublisher(serviceBusConnectionString, domainEventsTopicName, processCompletedMessageType);
-
+        // TODO AJW serviceCollection.AddBatchCompletedPublisher(serviceBusConnectionString, domainEventsTopicName, batchCompletedMessageType);
+        // TODO AJW serviceCollection.AddProcessCompletedPublisher(serviceBusConnectionString, domainEventsTopicName, processCompletedMessageType);
         var integrationEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
-        serviceCollection.AddProcessCompletedIntegrationEventPublisher(serviceBusConnectionString, integrationEventsTopicName);
+        // TOD AJW serviceCollection.AddProcessCompletedIntegrationEventPublisher(serviceBusConnectionString, integrationEventsTopicName);
         serviceCollection.AddScoped<IProcessCompletedIntegrationEventMapper, ProcessCompletedIntegrationEventMapper>();
 
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();

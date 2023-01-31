@@ -14,7 +14,6 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Contracts.Events;
@@ -39,7 +38,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
         Mock<IProcessCompletedIntegrationEventMapper> mapperMock)
     {
         // Arrange
-        var senderMock = new Mock<TestServiceBusSender>();
+        var senderMock = new Mock<IntegrationEventTopicServiceBusSender>();
         mapperMock
             .Setup(mapper => mapper.MapFrom(eventDto))
             .Returns(processCompleted);
@@ -65,7 +64,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
     {
         // Arrange
         var eventDto = CreateProcessCompletedEventDto(processType);
-        var senderMock = new Mock<TestServiceBusSender>();
+        var senderMock = new Mock<IntegrationEventTopicServiceBusSender>();
         mapperMock
             .Setup(mapper => mapper.MapFrom(eventDto))
             .Returns(processCompleted);

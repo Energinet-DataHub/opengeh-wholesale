@@ -23,7 +23,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.ProcessManager;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
 [Collection(nameof(ProcessManagerFunctionAppCollectionFixture))]
 public class DatabaseHealthCheckTests : FunctionAppTestBase<ProcessManagerFunctionAppFixture>
