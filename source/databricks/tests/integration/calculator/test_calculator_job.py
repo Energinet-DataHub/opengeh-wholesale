@@ -20,7 +20,7 @@ import pytest
 import yaml
 from unittest.mock import patch
 from tests.contract_utils import assert_contract_matches_schema
-from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
+from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start, _start
 from package.calculator_args import CalculatorArgs
 from package.constants.time_series_type import TimeSeriesType
 from package.constants.market_role import MarketRole
@@ -124,22 +124,8 @@ def _get_process_manager_parameters(filename):
         )
 
 
-def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails():
-    # Act
-    with pytest.raises(SystemExit) as excinfo:
-        _get_valid_args_or_throw("--unexpected-arg")
-    # Assert
-    assert excinfo.value.code == 2
-
-
-def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(source_path):
-
-    """
-    This test works in tandem with a .NET test ensuring that the calculator job accepts
-    the arguments that are provided by the calling process manager.
-    """
-
-    # Arrange
+@pytest.fixture(scope="session")
+def dummy_job_parameters(source_path: str) -> list[str]:
     process_manager_parameters = _get_process_manager_parameters(
         f"{source_path}/contracts/internal/calculation-job-parameters-reference.txt"
     )
@@ -156,8 +142,28 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(sourc
     ]
     command_line_args.extend(process_manager_parameters)
 
+    return command_line_args
+
+
+def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails():
+    # Act
+    with pytest.raises(SystemExit) as excinfo:
+        _get_valid_args_or_throw("--unexpected-arg")
+    # Assert
+    assert excinfo.value.code == 2
+
+
+def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(dummy_job_parameters):
+
+    """
+    This test works in tandem with a .NET test ensuring that the calculator job accepts
+    the arguments that are provided by the calling process manager.
+    """
+
+    # Arrange
+
     # Act and Assert
-    _get_valid_args_or_throw(command_line_args)
+    _get_valid_args_or_throw(dummy_job_parameters)
 
 
 def test__result_is_generated_for_requested_grid_areas(
@@ -597,3 +603,17 @@ def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked, mock_args_
         start()
     # Assert
     assert excinfo.value.code == 3
+
+
+@patch("package.calculator_job.initialize_spark")
+@patch("package.calculator_job.islocked")
+@patch("package.calculator_job._start_calculator")
+def test__start__start_calculator_called_without_exceptions(mock_start_calculator, mock_is_locked, mock_init_spark, dummy_job_parameters):
+    # Arrange
+    mock_is_locked.return_value = False
+
+    # Act
+    _start(dummy_job_parameters)
+
+    # Assert
+    mock_start_calculator.assert_called_once()
