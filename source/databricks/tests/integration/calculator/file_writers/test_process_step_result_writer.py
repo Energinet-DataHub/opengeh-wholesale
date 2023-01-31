@@ -199,7 +199,7 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
         DEFAULT_BATCH_ID,
         DEFAULT_GRID_AREA,
         DEFAULT_ENERGY_SUPPLIER_ID,
-        TimeSeriesType.PRODUCTION,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
