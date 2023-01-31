@@ -43,11 +43,6 @@ variable apim_maintenance_mode {
   default       = false
 }
 
-variable apimao_market_roles_domain_ingestion_function_url {
-  type          = string
-  description   = "Url of the Market Roles domain ingestion function, used for configuration inside the API Managment API."
-}
-
 variable apim_b2c_tenant_id {
   type          = string
   description   = "ID of the B2C tenant hosting the backend app registrations authorizing against."
