@@ -21,7 +21,6 @@ from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start
 from package.calculator_args import CalculatorArgs
 from package.constants.time_series_type import TimeSeriesType
-from package.constants.market_role import MarketRole
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit

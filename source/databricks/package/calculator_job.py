@@ -97,8 +97,8 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
 
     calculate_balance_fixing(
-        process_step_result_writer,
         basis_data_writer,
+        process_step_result_writer,
         metering_point_periods_df,
         timeseries_points_df,
         args.batch_period_start_datetime,
