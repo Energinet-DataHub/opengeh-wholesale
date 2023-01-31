@@ -13,13 +13,9 @@
 # limitations under the License.
 
 import sys
+
 import configargparse
-from .calculator_args import CalculatorArgs
-from .args_helper import valid_date, valid_list, valid_log_level
-from .datamigration import islocked
 import package.calculation_input as calculation_input
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import Row
 from configargparse import argparse
 from package import (
     calculate_balance_fixing,
@@ -29,6 +25,14 @@ from package import (
     initialize_spark,
     log,
 )
+from package.file_writers.basis_data_writer import BasisDataWriter
+from package.file_writers.process_step_result_writer import ProcessStepResultWriter
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.types import Row
+
+from .args_helper import valid_date, valid_list, valid_log_level
+from .calculator_args import CalculatorArgs
+from .datamigration import islocked
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -87,10 +91,14 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_period_end_datetime,
     )
 
-    output_path = f"{args.wholesale_container_path}/{infrastructure.OUTPUT_FOLDER}/batch_id={args.batch_id}"
+    process_step_result_writer = ProcessStepResultWriter(
+        args.wholesale_container_path, args.batch_id
+    )
+    basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
 
     calculate_balance_fixing(
-        output_path,
+        basis_data_writer,
+        process_step_result_writer,
         metering_point_periods_df,
         timeseries_points_df,
         args.batch_period_start_datetime,

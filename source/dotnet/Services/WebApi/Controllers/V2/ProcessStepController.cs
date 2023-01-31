@@ -36,7 +36,7 @@ public class ProcessStepController : ControllerBase
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
     [MapToApiVersion("2.3")]
-    public async Task<IActionResult> GetAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
+    public async Task<IActionResult> GetActorsAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
     {
         var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
         return Ok(actors);
@@ -49,7 +49,7 @@ public class ProcessStepController : ControllerBase
     [HttpPost]
     [MapToApiVersion(Version)]
     [MapToApiVersion("2.1")]
-    public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDto processStepResultRequestDto)
+    public async Task<IActionResult> GetResultAsync([FromBody] ProcessStepResultRequestDto processStepResultRequestDto)
     {
         var resultDto = await _processStepApplicationService.GetResultAsync(processStepResultRequestDto).ConfigureAwait(false);
         return Ok(resultDto);
@@ -58,7 +58,7 @@ public class ProcessStepController : ControllerBase
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
     [MapToApiVersion("2.2")]
-    public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
+    public async Task<IActionResult> GetResultAsync([FromBody] ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
     {
         var resultDto = await _processStepApplicationService.GetResultAsync(processStepResultRequestDtoV2).ConfigureAwait(false);
         return Ok(resultDto);
