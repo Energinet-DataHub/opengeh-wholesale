@@ -31,39 +31,40 @@ def apply(args: MigrationScriptArgs) -> None:
         credential=args.storage_account_key,
     )
 
-    # Enumerate the directories in the parent folder
-    directories = file_system_client.get_paths(path=directory_name)
-    parent_directory_client = file_system_client.get_directory_client(
-        directory=directory_name
-    )
-
-    # Rename each directory
-    for directory in directories:
-        match = re.search(
-            r"calculation-output/(batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/zip/(batch_.*)",
-            directory.name,
+    if file_system_client.exists():
+        # Enumerate the directories in the parent folder
+        directories = file_system_client.get_paths(path=directory_name)
+        parent_directory_client = file_system_client.get_directory_client(
+            directory=directory_name
         )
-        if match:
-            batch_id = match.group(1)
-            file_name = match.group(2)
-            current_directory_name = directory.name
-            print(current_directory_name)
 
-            file_client = file_system_client.get_file_client(
-                file_path=current_directory_name
+        # Rename each directory
+        for directory in directories:
+            match = re.search(
+                r"calculation-output/(batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12})/zip/(batch_.*)",
+                directory.name,
             )
+            if match:
+                batch_id = match.group(1)
+                file_name = match.group(2)
+                current_directory_name = directory.name
+                print(current_directory_name)
 
-            new_sub_directory_name = f"{batch_id}/zip/gln=grid_area"
-            parent_directory_client.create_sub_directory(new_sub_directory_name)
-            new_directory_name = (
-                f"{directory_name}/{new_sub_directory_name}/{file_name}"
-            )
-            move_and_rename_folder(
-                file_client=file_client,
-                current_directory_name=current_directory_name,
-                new_directory_name=new_directory_name,
-                container=container,
-            )
+                file_client = file_system_client.get_file_client(
+                    file_path=current_directory_name
+                )
+
+                new_sub_directory_name = f"{batch_id}/zip/gln=grid_area"
+                parent_directory_client.create_sub_directory(new_sub_directory_name)
+                new_directory_name = (
+                    f"{directory_name}/{new_sub_directory_name}/{file_name}"
+                )
+                move_and_rename_folder(
+                    file_client=file_client,
+                    current_directory_name=current_directory_name,
+                    new_directory_name=new_directory_name,
+                    container=container,
+                )
 
 
 def move_and_rename_folder(
