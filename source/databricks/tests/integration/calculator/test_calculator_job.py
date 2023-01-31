@@ -14,20 +14,21 @@
 
 from os import path
 from shutil import rmtree
-import re
 from pyspark.sql import SparkSession
 import pytest
-import yaml
 from unittest.mock import patch
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start, _start
 from package.calculator_args import CalculatorArgs
 from package.constants.time_series_type import TimeSeriesType
-from package.constants.market_role import MarketRole
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit
-from tests.helpers.file_utils import find_file, create_file_path_expression
+from tests.helpers.file_utils import find_file
+from tests.helpers.assert_calculation_file_path import (
+    CalculationFileType,
+    assert_file_path_match_contract,
+)
 
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -289,69 +290,6 @@ def test__quantity_is_with_precision_3(
     assert re.search(r"^\d+\.\d{3}$", result_non_profiled_consumption.first().quantity)
 
 
-@pytest.fixture(scope="session")
-def calculation_file_paths_contract(source_path):
-    with open(f"{source_path}/contracts/calculation-file-paths.yml", "r") as stream:
-        return DictObj(yaml.safe_load(stream))
-
-
-def test__actors_file_path_matches_contract(
-    data_lake_path,
-    worker_id,
-    executed_calculation_job,
-    calculation_file_paths_contract,
-):
-    # Arrange
-    contract = calculation_file_paths_contract.actors_file
-    expected_path_expression = create_file_path_expression(
-        contract.directory_expression,
-        contract.extension,
-    )
-    # Act: Executed in fixture executed_calculation_job
-
-    # Assert
-    relative_output_path = infra.get_actors_file_relative_path(
-        executed_batch_id,
-        "805",
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        MarketRole.ENERGY_SUPPLIER,
-    )
-    actual_result_file = find_file(
-        f"{data_lake_path}/{worker_id}/",
-        f"{relative_output_path}/part-*.json",
-    )
-    assert re.match(expected_path_expression, actual_result_file)
-
-
-def test__result_file_path_matches_contract(
-    data_lake_path,
-    worker_id,
-    executed_calculation_job,
-    calculation_file_paths_contract,
-):
-    # Arrange
-    contract = calculation_file_paths_contract.result_file
-    expected_path_expression = create_file_path_expression(
-        contract.directory_expression,
-        contract.extension,
-    )
-    relative_output_path = infra.get_result_file_relative_path(
-        executed_batch_id,
-        "805",
-        grid_area_gln,
-        TimeSeriesType.PRODUCTION,
-    )
-
-    # Act: Executed in fixture executed_calculation_job
-
-    # Assert
-    actual_result_file = find_file(
-        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.json"
-    )
-
-    assert re.match(expected_path_expression, actual_result_file)
-
-
 def test__result_file_has_correct_number_of_rows_based_on_period(
     spark,
     data_lake_path,
@@ -521,16 +459,11 @@ def test__creates_master_data_csv_per_grid_area(
 def test__master_basis_data_file_matches_contract(
     data_lake_path,
     worker_id,
+    contracts_path,
     executed_calculation_job,
-    calculation_file_paths_contract,
 ):
     # Arrange
-    contract = calculation_file_paths_contract.master_basis_data_file
-    expected_path_expression = create_file_path_expression(
-        contract.directory_expression,
-        contract.extension,
-    )
-    master_basis_datea_path = infra.get_master_basis_data_relative_path(
+    master_basis_data_path = infra.get_master_basis_data_relative_path(
         executed_batch_id, "805", grid_area_gln
     )
 
@@ -539,23 +472,20 @@ def test__master_basis_data_file_matches_contract(
     # Assert
     actual_file_path = find_file(
         f"{data_lake_path}/{worker_id}/",
-        f"{master_basis_datea_path}/part-*.csv",
+        f"{master_basis_data_path}/part-*.csv",
     )
-    assert re.match(expected_path_expression, actual_file_path)
+    assert_file_path_match_contract(
+        contracts_path, actual_file_path, CalculationFileType.MasterBasisData
+    )
 
 
 def test__hourly_basis_data_file_matches_contract(
     data_lake_path,
     worker_id,
+    contracts_path,
     executed_calculation_job,
-    calculation_file_paths_contract,
 ):
     # Arrange
-    contract = calculation_file_paths_contract.time_series_hour_basis_data_file
-    expected_path_expression = create_file_path_expression(
-        contract.directory_expression,
-        contract.extension,
-    )
     relative_output_path = infra.get_time_series_hour_relative_path(
         executed_batch_id, "805", grid_area_gln
     )
@@ -566,31 +496,31 @@ def test__hourly_basis_data_file_matches_contract(
     actual_file_path = find_file(
         f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
     )
-    assert re.match(expected_path_expression, actual_file_path)
+    assert_file_path_match_contract(
+        contracts_path, actual_file_path, CalculationFileType.TimeSeriesHourBasisData
+    )
 
 
 def test__quarterly_basis_data_file_matches_contract(
     data_lake_path,
     worker_id,
+    contracts_path,
     executed_calculation_job,
-    calculation_file_paths_contract,
 ):
     # Arrange
-    contract = calculation_file_paths_contract.time_series_quarter_basis_data_file
-    expected_path_expression = create_file_path_expression(
-        contract.directory_expression,
-        contract.extension,
-    )
     relative_output_path = infra.get_time_series_quarter_relative_path(
         executed_batch_id, "805", grid_area_gln
     )
+
     # Act: Executed in fixture executed_calculation_job
 
     # Assert
     actual_file_path = find_file(
         f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
     )
-    assert re.match(expected_path_expression, actual_file_path)
+    assert_file_path_match_contract(
+        contracts_path, actual_file_path, CalculationFileType.TimeSeriesQuarterBasisData
+    )
 
 
 @patch("package.calculator_job._get_valid_args_or_throw")
