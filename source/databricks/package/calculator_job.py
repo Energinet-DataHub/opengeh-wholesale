@@ -152,7 +152,7 @@ def _start(command_line_args: list[str]) -> None:
     calculator_args = CalculatorArgs(
         data_storage_account_name=args.data_storage_account_name,
         data_storage_account_key=args.data_storage_account_key,
-        wholesale_container_path=infrastructure.get_wholesale_container_path(
+        wholesale_container_path=infrastructure.get_container_root_path(
             args.data_storage_account_name
         ),
         batch_id=args.batch_id,
