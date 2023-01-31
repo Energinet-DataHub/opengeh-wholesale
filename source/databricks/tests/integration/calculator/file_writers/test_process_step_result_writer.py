@@ -187,7 +187,7 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
     tmpdir,
-):
+) -> None:
     # Arrange
     row = [
         _create_result_row(
