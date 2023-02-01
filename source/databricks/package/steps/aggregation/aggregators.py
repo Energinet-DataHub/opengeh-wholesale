@@ -197,13 +197,24 @@ def aggregate_production(
     )
 
 
-# Function to aggregate sum per grid area, balance responsible party and energy supplier (step 3, 4 and 5)
+# Function to aggregate sum per grid area, balance responsible party and energy supplier
 def aggregate_per_ga_and_brp_and_es(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
     settlement_method: Union[SettlementMethod, None],
     metadata: Metadata,
 ) -> DataFrame:
+    """This function creates a intermediate result which is subsequently used as input to achieve result for different process steps.
+
+    The function is responsible for
+    - Converting hour data to quarter data.
+    - Sum quantities across metering points per grid area, energy supplier, and balance responsible.
+    - Assign quality when performing sum.
+
+    Each row in the output dataframe will have a unique combination of: ga, brp, es, and quarter_time
+
+    """
+
     result = df.filter(
         col(Colname.metering_point_type) == market_evaluation_point_type.value
     )

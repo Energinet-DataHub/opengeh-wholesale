@@ -94,7 +94,6 @@ def executed_calculation_job(
     output_path = f"{data_lake_path}/{worker_id}/{infra.OUTPUT_FOLDER}"
 
     if path.isdir(output_path):
-        print("REMOVE FOLDER")
         # Since we are appending the result dataframes we must ensure that the path is removed before executing the tests
         rmtree(output_path)
 
@@ -299,7 +298,31 @@ def test__quantity_is_with_precision_3(
     assert re.search(r"^\d+\.\d{3}$", result_non_profiled_consumption.first().quantity)
 
 
-def test__result_file_has_correct_number_of_rows_based_on_period(
+def test__result_file_has_correct_expected_number_of_rows_for_consumption(
+    spark,
+    data_lake_path,
+    worker_id,
+    executed_calculation_job,
+):
+    # Arrange
+    result_relative_path = infra.get_result_file_relative_path(
+        executed_batch_id,
+        "806",
+        energy_supplier_gln_a,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+    )
+
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
+    # Assert
+    consumption_806 = spark.read.json(
+        f"{data_lake_path}/{worker_id}/{result_relative_path}"
+    )
+    assert consumption_806.count() == 192  # period is from 01-01 -> 01-03
+
+
+def test__result_file_has_correct_expected_number_of_rows_for_production(
     spark,
     data_lake_path,
     worker_id,
