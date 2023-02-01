@@ -14,14 +14,14 @@
 
 from pyspark.sql import DataFrame
 from package.constants import Colname
+import package.infrastructure as infra
 
 
 class BasisDataWriter:
-    def __init__(
-        self,
-        output_path: str,
-    ):
-        self.__output_path = output_path
+    def __init__(self, container_path: str, batch_id: str):
+        self.__output_path = (
+            f"{container_path}/{infra.get_batch_relative_path(batch_id)}"
+        )
 
     def write(
         self,
