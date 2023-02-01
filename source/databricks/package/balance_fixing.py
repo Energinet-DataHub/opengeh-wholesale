@@ -103,8 +103,10 @@ def _calculate_production(
     metadata: Metadata,
 ) -> None:
 
-    production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
-        enriched_time_series, metadata
+    production_per_per_ga_and_brp_and_es = (
+        agg_steps.aggregate_production_per_ga_and_brp_and_es(
+            enriched_time_series, metadata
+        )
     )
     production_per_ga = agg_steps.aggregate_production_ga(
         production_per_per_ga_and_brp_and_es, metadata
@@ -119,13 +121,15 @@ def _calculate_non_profiled_consumption(
     metadata: Metadata,
 ) -> None:
 
-    consumption = agg_steps.aggregate_non_profiled_consumption(
-        enriched_time_series_point_df, metadata
+    consumption_per_ga_and_es_and_brp = (
+        agg_steps.aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
+            enriched_time_series_point_df, metadata
+        )
     )
 
     # Non-profiled consumption per energy supplier
     consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
-        consumption, metadata
+        consumption_per_ga_and_es_and_brp, metadata
     )
 
     result_writer.write_per_ga_per_actor(
