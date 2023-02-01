@@ -232,24 +232,24 @@ def aggregate_per_ga_and_brp_and_es(
     result = result.withColumn(
         Colname.time_window, window(col("quarter_time"), "15 minutes")
     )
+    result = result.withColumn(
+        "quarter_quantity",
+        when(
+            col(Colname.resolution) == MeteringPointResolution.hour.value,
+            col(Colname.quantity) / 4,
+        ).when(
+            col(Colname.resolution) == MeteringPointResolution.quarter.value,
+            col(Colname.quantity),
+        ),
+    )
+
     result = (
-        result.withColumn(
-            "quarter_quantity",
-            when(
-                col(Colname.resolution) == MeteringPointResolution.hour.value,
-                col(Colname.quantity) / 4,
-            ).when(
-                col(Colname.resolution) == MeteringPointResolution.quarter.value,
-                col(Colname.quantity),
-            ),
-        )
-        .groupBy(
+        result.groupBy(
             Colname.grid_area,
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
             Colname.time_window,
-        )
-        .agg(
+        ).agg(
             # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
             sum("quarter_quantity").alias(Colname.sum_quantity),
             collect_set("Quality"),
