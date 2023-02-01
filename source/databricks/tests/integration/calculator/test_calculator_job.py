@@ -18,7 +18,12 @@ from pyspark.sql import SparkSession
 import pytest
 from unittest.mock import patch
 from tests.contract_utils import assert_contract_matches_schema
-from package.calculator_job import _get_valid_args_or_throw, _start_calculator, start, _start
+from package.calculator_job import (
+    _get_valid_args_or_throw,
+    _start_calculator,
+    start,
+    _start,
+)
 from package.calculator_args import CalculatorArgs
 from package.constants.time_series_type import TimeSeriesType
 import package.infrastructure as infra
@@ -86,8 +91,10 @@ def executed_calculation_job(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    output_path = f"{data_lake_path}{worker_id}/{infra.OUTPUT_FOLDER}"
+    output_path = f"{data_lake_path}/{worker_id}/{infra.OUTPUT_FOLDER}"
+
     if path.isdir(output_path):
+        print("REMOVE FOLDER")
         # Since we are appending the result dataframes we must ensure that the path is removed before executing the tests
         rmtree(output_path)
 
@@ -154,7 +161,9 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
     assert excinfo.value.code == 2
 
 
-def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(dummy_job_parameters):
+def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
+    dummy_job_parameters,
+):
 
     """
     This test works in tandem with a .NET test ensuring that the calculator job accepts
@@ -538,7 +547,9 @@ def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked, mock_args_
 @patch("package.calculator_job.initialize_spark")
 @patch("package.calculator_job.islocked")
 @patch("package.calculator_job._start_calculator")
-def test__start__start_calculator_called_without_exceptions(mock_start_calculator, mock_is_locked, mock_init_spark, dummy_job_parameters):
+def test__start__start_calculator_called_without_exceptions(
+    mock_start_calculator, mock_is_locked, mock_init_spark, dummy_job_parameters
+):
     # Arrange
     mock_is_locked.return_value = False
 

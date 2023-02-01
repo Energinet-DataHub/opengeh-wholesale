@@ -432,9 +432,9 @@ def __aggregate_per_ga(
     market_evaluation_point_type: MeteringPointType,
     metadata: Metadata,
 ) -> DataFrame:
-    result = df
-    # group_by = [Colname.grid_area, Colname.time_window]
-    # result = __aggregate_sum_quality(df, Colname.sum_quantity, group_by)
+    # result = df
+    group_by = [Colname.grid_area, Colname.time_window]
+    result = __aggregate_sum_quality(df, Colname.sum_quantity, group_by)
 
     result = result.withColumnRenamed(
         f"sum({Colname.sum_quantity})", Colname.sum_quantity
