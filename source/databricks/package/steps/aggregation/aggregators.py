@@ -243,42 +243,13 @@ def aggregate_per_ga_and_brp_and_es(
         ),
     )
 
-    result = (
-        result.groupBy(
-            Colname.grid_area,
-            Colname.balance_responsible_id,
-            Colname.energy_supplier_id,
-            Colname.time_window,
-        ).agg(
-            # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
-            sum("quarter_quantity").alias(Colname.sum_quantity),
-            collect_set("Quality"),
-        )
-        # TODO: What about calculated (A06)?
-        .withColumn(
-            "Quality",
-            when(
-                array_contains(
-                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
-                ),
-                lit(TimeSeriesQuality.missing.value),
-            )
-            .when(
-                array_contains(
-                    col("collect_set(Quality)"),
-                    lit(TimeSeriesQuality.estimated.value),
-                ),
-                lit(TimeSeriesQuality.estimated.value),
-            )
-            .when(
-                array_contains(
-                    col("collect_set(Quality)"),
-                    lit(TimeSeriesQuality.measured.value),
-                ),
-                lit(TimeSeriesQuality.measured.value),
-            ),
-        )
-    )
+    sum_group_by = [
+        Colname.grid_area,
+        Colname.balance_responsible_id,
+        Colname.energy_supplier_id,
+        Colname.time_window,
+    ]
+    result = __aggregate_sum_quality(result, sum_group_by)
 
     win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
 
@@ -477,3 +448,40 @@ def __aggregate_per_ga(
         )
     )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
+
+
+def __aggregate_sum_quality(result: DataFrame, group_by: list[str]) -> DataFrame:
+
+    result = (
+        result.groupBy(group_by).agg(
+            # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
+            sum("quarter_quantity").alias(Colname.sum_quantity),
+            collect_set("Quality"),
+        )
+        # TODO: What about calculated (A06)?
+        .withColumn(
+            "Quality",
+            when(
+                array_contains(
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
+                ),
+                lit(TimeSeriesQuality.missing.value),
+            )
+            .when(
+                array_contains(
+                    col("collect_set(Quality)"),
+                    lit(TimeSeriesQuality.estimated.value),
+                ),
+                lit(TimeSeriesQuality.estimated.value),
+            )
+            .when(
+                array_contains(
+                    col("collect_set(Quality)"),
+                    lit(TimeSeriesQuality.measured.value),
+                ),
+                lit(TimeSeriesQuality.measured.value),
+            ),
+        )
+    )
+
+    return result
