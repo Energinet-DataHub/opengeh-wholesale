@@ -166,10 +166,10 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
 
 
 # Function to aggregate non-profiled consumption per grid area, balance responsible party and energy supplier (step 3)
-def aggregate_non_profiled_consumption(
+def aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
     enriched_time_series: DataFrame, metadata: Metadata
 ) -> DataFrame:
-    return aggregate_per_ga_and_brp_and_es(
+    return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.non_profiled,
@@ -180,7 +180,7 @@ def aggregate_non_profiled_consumption(
 # Function to aggregate flex consumption per grid area, balance responsible party and energy supplier (step 4)
 def aggregate_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe]
-    return aggregate_per_ga_and_brp_and_es(
+    return _aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.consumption,
         SettlementMethod.flex,
@@ -189,21 +189,32 @@ def aggregate_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
 
 
 # Function to aggregate hourly production per grid area, balance responsible party and energy supplier (step 5)
-def aggregate_production(
+def aggregate_production_per_ga_and_brp_and_es(
     enriched_time_series: DataFrame, metadata: Metadata
 ) -> DataFrame:
-    return aggregate_per_ga_and_brp_and_es(
+    return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series, MeteringPointType.production, None, metadata
     )
 
 
-# Function to aggregate sum per grid area, balance responsible party and energy supplier (step 3, 4 and 5)
-def aggregate_per_ga_and_brp_and_es(
+# Function to aggregate sum per grid area, balance responsible party and energy supplier
+def _aggregate_per_ga_and_brp_and_es(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
     settlement_method: Union[SettlementMethod, None],
     metadata: Metadata,
 ) -> DataFrame:
+    """This function creates a intermediate result, which is subsequently used as input to achieve result for different process steps.
+
+    The function is responsible for
+    - Converting hour data to quarter data.
+    - Sum quantities across metering points per grid area, energy supplier, and balance responsible.
+    - Assign quality when performing sum.
+
+    Each row in the output dataframe corresponds to a unique combination of: ga, brp, es, and quarter_time
+
+    """
+
     result = df.filter(
         col(Colname.metering_point_type) == market_evaluation_point_type.value
     )
@@ -232,53 +243,24 @@ def aggregate_per_ga_and_brp_and_es(
     result = result.withColumn(
         Colname.time_window, window(col("quarter_time"), "15 minutes")
     )
-    result = (
-        result.withColumn(
-            "quarter_quantity",
-            when(
-                col(Colname.resolution) == MeteringPointResolution.hour.value,
-                col(Colname.quantity) / 4,
-            ).when(
-                col(Colname.resolution) == MeteringPointResolution.quarter.value,
-                col(Colname.quantity),
-            ),
-        )
-        .groupBy(
-            Colname.grid_area,
-            Colname.balance_responsible_id,
-            Colname.energy_supplier_id,
-            Colname.time_window,
-        )
-        .agg(
-            # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
-            sum("quarter_quantity").alias(Colname.sum_quantity),
-            collect_set("Quality"),
-        )
-        # TODO: What about calculated (A06)?
-        .withColumn(
-            "Quality",
-            when(
-                array_contains(
-                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
-                ),
-                lit(TimeSeriesQuality.missing.value),
-            )
-            .when(
-                array_contains(
-                    col("collect_set(Quality)"),
-                    lit(TimeSeriesQuality.estimated.value),
-                ),
-                lit(TimeSeriesQuality.estimated.value),
-            )
-            .when(
-                array_contains(
-                    col("collect_set(Quality)"),
-                    lit(TimeSeriesQuality.measured.value),
-                ),
-                lit(TimeSeriesQuality.measured.value),
-            ),
-        )
+    result = result.withColumn(
+        "quarter_quantity",
+        when(
+            col(Colname.resolution) == MeteringPointResolution.hour.value,
+            col(Colname.quantity) / 4,
+        ).when(
+            col(Colname.resolution) == MeteringPointResolution.quarter.value,
+            col(Colname.quantity),
+        ),
     )
+
+    sum_group_by = [
+        Colname.grid_area,
+        Colname.balance_responsible_id,
+        Colname.energy_supplier_id,
+        Colname.time_window,
+    ]
+    result = __aggregate_sum_and_set_quality(result, "quarter_quantity", sum_group_by)
 
     win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
 
@@ -328,6 +310,7 @@ def aggregate_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
 def aggregate_non_profiled_consumption_ga_es(
     non_profiled_consumption: DataFrame, metadata: Metadata
 ) -> DataFrame:
+
     return __aggregate_per_ga_and_es(
         non_profiled_consumption,
         MeteringPointType.consumption,
@@ -349,26 +332,19 @@ def __aggregate_per_ga_and_es(
     market_evaluation_point_type: MeteringPointType,
     metadata: Metadata,
 ) -> DataFrame:
-    result = (
-        df.groupBy(
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.time_window,
-            Colname.quality,
-        )
-        .sum(Colname.sum_quantity)
-        .withColumnRenamed(f"sum({Colname.sum_quantity})", Colname.sum_quantity)
-        .select(
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.time_window,
-            Colname.quality,
-            Colname.sum_quantity,
-            lit(MeteringPointResolution.hour.value).alias(
-                Colname.resolution
-            ),  # TODO take resolution from metadata
-            lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
-        )
+    group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
+    result = __aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
+
+    result = result.select(
+        Colname.grid_area,
+        Colname.energy_supplier_id,
+        Colname.time_window,
+        Colname.quality,
+        Colname.sum_quantity,
+        lit(MeteringPointResolution.hour.value).alias(
+            Colname.resolution
+        ),  # TODO take resolution from metadata
+        lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
@@ -461,19 +437,59 @@ def __aggregate_per_ga(
     market_evaluation_point_type: MeteringPointType,
     metadata: Metadata,
 ) -> DataFrame:
+    group_by = [Colname.grid_area, Colname.time_window]
+    result = __aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
+
+    result = result.withColumnRenamed(
+        f"sum({Colname.sum_quantity})", Colname.sum_quantity
+    ).select(
+        Colname.grid_area,
+        Colname.time_window,
+        Colname.quality,
+        Colname.sum_quantity,
+        lit(MeteringPointResolution.hour.value).alias(
+            Colname.resolution
+        ),  # TODO take resolution from metadata
+        lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
+    )
+
+    return create_dataframe_from_aggregation_result_schema(metadata, result)
+
+
+def __aggregate_sum_and_set_quality(
+    result: DataFrame, quantity_col_name: str, group_by: list[str]
+) -> DataFrame:
+
     result = (
-        df.groupBy(Colname.grid_area, Colname.time_window, Colname.quality)
-        .sum(Colname.sum_quantity)
-        .withColumnRenamed(f"sum({Colname.sum_quantity})", Colname.sum_quantity)
-        .select(
-            Colname.grid_area,
-            Colname.time_window,
-            Colname.quality,
-            Colname.sum_quantity,
-            lit(MeteringPointResolution.hour.value).alias(
-                Colname.resolution
-            ),  # TODO take resolution from metadata
-            lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
+        result.groupBy(group_by).agg(
+            # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
+            sum(quantity_col_name).alias(Colname.sum_quantity),
+            collect_set("Quality"),
+        )
+        # TODO: What about calculated (A06)?
+        .withColumn(
+            "Quality",
+            when(
+                array_contains(
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
+                ),
+                lit(TimeSeriesQuality.missing.value),
+            )
+            .when(
+                array_contains(
+                    col("collect_set(Quality)"),
+                    lit(TimeSeriesQuality.estimated.value),
+                ),
+                lit(TimeSeriesQuality.estimated.value),
+            )
+            .when(
+                array_contains(
+                    col("collect_set(Quality)"),
+                    lit(TimeSeriesQuality.measured.value),
+                ),
+                lit(TimeSeriesQuality.measured.value),
+            ),
         )
     )
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+
+    return result
