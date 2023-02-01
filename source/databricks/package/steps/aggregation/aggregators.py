@@ -249,7 +249,7 @@ def aggregate_per_ga_and_brp_and_es(
         Colname.energy_supplier_id,
         Colname.time_window,
     ]
-    result = __aggregate_sum_quality(result, sum_group_by)
+    result = __aggregate_sum_quality(result, "quarter_quantity", sum_group_by)
 
     win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
 
@@ -432,30 +432,34 @@ def __aggregate_per_ga(
     market_evaluation_point_type: MeteringPointType,
     metadata: Metadata,
 ) -> DataFrame:
-    result = (
-        df.groupBy(Colname.grid_area, Colname.time_window, Colname.quality)
-        .sum(Colname.sum_quantity)
-        .withColumnRenamed(f"sum({Colname.sum_quantity})", Colname.sum_quantity)
-        .select(
-            Colname.grid_area,
-            Colname.time_window,
-            Colname.quality,
-            Colname.sum_quantity,
-            lit(MeteringPointResolution.hour.value).alias(
-                Colname.resolution
-            ),  # TODO take resolution from metadata
-            lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
-        )
+    result = df
+    # group_by = [Colname.grid_area, Colname.time_window]
+    # result = __aggregate_sum_quality(df, Colname.sum_quantity, group_by)
+
+    result = result.withColumnRenamed(
+        f"sum({Colname.sum_quantity})", Colname.sum_quantity
+    ).select(
+        Colname.grid_area,
+        Colname.time_window,
+        Colname.quality,
+        Colname.sum_quantity,
+        lit(MeteringPointResolution.hour.value).alias(
+            Colname.resolution
+        ),  # TODO take resolution from metadata
+        lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
+
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def __aggregate_sum_quality(result: DataFrame, group_by: list[str]) -> DataFrame:
+def __aggregate_sum_quality(
+    result: DataFrame, quantity_col_name: str, group_by: list[str]
+) -> DataFrame:
 
     result = (
         result.groupBy(group_by).agg(
             # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
-            sum("quarter_quantity").alias(Colname.sum_quantity),
+            sum(quantity_col_name).alias(Colname.sum_quantity),
             collect_set("Quality"),
         )
         # TODO: What about calculated (A06)?
