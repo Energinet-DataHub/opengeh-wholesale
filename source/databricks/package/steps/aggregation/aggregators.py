@@ -260,7 +260,7 @@ def aggregate_per_ga_and_brp_and_es(
         Colname.energy_supplier_id,
         Colname.time_window,
     ]
-    result = __aggregate_sum_quality(result, "quarter_quantity", sum_group_by)
+    result = __aggregate_sum_and_set_quality(result, "quarter_quantity", sum_group_by)
 
     win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
 
@@ -333,7 +333,7 @@ def __aggregate_per_ga_and_es(
     metadata: Metadata,
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
-    result = __aggregate_sum_quality(df, Colname.sum_quantity, group_by)
+    result = __aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
 
     result = result.select(
         Colname.grid_area,
@@ -438,7 +438,7 @@ def __aggregate_per_ga(
     metadata: Metadata,
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.time_window]
-    result = __aggregate_sum_quality(df, Colname.sum_quantity, group_by)
+    result = __aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
 
     result = result.withColumnRenamed(
         f"sum({Colname.sum_quantity})", Colname.sum_quantity
@@ -456,7 +456,7 @@ def __aggregate_per_ga(
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def __aggregate_sum_quality(
+def __aggregate_sum_and_set_quality(
     result: DataFrame, quantity_col_name: str, group_by: list[str]
 ) -> DataFrame:
 
