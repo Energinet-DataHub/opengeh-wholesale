@@ -204,14 +204,14 @@ def aggregate_per_ga_and_brp_and_es(
     settlement_method: Union[SettlementMethod, None],
     metadata: Metadata,
 ) -> DataFrame:
-    """This function creates a intermediate result which is subsequently used as input to achieve result for different process steps.
+    """This function creates a intermediate result, which is subsequently used as input to achieve result for different process steps.
 
     The function is responsible for
     - Converting hour data to quarter data.
     - Sum quantities across metering points per grid area, energy supplier, and balance responsible.
     - Assign quality when performing sum.
 
-    Each row in the output dataframe will have a unique combination of: ga, brp, es, and quarter_time
+    Each row in the output dataframe corresponds to a unique combination of: ga, brp, es, and quarter_time
 
     """
 
@@ -310,6 +310,7 @@ def aggregate_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
 def aggregate_non_profiled_consumption_ga_es(
     non_profiled_consumption: DataFrame, metadata: Metadata
 ) -> DataFrame:
+
     return __aggregate_per_ga_and_es(
         non_profiled_consumption,
         MeteringPointType.consumption,
@@ -331,26 +332,19 @@ def __aggregate_per_ga_and_es(
     market_evaluation_point_type: MeteringPointType,
     metadata: Metadata,
 ) -> DataFrame:
-    result = (
-        df.groupBy(
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.time_window,
-            Colname.quality,
-        )
-        .sum(Colname.sum_quantity)
-        .withColumnRenamed(f"sum({Colname.sum_quantity})", Colname.sum_quantity)
-        .select(
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.time_window,
-            Colname.quality,
-            Colname.sum_quantity,
-            lit(MeteringPointResolution.hour.value).alias(
-                Colname.resolution
-            ),  # TODO take resolution from metadata
-            lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
-        )
+    group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
+    result = __aggregate_sum_quality(df, Colname.sum_quantity, group_by)
+
+    result = result.select(
+        Colname.grid_area,
+        Colname.energy_supplier_id,
+        Colname.time_window,
+        Colname.quality,
+        Colname.sum_quantity,
+        lit(MeteringPointResolution.hour.value).alias(
+            Colname.resolution
+        ),  # TODO take resolution from metadata
+        lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
