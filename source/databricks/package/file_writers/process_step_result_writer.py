@@ -66,7 +66,7 @@ class ProcessStepResultWriter:
             Colname.gln,
             Colname.time_series_type,
             col(Colname.sum_quantity).alias("quantity").cast("string"),
-            col(Colname.quality).alias("quality"),
+            col(Colname.qualities).alias("qualities"),
             col(Colname.time_window_start).alias("quarter_time"),
         )
 

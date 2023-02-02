@@ -48,10 +48,6 @@ def create_dataframe_from_aggregation_result_schema(
     result = __add_missing_nullable_columns(result)
     # Replaces None value with zero for sum_quantity
     result = result.na.fill(value=0, subset=[Colname.sum_quantity])
-    # Replaces None value with TimeSeriesQuality.missing for quality
-    result = result.na.fill(
-        value=TimeSeriesQuality.missing.value, subset=[Colname.quality]
-    )
 
     # Create data frame from RDD in order to be able to apply the schema
     return SparkSession.builder.getOrCreate().createDataFrame(
@@ -67,7 +63,7 @@ def create_dataframe_from_aggregation_result_schema(
             Colname.energy_supplier_id,
             Colname.time_window,
             Colname.sum_quantity,
-            Colname.quality,
+            Colname.qualities,
             Colname.metering_point_type,
             Colname.settlement_method,
             Colname.added_grid_loss,

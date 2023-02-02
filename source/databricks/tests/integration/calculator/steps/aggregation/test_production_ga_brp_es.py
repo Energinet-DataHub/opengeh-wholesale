@@ -460,19 +460,26 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
             TimeSeriesQuality.measured.value,
             TimeSeriesQuality.estimated.value,
             TimeSeriesQuality.missing.value,
-            TimeSeriesQuality.missing.value,
+            [
+                TimeSeriesQuality.missing.value,
+                TimeSeriesQuality.estimated.value,
+                TimeSeriesQuality.measured.value,
+            ],
         ),
         (
             TimeSeriesQuality.measured.value,
             TimeSeriesQuality.estimated.value,
             TimeSeriesQuality.measured.value,
-            TimeSeriesQuality.estimated.value,
+            [
+                TimeSeriesQuality.estimated.value,
+                TimeSeriesQuality.measured.value,
+            ],
         ),
         (
             TimeSeriesQuality.measured.value,
             TimeSeriesQuality.measured.value,
             TimeSeriesQuality.measured.value,
-            TimeSeriesQuality.measured.value,
+            [TimeSeriesQuality.measured.value],
         ),
     ],
 )
@@ -491,7 +498,8 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
     result_df = _aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
     )
-    assert result_df.first().Quality == expected_quality
+    actual_qualities = result_df.first()[Colname.qualities]
+    assert sorted(actual_qualities) == expected_quality
 
 
 def test__when_time_series_point_is_missing__quality_has_value_incomplete(
@@ -502,7 +510,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     result_df = _aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.production, None, metadata
     )
-    assert result_df.first().Quality == TimeSeriesQuality.missing.value
+    assert result_df.first()[Colname.qualities] == []
 
 
 def test__when_time_series_point_is_missing__quantity_is_0(

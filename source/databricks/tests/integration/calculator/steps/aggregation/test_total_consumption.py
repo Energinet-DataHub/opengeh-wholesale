@@ -26,7 +26,13 @@ from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import (
+    ArrayType,
+    DecimalType,
+    StringType,
+    StructType,
+    TimestampType,
+)
 import pytest
 import pandas as pd
 from package.constants import Colname, ResultKeyName
@@ -49,7 +55,7 @@ def net_exchange_schema():
         .add("in_sum", DecimalType(20, 1))
         .add("out_sum", DecimalType(20, 1))
         .add(Colname.sum_quantity, DecimalType(20, 1))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False))
         .add(Colname.resolution, StringType())
         .add(Colname.metering_point_type, StringType())
     )
@@ -111,7 +117,7 @@ def agg_net_exchange_factory(spark, net_exchange_schema):
                     Decimal(1.0),
                     Decimal(1.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "QM", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["QM"], ["56"]],
                 Colname.resolution: [
                     MeteringPointResolution.hour.value,
                     MeteringPointResolution.hour.value,
@@ -149,7 +155,7 @@ def production_schema():
             False,
         )
         .add(Colname.sum_quantity, DecimalType(20, 1))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False))
         .add(Colname.resolution, StringType())
         .add(Colname.metering_point_type, StringType())
     )
@@ -195,7 +201,7 @@ def agg_production_factory(spark, production_schema):
                     Decimal(5.0),
                     Decimal(6.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "E01", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["E01"], ["56"]],
                 Colname.resolution: [
                     MeteringPointResolution.hour.value,
                     MeteringPointResolution.hour.value,
@@ -228,7 +234,7 @@ def agg_total_production_factory(spark, production_schema):
                 Colname.grid_area: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
-                Colname.quality: [],
+                Colname.qualities: [],
                 Colname.resolution: [],
                 Colname.metering_point_type: [],
             }
@@ -242,7 +248,7 @@ def agg_total_production_factory(spark, production_schema):
                     Colname.end: datetime(2020, 1, 1, 1, 0),
                 },
                 Colname.sum_quantity: Decimal(1.0),
-                Colname.quality: quality,
+                Colname.qualities: [quality],
                 Colname.resolution: [MeteringPointResolution.hour.value],
                 Colname.metering_point_type: [MeteringPointType.production.value],
             },
@@ -264,7 +270,7 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
                 "in_sum": [],
                 "out_sum": [],
                 Colname.sum_quantity: [],
-                Colname.quality: [],
+                Colname.qualities: [],
                 Colname.resolution: [],
                 Colname.metering_point_type: [],
             }
@@ -280,7 +286,7 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
                 "in_sum": Decimal(1.0),
                 "out_sum": Decimal(1.0),
                 Colname.sum_quantity: Decimal(1.0),
-                Colname.quality: quality,
+                Colname.qualities: [quality],
                 Colname.resolution: [MeteringPointResolution.hour.value],
                 Colname.metering_point_type: [MeteringPointType.exchange.value],
             },
@@ -319,32 +325,32 @@ def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_fa
         (
             TimeSeriesQuality.estimated.value,
             TimeSeriesQuality.estimated.value,
-            TimeSeriesQuality.estimated.value,
+            [TimeSeriesQuality.estimated.value],
         ),
         (
             TimeSeriesQuality.estimated.value,
             TimeSeriesQuality.missing.value,
-            TimeSeriesQuality.estimated.value,
+            [TimeSeriesQuality.estimated.value, TimeSeriesQuality.missing.value],
         ),
         (
             TimeSeriesQuality.estimated.value,
             TimeSeriesQuality.measured.value,
-            TimeSeriesQuality.estimated.value,
-        ),
-        (
-            TimeSeriesQuality.missing.value,
-            TimeSeriesQuality.missing.value,
-            TimeSeriesQuality.estimated.value,
+            [TimeSeriesQuality.estimated.value, TimeSeriesQuality.measured.value],
         ),
         (
             TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.missing.value,
+            [TimeSeriesQuality.missing.value],
+        ),
+        (
+            TimeSeriesQuality.missing.value,
             TimeSeriesQuality.measured.value,
-            TimeSeriesQuality.estimated.value,
+            [TimeSeriesQuality.missing.value, TimeSeriesQuality.measured.value],
         ),
         (
             TimeSeriesQuality.measured.value,
             TimeSeriesQuality.measured.value,
-            TimeSeriesQuality.measured.value,
+            [TimeSeriesQuality.measured.value],
         ),
     ],
 )

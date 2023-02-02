@@ -58,6 +58,8 @@ class Colname:
     price_per_day = "price_per_day"
     processed_date = "processed_date"
     product = "product"
+    qualities = "qualities"
+    "The set of distinct qualities in the current time window for the current grouping"
     quality = "Quality"
     quantity = "Quantity"
     resolution = "Resolution"

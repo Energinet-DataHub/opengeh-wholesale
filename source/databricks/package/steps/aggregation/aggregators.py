@@ -17,7 +17,6 @@ from package.codelists import (
     MeteringPointResolution,
     MeteringPointType,
     SettlementMethod,
-    TimeSeriesQuality,
 )
 from package.constants import Colname, ResultKeyName
 from package.shared.data_classes import Metadata
@@ -27,11 +26,12 @@ from package.steps.aggregation.aggregation_result_formatter import (
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     array,
-    array_contains,
+    array_distinct,
     col,
     collect_set,
     explode,
     expr,
+    flatten,
     lit,
     row_number,
     sum,
@@ -254,7 +254,11 @@ def _aggregate_per_ga_and_brp_and_es(
         Colname.energy_supplier_id,
         Colname.time_window,
     ]
-    result = __aggregate_sum_and_set_quality(result, "quarter_quantity", sum_group_by)
+    result = result.groupBy(sum_group_by).agg(
+        # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
+        sum("quarter_quantity").alias(Colname.sum_quantity),
+        collect_set(Colname.quality).alias(Colname.qualities),
+    )
 
     win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
 
@@ -266,18 +270,12 @@ def _aggregate_per_ga_and_brp_and_es(
                 col(Colname.sum_quantity)
             ),
         )
-        .withColumn(
-            Colname.quality,
-            when(
-                col(Colname.quality).isNull(), TimeSeriesQuality.missing.value
-            ).otherwise(col(Colname.quality)),
-        )
         .select(
             Colname.grid_area,
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
             Colname.time_window,
-            Colname.quality,
+            Colname.qualities,
             Colname.sum_quantity,
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
             lit(None if settlement_method is None else settlement_method.value).alias(
@@ -324,13 +322,13 @@ def __aggregate_per_ga_and_es(
     metadata: Metadata,
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
-    result = __aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
+    result = __aggregate_sum_and_quality(df, Colname.sum_quantity, group_by)
 
     result = result.select(
         Colname.grid_area,
         Colname.energy_supplier_id,
         Colname.time_window,
-        Colname.quality,
+        Colname.qualities,
         Colname.sum_quantity,
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
@@ -374,7 +372,7 @@ def __aggregate_per_ga_and_brp(
             Colname.grid_area,
             Colname.balance_responsible_id,
             Colname.time_window,
-            Colname.quality,
+            Colname.qualities,
         )
         .sum(Colname.sum_quantity)
         .withColumnRenamed(f"sum({Colname.sum_quantity})", Colname.sum_quantity)
@@ -382,7 +380,7 @@ def __aggregate_per_ga_and_brp(
             Colname.grid_area,
             Colname.balance_responsible_id,
             Colname.time_window,
-            Colname.quality,
+            Colname.qualities,
             Colname.sum_quantity,
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
         )
@@ -423,14 +421,14 @@ def __aggregate_per_ga(
     metadata: Metadata,
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.time_window]
-    result = __aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
+    result = __aggregate_sum_and_quality(df, Colname.sum_quantity, group_by)
 
     result = result.withColumnRenamed(
         f"sum({Colname.sum_quantity})", Colname.sum_quantity
     ).select(
         Colname.grid_area,
         Colname.time_window,
-        Colname.quality,
+        Colname.qualities,
         Colname.sum_quantity,
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
@@ -438,40 +436,17 @@ def __aggregate_per_ga(
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def __aggregate_sum_and_set_quality(
+def __aggregate_sum_and_quality(
     result: DataFrame, quantity_col_name: str, group_by: list[str]
 ) -> DataFrame:
 
-    result = (
-        result.groupBy(group_by).agg(
-            # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
-            sum(quantity_col_name).alias(Colname.sum_quantity),
-            collect_set("Quality"),
-        )
-        # TODO: What about calculated (A06)?
-        .withColumn(
-            "Quality",
-            when(
-                array_contains(
-                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
-                ),
-                lit(TimeSeriesQuality.missing.value),
-            )
-            .when(
-                array_contains(
-                    col("collect_set(Quality)"),
-                    lit(TimeSeriesQuality.estimated.value),
-                ),
-                lit(TimeSeriesQuality.estimated.value),
-            )
-            .when(
-                array_contains(
-                    col("collect_set(Quality)"),
-                    lit(TimeSeriesQuality.measured.value),
-                ),
-                lit(TimeSeriesQuality.measured.value),
-            ),
-        )
+    result = result.groupBy(group_by).agg(
+        # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
+        sum(quantity_col_name).alias(Colname.sum_quantity),
+        # collect_set(Colname.qualities).alias(Colname.qualities),
+        array_distinct(flatten(collect_set(Colname.qualities))).alias(
+            Colname.qualities
+        ),
     )
 
     return result

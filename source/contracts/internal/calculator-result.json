@@ -5,8 +5,8 @@
         "type": "string"
       },
       {
-        "name": "quality",
-        "type": "string"
+        "name": "qualities",
+        "type": "list[string]"
       },
       {
         "name": "quarter_time",
