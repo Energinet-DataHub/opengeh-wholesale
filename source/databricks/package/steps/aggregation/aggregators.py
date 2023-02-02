@@ -104,9 +104,6 @@ def aggregate_net_exchange_per_neighbour_ga(
             Colname.quality,
             Colname.sum_quantity,
             col(Colname.in_grid_area).alias(Colname.grid_area),
-            lit(MeteringPointResolution.hour.value).alias(
-                Colname.resolution
-            ),  # TODO take resolution from metadata
             lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
         )
     )
@@ -156,9 +153,6 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
             Colname.time_window,
             Colname.sum_quantity,
             Colname.quality,
-            lit(MeteringPointResolution.hour.value).alias(
-                Colname.resolution
-            ),  # TODO take resolution from metadata
             lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
         )
     )
@@ -285,9 +279,6 @@ def _aggregate_per_ga_and_brp_and_es(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(MeteringPointResolution.quarter.value).alias(
-                Colname.resolution
-            ),  # TODO take resolution from metadata
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
             lit(None if settlement_method is None else settlement_method.value).alias(
                 Colname.settlement_method
@@ -341,9 +332,6 @@ def __aggregate_per_ga_and_es(
         Colname.time_window,
         Colname.quality,
         Colname.sum_quantity,
-        lit(MeteringPointResolution.hour.value).alias(
-            Colname.resolution
-        ),  # TODO take resolution from metadata
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
@@ -396,9 +384,6 @@ def __aggregate_per_ga_and_brp(
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(MeteringPointResolution.hour.value).alias(
-                Colname.resolution
-            ),  # TODO take resolution from metadata
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
         )
     )
@@ -447,9 +432,6 @@ def __aggregate_per_ga(
         Colname.time_window,
         Colname.quality,
         Colname.sum_quantity,
-        lit(MeteringPointResolution.hour.value).alias(
-            Colname.resolution
-        ),  # TODO take resolution from metadata
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
 

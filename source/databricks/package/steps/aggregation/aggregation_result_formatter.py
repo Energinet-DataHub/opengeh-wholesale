@@ -66,7 +66,6 @@ def create_dataframe_from_aggregation_result_schema(
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
             Colname.time_window,
-            Colname.resolution,
             Colname.sum_quantity,
             Colname.quality,
             Colname.metering_point_type,
