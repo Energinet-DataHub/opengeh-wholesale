@@ -269,7 +269,7 @@ def agg_net_exchange_factory(spark, agg_net_exchange_schema):
                     Decimal(1.0),
                     Decimal(1.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "56", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
                 Colname.resolution: [
                     MeteringPointResolution.hour.value,
                     MeteringPointResolution.hour.value,
@@ -336,7 +336,7 @@ def agg_flex_consumption_factory(spark, agg_consumption_and_production_schema):
                     Decimal(1.0),
                     Decimal(2.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "56", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
                 Colname.resolution: [
                     MeteringPointResolution.hour.value,
                     MeteringPointResolution.hour.value,
@@ -405,7 +405,7 @@ def agg_hourly_consumption_factory(spark, agg_consumption_and_production_schema)
                     Decimal(3.0),
                     Decimal(1.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "56", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
                 Colname.resolution: [
                     MeteringPointResolution.hour.value,
                     MeteringPointResolution.hour.value,
@@ -474,7 +474,7 @@ def agg_hourly_production_factory(spark, agg_consumption_and_production_schema):
                     Decimal(1.0),
                     Decimal(2.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "56", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
                 Colname.resolution: [
                     MeteringPointResolution.hour.value,
                     MeteringPointResolution.hour.value,

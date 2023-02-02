@@ -14,6 +14,7 @@
 
 from package.constants import Colname
 from pyspark.sql.types import (
+    ArrayType,
     DecimalType,
     IntegerType,
     StructType,
@@ -46,7 +47,7 @@ aggregation_result_schema = StructType(
         ),
         StructField(Colname.sum_quantity, DecimalType(18, 3), False),
         StructField(
-            Colname.quality, StringType(), False
+            Colname.qualities, ArrayType(StringType(), False), False
         ),  # enum int: change to enum later
         StructField(
             Colname.metering_point_type, StringType(), False

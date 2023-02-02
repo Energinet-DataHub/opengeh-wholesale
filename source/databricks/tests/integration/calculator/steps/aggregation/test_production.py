@@ -72,7 +72,7 @@ def test_data_factory(spark, agg_production_schema):
                 Colname.energy_supplier_id: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
-                Colname.quality: [],
+                Colname.qualities: [],
                 Colname.resolution: [],
                 Colname.metering_point_type: [],
             }
@@ -90,7 +90,7 @@ def test_data_factory(spark, agg_production_schema):
                                 Colname.end: default_obs_time + timedelta(hours=i + 1),
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
-                            Colname.quality: [TimeSeriesQuality.estimated.value],
+                            Colname.qualities: [[TimeSeriesQuality.estimated.value]],
                             Colname.resolution: [MeteringPointResolution.hour.value],
                             Colname.metering_point_type: [
                                 MeteringPointType.production.value

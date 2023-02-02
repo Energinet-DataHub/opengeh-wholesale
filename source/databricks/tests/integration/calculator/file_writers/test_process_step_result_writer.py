@@ -38,15 +38,12 @@ DEFAULT_ENERGY_SUPPLIER_ID = "987654321"
 
 
 def _create_result_row(
-    grid_area: str,
-    energy_supplier_id: str,
-    quantity: str = "1.1",
-    quality: TimeSeriesQuality = TimeSeriesQuality.measured,
+    grid_area: str, energy_supplier_id: str, quantity: str = "1.1"
 ) -> dict:
     row = {
         Colname.grid_area: grid_area,
         Colname.sum_quantity: Decimal(quantity),
-        Colname.quality: quality.value,
+        Colname.qualities: [TimeSeriesQuality.measured.value],
         Colname.resolution: MeteringPointResolution.quarter.value,
         Colname.time_window: {
             Colname.start: datetime(2020, 1, 1, 0, 0),

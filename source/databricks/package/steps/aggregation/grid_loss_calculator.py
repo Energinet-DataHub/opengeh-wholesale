@@ -187,12 +187,12 @@ def calculate_total_consumption(results: dict, metadata: Metadata) -> DataFrame:
             Colname.grid_area,
             Colname.time_window,
             Colname.sum_quantity,
-            Colname.quality,
+            Colname.qualities,
         )
-        .groupBy(Colname.grid_area, Colname.time_window, Colname.quality)
+        .groupBy(Colname.grid_area, Colname.time_window)
         .sum(Colname.sum_quantity)
         .withColumnRenamed(f"sum({Colname.sum_quantity})", production_sum_quantity)
-        .withColumnRenamed(Colname.quality, aggregated_production_quality)
+        .withColumnRenamed(Colname.qualities, aggregated_production_quality)
     )
 
     result_net_exchange = (
@@ -200,12 +200,12 @@ def calculate_total_consumption(results: dict, metadata: Metadata) -> DataFrame:
             Colname.grid_area,
             Colname.time_window,
             Colname.sum_quantity,
-            Colname.quality,
+            Colname.qualities,
         )
-        .groupBy(Colname.grid_area, Colname.time_window, Colname.quality)
+        .groupBy(Colname.grid_area, Colname.time_window)
         .sum(Colname.sum_quantity)
         .withColumnRenamed(f"sum({Colname.sum_quantity})", exchange_sum_quantity)
-        .withColumnRenamed(Colname.quality, aggregated_net_exchange_quality)
+        .withColumnRenamed(Colname.qualities, aggregated_net_exchange_quality)
     )
 
     result = result_production.join(
@@ -220,7 +220,7 @@ def calculate_total_consumption(results: dict, metadata: Metadata) -> DataFrame:
         .select(
             Colname.grid_area,
             Colname.time_window,
-            Colname.quality,
+            Colname.qualities,
             Colname.sum_quantity,
             lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         )
