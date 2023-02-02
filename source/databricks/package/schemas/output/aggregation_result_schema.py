@@ -44,9 +44,6 @@ aggregation_result_schema = StructType(
             ),
             False,
         ),
-        StructField(
-            Colname.resolution, StringType(), False
-        ),  # enum int: change to enum later
         StructField(Colname.sum_quantity, DecimalType(18, 3), False),
         StructField(
             Colname.quality, StringType(), False

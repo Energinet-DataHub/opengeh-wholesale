@@ -81,7 +81,6 @@ def combine_master_data(
         mddf[Colname.metering_point_id],
         mddf[Colname.from_date],
         mddf[Colname.to_date],
-        df[Colname.resolution],
         df[Colname.energy_supplier_id],
         df[Colname.balance_responsible_id],
         df[Colname.in_grid_area],
