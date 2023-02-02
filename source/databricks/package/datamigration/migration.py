@@ -71,6 +71,7 @@ def _migrate_data_lake(storage_account_name: str, storage_account_key: str) -> N
     )
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
+    uncommitted_migrations.sort()
 
     storage_account_url = infrastructure.get_storage_account_url(
         storage_account_name,
