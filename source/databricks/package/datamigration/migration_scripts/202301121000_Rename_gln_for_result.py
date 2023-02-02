@@ -35,40 +35,42 @@ def apply(args: MigrationScriptArgs) -> None:
         # Enumerate the directories in the parent folder
         directories = file_system_client.get_paths(path=directory_name)
 
-        # Rename each directory
-        for directory in directories:
-            match = re.search(
-                r"(calculation-output/(batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/result/grid_area=\d{3}))/gln=grid_access_provider/step=production",
-                directory.name,
-            )
-            if match and directory.is_directory:
-                base_path = match.group(1)
-                current_directory_name = directory.name
+        parent_directory_client = file_system_client.get_directory_client(
+            directory=directory_name
+        )
+        if parent_directory_client.exists():
+            # Rename each directory
+            for directory in directories:
+                match = re.search(
+                    r"(calculation-output/(batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/result/grid_area=\d{3}))/gln=grid_access_provider/step=production",
+                    directory.name,
+                )
+                if match and directory.is_directory:
+                    base_path = match.group(1)
+                    current_directory_name = directory.name
 
-                directory_client = file_system_client.get_directory_client(
-                    directory=current_directory_name
-                )
-                new_directory_name = (
-                    f"{base_path}/gln=grid_access_provider/time_series_type=production"
-                )
-                move_and_rename_folder(
-                    directory_client=directory_client,
-                    current_directory_name=current_directory_name,
-                    new_directory_name=new_directory_name,
-                    container=container,
-                )
+                    directory_client = file_system_client.get_directory_client(
+                        directory=current_directory_name
+                    )
+                    new_directory_name = f"{base_path}/gln=grid_access_provider/time_series_type=production"
+                    move_and_rename_folder(
+                        directory_client=directory_client,
+                        current_directory_name=current_directory_name,
+                        new_directory_name=new_directory_name,
+                        container=container,
+                    )
 
-                current_directory_name_2 = f"{base_path}/gln=grid_access_provider"
-                directory_client_2 = file_system_client.get_directory_client(
-                    directory=current_directory_name_2
-                )
-                new_directory_name_2 = f"{base_path}/gln=grid_area"
-                move_and_rename_folder(
-                    directory_client=directory_client_2,
-                    current_directory_name=current_directory_name_2,
-                    new_directory_name=new_directory_name_2,
-                    container=container,
-                )
+                    current_directory_name_2 = f"{base_path}/gln=grid_access_provider"
+                    directory_client_2 = file_system_client.get_directory_client(
+                        directory=current_directory_name_2
+                    )
+                    new_directory_name_2 = f"{base_path}/gln=grid_area"
+                    move_and_rename_folder(
+                        directory_client=directory_client_2,
+                        current_directory_name=current_directory_name_2,
+                        new_directory_name=new_directory_name_2,
+                        container=container,
+                    )
 
 
 def move_and_rename_folder(
