@@ -1,11 +1,15 @@
 data "azurerm_client_config" "this" {}
 
+locals {
+  sqlServerAdminName          = "perfdbadmin"
+}
+
 resource "azurerm_mssql_server" "performance_test" {
   name                          = "mssql-perf-test-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   resource_group_name           = azurerm_resource_group.this.name
   location                      = azurerm_resource_group.this.location
   version                       = "12.0"
-  administrator_login           = "perfdbadmin"
+  administrator_login           = local.sqlServerAdminName
   administrator_login_password  = random_password.mssql_administrator_login_password_performance_test.result
 
   identity {
