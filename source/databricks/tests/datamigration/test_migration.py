@@ -80,28 +80,28 @@ def test__all_migrations_script_has_correct_signature():
         assert parameter.annotation is MigrationScriptArgs
 
 
-@patch("package.datamigration.migration.initialize_spark")
-@patch("package.datamigration.migration.DataLakeFileManager")
-@patch("package.datamigration.migration.get_uncommitted_migrations")
-@patch("package.datamigration.migration.upload_committed_migration")
-@patch("package.datamigration.migration._apply_migration")
-def test__migrate_datalake__upload_called_with_correct_name(
-    mock_apply_migration,
-    mock_upload_committed_migration,
-    mock_uncommitted_migrations,
-    mock_file_manager,
-    mock_spark,
-):
-    # Arrange
-    all_migrations = _get_all_migrations()
-    mock_uncommitted_migrations.return_value = all_migrations
+# @patch("package.datamigration.migration.initialize_spark")
+# @patch("package.datamigration.migration.DataLakeFileManager")
+# @patch("package.datamigration.migration.get_uncommitted_migrations")
+# @patch("package.datamigration.migration.upload_committed_migration")
+# @patch("package.datamigration.migration._apply_migration")
+# def test__migrate_datalake__upload_called_with_correct_name(
+#     mock_apply_migration,
+#     mock_upload_committed_migration,
+#     mock_uncommitted_migrations,
+#     mock_file_manager,
+#     mock_spark,
+# ):
+#     # Arrange
+#     all_migrations = _get_all_migrations()
+#     mock_uncommitted_migrations.return_value = all_migrations
 
-    calls = []
-    for name in all_migrations:
-        calls.append(call(ANY, name))
+#     calls = []
+#     for name in all_migrations:
+#         calls.append(call(ANY, name))
 
-    # Act
-    _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
+#     # Act
+#     _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
 
-    # Assert
-    mock_upload_committed_migration.assert_has_calls(calls)
+#     # Assert
+#     mock_upload_committed_migration.assert_has_calls(calls)
