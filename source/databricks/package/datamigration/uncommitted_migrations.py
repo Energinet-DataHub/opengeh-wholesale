@@ -55,7 +55,7 @@ def _get_all_migrations() -> list[str]:
         name, extention = path.splitext(file_name)
         if extention == ".py" and name != "__init__":
             script_names.append(name)
-
+    script_names.sort()
     return script_names
 
 
