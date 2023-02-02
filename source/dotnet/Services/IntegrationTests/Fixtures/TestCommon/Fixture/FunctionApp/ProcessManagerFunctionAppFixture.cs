@@ -21,6 +21,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.IntegrationTests.Components;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.ProcessManager;

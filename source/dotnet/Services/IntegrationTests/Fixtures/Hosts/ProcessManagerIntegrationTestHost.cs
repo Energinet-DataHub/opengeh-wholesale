@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Wholesale.IntegrationTests.Mock;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Mock;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

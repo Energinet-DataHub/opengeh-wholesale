@@ -12,28 +12,48 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
     private readonly ICorrelationContext _correlationContext;
+    private readonly IJsonSerializer _jsonSerializer;
 
-    public ServiceBusMessageFactory(ICorrelationContext correlationContext)
+    public ServiceBusMessageFactory(
+        ICorrelationContext correlationContext,
+        IJsonSerializer jsonSerializer)
     {
         _correlationContext = correlationContext;
+        _jsonSerializer = jsonSerializer;
     }
 
-    public ServiceBusMessage Create(byte[] body, string messageType)
+    public ServiceBusMessage Create(DomainEventDto domainEventDto, string messageType)
     {
+        var serializedDto = _jsonSerializer.Serialize(domainEventDto);
+        var body = Encoding.UTF8.GetBytes(serializedDto);
         return CreateServiceBusMessage(body, messageType, _correlationContext.Id);
     }
 
-    public IEnumerable<ServiceBusMessage> Create(IEnumerable<byte[]> messages, string messageType)
+    public ServiceBusMessage Create(ProcessCompleted integrationEventDto, string messageType)
     {
-        return messages.Select(message => CreateServiceBusMessage(message, messageType, _correlationContext.Id));
+        var serializedDto = _jsonSerializer.Serialize(integrationEventDto);
+        var body = Encoding.UTF8.GetBytes(serializedDto);
+        return CreateServiceBusMessage(body, messageType, _correlationContext.Id);
+    }
+
+    public IEnumerable<ServiceBusMessage> Create(IEnumerable<DomainEventDto> domainEvents, string messageType)
+    {
+        var bodies = domainEvents
+            .Select(events => _jsonSerializer.Serialize(events))
+            .Select(body => Encoding.UTF8.GetBytes(body));
+        return bodies.Select(message => CreateServiceBusMessage(message, messageType, _correlationContext.Id));
     }
 
     /// <summary>

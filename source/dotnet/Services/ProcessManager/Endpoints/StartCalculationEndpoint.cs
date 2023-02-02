@@ -38,7 +38,7 @@ public class StartCalculationEndpoint
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
         byte[] message)
     {
-        var batchCreatedEvent = await _jsonSerializer.DeserializeAsync<BatchCreatedEventDto>(message).ConfigureAwait(false);
+        var batchCreatedEvent = await _jsonSerializer.DeserializeAsync<BatchCreatedDomainEventDto>(message).ConfigureAwait(false);
         await _batchApplicationService.StartCalculationAsync(batchCreatedEvent.BatchId).ConfigureAwait(false);
     }
 }

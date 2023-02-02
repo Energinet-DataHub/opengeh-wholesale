@@ -13,12 +13,16 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public interface IServiceBusMessageFactory
 {
-    ServiceBusMessage Create(byte[] body, string messageType);
+    IEnumerable<ServiceBusMessage> Create(IEnumerable<DomainEventDto> domainEvents, string messageType);
 
-    IEnumerable<ServiceBusMessage> Create(IEnumerable<byte[]> bodies, string messageType);
+    ServiceBusMessage Create(DomainEventDto domainEventDto, string messageType);
+
+    ServiceBusMessage Create(ProcessCompleted integrationEventDto, string messageType);
 }

@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
@@ -31,6 +33,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
+using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
@@ -102,9 +105,12 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IActorRepository, ActorRepository>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
-
+        services.AddScoped<IBatchCreatedPublisher, BatchCreatedPublisher>();
         services.AddScoped<DomainEventTopicServiceBusSender>();
         services.AddScoped<IntegrationEventTopicServiceBusSender>();
+        services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
+        services.AddScoped<ICorrelationContext, CorrelationContext>();
+        services.AddScoped<IJsonSerializer, JsonSerializer>();
 
         services.ConfigureDateTime();
     }

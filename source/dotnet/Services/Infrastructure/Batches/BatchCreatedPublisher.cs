@@ -18,25 +18,25 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Batches;
 
-public class BatchCompletedPublisher : IBatchCompletedPublisher
+public class BatchCreatedPublisher : IBatchCreatedPublisher
 {
-    private readonly DomainEventTopicServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
+    private readonly DomainEventTopicServiceBusSender _serviceBusSender;
     private readonly IOptions<DomainEventTopicSettings> _settings;
 
-    public BatchCompletedPublisher(
-        DomainEventTopicServiceBusSender serviceBusSender,
+    public BatchCreatedPublisher(
         IServiceBusMessageFactory serviceBusMessageFactory,
+        DomainEventTopicServiceBusSender serviceBusSender,
         IOptions<DomainEventTopicSettings> settings)
     {
-        _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
+        _serviceBusSender = serviceBusSender;
         _settings = settings;
     }
 
-    public async Task PublishAsync(IEnumerable<BatchCompletedEventDto> batchCompletedEvents)
+    public async Task PublishAsync(BatchCreatedDomainEventDto batchCreatedDomainEventDto)
     {
-        var messages = _serviceBusMessageFactory.Create(batchCompletedEvents, _settings.Value.TopicName);
-        await _serviceBusSender.SendMessagesAsync(messages).ConfigureAwait(false);
+        var message = _serviceBusMessageFactory.Create(batchCreatedDomainEventDto, _settings.Value.TopicName);
+        await _serviceBusSender.SendMessageAsync(message).ConfigureAwait(false);
     }
 }

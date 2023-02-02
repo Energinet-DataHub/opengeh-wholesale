@@ -15,7 +15,7 @@
 using System.Diagnostics;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi
 {
     [DebuggerStepThrough]
     public abstract class WebApiTestBase<TFixture> : IDisposable

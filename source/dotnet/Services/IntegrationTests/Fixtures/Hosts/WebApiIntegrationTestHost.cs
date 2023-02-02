@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 
 public sealed class WebApiIntegrationTestHost : IDisposable
 {

@@ -24,7 +24,6 @@ using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
-using Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using FluentAssertions;

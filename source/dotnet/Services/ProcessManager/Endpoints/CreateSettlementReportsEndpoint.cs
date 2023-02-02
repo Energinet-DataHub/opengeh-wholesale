@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Microsoft.Azure.Functions.Worker;

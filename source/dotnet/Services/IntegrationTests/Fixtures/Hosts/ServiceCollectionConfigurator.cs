@@ -19,13 +19,12 @@ using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 
 /// <summary>
 /// Extension methods to configure mocks for external dependencies of the host applications.

@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Batches;
 
-public class BatchCreatedPublisher : IBatchCreatedPublisher
+public class DomainEventTopicSettings
 {
-    public Task PublishAsync(BatchCreatedEventDto batchCreatedEventDto)
-    {
-        throw new NotImplementedException();
-    }
+    public string TopicName { get; init; } = string.Empty;
 }

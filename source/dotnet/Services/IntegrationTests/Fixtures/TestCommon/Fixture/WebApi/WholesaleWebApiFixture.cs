@@ -14,12 +14,14 @@
 
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi
 {
     public class WholesaleWebApiFixture : WebApiFixture
     {

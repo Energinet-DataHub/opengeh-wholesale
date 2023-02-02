@@ -13,11 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi
 {
     /// <summary>
     /// An xUnit fixture for supporting integration testing of a WebApi

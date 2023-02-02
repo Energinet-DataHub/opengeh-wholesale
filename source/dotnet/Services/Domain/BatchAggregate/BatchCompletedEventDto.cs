@@ -22,4 +22,4 @@ public sealed record BatchCompletedEventDto(
     List<string> GridAreaCodes,
     ProcessType ProcessType,
     Instant PeriodStart,
-    Instant PeriodEnd);
+    Instant PeriodEnd) : DomainEventDto;

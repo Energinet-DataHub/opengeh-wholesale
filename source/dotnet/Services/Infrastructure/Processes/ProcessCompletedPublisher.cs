@@ -12,43 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 public class ProcessCompletedPublisher : IProcessCompletedPublisher
 {
+    private readonly IOptions<DomainEventTopicSettings> _settings;
     private readonly ServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
-    private readonly string _messageType;
-    private readonly IJsonSerializer _jsonSerializer;
 
     public ProcessCompletedPublisher(
+        IOptions<DomainEventTopicSettings> settings,
         DomainEventTopicServiceBusSender serviceBusSender,
-        IServiceBusMessageFactory serviceBusMessageFactory,
-        string messageType,
-        IJsonSerializer jsonSerializer)
+        IServiceBusMessageFactory serviceBusMessageFactory)
     {
+        _settings = settings;
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
-        _messageType = messageType;
-        _jsonSerializer = jsonSerializer;
     }
 
     public async Task PublishAsync(List<ProcessCompletedEventDto> completedProcesses)
     {
-        var bodies = completedProcesses
-            .Select(events => _jsonSerializer.Serialize(events))
-            .Select(body => Encoding.UTF8.GetBytes(body));
-
-        var messages = _serviceBusMessageFactory.Create(bodies, _messageType);
-
+        var messages = _serviceBusMessageFactory.Create(completedProcesses, _settings.Value.TopicName);
         await _serviceBusSender.SendMessagesAsync(messages).ConfigureAwait(false);
     }
 }
