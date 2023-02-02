@@ -81,6 +81,7 @@ def _migrate_data_lake(storage_account_name: str, storage_account_key: str) -> N
     )
 
     for name in uncommitted_migrations:
+        print(name)
         _apply_migration(name, migration_args)
         upload_committed_migration(file_manager, name)
 
