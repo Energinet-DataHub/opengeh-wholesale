@@ -13,17 +13,15 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
-using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +29,7 @@ using NodaTime;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.ProcessManager;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
 public class SubmitCreatedBatchesEndpointTests
 {
