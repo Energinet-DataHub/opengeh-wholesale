@@ -15,14 +15,15 @@
 using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi;
 
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
 public class BatchControllerTests :
@@ -120,7 +121,7 @@ public class BatchControllerTests :
 
     private static BatchRequestDto CreateBatchRequestDto()
     {
-        var period = Periods.January_EuropeCopenhagen;
+        var period = Periods.January_EuropeCopenhagen_1ms;
         var batchRequest = new BatchRequestDto(
             ProcessType.BalanceFixing,
             new List<string> { "805" },
