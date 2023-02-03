@@ -23,6 +23,7 @@ limitations under the License.
     </PropertyGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="Scripts\202302031200_Drop_MessageHub.sql" />
       <EmbeddedResource Include="Scripts\202206161400_Create_Batch_Table.sql" />
       <EmbeddedResource Include="Scripts\202206281330_Create_MessageHub_Process_Table.sql" />
       <EmbeddedResource Include="Scripts\202208111100_Add_Batch_RunId.sql" />
