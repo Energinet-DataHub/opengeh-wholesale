@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
