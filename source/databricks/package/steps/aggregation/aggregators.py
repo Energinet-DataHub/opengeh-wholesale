@@ -444,7 +444,6 @@ def __aggregate_sum_and_set_quality(
     result = result.na.fill(value=0, subset=[quantity_col_name])
     result = (
         result.groupBy(group_by).agg(
-            # TODO: Doesn't this sum become null if just one quantity is already null? Should we replace null with 0 before this operation?
             sum(quantity_col_name).alias(Colname.sum_quantity),
             collect_set("Quality"),
         )
@@ -454,8 +453,11 @@ def __aggregate_sum_and_set_quality(
             when(
                 array_contains(
                     col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
+                )
+                | array_contains(
+                    col("collect_set(Quality)"), lit(TimeSeriesQuality.incomplete.value)
                 ),
-                lit(TimeSeriesQuality.missing.value),
+                lit(TimeSeriesQuality.incomplete.value),
             )
             .when(
                 array_contains(
