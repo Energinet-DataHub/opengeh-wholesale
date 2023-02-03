@@ -15,7 +15,3 @@
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public record BatchCreatedDomainEventDto(Guid BatchId) : DomainEventDto;
-
-public record DomainEventDto();
-
-public record IntegrationEventDto();

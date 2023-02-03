@@ -35,5 +35,26 @@ namespace Energinet.DataHub.Wholesale.WebApi
         public const string CalculationStorageContainerName = "STORAGE_CONTAINER_NAME";
 
         public const string DateTimeZoneId = "TIME_ZONE";
+
+        #region ServiceBus
+
+        // TODO: Add health check
+        // TODO: Add these new settings in terraform
+
+        /// <summary>
+        /// Connection string to manage the wholesale domain service bus namespace.
+        /// </summary>
+        public const string ServiceBusManageConnectionString = "SERVICE_BUS_MANAGE_CONNECTION_STRING";
+
+        /// <summary>
+        /// Connection string to subscribe to the wholesale domain service bus queues and topics.
+        /// </summary>
+        public const string ServiceBusSendConnectionString = "SERVICE_BUS_SEND_CONNECTION_STRING";
+
+        public const string BatchCreatedEventName = "BATCH_CREATED_EVENT_NAME";
+
+        public const string DomainEventsTopicName = "DOMAIN_EVENTS_TOPIC_NAME";
+
+        #endregion
     }
 }

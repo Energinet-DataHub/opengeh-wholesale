@@ -14,8 +14,6 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
@@ -134,7 +132,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        [Frozen] Mock<IBatchCompletedPublisher> batchCompletedPublisherMock,
+        [Frozen] Mock<IDomainEventPublisher> batchCompletedPublisherMock,
         Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
@@ -154,7 +152,7 @@ public class BatchExecutionStateDomainServiceTests
         // Assert
         batchCompletedPublisherMock
             .Verify(
-                publisher => publisher.PublishAsync(It.Is<IEnumerable<BatchCompletedEventDto>>(events => events.Single().BatchId == batch2.Id)),
+                publisher => publisher.PublishAsync(It.Is<List<BatchCompletedEventDto>>(events => events.Single().BatchId == batch2.Id)),
                 Times.Once);
     }
 
@@ -164,7 +162,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        [Frozen] Mock<IBatchCompletedPublisher> batchCompletedPublisherMock,
+        [Frozen] Mock<IDomainEventPublisher> batchCompletedPublisherMock,
         Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
@@ -189,7 +187,7 @@ public class BatchExecutionStateDomainServiceTests
         // Assert: Events was published for batch1 and batch3, but not for batch2
         batchCompletedPublisherMock
             .Verify(
-                publisher => publisher.PublishAsync(It.Is<IEnumerable<BatchCompletedEventDto>>(
+                publisher => publisher.PublishAsync(It.Is<IList<BatchCompletedEventDto>>(
                     events => events.Any(e => e.BatchId == batch1.Id) && events.Any(e => e.BatchId == batch3.Id) && events.All(e => e.BatchId != batch2.Id))),
                 Times.Once);
     }

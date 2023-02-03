@@ -12,31 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
-using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Batches;
+namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
-public class BatchCompletedPublisher : IBatchCompletedPublisher
+public class DomainEventPublisher : IDomainEventPublisher
 {
-    private readonly DomainEventTopicServiceBusSender _serviceBusSender;
+    private readonly IDomainEventTopicServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
-    private readonly IOptions<DomainEventTopicSettings> _settings;
 
-    public BatchCompletedPublisher(
-        DomainEventTopicServiceBusSender serviceBusSender,
-        IServiceBusMessageFactory serviceBusMessageFactory,
-        IOptions<DomainEventTopicSettings> settings)
+    public DomainEventPublisher(
+        IDomainEventTopicServiceBusSender serviceBusSender,
+        IServiceBusMessageFactory serviceBusMessageFactory)
     {
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
-        _settings = settings;
     }
 
-    public async Task PublishAsync(IEnumerable<BatchCompletedEventDto> batchCompletedEvents)
+    public async Task PublishAsync<TDomainEventDto>(TDomainEventDto domainEvent)
+        where TDomainEventDto : DomainEventDto
     {
-        var messages = _serviceBusMessageFactory.Create(batchCompletedEvents, _settings.Value.TopicName);
+        var message = _serviceBusMessageFactory.Create(domainEvent);
+        await _serviceBusSender.SendMessageAsync(message).ConfigureAwait(false);
+    }
+
+    public async Task PublishAsync<TDomainEventDto>(IList<TDomainEventDto> domainEvents)
+        where TDomainEventDto : DomainEventDto
+    {
+        var messages = _serviceBusMessageFactory.Create(domainEvents);
         await _serviceBusSender.SendMessagesAsync(messages).ConfigureAwait(false);
     }
 }

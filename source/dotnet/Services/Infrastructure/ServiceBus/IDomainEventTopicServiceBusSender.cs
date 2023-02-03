@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Azure.Messaging.ServiceBus;
 
-public interface IBatchCompletedPublisher
+namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+
+public interface IDomainEventTopicServiceBusSender
 {
-    Task PublishAsync(IEnumerable<BatchCompletedEventDto> batchCompletedEvents);
+    Task SendMessageAsync(ServiceBusMessage message);
+
+    Task SendMessagesAsync(IEnumerable<ServiceBusMessage> messages);
 }

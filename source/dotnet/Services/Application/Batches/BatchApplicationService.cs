@@ -31,7 +31,7 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchExecutionStateDomainService _batchExecutionStateDomainService;
     private readonly IBatchDtoMapper _batchDtoMapper;
     private readonly IProcessTypeMapper _processTypeMapper;
-    private readonly IBatchCreatedPublisher _batchCreatedPublisher;
+    private readonly IDomainEventPublisher _domainEventPublisher;
 
     public BatchApplicationService(
         IBatchFactory batchFactory,
@@ -41,7 +41,7 @@ public class BatchApplicationService : IBatchApplicationService
         IBatchExecutionStateDomainService batchExecutionStateDomainService,
         IBatchDtoMapper batchDtoMapper,
         IProcessTypeMapper processTypeMapper,
-        IBatchCreatedPublisher batchCreatedPublisher)
+        IDomainEventPublisher domainEventPublisher)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
@@ -50,7 +50,7 @@ public class BatchApplicationService : IBatchApplicationService
         _batchExecutionStateDomainService = batchExecutionStateDomainService;
         _batchDtoMapper = batchDtoMapper;
         _processTypeMapper = processTypeMapper;
-        _batchCreatedPublisher = batchCreatedPublisher;
+        _domainEventPublisher = domainEventPublisher;
     }
 
     public async Task<Guid> CreateAsync(BatchRequestDto batchRequestDto)
@@ -59,7 +59,7 @@ public class BatchApplicationService : IBatchApplicationService
         // Domain service
         var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
-        await _batchCreatedPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
+        await _domainEventPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
         // ------------
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
         return batch.Id;

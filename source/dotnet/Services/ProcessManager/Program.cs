@@ -34,9 +34,9 @@ using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
-using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -97,11 +97,6 @@ public static class Program
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
-        services.AddScoped<IBatchCompletedPublisher, BatchCompletedPublisher>();
-        services.AddScoped<IBatchCreatedPublisher, BatchCreatedPublisher>();
-        services.AddScoped<IProcessCompletedPublisher, ProcessCompletedPublisher>();
-        services.AddScoped<DomainEventTopicServiceBusSender>();
-        services.AddScoped<IntegrationEventTopicServiceBusSender>();
     }
 
     private static void Domains(IServiceCollection services)
@@ -134,11 +129,21 @@ public static class Program
                 o.EnableRetryOnFailure();
             }));
 
-        var domainEventTopicSettings = new DomainEventTopicSettings { TopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName) };
-        var integrationEventTopicSettings = new IntegrationEventTopicSettings { TopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName) };
+        var serviceBusConnectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
+        var messageTypes = new Dictionary<Type, string>
+        {
+            //{ typeof(BatchCreatedDomainEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCreatedEventName) },
+            { typeof(BatchCompletedEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName) },
+            { typeof(ProcessCompletedEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName) },
+        };
 
-        serviceCollection.AddScoped<DomainEventTopicSettings>(x => domainEventTopicSettings);
-        serviceCollection.AddScoped<IntegrationEventTopicSettings>(x => integrationEventTopicSettings);
+        var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        serviceCollection.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, messageTypes);
+
+        var integrationEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
+        serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName, messageTypes);
+
         serviceCollection.AddScoped<IProcessCompletedIntegrationEventMapper, ProcessCompletedIntegrationEventMapper>();
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         serviceCollection.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();

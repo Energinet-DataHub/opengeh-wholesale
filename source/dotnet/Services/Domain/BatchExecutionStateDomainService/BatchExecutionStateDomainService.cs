@@ -25,20 +25,20 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
     private readonly ICalculationDomainService _calculationDomainService;
     private readonly ILogger _logger;
     private readonly IClock _clock;
-    private readonly IBatchCompletedPublisher _batchCompletedPublisher;
+    private readonly IDomainEventPublisher _domainEventPublisher;
 
     public BatchExecutionStateDomainService(
         IBatchRepository batchRepository,
         ICalculationDomainService calculationDomainService,
         ILogger<BatchExecutionStateDomainService> logger,
         IClock clock,
-        IBatchCompletedPublisher batchCompletedPublisher)
+        IDomainEventPublisher domainEventPublisher)
     {
         _batchRepository = batchRepository;
         _calculationDomainService = calculationDomainService;
         _logger = logger;
         _clock = clock;
-        _batchCompletedPublisher = batchCompletedPublisher;
+        _domainEventPublisher = domainEventPublisher;
     }
 
     /// <summary>
@@ -73,9 +73,10 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
             }
         }
 
-        var batchCompletedEvents = completedBatches.Select(
-            b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), b.ProcessType, b.PeriodStart, b.PeriodEnd));
-        await _batchCompletedPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
+        var batchCompletedEvents = completedBatches
+            .Select(b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), b.ProcessType, b.PeriodStart, b.PeriodEnd))
+            .ToList();
+        await _domainEventPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
     }
 
     private static BatchExecutionState MapState(CalculationState calculationState)

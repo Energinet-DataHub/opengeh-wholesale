@@ -14,10 +14,10 @@
 
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.Extensions.Configuration;
 
@@ -29,11 +29,20 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixtu
         {
             AzuriteManager = new AzuriteManager();
             DatabaseManager = new WholesaleDatabaseManager();
+            IntegrationTestConfiguration = new IntegrationTestConfiguration();
+
+            ServiceBusResourceProvider = new ServiceBusResourceProvider(
+                IntegrationTestConfiguration.ServiceBusConnectionString,
+                TestLogger);
         }
 
         public WholesaleDatabaseManager DatabaseManager { get; }
 
         private AzuriteManager AzuriteManager { get; }
+
+        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
+
+        private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
         /// <inheritdoc/>
         protected override void OnConfigureEnvironment()
@@ -63,6 +72,10 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixtu
             var blobContainerClient = new BlobContainerClient(
                 Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
                 Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, "domain-events-topic");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCreatedEventName, "batch-created");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
 

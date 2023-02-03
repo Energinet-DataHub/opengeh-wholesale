@@ -17,8 +17,10 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+using Google.Protobuf;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -38,7 +40,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
         Mock<IProcessCompletedIntegrationEventMapper> mapperMock)
     {
         // Arrange
-        var senderMock = new Mock<IntegrationEventTopicServiceBusSender>();
+        var senderMock = new Mock<IIntegrationEventTopicServiceBusSender>();
         mapperMock
             .Setup(mapper => mapper.MapFrom(eventDto))
             .Returns(processCompleted);
@@ -64,12 +66,12 @@ public class ProcessCompletedIntegrationEventPublisherTests
     {
         // Arrange
         var eventDto = CreateProcessCompletedEventDto(processType);
-        var senderMock = new Mock<IntegrationEventTopicServiceBusSender>();
+        var senderMock = new Mock<IIntegrationEventTopicServiceBusSender>();
         mapperMock
             .Setup(mapper => mapper.MapFrom(eventDto))
             .Returns(processCompleted);
         factoryMock
-            .Setup(factory => factory.Create(processCompleted, expectedMessageType))
+            .Setup(factory => factory.Create<ProcessCompleted>(processCompleted.ToByteArray(), expectedMessageType))
             .Returns(new ServiceBusMessage
             {
                 ApplicationProperties = { { MessageMetaDataConstants.MessageType, expectedMessageType } },

@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Azure.Messaging.ServiceBus;
 
-public interface IBatchCreatedPublisher
+namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+
+public interface IIntegrationEventTopicServiceBusSender
 {
-    Task PublishAsync(BatchCreatedDomainEventDto batchCreatedDomainEvent);
+    Task SendMessageAsync(ServiceBusMessage message, CancellationToken cancellationToken);
 }

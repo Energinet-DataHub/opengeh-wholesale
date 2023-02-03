@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Batches;
+namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
-public class DomainEventTopicSettings
-{
-    public string TopicName { get; init; } = string.Empty;
-}
+public interface IIntegrationEventDto { }

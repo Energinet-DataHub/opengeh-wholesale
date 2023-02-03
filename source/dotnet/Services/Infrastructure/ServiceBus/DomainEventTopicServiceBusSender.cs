@@ -16,6 +16,22 @@ using Azure.Messaging.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
-public class DomainEventTopicServiceBusSender : ServiceBusSender
+public class DomainEventTopicServiceBusSender : IDomainEventTopicServiceBusSender
 {
+    private readonly ServiceBusSender _sender;
+
+    public DomainEventTopicServiceBusSender(ServiceBusSender sender)
+    {
+        _sender = sender;
+    }
+
+    public async Task SendMessageAsync(ServiceBusMessage message)
+    {
+        await _sender.SendMessageAsync(message).ConfigureAwait(false);
+    }
+
+    public async Task SendMessagesAsync(IEnumerable<ServiceBusMessage> messages)
+    {
+        await _sender.SendMessagesAsync(messages).ConfigureAwait(false);
+    }
 }

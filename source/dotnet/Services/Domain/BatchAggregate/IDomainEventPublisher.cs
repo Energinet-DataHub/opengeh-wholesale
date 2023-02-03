@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Batches;
+namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-public class IntegrationEventTopicSettings
+public interface IDomainEventPublisher
 {
-    public string TopicName { get; init; } = string.Empty;
+    Task PublishAsync<TDomainEventDto>(TDomainEventDto domainEvents)
+        where TDomainEventDto : DomainEventDto;
+
+    Task PublishAsync<TDomainEventDto>(IList<TDomainEventDto> domainEvents)
+        where TDomainEventDto : DomainEventDto;
 }

@@ -20,7 +20,6 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
@@ -33,9 +32,9 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
-using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
@@ -88,14 +87,13 @@ internal static class ServiceCollectionExtensions
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         services.AddSingleton(dataLakeFileSystemClient);
         services.AddScoped<HttpClient>(_ => null!);
-        services.AddScoped<IBatchCompletedPublisher>(_ => null!); // Unused in the use cases of this app
+        services.AddScoped<IDomainEventPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
         services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IBatchDtoV2Mapper, BatchDtoV2Mapper>();
         services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculationDomainService>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
@@ -105,12 +103,20 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IActorRepository, ActorRepository>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
-        services.AddScoped<IBatchCreatedPublisher, BatchCreatedPublisher>();
-        services.AddScoped<DomainEventTopicServiceBusSender>();
-        services.AddScoped<IntegrationEventTopicServiceBusSender>();
-        services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<IJsonSerializer, JsonSerializer>();
+
+        var serviceBusConnectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusSendConnectionString);
+        var messageTypes = new Dictionary<Type, string>
+        {
+            { typeof(BatchCreatedDomainEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCreatedEventName) },
+            //{ typeof(BatchCompletedEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName) },
+            //{ typeof(ProcessCompletedEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName) },
+        };
+
+        var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        services.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, messageTypes);
 
         services.ConfigureDateTime();
     }
