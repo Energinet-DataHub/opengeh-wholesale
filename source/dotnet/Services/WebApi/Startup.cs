@@ -13,11 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
@@ -49,7 +51,7 @@ public class Startup
         services.AddJwtTokenSecurity();
         services.AddCommandStack(Configuration);
         services.AddApplicationInsightsTelemetry();
-
+        ReRegisterCorrelationIdContextHack(services);
         ConfigureHealthChecks(services);
     }
 
@@ -90,5 +92,17 @@ public class Startup
             .AddBlobStorageContainerCheck(
                 EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
                 EnvironmentSettingNames.CalculationStorageContainerName.Val());
+    }
+
+    private static void ReRegisterCorrelationIdContextHack(IServiceCollection services)
+    {
+        var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(ICorrelationContext));
+        services.Remove(serviceDescriptor!);
+        services.AddScoped<ICorrelationContext>(_ =>
+        {
+            var correlationContext = new CorrelationContext();
+            correlationContext.SetId(Guid.NewGuid().ToString());
+            return correlationContext;
+        });
     }
 }
