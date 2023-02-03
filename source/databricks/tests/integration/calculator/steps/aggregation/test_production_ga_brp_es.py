@@ -460,7 +460,13 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
             TimeSeriesQuality.measured.value,
             TimeSeriesQuality.estimated.value,
             TimeSeriesQuality.missing.value,
-            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.incomplete.value,
+        ),
+        (
+            TimeSeriesQuality.measured.value,
+            TimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.incomplete.value,
+            TimeSeriesQuality.incomplete.value,
         ),
         (
             TimeSeriesQuality.measured.value,
