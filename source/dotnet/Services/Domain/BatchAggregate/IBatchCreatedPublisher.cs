@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 public interface IBatchCreatedPublisher
 {
-    Task PublishAsync(BatchCreatedDomainEventDto batchCreatedDomainEventDto);
+    Task PublishAsync(BatchCreatedDomainEventDto batchCreatedDomainEvent);
 }

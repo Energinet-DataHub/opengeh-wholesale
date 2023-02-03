@@ -56,9 +56,11 @@ public class BatchApplicationService : IBatchApplicationService
     public async Task<Guid> CreateAsync(BatchRequestDto batchRequestDto)
     {
         var processType = _processTypeMapper.MapFrom(batchRequestDto.ProcessType);
+        // Domain service
         var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _batchCreatedPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
+        // ------------
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
         return batch.Id;
     }

@@ -34,9 +34,9 @@ public class BatchCreatedPublisher : IBatchCreatedPublisher
         _settings = settings;
     }
 
-    public async Task PublishAsync(BatchCreatedDomainEventDto batchCreatedDomainEventDto)
+    public async Task PublishAsync(BatchCreatedDomainEventDto batchCreatedDomainEvent)
     {
-        var message = _serviceBusMessageFactory.Create(batchCreatedDomainEventDto, _settings.Value.TopicName);
+        var message = _serviceBusMessageFactory.Create(batchCreatedDomainEvent, _settings.Value.TopicName);
         await _serviceBusSender.SendMessageAsync(message).ConfigureAwait(false);
     }
 }

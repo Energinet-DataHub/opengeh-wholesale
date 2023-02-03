@@ -102,7 +102,6 @@ public static class Program
         services.AddScoped<IProcessCompletedPublisher, ProcessCompletedPublisher>();
         services.AddScoped<DomainEventTopicServiceBusSender>();
         services.AddScoped<IntegrationEventTopicServiceBusSender>();
-        services.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
     }
 
     private static void Domains(IServiceCollection services)
@@ -158,6 +157,8 @@ public static class Program
             provider => new SettlementReportRepository(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
+
+        serviceCollection.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
     }
 
     private static void DateTime(IServiceCollection serviceCollection)
