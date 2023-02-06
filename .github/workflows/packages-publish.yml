@@ -24,15 +24,10 @@ on:
       - source/dotnet/Packages/Client/**
       - source/dotnet/Packages/Contracts/**
       - .github/workflows/packages-publish.yml
+      - .github/workflows/detect-changes.yml
   # Build, test, pack
   # Executed if package folder or build scripts has changed; including if documentation or tests has changed
-  pull_request:
-    branches:
-      - main
-    paths:
-      - source/dotnet/Contracts/**
-      - source/dotnet/Packages/**
-      - .github/workflows/packages-publish.yml
+  workflow_call: {}
   # Build, test, pack and publish prerelease packages
   # Executed if manually triggered
   workflow_dispatch: {}
