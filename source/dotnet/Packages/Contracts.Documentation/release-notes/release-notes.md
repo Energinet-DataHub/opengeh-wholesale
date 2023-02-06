@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 2.0.5
+
+- Bump version as part of pipeline change.
+
 ## Version 2.0.4
 
 No functional changes.
