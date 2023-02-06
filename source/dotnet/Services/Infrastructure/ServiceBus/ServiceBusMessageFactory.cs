@@ -17,7 +17,6 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
@@ -46,8 +45,7 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         return CreateServiceBusMessage(body, messageType, _correlationContext.Id);
     }
 
-    public ServiceBusMessage Create<TIntegrationEventDto>(byte[] bytes, string messageType)
-        where TIntegrationEventDto : IIntegrationEventDto
+    public ServiceBusMessage CreateProcessCompleted(byte[] bytes, string messageType)
     {
         return CreateServiceBusMessage(bytes, messageType, _correlationContext.Id);
     }

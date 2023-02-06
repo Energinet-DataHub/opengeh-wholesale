@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
-
 // DO NOT CHANGE - this namespace is exposed publicly in the Contracts package
 namespace Energinet.DataHub.Wholesale.Contracts.Events;
 
-public partial class ProcessCompleted : IIntegrationEventDto
+public partial class ProcessCompleted
 {
     /// <summary>
     /// The message type for balance-fixing-completed transport message meta data in accordance with ADR-008.

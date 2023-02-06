@@ -42,7 +42,7 @@ public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegr
     {
         var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEvent);
         var messageType = GetMessageType(processCompletedEvent.ProcessType);
-        var message = _serviceBusMessageFactory.Create<ProcessCompleted>(integrationEvent.ToByteArray(), messageType);
+        var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
