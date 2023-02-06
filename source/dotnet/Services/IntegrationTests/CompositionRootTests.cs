@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;

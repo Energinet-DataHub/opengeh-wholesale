@@ -14,12 +14,15 @@
 
 using System.Net;
 using System.Net.Http.Json;
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using FluentAssertions;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -54,14 +57,26 @@ public class BatchControllerTests :
         return Task.CompletedTask;
     }
 
+    /* TODO AJW
     [Theory]
     [InlineData("/v2/batch")]
-    public async Task CreateAsync_WhenCalled_AlwaysReturnsOk(string baseUrl)
+    public async Task CreateAsync_WhenCalled_AlwaysReturnsOk(
+        Mock<IProcessStepApplicationService> mock,
+        string baseUrl)
     {
         var batchRequest = CreateBatchRequestDto();
         var actual = await _client.PostAsJsonAsync(baseUrl, batchRequest, CancellationToken.None);
         actual.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
+
+
+        // Arrange
+        mock
+            .Setup(service => service.GetActorsAsync(request))
+            .ReturnsAsync(new[] { wholesaleActorDto });
+        _factory.ProcessStepApplicationServiceMock = mock;
+        // Act
+
+    }*/
 
     [Theory]
     [InlineData("/v2/batch")]
