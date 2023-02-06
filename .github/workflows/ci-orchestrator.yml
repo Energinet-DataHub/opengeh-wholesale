@@ -58,6 +58,7 @@ jobs:
     needs: [
       ci_base,
       ci_dotnet,
+      ci_databricks,
       ci_packages,
     ]
     if: |
