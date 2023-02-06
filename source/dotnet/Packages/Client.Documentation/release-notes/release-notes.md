@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.5
+
+No functional changes.
+
 ## Version 5.0.4
 
 Expose `GetProcessStepActorsAsync`

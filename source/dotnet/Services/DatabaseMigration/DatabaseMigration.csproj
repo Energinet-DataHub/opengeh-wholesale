@@ -34,7 +34,7 @@ limitations under the License.
       <EmbeddedResource Include="Scripts\202210261230_Add_IsBatchDataDownloadAvailable.sql" />
       <EmbeddedResource Include="Scripts\202301241200_Rename_To_Batch_AreSettlementReportsCreated.sql" />
       <EmbeddedResource Include="Scripts\202302031300_Fix_Batch_PeriodEnds.sql" />
-      <EmbeddedResource Include="Scripts\202302061300_Rename_RunId_To_CalculationId.sql" />
+      <EmbeddedResource Include="Scripts\202302020800_Rename_RunId_To_CalculationId.sql" />
     </ItemGroup>
 
     <ItemGroup>
