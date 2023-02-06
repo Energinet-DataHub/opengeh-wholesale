@@ -15,7 +15,7 @@
 using NodaTime;
 using NodaTime.Extensions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 
 public static class Periods
 {
