@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.W
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -136,7 +136,7 @@ public class BatchControllerTests :
 
     private static BatchRequestDto CreateBatchRequestDto()
     {
-        var period = Periods.January_EuropeCopenhagen;
+        var period = Periods.January_EuropeCopenhagen_1ms;
         var batchRequest = new BatchRequestDto(
             ProcessType.BalanceFixing,
             new List<string> { "805" },

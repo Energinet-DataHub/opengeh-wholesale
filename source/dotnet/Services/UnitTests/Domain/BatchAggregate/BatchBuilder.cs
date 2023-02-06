@@ -34,7 +34,7 @@ public class BatchBuilder
         // In order to be valid the last millisecond must be omitted
         var firstOfJanuary = DateTimeOffset.Parse("2021-01-31T23:00Z");
         _periodStart = Instant.FromDateTimeOffset(firstOfJanuary);
-        _periodEnd = Instant.FromDateTimeOffset(firstOfJanuary.AddMonths(1).AddMilliseconds(-1));
+        _periodEnd = Instant.FromDateTimeOffset(firstOfJanuary.AddMonths(1));
     }
 
     public BatchBuilder WithStateSubmitted()

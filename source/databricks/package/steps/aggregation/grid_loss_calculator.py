@@ -134,9 +134,6 @@ def __calculate_grid_loss_or_residual_ga(
         Colname.grid_area,
         Colname.time_window,
         Colname.sum_quantity,  # grid loss
-        lit(MeteringPointResolution.hour.value).alias(
-            Colname.resolution
-        ),  # TODO take resolution from metadata
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         lit(TimeSeriesQuality.calculated.value).alias(Colname.quality),
     )
@@ -157,9 +154,6 @@ def calculate_added_system_correction(results: dict, metadata: Metadata) -> Data
         Colname.time_window,
         Colname.added_system_correction,
         Colname.sum_quantity,
-        lit(MeteringPointResolution.hour.value).alias(
-            Colname.resolution
-        ),  # TODO take resolution from metadata
         lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
@@ -178,9 +172,6 @@ def calculate_added_grid_loss(results: dict, metadata: Metadata):
         Colname.time_window,
         Colname.added_grid_loss,
         Colname.sum_quantity,
-        lit(MeteringPointResolution.hour.value).alias(
-            Colname.resolution
-        ),  # TODO take resolution from metadata
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
@@ -231,9 +222,6 @@ def calculate_total_consumption(results: dict, metadata: Metadata) -> DataFrame:
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(MeteringPointResolution.hour.value).alias(
-                Colname.resolution
-            ),  # TODO take resolution from metadata
             lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         )
     )

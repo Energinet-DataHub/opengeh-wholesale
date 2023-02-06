@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 2.0.4
+
+No functional changes.
+
 ## Version 2.0.3
 
 Add `BatchActorDto`, `BatchActorRequestDto` and `MarketRoleType`
