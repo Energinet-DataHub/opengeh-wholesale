@@ -25,7 +25,7 @@ from package.calculator_job import (
     _start,
 )
 from package.calculator_args import CalculatorArgs
-from package.constants.time_series_type import TimeSeriesType
+from package.codelists.time_series_type import TimeSeriesType
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit

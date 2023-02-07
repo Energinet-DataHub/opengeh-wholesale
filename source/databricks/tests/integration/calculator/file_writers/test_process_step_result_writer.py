@@ -20,8 +20,8 @@ from unittest.mock import patch
 
 from package.codelists import MeteringPointResolution, TimeSeriesQuality
 from package.constants import Colname
-from package.constants.market_role import MarketRole
-from package.constants.time_series_type import TimeSeriesType
+from package.codelists.market_role import MarketRole
+from package.codelists.time_series_type import TimeSeriesType
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 import package.infrastructure as infra
 from pyspark.sql import SparkSession

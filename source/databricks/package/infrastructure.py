@@ -14,8 +14,8 @@
 
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
-from package.constants.time_series_type import TimeSeriesType
-from package.constants.market_role import MarketRole
+from package.codelists.time_series_type import TimeSeriesType
+from package.codelists.market_role import MarketRole
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
 

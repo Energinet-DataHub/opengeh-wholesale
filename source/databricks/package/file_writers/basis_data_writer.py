@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
-from package.constants import Colname
 import package.infrastructure as infra
+from package.constants import Colname
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import lit
+from package.constants.partition_naming import GLN_VALUE_FOR_GRID_AREA
 
 
 class BasisDataWriter:
@@ -44,6 +46,7 @@ class BasisDataWriter:
 
     def _write_basis_data_to_csv(self, path: str, df: DataFrame) -> None:
         df = df.withColumnRenamed("GridAreaCode", "grid_area")
+        df = df.withColumn("gln", lit(GLN_VALUE_FOR_GRID_AREA))
 
         df.repartition("grid_area").write.mode("overwrite").partitionBy(
             "grid_area", Colname.gln

@@ -18,8 +18,8 @@ import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
 from package.codelists import MeteringPointResolution
 from package.constants import Colname
-from package.constants.market_role import MarketRole
-from package.constants.time_series_type import TimeSeriesType
+from package.codelists.market_role import MarketRole
+from package.codelists.time_series_type import TimeSeriesType
 from package.db_logging import debug
 from package.shared.data_classes import Metadata
 from package.file_writers.basis_data_writer import BasisDataWriter

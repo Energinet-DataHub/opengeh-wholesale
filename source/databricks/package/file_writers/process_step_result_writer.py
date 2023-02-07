@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
-from package.constants import Colname
-from package.constants.time_series_type import TimeSeriesType
-from package.constants.market_role import MarketRole
-from pyspark.sql.functions import col, lit
-from package.file_writers import actors_writer
 import package.infrastructure as infra
+from package.codelists.market_role import MarketRole
+from package.codelists.time_series_type import TimeSeriesType
+from package.constants import Colname
+from package.file_writers import actors_writer
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import col, lit
+from package.constants.partition_naming import GLN_VALUE_FOR_GRID_AREA
 
 
 class ProcessStepResultWriter:
@@ -93,7 +94,7 @@ class ProcessStepResultWriter:
         self,
         result_df: DataFrame,
     ) -> DataFrame:
-        result_df = result_df.withColumn(Colname.gln, lit("grid_area"))
+        result_df = result_df.withColumn(Colname.gln, lit(GLN_VALUE_FOR_GRID_AREA))
         return result_df
 
     def _write_result_df(self, result_df: DataFrame) -> None:
