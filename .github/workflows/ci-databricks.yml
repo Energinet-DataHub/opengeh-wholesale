@@ -34,6 +34,21 @@ jobs:
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
       TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
 
+  mypy_check:
+    runs-on: ubuntu-latest
+    name: Static type checker
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.x
+    - name: Run pip intall and mypy check of files in package
+      shell: bash
+      run: |
+        pip install --upgrade pip
+        pip install mypy types-python-dateutil
+        mypy ./source/databricks/package --disallow-untyped-defs --ignore-missing-imports
+
   #
   # Branch policy status check
   #
@@ -43,6 +58,7 @@ jobs:
     needs: [
       databricks_ci_build,
       databricks_ci_test,
+      mypy_check
     ]
     if: |
       always()
