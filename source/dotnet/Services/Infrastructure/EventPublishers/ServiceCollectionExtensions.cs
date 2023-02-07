@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,9 +25,9 @@ public static class ServiceCollectionExtensions
         this IServiceCollection serviceCollection,
         string serviceBusConnectionString,
         string topicName,
-        IDictionary<Type, string> messageType)
+        MessageTypeDictionary messageTypes)
     {
-        ServiceBusClientAndAndMessageFactoryRegistry(serviceCollection, serviceBusConnectionString, messageType);
+        ServiceBusClientAndAndMessageFactoryRegistry(serviceCollection, serviceBusConnectionString, messageTypes);
 
         serviceCollection.AddScoped<IDomainEventPublisher, DomainEventPublisher>();
         serviceCollection.AddSingleton<IDomainEventTopicServiceBusSender>(provider =>
@@ -41,35 +40,15 @@ public static class ServiceCollectionExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection AddIntegrationEventPublisher(
-        this IServiceCollection serviceCollection,
-        string serviceBusConnectionString,
-        string topicName,
-        IDictionary<Type, string> messageType)
-    {
-        ServiceBusClientAndAndMessageFactoryRegistry(serviceCollection, serviceBusConnectionString, messageType);
-
-        serviceCollection.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
-        serviceCollection.AddSingleton<IIntegrationEventTopicServiceBusSender>(provider =>
-        {
-            var client = provider.GetRequiredService<ServiceBusClient>();
-            var sender = client.CreateSender(topicName);
-            return new IntegrationEventTopicServiceBusSender(sender);
-        });
-
-        return serviceCollection;
-    }
-
     private static void ServiceBusClientAndAndMessageFactoryRegistry(
         IServiceCollection serviceCollection,
         string serviceBusConnectionString,
-        IDictionary<Type, string> messageType)
+        MessageTypeDictionary messageType)
     {
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))
             serviceCollection.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
 
-        // TODO: Create specific type
-        if (serviceCollection.All(x => x.ServiceType != typeof(IDictionary<Type, string>)))
+        if (serviceCollection.All(x => x.ServiceType != typeof(MessageTypeDictionary)))
             serviceCollection.AddSingleton(messageType);
 
         if (serviceCollection.All(x => x.ServiceType != typeof(IServiceBusMessageFactory)))

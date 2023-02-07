@@ -133,7 +133,7 @@ internal static class ServiceCollectionExtensions
         };
 
         var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
-        services.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, messageTypes);
+        services.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
     }
 
     private static void ConfigureDateTime(this IServiceCollection serviceCollection)

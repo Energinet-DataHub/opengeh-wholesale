@@ -129,7 +129,7 @@ public static class Program
                 o.EnableRetryOnFailure();
             }));
 
-        RegisterEventPublishers(serviceCollection);
+        RegisterDomainEventPublisher(serviceCollection);
 
         serviceCollection.AddScoped<IProcessCompletedIntegrationEventMapper, ProcessCompletedIntegrationEventMapper>();
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
@@ -153,7 +153,7 @@ public static class Program
         serviceCollection.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
     }
 
-    private static void RegisterEventPublishers(IServiceCollection serviceCollection)
+    private static void RegisterDomainEventPublisher(IServiceCollection serviceCollection)
     {
         var serviceBusConnectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
@@ -169,11 +169,7 @@ public static class Program
             },
         };
         var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
-        serviceCollection.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, messageTypes);
-
-        var integrationEventTopicName =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
-        serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName, messageTypes);
+        serviceCollection.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
     }
 
     private static void DateTime(IServiceCollection serviceCollection)
