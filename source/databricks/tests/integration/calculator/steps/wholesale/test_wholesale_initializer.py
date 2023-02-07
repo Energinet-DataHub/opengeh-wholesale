@@ -98,8 +98,8 @@ charges_dataset = [
 @pytest.mark.parametrize(
     "charges,resolution_duration,expected",
     [
-        (charges_dataset, ChargeResolution.hour.value, 1),
-        (charges_dataset, ChargeResolution.day.value, 2),
+        (charges_dataset, ChargeResolution.hour, 1),
+        (charges_dataset, ChargeResolution.day, 2),
     ],
 )
 def test__get_charges_based_on_resolution__filters_on_resolution_hour_or_day_only_for_tariff(
