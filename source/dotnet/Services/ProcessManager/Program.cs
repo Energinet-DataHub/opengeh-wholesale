@@ -195,6 +195,8 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
         var domainEventsTopicName =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        var batchCreatedSubscriptionStartCalculation =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StartCalculationWhenBatchCreatedSubscriptionName);
         var batchCompletedSubscriptionPublishProcessesCompleted =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName);
         var batchCompletedSubscriptionZipBasisData =
@@ -210,6 +212,11 @@ public static class Program
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,
                 name: "DomainEventsTopicExists")
+            .AddAzureServiceBusSubscription(
+                connectionString: serviceBusConnectionString,
+                topicName: domainEventsTopicName,
+                subscriptionName: batchCreatedSubscriptionStartCalculation,
+                name: "BatchCreatedSubscriptionStartCalculation")
             .AddAzureServiceBusSubscription(
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,
