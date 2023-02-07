@@ -128,9 +128,9 @@ The default Docker image used for testing is the newest version of the "latest"-
 
 In a pull request, it is possible to change the version of the Docker image used for running the tests. For example, if a pull request changes the Dockerfile, it might be relevant to run the test base towards the new Docker image. To change the version of the Docker image used, change the `image`-reference in the [docker-compose.yml](../../.devcontainer/docker-compose.yml)-file to e.g. `ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:pre-release-pr311`.
 
-### Static type checking with mypy
+### Static type checking with `mypy`
 
-We are using [mypy](https://mypy.readthedocs.io/en/stable/index.html#) locally in over development enviornment and in our CI with the following parameters:
+We are using [`mypy`](https://mypy.readthedocs.io/en/stable/index.html#) locally in over development enviornment and in our CI with the following parameters:
 
-* [--disallow-untyped-defs](https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-disallow-untyped-defs)
-* [--ignore-missing-imports](https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-ignore-missing-imports)
+* [`--disallow-untyped-defs`](https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-disallow-untyped-defs)
+* [`--ignore-missing-imports`](https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-ignore-missing-imports)
