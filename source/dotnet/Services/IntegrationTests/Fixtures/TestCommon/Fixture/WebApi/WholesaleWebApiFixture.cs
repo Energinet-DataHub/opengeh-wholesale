@@ -74,6 +74,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixtu
                 Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, "domain-events-topic");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCreatedEventName, "batch-created");
 
