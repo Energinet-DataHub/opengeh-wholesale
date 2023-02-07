@@ -13,12 +13,19 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.Domain;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public interface IServiceBusMessageFactory
 {
-    ServiceBusMessage Create(byte[] body, string messageType);
+    IEnumerable<ServiceBusMessage> Create<TDomainEventDto>(IList<TDomainEventDto> domainEvents)
+        where TDomainEventDto : DomainEventDto;
 
-    IEnumerable<ServiceBusMessage> Create(IEnumerable<byte[]> bodies, string messageType);
+    ServiceBusMessage Create<TDomainEventDto>(TDomainEventDto domainEvent)
+        where TDomainEventDto : DomainEventDto;
+
+    ServiceBusMessage CreateProcessCompleted(
+        byte[] bytes,
+        string messageType);
 }

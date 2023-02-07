@@ -21,7 +21,7 @@ limitations under the License.
         <RootNamespace>Energinet.DataHub.Wholesale.ProcessManager</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="6.0.4" />
+      <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="6.1.0" />
       <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.2.9" />
       <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
       <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />

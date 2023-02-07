@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Mock;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Mock;
 
 internal sealed class MockedServiceBusClient : ServiceBusClient
 {

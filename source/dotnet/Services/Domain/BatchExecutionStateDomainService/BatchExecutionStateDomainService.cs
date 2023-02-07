@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.using Energinet.DataHub.Wholesale.Application.JobRunner;
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Microsoft.Extensions.Logging;
@@ -27,20 +25,20 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
     private readonly ICalculationDomainService _calculationDomainService;
     private readonly ILogger _logger;
     private readonly IClock _clock;
-    private readonly IBatchCompletedPublisher _batchCompletedPublisher;
+    private readonly IDomainEventPublisher _domainEventPublisher;
 
     public BatchExecutionStateDomainService(
         IBatchRepository batchRepository,
         ICalculationDomainService calculationDomainService,
         ILogger<BatchExecutionStateDomainService> logger,
         IClock clock,
-        IBatchCompletedPublisher batchCompletedPublisher)
+        IDomainEventPublisher domainEventPublisher)
     {
         _batchRepository = batchRepository;
         _calculationDomainService = calculationDomainService;
         _logger = logger;
         _clock = clock;
-        _batchCompletedPublisher = batchCompletedPublisher;
+        _domainEventPublisher = domainEventPublisher;
     }
 
     /// <summary>
@@ -60,7 +58,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
             try
             {
                 var jobState = await _calculationDomainService
-                    .GetStatusAsync(batch.RunId!)
+                    .GetStatusAsync(batch.CalculationId!)
                     .ConfigureAwait(false);
 
                 var executionState = MapState(jobState);
@@ -71,13 +69,14 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {BatchRunId}", batch.RunId);
+                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {BatchRunId}", batch.CalculationId);
             }
         }
 
-        var batchCompletedEvents = completedBatches.Select(
-            b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), b.ProcessType, b.PeriodStart, b.PeriodEnd));
-        await _batchCompletedPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
+        var batchCompletedEvents = completedBatches
+            .Select(b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), b.ProcessType, b.PeriodStart, b.PeriodEnd))
+            .ToList();
+        await _domainEventPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
     }
 
     private static BatchExecutionState MapState(CalculationState calculationState)

@@ -12,28 +12,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
     private readonly ICorrelationContext _correlationContext;
+    private readonly IJsonSerializer _jsonSerializer;
+    private readonly MessageTypeDictionary _messageTypes;
 
-    public ServiceBusMessageFactory(ICorrelationContext correlationContext)
+    public ServiceBusMessageFactory(
+        ICorrelationContext correlationContext,
+        IJsonSerializer jsonSerializer,
+        MessageTypeDictionary messageTypes)
     {
         _correlationContext = correlationContext;
+        _jsonSerializer = jsonSerializer;
+        _messageTypes = messageTypes;
     }
 
-    public ServiceBusMessage Create(byte[] body, string messageType)
+    public ServiceBusMessage Create<TDomainEventDto>(TDomainEventDto domainEvent)
+        where TDomainEventDto : DomainEventDto
     {
+        var messageType = GetMessageType(domainEvent);
+        var serializedDto = _jsonSerializer.Serialize(domainEvent);
+        var body = Encoding.UTF8.GetBytes(serializedDto);
         return CreateServiceBusMessage(body, messageType, _correlationContext.Id);
     }
 
-    public IEnumerable<ServiceBusMessage> Create(IEnumerable<byte[]> messages, string messageType)
+    public ServiceBusMessage CreateProcessCompleted(byte[] bytes, string messageType)
     {
-        return messages.Select(message => CreateServiceBusMessage(message, messageType, _correlationContext.Id));
+        return CreateServiceBusMessage(bytes, messageType, _correlationContext.Id);
+    }
+
+    public IEnumerable<ServiceBusMessage> Create<TDomainEventDto>(IList<TDomainEventDto> domainEvents)
+        where TDomainEventDto : DomainEventDto
+    {
+        foreach (var domainEvent in domainEvents)
+        {
+            var body = _jsonSerializer.Serialize(domainEvent);
+            var bytes = Encoding.UTF8.GetBytes(body);
+            var messageType = GetMessageType(domainEvent);
+            yield return CreateServiceBusMessage(bytes, messageType, _correlationContext.Id);
+        }
     }
 
     /// <summary>
@@ -52,5 +79,10 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         serviceBusMessage.SetOperationCorrelationId(operationCorrelationId);
         serviceBusMessage.SetMessageType(messageType);
         return serviceBusMessage;
+    }
+
+    private string GetMessageType(DomainEventDto domainEvent)
+    {
+        return _messageTypes[domainEvent.GetType()];
     }
 }

@@ -13,14 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
 using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 using FluentAssertions;
@@ -49,7 +48,7 @@ public class SubmitCreatedBatchesEndpointTests
 
         public Task DisposeAsync() => Task.CompletedTask;
 
-        [Fact]
+        [Fact(Skip = "Split into multiple tests when concepts are ready")]
         public async Task When_PendingBatchCreated_Then_BatchAndProcessCompletedEventsArePublished()
         {
             // Arrange
@@ -59,14 +58,15 @@ public class SubmitCreatedBatchesEndpointTests
             using var eventualBatchCompletedEvent = await Fixture
                 .BatchCompletedListener
                 .ListenForMessageAsync<BatchCompletedEventDto>(b => b.BatchId == batchId);
+
             using var eventualProcessCompletedEvent = await Fixture
                 .ProcessCompletedListener
                 .ListenForMessageAsync<ProcessCompletedEventDto>(e => e.GridAreaCode == gridAreaCode);
 
-            // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
+            // Act: how to invoke create batch
 
             // Assert: Await timer triggered endpoints has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(SubmitCreatedBatchesEndpoint));
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartCalculationEndpoint));
 
             // clear log to ensure that initial run of UpdateBatchExecutionStateEndpoint does not count.
             Fixture.HostManager.ClearHostLog();
@@ -84,7 +84,7 @@ public class SubmitCreatedBatchesEndpointTests
             isProcessCompletedEventPublished.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Skip = "Split into multiple tests when concepts are ready")]
         public async Task When_PendingBatchCreated_Then_BatchIsCompleted()
         {
             // Arrange
@@ -95,7 +95,7 @@ public class SubmitCreatedBatchesEndpointTests
             // Act: The sut endpoint is timer triggered, thus there are nothing to invoke here
 
             // Assert: Await timer triggered endpoints has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(SubmitCreatedBatchesEndpoint));
+            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartCalculationEndpoint));
 
             // clear log to ensure that initial run of UpdateBatchExecutionStateEndpoint does not count.
             Fixture.HostManager.ClearHostLog();

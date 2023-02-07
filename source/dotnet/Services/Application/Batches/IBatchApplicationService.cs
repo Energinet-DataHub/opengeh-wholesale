@@ -30,7 +30,8 @@ public interface IBatchApplicationService
     /// <summary>
     /// Create and start all processes of batches with state <see cref="BatchExecutionState.Submitted"/>.
     /// </summary>
-    Task StartSubmittingAsync();
+    /// <param name="batchId"></param>
+    Task StartCalculationAsync(Guid batchId);
 
     Task UpdateExecutionStateAsync();
 

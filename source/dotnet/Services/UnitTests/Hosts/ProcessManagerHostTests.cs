@@ -38,6 +38,7 @@ public sealed class ProcessManagerHostTests
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsTopicName, placeholderValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.StartCalculationWhenBatchCreatedSubscriptionName, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName, placeholderValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, placeholderValue);

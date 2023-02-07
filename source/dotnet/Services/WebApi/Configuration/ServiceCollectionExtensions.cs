@@ -13,16 +13,18 @@
 // limitations under the License.
 
 using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
@@ -31,11 +33,12 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
+using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
@@ -84,15 +87,23 @@ internal static class ServiceCollectionExtensions
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         services.AddSingleton(dataLakeFileSystemClient);
         services.AddScoped<HttpClient>(_ => null!);
-        services.AddScoped<IBatchCompletedPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
         services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IBatchDtoV2Mapper, BatchDtoV2Mapper>();
         services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        services.AddScoped<IProcessCompletedPublisher>(_ => null!); // Unused in the use cases of this app
-        services.AddScoped<ICalculationDomainService>(_ => null!); // Unused in the use cases of this app
+        services.AddScoped<ICalculationDomainService, CalculationDomainService>();
+        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
+
+        services.AddSingleton(_ =>
+        {
+            var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
+            var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
+
+            return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
+        });
+        services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         services.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
         services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
@@ -101,8 +112,28 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IActorRepository, ActorRepository>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
+        services.AddScoped<ICorrelationContext, CorrelationContext>();
+        services.AddScoped<IJsonSerializer, JsonSerializer>();
+
+        RegisterDomainEventPublisher(services);
 
         services.ConfigureDateTime();
+    }
+
+    private static void RegisterDomainEventPublisher(IServiceCollection services)
+    {
+        var serviceBusConnectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusSendConnectionString);
+        var messageTypes = new Dictionary<Type, string>
+        {
+            {
+                typeof(BatchCreatedDomainEventDto),
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCreatedEventName)
+            },
+        };
+
+        var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        services.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
     }
 
     private static void ConfigureDateTime(this IServiceCollection serviceCollection)
