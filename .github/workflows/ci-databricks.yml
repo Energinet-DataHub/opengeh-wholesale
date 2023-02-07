@@ -42,7 +42,7 @@ jobs:
     - uses: actions/setup-python@v4
       with:
         python-version: 3.x
-    - name:
+    - name: Run pip intall and mypy check of files in package
       shell: bash
       run: |
         pip install --upgrade pip
