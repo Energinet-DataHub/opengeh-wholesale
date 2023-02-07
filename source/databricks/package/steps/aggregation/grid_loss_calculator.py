@@ -161,7 +161,7 @@ def calculate_added_system_correction(results: dict, metadata: Metadata) -> Data
 
 
 # Function to calculate grid loss to be added (step 9)
-def calculate_added_grid_loss(results: dict, metadata: Metadata):
+def calculate_added_grid_loss(results: dict, metadata: Metadata) -> DataFrame:
     df = results[ResultKeyName.grid_loss]
     result = df.withColumn(
         Colname.added_grid_loss,

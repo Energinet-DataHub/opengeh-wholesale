@@ -25,7 +25,7 @@ class Period:
         self.to_date = to_date
 
 
-def parse_period(beginning_date_time, end_date_time) -> Period:
+def parse_period(beginning_date_time: str, end_date_time: str) -> Period:
     period = Period(
         dateutil.parser.parse(beginning_date_time), dateutil.parser.parse(end_date_time)
     )
