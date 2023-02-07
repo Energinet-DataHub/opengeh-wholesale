@@ -19,7 +19,6 @@ using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
@@ -83,6 +82,11 @@ public class Startup
 
     private static void ConfigureHealthChecks(IServiceCollection services)
     {
+        var serviceBusConnectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
+        var domainEventsTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+
         services.AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
@@ -91,7 +95,11 @@ public class Startup
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
                 EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
-                EnvironmentSettingNames.CalculationStorageContainerName.Val());
+                EnvironmentSettingNames.CalculationStorageContainerName.Val())
+            .AddAzureServiceBusTopic(
+                connectionString: serviceBusConnectionString,
+                topicName: domainEventsTopicName,
+                name: "DomainEventsTopicExists");
     }
 
     /// <summary>

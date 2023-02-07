@@ -38,9 +38,6 @@ namespace Energinet.DataHub.Wholesale.WebApi
 
         #region ServiceBus
 
-        // TODO: Add health check
-        // TODO: Add these new settings in terraform
-
         /// <summary>
         /// Connection string to manage the wholesale domain service bus namespace.
         /// </summary>
