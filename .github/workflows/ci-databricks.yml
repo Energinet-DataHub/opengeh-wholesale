@@ -45,7 +45,7 @@ jobs:
     - run: pip install --upgrade pip
     - run: pip install mypy
     - run: pwd
-    - run: mypy -p tests --disallow-untyped-defs --ignore-missing-imports
+    - run: mypy ./source/databricks --disallow-untyped-defs --ignore-missing-imports
   #
   # Branch policy status check
   #
