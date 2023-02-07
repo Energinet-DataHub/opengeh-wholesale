@@ -129,20 +129,7 @@ public static class Program
                 o.EnableRetryOnFailure();
             }));
 
-        var serviceBusConnectionString =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
-        var messageTypes = new Dictionary<Type, string>
-        {
-            //{ typeof(BatchCreatedDomainEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCreatedEventName) },
-            { typeof(BatchCompletedEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName) },
-            { typeof(ProcessCompletedEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName) },
-        };
-
-        var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
-        serviceCollection.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, messageTypes);
-
-        var integrationEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
-        serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName, messageTypes);
+        RegisterEventPublishers(serviceCollection);
 
         serviceCollection.AddScoped<IProcessCompletedIntegrationEventMapper, ProcessCompletedIntegrationEventMapper>();
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
@@ -164,6 +151,29 @@ public static class Program
                 provider.GetRequiredService<IStreamZipper>()));
 
         serviceCollection.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
+    }
+
+    private static void RegisterEventPublishers(IServiceCollection serviceCollection)
+    {
+        var serviceBusConnectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
+        var messageTypes = new Dictionary<Type, string>
+        {
+            {
+                typeof(BatchCompletedEventDto),
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName)
+            },
+            {
+                typeof(ProcessCompletedEventDto),
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName)
+            },
+        };
+        var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        serviceCollection.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, messageTypes);
+
+        var integrationEventTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
+        serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName, messageTypes);
     }
 
     private static void DateTime(IServiceCollection serviceCollection)

@@ -40,7 +40,6 @@ using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 using Microsoft.EntityFrameworkCore;
@@ -88,7 +87,6 @@ internal static class ServiceCollectionExtensions
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         services.AddSingleton(dataLakeFileSystemClient);
         services.AddScoped<HttpClient>(_ => null!);
-        services.AddScoped<IDomainEventPublisher>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
         services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
@@ -117,19 +115,25 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<IJsonSerializer, JsonSerializer>();
 
+        RegisterDomainEventPublisher(services);
+
+        services.ConfigureDateTime();
+    }
+
+    private static void RegisterDomainEventPublisher(IServiceCollection services)
+    {
         var serviceBusConnectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusSendConnectionString);
         var messageTypes = new Dictionary<Type, string>
         {
-            { typeof(BatchCreatedDomainEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCreatedEventName) },
-            //{ typeof(BatchCompletedEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName) },
-            //{ typeof(ProcessCompletedEventDto), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName) },
+            {
+                typeof(BatchCreatedDomainEventDto),
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCreatedEventName)
+            },
         };
 
         var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
         services.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, messageTypes);
-
-        services.ConfigureDateTime();
     }
 
     private static void ConfigureDateTime(this IServiceCollection serviceCollection)
