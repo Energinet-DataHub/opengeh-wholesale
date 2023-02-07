@@ -44,7 +44,7 @@ jobs:
         python-version: 3.x
     - run: pip install --upgrade pip
     - run: pip install mypy
-    - run: mypy --disallow-untyped-defs --ignore-missing-imports $(git ls-files '*.py')
+    - run: mypy --strict $(git ls-files '*.py')
   #
   # Branch policy status check
   #
