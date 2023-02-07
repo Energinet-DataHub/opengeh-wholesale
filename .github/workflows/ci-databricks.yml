@@ -42,9 +42,13 @@ jobs:
     - uses: actions/setup-python@v4
       with:
         python-version: 3.x
-    - run: pip install --upgrade pip
-    - run: pip install mypy types-python-dateutil
-    - run: mypy ./source/databricks/package --disallow-untyped-defs --ignore-missing-imports
+    - name:
+      shell: bash
+      run: |
+        pip install --upgrade pip
+        pip install mypy types-python-dateutil
+        mypy ./source/databricks/package --disallow-untyped-defs --ignore-missing-imports
+
   #
   # Branch policy status check
   #
