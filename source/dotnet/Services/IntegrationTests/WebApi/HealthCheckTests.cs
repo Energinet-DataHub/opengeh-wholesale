@@ -22,7 +22,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
+namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi
 {
     [Collection(nameof(WholesaleWebApiCollectionFixture))]
     public class HealthCheckTests :
