@@ -14,9 +14,12 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
+using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
@@ -87,5 +90,36 @@ public class BatchApplicationServiceTests
 
         // Assert
         searchResult.Count().Should().Be(numberOfBatches);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StartCalculationAsync_ActivatesDomainServiceAndCommits(
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+        [Frozen] Mock<ICalculationDomainService> calculationDomainServiceMock,
+        Guid batchId,
+        BatchApplicationService sut)
+    {
+        // Arrange & Act
+        await sut.StartCalculationAsync(batchId);
+
+        // Assert
+        unitOfWorkMock.Verify(x => x.CommitAsync());
+        calculationDomainServiceMock.Verify(x => x.StartAsync(batchId));
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task UpdateExecutionStateAsync_ActivatesDomainServiceAndCommits(
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+        [Frozen] Mock<IBatchExecutionStateDomainService> calculationDomainServiceMock,
+        BatchApplicationService sut)
+    {
+        // Arrange & Act
+        await sut.UpdateExecutionStateAsync();
+
+        // Assert
+        unitOfWorkMock.Verify(x => x.CommitAsync());
+        calculationDomainServiceMock.Verify(x => x.UpdateExecutionStateAsync());
     }
 }

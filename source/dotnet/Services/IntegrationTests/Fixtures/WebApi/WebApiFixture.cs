@@ -17,7 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi
 {
     /// <summary>
     /// An xUnit fixture for supporting integration testing of a WebApi
@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi
             TestLogger = new TestDiagnosticsLogger();
         }
 
-        private ITestDiagnosticsLogger TestLogger { get; }
+        public ITestDiagnosticsLogger TestLogger { get; }
 
         public async Task InitializeAsync()
         {
