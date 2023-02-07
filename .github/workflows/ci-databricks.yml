@@ -34,6 +34,17 @@ jobs:
       IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
       TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
 
+  mypy_check:
+    runs-on: ubuntu-latest
+    name: Check
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - run: pip install --upgrade pip
+    - run: pip install mypy
+    - run: mypy --disallow-untyped-defs --ignore-missing-imports $(git ls-files '*.py')
   #
   # Branch policy status check
   #
