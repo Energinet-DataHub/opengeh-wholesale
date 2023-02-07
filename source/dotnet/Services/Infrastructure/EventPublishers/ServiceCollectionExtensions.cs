@@ -28,18 +28,9 @@ public static class ServiceCollectionExtensions
         string topicName,
         IDictionary<Type, string> messageType)
     {
+        ServiceBusClientAndAndMessageFactoryRegistry(serviceCollection, serviceBusConnectionString, messageType);
+
         serviceCollection.AddScoped<IDomainEventPublisher, DomainEventPublisher>();
-
-        if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))
-            serviceCollection.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
-
-        // TODO: Create specific type
-        if (serviceCollection.All(x => x.ServiceType != typeof(IDictionary<Type, string>)))
-            serviceCollection.AddSingleton(messageType);
-
-        if (serviceCollection.All(x => x.ServiceType != typeof(IServiceBusMessageFactory)))
-            serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
-
         serviceCollection.AddSingleton<IDomainEventTopicServiceBusSender>(provider =>
         {
             var client = provider.GetRequiredService<ServiceBusClient>();
@@ -56,8 +47,24 @@ public static class ServiceCollectionExtensions
         string topicName,
         IDictionary<Type, string> messageType)
     {
-        serviceCollection.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
+        ServiceBusClientAndAndMessageFactoryRegistry(serviceCollection, serviceBusConnectionString, messageType);
 
+        serviceCollection.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
+        serviceCollection.AddSingleton<IIntegrationEventTopicServiceBusSender>(provider =>
+        {
+            var client = provider.GetRequiredService<ServiceBusClient>();
+            var sender = client.CreateSender(topicName);
+            return new IntegrationEventTopicServiceBusSender(sender);
+        });
+
+        return serviceCollection;
+    }
+
+    private static void ServiceBusClientAndAndMessageFactoryRegistry(
+        IServiceCollection serviceCollection,
+        string serviceBusConnectionString,
+        IDictionary<Type, string> messageType)
+    {
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))
             serviceCollection.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
 
@@ -67,14 +74,5 @@ public static class ServiceCollectionExtensions
 
         if (serviceCollection.All(x => x.ServiceType != typeof(IServiceBusMessageFactory)))
             serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
-
-        serviceCollection.AddSingleton<IIntegrationEventTopicServiceBusSender>(provider =>
-        {
-            var client = provider.GetRequiredService<ServiceBusClient>();
-            var sender = client.CreateSender(topicName);
-            return new IntegrationEventTopicServiceBusSender(sender);
-        });
-
-        return serviceCollection;
     }
 }
