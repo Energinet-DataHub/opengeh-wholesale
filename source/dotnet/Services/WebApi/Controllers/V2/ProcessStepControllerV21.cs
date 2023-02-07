@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 [ApiController]
 [ApiVersion(Version)]
 // "ProcessStepResult" hardcoded instead of "[controller]" to avoid breaking changes due to rename of class
-[Route("v{version:apiVersion}/ProcessStepResult")]
+[Route($"v{Version}/ProcessStepResult")]
 public class ProcessStepV21Controller : ControllerBase
 {
     private const string Version = "2.1";
