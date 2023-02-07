@@ -17,6 +17,7 @@ from pyspark.sql.functions import lit
 from package.shared.data_classes import Metadata
 from package.constants import Colname
 from package.schemas.output import aggregation_result_schema
+from package.codelists import TimeSeriesQuality
 
 
 def __add_missing_nullable_columns(result: DataFrame) -> DataFrame:
@@ -47,6 +48,10 @@ def create_dataframe_from_aggregation_result_schema(
     result = __add_missing_nullable_columns(result)
     # Replaces None value with zero for sum_quantity
     result = result.na.fill(value=0, subset=[Colname.sum_quantity])
+    # Replaces None value with TimeSeriesQuality.missing for quality
+    result = result.na.fill(
+        value=TimeSeriesQuality.missing.value, subset=[Colname.quality]
+    )
 
     # Create data frame from RDD in order to be able to apply the schema
     return SparkSession.builder.getOrCreate().createDataFrame(
@@ -61,7 +66,6 @@ def create_dataframe_from_aggregation_result_schema(
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
             Colname.time_window,
-            Colname.resolution,
             Colname.sum_quantity,
             Colname.quality,
             Colname.metering_point_type,

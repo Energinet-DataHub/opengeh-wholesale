@@ -48,7 +48,6 @@ def aggregation_result_factory(spark):
         energy_supplier_id=None,
         time_window_start=DataframeDefaults.default_time_window_start,
         time_window_end=DataframeDefaults.default_time_window_end,
-        resolution=DataframeDefaults.default_metering_point_resolution,
         sum_quantity=DataframeDefaults.default_sum_quantity,
         quality=DataframeDefaults.default_quality,
         metering_point_type=DataframeDefaults.default_metering_point_type,
@@ -73,7 +72,6 @@ def aggregation_result_factory(spark):
                         Colname.start: time_window_start,
                         Colname.end: time_window_end,
                     },
-                    Colname.resolution: resolution,
                     Colname.sum_quantity: sum_quantity,
                     Colname.quality: quality,
                     Colname.metering_point_type: metering_point_type,
@@ -157,7 +155,6 @@ def expected_combined_data_schema():
         .add(Colname.metering_point_id, StringType())
         .add(Colname.from_date, TimestampType())
         .add(Colname.to_date, TimestampType())
-        .add(Colname.resolution, StringType())
         .add(Colname.energy_supplier_id, StringType())
         .add(Colname.balance_responsible_id, StringType())
         .add(Colname.in_grid_area, StringType())
@@ -195,7 +192,6 @@ def expected_combined_data_factory(spark, expected_combined_data_schema):
                     datetime(2019, 12, 31, 23, 0),
                     datetime(2020, 12, 31, 23, 0),
                 ],
-                Colname.resolution: ["PT1H", "PT1H"],
                 Colname.energy_supplier_id: ["8100000000115", "8100000000115"],
                 Colname.balance_responsible_id: ["8100000000214", "8100000000214"],
                 Colname.in_grid_area: [None, None],
@@ -227,7 +223,6 @@ def test_combine_added_system_correction_with_master_data(
         added_system_correction=Decimal(6.0),
         time_window_start=datetime(2019, 1, 1, 0, 0),
         time_window_end=datetime(2019, 1, 1, 1, 0),
-        resolution=MeteringPointResolution.hour.value,
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",
@@ -237,7 +232,6 @@ def test_combine_added_system_correction_with_master_data(
         added_system_correction=Decimal(6.0),
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
-        resolution=MeteringPointResolution.hour.value,
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",
@@ -268,7 +262,6 @@ def test_combine_added_grid_loss_with_master_data(
         added_grid_loss=Decimal(6.0),
         time_window_start=datetime(2019, 1, 1, 0, 0),
         time_window_end=datetime(2019, 1, 1, 1, 0),
-        resolution=MeteringPointResolution.hour.value,
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",
@@ -278,7 +271,6 @@ def test_combine_added_grid_loss_with_master_data(
         added_grid_loss=Decimal(6.0),
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
-        resolution=MeteringPointResolution.hour.value,
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",

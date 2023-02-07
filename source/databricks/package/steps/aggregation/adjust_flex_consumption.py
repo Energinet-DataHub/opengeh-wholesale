@@ -51,7 +51,6 @@ def adjust_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
         flex_consumption_result_df[Colname.balance_responsible_id],
         flex_consumption_result_df[Colname.energy_supplier_id],
         flex_consumption_result_df[Colname.time_window],
-        flex_consumption_result_df[Colname.resolution],
         flex_consumption_result_df[Colname.sum_quantity],
         flex_consumption_result_df[Colname.quality],
         flex_consumption_result_df[Colname.metering_point_type],
@@ -94,9 +93,6 @@ def adjust_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
         Colname.time_window,
         Colname.sum_quantity,
         Colname.quality,
-        lit(MeteringPointResolution.hour.value).alias(
-            Colname.resolution
-        ),  # TODO take resolution from metadata
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
     ).orderBy(
         Colname.grid_area,

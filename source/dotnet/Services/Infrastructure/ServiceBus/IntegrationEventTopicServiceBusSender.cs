@@ -12,6 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Azure.Messaging.ServiceBus;
 
-public sealed record JobRunId(long Id);
+namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+
+public class IntegrationEventTopicServiceBusSender : IIntegrationEventTopicServiceBusSender
+{
+    private readonly ServiceBusSender _sender;
+
+    public IntegrationEventTopicServiceBusSender(ServiceBusSender sender)
+    {
+        _sender = sender;
+    }
+
+    public async Task SendMessageAsync(ServiceBusMessage message, CancellationToken cancellationToken)
+    {
+        await _sender.SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
+    }
+}

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
@@ -28,7 +27,7 @@ public class DatabricksCalculationParametersFactory : ICalculationParametersFact
             $"--batch-id={batch.Id}",
             $"--batch-grid-areas=[{gridAreas}]",
             $"--batch-period-start-datetime={batch.PeriodStart}",
-            $"--batch-period-end-datetime={batch.OpenPeriodEnd}",
+            $"--batch-period-end-datetime={batch.PeriodEnd}",
         };
     }
 }

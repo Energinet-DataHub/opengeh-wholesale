@@ -37,7 +37,6 @@ def get_tariff_charges(
     market_roles: DataFrame,
     resolution_duration: ChargeResolution,
 ) -> DataFrame:
-
     # filter on resolution
     charges = get_charges_based_on_resolution(charges, resolution_duration)
 
@@ -100,13 +99,11 @@ def get_subscription_charges(
 def get_charges_based_on_resolution(
     charges: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
-    df = charges.filter(col(Colname.resolution) == resolution_duration)
+    df = charges.filter(col(Colname.resolution) == resolution_duration.value)
     return df
 
 
-def get_charges_based_on_charge_type(
-    charges: DataFrame, charge_type: ChargeType
-) -> DataFrame:
+def get_charges_based_on_charge_type(charges: DataFrame, charge_type: str) -> DataFrame:
     df = charges.filter(col(Colname.charge_type) == charge_type)
     return df
 
@@ -301,7 +298,7 @@ def __join_properties_on_charges_with_given_charge_type(
     charge_links: DataFrame,
     metering_points: DataFrame,
     market_roles: DataFrame,
-    charge_type: ChargeType,
+    charge_type: str,
 ) -> DataFrame:
     # filter on charge_type
     charges = get_charges_based_on_charge_type(charges, charge_type)

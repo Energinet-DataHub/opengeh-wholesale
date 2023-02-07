@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Google.Protobuf;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
+namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
 public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegrationEventPublisher
 {
-    private readonly ServiceBusSender _serviceBusSender;
+    private readonly IIntegrationEventTopicServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
 
     public ProcessCompletedIntegrationEventPublisher(
-        ServiceBusSender serviceBusSender,
+        IIntegrationEventTopicServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory,
         IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper)
     {
@@ -42,7 +42,7 @@ public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegr
     {
         var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEvent);
         var messageType = GetMessageType(processCompletedEvent.ProcessType);
-        var message = _serviceBusMessageFactory.Create(integrationEvent.ToByteArray(), messageType);
+        var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 

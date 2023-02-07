@@ -79,12 +79,11 @@ public class BatchTests
     }
 
     [Theory]
-    [InlineData("2023-01-31T23:00Z", "Europe/Copenhagen")]
+    [InlineData("2023-01-31T23:00:00.0001Z", "Europe/Copenhagen")]
     [InlineData("2023-01-31T22:59:59Z", "Europe/Copenhagen")]
     [InlineData("2023-01-31T22:59:59.9999999Z", "Europe/Copenhagen")]
-    [InlineData("2023-01-31", "Europe/Copenhagen")]
-    [InlineData("2023-01-31T22:59:59.999Z", "Asia/Tokyo")]
-    public void Ctor_WhenPeriodEndIsNot1MillisecondBeforeMidnight_ThrowsArgumentException(string periodEndString, string timeZoneId)
+    [InlineData("2023-01-31T23:00:00Z", "Asia/Tokyo")]
+    public void Ctor_WhenPeriodEndIsNotMidnight_ThrowsArgumentException(string periodEndString, string timeZoneId)
     {
         // Arrange
         var periodEnd = DateTimeOffset.Parse(periodEndString).ToInstant();

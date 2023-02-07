@@ -68,9 +68,9 @@ public class Batch
         if (periodStart >= periodEnd)
             errors.Add("periodStart is greater or equal to periodEnd");
 
-        // Validate that period end is set to 1 millisecond before midnight
-        if (new ZonedDateTime(periodEnd.Plus(Duration.FromMilliseconds(1)), dateTimeZone).TimeOfDay != LocalTime.Midnight)
-            errors.Add($"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
+        // Validate that period end is set to midnight
+        if (new ZonedDateTime(periodEnd, dateTimeZone).TimeOfDay != LocalTime.Midnight)
+            errors.Add($"The period end '{periodEnd.ToString()}' must be midnight.");
 
         if (new ZonedDateTime(periodStart, dateTimeZone).TimeOfDay != LocalTime.Midnight)
             errors.Add($"The period start '{periodStart.ToString()}'must be midnight.");
@@ -102,7 +102,7 @@ public class Batch
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
-    public JobRunId? RunId { get; private set; }
+    public CalculationId? CalculationId { get; private set; }
 
     /// <summary>
     /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
@@ -115,22 +115,15 @@ public class Batch
     /// </summary>
     public Instant PeriodEnd { get; }
 
-    /// <summary>
-    /// Gets an open-ended period end. That is a period end, which is exactly at midnight and thus exclusive.
-    /// This is used in calculations as it prevents loss of e.g. time-series received in the last millisecond
-    /// before midnight.
-    /// </summary>
-    public Instant OpenPeriodEnd => PeriodEnd.Plus(Duration.FromMilliseconds(1));
-
     public bool AreSettlementReportsCreated { get; set; }
 
-    public void MarkAsSubmitted(JobRunId jobRunId)
+    public void MarkAsSubmitted(CalculationId calculationId)
     {
-        ArgumentNullException.ThrowIfNull(jobRunId);
+        ArgumentNullException.ThrowIfNull(calculationId);
         if (ExecutionState is BatchExecutionState.Submitted or BatchExecutionState.Pending
             or BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Submitted);
-        RunId = jobRunId;
+        CalculationId = calculationId;
         ExecutionState = BatchExecutionState.Submitted;
     }
 
@@ -173,7 +166,7 @@ public class Batch
     }
 
     /// <summary>
-    /// Reset a batch. This will ensure that it will be picked up and run again in a new job run.
+    /// Reset a batch. This will ensure that it will be picked up and run again in a new calculation.
     /// </summary>
     public void Reset()
     {

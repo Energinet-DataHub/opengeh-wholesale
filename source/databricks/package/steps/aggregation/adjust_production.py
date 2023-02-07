@@ -53,7 +53,6 @@ def adjust_production(results: dict, metadata: Metadata) -> DataFrame:
         hourly_production_result_df[Colname.balance_responsible_id],
         hourly_production_result_df[Colname.energy_supplier_id],
         hourly_production_result_df[Colname.time_window],
-        hourly_production_result_df[Colname.resolution],
         hourly_production_result_df[Colname.sum_quantity],
         hourly_production_result_df[Colname.quality],
         hourly_production_result_df[Colname.metering_point_type],
@@ -100,9 +99,6 @@ def adjust_production(results: dict, metadata: Metadata) -> DataFrame:
         Colname.time_window,
         Colname.sum_quantity,
         Colname.quality,
-        lit(MeteringPointResolution.hour.value).alias(
-            Colname.resolution
-        ),  # TODO take resolution from metadata
         lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
     ).orderBy(
         Colname.grid_area,

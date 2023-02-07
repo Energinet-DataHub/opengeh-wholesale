@@ -17,7 +17,7 @@ name: Detect changes
 # DESCRIPTION:
 # This workflow will determine which categories of jobs should be executed,
 # based on detected changes.
-# It should be used by the 'ci.yml' and 'cd.yml' to ensure they both use
+# It should be used by the 'ci-orchestrator.yml' and 'cd.yml' to ensure they both use
 # the same path's to detect changes.
 
 on:
@@ -27,6 +27,8 @@ on:
         value: ${{ jobs.changes.outputs.databricks }}
       dotnet:
         value: ${{ jobs.changes.outputs.dotnet }}
+      packages:
+        value: ${{ jobs.changes.outputs.packages }}
 
 jobs:
   changes:
@@ -36,6 +38,7 @@ jobs:
     outputs:
       databricks: ${{ steps.filter.outputs.databricks }}
       dotnet: ${{ steps.filter.outputs.dotnet }}
+      packages: ${{ steps.filter.outputs.packages }}
     steps:
     # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
     - name: Checkout repository
@@ -49,15 +52,20 @@ jobs:
         filters: |
           databricks:
             - '.github/workflows/cd.yml'
-            - '.github/workflows/ci.yml'
+            - '.github/workflows/ci-databricks.yml'
             - '.github/workflows/detect-changes.yml'
             - '.github/actions/python-*/**'
             - 'source/databricks/**'
             - 'source/contracts/**'
           dotnet:
             - '.github/workflows/cd.yml'
-            - '.github/workflows/ci.yml'
+            - '.github/workflows/ci-dotnet.yml'
             - '.github/workflows/detect-changes.yml'
             - '.github/actions/dotnet-*/**'
             - 'source/contracts/**'
             - 'source/dotnet/!(Packages/**)/**'
+          packages:
+            - 'source/dotnet/Contracts/**'
+            - 'source/dotnet/Packages/**'
+            - '.github/workflows/packages-publish.yml'
+            - '.github/workflows/detect-changes.yml'

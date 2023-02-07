@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
+public interface IDomainEventPublisher
+{
+    Task PublishAsync<TDomainEventDto>(TDomainEventDto domainEvents)
+        where TDomainEventDto : DomainEventDto;
 
-public sealed record BatchCompletedEventDto(
-    Guid BatchId,
-    List<string> GridAreaCodes,
-    ProcessType ProcessType,
-    Instant PeriodStart,
-    Instant PeriodEnd);
+    Task PublishAsync<TDomainEventDto>(IList<TDomainEventDto> domainEvents)
+        where TDomainEventDto : DomainEventDto;
+}

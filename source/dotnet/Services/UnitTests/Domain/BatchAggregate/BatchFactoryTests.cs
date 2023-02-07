@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 public class BatchFactoryTests
 {
     private readonly DateTimeOffset _startDate = DateTimeOffset.Parse("2021-12-31T23:00Z");
-    private readonly DateTimeOffset _endDate = DateTimeOffset.Parse("2022-01-31T22:59:59.999Z");
+    private readonly DateTimeOffset _endDate = DateTimeOffset.Parse("2022-01-31T23:00Z");
     private readonly DateTimeZone _timeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
     private readonly List<string> _someGridAreasIds = new() { "004", "805" };
 

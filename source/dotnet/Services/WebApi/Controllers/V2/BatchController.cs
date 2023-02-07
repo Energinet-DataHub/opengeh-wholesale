@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 
@@ -33,29 +35,38 @@ public class BatchController : ControllerBase
     private readonly IBatchDtoV2Mapper _batchDtoV2Mapper;
     private readonly ISettlementReportApplicationService _settlementReportApplicationService;
     private readonly IBatchRequestDtoValidator _batchRequestDtoValidator;
+    private readonly DateTimeZone _dateTimeZone;
 
     public BatchController(
         IBatchApplicationService batchApplicationService,
         IBatchDtoV2Mapper batchDtoV2Mapper,
         ISettlementReportApplicationService settlementReportApplicationService,
-        IBatchRequestDtoValidator batchRequestDtoValidator)
+        IBatchRequestDtoValidator batchRequestDtoValidator,
+        DateTimeZone dateTimeZone)
     {
         _batchApplicationService = batchApplicationService;
         _batchDtoV2Mapper = batchDtoV2Mapper;
         _settlementReportApplicationService = settlementReportApplicationService;
         _batchRequestDtoValidator = batchRequestDtoValidator;
+        _dateTimeZone = dateTimeZone;
     }
 
     /// <summary>
     /// Create a batch.
+    /// Period end must be exactly 1 ms before midnight.
     /// </summary>
     /// <returns>200 Ok with The batch id, or a 400 with an errormessage</returns>
     [HttpPost]
     [MapToApiVersion(Version)]
     public async Task<IActionResult> CreateAsync([FromBody] BatchRequestDto batchRequestDto)
     {
+        batchRequestDto = batchRequestDto with { EndDate = batchRequestDto.EndDate.AddMilliseconds(1) };
+        var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
+        if (new ZonedDateTime(periodEnd, _dateTimeZone).TimeOfDay != LocalTime.Midnight)
+            return StatusCode((int)HttpStatusCode.BadRequest, $"The period end '{periodEnd.ToString()}' must be 1 ms before midnight.");
+
         if (!_batchRequestDtoValidator.IsValid(batchRequestDto, out var errorMessages))
-            return StatusCode(400, string.Join(" ", errorMessages));
+            return StatusCode((int)HttpStatusCode.BadRequest, string.Join(" ", errorMessages));
 
         var batchId = await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
         return Ok(batchId);
@@ -63,6 +74,7 @@ public class BatchController : ControllerBase
 
     /// <summary>
     /// Get batches that matches the criteria specified in <paramref name="batchSearchDto"/>
+    /// Period ends are 1 ms before midnight of the last day of the period.
     /// </summary>
     /// <param name="batchSearchDto">Search criteria</param>
     /// <returns>Batches that matches the search criteria. Always 200 OK</returns>
@@ -71,8 +83,16 @@ public class BatchController : ControllerBase
     public async Task<IActionResult> SearchAsync([FromBody] BatchSearchDto batchSearchDto)
     {
         var batchesDto = await _batchApplicationService.SearchAsync(batchSearchDto).ConfigureAwait(false);
-        var batchesDtoV2 = batchesDto.Select(_batchDtoV2Mapper.Map);
-        return Ok(batchesDtoV2);
+        var batches = batchesDto.Select(_batchDtoV2Mapper.Map).ToList();
+
+        // Subtract 1 ms from period end as it is currently the expectation of the API
+        for (var i = 0; i < batches.Count(); i++)
+        {
+            var batch = batches[i];
+            batches[i] = batch with { PeriodEnd = batch.PeriodEnd.AddMilliseconds(-1) };
+        }
+
+        return Ok(batches);
     }
 
     /// <summary>
@@ -89,7 +109,8 @@ public class BatchController : ControllerBase
     }
 
     /// <summary>
-    /// Returns a batch matching <paramref name="batchId"/>
+    /// Returns a batch matching <paramref name="batchId"/>.
+    /// Period ends are 1 ms before midnight of the last day of the period.
     /// </summary>
     /// <param name="batchId">BatchId</param>
     [HttpGet]
@@ -97,7 +118,11 @@ public class BatchController : ControllerBase
     public async Task<IActionResult> GetAsync(Guid batchId)
     {
         var batchDto = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
-        var batchDtoV2 = _batchDtoV2Mapper.Map(batchDto);
-        return Ok(batchDtoV2);
+        var batch = _batchDtoV2Mapper.Map(batchDto);
+
+        // Subtract 1 ms from period end as it is currently the expectation of the API
+        batch = batch with { PeriodEnd = batch.PeriodEnd.AddMilliseconds(-1) };
+
+        return Ok(batch);
     }
 }
