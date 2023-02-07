@@ -1,8 +1,12 @@
 # Wholesale Client Package Release notes
 
-## Version 5.0.5
+## Version 5.0.6
 
 No functional changes.
+
+## Version 5.0.5
+
+- Bump version as part of pipeline change.
 
 ## Version 5.0.4
 
