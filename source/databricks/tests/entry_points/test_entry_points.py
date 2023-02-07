@@ -20,26 +20,28 @@ import subprocess
 # which dependens on the number of "entry point tests".
 
 
-def test__entry_point__start_calculator__returns_0(installed_package):
+def test__entry_point__start_calculator__returns_0(installed_package: None) -> None:
     exit_code = subprocess.call(["start_calculator", "-h"])
     assert exit_code == 0
 
 
-def test__entry_point__uncommitted_migrations_count__returns_0(installed_package):
+def test__entry_point__uncommitted_migrations_count__returns_0(
+    installed_package: None,
+) -> None:
     exit_code = subprocess.call(["uncommitted_migrations_count", "-h"])
     assert exit_code == 0
 
 
-def test__entry_point__lock_storage__returns_0(installed_package):
+def test__entry_point__lock_storage__returns_0(installed_package: None) -> None:
     exit_code = subprocess.call(["lock_storage", "-h"])
     assert exit_code == 0
 
 
-def test__entry_point__unlock_storage__returns_0(installed_package):
+def test__entry_point__unlock_storage__returns_0(installed_package: None) -> None:
     exit_code = subprocess.call(["unlock_storage", "-h"])
     assert exit_code == 0
 
 
-def test__entry_point__migrate_data_lake__returns_0(installed_package):
+def test__entry_point__migrate_data_lake__returns_0(installed_package: None) -> None:
     exit_code = subprocess.call(["migrate_data_lake", "-h"])
     assert exit_code == 0
