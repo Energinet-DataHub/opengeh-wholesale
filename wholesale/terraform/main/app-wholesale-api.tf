@@ -23,6 +23,7 @@ module "app_wholesale_api" {
     BACKEND_SERVICE_APP_ID                  = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)"
     STORAGE_CONNECTION_STRING               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)",
     STORAGE_CONTAINER_NAME                  = local.STORAGE_CONTAINER_NAME
+    BATCH_CREATED_EVENT_NAME                = local.BATCH_CREATED_EVENT_NAME
   }
 
   connection_strings                        = [

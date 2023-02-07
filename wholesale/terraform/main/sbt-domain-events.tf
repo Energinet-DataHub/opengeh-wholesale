@@ -37,3 +37,14 @@ module "sbtsub_publish_processescompletedintegrationevent_when_processcompleted"
     label = local.PROCESS_COMPLETED_EVENT_NAME
   }
 }
+
+module "sbtsub_publish_batch_created_event_when_batch_created" {
+  source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=v10"
+  name                = local.PUBLISH_BATCH_CREATED_EVENT_WHEN_BATCH_CREATED_SUBSCRIPTION_NAME
+  project_name        = var.domain_name_short
+  topic_id            = module.sbt_domain_events.id
+  max_delivery_count  = 10
+  correlation_filter  = {
+    label = local.BATCH_CREATED_EVENT_NAME
+  }
+}
