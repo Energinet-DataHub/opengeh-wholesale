@@ -20,26 +20,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 
 [ApiController]
-[ApiVersion(Version)]
-// "ProcessStepResult" hardcoded instead of "[controller]" to avoid breaking changes due to rename of class
 [Route("v{version:apiVersion}/ProcessStepResult")]
-public class ProcessStepController : ControllerBase
+public class ProcessStepV21Controller : ControllerBase
 {
-    private const string Version = "2.0";
     private readonly IProcessStepApplicationService _processStepApplicationService;
 
-    public ProcessStepController(IProcessStepApplicationService processStepApplicationService)
+    public ProcessStepV21Controller(IProcessStepApplicationService processStepApplicationService)
     {
         _processStepApplicationService = processStepApplicationService;
-    }
-
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpPost]
-    [MapToApiVersion("2.3")]
-    public async Task<IActionResult> GetActorsAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
-    {
-        var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
-        return Ok(actors);
     }
 
     /// <summary>
@@ -47,20 +35,11 @@ public class ProcessStepController : ControllerBase
     /// </summary>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
-    [MapToApiVersion(Version)]
-    [MapToApiVersion("2.1")]
-    public async Task<IActionResult> GetResultAsync([FromBody] ProcessStepResultRequestDto processStepResultRequestDto)
+    [ApiVersion("2.0")]
+    [ApiVersion("2.1")]
+    public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDto processStepResultRequestDto)
     {
         var resultDto = await _processStepApplicationService.GetResultAsync(processStepResultRequestDto).ConfigureAwait(false);
-        return Ok(resultDto);
-    }
-
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpPost]
-    [MapToApiVersion("2.2")]
-    public async Task<IActionResult> GetResultAsync([FromBody] ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
-    {
-        var resultDto = await _processStepApplicationService.GetResultAsync(processStepResultRequestDtoV2).ConfigureAwait(false);
         return Ok(resultDto);
     }
 }
