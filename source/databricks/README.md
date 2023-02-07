@@ -108,7 +108,7 @@ The following Flake8 codes are ignored:
 * Line too long (82 &gt; 79 characters) ([E501](https://www.flake8rules.com/rules/E501.html)) (*Only ignored in CI step*)
 * Line break occurred before a binary operator ([W503](https://www.flake8rules.com/rules/W503.html)) (*Black formatting does not follow this rule*)
 
-Links to files containing  Flake8 ignore [tox.ini](../../tox.ini) and [ci.yml](../../.github/workflows/ci.yml)
+Links to files containing  Flake8 ignore [tox.ini](../../tox.ini) and [`ci-databricks.yml`](../../.github/workflows/ci-databricks.yml)
 
 We are using standard [Black code style](https://github.com/psf/black/blob/main/docs/the_black_code_style/current_style.md#the-black-code-style).
 
@@ -127,3 +127,10 @@ If a pull request triggers a new Docker image to be published, a new version of 
 The default Docker image used for testing is the newest version of the "latest"-tagged [databricks-unit-test](https://github.com/orgs/Energinet-DataHub/packages?repo_name=opengeh-wholesale)-image stored in [GitHub packages](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages), which is a container registry.
 
 In a pull request, it is possible to change the version of the Docker image used for running the tests. For example, if a pull request changes the Dockerfile, it might be relevant to run the test base towards the new Docker image. To change the version of the Docker image used, change the `image`-reference in the [docker-compose.yml](../../.devcontainer/docker-compose.yml)-file to e.g. `ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:pre-release-pr311`.
+
+### Static type checking with `mypy`
+
+We are using [`mypy`](https://mypy.readthedocs.io/en/stable/index.html#) locally in our development environment, and in our CI pipeline with the following parameters:
+
+* [`--disallow-untyped-defs`](https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-disallow-untyped-defs)
+* [`--ignore-missing-imports`](https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-ignore-missing-imports)
