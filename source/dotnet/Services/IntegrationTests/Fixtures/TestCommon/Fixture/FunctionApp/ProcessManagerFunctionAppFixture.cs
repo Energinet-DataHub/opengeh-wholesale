@@ -22,12 +22,12 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.IntegrationTests.Components;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Authorization;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.FunctionApp
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.FunctionApp
 {
     public class ProcessManagerFunctionAppFixture : FunctionAppFixture
     {
@@ -107,6 +107,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
             await DatabaseManager.CreateDatabaseAsync();
             DatabricksTestManager.BeginListen();
 
+            var batchCreatedEventName = "batch-created-event-name";
             var batchCompletedEventName = "batch-completed-event-name";
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, batchCompletedEventName);
 
@@ -120,6 +121,9 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Functi
             DomainEventsTopic = await ServiceBusResourceProvider
                 .BuildTopic("domain-events")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
+                .AddSubscription("start-calculation-subscription")
+                .AddSubjectFilter(batchCreatedEventName)
+                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.StartCalculationWhenBatchCreatedSubscriptionName)
                 .AddSubscription("zip-basis-data-subscription")
                 .AddSubjectFilter(batchCompletedEventName)
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName)
