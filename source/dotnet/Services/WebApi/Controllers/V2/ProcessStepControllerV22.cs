@@ -20,12 +20,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 
 [ApiController]
-[ApiVersion(Version)]
-// "ProcessStepResult" hardcoded instead of "[controller]" to avoid breaking changes due to rename of class
-[Route($"v{Version}/ProcessStepResult")]
+[Route($"v2.2/ProcessStepResult")]
 public class ProcessStepV22Controller : ControllerBase
 {
-    private const string Version = "2.2";
     private readonly IProcessStepApplicationService _processStepApplicationService;
 
     public ProcessStepV22Controller(IProcessStepApplicationService processStepApplicationService)
@@ -35,7 +32,6 @@ public class ProcessStepV22Controller : ControllerBase
 
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
-    [MapToApiVersion(Version)]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
     {
         var resultDto = await _processStepApplicationService.GetResultAsync(processStepResultRequestDtoV2).ConfigureAwait(false);
