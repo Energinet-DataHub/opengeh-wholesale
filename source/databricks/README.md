@@ -130,7 +130,7 @@ In a pull request, it is possible to change the version of the Docker image used
 
 ### Static type checking with `mypy`
 
-We are using [`mypy`](https://mypy.readthedocs.io/en/stable/index.html#) locally in over development environment and in our CI with the following parameters:
+We are using [`mypy`](https://mypy.readthedocs.io/en/stable/index.html#) locally in our development environment, and in our CI pipeline with the following parameters:
 
 * [`--disallow-untyped-defs`](https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-disallow-untyped-defs)
 * [`--ignore-missing-imports`](https://mypy.readthedocs.io/en/stable/command_line.html#cmdoption-mypy-ignore-missing-imports)
