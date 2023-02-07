@@ -48,9 +48,9 @@ public class DatabricksCalculatorJobRunnerTests
         RunLifeCycleState runLifeCycleState,
         RunResultState runResultState,
         [Frozen] Mock<IDatabricksWheelClient> databricksWheelClientMock,
-        DatabricksCalculationInfrastructureService sut)
+        CalculationEngineClient sut)
     {
-        var jobRunId = new JobRunId(1);
+        var jobRunId = new CalculationId(1);
         var runState = new Run { State = new RunState { LifeCycleState = runLifeCycleState, ResultState = runResultState } };
         databricksWheelClientMock.Setup(x => x.Jobs.RunsGet(jobRunId.Id, CancellationToken.None)).ReturnsAsync(runState);
         var jobState = await sut.GetStatusAsync(jobRunId);

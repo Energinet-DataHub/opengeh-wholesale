@@ -15,8 +15,9 @@
 using System.Net;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.FunctionApp;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;

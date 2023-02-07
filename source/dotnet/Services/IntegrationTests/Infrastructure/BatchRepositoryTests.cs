@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
@@ -24,7 +25,7 @@ using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Infrastructure;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Infrastructure;
 
 public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 {

@@ -15,7 +15,7 @@
 using System.Reflection;
 using Microsoft.Azure.Functions.Worker;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 
 /// <summary>
 /// The class provides delegates/functions that can assist

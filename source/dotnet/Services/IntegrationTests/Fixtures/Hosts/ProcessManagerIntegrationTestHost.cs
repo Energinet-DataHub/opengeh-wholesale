@@ -14,13 +14,13 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Wholesale.IntegrationTests.Mock;
+using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Mock;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 
 public sealed class ProcessManagerIntegrationTestHost : IDisposable
 {
@@ -62,11 +62,14 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
     private static void ConfigureEnvironmentVars(string databaseManagerConnectionString)
     {
         const string anyValue = "fake_value";
+        const string anyServiceBusConnectionString = "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=someKeyName;SharedAccessKey=someKeyValue";
+
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, anyServiceBusConnectionString);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.IntegrationEventsTopicName, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.StartCalculationWhenBatchCreatedSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");

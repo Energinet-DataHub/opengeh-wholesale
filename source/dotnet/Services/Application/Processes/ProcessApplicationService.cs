@@ -12,32 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
 public class ProcessApplicationService : IProcessApplicationService
 {
-    private readonly IProcessCompletedPublisher _processCompletedPublisher;
     private readonly IProcessCompletedIntegrationEventPublisher _processCompletedIntegrationEventPublisher;
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
+    private readonly IDomainEventPublisher _domainEventPublisher;
 
     public ProcessApplicationService(
-        IProcessCompletedPublisher processCompletedPublisher,
         IProcessCompletedIntegrationEventPublisher processCompletedIntegrationEventPublisher,
-        IProcessCompletedEventDtoFactory processCompletedEventDtoFactory)
+        IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
+        IDomainEventPublisher domainEventPublisher)
     {
-        _processCompletedPublisher = processCompletedPublisher;
         _processCompletedIntegrationEventPublisher = processCompletedIntegrationEventPublisher;
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
+        _domainEventPublisher = domainEventPublisher;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
     {
         var processCompletedEvents = _processCompletedEventDtoFactory.CreateFromBatchCompletedEvent(batchCompletedEvent);
-        await _processCompletedPublisher.PublishAsync(processCompletedEvents).ConfigureAwait(false);
+        await _domainEventPublisher.PublishAsync(processCompletedEvents).ConfigureAwait(false);
     }
 
     public async Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)

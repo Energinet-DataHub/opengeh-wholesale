@@ -14,7 +14,7 @@
 
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 
 /// <summary>
 /// An xUnit fixture for sharing a wholesale database for integration tests.

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -49,7 +50,7 @@ public class Startup
         services.AddJwtTokenSecurity();
         services.AddCommandStack(Configuration);
         services.AddApplicationInsightsTelemetry();
-
+        RegisterCorrelationContext(services);
         ConfigureHealthChecks(services);
     }
 
@@ -81,14 +82,39 @@ public class Startup
 
     private static void ConfigureHealthChecks(IServiceCollection services)
     {
+        var serviceBusConnectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
+        var domainEventsTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+
         services.AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
-            // This ought to be a Data Lake (gen 2) file system check.
-            // It is, however, not easily tested so for now we stick with testing resource existence
-            // and connectivity through the lesser blob storage API.
-            .AddBlobStorageContainerCheck(
-                EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
-                EnvironmentSettingNames.CalculationStorageContainerName.Val());
+        .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
+        // This ought to be a Data Lake (gen 2) file system check.
+        // It is, however, not easily tested so for now we stick with testing resource existence
+        // and connectivity through the lesser blob storage API.
+        .AddBlobStorageContainerCheck(
+            EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
+            EnvironmentSettingNames.CalculationStorageContainerName.Val());
+        // .AddAzureServiceBusTopic(
+        //     connectionString: serviceBusConnectionString,
+        //     topicName: domainEventsTopicName,
+        //     name: "DomainEventsTopicExists");
+    }
+
+    /// <summary>
+    /// The middleware to handle properly set a CorrelationContext is only supported for Functions.
+    /// This registry will ensure a new CorrelationContext (with a new Id) is set for each session
+    /// </summary>
+    private static void RegisterCorrelationContext(IServiceCollection services)
+    {
+        var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(ICorrelationContext));
+        services.Remove(serviceDescriptor!);
+        services.AddScoped<ICorrelationContext>(_ =>
+        {
+            var correlationContext = new CorrelationContext();
+            correlationContext.SetId(Guid.NewGuid().ToString());
+            return correlationContext;
+        });
     }
 }

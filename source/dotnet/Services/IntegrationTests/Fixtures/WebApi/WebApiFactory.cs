@@ -13,11 +13,16 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
+using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.WebApi;
@@ -83,7 +88,47 @@ public class WebApiFactory : WebApplicationFactory<Startup>
                         provider.GetRequiredService<IProcessStepResultMapper>(),
                         provider.GetRequiredService<IActorRepository>());
                 });
+
+            services.AddScoped(
+                provider =>
+                {
+                    if (BatchApplicationServiceMock != null)
+                        return BatchApplicationServiceMock.Object;
+
+                    return new BatchApplicationService(
+                        provider.GetRequiredService<IBatchFactory>(),
+                        provider.GetRequiredService<IBatchRepository>(),
+                        provider.GetRequiredService<IUnitOfWork>(),
+                        provider.GetRequiredService<ICalculationDomainService>(),
+                        provider.GetRequiredService<IBatchExecutionStateDomainService>(),
+                        provider.GetRequiredService<IBatchDtoMapper>(),
+                        provider.GetRequiredService<IProcessTypeMapper>(),
+                        provider.GetRequiredService<IDomainEventPublisher>());
+                });
         });
+
+        ConfigureEnvironmentVars();
+    }
+
+    private static void ConfigureEnvironmentVars()
+    {
+        const string anyValue = "fake_value";
+        var anyServiceBusConnectionString = "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=someKeyName;SharedAccessKey=someKeyValue";
+
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.BackendAppId, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ExternalOpenIdUrl, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.InternalOpenIdUrl, anyValue);
+        Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{EnvironmentSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, anyServiceBusConnectionString);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, anyServiceBusConnectionString);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCreatedEventName, "batch-created");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, "http://localhost/");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, "no_token");
     }
 
     /// <summary>
@@ -93,6 +138,8 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     public Mock<ISettlementReportApplicationService>? SettlementReportApplicationServiceMock { get; set; }
 
     public Mock<IProcessStepApplicationService>? ProcessStepApplicationServiceMock { get; set; }
+
+    public Mock<IBatchApplicationService>? BatchApplicationServiceMock { get; set; }
 
     private sealed class AllowAnonymous : IAuthorizationHandler
     {

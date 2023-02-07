@@ -19,21 +19,26 @@ using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 
-public sealed class DatabricksCalculationInfrastructureService : ICalculationDomainService
+public sealed class CalculationEngineClient : ICalculationEngineClient
 {
     private readonly IDatabricksCalculatorJobSelector _databricksCalculatorJobSelector;
     private readonly IDatabricksWheelClient _wheelClient;
+    private readonly ICalculationParametersFactory _calculationParametersFactory;
 
-    public DatabricksCalculationInfrastructureService(
+    public CalculationEngineClient(
         IDatabricksCalculatorJobSelector databricksCalculatorJobSelector,
-        IDatabricksWheelClient wheelClient)
+        IDatabricksWheelClient wheelClient,
+        ICalculationParametersFactory calculationParametersFactory)
     {
         _databricksCalculatorJobSelector = databricksCalculatorJobSelector;
         _wheelClient = wheelClient;
+        _calculationParametersFactory = calculationParametersFactory;
     }
 
-    public async Task<JobRunId> StartAsync(IEnumerable<string> jobParameters)
+    public async Task<CalculationId> StartAsync(Batch batch)
     {
+        var jobParameters = _calculationParametersFactory.CreateParameters(batch);
+
         var calculatorJob = await _databricksCalculatorJobSelector
             .GetAsync()
             .ConfigureAwait(false);
@@ -45,14 +50,14 @@ public sealed class DatabricksCalculationInfrastructureService : ICalculationDom
             .RunNow(calculatorJob.JobId, runParameters)
             .ConfigureAwait(false);
 
-        return new JobRunId(runId.RunId);
+        return new CalculationId(runId.RunId);
     }
 
-    public async Task<CalculationState> GetStatusAsync(JobRunId jobRunId)
+    public async Task<CalculationState> GetStatusAsync(CalculationId calculationId)
     {
         var runState = await _wheelClient
             .Jobs
-            .RunsGet(jobRunId.Id)
+            .RunsGet(calculationId.Id)
             .ConfigureAwait(false);
 
         return runState.State.LifeCycleState switch

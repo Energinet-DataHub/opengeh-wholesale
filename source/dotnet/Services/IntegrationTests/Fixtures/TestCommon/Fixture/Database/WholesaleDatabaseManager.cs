@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.DatabaseMigration;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 
 public class WholesaleDatabaseManager : SqlServerDatabaseManager<DatabaseContext>
 {

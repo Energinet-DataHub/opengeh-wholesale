@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-/// <summary>
-/// This is an infrastructure concern. It cannot, however, currently be moved to infrastructure
-/// due to problems listed in <see cref="BatchApplicationService.UpdateExecutionStateAsync"/>.
-/// </summary>
-public interface ICalculationParametersFactory
-{
-    IEnumerable<string> CreateParameters(Batch batch);
-}
+public sealed record BatchCompletedEventDto(
+    Guid BatchId,
+    List<string> GridAreaCodes,
+    ProcessType ProcessType,
+    Instant PeriodStart,
+    Instant PeriodEnd) : DomainEventDto;

@@ -34,14 +34,13 @@ using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
-using Energinet.DataHub.Wholesale.Infrastructure.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
@@ -94,7 +93,8 @@ public static class Program
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
         services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        services.AddScoped<ICalculationDomainService, DatabricksCalculationInfrastructureService>();
+        services.AddScoped<ICalculationDomainService, CalculationDomainService>();
+        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
     }
@@ -129,23 +129,11 @@ public static class Program
                 o.EnableRetryOnFailure();
             }));
 
-        var serviceBusConnectionString =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusSendConnectionString);
+        RegisterEventPublishers(serviceCollection);
 
-        var domainEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
-
-        var batchCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName);
-        var processCompletedMessageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName);
-        serviceCollection.AddBatchCompletedPublisher(serviceBusConnectionString, domainEventsTopicName, batchCompletedMessageType);
-        serviceCollection.AddProcessCompletedPublisher(serviceBusConnectionString, domainEventsTopicName, processCompletedMessageType);
-
-        var integrationEventsTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
-        serviceCollection.AddProcessCompletedIntegrationEventPublisher(serviceBusConnectionString, integrationEventsTopicName);
         serviceCollection.AddScoped<IProcessCompletedIntegrationEventMapper, ProcessCompletedIntegrationEventMapper>();
-
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
-        serviceCollection
-            .AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
+        serviceCollection.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
         serviceCollection.AddSingleton(_ =>
         {
@@ -161,6 +149,29 @@ public static class Program
             provider => new SettlementReportRepository(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
+    }
+
+    private static void RegisterEventPublishers(IServiceCollection serviceCollection)
+    {
+        var serviceBusConnectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
+        var messageTypes = new Dictionary<Type, string>
+        {
+            {
+                typeof(BatchCompletedEventDto),
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCompletedEventName)
+            },
+            {
+                typeof(ProcessCompletedEventDto),
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName)
+            },
+        };
+        var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        serviceCollection.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
+
+        var integrationEventTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
+        serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName);
     }
 
     private static void DateTime(IServiceCollection serviceCollection)
@@ -182,6 +193,8 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
         var domainEventsTopicName =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        var batchCreatedSubscriptionStartCalculation =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StartCalculationWhenBatchCreatedSubscriptionName);
         var batchCompletedSubscriptionPublishProcessesCompleted =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName);
         var batchCompletedSubscriptionZipBasisData =
@@ -197,6 +210,11 @@ public static class Program
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,
                 name: "DomainEventsTopicExists")
+            .AddAzureServiceBusSubscription(
+                connectionString: serviceBusConnectionString,
+                topicName: domainEventsTopicName,
+                subscriptionName: batchCreatedSubscriptionStartCalculation,
+                name: "BatchCreatedSubscriptionStartCalculation")
             .AddAzureServiceBusSubscription(
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,

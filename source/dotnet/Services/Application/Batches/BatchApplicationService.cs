@@ -28,56 +28,47 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICalculationDomainService _calculationDomainService;
-    private readonly ICalculationParametersFactory _calculationParametersFactory;
     private readonly IBatchExecutionStateDomainService _batchExecutionStateDomainService;
     private readonly IBatchDtoMapper _batchDtoMapper;
     private readonly IProcessTypeMapper _processTypeMapper;
+    private readonly IDomainEventPublisher _domainEventPublisher;
 
     public BatchApplicationService(
         IBatchFactory batchFactory,
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         ICalculationDomainService calculationDomainService,
-        ICalculationParametersFactory calculationParametersFactory,
         IBatchExecutionStateDomainService batchExecutionStateDomainService,
         IBatchDtoMapper batchDtoMapper,
-        IProcessTypeMapper processTypeMapper)
+        IProcessTypeMapper processTypeMapper,
+        IDomainEventPublisher domainEventPublisher)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _calculationDomainService = calculationDomainService;
-        _calculationParametersFactory = calculationParametersFactory;
         _batchExecutionStateDomainService = batchExecutionStateDomainService;
         _batchDtoMapper = batchDtoMapper;
         _processTypeMapper = processTypeMapper;
+        _domainEventPublisher = domainEventPublisher;
     }
 
     public async Task<Guid> CreateAsync(BatchRequestDto batchRequestDto)
     {
         var processType = _processTypeMapper.MapFrom(batchRequestDto.ProcessType);
+        // Domain service
         var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
+        await _domainEventPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
+        // ------------
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
-
         return batch.Id;
     }
 
-    public async Task StartSubmittingAsync()
+    public async Task StartCalculationAsync(Guid batchId)
     {
-        var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
-
-        // TODO: Problems with this code:
-        // - Multiple unit of work commits. What if something fails? There should probably be exactly none or one commit per use case
-        // - This complexity belongs to a domain service, but it can't be moved to a domain service because of the unit of work dependency
-        // - ICalculationParametersFactory is an infrastructure concern, but can't be moved to infra due to this code
-        foreach (var batch in batches)
-        {
-            var jobParameters = _calculationParametersFactory.CreateParameters(batch);
-            var jobRunId = await _calculationDomainService.StartAsync(jobParameters).ConfigureAwait(false);
-            batch.MarkAsSubmitted(jobRunId);
-            await _unitOfWork.CommitAsync().ConfigureAwait(false);
-        }
+        await _calculationDomainService.StartAsync(batchId).ConfigureAwait(false);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     public async Task UpdateExecutionStateAsync()

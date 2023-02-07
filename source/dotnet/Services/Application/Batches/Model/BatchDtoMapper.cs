@@ -23,7 +23,7 @@ public class BatchDtoMapper : IBatchDtoMapper
     public BatchDto Map(Batch batch)
     {
         return new BatchDto(
-            batch.RunId?.Id,
+            batch.CalculationId?.Id,
             batch.Id,
             batch.PeriodStart.ToDateTimeOffset(),
             batch.PeriodEnd.ToDateTimeOffset(),

@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Hosts;
+namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 
 public sealed class WebApiIntegrationTestHost : IDisposable
 {
@@ -57,6 +57,8 @@ public sealed class WebApiIntegrationTestHost : IDisposable
     private static void ConfigureEnvironmentVars()
     {
         const string anyValue = "fake_value";
+        const string anyServiceBusConnectionString = "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=someKeyName;SharedAccessKey=someKeyValue";
+
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.BackendAppId, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.ExternalOpenIdUrl, anyValue);
@@ -64,7 +66,13 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{EnvironmentSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, anyValue);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, anyServiceBusConnectionString);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, anyServiceBusConnectionString);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCreatedEventName, "batch-created");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, "http://localhost/");
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, "no_token");
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
