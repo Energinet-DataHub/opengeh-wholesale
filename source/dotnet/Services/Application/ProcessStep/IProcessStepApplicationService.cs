@@ -25,6 +25,5 @@ public interface IProcessStepApplicationService
 
     Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
 
-    // TODO: Only expose one GetResult method
     Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
 }
