@@ -54,6 +54,7 @@ jobs:
     needs: [
       databricks_ci_build,
       databricks_ci_test,
+      mypy_check
     ]
     if: |
       always()
