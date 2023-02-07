@@ -17,6 +17,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
@@ -24,12 +25,12 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
     private readonly ICorrelationContext _correlationContext;
     private readonly IJsonSerializer _jsonSerializer;
-    private readonly IDictionary<Type, string> _messageTypes;
+    private readonly MessageTypeDictionary _messageTypes;
 
     public ServiceBusMessageFactory(
         ICorrelationContext correlationContext,
         IJsonSerializer jsonSerializer,
-        IDictionary<Type, string> messageTypes)
+        MessageTypeDictionary messageTypes)
     {
         _correlationContext = correlationContext;
         _jsonSerializer = jsonSerializer;

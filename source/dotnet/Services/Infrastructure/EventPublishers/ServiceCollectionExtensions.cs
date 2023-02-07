@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,15 +41,33 @@ public static class ServiceCollectionExtensions
         return serviceCollection;
     }
 
+    public static IServiceCollection AddIntegrationEventPublisher(
+        this IServiceCollection serviceCollection,
+        string serviceBusConnectionString,
+        string topicName)
+    {
+        ServiceBusClientAndAndMessageFactoryRegistry(serviceCollection, serviceBusConnectionString);
+
+        serviceCollection.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
+        serviceCollection.AddSingleton<IIntegrationEventTopicServiceBusSender>(provider =>
+        {
+            var client = provider.GetRequiredService<ServiceBusClient>();
+            var sender = client.CreateSender(topicName);
+            return new IntegrationEventTopicServiceBusSender(sender);
+        });
+
+        return serviceCollection;
+    }
+
     private static void ServiceBusClientAndAndMessageFactoryRegistry(
         IServiceCollection serviceCollection,
         string serviceBusConnectionString,
-        MessageTypeDictionary messageType)
+        MessageTypeDictionary? messageType = null)
     {
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))
             serviceCollection.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
 
-        if (serviceCollection.All(x => x.ServiceType != typeof(MessageTypeDictionary)))
+        if (messageType != null && serviceCollection.All(x => x.ServiceType != typeof(MessageTypeDictionary)))
             serviceCollection.AddSingleton(messageType);
 
         if (serviceCollection.All(x => x.ServiceType != typeof(IServiceBusMessageFactory)))

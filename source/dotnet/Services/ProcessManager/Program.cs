@@ -129,7 +129,7 @@ public static class Program
                 o.EnableRetryOnFailure();
             }));
 
-        RegisterDomainEventPublisher(serviceCollection);
+        RegisterEventPublishers(serviceCollection);
 
         serviceCollection.AddScoped<IProcessCompletedIntegrationEventMapper, ProcessCompletedIntegrationEventMapper>();
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
@@ -149,11 +149,9 @@ public static class Program
             provider => new SettlementReportRepository(
                 provider.GetRequiredService<DataLakeFileSystemClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
-
-        serviceCollection.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
     }
 
-    private static void RegisterDomainEventPublisher(IServiceCollection serviceCollection)
+    private static void RegisterEventPublishers(IServiceCollection serviceCollection)
     {
         var serviceBusConnectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
@@ -170,6 +168,10 @@ public static class Program
         };
         var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
         serviceCollection.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
+
+        var integrationEventTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
+        serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName);
     }
 
     private static void DateTime(IServiceCollection serviceCollection)
