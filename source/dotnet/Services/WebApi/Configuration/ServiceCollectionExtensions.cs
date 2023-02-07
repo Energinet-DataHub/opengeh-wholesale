@@ -24,6 +24,7 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
@@ -94,7 +95,17 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IBatchDtoV2Mapper, BatchDtoV2Mapper>();
         services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        services.AddScoped<ICalculationDomainService>(_ => null!); // Unused in the use cases of this app
+        services.AddScoped<ICalculationDomainService, CalculationDomainService>();
+        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
+
+        services.AddSingleton(_ =>
+        {
+            var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
+            var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
+
+            return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
+        });
+        services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         services.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
         services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
