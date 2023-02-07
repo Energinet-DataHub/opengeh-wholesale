@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
 
 [ApiController]
-[Route($"v2.3/ProcessStepResult")]
+[Route("v2.3/ProcessStepResult")]
 public class ProcessStepV23Controller : ControllerBase
 {
     private readonly IProcessStepApplicationService _processStepApplicationService;
@@ -32,6 +32,7 @@ public class ProcessStepV23Controller : ControllerBase
 
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
+    [ApiVersion("2.3")]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
     {
         var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);

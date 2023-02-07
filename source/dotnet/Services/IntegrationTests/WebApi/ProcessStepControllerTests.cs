@@ -66,7 +66,7 @@ public class ProcessStepControllerTests :
         WholesaleActorDto expectedActor)
     {
         // Arrange
-        const string expectedUrl = "/v2.3/processstepresult";
+        const string expectedUrl = "/v2.3/ProcessStepResult";
         applicationServiceMock
             .Setup(service => service.GetActorsAsync(request))
             .ReturnsAsync(() => new[] { expectedActor });
