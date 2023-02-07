@@ -51,7 +51,7 @@ public class Startup
         services.AddJwtTokenSecurity();
         services.AddCommandStack(Configuration);
         services.AddApplicationInsightsTelemetry();
-        ReRegisterCorrelationIdContextHack(services);
+        RegisterCorrelationContext(services);
         ConfigureHealthChecks(services);
     }
 
@@ -94,7 +94,11 @@ public class Startup
                 EnvironmentSettingNames.CalculationStorageContainerName.Val());
     }
 
-    private static void ReRegisterCorrelationIdContextHack(IServiceCollection services)
+    /// <summary>
+    /// The middleware to handle properly set a CorrelationContext is only supported for Functions.
+    /// This registry will ensure a new CorrelationContext (with a new Id) is set for each session
+    /// </summary>
+    private static void RegisterCorrelationContext(IServiceCollection services)
     {
         var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(ICorrelationContext));
         services.Remove(serviceDescriptor!);
