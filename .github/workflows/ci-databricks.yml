@@ -43,7 +43,7 @@ jobs:
       with:
         python-version: 3.x
     - run: pip install --upgrade pip
-    - run: pip install mypy
+    - run: pip install mypy types-python-dateutil
     - run: mypy ./source/databricks/package --disallow-untyped-defs --ignore-missing-imports
   #
   # Branch policy status check

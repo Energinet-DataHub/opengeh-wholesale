@@ -29,7 +29,6 @@ setup(
         "azure-storage-blob==12.14.1",
         "databricks-cli==0.17.3",
         "python-dateutil==2.8.2",
-        "types-python-dateutil",
     ],
     entry_points={
         "console_scripts": [
