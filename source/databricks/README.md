@@ -108,7 +108,7 @@ The following Flake8 codes are ignored:
 * Line too long (82 &gt; 79 characters) ([E501](https://www.flake8rules.com/rules/E501.html)) (*Only ignored in CI step*)
 * Line break occurred before a binary operator ([W503](https://www.flake8rules.com/rules/W503.html)) (*Black formatting does not follow this rule*)
 
-Links to files containing  Flake8 ignore [tox.ini](../../tox.ini) and [ci.yml](../../.github/workflows/ci.yml)
+Links to files containing  Flake8 ignore [tox.ini](../../tox.ini) and [`ci-databricks.yml`](../../.github/workflows/ci-databricks.yml)
 
 We are using standard [Black code style](https://github.com/psf/black/blob/main/docs/the_black_code_style/current_style.md#the-black-code-style).
 
