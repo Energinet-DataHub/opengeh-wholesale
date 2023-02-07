@@ -32,7 +32,8 @@ from pyspark.sql.types import DecimalType
 
 
 def calculate_balance_fixing(
-    output_path: str,
+    basis_data_writer: BasisDataWriter,
+    process_step_result_writer: ProcessStepResultWriter,
     metering_points_periods_df: DataFrame,
     timeseries_points: DataFrame,
     period_start_datetime: datetime,
@@ -48,7 +49,7 @@ def calculate_balance_fixing(
     )
 
     _create_and_write_basis_data(
-        output_path,
+        basis_data_writer,
         metering_points_periods_df,
         enriched_time_series_point_df,
         period_start_datetime,
@@ -56,11 +57,11 @@ def calculate_balance_fixing(
         time_zone,
     )
 
-    _calculate(output_path, enriched_time_series_point_df)
+    _calculate(process_step_result_writer, enriched_time_series_point_df)
 
 
 def _create_and_write_basis_data(
-    output_path: str,
+    basis_data_writer: BasisDataWriter,
     metering_points_periods_df: DataFrame,
     enriched_time_series_point_df: DataFrame,
     period_start_datetime: datetime,
@@ -78,15 +79,15 @@ def _create_and_write_basis_data(
         metering_points_periods_df, period_start_datetime, period_end_datetime
     )
 
-    basis_data_writer = BasisDataWriter(output_path)
     basis_data_writer.write(
         master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
     )
 
 
-def _calculate(output_path: str, enriched_time_series_point_df: DataFrame) -> None:
+def _calculate(
+    result_writer: ProcessStepResultWriter, enriched_time_series_point_df: DataFrame
+) -> None:
 
-    result_writer = ProcessStepResultWriter(output_path)
     metadata_fake = Metadata("1", "1", "1", "1")
 
     _calculate_production(result_writer, enriched_time_series_point_df, metadata_fake)
@@ -102,17 +103,16 @@ def _calculate_production(
     metadata: Metadata,
 ) -> None:
 
-    total_production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production(
-        enriched_time_series, metadata
+    production_per_per_ga_and_brp_and_es = (
+        agg_steps.aggregate_production_per_ga_and_brp_and_es(
+            enriched_time_series, metadata
+        )
     )
-    total_production_per_ga_df = total_production_per_per_ga_and_brp_and_es.groupBy(
-        Colname.grid_area, Colname.time_window
-    ).agg(
-        sum(Colname.sum_quantity).alias(Colname.sum_quantity),
-        first(Colname.quality).alias(Colname.quality),
+    production_per_ga = agg_steps.aggregate_production_ga(
+        production_per_per_ga_and_brp_and_es, metadata
     )
 
-    result_writer.write_per_ga(total_production_per_ga_df, TimeSeriesType.PRODUCTION)
+    result_writer.write_per_ga(production_per_ga, TimeSeriesType.PRODUCTION)
 
 
 def _calculate_non_profiled_consumption(
@@ -121,13 +121,15 @@ def _calculate_non_profiled_consumption(
     metadata: Metadata,
 ) -> None:
 
-    consumption = agg_steps.aggregate_non_profiled_consumption(
-        enriched_time_series_point_df, metadata
+    consumption_per_ga_and_es_and_brp = (
+        agg_steps.aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
+            enriched_time_series_point_df, metadata
+        )
     )
 
     # Non-profiled consumption per energy supplier
     consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
-        consumption, metadata
+        consumption_per_ga_and_es_and_brp, metadata
     )
 
     result_writer.write_per_ga_per_actor(

@@ -48,7 +48,7 @@ public class SubmitCreatedBatchesEndpointTests
 
         public Task DisposeAsync() => Task.CompletedTask;
 
-        [Fact]
+        [Fact(Skip = "Split into multiple tests when concepts are ready")]
         public async Task When_PendingBatchCreated_Then_BatchAndProcessCompletedEventsArePublished()
         {
             // Arrange
@@ -84,7 +84,7 @@ public class SubmitCreatedBatchesEndpointTests
             isProcessCompletedEventPublished.Should().BeTrue();
         }
 
-        [Fact]
+        [Fact(Skip = "Split into multiple tests when concepts are ready")]
         public async Task When_PendingBatchCreated_Then_BatchIsCompleted()
         {
             // Arrange

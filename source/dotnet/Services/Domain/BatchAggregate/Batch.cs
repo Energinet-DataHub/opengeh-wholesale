@@ -68,9 +68,9 @@ public class Batch
         if (periodStart >= periodEnd)
             errors.Add("periodStart is greater or equal to periodEnd");
 
-        // Validate that period end is set to 1 millisecond before midnight
-        if (new ZonedDateTime(periodEnd.Plus(Duration.FromMilliseconds(1)), dateTimeZone).TimeOfDay != LocalTime.Midnight)
-            errors.Add($"The period end '{periodEnd.ToString()}' must be one millisecond before midnight.");
+        // Validate that period end is set to midnight
+        if (new ZonedDateTime(periodEnd, dateTimeZone).TimeOfDay != LocalTime.Midnight)
+            errors.Add($"The period end '{periodEnd.ToString()}' must be midnight.");
 
         if (new ZonedDateTime(periodStart, dateTimeZone).TimeOfDay != LocalTime.Midnight)
             errors.Add($"The period start '{periodStart.ToString()}'must be midnight.");
@@ -114,13 +114,6 @@ public class Batch
     /// The 1 ms off is by design originating from the front-end decision on how to handle date periods.
     /// </summary>
     public Instant PeriodEnd { get; }
-
-    /// <summary>
-    /// Gets an open-ended period end. That is a period end, which is exactly at midnight and thus exclusive.
-    /// This is used in calculations as it prevents loss of e.g. time-series received in the last millisecond
-    /// before midnight.
-    /// </summary>
-    public Instant OpenPeriodEnd => PeriodEnd.Plus(Duration.FromMilliseconds(1));
 
     public bool AreSettlementReportsCreated { get; set; }
 

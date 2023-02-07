@@ -14,7 +14,6 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
@@ -26,8 +25,7 @@ public interface IServiceBusMessageFactory
     ServiceBusMessage Create<TDomainEventDto>(TDomainEventDto domainEvent)
         where TDomainEventDto : DomainEventDto;
 
-    ServiceBusMessage Create<TIntegrationEventDto>(
+    ServiceBusMessage CreateProcessCompleted(
         byte[] bytes,
-        string messageType)
-        where TIntegrationEventDto : IIntegrationEventDto;
+        string messageType);
 }

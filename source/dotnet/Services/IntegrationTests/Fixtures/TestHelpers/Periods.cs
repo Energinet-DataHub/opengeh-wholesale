@@ -23,8 +23,15 @@ public static class Periods
         January_EuropeCopenhagen =>
         (
             DateTimeOffset.Parse("2021-12-31T23:00Z"),
-            DateTimeOffset.Parse("2022-01-31T22:59:59.999Z"),
+            DateTimeOffset.Parse("2022-01-31T23:00Z"),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+
+    public static (DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeZone DateTimeZone)
+        January_EuropeCopenhagen_1ms =>
+    (
+        DateTimeOffset.Parse("2021-12-31T23:00Z"),
+        DateTimeOffset.Parse("2022-01-31T22:59:59.999Z"),
+        DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
     public static (Instant PeriodStart, Instant PeriodEnd, DateTimeZone DateTimeZone) January_EuropeCopenhagen_Instant
     {

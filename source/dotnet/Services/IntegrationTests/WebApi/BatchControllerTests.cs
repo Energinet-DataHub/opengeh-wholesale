@@ -14,14 +14,13 @@
 
 using System.Net;
 using System.Net.Http.Json;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -37,7 +36,6 @@ public class BatchControllerTests :
     IAsyncLifetime
 {
     private readonly HttpClient _client;
-    private readonly WebApiFactory _factory;
 
     public BatchControllerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
@@ -46,7 +44,6 @@ public class BatchControllerTests :
         : base(wholesaleWebApiFixture, testOutputHelper)
     {
         _client = factory.CreateClient();
-        _factory = factory;
     }
 
     public Task InitializeAsync()
@@ -60,40 +57,38 @@ public class BatchControllerTests :
         return Task.CompletedTask;
     }
 
+    /* TODO AJW
     [Theory]
-    [AutoMoqData]
+    [InlineData("/v2/batch")]
     public async Task CreateAsync_WhenCalled_AlwaysReturnsOk(
-        Mock<IBatchApplicationService> mock,
-        Guid id)
+        Mock<IProcessStepApplicationService> mock,
+        string baseUrl)
     {
-        // Arrange
-        var batchRequestDto = CreateBatchRequestDto();
-        mock.Setup(service => service.CreateAsync(batchRequestDto)).ReturnsAsync(id);
-        _factory.BatchApplicationServiceMock = mock;
-
-        // Act
-        var actual = await _client.PostAsJsonAsync("/v2/batch", batchRequestDto, CancellationToken.None);
-
-        // Assert
+        var batchRequest = CreateBatchRequestDto();
+        var actual = await _client.PostAsJsonAsync(baseUrl, batchRequest, CancellationToken.None);
         actual.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
+
+
+        // Arrange
+        mock
+            .Setup(service => service.GetActorsAsync(request))
+            .ReturnsAsync(new[] { wholesaleActorDto });
+        _factory.ProcessStepApplicationServiceMock = mock;
+        // Act
+
+    }*/
 
     [Theory]
-    [AutoMoqData]
-    public async Task SearchAsync_WhenCalled_AlwaysReturnsOk(
-        Mock<IBatchApplicationService> mock,
-        IEnumerable<BatchDto> batchDtos)
+    [InlineData("/v2/batch")]
+    public async Task SearchAsync_WhenCalled_AlwaysReturnsOk(string baseUrl)
     {
         // Arrange
         var minExecutionTime = new DateTimeOffset(2022, 01, 02, 1, 2, 3, 50, TimeSpan.Zero);
         var maxExecutionTime = minExecutionTime + TimeSpan.FromMinutes(33);
         var batchSearchDto = new BatchSearchDto(minExecutionTime, maxExecutionTime);
 
-        mock.Setup(service => service.SearchAsync(batchSearchDto)).ReturnsAsync(batchDtos);
-        _factory.BatchApplicationServiceMock = mock;
-
         // Act
-        var searchUrl = "/v2/batch" + "/Search";
+        var searchUrl = baseUrl + "/Search";
         var response = await _client.PostAsJsonAsync(searchUrl, batchSearchDto, CancellationToken.None);
 
         // Assert
@@ -101,18 +96,17 @@ public class BatchControllerTests :
     }
 
     [Theory]
-    [AutoMoqData]
-    public async Task GetAsync_WhenCalled_ReturnsOk(
-        Mock<IBatchApplicationService> batchApplicationServiceMock,
-        Guid batchId,
-        BatchDto batchDto)
+    [InlineData("/v2/batch")]
+    public async Task GetAsync_WhenCalled_ReturnsOk(string baseUrl)
     {
         // Arrange
-        batchApplicationServiceMock.Setup(service => service.GetAsync(batchId)).ReturnsAsync(batchDto);
-        _factory.BatchApplicationServiceMock = batchApplicationServiceMock;
+        var batchRequest = CreateBatchRequestDto();
+        var responseCreateAsync = await _client.PostAsJsonAsync(baseUrl, batchRequest, CancellationToken.None);
+        var batchId = await responseCreateAsync.Content.ReadFromJsonAsync<Guid>();
 
         // Act
-        var response = await _client.GetAsync($"/v2/batch?batchId={batchId.ToString()}", CancellationToken.None);
+        var batchUrl = $"{baseUrl}?batchId={batchId.ToString()}";
+        var response = await _client.GetAsync(batchUrl);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

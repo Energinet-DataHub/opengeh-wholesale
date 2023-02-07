@@ -71,7 +71,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
             .Setup(mapper => mapper.MapFrom(eventDto))
             .Returns(processCompleted);
         factoryMock
-            .Setup(factory => factory.Create<ProcessCompleted>(processCompleted.ToByteArray(), expectedMessageType))
+            .Setup(factory => factory.CreateProcessCompleted(processCompleted.ToByteArray(), expectedMessageType))
             .Returns(new ServiceBusMessage
             {
                 ApplicationProperties = { { MessageMetaDataConstants.MessageType, expectedMessageType } },
