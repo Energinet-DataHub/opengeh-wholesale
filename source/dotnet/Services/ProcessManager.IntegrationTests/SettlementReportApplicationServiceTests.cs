@@ -15,25 +15,21 @@
 using System.IO.Compression;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
+using ProcessManager.IntegrationTests.Fixtures;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
+namespace ProcessManager.IntegrationTests;
 
 [Collection(nameof(ProcessManagerIntegrationTestHost))]
 public sealed class SettlementReportApplicationServiceTests

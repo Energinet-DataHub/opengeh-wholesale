@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.FunctionApp;
+using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
+namespace ProcessManager.IntegrationTests.Fixtures;
 
 /// <summary>
-/// An xUnit collection fixture for ensuring tests don't run in parallel.
-///
-/// xUnit documentation of collection fixtures:
-///  * https://xunit.net/docs/shared-context#collection-fixture
+/// Fixture configuration used for integration tests running without TestCommon function app.
 /// </summary>
-[CollectionDefinition(nameof(ProcessManagerFunctionAppCollectionFixture))]
-public class ProcessManagerFunctionAppCollectionFixture : ICollectionFixture<ProcessManagerFunctionAppFixture>
+[CollectionDefinition(nameof(ProcessManagerIntegrationTestHost))]
+public sealed class ProcessManagerFixtureConfiguration :
+    ICollectionFixture<ProcessManagerDatabaseFixture>,
+    ICollectionFixture<ProcessManagerDatabricksFixture>
 {
 }
