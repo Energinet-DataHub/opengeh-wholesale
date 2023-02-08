@@ -12,19 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
+using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
+using FluentAssertions;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
+using NodaTime;
 using ProcessManager.IntegrationTests.Fixtures;
 using Xunit;
+using ProcessType = Energinet.DataHub.Wholesale.Domain.ProcessAggregate.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
@@ -33,9 +38,9 @@ public sealed class BatchApplicationServiceTests
 {
     private const long DummyJobId = 42;
     private const string DummyJobName = "CalculatorJob";
-    private readonly ProcessManagerDatabaseFixture _processManagerDatabaseFixture;
-    private readonly Mock<IJobsWheelApi> _jobsApiMock = new Mock<IJobsWheelApi>();
     private readonly Mock<IDatabricksWheelClient> _databricksWheelClientMock = new Mock<IDatabricksWheelClient>();
+    private readonly Mock<IJobsWheelApi> _jobsApiMock = new Mock<IJobsWheelApi>();
+    private readonly ProcessManagerDatabaseFixture _processManagerDatabaseFixture;
 
     public BatchApplicationServiceTests(ProcessManagerDatabaseFixture processManagerDatabaseFixture)
     {
@@ -54,6 +59,48 @@ public sealed class BatchApplicationServiceTests
             .ReturnsAsync(runIdentifier);
 
         _databricksWheelClientMock.Setup(x => x.Jobs).Returns(_jobsApiMock.Object);
+    }
+
+    [Theory]
+    [InlineAutoMoqData(CalculationState.Pending, BatchExecutionState.Pending)]
+    [InlineAutoMoqData(CalculationState.Running, BatchExecutionState.Executing)]
+    [InlineAutoMoqData(CalculationState.Completed, BatchExecutionState.Completed)]
+    [InlineAutoMoqData(CalculationState.Canceled, BatchExecutionState.Canceled)]
+    [InlineAutoMoqData(CalculationState.Failed, BatchExecutionState.Completed)]
+    public void MapStateSuccess(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState, BatchExecutionStateDomainService sut)
+    {
+        var actualBatchExecutionState = sut.MapState(calculationState);
+        actualBatchExecutionState.Should().Be(expectedBatchExecutionState);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void MapStateException(BatchExecutionStateDomainService sut)
+    {
+        const CalculationState unexpectedCalculationState = (CalculationState)99;
+        Action action = () => sut.MapState(unexpectedCalculationState);
+        action.Should().Throw<ArgumentOutOfRangeException>()
+            .WithParameterName("calculationState")
+            .And.ActualValue.Should().Be(unexpectedCalculationState);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void HandleNewState(BatchExecutionStateDomainService sut)
+    {
+        var state = BatchExecutionState.Pending;
+        var batch = new Batch(
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { new GridAreaCode("123") },
+            Instant.MinValue,
+            Instant.FromUtc(2023, 1, 1, 0, 0),
+            Instant.MinValue,
+            DateTimeZone.Utc);
+        var completedBatches = new List<Batch>();
+
+        sut.HandleNewState(state, batch, completedBatches);
+        batch.ExecutionState.Should().Be(BatchExecutionState.Pending);
+        completedBatches.Should().BeEmpty();
     }
 
     [Fact(Skip = "Split into multiple tests when concepts are ready")]
@@ -186,7 +233,7 @@ public sealed class BatchApplicationServiceTests
     {
         var period = Periods.January_EuropeCopenhagen;
         return new BatchRequestDto(
-            ProcessType.BalanceFixing,
+            Contracts.ProcessType.BalanceFixing,
             new[] { gridAreaCode },
             period.PeriodStart,
             period.PeriodEnd);

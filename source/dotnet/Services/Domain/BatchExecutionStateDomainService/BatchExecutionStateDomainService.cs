@@ -23,9 +23,9 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
 {
     private readonly IBatchRepository _batchRepository;
     private readonly ICalculationDomainService _calculationDomainService;
-    private readonly ILogger _logger;
     private readonly IClock _clock;
     private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly ILogger _logger;
 
     public BatchExecutionStateDomainService(
         IBatchRepository batchRepository,
@@ -79,7 +79,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
         await _domainEventPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
     }
 
-    private static BatchExecutionState MapState(CalculationState calculationState)
+    public BatchExecutionState MapState(CalculationState calculationState)
     {
         return calculationState switch
         {
@@ -92,7 +92,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
         };
     }
 
-    private void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)
+    public void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)
     {
         switch (state)
         {
