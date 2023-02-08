@@ -17,13 +17,13 @@ using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
+using ProcessManager.IntegrationTests.Fixtures;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;

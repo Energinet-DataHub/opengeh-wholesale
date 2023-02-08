@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.FunctionApp;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
@@ -25,6 +24,7 @@ using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
+using ProcessManager.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
