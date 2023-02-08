@@ -16,6 +16,7 @@ using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Wholesale.IntegrationTests.Components;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.WebApi;
@@ -29,6 +30,7 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixtu
         {
             AzuriteManager = new AzuriteManager();
             DatabaseManager = new WholesaleDatabaseManager();
+            DatabricksTestManager = new DatabricksTestManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
             ServiceBusResourceProvider = new ServiceBusResourceProvider(
@@ -37,6 +39,8 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixtu
         }
 
         public WholesaleDatabaseManager DatabaseManager { get; }
+
+        public DatabricksTestManager DatabricksTestManager { get; }
 
         private AzuriteManager AzuriteManager { get; }
 
@@ -65,8 +69,16 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixtu
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.BackendAppId, "disabled");
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
+
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
+
+            await ServiceBusResourceProvider
+                .BuildTopic("domain-events")
+                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
+                .CreateAsync();
 
             // Create storage container - ought to be a Data Lake file system
             var blobContainerClient = new BlobContainerClient(
@@ -75,7 +87,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixtu
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, "domain-events-topic");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCreatedEventName, "batch-created");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
