@@ -35,4 +35,10 @@
       <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="integrationtest.local.settings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
