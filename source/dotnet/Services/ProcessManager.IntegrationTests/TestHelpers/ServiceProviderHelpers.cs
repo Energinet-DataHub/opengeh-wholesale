@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
+namespace ProcessManager.IntegrationTests.TestHelpers;
 
 internal static class ServiceProviderHelpers
 {

@@ -14,13 +14,13 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Mock;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using ProcessManager.IntegrationTests.Mock;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
+namespace ProcessManager.IntegrationTests.Fixtures;
 
 public sealed class ProcessManagerIntegrationTestHost : IDisposable
 {
