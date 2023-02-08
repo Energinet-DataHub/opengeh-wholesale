@@ -45,11 +45,11 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\Services\UnitTests\UnitTests.csproj' \
+          '.\source\dotnet\Services\WebApi.UnitTests\WebApi.UnitTests.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
-          --output '.\source\dotnet\Services\UnitTests\bin\Release\net6.0'
+          --output '.\source\dotnet\Services\WebApi.UnitTests\bin\Release\net6.0'
 
     - name: Copy all directories and files in source/dotnet except the obj-directories
       shell: bash
