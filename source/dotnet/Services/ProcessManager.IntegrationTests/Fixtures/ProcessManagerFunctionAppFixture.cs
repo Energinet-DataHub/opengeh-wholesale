@@ -27,7 +27,7 @@ using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Authorization;
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.FunctionApp
+namespace ProcessManager.IntegrationTests.Fixtures
 {
     public class ProcessManagerFunctionAppFixture : FunctionAppFixture
     {
