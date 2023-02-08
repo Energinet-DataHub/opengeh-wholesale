@@ -38,6 +38,7 @@ module "func_processmanager" {
     CREATE_SETTLEMENT_REPORTS_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME   = module.sbtsub_create_settlement_reports_when_batch_completed.name
     PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME = module.sbtsub_publish_process_completed_when_batch_completed.name
     PUBLISH_PROCESSESCOMPLETEDINTEGRATIONEVENT_WHEN_PROCESSCOMPLETED_SUBSCRIPTION_NAME = module.sbtsub_publish_processescompletedintegrationevent_when_processcompleted.name
+    START_CALCULATION_WHEN_BATCH_CREATED_SUBSCRIPTION_NAME              = module.sbtsub_publish_batch_created_event_when_batch_created.name
     
     # Databricks
     DATABRICKS_WORKSPACE_TOKEN                                         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
