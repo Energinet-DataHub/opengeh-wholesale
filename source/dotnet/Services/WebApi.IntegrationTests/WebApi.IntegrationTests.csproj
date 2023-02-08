@@ -26,8 +26,8 @@ limitations under the License.
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationTests</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationTests</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.WebApi.IntegrationTests</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.WebApi.IntegrationTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
