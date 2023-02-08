@@ -23,7 +23,16 @@ module "app_wholesale_api" {
     BACKEND_SERVICE_APP_ID                  = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)"
     STORAGE_CONNECTION_STRING               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)",
     STORAGE_CONTAINER_NAME                  = local.STORAGE_CONTAINER_NAME
+
+    # Service Bus
+    SERVICE_BUS_SEND_CONNECTION_STRING      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
+    SERVICE_BUS_MANAGE_CONNECTION_STRING    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
+    DOMAIN_EVENTS_TOPIC_NAME                = module.sbt_domain_events.name
     BATCH_CREATED_EVENT_NAME                = local.BATCH_CREATED_EVENT_NAME
+
+    # Databricks
+    DATABRICKS_WORKSPACE_TOKEN              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
+    DATABRICKS_WORKSPACE_URL                = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
   }
 
   connection_strings                        = [
