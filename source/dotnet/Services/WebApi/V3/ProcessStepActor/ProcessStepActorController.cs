@@ -17,26 +17,30 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepActor;
 
+/// <summary>
+/// Actor resource for actors for whom batch results have been calculated.
+/// </summary>
 [ApiController]
-[Route("v2.3/ProcessStepResult")]
-public class ProcessStepV23Controller : ControllerBase
+[Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/market-roles/{marketRole}")]
+public class ProcessStepActorController : ControllerBase
 {
     private readonly IProcessStepApplicationService _processStepApplicationService;
 
-    public ProcessStepV23Controller(IProcessStepApplicationService processStepApplicationService)
+    public ProcessStepActorController(IProcessStepApplicationService processStepApplicationService)
     {
         _processStepApplicationService = processStepApplicationService;
     }
 
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [Obsolete("Use `/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/market-roles/{marketRole}` instead")]
-    [HttpPost]
-    [ApiVersion("2.3")]
-    public async Task<IActionResult> GetAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
+    [HttpGet]
+    public async Task<List<ActorDto>> GetAsync([FromRoute] Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, MarketRole marketRole)
     {
+        var processStepActorsRequest = new ProcessStepActorsRequest(batchId, gridAreaCode, timeSeriesType, marketRole);
+
         var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
-        return Ok(actors);
+
+        return actors.Select(a => new ActorDto(a.Gln)).ToList();
     }
 }
