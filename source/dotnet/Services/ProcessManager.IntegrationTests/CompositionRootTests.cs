@@ -12,37 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using Microsoft.AspNetCore.Mvc;
+using ProcessManager.IntegrationTests.Fixtures;
+using ProcessManager.IntegrationTests.TestHelpers;
 using Xunit;
 using pm = Energinet.DataHub.Wholesale.ProcessManager;
 using wapi = Energinet.DataHub.Wholesale.WebApi;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests;
+namespace ProcessManager.IntegrationTests;
 
 [Collection(nameof(CompositionRootTests))]
 public class CompositionRootTests
 {
-    #region Member data providers
-
-    public static IEnumerable<object[]> GetControllerRequirements()
-    {
-        var constructorDependencies = ReflectionDelegates.FindAllConstructorDependenciesForType();
-
-        return typeof(wapi.Program).Assembly.GetTypes()
-            .Where(t => t.IsSubclassOf(typeof(ControllerBase)))
-            .Select(t => new object[] { new Requirement(t.Name, constructorDependencies(t)) });
-    }
-
-    #endregion
+    public static IEnumerable<object[]> ProcessManagerFunctions()
+        => GetFunctionRequirements(typeof(pm.Program));
 
     [Theory]
-    [MemberData(nameof(GetControllerRequirements))]
-    public async Task WebApi_can_resolve_dependencies_for(Requirement requirement)
+    [MemberData(nameof(ProcessManagerFunctions))]
+    public async Task ProcessManagerFunctions_can_resolve_dependencies_for(Requirement requirement)
     {
-        using var host = await WebApiIntegrationTestHost.CreateAsync();
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync("FakeDatabaseManagerConnectionString");
         await using var scope = host.BeginScope();
         Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
     }

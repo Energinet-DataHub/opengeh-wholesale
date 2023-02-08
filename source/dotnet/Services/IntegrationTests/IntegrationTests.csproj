@@ -73,4 +73,9 @@ limitations under the License.
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Fixtures\Mock" />
+    <Folder Include="ProcessManager" />
+  </ItemGroup>
+
 </Project>

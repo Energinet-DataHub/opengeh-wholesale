@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.D
 using Energinet.DataHub.Wholesale.ProcessManager;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
+namespace ProcessManager.IntegrationTests.Fixtures;
 
 public sealed class ProcessManagerDatabaseFixture : IAsyncLifetime
 {

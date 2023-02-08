@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.Database;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
+namespace ProcessManager.IntegrationTests.Fixtures;
 
 /// <summary>
 /// Fixture configuration used for integration tests running without TestCommon function app.

@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Mock;
+namespace ProcessManager.IntegrationTests.Mock;
 
 internal sealed class MockedCorrelationContext : ICorrelationContext
 {
