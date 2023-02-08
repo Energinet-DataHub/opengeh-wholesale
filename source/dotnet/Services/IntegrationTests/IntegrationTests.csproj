@@ -64,6 +64,9 @@ limitations under the License.
     <None Update="functionapphost.settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="integrationtest.local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -76,7 +79,6 @@ limitations under the License.
   <ItemGroup>
     <Folder Include="Fixtures\Mock" />
     <Folder Include="Fixtures\TestCommon\Fixture\FunctionApp" />
-    <Folder Include="ProcessManager" />
   </ItemGroup>
 
 </Project>
