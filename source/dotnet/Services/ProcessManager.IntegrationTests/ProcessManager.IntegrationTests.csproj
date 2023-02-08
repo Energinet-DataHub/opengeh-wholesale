@@ -31,7 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\IntegrationTests\IntegrationTests.csproj" />
+      <ProjectReference Include="..\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" />
       <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
     </ItemGroup>
 
