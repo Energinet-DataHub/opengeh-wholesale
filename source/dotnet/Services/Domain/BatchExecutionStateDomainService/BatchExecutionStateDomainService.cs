@@ -22,7 +22,6 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 public class BatchExecutionStateDomainService : IBatchExecutionStateDomainService
 {
     private readonly IBatchRepository _batchRepository;
-    private readonly IBatchStateMapper _batchStateMapper;
     private readonly ICalculationDomainService _calculationDomainService;
     private readonly IClock _clock;
     private readonly IDomainEventPublisher _domainEventPublisher;
@@ -33,15 +32,13 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
         ICalculationDomainService calculationDomainService,
         ILogger<BatchExecutionStateDomainService> logger,
         IClock clock,
-        IDomainEventPublisher domainEventPublisher,
-        IBatchStateMapper batchStateMapper)
+        IDomainEventPublisher domainEventPublisher)
     {
         _batchRepository = batchRepository;
         _calculationDomainService = calculationDomainService;
         _logger = logger;
         _clock = clock;
         _domainEventPublisher = domainEventPublisher;
-        _batchStateMapper = batchStateMapper;
     }
 
     /// <summary>
@@ -64,7 +61,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
                     .GetStatusAsync(batch.CalculationId!)
                     .ConfigureAwait(false);
 
-                var executionState = _batchStateMapper.MapState(jobState);
+                var executionState = BatchStateMapper.MapState(jobState);
                 if (executionState != batch.ExecutionState)
                 {
                     HandleNewState(executionState, batch, completedBatches);
@@ -82,7 +79,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
         await _domainEventPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
     }
 
-    public void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)
+    private void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)
     {
         switch (state)
         {

@@ -17,9 +17,9 @@ using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 
-public class BatchStateMapper : IBatchStateMapper
+public static class BatchStateMapper
 {
-    public BatchExecutionState MapState(CalculationState calculationState)
+    public static BatchExecutionState MapState(CalculationState calculationState)
     {
         return calculationState switch
         {
