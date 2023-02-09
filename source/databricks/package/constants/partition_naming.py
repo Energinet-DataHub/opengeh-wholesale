@@ -13,4 +13,5 @@
 # limitations under the License.
 
 
-GLN_VALUE_FOR_GRID_AREA = "grid_area"  # When a result includes the entire grid area we use this text to set the folder name ("gln=grid_area")
+GLN_VALUE_FOR_GRID_AREA = "grid_area"
+"""When a result includes the entire grid area we use this text to set the folder name ("gln=grid_area")"""
