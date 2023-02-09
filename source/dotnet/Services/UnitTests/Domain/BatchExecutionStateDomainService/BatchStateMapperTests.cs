@@ -29,7 +29,7 @@ public class BatchStateMapperTests
     [InlineAutoMoqData(CalculationState.Completed, BatchExecutionState.Completed)]
     [InlineAutoMoqData(CalculationState.Canceled, BatchExecutionState.Canceled)]
     [InlineAutoMoqData(CalculationState.Failed, BatchExecutionState.Failed)]
-    public void MapState_CalculationState_ExpectedBatchExecutionState(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState)
+    public void MapState_CalledWithACalculationStateItCanMap_ExpectedBatchExecutionState(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState)
     {
         // Act
         var actualBatchExecutionState = BatchStateMapper.MapState(calculationState);
@@ -39,7 +39,7 @@ public class BatchStateMapperTests
     }
 
     [Fact]
-    public void MapState_UnexpectedCalculationState_ThrowsArgumentOutOfRangeException()
+    public void MapState_CalledWithAUnexpectedCalculationStateItCanNotMap_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         const CalculationState unexpectedCalculationState = (CalculationState)99;
