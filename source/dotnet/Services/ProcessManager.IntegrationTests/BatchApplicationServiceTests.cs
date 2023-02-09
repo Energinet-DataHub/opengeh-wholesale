@@ -13,23 +13,18 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
 using Microsoft.Azure.Databricks.Client;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using NodaTime;
 using ProcessManager.IntegrationTests.Fixtures;
 using Xunit;
-using ProcessType = Energinet.DataHub.Wholesale.Domain.ProcessAggregate.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
 
@@ -66,7 +61,7 @@ public sealed class BatchApplicationServiceTests
     [InlineAutoMoqData(CalculationState.Running, BatchExecutionState.Executing)]
     [InlineAutoMoqData(CalculationState.Completed, BatchExecutionState.Completed)]
     [InlineAutoMoqData(CalculationState.Canceled, BatchExecutionState.Canceled)]
-    [InlineAutoMoqData(CalculationState.Failed, BatchExecutionState.Completed)]
+    [InlineAutoMoqData(CalculationState.Failed, BatchExecutionState.Failed)]
     public void MapStateSuccess(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState, BatchExecutionStateDomainService sut)
     {
         // Act
@@ -141,101 +136,6 @@ public sealed class BatchApplicationServiceTests
         action.Should().Throw<ArgumentOutOfRangeException>();
     }
 
-    [Fact(Skip = "Split into multiple tests when concepts are ready")]
-    public async Task When_RunIsPending_Then_BatchIsPending()
-    {
-        // Arrange
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
-        await using var scope = host.BeginScope();
-        var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-
-        var pendingRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.PENDING, ResultState = RunResultState.SUCCESS } };
-
-        _jobsApiMock
-            .Setup(x => x.RunsGet(It.IsAny<long>(), default))
-            .ReturnsAsync(pendingRun);
-
-        const string gridAreaCode = "123";
-
-        // Act
-        await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
-        await target.StartCalculationAsync(Guid.NewGuid());
-        await target.UpdateExecutionStateAsync();
-
-        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
-        await using var readScope = readHost.BeginScope();
-        var repository = readScope.ServiceProvider.GetRequiredService<IBatchRepository>();
-        // Assert: Verify that batch is now pending.
-        var pending = await repository.GetPendingAsync();
-        var createdBatch = pending.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
-        Assert.Equal(DummyJobId, createdBatch.CalculationId!.Id);
-    }
-
-    [Fact(Skip = "Split into multiple tests when concepts are ready")]
-    public async Task When_RunIsRunning_Then_BatchIsExecuting()
-    {
-        // Arrange
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
-        await using var scope = host.BeginScope();
-        var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-
-        var executingRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.RUNNING, ResultState = RunResultState.SUCCESS } };
-
-        _jobsApiMock
-            .Setup(x => x.RunsGet(It.IsAny<long>(), default))
-            .ReturnsAsync(executingRun);
-
-        const string gridAreaCode = "456";
-
-        // Act
-        await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
-        await target.StartCalculationAsync(Guid.NewGuid());
-        await target.UpdateExecutionStateAsync();
-
-        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
-        await using var readScope = readHost.BeginScope();
-        var repository = readScope.ServiceProvider.GetRequiredService<IBatchRepository>();
-        // Assert: Verify that batch is now executing.
-        var executing = await repository.GetExecutingAsync();
-        var createdBatch = executing.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
-        Assert.Equal(DummyJobId, createdBatch.CalculationId!.Id);
-    }
-
-    [Fact(Skip = "Split into multiple tests when concepts are ready")]
-    public async Task When_RunIsTerminated_Then_BatchIsCompleted()
-    {
-        // Arrange
-        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
-        await using var scope = host.BeginScope();
-        var target = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-
-        var executingRun = new Run { State = new RunState { LifeCycleState = RunLifeCycleState.TERMINATED, ResultState = RunResultState.SUCCESS } };
-
-        _jobsApiMock
-            .Setup(x => x.RunsGet(It.IsAny<long>(), default))
-            .ReturnsAsync(executingRun);
-
-        const string gridAreaCode = "789";
-
-        // Act
-        await target.CreateAsync(CreateBatchRequestDto(gridAreaCode));
-        await target.StartCalculationAsync(Guid.NewGuid());
-        await target.UpdateExecutionStateAsync();
-
-        using var readHost = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, ServiceCollection);
-        await using var readScope = readHost.BeginScope();
-        var repository = readScope.ServiceProvider.GetRequiredService<IBatchRepository>();
-        // Assert: Verify that batch is now completed.
-        var completed = await repository.GetCompletedAsync();
-        var createdBatch = completed.Single(x => x.GridAreaCodes.Contains(new GridAreaCode(gridAreaCode)));
-        Assert.Equal(DummyJobId, createdBatch.CalculationId!.Id);
-    }
-
-    private void ServiceCollection(IServiceCollection collection)
-    {
-        collection.Replace(ServiceDescriptor.Singleton(_databricksWheelClientMock.Object));
-    }
-
     private static Job CreateJob(long jobId, string jobName)
     {
         return new Job()
@@ -265,15 +165,5 @@ public sealed class BatchApplicationServiceTests
                 },
         };
         return calculatorJob;
-    }
-
-    private static BatchRequestDto CreateBatchRequestDto(string gridAreaCode)
-    {
-        var period = Periods.January_EuropeCopenhagen;
-        return new BatchRequestDto(
-            Contracts.ProcessType.BalanceFixing,
-            new[] { gridAreaCode },
-            period.PeriodStart,
-            period.PeriodEnd);
     }
 }
