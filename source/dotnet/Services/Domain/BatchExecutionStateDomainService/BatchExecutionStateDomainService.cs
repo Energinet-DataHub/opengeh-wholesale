@@ -22,6 +22,7 @@ namespace Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 public class BatchExecutionStateDomainService : IBatchExecutionStateDomainService
 {
     private readonly IBatchRepository _batchRepository;
+    private readonly IBatchStateMapper _batchStateMapper;
     private readonly ICalculationDomainService _calculationDomainService;
     private readonly IClock _clock;
     private readonly IDomainEventPublisher _domainEventPublisher;
@@ -32,13 +33,15 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
         ICalculationDomainService calculationDomainService,
         ILogger<BatchExecutionStateDomainService> logger,
         IClock clock,
-        IDomainEventPublisher domainEventPublisher)
+        IDomainEventPublisher domainEventPublisher,
+        IBatchStateMapper batchStateMapper)
     {
         _batchRepository = batchRepository;
         _calculationDomainService = calculationDomainService;
         _logger = logger;
         _clock = clock;
         _domainEventPublisher = domainEventPublisher;
+        _batchStateMapper = batchStateMapper;
     }
 
     /// <summary>
@@ -61,7 +64,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
                     .GetStatusAsync(batch.CalculationId!)
                     .ConfigureAwait(false);
 
-                var executionState = MapState(jobState);
+                var executionState = _batchStateMapper.MapState(jobState);
                 if (executionState != batch.ExecutionState)
                 {
                     HandleNewState(executionState, batch, completedBatches);
@@ -77,19 +80,6 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
             .Select(b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), b.ProcessType, b.PeriodStart, b.PeriodEnd))
             .ToList();
         await _domainEventPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
-    }
-
-    public BatchExecutionState MapState(CalculationState calculationState)
-    {
-        return calculationState switch
-        {
-            CalculationState.Pending => BatchExecutionState.Pending,
-            CalculationState.Running => BatchExecutionState.Executing,
-            CalculationState.Completed => BatchExecutionState.Completed,
-            CalculationState.Canceled => BatchExecutionState.Canceled,
-            CalculationState.Failed => BatchExecutionState.Failed,
-            _ => throw new ArgumentOutOfRangeException(nameof(calculationState), calculationState, "Unexpected JobState."),
-        };
     }
 
     public void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)

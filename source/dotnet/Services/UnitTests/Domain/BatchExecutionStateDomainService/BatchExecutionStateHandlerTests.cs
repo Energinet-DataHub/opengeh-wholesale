@@ -15,6 +15,7 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
@@ -35,6 +36,7 @@ public class BatchExecutionStateDomainServiceTests
     public async Task UpdateExecutionState_WhenJobStateIsRunning_UpdateBatchToExecuting(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
+        [Frozen] Mock<IBatchStateMapper> batchStateMapperMock,
         Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
@@ -43,6 +45,8 @@ public class BatchExecutionStateDomainServiceTests
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
             .ReturnsAsync(pendingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Running);
+        batchStateMapperMock.Setup(mapper => mapper.MapState(CalculationState.Running))
+            .Returns(BatchExecutionState.Executing);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -57,6 +61,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
+        [Frozen] Mock<IBatchStateMapper> batchStateMapperMock,
         Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
@@ -67,6 +72,8 @@ public class BatchExecutionStateDomainServiceTests
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
             .ReturnsAsync(executingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Completed);
+        batchStateMapperMock.Setup(mapper => mapper.MapState(CalculationState.Completed))
+            .Returns(BatchExecutionState.Completed);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -84,6 +91,7 @@ public class BatchExecutionStateDomainServiceTests
     public async Task UpdateExecutionState_WhenJobStateIsCancelled_UpdateBatchToCreated(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
+        [Frozen] Mock<IBatchStateMapper> batchStateMapperMock,
         Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
@@ -92,6 +100,8 @@ public class BatchExecutionStateDomainServiceTests
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
             .ReturnsAsync(executingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Canceled);
+        batchStateMapperMock.Setup(mapper => mapper.MapState(CalculationState.Canceled))
+            .Returns(BatchExecutionState.Canceled);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -106,6 +116,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
+        [Frozen] Mock<IBatchStateMapper> batchStateMapperMock,
         Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
@@ -119,6 +130,8 @@ public class BatchExecutionStateDomainServiceTests
             .ReturnsAsync(batches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationId!))
             .ReturnsAsync(CalculationState.Completed);
+        batchStateMapperMock.Setup(mapper => mapper.MapState(CalculationState.Completed))
+            .Returns(BatchExecutionState.Completed);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -135,6 +148,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
         [Frozen] Mock<IDomainEventPublisher> batchCompletedPublisherMock,
+        [Frozen] Mock<IBatchStateMapper> batchStateMapperMock,
         Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
@@ -147,6 +161,8 @@ public class BatchExecutionStateDomainServiceTests
             .ReturnsAsync(batches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationId!))
             .ReturnsAsync(CalculationState.Completed);
+        batchStateMapperMock.Setup(mapper => mapper.MapState(CalculationState.Completed))
+            .Returns(BatchExecutionState.Completed);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -165,6 +181,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
         [Frozen] Mock<IDomainEventPublisher> batchCompletedPublisherMock,
+        [Frozen] Mock<IBatchStateMapper> batchStateMapperMock,
         Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
@@ -179,9 +196,13 @@ public class BatchExecutionStateDomainServiceTests
             .ReturnsAsync(batches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch1.CalculationId!))
             .ReturnsAsync(CalculationState.Completed);
+        batchStateMapperMock.Setup(mapper => mapper.MapState(CalculationState.Completed))
+            .Returns(BatchExecutionState.Completed);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationId!)).ThrowsAsync(default);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch3.CalculationId!))
             .ReturnsAsync(CalculationState.Completed);
+        batchStateMapperMock.Setup(mapper => mapper.MapState(CalculationState.Completed))
+            .Returns(BatchExecutionState.Completed);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -200,7 +221,7 @@ public class BatchExecutionStateDomainServiceTests
     [InlineAutoMoqData(CalculationState.Completed, BatchExecutionState.Completed)]
     [InlineAutoMoqData(CalculationState.Canceled, BatchExecutionState.Canceled)]
     [InlineAutoMoqData(CalculationState.Failed, BatchExecutionState.Failed)]
-    public void MapState_CalculationState_ExpectedBatchExecutionState(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState, Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+    public void MapState_CalculationState_ExpectedBatchExecutionState(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState, BatchStateMapper sut)
     {
         // Act
         var actualBatchExecutionState = sut.MapState(calculationState);
@@ -211,7 +232,7 @@ public class BatchExecutionStateDomainServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void MapState_UnexpectedCalculationState_ThrowsArgumentOutOfRangeException(Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+    public void MapState_UnexpectedCalculationState_ThrowsArgumentOutOfRangeException(BatchStateMapper sut)
     {
         // Arrange
         const CalculationState unexpectedCalculationState = (CalculationState)99;
