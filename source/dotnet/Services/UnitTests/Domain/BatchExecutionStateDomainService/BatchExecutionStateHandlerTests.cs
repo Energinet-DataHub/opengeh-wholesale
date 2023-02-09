@@ -16,6 +16,8 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
@@ -190,5 +192,85 @@ public class BatchExecutionStateDomainServiceTests
                 publisher => publisher.PublishAsync(It.Is<IList<BatchCompletedEventDto>>(
                     events => events.Any(e => e.BatchId == batch1.Id) && events.Any(e => e.BatchId == batch3.Id) && events.All(e => e.BatchId != batch2.Id))),
                 Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData(CalculationState.Pending, BatchExecutionState.Pending)]
+    [InlineAutoMoqData(CalculationState.Running, BatchExecutionState.Executing)]
+    [InlineAutoMoqData(CalculationState.Completed, BatchExecutionState.Completed)]
+    [InlineAutoMoqData(CalculationState.Canceled, BatchExecutionState.Canceled)]
+    [InlineAutoMoqData(CalculationState.Failed, BatchExecutionState.Failed)]
+    public void MapState_CalculationState_ExpectedBatchExecutionState(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState, Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+    {
+        // Act
+        var actualBatchExecutionState = sut.MapState(calculationState);
+
+        // Assert
+        actualBatchExecutionState.Should().Be(expectedBatchExecutionState);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void MapState_UnexpectedCalculationState_ThrowsArgumentOutOfRangeException(Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+    {
+        // Arrange
+        const CalculationState unexpectedCalculationState = (CalculationState)99;
+
+        // Act
+        Action action = () => sut.MapState(unexpectedCalculationState);
+
+        // Assert
+        action.Should().Throw<ArgumentOutOfRangeException>()
+            .WithParameterName("calculationState")
+            .And.ActualValue.Should().Be(unexpectedCalculationState);
+    }
+
+    [Theory]
+    [InlineAutoMoqData(BatchExecutionState.Pending, BatchExecutionState.Pending, 0)]
+    [InlineAutoMoqData(BatchExecutionState.Executing, BatchExecutionState.Executing, 0)]
+    [InlineAutoMoqData(BatchExecutionState.Completed, BatchExecutionState.Completed, 1)]
+    [InlineAutoMoqData(BatchExecutionState.Failed, BatchExecutionState.Failed, 0)]
+    [InlineAutoMoqData(BatchExecutionState.Canceled, BatchExecutionState.Created, 0)]
+
+    public void HandleNewState_BatchExecutionState_ExpectedBatchExecutionState(BatchExecutionState state, BatchExecutionState expectedState, int expectedCompletedBatchesCount,  Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+    {
+        // Arrange
+        var batch = new Batch(
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { new GridAreaCode("123") },
+            Instant.MinValue,
+            Instant.FromUtc(2023, 1, 1, 0, 0),
+            Instant.MinValue,
+            DateTimeZone.Utc);
+        var completedBatches = new List<Batch>();
+
+        // Act
+        sut.HandleNewState(state, batch, completedBatches);
+
+        // Assert
+        batch.ExecutionState.Should().Be(expectedState);
+        completedBatches.Count.Should().Be(expectedCompletedBatchesCount);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void HandleNewState_UnexpectedBatchExecutionState_ThrowsArgumentOutOfRangeException(Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+    {
+        // Arrange
+        var state = (BatchExecutionState)99;
+        var batch = new Batch(
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { new GridAreaCode("123") },
+            Instant.MinValue,
+            Instant.FromUtc(2023, 1, 1, 0, 0),
+            Instant.MinValue,
+            DateTimeZone.Utc);
+        var completedBatches = new List<Batch>();
+
+        // Act
+        Action action = () => sut.HandleNewState(state, batch, completedBatches);
+
+        // Assert
+        action.Should().Throw<ArgumentOutOfRangeException>();
     }
 }
