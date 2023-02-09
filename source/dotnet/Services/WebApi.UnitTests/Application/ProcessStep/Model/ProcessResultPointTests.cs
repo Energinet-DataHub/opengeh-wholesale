@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 using Xunit;
 using Xunit.Categories;
 

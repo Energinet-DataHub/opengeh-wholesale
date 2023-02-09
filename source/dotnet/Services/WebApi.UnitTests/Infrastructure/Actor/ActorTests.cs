@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 using Xunit;
 using Xunit.Categories;
 

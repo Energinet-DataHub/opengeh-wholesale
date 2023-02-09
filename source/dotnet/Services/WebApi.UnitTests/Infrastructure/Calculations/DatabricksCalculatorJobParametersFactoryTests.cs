@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 using FluentAssertions;
 using NodaTime;
 using NodaTime.Extensions;

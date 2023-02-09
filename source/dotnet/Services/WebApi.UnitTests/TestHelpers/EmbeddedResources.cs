@@ -14,7 +14,7 @@
 
 using System.Reflection;
 
-namespace Energinet.DataHub.Wholesale.Tests.TestHelpers;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 
 public static class EmbeddedResources
 {
@@ -25,7 +25,8 @@ public static class EmbeddedResources
     /// </summary>
     public static Stream GetStream(string relativeDocumentPath)
     {
-        var resourceName = $"Energinet.DataHub.Wholesale.Tests.{relativeDocumentPath}";
+        const string assemblyRootNamespace = "Energinet.DataHub.Wholesale.WebApi.UnitTests";
+        var resourceName = $"{assemblyRootNamespace}.{relativeDocumentPath}";
 
         var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
 
