@@ -69,7 +69,10 @@ public sealed class BatchApplicationServiceTests
     [InlineAutoMoqData(CalculationState.Failed, BatchExecutionState.Completed)]
     public void MapStateSuccess(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState, BatchExecutionStateDomainService sut)
     {
+        // Act
         var actualBatchExecutionState = sut.MapState(calculationState);
+
+        // Assert
         actualBatchExecutionState.Should().Be(expectedBatchExecutionState);
     }
 
@@ -77,18 +80,28 @@ public sealed class BatchApplicationServiceTests
     [InlineAutoMoqData]
     public void MapStateException(BatchExecutionStateDomainService sut)
     {
+        // Arrange
         const CalculationState unexpectedCalculationState = (CalculationState)99;
+
+        // Act
         Action action = () => sut.MapState(unexpectedCalculationState);
+
+        // Assert
         action.Should().Throw<ArgumentOutOfRangeException>()
             .WithParameterName("calculationState")
             .And.ActualValue.Should().Be(unexpectedCalculationState);
     }
 
     [Theory]
-    [InlineAutoMoqData]
-    public void HandleNewState(BatchExecutionStateDomainService sut)
+    [InlineAutoMoqData(BatchExecutionState.Pending, BatchExecutionState.Pending, 0)]
+    [InlineAutoMoqData(BatchExecutionState.Executing, BatchExecutionState.Executing, 0)]
+    [InlineAutoMoqData(BatchExecutionState.Completed, BatchExecutionState.Completed, 1)]
+    [InlineAutoMoqData(BatchExecutionState.Failed, BatchExecutionState.Failed, 0)]
+    [InlineAutoMoqData(BatchExecutionState.Canceled, BatchExecutionState.Created, 0)]
+
+    public void HandleNewStateSuccess(BatchExecutionState state, BatchExecutionState expectedState, int expectedCompletedBatchesCount,  BatchExecutionStateDomainService sut)
     {
-        var state = BatchExecutionState.Pending;
+        // Arrange
         var batch = new Batch(
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new GridAreaCode("123") },
@@ -98,9 +111,34 @@ public sealed class BatchApplicationServiceTests
             DateTimeZone.Utc);
         var completedBatches = new List<Batch>();
 
+        // Act
         sut.HandleNewState(state, batch, completedBatches);
-        batch.ExecutionState.Should().Be(BatchExecutionState.Pending);
-        completedBatches.Should().BeEmpty();
+
+        // Assert
+        batch.ExecutionState.Should().Be(expectedState);
+        completedBatches.Count.Should().Be(expectedCompletedBatchesCount);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void HandleNewStateException(BatchExecutionStateDomainService sut)
+    {
+        // Arrange
+        var state = (BatchExecutionState)99;
+        var batch = new Batch(
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { new GridAreaCode("123") },
+            Instant.MinValue,
+            Instant.FromUtc(2023, 1, 1, 0, 0),
+            Instant.MinValue,
+            DateTimeZone.Utc);
+        var completedBatches = new List<Batch>();
+
+        // Act
+        Action action = () => sut.HandleNewState(state, batch, completedBatches);
+
+        // Assert
+        action.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Fact(Skip = "Split into multiple tests when concepts are ready")]
