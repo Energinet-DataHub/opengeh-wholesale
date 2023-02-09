@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame
 from package.constants import Colname
 from pyspark.sql.functions import lit
-from package.constants.market_role import MarketRole
+from package.codelists.market_role import MarketRole
 
 
 def write(output_path: str, result_df: DataFrame, market_role: MarketRole) -> None:
