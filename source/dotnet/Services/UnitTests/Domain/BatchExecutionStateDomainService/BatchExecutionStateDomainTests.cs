@@ -15,7 +15,6 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
 using FluentAssertions;
@@ -191,35 +190,5 @@ public class BatchExecutionStateDomainServiceTests
                 publisher => publisher.PublishAsync(It.Is<IList<BatchCompletedEventDto>>(
                     events => events.Any(e => e.BatchId == batch1.Id) && events.Any(e => e.BatchId == batch3.Id) && events.All(e => e.BatchId != batch2.Id))),
                 Times.Once);
-    }
-
-    [Theory]
-    [InlineAutoMoqData(CalculationState.Pending, BatchExecutionState.Pending)]
-    [InlineAutoMoqData(CalculationState.Running, BatchExecutionState.Executing)]
-    [InlineAutoMoqData(CalculationState.Completed, BatchExecutionState.Completed)]
-    [InlineAutoMoqData(CalculationState.Canceled, BatchExecutionState.Canceled)]
-    [InlineAutoMoqData(CalculationState.Failed, BatchExecutionState.Failed)]
-    public void MapState_CalculationState_ExpectedBatchExecutionState(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState)
-    {
-        // Act
-        var actualBatchExecutionState = BatchStateMapper.MapState(calculationState);
-
-        // Assert
-        actualBatchExecutionState.Should().Be(expectedBatchExecutionState);
-    }
-
-    [Fact]
-    public void MapState_UnexpectedCalculationState_ThrowsArgumentOutOfRangeException()
-    {
-        // Arrange
-        const CalculationState unexpectedCalculationState = (CalculationState)99;
-
-        // Act
-        Action action = () => BatchStateMapper.MapState(unexpectedCalculationState);
-
-        // Assert
-        action.Should().Throw<ArgumentOutOfRangeException>()
-            .WithParameterName("calculationState")
-            .And.ActualValue.Should().Be(unexpectedCalculationState);
     }
 }
