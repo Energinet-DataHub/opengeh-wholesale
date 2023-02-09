@@ -74,7 +74,6 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Fixtures\Mock" />
     <Folder Include="Fixtures\TestCommon\Fixture\FunctionApp" />
   </ItemGroup>
 

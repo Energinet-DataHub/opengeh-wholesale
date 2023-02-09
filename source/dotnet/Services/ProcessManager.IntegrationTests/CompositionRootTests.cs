@@ -14,12 +14,10 @@
 
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
-using Microsoft.AspNetCore.Mvc;
 using ProcessManager.IntegrationTests.Fixtures;
 using ProcessManager.IntegrationTests.TestHelpers;
 using Xunit;
 using pm = Energinet.DataHub.Wholesale.ProcessManager;
-using wapi = Energinet.DataHub.Wholesale.WebApi;
 
 namespace ProcessManager.IntegrationTests;
 
