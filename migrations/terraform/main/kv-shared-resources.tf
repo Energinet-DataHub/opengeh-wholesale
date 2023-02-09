@@ -18,6 +18,11 @@ data "azurerm_key_vault_secret" "st_data_lake_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "st_data_lake_name" {
+  name         = "st-data-lake-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "vnet_resource_group_name" {
   name         = "vnet-resource-group-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id

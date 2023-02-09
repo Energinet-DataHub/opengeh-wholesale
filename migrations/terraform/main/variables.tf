@@ -3,6 +3,11 @@ variable subscription_id {
   description = "Subscription that the infrastructure code is deployed into."
 }
 
+variable tenant_id {
+  type        = string
+  description = "Azure Tenant that the infrastructure is deployed into."
+}
+
 variable resource_group_name {
   type        = string
   description = "Resource Group that the infrastructure code is deployed into."
@@ -31,4 +36,14 @@ variable shared_resources_keyvault_name {
 variable shared_resources_resource_group_name {
   type          = string
   description   = "Name of the Resource Group, that contains the shared resources."
+}
+
+variable github_username {
+  type          = string
+  description   = "Username used to access Github from Databricks jobs."
+}
+
+variable github_personal_access_token {
+  type          = string
+  description   = "Personal access token for Github access"
 }

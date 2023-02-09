@@ -1,0 +1,194 @@
+resource "databricks_git_credential" "ado" {
+  git_username          = var.github_username
+  git_provider          = "gitHub"
+  personal_access_token = var.github_personal_access_token
+}
+
+resource "databricks_secret_scope" "spn_app_id" {
+  name = "spn-id-scope"
+}
+
+resource "databricks_secret" "spn_app_id" {
+  key          = "spn_app_id"
+  string_value = azuread_application.app_databricks.application_id
+  scope        = databricks_secret_scope.spn_app_id.id
+}
+
+resource "databricks_secret_scope" "spn_app_secret" {
+  name = "spn-secret-scope"
+}
+
+resource "databricks_secret" "spn_app_secret" {
+  key          = "spn_app_secret"
+  string_value = azuread_application_password.secret.value
+  scope        = databricks_secret_scope.spn_app_secret.id
+}
+
+resource "databricks_job" "this" {
+  name = "Landing_To_Gold"
+
+  job_cluster {
+    job_cluster_key = "Shared_job_cluster"
+    new_cluster {
+      num_workers   = 0
+      spark_version = data.databricks_spark_version.latest_lts.id
+      node_type_id  = "Standard_DS4_v2"
+      spark_conf = {
+        "fs.azure.account.oauth2.client.endpoint.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
+        "fs.azure.account.oauth2.client.endpoint.${module.st_migrations.name}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
+        "fs.azure.account.oauth2.client.endpoint.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
+        "fs.azure.account.auth.type.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": "OAuth"
+        "fs.azure.account.auth.type.${module.st_migrations.name}.dfs.core.windows.net": "OAuth"
+        "fs.azure.account.auth.type.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": "OAuth"
+        "fs.azure.account.oauth.provider.type.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth.provider.type.${module.st_migrations.name}.dfs.core.windows.net": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth.provider.type.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth2.client.id.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": databricks_secret.spn_app_id.config_reference
+        "fs.azure.account.oauth2.client.id.${module.st_migrations.name}.dfs.core.windows.net": databricks_secret.spn_app_id.config_reference
+        "fs.azure.account.oauth2.client.id.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": databricks_secret.spn_app_id.config_reference
+        "fs.azure.account.oauth2.client.secret.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": databricks_secret.spn_app_secret.config_reference
+        "fs.azure.account.oauth2.client.secret.${module.st_migrations.name}.dfs.core.windows.net": databricks_secret.spn_app_secret.config_reference
+        "fs.azure.account.oauth2.client.secret.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": databricks_secret.spn_app_secret.config_reference
+        "spark.databricks.delta.preview.enabled": true
+        "spark.databricks.io.cache.enabled": true
+        "spark.master": "local[*, 4]"
+      }
+    }
+  }
+  
+  git_source {
+    url = "https://github.com/Energinet-DataHub/opengeh-migration.git"
+    provider = "gitHub"
+    branch   = "main"
+  }
+
+  task {
+    task_key = "start"
+
+    library {
+      whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
+    }
+
+    notebook_task {  
+      notebook_path     = "adb/config/workspace_setup"
+      base_parameters   = {
+        batch_execution = true
+        landing_storage_account = data.azurerm_storage_account.drop.name # Should we use this or another datalake for dump
+        datalake_storage_account = module.st_migrations.name
+        datalake_shared_storage_account = data.azurerm_key_vault_secret.st_data_lake_name.value
+        time_series_container = "timeseries-testdata"
+        metering_point_container = "meteringpoints-testdata"
+        gold_database = "gold_wholesale_cicd_temp"
+      }
+    }
+    job_cluster_key = "Shared_job_cluster"
+  }
+
+  task {
+    task_key = "check_schemas"
+    depends_on {
+      task_key = "start"
+    }
+    
+    notebook_task {
+      notebook_path = "adb/config/schema_validation"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    job_cluster_key = "Shared_job_cluster"
+  }
+
+  task {
+    task_key = "autoloader_time_series"
+    depends_on {
+      task_key = "check_schemas"
+    }
+
+    notebook_task {
+      notebook_path     = "adb/bronze/autoloader_time_series"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    job_cluster_key = "Shared_job_cluster"
+  }
+
+  task {
+    task_key = "autoloader_metering_points"
+    depends_on {
+      task_key = "check_schemas"
+    }
+
+    notebook_task {
+      notebook_path     = "adb/bronze/autoloader_metering_points"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    job_cluster_key = "Shared_job_cluster"
+  }
+
+  task {
+    task_key = "bronze_to_silver_time_series"
+    depends_on {
+      task_key = "autoloader_time_series"
+    }
+
+    notebook_task {
+      notebook_path     = "adb/silver/time_series"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    job_cluster_key = "Shared_job_cluster"
+  }
+
+  task {
+    task_key = "bronze_to_silver_metering_points"
+    depends_on {
+      task_key = "autoloader_metering_points"
+    }
+
+    notebook_task {
+      notebook_path     = "adb/silver/metering_points"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    job_cluster_key = "Shared_job_cluster"
+  }
+
+  task {
+    task_key = "silver_to_gold_time_series"
+    depends_on {
+      task_key = "bronze_to_silver_time_series"
+    }
+    depends_on {
+     task_key = "bronze_to_silver_metering_points"
+    }    
+
+    notebook_task {
+      notebook_path     = "adb/gold/wholesale_time_series"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    job_cluster_key = "Shared_job_cluster"
+  }
+
+  task {
+    task_key = "silver_to_gold_metering_points"
+    depends_on {
+      task_key = "bronze_to_silver_metering_points"
+    }
+
+    notebook_task {
+      notebook_path     = "adb/gold/wholesale_metering_points"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    job_cluster_key = "Shared_job_cluster"
+  }
+}
