@@ -34,7 +34,7 @@ public class HealthCheckEndpointTests : FunctionAppTestBase<ProcessManagerFuncti
     {
     }
 
-    [Fact(Skip = "Test")]
+    [Fact]
     public async Task When_RequestLivenessStatus_Then_ResponseIsOkAndHealthy()
     {
         // Arrange
@@ -50,7 +50,7 @@ public class HealthCheckEndpointTests : FunctionAppTestBase<ProcessManagerFuncti
         actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
     }
 
-    [Fact(Skip = "Test")]
+    [Fact]
     public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
     {
         // Arrange

@@ -48,7 +48,7 @@ public class PublishProcessCompletedIntegrationEventEndpointTests
 
         public Task DisposeAsync() => Task.CompletedTask;
 
-        [Fact(Skip = "test")]
+        [Fact]
         public async Task When_ProcessCompletedDomainEventPublished_Then_ProcessCompletedIntegrationEventPublished()
         {
             // Arrange
