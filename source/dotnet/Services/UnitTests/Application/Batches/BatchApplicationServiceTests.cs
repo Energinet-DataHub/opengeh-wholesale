@@ -131,7 +131,7 @@ public class BatchApplicationServiceTests
     [InlineAutoMoqData(CalculationState.Completed, BatchExecutionState.Completed)]
     [InlineAutoMoqData(CalculationState.Canceled, BatchExecutionState.Canceled)]
     [InlineAutoMoqData(CalculationState.Failed, BatchExecutionState.Failed)]
-    public void MapStateSuccess(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState, BatchExecutionStateDomainService sut)
+    public void MapState_CalculationState_ExpectedBatchExecutionState(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState, BatchExecutionStateDomainService sut)
     {
         // Act
         var actualBatchExecutionState = sut.MapState(calculationState);
@@ -142,7 +142,7 @@ public class BatchApplicationServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void MapStateException(BatchExecutionStateDomainService sut)
+    public void MapState_UnexpectedCalculationState_ThrowsArgumentOutOfRangeException(BatchExecutionStateDomainService sut)
     {
         // Arrange
         const CalculationState unexpectedCalculationState = (CalculationState)99;
@@ -163,7 +163,7 @@ public class BatchApplicationServiceTests
     [InlineAutoMoqData(BatchExecutionState.Failed, BatchExecutionState.Failed, 0)]
     [InlineAutoMoqData(BatchExecutionState.Canceled, BatchExecutionState.Created, 0)]
 
-    public void HandleNewStateSuccess(BatchExecutionState state, BatchExecutionState expectedState, int expectedCompletedBatchesCount,  BatchExecutionStateDomainService sut)
+    public void HandleNewState_BatchExecutionState_ExpectedBatchExecutionState(BatchExecutionState state, BatchExecutionState expectedState, int expectedCompletedBatchesCount,  BatchExecutionStateDomainService sut)
     {
         // Arrange
         var batch = new Batch(
@@ -185,7 +185,7 @@ public class BatchApplicationServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void HandleNewStateException(BatchExecutionStateDomainService sut)
+    public void HandleNewState_UnexpectedBatchExecutionState_ThrowsArgumentOutOfRangeException(BatchExecutionStateDomainService sut)
     {
         // Arrange
         var state = (BatchExecutionState)99;
