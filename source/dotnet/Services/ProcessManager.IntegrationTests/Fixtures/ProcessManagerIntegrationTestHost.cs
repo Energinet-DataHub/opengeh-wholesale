@@ -61,7 +61,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
 
     private static void ConfigureEnvironmentVars(string databaseManagerConnectionString)
     {
-        const string anyValue = "fakevalue";
+        const string anyValue = "fake_value";
         const string anyServiceBusConnectionString = "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=someKeyName;SharedAccessKey=someKeyValue";
 
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, anyValue);
