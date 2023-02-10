@@ -25,8 +25,7 @@ public static class EmbeddedResources
     /// </summary>
     public static Stream GetStream(string relativeDocumentPath)
     {
-        const string assemblyRootNamespace = "Energinet.DataHub.Wholesale.WebApi.UnitTests";
-        var resourceName = $"{assemblyRootNamespace}.{relativeDocumentPath}";
+        var resourceName = $"{typeof(Root).Namespace}.{relativeDocumentPath}";
 
         var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
 

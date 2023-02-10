@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Hosts;
 
 public sealed class WebApiIntegrationTestHost : IDisposable
 {

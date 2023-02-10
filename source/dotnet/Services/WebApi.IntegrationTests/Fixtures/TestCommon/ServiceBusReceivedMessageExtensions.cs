@@ -15,7 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon
 {
     public static class ServiceBusReceivedMessageExtensions
     {

@@ -20,14 +20,14 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
 using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.Batches;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Batches;
 
 [UnitTest]
 public class BatchApplicationServiceTests

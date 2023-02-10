@@ -15,7 +15,7 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Tests.TestHelpers;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 
 internal static class ContractComplianceTestHelper
 {

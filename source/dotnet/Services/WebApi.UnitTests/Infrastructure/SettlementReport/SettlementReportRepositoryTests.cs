@@ -25,14 +25,14 @@ using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.SettlementReport;
 
 [UnitTest]
 public class SettlementReportRepositoryTests

@@ -13,18 +13,12 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
-using Azure;
-using Azure.Storage.Files.DataLake;
-using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.ProcessStep;
-using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -32,7 +26,7 @@ using Xunit.Categories;
 using DataLakeFileClient = Azure.Storage.Files.DataLake.DataLakeFileClient;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 
 [UnitTest]
 public class ProcessStepResultRepositoryTests

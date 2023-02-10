@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Actor;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Actor;
 
 [UnitTest]
 public class ActorTests

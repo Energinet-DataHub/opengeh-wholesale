@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using NodaTime;
 using Test.Core;
 
-namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchAggregate;
 
 public class BatchBuilder
 {

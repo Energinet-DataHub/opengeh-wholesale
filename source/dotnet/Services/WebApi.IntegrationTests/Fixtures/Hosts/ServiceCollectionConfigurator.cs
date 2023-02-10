@@ -24,7 +24,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Hosts;
 
 /// <summary>
 /// Extension methods to configure mocks for external dependencies of the host applications.

@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Hosts;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
-using pm = Energinet.DataHub.Wholesale.ProcessManager;
 using wapi = Energinet.DataHub.Wholesale.WebApi;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests;
 
 [Collection(nameof(CompositionRootTests))]
 public class CompositionRootTests

@@ -17,7 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi
 {
     /// <summary>
     /// An xUnit fixture for supporting integration testing of a WebApi
