@@ -23,9 +23,9 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
 {
     private readonly IBatchRepository _batchRepository;
     private readonly ICalculationDomainService _calculationDomainService;
-    private readonly ILogger _logger;
     private readonly IClock _clock;
     private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly ILogger _logger;
 
     public BatchExecutionStateDomainService(
         IBatchRepository batchRepository,
@@ -61,7 +61,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
                     .GetStatusAsync(batch.CalculationId!)
                     .ConfigureAwait(false);
 
-                var executionState = MapState(jobState);
+                var executionState = BatchStateMapper.MapState(jobState);
                 if (executionState != batch.ExecutionState)
                 {
                     HandleNewState(executionState, batch, completedBatches);
@@ -77,19 +77,6 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
             .Select(b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), b.ProcessType, b.PeriodStart, b.PeriodEnd))
             .ToList();
         await _domainEventPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
-    }
-
-    private static BatchExecutionState MapState(CalculationState calculationState)
-    {
-        return calculationState switch
-        {
-            CalculationState.Pending => BatchExecutionState.Pending,
-            CalculationState.Running => BatchExecutionState.Executing,
-            CalculationState.Completed => BatchExecutionState.Completed,
-            CalculationState.Canceled => BatchExecutionState.Canceled,
-            CalculationState.Failed => BatchExecutionState.Failed,
-            _ => throw new ArgumentOutOfRangeException(nameof(calculationState), calculationState, "Unexpected JobState."),
-        };
     }
 
     private void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)

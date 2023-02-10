@@ -103,6 +103,7 @@ public static class Program
     {
         services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
+        services.AddSingleton(new BatchStateMapper());
     }
 
     private static void Infrastructure(IServiceCollection serviceCollection)
