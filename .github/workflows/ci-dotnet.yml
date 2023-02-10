@@ -41,6 +41,28 @@ jobs:
       AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
       AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
 
+  dotnet_ci_test_integrationtests_processmanager:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    with:
+      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\ProcessManager.IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.dll'
+      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_PROCESSMANAGER
+      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\source\dotnet\Services\ProcessManager'
+      DOWNLOAD_ATTEMPT_LIMIT: 20
+      USE_AZURE_FUNCTIONS_TOOLS: true
+      ENVIRONMENT: AzureAuth
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
+      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+      AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
+
+  dotnet_ci_test_unittests_webapi:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    with:
+      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\WebApi.UnitTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll'
+      DOWNLOAD_ATTEMPT_LIMIT: 20
+
   # Run all tests in 'UnitTests.dll'
   dotnet_ci_test_tests:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
@@ -58,6 +80,7 @@ jobs:
       dotnet_ci_build,
       dotnet_ci_test_integrationtests_part1,
       dotnet_ci_test_tests,
+      dotnet_ci_test_integrationtests_processmanager,
     ]
     if: |
       always()
