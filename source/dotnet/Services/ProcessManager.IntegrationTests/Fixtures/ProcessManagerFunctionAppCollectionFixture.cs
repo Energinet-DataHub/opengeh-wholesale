@@ -14,7 +14,7 @@
 
 using Xunit;
 
-namespace ProcessManager.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
 
 /// <summary>
 /// An xUnit collection fixture for ensuring tests don't run in parallel.

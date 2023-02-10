@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{1D30AFD7-C79E-4D22-833F-64F76DE59BB3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{29B77280-062B-4AB0-A67D-8AF9C346299F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.UnitTests", "WebApi.UnitTests\WebApi.UnitTests.csproj", "{29B77280-062B-4AB0-A67D-8AF9C346299F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.Core", "Infrastructure.Core\Infrastructure.Core.csproj", "{78BBC6A5-D641-4779-80AA-16F6F0140832}"
 EndProject
@@ -30,7 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionFolder", "_Solutio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabricksClient", "DatabricksClient\DatabricksClient.csproj", "{902AE74C-5B0C-4DB2-80BB-F9A94367EB8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{6D00C8EA-65D9-4568-B3C6-23E31598D51E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.IntegrationTests", "WebApi.IntegrationTests\WebApi.IntegrationTests.csproj", "{6D00C8EA-65D9-4568-B3C6-23E31598D51E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Core", "Test.Core\Test.Core.csproj", "{EFA0CC43-7B22-4842-9AC0-E0FDA4F844BA}"
 EndProject

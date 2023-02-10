@@ -22,14 +22,14 @@ using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.Hosts;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
+using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
-using ProcessManager.IntegrationTests.Fixtures;
 using Test.Core;
 using Xunit;
 
-namespace ProcessManager.IntegrationTests;
+namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests;
 
 [Collection(nameof(ProcessManagerIntegrationTestHost))]
 public sealed class SettlementReportApplicationServiceTests

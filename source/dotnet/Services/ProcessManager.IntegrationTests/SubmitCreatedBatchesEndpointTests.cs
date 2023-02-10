@@ -18,17 +18,16 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function;
 using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
+using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using ProcessManager.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
+namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests;
 
 public class SubmitCreatedBatchesEndpointTests
 {

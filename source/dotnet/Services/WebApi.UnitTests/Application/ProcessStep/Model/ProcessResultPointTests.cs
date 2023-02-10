@@ -12,14 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.Tests.TestHelpers;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 using Xunit;
+using Xunit.Categories;
 
-namespace ProcessManager.UnitTests;
+namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessStep.Model;
 
-public class Test1
+[UnitTest]
+public sealed class ProcessResultPointTests
 {
     [Fact]
-    public void UnitTest1()
+    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
     {
+        await using var stream = EmbeddedResources.GetStream("Sender.Infrastructure.Calculator.calculator-result.json");
+
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<ProcessResultPoint>(stream);
     }
 }

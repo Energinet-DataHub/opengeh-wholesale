@@ -21,14 +21,12 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
-using Energinet.DataHub.Wholesale.ProcessManager;
+using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
 using FluentAssertions;
-using ProcessManager.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ProcessManager.IntegrationTests;
+namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests;
 
 public class PublishProcessCompletedIntegrationEventEndpointTests
 {

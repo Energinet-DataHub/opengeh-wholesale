@@ -21,13 +21,9 @@ limitations under the License.
   See https://stackoverflow.com/questions/69919664/publish-error-found-multiple-publish-output-files-with-the-same-relative-path/69919694#69919694
   -->
   <PropertyGroup>
-    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationTests</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationTests</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.WebApi.IntegrationTests</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.WebApi.IntegrationTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -58,9 +54,6 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="integrationtest.local.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="functionapphost.settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -77,7 +70,6 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Fixtures\Mock" />
     <Folder Include="Fixtures\TestCommon\Fixture\FunctionApp" />
   </ItemGroup>
 
