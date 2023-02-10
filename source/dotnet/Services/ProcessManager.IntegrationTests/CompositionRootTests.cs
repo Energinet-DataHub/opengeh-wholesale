@@ -14,12 +14,12 @@
 
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
-using ProcessManager.IntegrationTests.Fixtures;
-using ProcessManager.IntegrationTests.TestHelpers;
+using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
+using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.TestHelpers;
 using Xunit;
 using pm = Energinet.DataHub.Wholesale.ProcessManager;
 
-namespace ProcessManager.IntegrationTests;
+namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests;
 
 [Collection(nameof(CompositionRootTests))]
 public class CompositionRootTests
