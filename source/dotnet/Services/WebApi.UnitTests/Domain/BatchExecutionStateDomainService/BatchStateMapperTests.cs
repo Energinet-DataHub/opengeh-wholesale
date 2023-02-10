@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchExecutionStateDomainService;
 
 public class BatchStateMapperTests
 {

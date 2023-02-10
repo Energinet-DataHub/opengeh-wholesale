@@ -18,7 +18,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Core
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Core
 {
     [UnitTest]
     public class EnvironmentVariableHelperTests

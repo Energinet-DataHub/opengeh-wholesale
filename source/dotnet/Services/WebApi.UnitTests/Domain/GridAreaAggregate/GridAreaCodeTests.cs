@@ -17,7 +17,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Domain.GridAreaAggregate;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.GridAreaAggregate;
 
 [UnitTest]
 public class GridAreaCodeTests

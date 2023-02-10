@@ -22,7 +22,7 @@ using Microsoft.Azure.Databricks.Client;
 using Moq;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Calculations;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Calculations;
 
 public class DatabricksCalculatorJobRunnerTests
 {

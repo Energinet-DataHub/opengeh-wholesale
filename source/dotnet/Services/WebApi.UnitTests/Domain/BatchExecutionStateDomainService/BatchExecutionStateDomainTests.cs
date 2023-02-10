@@ -16,14 +16,14 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
 using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchExecutionStateDomainService;
 
 [UnitTest]
 public class BatchExecutionStateDomainServiceTests

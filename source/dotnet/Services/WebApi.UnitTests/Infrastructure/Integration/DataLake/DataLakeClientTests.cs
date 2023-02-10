@@ -23,7 +23,7 @@ using Moq;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Integration.DataLake;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Integration.DataLake;
 
 [UnitTest]
 public class DataLakeClientTests

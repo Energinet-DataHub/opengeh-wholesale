@@ -12,17 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests;
 
-/// <summary>
-/// A requirement that must be meet by the composition root
-/// </summary>
-/// <param name="Name">Friendly name for the requirement</param>
-/// <param name="DependentOn">All dependencies that must be resolved</param>
-public record Requirement(string Name, IEnumerable<Type> DependentOn)
+internal class Root
 {
-    public override string ToString()
-    {
-        return Name;
-    }
 }

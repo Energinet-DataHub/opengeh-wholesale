@@ -18,7 +18,7 @@ using Xunit;
 using Xunit.Categories;
 using MarketRole = Energinet.DataHub.Wholesale.Domain.ActorAggregate.MarketRole;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.ProcessStep.Model;
 
 [UnitTest]
 public class MarketRoleMapperTests

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.TestHelpers;
 

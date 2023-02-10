@@ -22,7 +22,7 @@ using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchAggregate;
 
 [UnitTest]
 public class BatchFactoryTests
