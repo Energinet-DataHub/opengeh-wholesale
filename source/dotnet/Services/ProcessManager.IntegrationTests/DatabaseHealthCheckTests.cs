@@ -16,15 +16,13 @@ using System.Net;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
+using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using ProcessManager.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.ProcessManager;
+namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests;
 
 [Collection(nameof(ProcessManagerFunctionAppCollectionFixture))]
 public class DatabaseHealthCheckTests : FunctionAppTestBase<ProcessManagerFunctionAppFixture>
