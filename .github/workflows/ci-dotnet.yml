@@ -24,10 +24,10 @@ jobs:
     with:
       SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
 
-  dotnet_ci_test_integrationtests_part1:
+  dotnet_ci_test_integrationtests_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.IntegrationTests.dll'
+      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll'
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\source\dotnet\Services\WebApi'
       DOWNLOAD_ATTEMPT_LIMIT: 20
@@ -54,10 +54,10 @@ jobs:
       AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
       AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
 
-  dotnet_ci_test_tests:
+  dotnet_ci_test_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\UnitTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.UnitTests.dll'
+      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\WebApi.UnitTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 20
 
   #
@@ -68,9 +68,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [
       dotnet_ci_build,
-      dotnet_ci_test_integrationtests_part1,
+      dotnet_ci_test_integrationtests_webapi,
       dotnet_ci_test_integrationtests_processmanager,
-      dotnet_ci_test_tests,
+      dotnet_ci_test_webapi,
     ]
     if: |
       always()
