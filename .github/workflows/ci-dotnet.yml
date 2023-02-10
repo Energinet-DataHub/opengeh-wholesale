@@ -60,7 +60,7 @@ jobs:
   dotnet_ci_test_unittests_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\WebApi.UnitTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.UnitTests.dll'
+      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\WebApi.UnitTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 20
 
   # Run all tests in 'UnitTests.dll'
