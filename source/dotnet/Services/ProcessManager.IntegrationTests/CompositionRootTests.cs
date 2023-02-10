@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestHelpers;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestHelpers;
 using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.TestHelpers;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using Xunit;
 using pm = Energinet.DataHub.Wholesale.ProcessManager;
 

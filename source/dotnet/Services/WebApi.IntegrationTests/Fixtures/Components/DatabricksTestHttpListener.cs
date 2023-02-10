@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Microsoft.Azure.Databricks.Client;
 using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Components;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 
 /// <summary>
 /// There is currently no Databricks environment for integration testing.

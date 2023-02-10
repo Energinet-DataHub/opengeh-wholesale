@@ -13,14 +13,13 @@
 // limitations under the License.
 
 using System.Net;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.WebApi;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
 
 [Collection(nameof(BearerTokenTests))]
 public class BearerTokenTests :

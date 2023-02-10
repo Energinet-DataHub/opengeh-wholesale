@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi
 {
     /// <summary>
     /// A xUnit collection fixture for ensuring tests don't run in parallel.

@@ -18,7 +18,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Actor;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Actor;
 
 [UnitTest]
 public class MarketRoleMapperTests

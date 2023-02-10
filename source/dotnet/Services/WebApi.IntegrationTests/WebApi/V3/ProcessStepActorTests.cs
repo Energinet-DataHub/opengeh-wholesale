@@ -17,16 +17,15 @@ using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepActor;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi.V3;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
 public class ProcessStepActorTests :

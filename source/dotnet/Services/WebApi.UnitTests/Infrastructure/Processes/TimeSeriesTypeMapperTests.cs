@@ -18,7 +18,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 
 [UnitTest]
 public class TimeSeriesTypeMapperTests

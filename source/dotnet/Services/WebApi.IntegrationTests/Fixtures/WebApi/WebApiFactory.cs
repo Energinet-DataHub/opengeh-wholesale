@@ -25,14 +25,13 @@ using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
-using Energinet.DataHub.Wholesale.WebApi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 
 /// <summary>
 /// When we execute the tests on build agents we use the builded output (assemblies).

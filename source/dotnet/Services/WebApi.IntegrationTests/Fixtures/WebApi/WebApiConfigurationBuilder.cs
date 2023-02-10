@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi
 {
     public static class WebApiConfigurationBuilder
     {

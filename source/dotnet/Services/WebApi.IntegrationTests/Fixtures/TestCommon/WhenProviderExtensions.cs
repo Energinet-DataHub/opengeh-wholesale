@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
-using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon
 {
     /// <summary>
     /// Actually service bus listener mock extensions, but we want to separate the fluent API

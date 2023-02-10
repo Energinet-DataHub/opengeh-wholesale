@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Moq;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.Processes;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Processes;
 
 public class ProcessApplicationServiceTest
 {

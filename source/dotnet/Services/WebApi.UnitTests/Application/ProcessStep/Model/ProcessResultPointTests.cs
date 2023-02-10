@@ -13,12 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.ProcessStep.Model;
 
 [UnitTest]
 public sealed class ProcessResultPointTests

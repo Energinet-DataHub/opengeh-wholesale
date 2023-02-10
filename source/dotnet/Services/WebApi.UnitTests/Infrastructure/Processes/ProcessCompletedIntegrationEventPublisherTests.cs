@@ -25,7 +25,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 
 public class ProcessCompletedIntegrationEventPublisherTests
 {

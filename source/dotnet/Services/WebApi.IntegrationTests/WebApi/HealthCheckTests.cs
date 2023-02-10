@@ -14,15 +14,14 @@
 
 using System.Net;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
-using Energinet.DataHub.Wholesale.IntegrationTests.Fixtures.WebApi;
-using Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.WebApi
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi
 {
     [Collection(nameof(WholesaleWebApiCollectionFixture))]
     public class HealthCheckTests :

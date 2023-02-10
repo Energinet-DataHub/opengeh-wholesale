@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Contracts.Events;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Integration;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Integration;
 
 public class ProcessCompletedTests
 {

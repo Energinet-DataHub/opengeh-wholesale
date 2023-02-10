@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.ProcessStep.Model;
 
 public class ProcessStepMapperTests
 {

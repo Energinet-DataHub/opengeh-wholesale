@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon;
 using FluentAssertions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Function
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Function
 {
     public static class FunctionAsserts
     {

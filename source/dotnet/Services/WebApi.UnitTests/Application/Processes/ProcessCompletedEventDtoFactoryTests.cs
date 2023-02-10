@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
@@ -23,7 +20,7 @@ using FluentAssertions;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Tests.Application.Processes;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Processes;
 
 public class ProcessCompletedEventDtoFactoryTests
 {

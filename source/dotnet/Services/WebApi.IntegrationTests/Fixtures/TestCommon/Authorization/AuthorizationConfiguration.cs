@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.TestCommon.Authorization;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Authorization;
 
 public class AuthorizationConfiguration
 {

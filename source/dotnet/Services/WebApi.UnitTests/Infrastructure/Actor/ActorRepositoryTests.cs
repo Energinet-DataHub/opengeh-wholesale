@@ -13,25 +13,21 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
-using Azure;
-using Azure.Storage.Files.DataLake;
-using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
-using Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using Actor = Energinet.DataHub.Wholesale.Infrastructure.BatchActor.Actor;
 using DataLakeFileClient = Azure.Storage.Files.DataLake.DataLakeFileClient;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.Actor;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Actor;
 
 [UnitTest]
 public class ActorRepositoryTests

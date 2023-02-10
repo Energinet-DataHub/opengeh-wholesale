@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.IntegrationTests.Components
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components
 {
     public sealed class DatabricksTestManager : IAsyncDisposable
     {

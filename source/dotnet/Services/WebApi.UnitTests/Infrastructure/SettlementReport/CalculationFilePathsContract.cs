@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Tests.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Energinet.DataHub.Wholesale.Tests.Infrastructure.SettlementReport;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.SettlementReport;
 
 /// <summary>
 /// Represents the contract of calculation files between .NET and Databricks applications.
