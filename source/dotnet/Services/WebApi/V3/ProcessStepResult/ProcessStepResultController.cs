@@ -39,7 +39,7 @@ public class ProcessStepResultController : ControllerBase
     }
 
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpPost]
+    [HttpGet]
     public async Task<ProcessStepResultDto> GetAsync([FromRoute] Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string gln)
     {
         var request = new ProcessStepResultRequestDtoV2(batchId, gridAreaCode, timeSeriesType, gln);
