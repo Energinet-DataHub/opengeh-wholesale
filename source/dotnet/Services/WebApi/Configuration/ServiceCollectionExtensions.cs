@@ -42,6 +42,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
+using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
@@ -61,6 +62,11 @@ internal static class ServiceCollectionExtensions
 
         serviceCollection.AddJwtBearerAuthentication(externalOpenIdUrl, internalOpenIdUrl, backendAppId);
         serviceCollection.AddPermissionAuthorization();
+    }
+
+    public static void AddWebApiHostRegistrations(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
     }
 
     public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)

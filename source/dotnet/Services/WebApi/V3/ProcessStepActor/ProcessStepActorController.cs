@@ -41,6 +41,8 @@ public class ProcessStepActorController : ControllerBase
 
         var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
 
-        return actors.Select(a => new ActorDto(a.Gln)).ToList();
+        return actors
+            .Select(a => new ActorDto(a.Gln))
+            .ToList();
     }
 }

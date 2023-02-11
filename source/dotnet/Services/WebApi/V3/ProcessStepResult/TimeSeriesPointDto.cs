@@ -12,22 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
-
-namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
 /// <summary>
-/// An immutable batch.
+/// TimeSeriesPoint
 /// </summary>
-public sealed record BatchDto(
-    long? RunId,
-    Guid BatchId,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string Resolution,
-    string Unit,
-    DateTimeOffset? ExecutionTimeStart,
-    DateTimeOffset? ExecutionTimeEnd,
-    BatchState ExecutionState,
-    bool AreSettlementReportsCreated,
-    string[] GridAreaCodes);
+/// <param name="Time">The observation time for the measured 'Quantity'</param>
+/// <param name="Quantity">Quantity has a scale of 3</param>
+/// <param name="Quality">Any of the following values: "A02" (missing), "A03" (estimated), "A04" (measured), "A06" (calculated)</param>
+public sealed record TimeSeriesPointDto(
+    DateTimeOffset Time,
+    decimal Quantity,
+    string Quality);

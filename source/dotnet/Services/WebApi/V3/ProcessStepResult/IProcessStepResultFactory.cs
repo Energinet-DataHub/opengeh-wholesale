@@ -12,22 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
-/// <summary>
-/// An immutable batch.
-/// </summary>
-public sealed record BatchDto(
-    long? RunId,
-    Guid BatchId,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string Resolution,
-    string Unit,
-    DateTimeOffset? ExecutionTimeStart,
-    DateTimeOffset? ExecutionTimeEnd,
-    BatchState ExecutionState,
-    bool AreSettlementReportsCreated,
-    string[] GridAreaCodes);
+public interface IProcessStepResultFactory
+{
+    public ProcessStepResultDto Create(Contracts.ProcessStepResultDto stepResult, BatchDto batch);
+}
