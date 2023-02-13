@@ -48,42 +48,6 @@ public class SubmitCreatedBatchesEndpointTests
         public Task DisposeAsync() => Task.CompletedTask;
 
         [Fact(Skip = "Split into multiple tests when concepts are ready")]
-        public async Task When_PendingBatchCreated_Then_BatchAndProcessCompletedEventsArePublished()
-        {
-            // Arrange
-            var gridAreaCode = CreateGridAreaCode();
-            var batchId = await CreateAndSavePendingBatch(gridAreaCode);
-
-            using var eventualBatchCompletedEvent = await Fixture
-                .BatchCompletedListener
-                .ListenForMessageAsync<BatchCompletedEventDto>(b => b.BatchId == batchId);
-
-            using var eventualProcessCompletedEvent = await Fixture
-                .ProcessCompletedListener
-                .ListenForMessageAsync<ProcessCompletedEventDto>(e => e.GridAreaCode == gridAreaCode);
-
-            // Act: how to invoke create batch
-
-            // Assert: Await timer triggered endpoints has executed before actually asserting
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(StartCalculationEndpoint));
-
-            // clear log to ensure that initial run of UpdateBatchExecutionStateEndpoint does not count.
-            Fixture.HostManager.ClearHostLog();
-            await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(UpdateBatchExecutionStateEndpoint));
-
-            // Assert: Batch and process completed events have been published
-            var isBatchCompletedEventPublished = eventualBatchCompletedEvent
-                .MessageAwaiter!
-                .Wait(TimeSpan.FromSeconds(20));
-            isBatchCompletedEventPublished.Should().BeTrue();
-
-            var isProcessCompletedEventPublished = eventualProcessCompletedEvent
-                .MessageAwaiter!
-                .Wait(TimeSpan.FromSeconds(20));
-            isProcessCompletedEventPublished.Should().BeTrue();
-        }
-
-        [Fact(Skip = "Split into multiple tests when concepts are ready")]
         public async Task When_PendingBatchCreated_Then_BatchIsCompleted()
         {
             // Arrange
