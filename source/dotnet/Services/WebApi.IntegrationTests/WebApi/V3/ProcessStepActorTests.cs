@@ -60,19 +60,21 @@ public class ProcessStepActorTests :
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOk(
+    public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
         Mock<IProcessStepApplicationService> applicationServiceMock,
         ProcessStepActorsRequest request)
     {
         // Arrange
         var expectedUrl = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/market-roles/{request.MarketRole}";
+        var expectedHttpStatusCode = HttpStatusCode.OK;
+
         _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         var actualContent = await _client.GetAsync(expectedUrl);
 
         // Assert
-        actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
     }
 
     [Theory]
@@ -83,7 +85,7 @@ public class ProcessStepActorTests :
         WholesaleActorDto expectedActor)
     {
         // Arrange
-        var expectedUrl = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/market-roles/{request.MarketRole}";
+        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/market-roles/{request.MarketRole}";
 
         applicationServiceMock
             .Setup(service => service.GetActorsAsync(request))
@@ -91,7 +93,7 @@ public class ProcessStepActorTests :
         _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
-        var actualContent = await _client.GetAsync(expectedUrl);
+        var actualContent = await _client.GetAsync(url);
 
         // Assert
         var actualActors = await actualContent.Content.ReadFromJsonAsync<List<ActorDto>>();
