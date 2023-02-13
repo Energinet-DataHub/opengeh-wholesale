@@ -47,7 +47,7 @@ public class SubmitCreatedBatchesEndpointTests
         public Task DisposeAsync() => Task.CompletedTask;
 
         [Fact]
-        public async Task When_PendingBatchCreated_Then_BatchIsCompleted()
+        public async Task EnsureFunctionEndpoint_IsCalled_ByTimerTrigger()
         {
             await FunctionAsserts.AssertHasExecutedAsync(Fixture.HostManager, nameof(UpdateBatchExecutionStateEndpoint));
         }
