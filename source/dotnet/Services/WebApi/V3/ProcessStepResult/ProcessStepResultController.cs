@@ -21,26 +21,55 @@ using Microsoft.AspNetCore.Mvc;
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
 /// <summary>
-/// Actor resource for actors for whom batch results have been calculated.
+/// Calculated result.
 /// </summary>
 [ApiController]
-[Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/actors/{gln}")]
+[Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}")]
 public class ProcessStepResultController : ControllerBase
 {
     private readonly IProcessStepApplicationService _processStepApplicationService;
     private readonly IProcessStepResultFactory _processStepResultFactory;
     private readonly IBatchApplicationService _batchApplicationService;
 
-    public ProcessStepResultController(IProcessStepApplicationService processStepApplicationService, IProcessStepResultFactory processStepResultFactory, IBatchApplicationService batchApplicationService)
+    public ProcessStepResultController(
+        IProcessStepApplicationService processStepApplicationService,
+        IProcessStepResultFactory processStepResultFactory,
+        IBatchApplicationService batchApplicationService)
     {
         _processStepApplicationService = processStepApplicationService;
         _processStepResultFactory = processStepResultFactory;
         _batchApplicationService = batchApplicationService;
     }
 
+    /// <summary>
+    /// Get calculation result for a grid area.
+    /// </summary>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpGet]
-    public async Task<ProcessStepResultDto> GetAsync([FromRoute] Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string gln)
+    public async Task<ProcessStepResultDto> GetForGridAreaAsync(
+        [FromRoute] Guid batchId,
+        [FromRoute] string gridAreaCode,
+        [FromRoute] TimeSeriesType timeSeriesType)
+    {
+        if (timeSeriesType != TimeSeriesType.Production) throw new NotImplementedException();
+
+        var request = new ProcessStepResultRequestDto(batchId, gridAreaCode, ProcessStepType.AggregateProductionPerGridArea);
+        var stepResult = await _processStepApplicationService.GetResultAsync(request).ConfigureAwait(false);
+        var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
+
+        return _processStepResultFactory.Create(stepResult, batch);
+    }
+
+    /// <summary>
+    /// Get calculation result for a specific actor by GLN.
+    /// </summary>
+    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
+    [HttpGet]
+    public async Task<ProcessStepResultDto> GetForActorAsync(
+        [FromRoute] Guid batchId,
+        [FromRoute] string gridAreaCode,
+        [FromRoute] TimeSeriesType timeSeriesType,
+        [FromQuery] string gln)
     {
         var request = new ProcessStepResultRequestDtoV2(batchId, gridAreaCode, timeSeriesType, gln);
         var stepResult = await _processStepApplicationService.GetResultAsync(request).ConfigureAwait(false);

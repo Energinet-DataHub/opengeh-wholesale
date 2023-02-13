@@ -27,35 +27,14 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 
-[Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class ProcessStepActorTests :
-    WebApiTestBase<WholesaleWebApiFixture>,
-    IClassFixture<WholesaleWebApiFixture>,
-    IClassFixture<WebApiFactory>,
-    IAsyncLifetime
+public class ProcessStepResultTests : WebApiTestBase
 {
-    private readonly HttpClient _client;
-    private readonly WebApiFactory _factory;
-
-    public ProcessStepActorTests(
+    public ProcessStepResultTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
-        : base(wholesaleWebApiFixture, testOutputHelper)
+        : base(wholesaleWebApiFixture, factory, testOutputHelper)
     {
-        _factory = factory;
-        _client = factory.CreateClient();
-    }
-
-    public Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task DisposeAsync()
-    {
-        _client.Dispose();
-        return Task.CompletedTask;
     }
 
     [Theory]
@@ -68,7 +47,7 @@ public class ProcessStepActorTests :
         var expectedHttpStatusCode = HttpStatusCode.OK;
 
         // Act
-        var actualContent = await _client.GetAsync(expectedUrl);
+        var actualContent = await Client.GetAsync(expectedUrl);
 
         // Assert
         actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
@@ -87,10 +66,10 @@ public class ProcessStepActorTests :
         applicationServiceMock
             .Setup(service => service.GetActorsAsync(request))
             .ReturnsAsync(() => new[] { expectedActor });
-        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
-        var actualContent = await _client.GetAsync(url);
+        var actualContent = await Client.GetAsync(url);
 
         // Assert
         var actualActors = await actualContent.Content.ReadFromJsonAsync<List<ActorDto>>();
