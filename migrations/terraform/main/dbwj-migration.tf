@@ -70,7 +70,7 @@ resource "databricks_job" "this" {
     }
 
     notebook_task {  
-      notebook_path     = "adb/config/workspace_setup"
+      notebook_path     = "source/DataMigration/config/workspace_setup"
       base_parameters   = {
         batch_execution = true
         landing_storage_account = data.azurerm_storage_account.drop.name # Should we use this or another datalake for dump
@@ -91,7 +91,7 @@ resource "databricks_job" "this" {
     }
     
     notebook_task {
-      notebook_path = "adb/config/schema_validation"
+      notebook_path = "source/DataMigration/config/schema_validation"
       base_parameters   = {
         BatchExecution = true
       }
@@ -106,7 +106,7 @@ resource "databricks_job" "this" {
     }
 
     notebook_task {
-      notebook_path     = "adb/bronze/autoloader_time_series"
+      notebook_path     = "source/DataMigration/bronze/autoloader_time_series"
       base_parameters   = {
         BatchExecution = true
       }
@@ -121,7 +121,7 @@ resource "databricks_job" "this" {
     }
 
     notebook_task {
-      notebook_path     = "adb/bronze/autoloader_metering_points"
+      notebook_path     = "source/DataMigration/bronze/autoloader_metering_points"
       base_parameters   = {
         BatchExecution = true
       }
@@ -136,7 +136,7 @@ resource "databricks_job" "this" {
     }
 
     notebook_task {
-      notebook_path     = "adb/silver/time_series"
+      notebook_path     = "source/DataMigration/silver/time_series"
       base_parameters   = {
         BatchExecution = true
       }
@@ -151,7 +151,7 @@ resource "databricks_job" "this" {
     }
 
     notebook_task {
-      notebook_path     = "adb/silver/metering_points"
+      notebook_path     = "source/DataMigration/silver/metering_points"
       base_parameters   = {
         BatchExecution = true
       }
@@ -169,7 +169,7 @@ resource "databricks_job" "this" {
     }    
 
     notebook_task {
-      notebook_path     = "adb/gold/wholesale_time_series"
+      notebook_path     = "source/DataMigration/gold/wholesale_time_series"
       base_parameters   = {
         BatchExecution = true
       }
@@ -184,7 +184,7 @@ resource "databricks_job" "this" {
     }
 
     notebook_task {
-      notebook_path     = "adb/gold/wholesale_metering_points"
+      notebook_path     = "source/DataMigration/gold/wholesale_metering_points"
       base_parameters   = {
         BatchExecution = true
       }
