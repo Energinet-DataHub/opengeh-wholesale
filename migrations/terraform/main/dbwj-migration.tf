@@ -63,7 +63,8 @@ resource "databricks_job" "this" {
   }
 
   task {
-    task_key = "start"
+    # When semantic versioning is ready, remove this uuid as this is only added to trigger a wheel on each merge into main
+    task_key = "start_${uuid()}" 
 
     library {
       whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
