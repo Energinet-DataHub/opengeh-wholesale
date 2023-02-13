@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepEnergySupplier;
 /// Energy suppliers for which batch results have been calculated.
 /// </summary>
 [ApiController]
-[Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers/")]
+[Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers")]
 public class ProcessStepEnergySupplierController : ControllerBase
 {
     private readonly IProcessStepApplicationService _processStepApplicationService;
@@ -35,28 +35,12 @@ public class ProcessStepEnergySupplierController : ControllerBase
     }
 
     /// <summary>
-    /// Energy suppliers.
-    /// </summary>
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpGet]
-    public async Task<List<ActorDto>> GetAllAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType)
-    {
-        var processStepActorsRequest = new ProcessStepActorsRequest(batchId, gridAreaCode, timeSeriesType, MarketRole.EnergySupplier);
-
-        var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
-
-        return actors
-            .Select(a => new ActorDto(a.Gln))
-            .ToList();
-    }
-
-    /// <summary>
     /// Energy supplier identified by GLN.
     /// </summary>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpGet]
     [Route("{gln}")]
-    public Task<ActorDto> GetByGlnAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType)
+    public Task<ActorDto> GetByGlnAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType, [FromRoute] string gln)
     {
         return Task.FromResult<ActorDto>(null!);
     }
@@ -66,8 +50,25 @@ public class ProcessStepEnergySupplierController : ControllerBase
     /// </summary>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpGet]
-    public Task<List<ActorDto>> GetAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType, [FromQuery] string balanceResponsibleParty)
+    public async Task<List<ActorDto>> GetAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType, [FromQuery] string? balanceResponsibleParty)
     {
-        return Task.FromResult<List<ActorDto>>(null!);
+        if (balanceResponsibleParty == null)
+            return await GetAllAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+
+        return null!;
+    }
+
+    /// <summary>
+    /// Energy suppliers.
+    /// </summary>
+    private async Task<List<ActorDto>> GetAllAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType)
+    {
+        var processStepActorsRequest = new ProcessStepActorsRequest(batchId, gridAreaCode, timeSeriesType, MarketRole.EnergySupplier);
+
+        var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
+
+        return actors
+            .Select(a => new ActorDto(a.Gln))
+            .ToList();
     }
 }

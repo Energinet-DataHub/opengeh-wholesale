@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepActor;
 using FluentAssertions;
 using Moq;
+using Test.Core;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -43,7 +44,8 @@ public class ProcessStepResultTests : WebApiTestBase
         ProcessStepActorsRequest request)
     {
         // Arrange
-        var expectedUrl = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/market-roles/{request.MarketRole}";
+        request.SetPrivateProperty(r => r.Type, TimeSeriesType.Production);
+        var expectedUrl = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}";
         var expectedHttpStatusCode = HttpStatusCode.OK;
 
         // Act
@@ -58,10 +60,11 @@ public class ProcessStepResultTests : WebApiTestBase
     public async Task HTTP_GET_V3_ReturnsExpectedActorInJson(
         Mock<IProcessStepApplicationService> applicationServiceMock,
         ProcessStepActorsRequest request,
+        string gln,
         WholesaleActorDto expectedActor)
     {
         // Arrange
-        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/market-roles/{request.MarketRole}";
+        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}?gln={gln}";
 
         applicationServiceMock
             .Setup(service => service.GetActorsAsync(request))

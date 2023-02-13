@@ -45,7 +45,7 @@ public class ProcessStepBalanceResponsiblePartyTests : WebApiTestBase
         TimeSeriesType timeSeriesType)
     {
         // Arrange
-        var expectedUrl = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/balance-responsible-party";
+        var expectedUrl = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/balance-responsible-parties";
         var expectedHttpStatusCode = HttpStatusCode.OK;
 
         // Act
@@ -63,7 +63,7 @@ public class ProcessStepBalanceResponsiblePartyTests : WebApiTestBase
         WholesaleActorDto expectedActor)
     {
         // Arrange
-        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/balance-responsible-party";
+        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/balance-responsible-parties";
 
         applicationServiceMock
             .Setup(service => service.GetActorsAsync(request))
