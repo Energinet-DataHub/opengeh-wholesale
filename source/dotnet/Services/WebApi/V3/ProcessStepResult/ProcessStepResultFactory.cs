@@ -28,7 +28,7 @@ public class ProcessStepResultFactory : IProcessStepResultFactory
             batch.PeriodEnd,
             batch.Resolution,
             batch.Unit,
-            stepResult.TimeSeriesPoints.Select(Map()).ToArray());
+            stepResult.TimeSeriesPoints.Select(MapTimeSeriesPoint()).ToArray());
     }
 
     public static string MapQuality(string quality) =>
@@ -41,7 +41,7 @@ public class ProcessStepResultFactory : IProcessStepResultFactory
             _ => throw new ArgumentException($"No mapping defined for quantity quality '{quality}'"),
         };
 
-    private static Func<Contracts.TimeSeriesPointDto, TimeSeriesPointDto> Map()
+    private static Func<Contracts.TimeSeriesPointDto, TimeSeriesPointDto> MapTimeSeriesPoint()
     {
         return p => new TimeSeriesPointDto(p.Time, p.Quantity, MapQuality(p.Quality));
     }
