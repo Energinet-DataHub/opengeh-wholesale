@@ -61,14 +61,11 @@ public class ProcessStepActorTests :
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
-        Mock<IProcessStepApplicationService> applicationServiceMock,
         ProcessStepActorsRequest request)
     {
         // Arrange
         var expectedUrl = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/market-roles/{request.MarketRole}";
         var expectedHttpStatusCode = HttpStatusCode.OK;
-
-        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         var actualContent = await _client.GetAsync(expectedUrl);
