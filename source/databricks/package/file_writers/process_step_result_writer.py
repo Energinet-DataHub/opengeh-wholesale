@@ -31,7 +31,6 @@ class ProcessStepResultWriter:
     def write_per_ga(
         self, result_df: DataFrame, time_series_type: TimeSeriesType
     ) -> None:
-
         result_df = self._add_gln_without_market_role(result_df)
         result_df = self._prepare_result_for_output(
             result_df,
@@ -45,7 +44,6 @@ class ProcessStepResultWriter:
         time_series_type: TimeSeriesType,
         market_role: MarketRole,
     ) -> None:
-
         result_df = self._add_gln(result_df, market_role)
         result_df = self._prepare_result_for_output(
             result_df,
@@ -57,7 +55,6 @@ class ProcessStepResultWriter:
     def _prepare_result_for_output(
         self, result_df: DataFrame, time_series_type: TimeSeriesType
     ) -> DataFrame:
-
         result_df = result_df.withColumn(
             Colname.time_series_type, lit(time_series_type.value)
         )
@@ -78,10 +75,13 @@ class ProcessStepResultWriter:
         result_df: DataFrame,
         market_role: MarketRole,
     ) -> DataFrame:
-
         if market_role is MarketRole.ENERGY_SUPPLIER:
             result_df = result_df.withColumnRenamed(
                 Colname.energy_supplier_id, Colname.gln
+            )
+        elif market_role is MarketRole.BALANCE_RESPONSIBLE:
+            result_df = result_df.withColumnRenamed(
+                Colname.balance_responsible_id, Colname.gln
             )
         else:
             raise NotImplementedError(
@@ -98,7 +98,6 @@ class ProcessStepResultWriter:
         return result_df
 
     def _write_result_df(self, result_df: DataFrame) -> None:
-
         result_data_directory = f"{self.__output_path}/result"
 
         # First repartition to co-locate all rows for a grid area on a single executor.
