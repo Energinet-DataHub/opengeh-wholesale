@@ -154,7 +154,7 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
     row1_df = time_series_row_factory(quantity=Decimal(1))
     row2_df = time_series_row_factory(quantity=Decimal(2))
     time_series = row1_df.union(row2_df)
-    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
+    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
         time_series, metadata
     )
 
