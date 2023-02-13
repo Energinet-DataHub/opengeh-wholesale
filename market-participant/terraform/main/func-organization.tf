@@ -25,8 +25,8 @@ module "func_entrypoint_marketparticipant" {
     SERVICE_BUS_CONNECTION_STRING               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)",
     SERVICE_BUS_HEALTH_CHECK_CONNECTION_STRING  = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)",
     SBT_MARKET_PARTICIPANT_CHANGED_NAME         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-sharedres-integrationevent-received-name)",
-    SEND_GRID_APIKEY                            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sendgrid-api-key)",
-    USER_INVITE_FROM_EMAIL                      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sendgrid-from-email)",
+    SEND_GRID_APIKEY                            = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_api_key.name})",
+    USER_INVITE_FROM_EMAIL                      = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_from_email.name})",
     AZURE_B2C_TENANT                            = var.b2c_tenant
     AZURE_B2C_SPN_ID                            = var.b2c_spn_id
     AZURE_B2C_SPN_SECRET                        = var.b2c_spn_secret
