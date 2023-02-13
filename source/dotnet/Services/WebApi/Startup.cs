@@ -49,7 +49,6 @@ public class Startup
 
         services.AddJwtTokenSecurity();
         services.AddCommandStack(Configuration);
-        services.AddWebApiHostRegistrations();
         services.AddApplicationInsightsTelemetry();
         RegisterCorrelationContext(services);
         ConfigureHealthChecks(services);

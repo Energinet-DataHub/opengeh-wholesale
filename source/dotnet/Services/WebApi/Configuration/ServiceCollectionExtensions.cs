@@ -64,11 +64,6 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddPermissionAuthorization();
     }
 
-    public static void AddWebApiHostRegistrations(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
-    }
-
     public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString(EnvironmentSettingNames.DbConnectionString);
@@ -120,6 +115,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<IJsonSerializer, JsonSerializer>();
+        services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
 
         RegisterDomainEventPublisher(services);
 
