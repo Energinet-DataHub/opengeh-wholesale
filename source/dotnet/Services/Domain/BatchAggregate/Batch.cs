@@ -134,7 +134,7 @@ public class Batch
     /// <summary>
     /// Get the unit for result values (an energy unit for aggregations and a price unit/currency for settlements).
     /// </summary>
-    public string GetUnit()
+    public string GetQuantityUnit()
     {
         switch (ProcessType)
         {
