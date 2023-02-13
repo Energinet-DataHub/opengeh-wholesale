@@ -14,10 +14,13 @@
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
-public static class TimeSeriesPointQuality
+/// <summary>
+/// Please be aware that the enum names are being serialized so the literal names do matter.
+/// </summary>
+public enum TimeSeriesPointQuality
 {
-    public const string Missing = "missing";
-    public const string Estimated = "estimated";
-    public const string Measured = "measured";
-    public const string Calculated = "calculated";
+    Missing,
+    Estimated,
+    Measured,
+    Calculated,
 }

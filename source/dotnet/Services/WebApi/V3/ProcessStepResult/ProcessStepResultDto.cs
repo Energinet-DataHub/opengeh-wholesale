@@ -20,17 +20,17 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 /// <param name="Sum">Sum has a scale of 3</param>
 /// <param name="Min">Min has a scale of 3</param>
 /// <param name="Max">Max has a scale of 3</param>
-/// <param name="Start"></param>
-/// <param name="End"></param>
+/// <param name="PeriodStart"></param>
+/// <param name="PeriodEnd"></param>
 /// <param name="Resolution"></param>
-/// <param name="Unit"></param>
+/// <param name="Unit">kWh</param>
 /// <param name="TimeSeriesPoints"></param>
 public sealed record ProcessStepResultDto(
     decimal Sum,
     decimal Min,
     decimal Max,
-    DateTimeOffset Start,
-    DateTimeOffset End,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd,
     string Resolution,
     string Unit,
     TimeSeriesPointDto[] TimeSeriesPoints);

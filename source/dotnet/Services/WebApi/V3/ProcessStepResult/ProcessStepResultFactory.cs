@@ -31,20 +31,18 @@ public class ProcessStepResultFactory : IProcessStepResultFactory
             stepResult.TimeSeriesPoints.Select(Map()).ToArray());
     }
 
-    private static Func<Contracts.TimeSeriesPointDto, TimeSeriesPointDto> Map()
-    {
-        return p => new TimeSeriesPointDto(p.Time, p.Quantity, Map(p.Quality));
-    }
-
-    private static string Map(string quality) =>
-        // TODO: Seems like we are missing a contract for these (CIM) qualities between .NET and pyspark
-        // TODO: Should we stop using these CIM names?
+    public static string MapQuality(string quality) =>
         quality switch
         {
-            "A02" => TimeSeriesPointQuality.Missing,
-            "A03" => TimeSeriesPointQuality.Estimated,
-            "A04" => TimeSeriesPointQuality.Measured,
-            "A06" => TimeSeriesPointQuality.Calculated,
-            _ => throw new NotImplementedException($"No mapping defined for quality '{quality}'"),
+            "A02" => TimeSeriesPointQuality.Missing.ToString().ToLower(),
+            "A03" => TimeSeriesPointQuality.Estimated.ToString().ToLower(),
+            "A04" => TimeSeriesPointQuality.Measured.ToString().ToLower(),
+            "A06" => TimeSeriesPointQuality.Calculated.ToString().ToLower(),
+            _ => throw new ArgumentException($"No mapping defined for quantity quality '{quality}'"),
         };
+
+    private static Func<Contracts.TimeSeriesPointDto, TimeSeriesPointDto> Map()
+    {
+        return p => new TimeSeriesPointDto(p.Time, p.Quantity, MapQuality(p.Quality));
+    }
 }
