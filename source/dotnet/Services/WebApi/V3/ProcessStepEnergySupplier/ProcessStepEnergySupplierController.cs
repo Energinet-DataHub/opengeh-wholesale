@@ -58,7 +58,7 @@ public class ProcessStepEnergySupplierController : ControllerBase
     [Route("{gln}")]
     public Task<ActorDto> GetByGlnAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<ActorDto>(null!);
     }
 
     /// <summary>
@@ -68,6 +68,6 @@ public class ProcessStepEnergySupplierController : ControllerBase
     [HttpGet]
     public Task<List<ActorDto>> GetAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType, [FromQuery] string balanceResponsibleParty)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<List<ActorDto>>(null!);
     }
 }

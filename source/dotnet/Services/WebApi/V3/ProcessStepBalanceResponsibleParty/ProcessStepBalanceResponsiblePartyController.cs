@@ -65,6 +65,6 @@ public class ProcessStepBalanceResponsiblePartyController : ControllerBase
         [FromRoute] TimeSeriesType timeSeriesType,
         [FromRoute] string gln)
     {
-        throw new NotImplementedException();
+        return Task.FromResult<ActorDto>(null!);
     }
 }
