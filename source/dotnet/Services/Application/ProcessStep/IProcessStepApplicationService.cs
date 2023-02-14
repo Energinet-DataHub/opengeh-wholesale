@@ -23,7 +23,5 @@ public interface IProcessStepApplicationService
 {
     Task<WholesaleActorDto[]> GetActorsAsync(ProcessStepActorsRequest processStepActorsRequest);
 
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
-
-    Task<ProcessStepResultDto> GetResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
+    Task<ProcessStepResultDto> GetResultAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string gln);
 }

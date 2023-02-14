@@ -209,10 +209,10 @@ public class SettlementReportRepositoryTests
 
         // Act
         var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
                 batchId,
                 gridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
+                Contracts.TimeSeriesType.Production,
+                "grid_area");
 
         // Assert
         actual.TimeSeriesPoints.First().Time.Should().Be(time);

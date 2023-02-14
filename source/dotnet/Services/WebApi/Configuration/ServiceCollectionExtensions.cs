@@ -41,7 +41,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
+using Energinet.DataHub.Wholesale.WebApi.V2;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;

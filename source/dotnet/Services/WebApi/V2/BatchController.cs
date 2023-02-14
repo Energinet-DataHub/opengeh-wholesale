@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
+namespace Energinet.DataHub.Wholesale.WebApi.V2;
 
 /// <summary>
 /// Handle process batches.

@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
-using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepActor;
 using FluentAssertions;
 using Moq;
 using Test.Core;
@@ -53,7 +52,7 @@ public class ProcessStepResultTests : WebApiTestBase
         request.SetPrivateProperty(r => r.Type, TimeSeriesType.Production);
         result.SetPrivateProperty(r => r.TimeSeriesPoints, new TimeSeriesPointDto[] { new(DateTimeOffset.Now, decimal.One, "A04") });
         processStepApplicationServiceMock
-            .Setup(service => service.GetResultAsync(It.IsAny<ProcessStepResultRequestDto>()))
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, "grid_area"))
             .ReturnsAsync(() => result);
         batchApplicationServiceMock.Setup(service => service.GetAsync(request.BatchId)).ReturnsAsync(batchDto);
         Factory.ProcessStepApplicationServiceMock = processStepApplicationServiceMock;
