@@ -131,7 +131,7 @@ def _calculate_non_profiled_consumption(
     result_writer.write_per_ga_per_actor(
         consumption_per_ga_and_brp,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        MarketRole.BALANCE_RESPONSIBLE,
+        MarketRole.BALANCE_RESPONSIBLE_PARTY,
     )
 
     # Non-profiled consumption per energy supplier
