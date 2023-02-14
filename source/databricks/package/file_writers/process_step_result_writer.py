@@ -79,7 +79,7 @@ class ProcessStepResultWriter:
             result_df = result_df.withColumnRenamed(
                 Colname.energy_supplier_id, Colname.gln
             )
-        elif market_role is MarketRole.BALANCE_RESPONSIBLE:
+        elif market_role is MarketRole.BALANCE_RESPONSIBLE_PARTY:
             result_df = result_df.withColumnRenamed(
                 Colname.balance_responsible_id, Colname.gln
             )
