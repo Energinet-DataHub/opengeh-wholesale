@@ -160,7 +160,7 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
 
 
 # Function to aggregate non-profiled consumption per grid area, balance responsible party and energy supplier (step 3)
-def aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
+def aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
     enriched_time_series: DataFrame, metadata: Metadata
 ) -> DataFrame:
     return _aggregate_per_ga_and_brp_and_es(
@@ -301,7 +301,6 @@ def aggregate_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
 def aggregate_non_profiled_consumption_ga_es(
     non_profiled_consumption: DataFrame, metadata: Metadata
 ) -> DataFrame:
-
     return __aggregate_per_ga_and_es(
         non_profiled_consumption,
         MeteringPointType.consumption,
@@ -346,10 +345,10 @@ def aggregate_production_ga_brp(results: dict, metadata: Metadata) -> DataFrame:
 
 
 def aggregate_non_profiled_consumption_ga_brp(
-    results: dict, metadata: Metadata
+    result: DataFrame, metadata: Metadata
 ) -> DataFrame:
     return __aggregate_per_ga_and_brp(
-        results[ResultKeyName.non_profiled_consumption],
+        result,
         MeteringPointType.consumption,
         metadata,
     )
@@ -369,23 +368,16 @@ def __aggregate_per_ga_and_brp(
     market_evaluation_point_type: MeteringPointType,
     metadata: Metadata,
 ) -> DataFrame:
-    result = (
-        df.groupBy(
-            Colname.grid_area,
-            Colname.balance_responsible_id,
-            Colname.time_window,
-            Colname.quality,
-        )
-        .sum(Colname.sum_quantity)
-        .withColumnRenamed(f"sum({Colname.sum_quantity})", Colname.sum_quantity)
-        .select(
-            Colname.grid_area,
-            Colname.balance_responsible_id,
-            Colname.time_window,
-            Colname.quality,
-            Colname.sum_quantity,
-            lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
-        )
+    group_by = [Colname.grid_area, Colname.balance_responsible_id, Colname.time_window]
+    result = __aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
+
+    result = result.select(
+        Colname.grid_area,
+        Colname.balance_responsible_id,
+        Colname.time_window,
+        Colname.quality,
+        Colname.sum_quantity,
+        lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
