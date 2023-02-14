@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepActor;
+namespace Energinet.DataHub.Wholesale.WebApi.V3;
 
 // ReSharper disable once NotAccessedPositionalProperty.Global - Property is accessed while serializing the API result
 public sealed record ActorDto(string Gln);

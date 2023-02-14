@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
+namespace Energinet.DataHub.Wholesale.WebApi.V2;
 
 [ApiController]
 [Route("v2.2/ProcessStepResult")]
@@ -35,7 +35,11 @@ public class ProcessStepV22Controller : ControllerBase
     [ApiVersion("2.2")]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
     {
-        var resultDto = await _processStepApplicationService.GetResultAsync(processStepResultRequestDtoV2).ConfigureAwait(false);
+        var resultDto = await _processStepApplicationService.GetResultAsync(
+            processStepResultRequestDtoV2.BatchId,
+            processStepResultRequestDtoV2.GridAreaCode,
+            processStepResultRequestDtoV2.TimeSeriesType,
+            processStepResultRequestDtoV2.Gln).ConfigureAwait(false);
         return Ok(resultDto);
     }
 }
