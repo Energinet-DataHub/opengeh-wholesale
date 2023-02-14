@@ -15,7 +15,7 @@ from decimal import Decimal
 from datetime import datetime
 from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import (
-    aggregate_non_profiled_consumption_per_ga_and_es_and_brp,
+    aggregate_non_profiled_consumption_per_ga_and_brp_and_es,
     _aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
@@ -85,7 +85,7 @@ def time_series_row_factory(spark, time_series_schema):
         quantity=default_quantity,
         obs_time=default_obs_time,
         resolution=default_resolution,
-    ):
+    ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.metering_point_type: [point_type],
@@ -113,7 +113,7 @@ def check_aggregation_row(
     sum: Decimal,
     start: datetime,
     end: datetime,
-):
+) -> None:
     """
     Helper function that checks column values for the given row.
     Note that start and end datetimes are timezone-naive - we set the Spark session timezone to UTC in the
@@ -133,12 +133,12 @@ def check_aggregation_row(
 
 def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
     time_series_row_factory,
-):
+) -> None:
     """
     Aggregator should filter out all non "E17" MarketEvaluationPointType rows
     """
     time_series = time_series_row_factory(point_type=e_18)
-    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
+    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
         time_series, metadata
     )
     assert aggregated_df.count() == 0
@@ -146,7 +146,7 @@ def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
 
 def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
     time_series_row_factory,
-):
+) -> None:
     """
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
     same quarter hour time window
@@ -154,7 +154,7 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
     row1_df = time_series_row_factory(quantity=Decimal(1))
     row2_df = time_series_row_factory(quantity=Decimal(2))
     time_series = row1_df.union(row2_df)
-    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
+    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
         time_series, metadata
     )
 
@@ -178,7 +178,7 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
 
 def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_in_different_hours(
     time_series_row_factory,
-):
+) -> None:
     """
     Aggregator should calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
     2 different quarter hour time windows
@@ -189,7 +189,7 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
     row1_df = time_series_row_factory()
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
     time_series = row1_df.union(row2_df)
-    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
+    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
         time_series, metadata
     ).sort(Colname.time_window)
 
@@ -226,19 +226,19 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
 
 def test_consumption_supplier_aggregator_returns_correct_schema(
     time_series_row_factory,
-):
+) -> None:
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
     and time window (from the quarter-hour resolution specified in the aggregator).
     """
     time_series = time_series_row_factory()
-    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
+    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
         time_series, metadata
     )
     assert aggregated_df.schema == aggregation_result_schema
 
 
-def test_consumption_test_filter_by_domain_is_pressent(time_series_row_factory):
+def test_consumption_test_filter_by_domain_is_pressent(time_series_row_factory) -> None:
     df = time_series_row_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
@@ -251,7 +251,7 @@ def test_consumption_test_filter_by_domain_is_pressent(time_series_row_factory):
 
 def test_consumption_test_filter_by_domain_is_not_pressent(
     time_series_row_factory,
-):
+) -> None:
     df = time_series_row_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
@@ -262,9 +262,9 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
     assert aggregated_df.count() == 0
 
 
-def test_expected_schema(time_series_row_factory):
+def test_expected_schema(time_series_row_factory) -> None:
     time_series = time_series_row_factory()
-    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
+    aggregated_df = aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
         time_series, metadata
     )
     assert aggregated_df.schema == aggregation_result_schema
