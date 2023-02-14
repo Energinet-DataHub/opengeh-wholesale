@@ -52,8 +52,7 @@ public class ProcessStepResultController : ControllerBase
         [FromRoute] TimeSeriesType timeSeriesType,
         [FromQuery] string gln)
     {
-        var request = new ProcessStepResultRequestDtoV2(batchId, gridAreaCode, timeSeriesType, gln);
-        var stepResult = await _processStepApplicationService.GetResultAsync(request).ConfigureAwait(false);
+        var stepResult = await _processStepApplicationService.GetResultAsync(batchId, gridAreaCode, timeSeriesType, gln).ConfigureAwait(false);
         var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
 
         return _processStepResultFactory.Create(stepResult, batch);
@@ -71,8 +70,12 @@ public class ProcessStepResultController : ControllerBase
     {
         if (timeSeriesType != TimeSeriesType.Production) throw new NotImplementedException();
 
-        var request = new ProcessStepResultRequestDto(batchId, gridAreaCode, ProcessStepType.AggregateProductionPerGridArea);
-        var stepResult = await _processStepApplicationService.GetResultAsync(request).ConfigureAwait(false);
+        var stepResult = await _processStepApplicationService.GetResultAsync(
+            batchId,
+            gridAreaCode,
+            timeSeriesType,
+            "grid_area").ConfigureAwait(false);
+
         var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
 
         return _processStepResultFactory.Create(stepResult, batch);

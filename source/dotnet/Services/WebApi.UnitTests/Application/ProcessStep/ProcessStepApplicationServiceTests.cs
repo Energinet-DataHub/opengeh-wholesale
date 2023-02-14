@@ -59,10 +59,10 @@ public class ProcessStepApplicationServiceTests
 
         // Act
         var actual = await sut.GetResultAsync(
-            new ProcessStepResultRequestDto(
                 batchId,
                 gridAreaCode,
-                ProcessStepType.AggregateProductionPerGridArea));
+                Contracts.TimeSeriesType.Production,
+                "grid_area");
 
         // Assert
         actual.TimeSeriesPoints.First().Time.Should().Be(time);
@@ -147,7 +147,7 @@ public class ProcessStepApplicationServiceTests
             .Returns(() => resultDto);
 
         // Act
-        var actual = await sut.GetResultAsync(request);
+        var actual = await sut.GetResultAsync(request.BatchId, request.GridAreaCode, Contracts.TimeSeriesType.Production, "grid_area");
 
         actual.Should().BeEquivalentTo(resultDto);
     }

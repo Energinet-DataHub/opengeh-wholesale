@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
+namespace Energinet.DataHub.Wholesale.WebApi.V2;
 
 [ApiController]
 [ApiVersion(Version)]
