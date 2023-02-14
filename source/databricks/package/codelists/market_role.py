@@ -17,3 +17,4 @@ from enum import Enum
 
 class MarketRole(Enum):
     ENERGY_SUPPLIER = "energy_supplier"
+    BALANCE_RESPONSIBLE_PARTY = "balance_responsible_party"

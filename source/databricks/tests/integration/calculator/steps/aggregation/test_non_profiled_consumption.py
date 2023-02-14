@@ -31,6 +31,7 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
 from package.constants import Colname, ResultKeyName
+from pyspark.sql import DataFrame
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -63,7 +64,7 @@ def settled_schema():
 
 @pytest.fixture(scope="module")
 def agg_result_factory(spark, settled_schema):
-    def factory():
+    def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "1", "1", "2"],
@@ -137,7 +138,7 @@ def agg_result_factory(spark, settled_schema):
 
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_time_window(
     agg_result_factory,
-):
+) -> None:
     consumption = create_dataframe_from_aggregation_result_schema(
         metadata, agg_result_factory()
     )
@@ -159,7 +160,7 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_
 
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_different_time_window(
     agg_result_factory,
-):
+) -> None:
     consumption = create_dataframe_from_aggregation_result_schema(
         metadata, agg_result_factory()
     )
@@ -181,7 +182,7 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_differe
 
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_time_window_as_other_grid_area(
     agg_result_factory,
-):
+) -> None:
     consumption = create_dataframe_from_aggregation_result_schema(
         metadata, agg_result_factory()
     )
@@ -201,7 +202,7 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_ti
     )
 
 
-def test_production_calculation_per_ga_and_es(agg_result_factory):
+def test_production_calculation_per_ga_and_es(agg_result_factory) -> None:
     consumption = create_dataframe_from_aggregation_result_schema(
         metadata, agg_result_factory()
     )
@@ -220,14 +221,13 @@ def test_production_calculation_per_ga_and_es(agg_result_factory):
     assert aggregated_df_collect[5][Colname.sum_quantity] == Decimal(1)
 
 
-def test_production_calculation_per_ga_and_brp(agg_result_factory):
-    results = {}
-    results[
-        ResultKeyName.non_profiled_consumption
-    ] = create_dataframe_from_aggregation_result_schema(metadata, agg_result_factory())
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp(results, metadata).sort(
-        Colname.grid_area, Colname.balance_responsible_id, Colname.time_window
+def test_production_calculation_per_ga_and_brp(agg_result_factory) -> None:
+    non_profiled_consumption = create_dataframe_from_aggregation_result_schema(
+        metadata, agg_result_factory()
     )
+    aggregated_df = aggregate_non_profiled_consumption_ga_brp(
+        non_profiled_consumption, metadata
+    ).sort(Colname.grid_area, Colname.balance_responsible_id, Colname.time_window)
     aggregated_df_collect = aggregated_df.collect()
     assert aggregated_df_collect[0][Colname.energy_supplier_id] is None
     assert aggregated_df_collect[0][Colname.grid_area] == "1"
@@ -238,7 +238,7 @@ def test_production_calculation_per_ga_and_brp(agg_result_factory):
     assert aggregated_df_collect[3][Colname.sum_quantity] == Decimal(1)
 
 
-def test_production_calculation_per_ga(agg_result_factory):
+def test_production_calculation_per_ga(agg_result_factory) -> None:
     consumption = create_dataframe_from_aggregation_result_schema(
         metadata, agg_result_factory()
     )
