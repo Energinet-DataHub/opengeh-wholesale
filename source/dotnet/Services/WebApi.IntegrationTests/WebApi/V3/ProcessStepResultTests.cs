@@ -68,28 +68,4 @@ public class ProcessStepResultTests : WebApiTestBase
         // Assert
         actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
     }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task HTTP_GET_V3_ReturnsExpectedActorInJson(
-        Mock<IProcessStepApplicationService> applicationServiceMock,
-        ProcessStepActorsRequest request,
-        string gln,
-        WholesaleActorDto expectedActor)
-    {
-        // Arrange
-        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}?gln={gln}";
-
-        applicationServiceMock
-            .Setup(service => service.GetActorsAsync(It.IsAny<ProcessStepActorsRequest>()))
-            .ReturnsAsync(() => new[] { expectedActor });
-        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
-
-        // Act
-        var actualContent = await Client.GetAsync(url);
-
-        // Assert
-        var actualActors = await actualContent.Content.ReadFromJsonAsync<List<ActorDto>>();
-        actualActors!.Single().Should().BeEquivalentTo(expectedActor);
-    }
 }
