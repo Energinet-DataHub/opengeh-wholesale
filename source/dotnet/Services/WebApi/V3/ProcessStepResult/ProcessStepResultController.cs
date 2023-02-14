@@ -45,16 +45,13 @@ public class ProcessStepResultController : ControllerBase
     /// Get calculation result for a specific actor by GLN.
     /// </summary>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpGet]
+    [HttpGet("{gln}")]
     public async Task<ProcessStepResultDto> GetForActorAsync(
         [FromRoute] Guid batchId,
         [FromRoute] string gridAreaCode,
         [FromRoute] TimeSeriesType timeSeriesType,
-        [FromQuery] string? gln = null)
+        [FromQuery] string gln)
     {
-        if (gln == null)
-            return await GetForGridAreaAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
-
         var request = new ProcessStepResultRequestDtoV2(batchId, gridAreaCode, timeSeriesType, gln);
         var stepResult = await _processStepApplicationService.GetResultAsync(request).ConfigureAwait(false);
         var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
@@ -65,10 +62,12 @@ public class ProcessStepResultController : ControllerBase
     /// <summary>
     /// Get calculation result for a grid area.
     /// </summary>
-    private async Task<ProcessStepResultDto> GetForGridAreaAsync(
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType)
+    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
+    [HttpGet]
+    public async Task<ProcessStepResultDto> GetForActorAsync(
+        [FromRoute] Guid batchId,
+        [FromRoute] string gridAreaCode,
+        [FromRoute] TimeSeriesType timeSeriesType)
     {
         if (timeSeriesType != TimeSeriesType.Production) throw new NotImplementedException();
 
