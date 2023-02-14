@@ -100,10 +100,8 @@ def _calculate_production(
     enriched_time_series: DataFrame,
     metadata: Metadata,
 ) -> None:
-    production_per_per_ga_and_brp_and_es = (
-        agg_steps.aggregate_production_per_ga_and_brp_and_es(
-            enriched_time_series, metadata
-        )
+    production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production_ga_es(
+        enriched_time_series, metadata
     )
     production_per_ga = agg_steps.aggregate_production_ga(
         production_per_per_ga_and_brp_and_es, metadata
@@ -117,32 +115,26 @@ def _calculate_non_profiled_consumption(
     enriched_time_series_point_df: DataFrame,
     metadata: Metadata,
 ) -> None:
-    consumption_per_ga_and_brp_and_es = (
-        agg_steps.aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
-            enriched_time_series_point_df, metadata
-        )
-    )
-
-    # Non-profiled consumption per balance responsible
-    consumption_per_ga_and_brp = agg_steps.aggregate_non_profiled_consumption_ga_brp(
-        consumption_per_ga_and_brp_and_es, metadata
-    )
-
-    result_writer.write_per_ga_per_actor(
-        consumption_per_ga_and_brp,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        MarketRole.BALANCE_RESPONSIBLE_PARTY,
-    )
-
     # Non-profiled consumption per energy supplier
     consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
-        consumption_per_ga_and_brp_and_es, metadata
+        enriched_time_series_point_df, metadata
     )
 
     result_writer.write_per_ga_per_actor(
         consumption_per_ga_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.ENERGY_SUPPLIER,
+    )
+
+    # Non-profiled consumption per balance responsible
+    consumption_per_ga_and_brp = agg_steps.aggregate_non_profiled_consumption_ga_brp(
+        consumption_per_ga_and_es, metadata
+    )
+
+    result_writer.write_per_ga_per_actor(
+        consumption_per_ga_and_brp,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        MarketRole.BALANCE_RESPONSIBLE_PARTY,
     )
 
 
