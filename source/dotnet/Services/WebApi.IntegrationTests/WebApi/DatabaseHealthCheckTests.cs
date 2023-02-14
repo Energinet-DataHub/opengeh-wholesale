@@ -52,7 +52,7 @@ public class DatabaseHealthCheckTests :
         return Task.CompletedTask;
     }
 
-    [Fact(Skip = "This test needs refactoring as it causes other tests in same test run to fail.")]
+    [Fact]
     public async Task When_DatabaseIsDeletedAndRequestReadinessStatus_Then_ResponseIsServiceUnavailableAndUnhealthy()
     {
         // Arrange
