@@ -59,11 +59,11 @@ public class ProcessStepResultTests : WebApiTestBase
         Factory.ProcessStepApplicationServiceMock = processStepApplicationServiceMock;
         Factory.BatchApplicationServiceMock = batchApplicationServiceMock;
 
-        var expectedUrl = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}";
+        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}";
         var expectedHttpStatusCode = HttpStatusCode.OK;
 
         // Act
-        var actualContent = await Client.GetAsync(expectedUrl);
+        var actualContent = await Client.GetAsync(url);
 
         // Assert
         actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
