@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
-public enum MarketRole
+/// <summary>
+/// Please be aware that the enum names are being serialized so the literal names do matter.
+/// </summary>
+public enum TimeSeriesPointQuality
 {
-    EnergySupplier = 0,
-    BalanceResponsibleParty = 1,
+    Missing,
+    Estimated,
+    Measured,
+    Calculated,
 }

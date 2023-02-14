@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
-public enum MarketRole
-{
-    EnergySupplier = 0,
-    BalanceResponsibleParty = 1,
-}
+/// <summary>
+/// TimeSeriesPoint
+/// </summary>
+/// <param name="Time">The observation time for the measured 'Quantity'</param>
+/// <param name="Quantity">Quantity has a scale of 3</param>
+/// <param name="Quality">Any of the values from <see cref="TimeSeriesPointQuality"/></param>
+public sealed record TimeSeriesPointDto(
+    DateTimeOffset Time,
+    decimal Quantity,
+    string Quality);

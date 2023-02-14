@@ -18,9 +18,11 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 
 public static class MarketRoleMapper
 {
+    // TODO: Are we missing contract tests?
     // These strings represents where actors for witch results were generated are written from spark.
     // They should only be changed with changing how we write down the actors.
     private const string EnergySupplier = "energy_supplier";
+    private const string BalanceResponsibleParty = "balance_responsible_party";
 
     public static string Map(MarketRole marketRole)
     {
@@ -28,6 +30,8 @@ public static class MarketRoleMapper
         {
             case MarketRole.EnergySupplier:
                 return EnergySupplier;
+            case MarketRole.BalanceResponsibleParty:
+                return BalanceResponsibleParty;
             default:
                 throw new ArgumentOutOfRangeException(nameof(marketRole), marketRole, null);
         }

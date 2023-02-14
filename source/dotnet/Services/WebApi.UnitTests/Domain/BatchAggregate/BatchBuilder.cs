@@ -27,6 +27,7 @@ public class BatchBuilder
 
     private BatchExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
+    private ProcessType _processType = ProcessType.BalanceFixing;
 
     public BatchBuilder()
     {
@@ -73,10 +74,16 @@ public class BatchBuilder
         return this;
     }
 
+    public BatchBuilder WithProcessType(ProcessType processType)
+    {
+        _processType = processType;
+        return this;
+    }
+
     public Batch Build()
     {
         var batch = new Batch(
-            ProcessType.BalanceFixing,
+            _processType,
             _gridAreaCodes,
             _periodStart,
             _periodEnd,

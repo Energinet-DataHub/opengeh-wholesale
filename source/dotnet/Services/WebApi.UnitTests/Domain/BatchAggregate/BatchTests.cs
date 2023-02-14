@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
@@ -69,6 +70,24 @@ public class BatchTests
     {
         var sut = new BatchBuilder().WithStatePending().Build();
         sut.ExecutionTimeStart.Should().NotBeNull();
+    }
+
+    [Theory]
+    [InlineAutoMoqData(Contracts.ProcessType.BalanceFixing, "PT15M")]
+    public void GetResolution_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedIso8601Duration)
+    {
+        var sut = new BatchBuilder().WithProcessType(processType).Build();
+        var actual = sut.GetResolution();
+        actual.Should().Be(expectedIso8601Duration);
+    }
+
+    [Theory]
+    [InlineAutoMoqData(ProcessType.BalanceFixing, "kWh")]
+    public void GetQuantityUnit_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedQuantityUnit)
+    {
+        var sut = new BatchBuilder().WithProcessType(processType).Build();
+        var actual = sut.GetQuantityUnit();
+        actual.Should().Be(expectedQuantityUnit);
     }
 
     [Fact]

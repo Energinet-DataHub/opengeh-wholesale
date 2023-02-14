@@ -34,6 +34,7 @@ limitations under the License.
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
+    <ProjectReference Include="..\WebApi\WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
