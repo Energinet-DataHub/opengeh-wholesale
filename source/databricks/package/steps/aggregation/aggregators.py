@@ -170,7 +170,9 @@ def aggregate_non_profiled_consumption_ga_es(
     )
 
 
-def aggregate_flex_consumption_ga_es(enriched_time_series: DataFrame, metadata: Metadata) -> DataFrame:
+def aggregate_flex_consumption_ga_es(
+    enriched_time_series: DataFrame, metadata: Metadata
+) -> DataFrame:
     return __aggregate_per_ga_and_es(
         enriched_time_series,
         MeteringPointType.consumption,
