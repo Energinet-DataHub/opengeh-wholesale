@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.7
+
+No functional changes.
+
 ## Version 5.0.6
 
 No functional changes.
