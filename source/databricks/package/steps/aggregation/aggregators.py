@@ -170,10 +170,9 @@ def aggregate_non_profiled_consumption_ga_es(
     )
 
 
-def aggregate_flex_consumption_ga_es(results: dict, metadata: Metadata) -> DataFrame:
-    df = results[ResultKeyName.aggregation_base_dataframe]
+def aggregate_flex_consumption_ga_es(enriched_time_series: DataFrame, metadata: Metadata) -> DataFrame:
     return __aggregate_per_ga_and_es(
-        df,
+        enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.flex,
         metadata,
@@ -244,14 +243,14 @@ def __aggregate_per_ga_and_es(
             col(Colname.quantity),
         ),
     )
-    result.show()
     sum_group_by = [
         Colname.grid_area,
+        Colname.balance_responsible_id,
         Colname.energy_supplier_id,
         Colname.time_window,
     ]
     result = __aggregate_sum_and_set_quality(result, "quarter_quantity", sum_group_by)
-    result.show()
+
     win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
 
     result = (

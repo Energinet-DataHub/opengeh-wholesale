@@ -103,11 +103,8 @@ def test_data_factory(spark, agg_flex_consumption_schema):
 
 
 def test_flex_consumption_calculation_per_ga_and_es(test_data_factory):
-    results = {}
-    results[
-        ResultKeyName.flex_consumption_with_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_consumption_ga_es(results, metadata).sort(
+    df = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
+    result = aggregate_flex_consumption_ga_es(df, metadata).sort(
         Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
     )
     result_collect = result.collect()
