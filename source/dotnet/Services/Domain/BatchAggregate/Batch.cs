@@ -117,6 +117,34 @@ public class Batch
 
     public bool AreSettlementReportsCreated { get; set; }
 
+    /// <summary>
+    /// Get the ISO 8601 duration for the given process type.
+    /// </summary>
+    public string GetResolution()
+    {
+        switch (ProcessType)
+        {
+            case ProcessType.BalanceFixing:
+                return "PT15M";
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// Get the unit for result values (an energy unit for aggregations and a price unit/currency for settlements).
+    /// </summary>
+    public string GetQuantityUnit()
+    {
+        switch (ProcessType)
+        {
+            case ProcessType.BalanceFixing:
+                return "kWh";
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
     public void MarkAsSubmitted(CalculationId calculationId)
     {
         ArgumentNullException.ThrowIfNull(calculationId);

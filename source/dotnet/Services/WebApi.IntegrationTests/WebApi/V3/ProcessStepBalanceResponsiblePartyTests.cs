@@ -27,35 +27,32 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 
-[Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class ProcessStepActorTests :
-    WebApiTestBase<WholesaleWebApiFixture>,
-    IClassFixture<WholesaleWebApiFixture>,
-    IClassFixture<WebApiFactory>,
-    IAsyncLifetime
+public class ProcessStepBalanceResponsiblePartyTests : WebApiTestBase
 {
-    private readonly HttpClient _client;
-    private readonly WebApiFactory _factory;
-
-    public ProcessStepActorTests(
+    public ProcessStepBalanceResponsiblePartyTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
-        : base(wholesaleWebApiFixture, testOutputHelper)
+        : base(wholesaleWebApiFixture, factory, testOutputHelper)
     {
-        _factory = factory;
-        _client = factory.CreateClient();
     }
 
-    public Task InitializeAsync()
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType)
     {
-        return Task.CompletedTask;
-    }
+        // Arrange
+        var expectedUrl = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/balance-responsible-parties";
+        var expectedHttpStatusCode = HttpStatusCode.OK;
 
-    public Task DisposeAsync()
-    {
-        _client.Dispose();
-        return Task.CompletedTask;
+        // Act
+        var actualContent = await Client.GetAsync(expectedUrl);
+
+        // Assert
+        actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
     }
 
     [Theory]
@@ -66,20 +63,17 @@ public class ProcessStepActorTests :
         WholesaleActorDto expectedActor)
     {
         // Arrange
-        var expectedUrl = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/market-roles/{request.MarketRole}";
+        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/balance-responsible-parties";
 
         applicationServiceMock
             .Setup(service => service.GetActorsAsync(request))
             .ReturnsAsync(() => new[] { expectedActor });
-        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
-        var actualContent = await _client.GetAsync(expectedUrl);
+        var actualContent = await Client.GetAsync(url);
 
-        // Assert: Response HTTP status code
-        actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        // Assert: Response body
+        // Assert
         var actualActors = await actualContent.Content.ReadFromJsonAsync<List<ActorDto>>();
         actualActors!.Single().Should().BeEquivalentTo(expectedActor);
     }

@@ -25,6 +25,7 @@ public class MarketRoleMapperTests
 {
     [Theory]
     [InlineData(MarketRole.EnergySupplier, "energy_supplier")]
+    [InlineData(MarketRole.BalanceResponsibleParty, "balance_responsible_party")]
     public void WhenMapIsCalled_ThenCorrectStringIsReturned(MarketRole role, string expected)
     {
         var marketRoles = Enum.GetValues(typeof(MarketRole)).Cast<MarketRole>();

@@ -1,0 +1,70 @@
+﻿// Copyright 2020 Energinet DataHub A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License2");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
+using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepActor;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepBalanceResponsibleParty;
+
+/// <summary>
+/// Energy suppliers for which batch results have been calculated.
+/// </summary>
+[ApiController]
+[Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/balance-responsible-parties")]
+public class ProcessStepBalanceResponsiblePartyController : ControllerBase
+{
+    private readonly IProcessStepApplicationService _processStepApplicationService;
+
+    public ProcessStepBalanceResponsiblePartyController(IProcessStepApplicationService processStepApplicationService)
+    {
+        _processStepApplicationService = processStepApplicationService;
+    }
+
+    /// <summary>
+    /// Balance responsible parties.
+    /// </summary>
+    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
+    [HttpGet]
+    public async Task<List<ActorDto>> GetAllAsync(
+        [FromRoute] Guid batchId,
+        [FromRoute] string gridAreaCode,
+        [FromRoute] TimeSeriesType timeSeriesType)
+    {
+        var processStepActorsRequest = new ProcessStepActorsRequest(batchId, gridAreaCode, timeSeriesType, MarketRole.BalanceResponsibleParty);
+
+        var brps = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
+
+        return brps
+            .Select(a => new ActorDto(a.Gln))
+            .ToList();
+    }
+
+    /// <summary>
+    /// Balance responsible party.
+    /// </summary>
+    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
+    [HttpGet]
+    [Route("{gln}")]
+    public Task<ActorDto> GetByGlnAsync(
+        [FromRoute] Guid batchId,
+        [FromRoute] string gridAreaCode,
+        [FromRoute] TimeSeriesType timeSeriesType,
+        [FromRoute] string gln)
+    {
+        return Task.FromResult<ActorDto>(null!);
+    }
+}

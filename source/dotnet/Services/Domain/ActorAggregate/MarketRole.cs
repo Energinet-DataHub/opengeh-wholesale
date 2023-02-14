@@ -17,4 +17,5 @@ namespace Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 public enum MarketRole
 {
     EnergySupplier = 0,
+    BalanceResponsibleParty = 1,
 }

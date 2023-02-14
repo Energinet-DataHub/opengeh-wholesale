@@ -42,6 +42,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
+using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
@@ -114,6 +115,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<IJsonSerializer, JsonSerializer>();
+        services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
 
         RegisterDomainEventPublisher(services);
 
