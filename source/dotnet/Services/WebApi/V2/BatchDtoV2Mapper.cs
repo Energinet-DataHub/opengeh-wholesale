@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Controllers.V2;
+namespace Energinet.DataHub.Wholesale.WebApi.V2;
 
 public class BatchDtoV2Mapper : IBatchDtoV2Mapper
 {
