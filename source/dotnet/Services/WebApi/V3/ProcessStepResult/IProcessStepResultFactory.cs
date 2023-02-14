@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
 
-public enum MarketRole
+namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
+
+public interface IProcessStepResultFactory
 {
-    EnergySupplier = 0,
-    BalanceResponsibleParty = 1,
+    public ProcessStepResultDto Create(Contracts.ProcessStepResultDto stepResult, BatchDto batch);
 }

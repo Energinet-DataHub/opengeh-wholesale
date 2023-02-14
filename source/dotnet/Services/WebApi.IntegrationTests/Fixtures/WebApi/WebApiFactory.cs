@@ -12,19 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
-using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -64,46 +54,12 @@ public class WebApiFactory : WebApplicationFactory<Startup>
                 services.AddSingleton<IAuthorizationHandler>(new AllowAnonymous());
             }
 
-            services.AddScoped(
-                provider =>
-                {
-                    if (SettlementReportApplicationServiceMock != null)
-                        return SettlementReportApplicationServiceMock.Object;
-
-                    var batchRepository = provider.GetRequiredService<IBatchRepository>();
-                    var settlementReportRepository = provider.GetRequiredService<ISettlementReportRepository>();
-                    var unitOfWork = provider.GetRequiredService<IUnitOfWork>();
-                    return new SettlementReportApplicationService(batchRepository, settlementReportRepository, unitOfWork);
-                });
-
-            services.AddScoped(
-                provider =>
-                {
-                    if (ProcessStepApplicationServiceMock != null)
-                        return ProcessStepApplicationServiceMock.Object;
-
-                    return new ProcessStepApplicationService(
-                        provider.GetRequiredService<IProcessStepResultRepository>(),
-                        provider.GetRequiredService<IProcessStepResultMapper>(),
-                        provider.GetRequiredService<IActorRepository>());
-                });
-
-            services.AddScoped(
-                provider =>
-                {
-                    if (BatchApplicationServiceMock != null)
-                        return BatchApplicationServiceMock.Object;
-
-                    return new BatchApplicationService(
-                        provider.GetRequiredService<IBatchFactory>(),
-                        provider.GetRequiredService<IBatchRepository>(),
-                        provider.GetRequiredService<IUnitOfWork>(),
-                        provider.GetRequiredService<ICalculationDomainService>(),
-                        provider.GetRequiredService<IBatchExecutionStateDomainService>(),
-                        provider.GetRequiredService<IBatchDtoMapper>(),
-                        provider.GetRequiredService<IProcessTypeMapper>(),
-                        provider.GetRequiredService<IDomainEventPublisher>());
-                });
+            services.AddScoped(_ =>
+                SettlementReportApplicationServiceMock?.Object ??
+                new Mock<ISettlementReportApplicationService>().Object);
+            services.AddScoped(_ =>
+                ProcessStepApplicationServiceMock?.Object ?? new Mock<IProcessStepApplicationService>().Object);
+            services.AddScoped(_ => BatchApplicationServiceMock?.Object ?? new Mock<IBatchApplicationService>().Object);
         });
     }
 

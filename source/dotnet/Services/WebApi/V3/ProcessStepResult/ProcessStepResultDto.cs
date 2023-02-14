@@ -12,22 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
-
-namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
 /// <summary>
-/// An immutable batch.
+/// Result data from a specific step in a process
 /// </summary>
-public sealed record BatchDto(
-    long? RunId,
-    Guid BatchId,
+/// <param name="Sum">Sum has a scale of 3</param>
+/// <param name="Min">Min has a scale of 3</param>
+/// <param name="Max">Max has a scale of 3</param>
+/// <param name="PeriodStart"></param>
+/// <param name="PeriodEnd"></param>
+/// <param name="Resolution"></param>
+/// <param name="Unit">kWh</param>
+/// <param name="TimeSeriesPoints"></param>
+public sealed record ProcessStepResultDto(
+    decimal Sum,
+    decimal Min,
+    decimal Max,
     DateTimeOffset PeriodStart,
     DateTimeOffset PeriodEnd,
     string Resolution,
     string Unit,
-    DateTimeOffset? ExecutionTimeStart,
-    DateTimeOffset? ExecutionTimeEnd,
-    BatchState ExecutionState,
-    bool AreSettlementReportsCreated,
-    string[] GridAreaCodes);
+    TimeSeriesPointDto[] TimeSeriesPoints);
