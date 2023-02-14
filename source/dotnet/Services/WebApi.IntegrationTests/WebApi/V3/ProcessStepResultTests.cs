@@ -15,6 +15,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
@@ -41,10 +43,22 @@ public class ProcessStepResultTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
+        Mock<IProcessStepApplicationService> processStepApplicationServiceMock,
+        Mock<IBatchApplicationService> batchApplicationServiceMock,
+        Contracts.ProcessStepResultDto result,
+        BatchDto batchDto,
         ProcessStepActorsRequest request)
     {
         // Arrange
         request.SetPrivateProperty(r => r.Type, TimeSeriesType.Production);
+        result.SetPrivateProperty(r => r.TimeSeriesPoints, new TimeSeriesPointDto[] { new(DateTimeOffset.Now, decimal.One, "A04") });
+        processStepApplicationServiceMock
+            .Setup(service => service.GetResultAsync(It.IsAny<ProcessStepResultRequestDto>()))
+            .ReturnsAsync(() => result);
+        batchApplicationServiceMock.Setup(service => service.GetAsync(request.BatchId)).ReturnsAsync(batchDto);
+        Factory.ProcessStepApplicationServiceMock = processStepApplicationServiceMock;
+        Factory.BatchApplicationServiceMock = batchApplicationServiceMock;
+
         var expectedUrl = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}";
         var expectedHttpStatusCode = HttpStatusCode.OK;
 
@@ -67,7 +81,7 @@ public class ProcessStepResultTests : WebApiTestBase
         var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}?gln={gln}";
 
         applicationServiceMock
-            .Setup(service => service.GetActorsAsync(request))
+            .Setup(service => service.GetActorsAsync(It.IsAny<ProcessStepActorsRequest>()))
             .ReturnsAsync(() => new[] { expectedActor });
         Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
