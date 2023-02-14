@@ -40,7 +40,6 @@ def calculate_balance_fixing(
     period_end_datetime: datetime,
     time_zone: str,
 ) -> None:
-
     enriched_time_series_point_df = _get_enriched_time_series_points_df(
         timeseries_points,
         metering_points_periods_df,
@@ -87,7 +86,6 @@ def _create_and_write_basis_data(
 def _calculate(
     result_writer: ProcessStepResultWriter, enriched_time_series_point_df: DataFrame
 ) -> None:
-
     metadata_fake = Metadata("1", "1", "1", "1")
 
     _calculate_production(result_writer, enriched_time_series_point_df, metadata_fake)
@@ -102,7 +100,6 @@ def _calculate_production(
     enriched_time_series: DataFrame,
     metadata: Metadata,
 ) -> None:
-
     production_per_per_ga_and_brp_and_es = (
         agg_steps.aggregate_production_per_ga_and_brp_and_es(
             enriched_time_series, metadata
@@ -120,16 +117,26 @@ def _calculate_non_profiled_consumption(
     enriched_time_series_point_df: DataFrame,
     metadata: Metadata,
 ) -> None:
-
-    consumption_per_ga_and_es_and_brp = (
-        agg_steps.aggregate_non_profiled_consumption_per_ga_and_es_and_brp(
+    consumption_per_ga_and_brp_and_es = (
+        agg_steps.aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
             enriched_time_series_point_df, metadata
         )
     )
 
+    # Non-profiled consumption per balance responsible
+    consumption_per_ga_and_brp = agg_steps.aggregate_non_profiled_consumption_ga_brp(
+        consumption_per_ga_and_brp_and_es, metadata
+    )
+
+    result_writer.write_per_ga_per_actor(
+        consumption_per_ga_and_brp,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        MarketRole.BALANCE_RESPONSIBLE_PARTY,
+    )
+
     # Non-profiled consumption per energy supplier
     consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
-        consumption_per_ga_and_es_and_brp, metadata
+        consumption_per_ga_and_brp_and_es, metadata
     )
 
     result_writer.write_per_ga_per_actor(
