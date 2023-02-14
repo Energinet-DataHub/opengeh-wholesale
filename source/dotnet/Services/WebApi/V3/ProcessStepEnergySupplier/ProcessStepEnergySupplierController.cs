@@ -42,6 +42,7 @@ public class ProcessStepEnergySupplierController : ControllerBase
     [Route("{gln}")]
     public Task<ActorDto> GetByGlnAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType, [FromRoute] string gln)
     {
+        // TODO: missing implementation
         return Task.FromResult<ActorDto>(null!);
     }
 
@@ -55,6 +56,7 @@ public class ProcessStepEnergySupplierController : ControllerBase
         if (balanceResponsibleParty == null)
             return await GetAllAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
 
+        // TODO: missing implementation
         return null!;
     }
 
