@@ -20,7 +20,7 @@ from package.codelists import (
 )
 
 from package.steps.aggregation import (
-    aggregate_production_ga_es,
+    aggregate_production_ga_brp_es,
     aggregate_production_ga_brp,
     aggregate_production_ga,
 )

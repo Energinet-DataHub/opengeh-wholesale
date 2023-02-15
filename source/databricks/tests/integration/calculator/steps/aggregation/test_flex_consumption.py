@@ -19,7 +19,7 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.steps.aggregation import (
-    aggregate_flex_consumption_ga_es,
+    aggregate_flex_consumption_ga_brp_es,
     aggregate_flex_consumption_ga_brp,
     aggregate_flex_consumption_ga,
 )

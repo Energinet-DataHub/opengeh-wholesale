@@ -159,10 +159,10 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
     return create_dataframe_from_aggregation_result_schema(metadata, resultDf)
 
 
-def aggregate_non_profiled_consumption_ga_es(
+def aggregate_non_profiled_consumption_ga_brp_es(
     enriched_time_series: DataFrame, metadata: Metadata
 ) -> DataFrame:
-    return __aggregate_per_ga_and_es(
+    return __aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.non_profiled,
@@ -170,10 +170,10 @@ def aggregate_non_profiled_consumption_ga_es(
     )
 
 
-def aggregate_flex_consumption_ga_es(
+def aggregate_flex_consumption_ga_brp_es(
     enriched_time_series: DataFrame, metadata: Metadata
 ) -> DataFrame:
-    return __aggregate_per_ga_and_es(
+    return __aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.flex,
@@ -181,16 +181,16 @@ def aggregate_flex_consumption_ga_es(
     )
 
 
-def aggregate_production_ga_es(
+def aggregate_production_ga_brp_es(
     enriched_time_series: DataFrame, metadata: Metadata
 ) -> DataFrame:
-    return __aggregate_per_ga_and_es(
+    return __aggregate_per_ga_and_brp_and_es(
         enriched_time_series, MeteringPointType.production, None, metadata
     )
 
 
 # Function to aggregate sum per grid area and energy supplier (step 12, 13 and 14)
-def __aggregate_per_ga_and_es(
+def __aggregate_per_ga_and_brp_and_es(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
     settlement_method: Union[SettlementMethod, None],

@@ -16,16 +16,16 @@ from .aggregation_initializer import get_time_series_dataframe
 from .aggregators import (
     aggregate_net_exchange_per_ga,
     aggregate_net_exchange_per_neighbour_ga,
-    aggregate_production_ga_es,
-    aggregate_non_profiled_consumption_ga_es,
-    aggregate_flex_consumption_ga_es,
+    aggregate_production_ga_brp_es,
+    aggregate_non_profiled_consumption_ga_brp_es,
+    aggregate_flex_consumption_ga_brp_es,
     aggregate_production_ga_brp,
     aggregate_non_profiled_consumption_ga_brp,
     aggregate_flex_consumption_ga_brp,
     aggregate_production_ga,
     aggregate_non_profiled_consumption_ga,
     aggregate_flex_consumption_ga,
-    __aggregate_per_ga_and_es,
+    __aggregate_per_ga_and_brp_and_es,
 )
 from .grid_loss_calculator import (
     calculate_grid_loss,
