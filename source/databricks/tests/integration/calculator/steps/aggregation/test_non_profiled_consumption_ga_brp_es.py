@@ -14,7 +14,7 @@
 from decimal import Decimal
 from datetime import datetime
 from package.constants import Colname
-from package.steps.aggregation import (
+from package.steps.aggregation.aggregators import (
     aggregate_non_profiled_consumption_ga_brp_es,
     _aggregate_per_ga_and_brp_and_es,
 )
