@@ -21,3 +21,21 @@ resource "azurerm_role_assignment" "ra_migrations_contributor" {
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azuread_service_principal.spn_databricks.id
 }
+
+resource "azurerm_storage_container" "bronze" {
+  name                  = "bronze"
+  storage_account_name  = module.st_migrations.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "silver" {
+  name                  = "silver"
+  storage_account_name  = module.st_migrations.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "gold" {
+  name                  = "gold"
+  storage_account_name  = module.st_migrations.name
+  container_access_type = "private"
+}
