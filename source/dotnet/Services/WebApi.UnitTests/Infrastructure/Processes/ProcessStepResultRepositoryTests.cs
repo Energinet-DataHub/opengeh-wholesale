@@ -46,7 +46,7 @@ public class ProcessStepResultRepositoryTests
             .ReturnsAsync(stream.Object);
         dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(dataLakeFileClientMock.Object);
-        var processResultPoint = new ProcessResultPoint("1.00", "A04", "2022-05-31T22:00:00");
+        var processResultPoint = new ProcessResultPoint("1.00", "measured", "2022-05-31T22:00:00");
         jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ProcessResultPoint>(stream.Object))
             .ReturnsAsync(new List<ProcessResultPoint>
             {
