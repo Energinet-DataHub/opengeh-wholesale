@@ -45,8 +45,8 @@ public class Startup
                 "v1",
                 new OpenApiInfo
                 {
-                    Title = "My API - V1",
-                    Version = "v1",
+                    Title = "Wholesale API - v2-v3",
+                    Version = "v2-v3",
                 });
             var filePath = Path.Combine(AppContext.BaseDirectory, "Energinet.DataHub.Wholesale.WebApi.xml");
             c.IncludeXmlComments(filePath);
