@@ -13,7 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 from package.steps.aggregation import (
     aggregate_production_ga_brp_es,
     __aggregate_per_ga_and_brp_and_es,
@@ -29,7 +29,8 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, sum, lit
 from pyspark.sql.types import DecimalType
 import pytest
-from typing import Callable
+from typing import Callable, Optional
+from pandas.core.frame import DataFrame as PandasDataFrame
 
 e_17 = MeteringPointType.consumption.value
 e_18 = MeteringPointType.production.value
@@ -54,8 +55,8 @@ metadata = Metadata("1", "1", "1", "1")
 
 @pytest.fixture
 def enriched_time_series_factory(
-    spark: SparkSession, timestamp_factory: Callable
-) -> Callable:
+    spark: SparkSession, timestamp_factory: Callable[[str], Optional[datetime]]
+) -> Callable[..., DataFrame]:
     def factory(
         resolution: str = default_resolution,
         quantity: Decimal = default_quantity,
@@ -84,8 +85,8 @@ def enriched_time_series_factory(
 
 @pytest.fixture
 def enriched_time_series_quarterly_same_time_factory(
-    enriched_time_series_factory: Callable,
-) -> Callable:
+    enriched_time_series_factory: Callable[..., DataFrame],
+) -> Callable[..., DataFrame]:
     def factory(
         first_resolution: str = MeteringPointResolution.quarter.value,
         second_resolution: str = MeteringPointResolution.quarter.value,
@@ -132,7 +133,7 @@ def check_aggregation_row(
         "TimestampType in pyspark is not tz aware like in Pandas rather it passes long ints
         and displays them according to your machine's local time zone (by default)"
     """
-    pandas_df = df.toPandas()
+    pandas_df: PandasDataFrame = df.toPandas()
     assert pandas_df[Colname.grid_area][row] == grid
     assert pandas_df[Colname.balance_responsible_id][row] == responsible
     assert pandas_df[Colname.energy_supplier_id][row] == supplier
@@ -149,7 +150,7 @@ def check_aggregation_row(
     ],
 )
 def test_production_aggregator_filters_out_incorrect_point_type(
-    metering_point_type: str, enriched_time_series_factory: Callable
+    metering_point_type: str, enriched_time_series_factory: Callable[..., DataFrame]
 ) -> None:
     """
     Aggregator should filter out all non "E18" MarketEvaluationPointType rows
@@ -162,7 +163,7 @@ def test_production_aggregator_filters_out_incorrect_point_type(
 
 
 def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
-    enriched_time_series_factory: Callable,
+    enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator should calculate the correct sum of a "grid area" grouping within the
@@ -193,7 +194,7 @@ def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
 
 
 def test_production_aggregator_returns_distinct_rows_for_observations_in_different_hours(
-    enriched_time_series_factory: Callable,
+    enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator can calculate the correct sum of a "grid area"-"responsible"-"supplier" grouping
@@ -236,7 +237,7 @@ def test_production_aggregator_returns_distinct_rows_for_observations_in_differe
 
 
 def test_production_aggregator_returns_correct_schema(
-    enriched_time_series_factory: Callable,
+    enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
@@ -248,7 +249,7 @@ def test_production_aggregator_returns_correct_schema(
 
 
 def test_production_test_filter_by_domain_is_pressent(
-    enriched_time_series_factory: Callable,
+    enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
     df = enriched_time_series_factory()
     aggregated_df = __aggregate_per_ga_and_brp_and_es(
@@ -259,7 +260,7 @@ def test_production_test_filter_by_domain_is_pressent(
 
 # Test sums with only quarterly can be calculated
 def test__quarterly_sums_correctly(
-    enriched_time_series_quarterly_same_time_factory: Callable,
+    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
 ) -> None:
     """Test that checks quantity is summed correctly with only quarterly times"""
     df = enriched_time_series_quarterly_same_time_factory(
@@ -293,7 +294,7 @@ def test__quarterly_sums_correctly(
     ],
 )
 def test__hourly_sums_are_rounded_correctly(
-    enriched_time_series_factory: Callable,
+    enriched_time_series_factory: Callable[..., DataFrame],
     quantity: Decimal,
     expected_point_quantity: Decimal,
 ) -> None:
@@ -314,7 +315,7 @@ def test__hourly_sums_are_rounded_correctly(
 
 
 def test__quarterly_and_hourly_sums_correctly(
-    enriched_time_series_quarterly_same_time_factory: Callable,
+    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
 ) -> None:
     """Test that checks quantity is summed correctly with quarterly and hourly times"""
     first_quantity = Decimal("4")
@@ -333,7 +334,7 @@ def test__quarterly_and_hourly_sums_correctly(
 
 
 def test__points_with_same_time_quantities_are_on_same_position(
-    enriched_time_series_quarterly_same_time_factory: Callable,
+    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
 ) -> None:
     """Test that points with the same 'time' have added their 'Quantity's together on the same position"""
     df = enriched_time_series_quarterly_same_time_factory(
@@ -351,7 +352,7 @@ def test__points_with_same_time_quantities_are_on_same_position(
 
 
 def test__position_is_based_on_time_correctly(
-    enriched_time_series_quarterly_same_time_factory: Callable,
+    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
 ) -> None:
     """'position' is correctly placed based on 'time'"""
     df = enriched_time_series_quarterly_same_time_factory(
@@ -375,7 +376,7 @@ def test__position_is_based_on_time_correctly(
 
 
 def test__that_hourly_quantity_is_summed_as_quarterly(
-    enriched_time_series_quarterly_same_time_factory: Callable,
+    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
 ) -> None:
     "Test that checks if hourly quantities are summed as quarterly"
     df = enriched_time_series_quarterly_same_time_factory(
@@ -396,7 +397,7 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
 
 
 def test__that_grid_area_code_in_input_is_in_output(
-    enriched_time_series_quarterly_same_time_factory: Callable,
+    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
 ) -> None:
     "Test that the grid area codes in input are in result"
     df = enriched_time_series_quarterly_same_time_factory()
@@ -407,7 +408,7 @@ def test__that_grid_area_code_in_input_is_in_output(
 
 
 def test__each_grid_area_has_a_sum(
-    enriched_time_series_quarterly_same_time_factory: Callable,
+    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
 ) -> None:
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
@@ -419,7 +420,7 @@ def test__each_grid_area_has_a_sum(
 
 
 def test__final_sum_of_different_magnitudes_should_not_lose_precision(
-    enriched_time_series_factory: Callable,
+    enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
     """Test that values with different magnitudes do not lose precision when accumulated"""
     df = (
@@ -479,7 +480,7 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
     ],
 )
 def test__quality_is_lowest_common_denominator_among_measured_estimated_and_missing(
-    enriched_time_series_factory: Callable,
+    enriched_time_series_factory: Callable[..., DataFrame],
     quality_1: str,
     quality_2: str,
     quality_3: str,
@@ -497,7 +498,7 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
 
 
 def test__when_time_series_point_is_missing__quality_has_value_incomplete(
-    enriched_time_series_factory: Callable,
+    enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
     df = enriched_time_series_factory().withColumn("quality", lit(None))
 
@@ -508,7 +509,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
 
 
 def test__when_time_series_point_is_missing__quantity_is_0(
-    enriched_time_series_factory: Callable,
+    enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
     df = enriched_time_series_factory().withColumn(
         Colname.quantity, lit(None).cast(DecimalType())
