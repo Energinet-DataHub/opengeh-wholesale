@@ -13,7 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 from package.steps.aggregation import (
     aggregate_flex_consumption_ga_brp_es,
     __aggregate_per_ga_and_brp_and_es,
@@ -25,10 +25,18 @@ from package.codelists import (
 )
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
-from pyspark.sql import DataFrame
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+)
+from typing import Callable
 import pytest
 import pandas as pd
+from pandas.core.frame import DataFrame as PandasDataFrame
+
 
 e_20 = MeteringPointType.exchange.value
 e_17 = MeteringPointType.consumption.value
@@ -54,7 +62,7 @@ metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
-def time_series_schema():
+def time_series_schema() -> StructType:
     """
     Input time series data point schema
     """
@@ -73,21 +81,23 @@ def time_series_schema():
 
 
 @pytest.fixture(scope="module")
-def time_series_row_factory(spark, time_series_schema):
+def time_series_row_factory(
+    spark: SparkSession, time_series_schema: StringType
+) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
 
     def factory(
-        point_type=default_point_type,
-        settlement_method=default_settlement_method,
-        domain=default_domain,
-        responsible=default_responsible,
-        supplier=default_supplier,
-        quantity=default_quantity,
-        obs_time=default_obs_time,
-        resolution=default_resolution,
-    ):
+        point_type: str = default_point_type,
+        settlement_method: str = default_settlement_method,
+        domain: str = default_domain,
+        responsible: str = default_responsible,
+        supplier: str = default_supplier,
+        quantity: Decimal = default_quantity,
+        obs_time: datetime = default_obs_time,
+        resolution: str = default_resolution,
+    ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.metering_point_type: [point_type],
@@ -115,7 +125,7 @@ def check_aggregation_row(
     sum: Decimal,
     start: datetime,
     end: datetime,
-):
+) -> None:
     """
     Helper function that checks column values for the given row.
     Note that start and end datetimes are timezone-naive - we set the Spark session timezone to UTC in the
@@ -124,7 +134,8 @@ def check_aggregation_row(
         "TimestampType in pyspark is not tz aware like in Pandas rather it passes long ints
         and displays them according to your machine's local time zone (by default)"
     """
-    pandas_df = df.toPandas()
+
+    pandas_df: PandasDataFrame = df.toPandas()
     assert pandas_df[Colname.grid_area][row] == grid
     assert pandas_df[Colname.balance_responsible_id][row] == responsible
     assert pandas_df[Colname.energy_supplier_id][row] == supplier
@@ -140,7 +151,9 @@ def check_aggregation_row(
         pytest.param(e_20, id="should filter out E20"),
     ],
 )
-def test_filters_out_incorrect_point_type(point_type, time_series_row_factory):
+def test_filters_out_incorrect_point_type(
+    point_type: str, time_series_row_factory: Callable[..., DataFrame]
+) -> None:
     """
     Aggregator should filter out all non "E17" MarketEvaluationPointType rows
     """
@@ -156,8 +169,8 @@ def test_filters_out_incorrect_point_type(point_type, time_series_row_factory):
     ],
 )
 def test_filters_out_incorrect_settlement_method(
-    settlement_method, time_series_row_factory
-):
+    settlement_method: str, time_series_row_factory: Callable[..., DataFrame]
+) -> None:
     """
     Aggregator should filter out all non "D01" SettlementMethod rows
     """
@@ -166,7 +179,9 @@ def test_filters_out_incorrect_settlement_method(
     assert aggregated_df.count() == 0
 
 
-def test_aggregates_observations_in_same_hour(time_series_row_factory):
+def test_aggregates_observations_in_same_hour(
+    time_series_row_factory: Callable[..., DataFrame]
+) -> None:
     """
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
     same quarter hour time window
@@ -195,8 +210,8 @@ def test_aggregates_observations_in_same_hour(time_series_row_factory):
 
 
 def test_returns_distinct_rows_for_observations_in_different_hours(
-    time_series_row_factory,
-):
+    time_series_row_factory: Callable[..., DataFrame],
+) -> None:
     """
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
     2 different quarter hour time windows
@@ -242,7 +257,9 @@ def test_returns_distinct_rows_for_observations_in_different_hours(
     )
 
 
-def test_returns_correct_schema(time_series_row_factory):
+def test_returns_correct_schema(
+    time_series_row_factory: Callable[..., DataFrame]
+) -> None:
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
     and time window (from the quarter-hour resolution specified in the aggregator).
@@ -252,7 +269,9 @@ def test_returns_correct_schema(time_series_row_factory):
     assert aggregated_df.schema == aggregation_result_schema
 
 
-def test_flex_consumption_test_filter_by_domain_is_present(time_series_row_factory):
+def test_flex_consumption_test_filter_by_domain_is_present(
+    time_series_row_factory: Callable[..., DataFrame]
+) -> None:
     df = time_series_row_factory()
     aggregated_df = __aggregate_per_ga_and_brp_and_es(
         df,
@@ -263,7 +282,9 @@ def test_flex_consumption_test_filter_by_domain_is_present(time_series_row_facto
     assert aggregated_df.count() == 1
 
 
-def test_flex_consumption_test_filter_by_domain_is_not_present(time_series_row_factory):
+def test_flex_consumption_test_filter_by_domain_is_not_present(
+    time_series_row_factory: Callable[..., DataFrame]
+) -> None:
     df = time_series_row_factory()
     aggregated_df = __aggregate_per_ga_and_brp_and_es(
         df,
