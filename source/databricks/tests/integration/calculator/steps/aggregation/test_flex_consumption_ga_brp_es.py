@@ -83,7 +83,7 @@ def time_series_schema() -> StructType:
 @pytest.fixture(scope="module")
 def time_series_row_factory(
     spark: SparkSession, time_series_schema: StringType
-) -> Callable[..., DataFrame]:
+) -> Callable:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
@@ -152,7 +152,7 @@ def check_aggregation_row(
     ],
 )
 def test_filters_out_incorrect_point_type(
-    point_type: str, time_series_row_factory: Callable[..., DataFrame]
+    point_type: str, time_series_row_factory: Callable
 ) -> None:
     """
     Aggregator should filter out all non "E17" MarketEvaluationPointType rows
@@ -169,7 +169,7 @@ def test_filters_out_incorrect_point_type(
     ],
 )
 def test_filters_out_incorrect_settlement_method(
-    settlement_method: str, time_series_row_factory: Callable[..., DataFrame]
+    settlement_method: str, time_series_row_factory: Callable
 ) -> None:
     """
     Aggregator should filter out all non "D01" SettlementMethod rows
@@ -180,7 +180,7 @@ def test_filters_out_incorrect_settlement_method(
 
 
 def test_aggregates_observations_in_same_hour(
-    time_series_row_factory: Callable[..., DataFrame]
+    time_series_row_factory: Callable,
 ) -> None:
     """
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
@@ -210,7 +210,7 @@ def test_aggregates_observations_in_same_hour(
 
 
 def test_returns_distinct_rows_for_observations_in_different_hours(
-    time_series_row_factory: Callable[..., DataFrame],
+    time_series_row_factory: Callable,
 ) -> None:
     """
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
@@ -257,9 +257,7 @@ def test_returns_distinct_rows_for_observations_in_different_hours(
     )
 
 
-def test_returns_correct_schema(
-    time_series_row_factory: Callable[..., DataFrame]
-) -> None:
+def test_returns_correct_schema(time_series_row_factory: Callable) -> None:
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
     and time window (from the quarter-hour resolution specified in the aggregator).
@@ -270,7 +268,7 @@ def test_returns_correct_schema(
 
 
 def test_flex_consumption_test_filter_by_domain_is_present(
-    time_series_row_factory: Callable[..., DataFrame]
+    time_series_row_factory: Callable,
 ) -> None:
     df = time_series_row_factory()
     aggregated_df = __aggregate_per_ga_and_brp_and_es(
