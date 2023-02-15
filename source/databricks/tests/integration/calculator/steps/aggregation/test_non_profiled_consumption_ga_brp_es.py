@@ -75,7 +75,7 @@ def time_series_schema() -> StructType:
 @pytest.fixture(scope="module")
 def time_series_row_factory(
     spark: SparkSession, time_series_schema: StructType
-) -> Callable:
+) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
@@ -136,7 +136,7 @@ def check_aggregation_row(
 
 
 def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
-    time_series_row_factory: Callable,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator should filter out all non "E17" MarketEvaluationPointType rows
@@ -147,7 +147,7 @@ def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
 
 
 def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
-    time_series_row_factory: Callable,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
@@ -177,7 +177,7 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
 
 
 def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_in_different_hours(
-    time_series_row_factory: Callable,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator should calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
@@ -225,7 +225,7 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
 
 
 def test_consumption_supplier_aggregator_returns_correct_schema(
-    time_series_row_factory: Callable,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
@@ -237,7 +237,7 @@ def test_consumption_supplier_aggregator_returns_correct_schema(
 
 
 def test_consumption_test_filter_by_domain_is_pressent(
-    time_series_row_factory: Callable,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     df = time_series_row_factory()
     aggregated_df = __aggregate_per_ga_and_brp_and_es(
@@ -250,7 +250,7 @@ def test_consumption_test_filter_by_domain_is_pressent(
 
 
 def test_consumption_test_filter_by_domain_is_not_pressent(
-    time_series_row_factory: Callable,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     df = time_series_row_factory()
     aggregated_df = __aggregate_per_ga_and_brp_and_es(
@@ -262,7 +262,7 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
     assert aggregated_df.count() == 0
 
 
-def test_expected_schema(time_series_row_factory: Callable) -> None:
+def test_expected_schema(time_series_row_factory: Callable[..., DataFrame]) -> None:
     time_series = time_series_row_factory()
     aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series, metadata)
     assert aggregated_df.schema == aggregation_result_schema
