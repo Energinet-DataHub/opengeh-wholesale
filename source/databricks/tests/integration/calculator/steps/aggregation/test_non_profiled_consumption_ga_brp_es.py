@@ -13,7 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 from package.steps.aggregation import (
     aggregate_non_profiled_consumption_ga_brp_es,
     __aggregate_per_ga_and_brp_and_es,
@@ -25,10 +25,12 @@ from package.codelists import (
 )
 from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from typing import Callable
 import pytest
 import pandas as pd
+from pandas.core.frame import DataFrame as PandasDataFrame
 
 e_17 = MeteringPointType.consumption.value
 e_18 = MeteringPointType.production.value
@@ -52,7 +54,7 @@ metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
-def time_series_schema():
+def time_series_schema() -> StructType:
     """
     Input time series data point schema
     """
@@ -71,20 +73,22 @@ def time_series_schema():
 
 
 @pytest.fixture(scope="module")
-def time_series_row_factory(spark, time_series_schema):
+def time_series_row_factory(
+    spark: SparkSession, time_series_schema: StructType
+) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
 
     def factory(
-        point_type=default_point_type,
-        settlement_method=default_settlement_method,
-        domain=default_domain,
-        responsible=default_responsible,
-        supplier=default_supplier,
-        quantity=default_quantity,
-        obs_time=default_obs_time,
-        resolution=default_resolution,
+        point_type: str = default_point_type,
+        settlement_method: str = default_settlement_method,
+        domain: str = default_domain,
+        responsible: str = default_responsible,
+        supplier: str = default_supplier,
+        quantity: Decimal = default_quantity,
+        obs_time: datetime = default_obs_time,
+        resolution: str = default_resolution,
     ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
@@ -122,7 +126,7 @@ def check_aggregation_row(
         "TimestampType in pyspark is not tz aware like in Pandas rather it passes long ints
         and displays them according to your machine's local time zone (by default)"
     """
-    pandas_df = df.toPandas()
+    pandas_df: PandasDataFrame = df.toPandas()
     assert pandas_df[Colname.grid_area][row] == grid
     assert pandas_df[Colname.balance_responsible_id][row] == responsible
     assert pandas_df[Colname.energy_supplier_id][row] == supplier
@@ -132,7 +136,7 @@ def check_aggregation_row(
 
 
 def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
-    time_series_row_factory,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator should filter out all non "E17" MarketEvaluationPointType rows
@@ -143,7 +147,7 @@ def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
 
 
 def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
-    time_series_row_factory,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
@@ -173,7 +177,7 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
 
 
 def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_in_different_hours(
-    time_series_row_factory,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator should calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
@@ -221,7 +225,7 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
 
 
 def test_consumption_supplier_aggregator_returns_correct_schema(
-    time_series_row_factory,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
@@ -232,7 +236,9 @@ def test_consumption_supplier_aggregator_returns_correct_schema(
     assert aggregated_df.schema == aggregation_result_schema
 
 
-def test_consumption_test_filter_by_domain_is_pressent(time_series_row_factory) -> None:
+def test_consumption_test_filter_by_domain_is_pressent(
+    time_series_row_factory: Callable[..., DataFrame]
+) -> None:
     df = time_series_row_factory()
     aggregated_df = __aggregate_per_ga_and_brp_and_es(
         df,
@@ -244,7 +250,7 @@ def test_consumption_test_filter_by_domain_is_pressent(time_series_row_factory) 
 
 
 def test_consumption_test_filter_by_domain_is_not_pressent(
-    time_series_row_factory,
+    time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     df = time_series_row_factory()
     aggregated_df = __aggregate_per_ga_and_brp_and_es(
@@ -256,7 +262,7 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
     assert aggregated_df.count() == 0
 
 
-def test_expected_schema(time_series_row_factory) -> None:
+def test_expected_schema(time_series_row_factory: Callable[..., DataFrame]) -> None:
     time_series = time_series_row_factory()
     aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series, metadata)
     assert aggregated_df.schema == aggregation_result_schema
