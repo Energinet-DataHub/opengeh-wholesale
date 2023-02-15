@@ -53,6 +53,9 @@ resource "databricks_job" "this" {
         "spark.databricks.io.cache.enabled": true
         "spark.master": "local[*, 4]"
       }
+      spark_env_vars = {
+        "APPI_INSTRUMENTATION_KEY" = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+      }
     }
   }
   
