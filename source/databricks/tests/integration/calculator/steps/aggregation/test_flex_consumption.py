@@ -19,7 +19,6 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.steps.aggregation import (
-    aggregate_flex_consumption_ga_es,
     aggregate_flex_consumption_ga_brp,
     aggregate_flex_consumption_ga,
 )
@@ -28,6 +27,8 @@ from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql import SparkSession, DataFrame
+from typing import Callable
 import pytest
 import pandas as pd
 from package.constants import Colname, ResultKeyName
@@ -41,7 +42,7 @@ metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
-def agg_flex_consumption_schema():
+def agg_flex_consumption_schema() -> StructType:
     return (
         StructType()
         .add(Colname.grid_area, StringType(), False)
@@ -62,8 +63,10 @@ def agg_flex_consumption_schema():
 
 
 @pytest.fixture(scope="module")
-def test_data_factory(spark, agg_flex_consumption_schema):
-    def factory():
+def test_data_factory(
+    spark: SparkSession, agg_flex_consumption_schema: StructType
+) -> Callable[..., DataFrame]:
+    def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [],
@@ -102,25 +105,9 @@ def test_data_factory(spark, agg_flex_consumption_schema):
     return factory
 
 
-def test_flex_consumption_calculation_per_ga_and_es(test_data_factory):
-    results = {}
-    results[
-        ResultKeyName.flex_consumption_with_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_consumption_ga_es(results, metadata).sort(
-        Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
-    )
-    result_collect = result.collect()
-    assert result_collect[0][Colname.balance_responsible_id] is None
-    assert result_collect[0][Colname.grid_area] == "0"
-    assert result_collect[9][Colname.energy_supplier_id] == "9"
-    assert result_collect[10][Colname.sum_quantity] == Decimal("15")
-    assert result_collect[29][Colname.grid_area] == "2"
-    assert result_collect[29][Colname.energy_supplier_id] == "9"
-    assert result_collect[29][Colname.sum_quantity] == Decimal("65")
-
-
-def test_flex_consumption_calculation_per_ga_and_brp(test_data_factory):
+def test_flex_consumption_calculation_per_ga_and_brp(
+    test_data_factory: Callable[..., DataFrame]
+) -> None:
     results = {}
     results[
         ResultKeyName.flex_consumption_with_grid_loss
@@ -138,7 +125,9 @@ def test_flex_consumption_calculation_per_ga_and_brp(test_data_factory):
     assert result_collect[14][Colname.sum_quantity] == Decimal("105")
 
 
-def test_flex_consumption_calculation_per_ga(test_data_factory):
+def test_flex_consumption_calculation_per_ga(
+    test_data_factory: Callable[..., DataFrame]
+) -> None:
     results = {}
     results[
         ResultKeyName.flex_consumption_with_grid_loss

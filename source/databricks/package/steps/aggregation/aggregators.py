@@ -159,11 +159,10 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
     return create_dataframe_from_aggregation_result_schema(metadata, resultDf)
 
 
-# Function to aggregate non-profiled consumption per grid area, balance responsible party and energy supplier (step 3)
-def aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
+def aggregate_non_profiled_consumption_ga_brp_es(
     enriched_time_series: DataFrame, metadata: Metadata
 ) -> DataFrame:
-    return _aggregate_per_ga_and_brp_and_es(
+    return __aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.non_profiled,
@@ -171,28 +170,27 @@ def aggregate_non_profiled_consumption_per_ga_and_brp_and_es(
     )
 
 
-# Function to aggregate flex consumption per grid area, balance responsible party and energy supplier (step 4)
-def aggregate_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
-    df = results[ResultKeyName.aggregation_base_dataframe]
-    return _aggregate_per_ga_and_brp_and_es(
-        df,
+def aggregate_flex_consumption_ga_brp_es(
+    enriched_time_series: DataFrame, metadata: Metadata
+) -> DataFrame:
+    return __aggregate_per_ga_and_brp_and_es(
+        enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.flex,
         metadata,
     )
 
 
-# Function to aggregate hourly production per grid area, balance responsible party and energy supplier (step 5)
-def aggregate_production_per_ga_and_brp_and_es(
+def aggregate_production_ga_brp_es(
     enriched_time_series: DataFrame, metadata: Metadata
 ) -> DataFrame:
-    return _aggregate_per_ga_and_brp_and_es(
+    return __aggregate_per_ga_and_brp_and_es(
         enriched_time_series, MeteringPointType.production, None, metadata
     )
 
 
-# Function to aggregate sum per grid area, balance responsible party and energy supplier
-def _aggregate_per_ga_and_brp_and_es(
+# Function to aggregate sum per grid area and energy supplier (step 12, 13 and 14)
+def __aggregate_per_ga_and_brp_and_es(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
     settlement_method: Union[SettlementMethod, None],
@@ -247,7 +245,6 @@ def _aggregate_per_ga_and_brp_and_es(
             col(Colname.quantity),
         ),
     )
-
     sum_group_by = [
         Colname.grid_area,
         Colname.balance_responsible_id,
@@ -287,52 +284,6 @@ def _aggregate_per_ga_and_brp_and_es(
         )
     )
 
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
-
-
-def aggregate_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
-    return __aggregate_per_ga_and_es(
-        results[ResultKeyName.production_with_system_correction_and_grid_loss],
-        MeteringPointType.production,
-        metadata,
-    )
-
-
-def aggregate_non_profiled_consumption_ga_es(
-    non_profiled_consumption: DataFrame, metadata: Metadata
-) -> DataFrame:
-    return __aggregate_per_ga_and_es(
-        non_profiled_consumption,
-        MeteringPointType.consumption,
-        metadata,
-    )
-
-
-def aggregate_flex_consumption_ga_es(results: dict, metadata: Metadata) -> DataFrame:
-    return __aggregate_per_ga_and_es(
-        results[ResultKeyName.flex_consumption_with_grid_loss],
-        MeteringPointType.consumption,
-        metadata,
-    )
-
-
-# Function to aggregate sum per grid area and energy supplier (step 12, 13 and 14)
-def __aggregate_per_ga_and_es(
-    df: DataFrame,
-    market_evaluation_point_type: MeteringPointType,
-    metadata: Metadata,
-) -> DataFrame:
-    group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
-    result = __aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
-
-    result = result.select(
-        Colname.grid_area,
-        Colname.energy_supplier_id,
-        Colname.time_window,
-        Colname.quality,
-        Colname.sum_quantity,
-        lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
-    )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
