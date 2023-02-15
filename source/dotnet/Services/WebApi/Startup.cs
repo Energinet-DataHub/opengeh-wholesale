@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
@@ -38,7 +39,18 @@ public class Startup
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc(
+                "v1",
+                new OpenApiInfo
+                {
+                    Title = "Wholesale API - v2-v3",
+                    Version = "v2-v3",
+                });
+            var filePath = Path.Combine(AppContext.BaseDirectory, "Energinet.DataHub.Wholesale.WebApi.xml");
+            c.IncludeXmlComments(filePath);
+        });
 
         services.AddApiVersioning(config =>
         {
