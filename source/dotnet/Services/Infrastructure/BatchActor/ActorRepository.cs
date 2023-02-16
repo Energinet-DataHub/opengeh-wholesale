@@ -59,6 +59,6 @@ public class ActorRepository : IActorRepository
 
     private static Domain.ActorAggregate.Actor[] MapToBatchActor(IEnumerable<Actor> actors)
     {
-        return actors.Select(actor => new Domain.ActorAggregate.Actor(actor.gln)).ToArray();
+        return actors.Select(actor => new Domain.ActorAggregate.Actor(actor.energy_supplier_gln)).ToArray();
     }
 }
