@@ -44,13 +44,10 @@ def get_result_file_relative_path(
 
 
 def get_actors_file_relative_path(
-    batch_id: str,
-    grid_area: str,
-    time_series_type: TimeSeriesType,
-    market_role: MarketRole,
+    batch_id: str, grid_area: str, time_series_type: TimeSeriesType
 ) -> str:
     batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{ACTORS_FOLDER}/grid_area={grid_area}/time_series_type={time_series_type.value}/market_role={market_role.value}"
+    return f"{batch_path}/{ACTORS_FOLDER}/grid_area={grid_area}/time_series_type={time_series_type.value}"
 
 
 def get_time_series_quarter_relative_path(

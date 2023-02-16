@@ -14,32 +14,26 @@
 
 from pyspark.sql import DataFrame
 from package.constants import Colname
-from pyspark.sql.functions import lit
-from package.codelists.market_role import MarketRole
 
 
-def write(output_path: str, result_df: DataFrame, market_role: MarketRole) -> None:
-
-    actors_df = _get_actors(result_df, market_role)
+def write(output_path: str, result_df: DataFrame) -> None:
+    actors_df = _get_actors(result_df)
 
     actors_directory = f"{output_path}/actors"
 
     (
         actors_df.repartition("grid_area")
         .write.mode("append")
-        .partitionBy("grid_area", Colname.time_series_type, Colname.market_role)
+        .partitionBy("grid_area", Colname.time_series_type)
         .json(actors_directory)
     )
 
 
-def _get_actors(result_df: DataFrame, market_role: MarketRole) -> DataFrame:
-
+def _get_actors(result_df: DataFrame) -> DataFrame:
     actors_df = result_df.select(
         "grid_area",
         Colname.gln,
         Colname.time_series_type,
     ).distinct()
-
-    actors_df = actors_df.withColumn(Colname.market_role, lit(market_role.value))
 
     return actors_df
