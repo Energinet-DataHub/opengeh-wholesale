@@ -31,9 +31,7 @@ class ProcessStepResultWriter:
     def write_per_ga(
         self, result_df: DataFrame, time_series_type: TimeSeriesType
     ) -> None:
-        result_df = result_df.withColumn(
-            Colname.time_series_type, lit(time_series_type.value)
-        )
+        result_df = self._add_gln_without_market_role(result_df)
         result_df = self._prepare_result_for_output(
             result_df,
             time_series_type,
