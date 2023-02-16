@@ -36,7 +36,8 @@ public class ActorRepository : IActorRepository
     public async Task<Domain.ActorAggregate.Actor[]> GetAsync(
         Guid batchId,
         GridAreaCode gridAreaCode,
-        TimeSeriesType timeSeriesType)
+        TimeSeriesType timeSeriesType,
+        MarketRole marketRole)
     {
         var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType);
         var dataLakeFileClient = await _dataLakeClient.GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);

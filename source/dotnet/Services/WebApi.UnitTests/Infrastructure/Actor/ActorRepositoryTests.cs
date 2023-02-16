@@ -56,7 +56,7 @@ public class ActorRepositoryTests
             jsonNewlineSerializerMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production);
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRole.EnergySupplier);
 
         // Assert
         actual.Should().NotBeNull();
