@@ -89,3 +89,8 @@ variable sendgrid_from_email {
   type          = string
   description   = "Specify the sender which the emails originates from"
 }
+
+variable sendgrid_bcc_email {
+  type          = string
+  description   = "Specify the bcc email address for email copies"
+}
