@@ -133,16 +133,16 @@ def _calculate_non_profiled_consumption(
         MarketRole.ENERGY_SUPPLIER,
     )
 
-    # # Non-profiled consumption per balance responsible
-    # consumption_per_ga_and_brp = agg_steps.aggregate_non_profiled_consumption_ga_brp(
-    #     consumption_per_ga_and_brp_and_es, metadata
-    # )
+    # Non-profiled consumption per balance responsible
+    consumption_per_ga_and_brp = agg_steps.aggregate_non_profiled_consumption_ga_brp(
+        consumption_per_ga_and_brp_and_es, metadata
+    )
 
-    # result_writer.write_per_ga_per_actor(
-    #     consumption_per_ga_and_brp,
-    #     TimeSeriesType.NON_PROFILED_CONSUMPTION,
-    #     MarketRole.BALANCE_RESPONSIBLE_PARTY,
-    # )
+    result_writer.write_per_ga_per_actor(
+        consumption_per_ga_and_brp,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        MarketRole.BALANCE_RESPONSIBLE_PARTY,
+    )
 
 
 def _get_enriched_time_series_points_df(
