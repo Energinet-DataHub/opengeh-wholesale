@@ -26,11 +26,9 @@ class MigrationScriptArgs:
     def __init__(
         self,
         data_storage_account_url: str,
-        data_storage_account_name: str,
         data_storage_account_key: str,
         spark: SparkSession,
     ) -> None:
         self.storage_account_url = data_storage_account_url
-        self.storage_account_name = data_storage_account_name
         self.storage_account_key = data_storage_account_key
         self.spark = spark
