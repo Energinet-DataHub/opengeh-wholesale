@@ -44,8 +44,7 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
         var actors = await _actorRepository.GetAsync(
             processStepActorsRequest.BatchId,
             new GridAreaCode(processStepActorsRequest.GridAreaCode),
-            TimeSeriesTypeMapper.Map(processStepActorsRequest.Type),
-            MarketRoleMapper.Map(processStepActorsRequest.MarketRole)).ConfigureAwait(false);
+            TimeSeriesTypeMapper.Map(processStepActorsRequest.Type)).ConfigureAwait(false);
 
         return actors.Select(batchActor => new WholesaleActorDto(batchActor.Gln)).ToArray();
     }

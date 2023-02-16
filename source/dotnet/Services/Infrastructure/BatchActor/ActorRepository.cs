@@ -36,10 +36,9 @@ public class ActorRepository : IActorRepository
     public async Task<Domain.ActorAggregate.Actor[]> GetAsync(
         Guid batchId,
         GridAreaCode gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        MarketRole marketRole)
+        TimeSeriesType timeSeriesType)
     {
-        var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType, marketRole);
+        var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType);
         var dataLakeFileClient = await _dataLakeClient.GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
@@ -51,10 +50,9 @@ public class ActorRepository : IActorRepository
     public static (string Directory, string Extension) GetActorListFileSpecification(
         Guid batchId,
         GridAreaCode gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        MarketRole marketRole)
+        TimeSeriesType timeSeriesType)
     {
-        return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode.Code}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/", ".json");
+        return ($"calculation-output/batch_id={batchId}/actors/{TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/", ".json");
     }
 
     private static Domain.ActorAggregate.Actor[] MapToBatchActor(IEnumerable<Actor> actors)

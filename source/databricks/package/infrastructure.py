@@ -47,7 +47,7 @@ def get_actors_file_relative_path(
     batch_id: str, grid_area: str, time_series_type: TimeSeriesType
 ) -> str:
     batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{ACTORS_FOLDER}/grid_area={grid_area}/time_series_type={time_series_type.value}"
+    return f"{batch_path}/{ACTORS_FOLDER}/{time_series_type.value}/grid_area={grid_area}"
 
 
 def get_time_series_quarter_relative_path(

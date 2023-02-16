@@ -88,8 +88,7 @@ public class ProcessStepApplicationServiceTests
             .Setup(x => x.GetAsync(
                 actorsRequest.BatchId,
                 new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production,
-                MarketRole.EnergySupplier)).ReturnsAsync(new Actor[] { });
+                TimeSeriesType.Production)).ReturnsAsync(new Actor[] { });
 
         // Act
         var actors = await sut.GetActorsAsync(actorsRequest);
@@ -117,8 +116,7 @@ public class ProcessStepApplicationServiceTests
             .Setup(x => x.GetAsync(
                 actorsRequest.BatchId,
                 new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production,
-                MarketRole.EnergySupplier)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
+                TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
 
         // Act
         var actors = await sut.GetActorsAsync(actorsRequest);

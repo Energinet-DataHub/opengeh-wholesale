@@ -14,26 +14,22 @@
 
 from pyspark.sql import DataFrame
 from package.constants import Colname
+from package.codelists.time_series_type import TimeSeriesType
 
 
-def write(output_path: str, result_df: DataFrame) -> None:
-    actors_df = _get_actors(result_df)
+def write(
+    output_path: str, result_df: DataFrame, time_series_type: TimeSeriesType
+) -> None:
+    actors_df = result_df.select("grid_area", Colname.energy_supplier_id).distinct()
+    actors_df = actors_df.withColumnRenamed(
+        Colname.energy_supplier_id, "energy_supplier_gln"
+    )
 
-    actors_directory = f"{output_path}/actors"
+    actors_directory = f"{output_path}/actors/{time_series_type.value}"
 
     (
         actors_df.repartition("grid_area")
         .write.mode("append")
-        .partitionBy("grid_area", Colname.time_series_type)
+        .partitionBy("grid_area")
         .json(actors_directory)
     )
-
-
-def _get_actors(result_df: DataFrame) -> DataFrame:
-    actors_df = result_df.select(
-        "grid_area",
-        Colname.gln,
-        Colname.time_series_type,
-    ).distinct()
-
-    return actors_df

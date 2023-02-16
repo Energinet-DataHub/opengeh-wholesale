@@ -56,7 +56,7 @@ public class ActorRepositoryTests
             jsonNewlineSerializerMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRole.EnergySupplier);
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production);
 
         // Assert
         actual.Should().NotBeNull();
@@ -75,7 +75,7 @@ public class ActorRepositoryTests
         var expected = calculationFilePathsContract.ActorsFile;
 
         // Act
-        var (directory, extension) = ActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, MarketRole.EnergySupplier);
+        var (directory, extension) = ActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType);
 
         // Assert
         extension.Should().Be(expected.Extension);
