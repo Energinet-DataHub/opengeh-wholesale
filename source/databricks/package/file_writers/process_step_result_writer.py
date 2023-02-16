@@ -31,6 +31,7 @@ class ProcessStepResultWriter:
     def write_per_ga(
         self, result_df: DataFrame, time_series_type: TimeSeriesType
     ) -> None:
+        result_df = result_df.withColumnRenamed(Colname.grid_area, "grid_area")
         result_df = self._add_gln_without_market_role(result_df)
         result_df = self._prepare_result_for_output(
             result_df,
@@ -44,6 +45,8 @@ class ProcessStepResultWriter:
         time_series_type: TimeSeriesType,
         market_role: MarketRole,
     ) -> None:
+        result_df = result_df.withColumnRenamed(Colname.grid_area, "grid_area")
+
         actors_writer.write(self.__output_path, result_df, time_series_type)
         result_df = self._add_gln(result_df, market_role)
         result_df = self._prepare_result_for_output(
@@ -60,7 +63,7 @@ class ProcessStepResultWriter:
         )
 
         result_df = result_df.select(
-            col(Colname.grid_area).alias("grid_area"),
+            "grid_area",
             Colname.gln,
             Colname.time_series_type,
             col(Colname.sum_quantity).alias("quantity").cast("string"),

@@ -65,9 +65,8 @@ def _get_gln_from_actors_file(
     time_series_type: TimeSeriesType,
     market_role: MarketRole,
 ) -> list[str]:
-
     actors_path = infra.get_actors_file_relative_path(
-        batch_id, grid_area, time_series_type, market_role
+        batch_id, grid_area, time_series_type
     )
     actors_json = find_file(output_path, f"{actors_path}/part-*.json")
 
@@ -75,7 +74,7 @@ def _get_gln_from_actors_file(
     with open(actors_json, "r") as json_file:
         for line in json_file:
             json_data = json.loads(line)
-            gln.append(json_data[Colname.gln])
+            gln.append(json_data["energy_supplier_gln"])
 
     return gln
 
@@ -84,7 +83,6 @@ def _get_gln_from_actors_file(
 def test__write_per_ga__does_not_call_actors_writer(
     mock_actors_writer, spark: SparkSession, tmpdir
 ) -> None:
-
     # Arrange
     row = [
         _create_result_row(
@@ -104,7 +102,6 @@ def test__write_per_ga__does_not_call_actors_writer(
 def test__write_per_ga_per_actor__actors_file_has_expected_gln(
     spark: SparkSession, tmpdir: Path
 ) -> None:
-
     # Arrange
     output_path = str(tmpdir)
     expected_gln_805 = ["123", "234"]
@@ -161,10 +158,7 @@ def test__write_per_ga_per_actor__actors_file_path_matches_contract(
     ]
     result_df = spark.createDataFrame(data=row)
     relative_output_path = infra.get_actors_file_relative_path(
-        DEFAULT_BATCH_ID,
-        DEFAULT_GRID_AREA,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        MarketRole.ENERGY_SUPPLIER,
+        DEFAULT_BATCH_ID, DEFAULT_GRID_AREA, TimeSeriesType.NON_PROFILED_CONSUMPTION
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
