@@ -115,9 +115,16 @@ def _calculate_non_profiled_consumption(
     enriched_time_series_point_df: DataFrame,
     metadata: Metadata,
 ) -> None:
+    # Non-profiled consumption per balance responsible party and energy supplier
+    consumption_per_ga_and_brp_and_es = (
+        agg_steps.aggregate_non_profiled_consumption_ga_brp_es(
+            enriched_time_series_point_df, metadata
+        )
+    )
+
     # Non-profiled consumption per energy supplier
-    consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_brp_es(
-        enriched_time_series_point_df, metadata
+    consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
+        consumption_per_ga_and_brp_and_es, metadata
     )
 
     result_writer.write_per_ga_per_actor(
@@ -128,7 +135,7 @@ def _calculate_non_profiled_consumption(
 
     # Non-profiled consumption per balance responsible
     consumption_per_ga_and_brp = agg_steps.aggregate_non_profiled_consumption_ga_brp(
-        consumption_per_ga_and_es, metadata
+        consumption_per_ga_and_brp_and_es, metadata
     )
 
     result_writer.write_per_ga_per_actor(
