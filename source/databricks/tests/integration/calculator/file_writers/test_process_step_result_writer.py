@@ -18,10 +18,14 @@ from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
 
-from package.codelists import MeteringPointResolution, TimeSeriesQuality
+from package.codelists import (
+    MeteringPointResolution,
+    TimeSeriesQuality,
+    MarketRole,
+    TimeSeriesType,
+    CalculationName,
+)
 from package.constants import Colname
-from package.codelists.market_role import MarketRole
-from package.codelists.time_series_type import TimeSeriesType
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 import package.infrastructure as infra
 from pyspark.sql import SparkSession
@@ -35,11 +39,13 @@ ACTORS_FOLDER = "actors"
 DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
 DEFAULT_GRID_AREA = "105"
 DEFAULT_ENERGY_SUPPLIER_ID = "987654321"
+DEFAULT_BALANCE_RESPONSIBLE_ID = "123456789"
 
 
 def _create_result_row(
     grid_area: str,
     energy_supplier_id: str,
+    balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
     quantity: str = "1.1",
     quality: TimeSeriesQuality = TimeSeriesQuality.measured,
 ) -> dict:
@@ -53,6 +59,7 @@ def _create_result_row(
             Colname.end: datetime(2020, 1, 1, 1, 0),
         },
         Colname.energy_supplier_id: energy_supplier_id,
+        Colname.balance_responsible_id: balance_responsible_id,
     }
 
     return row
@@ -65,7 +72,6 @@ def _get_gln_from_actors_file(
     time_series_type: TimeSeriesType,
     market_role: MarketRole,
 ) -> list[str]:
-
     actors_path = infra.get_actors_file_relative_path(
         batch_id, grid_area, time_series_type, market_role
     )
@@ -84,18 +90,20 @@ def _get_gln_from_actors_file(
 def test__write_per_ga__does_not_call_actors_writer(
     mock_actors_writer, spark: SparkSession, tmpdir
 ) -> None:
-
     # Arrange
     row = [
         _create_result_row(
-            grid_area=DEFAULT_GRID_AREA, energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID
+            grid_area=DEFAULT_GRID_AREA,
+            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
         )
     ]
     result_df = spark.createDataFrame(data=row)
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act
-    sut.write_per_ga(result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION)
+    sut.write_per_ga(
+        result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION, CalculationName.total_ga
+    )
 
     # Assert
     mock_actors_writer.write.assert_not_called()
@@ -104,7 +112,6 @@ def test__write_per_ga__does_not_call_actors_writer(
 def test__write_per_ga_per_actor__actors_file_has_expected_gln(
     spark: SparkSession, tmpdir: Path
 ) -> None:
-
     # Arrange
     output_path = str(tmpdir)
     expected_gln_805 = ["123", "234"]
@@ -130,7 +137,9 @@ def test__write_per_ga_per_actor__actors_file_has_expected_gln(
     sut = ProcessStepResultWriter(output_path, DEFAULT_BATCH_ID)
 
     # Act
-    sut.write_per_ga_per_actor(result_df, time_series_type, market_role)
+    sut.write_per_ga_per_actor(
+        result_df, time_series_type, market_role, CalculationName.es_per_ga
+    )
 
     # Assert
     actual_gln_805 = _get_gln_from_actors_file(
@@ -170,7 +179,10 @@ def test__write_per_ga_per_actor__actors_file_path_matches_contract(
 
     # Act
     sut.write_per_ga_per_actor(
-        result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION, MarketRole.ENERGY_SUPPLIER
+        result_df,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        MarketRole.ENERGY_SUPPLIER,
+        CalculationName.es_per_ga,
     )
 
     # Assert
@@ -200,12 +212,16 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
         DEFAULT_GRID_AREA,
         DEFAULT_ENERGY_SUPPLIER_ID,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        CalculationName.es_per_ga,
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act: Executed in fixture executed_calculation_job
     sut.write_per_ga_per_actor(
-        result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION, MarketRole.ENERGY_SUPPLIER
+        result_df,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        MarketRole.ENERGY_SUPPLIER,
+        CalculationName.es_per_ga,
     )
 
     # Assert
