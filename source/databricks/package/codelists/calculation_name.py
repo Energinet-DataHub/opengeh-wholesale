@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .charge_resolution import ChargeResolution
-from .time_series_quality import TimeSeriesQuality
-from .metering_point_type import MeteringPointType
-from .settlement_method import SettlementMethod
-from .metering_point_resolution import MeteringPointResolution
-from .charge_type import ChargeType
-from .time_series_type import TimeSeriesType
-from .calculation_name import CalculationName
+
+class CalculationName:
+    total_ga = "total_ga"
+    es_per_brp_per_ga = "es_per_brp_per_ga"
+    es_per_ga = "es_per_ga"
+    brp_per_ga = "brp_per_ga"

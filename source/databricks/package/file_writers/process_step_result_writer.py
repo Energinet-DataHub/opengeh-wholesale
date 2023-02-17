@@ -58,7 +58,9 @@ class ProcessStepResultWriter:
         self._write_result_df(
             result_df, partition_by, time_series_type, calculation_name
         )
-        actors_writer.write(self.__output_path, result_df, market_role)
+        actors_writer.write(
+            self.__output_path, result_df, market_role, time_series_type
+        )
 
     def _prepare_result_for_output(self, result_df: DataFrame) -> DataFrame:
         result_df = result_df.select(
@@ -100,7 +102,7 @@ class ProcessStepResultWriter:
         calculation_name: str,
     ) -> None:
         result_data_directory = (
-            f"{self.__output_path}/result/{calculation_name}/{time_series_type}"
+            f"{self.__output_path}/result/{calculation_name}/time_series_type={time_series_type.value}"
         )
 
         # First repartition to co-locate all rows for a grid area on a single executor.

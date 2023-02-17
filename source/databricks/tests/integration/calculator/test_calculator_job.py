@@ -25,7 +25,7 @@ from package.calculator_job import (
     _start,
 )
 from package.calculator_args import CalculatorArgs
-from package.codelists.time_series_type import TimeSeriesType
+from package.codelists import TimeSeriesType, CalculationName
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from pyspark.sql.functions import lit
@@ -182,24 +182,41 @@ def test__result_is_generated_for_requested_grid_areas(
 ):
     # Arrange
     expected_ga_gln_type = [
-        ["805", None, TimeSeriesType.PRODUCTION],
-        ["806", None, TimeSeriesType.PRODUCTION],
-        ["805", energy_supplier_gln_a, TimeSeriesType.NON_PROFILED_CONSUMPTION],
-        ["806", energy_supplier_gln_a, TimeSeriesType.NON_PROFILED_CONSUMPTION],
-        ["805", energy_supplier_gln_b, TimeSeriesType.NON_PROFILED_CONSUMPTION],
-        ["806", energy_supplier_gln_b, TimeSeriesType.NON_PROFILED_CONSUMPTION],
+        ["805", None, TimeSeriesType.PRODUCTION, "total_ga"],
+        ["806", None, TimeSeriesType.PRODUCTION, "total_ga"],
+        [
+            "805",
+            energy_supplier_gln_a,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            "es_ga",
+        ],
+        [
+            "806",
+            energy_supplier_gln_a,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            "es_ga",
+        ],
+        [
+            "805",
+            energy_supplier_gln_b,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            "es_ga",
+        ],
+        [
+            "806",
+            energy_supplier_gln_b,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            "es_ga",
+        ],
     ]
 
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    for grid_area, gln, time_series_type in expected_ga_gln_type:
+    for grid_area, gln, time_series_type, calculation_name in expected_ga_gln_type:
         result_path = infra.get_result_file_relative_path(
-            executed_batch_id,
-            grid_area,
-            gln,
-            time_series_type,
+            executed_batch_id, grid_area, gln, time_series_type, calculation_name
         )
         result = spark.read.json(f"{data_lake_path}/{worker_id}/{result_path}")
         assert result.count() >= 1, "Calculator job failed to write files"
@@ -240,10 +257,7 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 ):
     # Arrange
     result_relative_path = infra.get_result_file_relative_path(
-        executed_batch_id,
-        "805",
-        grid_area_gln,
-        TimeSeriesType.PRODUCTION,
+        executed_batch_id, "805", grid_area_gln, TimeSeriesType.PRODUCTION, "total_ga"
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 

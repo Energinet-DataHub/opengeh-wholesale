@@ -16,28 +16,31 @@ from pyspark.sql import DataFrame
 from package.constants import Colname
 from pyspark.sql.functions import lit
 from package.codelists.market_role import MarketRole
+from package.codelists.time_series_type import TimeSeriesType
 
 
-def write(output_path: str, result_df: DataFrame, market_role: MarketRole) -> None:
-
+def write(
+    output_path: str,
+    result_df: DataFrame,
+    market_role: MarketRole,
+    time_series_type: TimeSeriesType,
+) -> None:
     actors_df = _get_actors(result_df, market_role)
 
-    actors_directory = f"{output_path}/actors"
+    actors_directory = f"{output_path}/actors/{time_series_type.value}"
 
     (
         actors_df.repartition("grid_area")
         .write.mode("append")
-        .partitionBy("grid_area", Colname.time_series_type, Colname.market_role)
+        .partitionBy("grid_area", Colname.market_role)
         .json(actors_directory)
     )
 
 
 def _get_actors(result_df: DataFrame, market_role: MarketRole) -> DataFrame:
-
     actors_df = result_df.select(
         "grid_area",
         Colname.gln,
-        Colname.time_series_type,
     ).distinct()
 
     actors_df = actors_df.withColumn(Colname.market_role, lit(market_role.value))
