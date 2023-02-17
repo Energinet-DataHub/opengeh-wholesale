@@ -36,6 +36,7 @@ class ProcessStepResultWriter:
         result_df = self._prepare_result_for_output(
             result_df,
         )
+        result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
         partition_by = ["grid_area"]
         self._write_result_df(
             result_df, partition_by, time_series_type, calculation_name
@@ -48,10 +49,11 @@ class ProcessStepResultWriter:
         market_role: MarketRole,
         calculation_name: str,
     ) -> None:
-        result_df = self._add_gln(result_df, market_role)
         result_df = self._prepare_result_for_output(
             result_df,
         )
+        result_df = self._add_gln(result_df, market_role)
+        result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
         partition_by = ["grid_area", Colname.gln]
         self._write_result_df(
             result_df, partition_by, time_series_type, calculation_name
@@ -61,7 +63,8 @@ class ProcessStepResultWriter:
     def _prepare_result_for_output(self, result_df: DataFrame) -> DataFrame:
         result_df = result_df.select(
             col(Colname.grid_area).alias("grid_area"),
-            Colname.gln,
+            Colname.energy_supplier_id,
+            Colname.balance_responsible_id,
             col(Colname.sum_quantity).alias("quantity").cast("string"),
             col(Colname.quality).alias("quality"),
             col(Colname.time_window_start).alias("quarter_time"),
