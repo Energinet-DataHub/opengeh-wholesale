@@ -13,8 +13,7 @@
 # limitations under the License.
 
 import package.infrastructure as infra
-from package.codelists.market_role import MarketRole
-from package.codelists.time_series_type import TimeSeriesType
+from package.codelists import MarketRole, TimeSeriesType
 from package.constants import Colname
 from package.file_writers import actors_writer
 from pyspark.sql import DataFrame
@@ -101,9 +100,7 @@ class ProcessStepResultWriter:
         time_series_type: TimeSeriesType,
         calculation_name: str,
     ) -> None:
-        result_data_directory = (
-            f"{self.__output_path}/result/{calculation_name}/time_series_type={time_series_type.value}"
-        )
+        result_data_directory = f"{self.__output_path}/result/{calculation_name}/time_series_type={time_series_type.value}"
 
         # First repartition to co-locate all rows for a grid area on a single executor.
         # This ensures that only one file is being written/created for each grid area

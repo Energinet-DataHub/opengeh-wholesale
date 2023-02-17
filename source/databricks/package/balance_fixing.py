@@ -18,8 +18,7 @@ import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
 from package.codelists import MeteringPointResolution
 from package.constants import Colname
-from package.codelists.market_role import MarketRole
-from package.codelists.time_series_type import TimeSeriesType
+from package.codelists import MarketRole, TimeSeriesType, CalculationName
 from package.db_logging import debug
 from package.shared.data_classes import Metadata
 from package.file_writers.basis_data_writer import BasisDataWriter
@@ -107,7 +106,7 @@ def _calculate_production(
         production_per_per_ga_and_brp_and_es, metadata
     )
 
-    result_writer.write_per_ga(production_per_ga, TimeSeriesType.PRODUCTION, "total_ga")
+    result_writer.write_per_ga(production_per_ga, TimeSeriesType.PRODUCTION, CalculationName.total_ga)
 
 
 def _calculate_non_profiled_consumption(
@@ -131,7 +130,7 @@ def _calculate_non_profiled_consumption(
         consumption_per_ga_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.ENERGY_SUPPLIER,
-        "es_ga",
+        CalculationName.es_per_ga,
     )
 
     # Non-profiled consumption per balance responsible
@@ -143,7 +142,7 @@ def _calculate_non_profiled_consumption(
         consumption_per_ga_and_brp,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.BALANCE_RESPONSIBLE_PARTY,
-        "brp_ga",
+        CalculationName.brp_per_ga,
     )
 
 

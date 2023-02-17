@@ -15,8 +15,7 @@
 from pyspark.sql import DataFrame
 from package.constants import Colname
 from pyspark.sql.functions import lit
-from package.codelists.market_role import MarketRole
-from package.codelists.time_series_type import TimeSeriesType
+from package.codelists import MarketRole, TimeSeriesType
 
 
 def write(

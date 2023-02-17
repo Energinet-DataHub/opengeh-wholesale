@@ -15,6 +15,6 @@
 
 class CalculationName:
     total_ga = "total_ga"
-    es_per_brp_per_ga = "es_per_brp_per_ga"
-    es_per_ga = "es_per_ga"
-    brp_per_ga = "brp_per_ga"
+    es_per_brp_per_ga = "es_brp_ga"
+    es_per_ga = "es_ga"
+    brp_per_ga = "brp_ga"

@@ -182,31 +182,31 @@ def test__result_is_generated_for_requested_grid_areas(
 ):
     # Arrange
     expected_ga_gln_type = [
-        ["805", None, TimeSeriesType.PRODUCTION, "total_ga"],
-        ["806", None, TimeSeriesType.PRODUCTION, "total_ga"],
+        ["805", None, TimeSeriesType.PRODUCTION, CalculationName.total_ga],
+        ["806", None, TimeSeriesType.PRODUCTION, CalculationName.total_ga],
         [
             "805",
             energy_supplier_gln_a,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            "es_ga",
+            CalculationName.es_per_ga,
         ],
         [
             "806",
             energy_supplier_gln_a,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            "es_ga",
+            CalculationName.es_per_ga,
         ],
         [
             "805",
             energy_supplier_gln_b,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            "es_ga",
+            CalculationName.es_per_ga,
         ],
         [
             "806",
             energy_supplier_gln_b,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            "es_ga",
+            CalculationName.es_per_ga,
         ],
     ]
 
@@ -257,7 +257,11 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
 ):
     # Arrange
     result_relative_path = infra.get_result_file_relative_path(
-        executed_batch_id, "805", grid_area_gln, TimeSeriesType.PRODUCTION, "total_ga"
+        executed_batch_id,
+        "805",
+        None,
+        TimeSeriesType.PRODUCTION,
+        CalculationName.total_ga,
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
@@ -283,8 +287,9 @@ def test__quantity_is_with_precision_3(
     result_relative_path_production = infra.get_result_file_relative_path(
         executed_batch_id,
         "805",
-        grid_area_gln,
+        None,
         TimeSeriesType.PRODUCTION,
+        CalculationName.total_ga,
     )
 
     result_relative_path_non_profiled_consumption = infra.get_result_file_relative_path(
@@ -292,6 +297,7 @@ def test__quantity_is_with_precision_3(
         "805",
         energy_supplier_gln_a,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        CalculationName.es_per_ga,
     )
 
     # Act
@@ -323,6 +329,7 @@ def test__result_file_has_correct_expected_number_of_rows_for_consumption(
         "806",
         energy_supplier_gln_a,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        CalculationName.es_per_ga,
     )
 
     # Act
@@ -345,8 +352,9 @@ def test__result_file_has_correct_expected_number_of_rows_for_production(
     result_relative_path = infra.get_result_file_relative_path(
         executed_batch_id,
         "806",
-        grid_area_gln,
+        None,
         TimeSeriesType.PRODUCTION,
+        CalculationName.total_ga,
     )
 
     # Act

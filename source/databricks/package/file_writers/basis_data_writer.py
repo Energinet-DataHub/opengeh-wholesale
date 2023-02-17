@@ -44,7 +44,8 @@ class BasisDataWriter:
 
     def _write_basis_data_to_csv(self, path: str, df: DataFrame) -> None:
         df = df.withColumnRenamed("GridAreaCode", "grid_area")
+        df = df.withColumn("gln", lit("grid_area"))
 
         df.repartition("grid_area").write.mode("overwrite").partitionBy(
-            "grid_area"
+            "grid_area", Colname.gln
         ).option("header", True).csv(path)
