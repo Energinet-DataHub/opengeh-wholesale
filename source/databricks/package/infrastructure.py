@@ -36,7 +36,7 @@ def get_container_root_path(storage_account_name: str) -> str:
 def get_result_file_relative_path(
     batch_id: str,
     grid_area: str,
-    gln: str,
+    gln: str | None,
     time_series_type: TimeSeriesType,
     calculation_name: str,
 ) -> str:
