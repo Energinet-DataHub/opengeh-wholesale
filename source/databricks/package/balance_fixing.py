@@ -107,7 +107,7 @@ def _calculate_production(
         production_per_per_ga_and_brp_and_es, metadata
     )
 
-    result_writer.write_per_ga(production_per_ga, TimeSeriesType.PRODUCTION)
+    result_writer.write_per_ga(production_per_ga, TimeSeriesType.PRODUCTION, "total_ga")
 
 
 def _calculate_non_profiled_consumption(
@@ -131,6 +131,7 @@ def _calculate_non_profiled_consumption(
         consumption_per_ga_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.ENERGY_SUPPLIER,
+        "es_ga",
     )
 
     # Non-profiled consumption per balance responsible
@@ -142,6 +143,7 @@ def _calculate_non_profiled_consumption(
         consumption_per_ga_and_brp,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.BALANCE_RESPONSIBLE_PARTY,
+        "brp_ga",
     )
 
 

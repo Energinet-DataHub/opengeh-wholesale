@@ -101,7 +101,7 @@ def executed_calculation_job(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         header=True,
         schema=metering_point_period_schema,
-    ).withColumn("gln", lit(grid_area_gln))
+    )
     metering_points_df.write.format("delta").save(
         f"{data_lake_path}/{worker_id}/calculation-input-v2/metering-point-periods",
         mode="overwrite",
@@ -110,7 +110,7 @@ def executed_calculation_job(
         f"{test_files_folder_path}/TimeSeriesPoints.csv",
         header=True,
         schema=time_series_point_schema,
-    ).withColumn("gln", lit(grid_area_gln))
+    )
 
     timeseries_points_df.write.format("delta").save(
         f"{data_lake_path}/{worker_id}/calculation-input-v2/time-series-points",
@@ -163,7 +163,6 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails(
 def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
     dummy_job_parameters,
 ):
-
     """
     This test works in tandem with a .NET test ensuring that the calculator job accepts
     the arguments that are provided by the calling process manager.
@@ -183,8 +182,8 @@ def test__result_is_generated_for_requested_grid_areas(
 ):
     # Arrange
     expected_ga_gln_type = [
-        ["805", grid_area_gln, TimeSeriesType.PRODUCTION],
-        ["806", grid_area_gln, TimeSeriesType.PRODUCTION],
+        ["805", None, TimeSeriesType.PRODUCTION],
+        ["806", None, TimeSeriesType.PRODUCTION],
         ["805", energy_supplier_gln_a, TimeSeriesType.NON_PROFILED_CONSUMPTION],
         ["806", energy_supplier_gln_a, TimeSeriesType.NON_PROFILED_CONSUMPTION],
         ["805", energy_supplier_gln_b, TimeSeriesType.NON_PROFILED_CONSUMPTION],

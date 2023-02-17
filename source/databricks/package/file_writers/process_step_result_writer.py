@@ -19,7 +19,6 @@ from package.constants import Colname
 from package.file_writers import actors_writer
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit
-from package.constants.partition_naming import GLN_VALUE_FOR_GRID_AREA
 
 
 class ProcessStepResultWriter:
@@ -29,40 +28,40 @@ class ProcessStepResultWriter:
         )
 
     def write_per_ga(
-        self, result_df: DataFrame, time_series_type: TimeSeriesType
+        self,
+        result_df: DataFrame,
+        time_series_type: TimeSeriesType,
+        calculation_name: str,
     ) -> None:
-        result_df = self._add_gln_without_market_role(result_df)
         result_df = self._prepare_result_for_output(
             result_df,
-            time_series_type,
         )
-        self._write_result_df(result_df)
+        partition_by = ["grid_area"]
+        self._write_result_df(
+            result_df, partition_by, time_series_type, calculation_name
+        )
 
     def write_per_ga_per_actor(
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
         market_role: MarketRole,
+        calculation_name: str,
     ) -> None:
         result_df = self._add_gln(result_df, market_role)
         result_df = self._prepare_result_for_output(
             result_df,
-            time_series_type,
         )
-        self._write_result_df(result_df)
+        partition_by = ["grid_area", Colname.gln]
+        self._write_result_df(
+            result_df, partition_by, time_series_type, calculation_name
+        )
         actors_writer.write(self.__output_path, result_df, market_role)
 
-    def _prepare_result_for_output(
-        self, result_df: DataFrame, time_series_type: TimeSeriesType
-    ) -> DataFrame:
-        result_df = result_df.withColumn(
-            Colname.time_series_type, lit(time_series_type.value)
-        )
-
+    def _prepare_result_for_output(self, result_df: DataFrame) -> DataFrame:
         result_df = result_df.select(
             col(Colname.grid_area).alias("grid_area"),
             Colname.gln,
-            Colname.time_series_type,
             col(Colname.sum_quantity).alias("quantity").cast("string"),
             col(Colname.quality).alias("quality"),
             col(Colname.time_window_start).alias("quarter_time"),
@@ -90,15 +89,16 @@ class ProcessStepResultWriter:
 
         return result_df
 
-    def _add_gln_without_market_role(
+    def _write_result_df(
         self,
         result_df: DataFrame,
-    ) -> DataFrame:
-        result_df = result_df.withColumn(Colname.gln, lit(GLN_VALUE_FOR_GRID_AREA))
-        return result_df
-
-    def _write_result_df(self, result_df: DataFrame) -> None:
-        result_data_directory = f"{self.__output_path}/result"
+        partition_by: list[str],
+        time_series_type: TimeSeriesType,
+        calculation_name: str,
+    ) -> None:
+        result_data_directory = (
+            f"{self.__output_path}/result/{calculation_name}/{time_series_type}"
+        )
 
         # First repartition to co-locate all rows for a grid area on a single executor.
         # This ensures that only one file is being written/created for each grid area
@@ -106,6 +106,6 @@ class ProcessStepResultWriter:
         (
             result_df.repartition("grid_area")
             .write.mode("append")
-            .partitionBy("grid_area", Colname.gln, Colname.time_series_type)
+            .partitionBy(partition_by)
             .json(result_data_directory)
         )
