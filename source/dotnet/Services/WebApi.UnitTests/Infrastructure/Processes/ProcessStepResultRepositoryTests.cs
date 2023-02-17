@@ -74,7 +74,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var (directory, extension, _) = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area");
+        var (directory, extension, _) = ProcessStepResultRepository.GetResultFilePerGridAreaSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area");
 
         // Assert
         extension.Should().Be(expected.Extension);
@@ -92,7 +92,7 @@ public class ProcessStepResultRepositoryTests
         const string gridAreaCode = "123";
 
         // Act
-        var (directory, _, _) = ProcessStepResultRepository.GetResultFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, "grid_area");
+        var (directory, _, _) = ProcessStepResultRepository.GetResultFilePerGridAreaSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, "grid_area");
 
         // Assert
         directory.Should().Contain(expectedTimeSeriesType);

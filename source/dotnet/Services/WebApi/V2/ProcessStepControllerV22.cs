@@ -39,7 +39,8 @@ public class ProcessStepV22Controller : ControllerBase
             processStepResultRequestDtoV2.BatchId,
             processStepResultRequestDtoV2.GridAreaCode,
             processStepResultRequestDtoV2.TimeSeriesType,
-            processStepResultRequestDtoV2.Gln).ConfigureAwait(false);
+            processStepResultRequestDtoV2.Gln,
+            MarketRole.EnergySupplier).ConfigureAwait(false);
         return Ok(resultDto);
     }
 }

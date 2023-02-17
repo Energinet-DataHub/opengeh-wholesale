@@ -12,22 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 public static class MarketRoleMapper
 {
-    public static Domain.ActorAggregate.MarketRole Map(MarketRole marketRole)
+    // These strings represents how write our results from spark.
+    // They should only be changed with changing how we write down the results.
+    private const string EnergySupplierGridArea = "es_ga";
+    private const string BalanceResponsiblePartyGridArea = "brp_ga";
+    private const string TotalGridArea = "total_ga";
+
+    public static string Map(MarketRole marketRole)
     {
         switch (marketRole)
         {
             case MarketRole.EnergySupplier:
-                return Domain.ActorAggregate.MarketRole.EnergySupplier;
+                return EnergySupplierGridArea;
             case MarketRole.BalanceResponsibleParty:
-                return Domain.ActorAggregate.MarketRole.BalanceResponsibleParty;
+                return BalanceResponsiblePartyGridArea;
             case MarketRole.GridAccessProvider:
-                return Domain.ActorAggregate.MarketRole.GridAccessProvider;
+                return TotalGridArea;
             default:
                 throw new ArgumentOutOfRangeException(nameof(marketRole), marketRole, null);
         }
