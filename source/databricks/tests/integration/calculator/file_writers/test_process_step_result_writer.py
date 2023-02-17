@@ -16,7 +16,7 @@ import json
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 from package.codelists import (
     MeteringPointResolution,
@@ -88,7 +88,7 @@ def _get_gln_from_actors_file(
 
 @patch("package.file_writers.process_step_result_writer.actors_writer")
 def test__write_per_ga__does_not_call_actors_writer(
-    mock_actors_writer, spark: SparkSession, tmpdir
+    mock_actors_writer: Mock, spark: SparkSession, tmpdir: Path
 ) -> None:
     # Arrange
     row = [
@@ -160,7 +160,7 @@ def test__write_per_ga_per_actor__actors_file_has_expected_gln(
 def test__write_per_ga_per_actor__actors_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
-    tmpdir,
+    tmpdir: Path,
 ) -> None:
     # Arrange
     row = [
@@ -198,7 +198,7 @@ def test__write_per_ga_per_actor__actors_file_path_matches_contract(
 def test__write_per_ga_per_actor__result_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
-    tmpdir,
+    tmpdir: Path,
 ) -> None:
     # Arrange
     row = [
