@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
@@ -39,25 +40,34 @@ public class Startup
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc(
-                "v1",
-                new OpenApiInfo
-                {
-                    Title = "Wholesale API - v2-v3",
-                    Version = "v2-v3",
-                });
-            var filePath = Path.Combine(AppContext.BaseDirectory, "Energinet.DataHub.Wholesale.WebApi.xml");
-            c.IncludeXmlComments(filePath);
-        });
+        // services.AddSwaggerGen(c =>
+        // {
+        //     c.SwaggerDoc(
+        //         "Foo",
+        //         new OpenApiInfo
+        //         {
+        //             Title = "Wholesale API",
+        //             //Version = "v2-v3",
+        //         });
+        //     var filePath = Path.Combine(AppContext.BaseDirectory, $"{Root.Namespace}.xml");
+        //     c.IncludeXmlComments(filePath);
+        // });
+        services.AddSwaggerGen();
 
         services.AddApiVersioning(config =>
         {
-            config.DefaultApiVersion = new ApiVersion(1, 0);
+            config.DefaultApiVersion = new ApiVersion(3, 0);
             config.AssumeDefaultVersionWhenUnspecified = true;
             config.ReportApiVersions = true;
         });
+
+        // Add ApiExplorer to discover versions
+        services.AddVersionedApiExplorer(setup =>
+        {
+            setup.GroupNameFormat = "'v'VVV";
+            setup.SubstituteApiVersionInUrl = true; // TODO: Remove?
+        });
+        services.ConfigureOptions<ConfigureSwaggerOptions>();
 
         services.AddJwtTokenSecurity();
         services.AddCommandStack(Configuration);
@@ -77,7 +87,17 @@ public class Startup
         }
 
         app.UseSwagger();
-        app.UseSwaggerUI();
+
+        var apiVersionDescriptionProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+        app.UseSwaggerUI(options =>
+        {
+            foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
+            {
+                options.SwaggerEndpoint(
+                    $"/swagger/{description.GroupName}/swagger.json",
+                    description.GroupName.ToUpperInvariant());
+            }
+        });
 
         app.UseHttpsRedirection();
         app.UseAuthentication();
