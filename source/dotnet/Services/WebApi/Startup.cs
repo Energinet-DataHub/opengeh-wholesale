@@ -52,11 +52,10 @@ public class Startup
             config.ReportApiVersions = true;
         });
 
-        // Add ApiExplorer to discover versions
         services.AddVersionedApiExplorer(setup =>
         {
             setup.GroupNameFormat = "'v'VVV";
-            setup.SubstituteApiVersionInUrl = true; // TODO: Remove?
+            setup.SubstituteApiVersionInUrl = true;
         });
         services.ConfigureOptions<ConfigureSwaggerOptions>();
 
@@ -82,6 +81,7 @@ public class Startup
         var apiVersionDescriptionProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
         app.UseSwaggerUI(options =>
         {
+            // Reverse the API's in order to make the latest API versions appear first in select box in UI
             foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
             {
                 options.SwaggerEndpoint(
