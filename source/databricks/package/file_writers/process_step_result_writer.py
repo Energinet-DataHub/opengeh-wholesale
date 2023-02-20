@@ -16,7 +16,6 @@ import package.infrastructure as infra
 from package.codelists.market_role import MarketRole
 from package.codelists.time_series_type import TimeSeriesType
 from package.constants import Colname
-from package.file_writers import actors_writer
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit
 from package.constants.partition_naming import GLN_VALUE_FOR_GRID_AREA
@@ -47,7 +46,6 @@ class ProcessStepResultWriter:
     ) -> None:
         result_df = result_df.withColumnRenamed(Colname.grid_area, "grid_area")
 
-        actors_writer.write(self.__output_path, result_df, time_series_type)
         result_df = self._add_gln(result_df, market_role)
         result_df = self._prepare_result_for_output(
             result_df,

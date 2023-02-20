@@ -15,21 +15,28 @@
 from pyspark.sql import DataFrame
 from package.constants import Colname
 from package.codelists.time_series_type import TimeSeriesType
+import package.infrastructure as infra
 
 
-def write(
-    output_path: str, result_df: DataFrame, time_series_type: TimeSeriesType
-) -> None:
-    actors_df = result_df.select("grid_area", Colname.energy_supplier_id).distinct()
-    actors_df = actors_df.withColumnRenamed(
-        Colname.energy_supplier_id, "energy_supplier_gln"
-    )
+class ActorsWriter:
+    def __init__(self, container_path: str, batch_id: str):
+        self.__output_path = (
+            f"{container_path}/{infra.get_batch_relative_path(batch_id)}/actors/"
+        )
 
-    actors_directory = f"{output_path}/actors/{time_series_type.value}"
+    def write(self, result_df: DataFrame, time_series_type: TimeSeriesType) -> None:
+        result_df = result_df.withColumnRenamed(Colname.grid_area, "grid_area")
 
-    (
-        actors_df.repartition("grid_area")
-        .write.mode("append")
-        .partitionBy("grid_area")
-        .json(actors_directory)
-    )
+        actors_df = result_df.select("grid_area", Colname.energy_supplier_id).distinct()
+        actors_df = actors_df.withColumnRenamed(
+            Colname.energy_supplier_id, "energy_supplier_gln"
+        )
+
+        actors_directory = f"{self.__output_path}/{time_series_type.value}"
+
+        (
+            actors_df.repartition("grid_area")
+            .write.mode("overwrite")
+            .partitionBy("grid_area")
+            .json(actors_directory)
+        )
