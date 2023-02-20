@@ -59,10 +59,7 @@ def _create_result_row(
 
 
 def _get_gln_from_actors_file(
-    output_path: str,
-    batch_id: str,
-    grid_area: str,
-    time_series_type: TimeSeriesType
+    output_path: str, batch_id: str, grid_area: str, time_series_type: TimeSeriesType
 ) -> list[str]:
     actors_path = infra.get_actors_file_relative_path(
         batch_id, grid_area, time_series_type
@@ -86,7 +83,7 @@ def test__write__actors_file_has_expected_gln(
     expected_gln_805 = ["123", "234"]
     expected_gln_806 = ["123", "345"]
     time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
-  
+
     rows = []
     rows.append(
         _create_result_row(grid_area="805", energy_supplier_id=expected_gln_805[0])
@@ -141,9 +138,7 @@ def test__write_per_ga_per_actor__actors_file_path_matches_contract(
     sut = ActorsWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act
-    sut.Wrtie(
-        result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION
-    )
+    sut.Wrtie(result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION)
 
     # Assert
     actual_result_file = find_file(
