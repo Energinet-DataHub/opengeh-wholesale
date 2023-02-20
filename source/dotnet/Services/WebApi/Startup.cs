@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
@@ -41,23 +41,23 @@ public class Startup
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc(
-                "v1",
-                new OpenApiInfo
-                {
-                    Title = "Wholesale API - v2-v3",
-                    Version = "v2-v3",
-                });
-            var filePath = Path.Combine(AppContext.BaseDirectory, "Energinet.DataHub.Wholesale.WebApi.xml");
+            var filePath = Path.Combine(AppContext.BaseDirectory, $"{Root.Namespace}.xml");
             c.IncludeXmlComments(filePath);
         });
 
         services.AddApiVersioning(config =>
         {
-            config.DefaultApiVersion = new ApiVersion(1, 0);
+            config.DefaultApiVersion = new ApiVersion(3, 0);
             config.AssumeDefaultVersionWhenUnspecified = true;
             config.ReportApiVersions = true;
         });
+
+        services.AddVersionedApiExplorer(setup =>
+        {
+            setup.GroupNameFormat = "'v'VVV";
+            setup.SubstituteApiVersionInUrl = true;
+        });
+        services.ConfigureOptions<ConfigureSwaggerOptions>();
 
         services.AddJwtTokenSecurity();
         services.AddCommandStack(Configuration);
@@ -77,7 +77,18 @@ public class Startup
         }
 
         app.UseSwagger();
-        app.UseSwaggerUI();
+
+        var apiVersionDescriptionProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+        app.UseSwaggerUI(options =>
+        {
+            // Reverse the API's in order to make the latest API versions appear first in select box in UI
+            foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
+            {
+                options.SwaggerEndpoint(
+                    $"/swagger/{description.GroupName}/swagger.json",
+                    description.GroupName.ToUpperInvariant());
+            }
+        });
 
         app.UseHttpsRedirection();
         app.UseAuthentication();

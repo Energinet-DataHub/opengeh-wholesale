@@ -22,9 +22,8 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepBalanceResponsiblePar
 /// <summary>
 /// Energy suppliers for which batch results have been calculated.
 /// </summary>
-[ApiController]
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/balance-responsible-parties")]
-public class ProcessStepBalanceResponsiblePartyController : ControllerBase
+public class ProcessStepBalanceResponsiblePartyController : V3ControllerBase
 {
     private readonly IProcessStepApplicationService _processStepApplicationService;
 
