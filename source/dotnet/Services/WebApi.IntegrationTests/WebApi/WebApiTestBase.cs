@@ -12,37 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
-using FluentAssertions;
-using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
 
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class SettlementReportControllerTests :
+public abstract class WebApiTestBase :
     WebApiTestBase<WholesaleWebApiFixture>,
     IClassFixture<WholesaleWebApiFixture>,
     IClassFixture<WebApiFactory>,
     IAsyncLifetime
 {
-    private readonly HttpClient _client;
-    private readonly WebApiFactory _factory;
+    protected HttpClient Client { get; }
 
-    public SettlementReportControllerTests(
+    protected WebApiFactory Factory { get; }
+
+    protected WebApiTestBase(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
         : base(wholesaleWebApiFixture, testOutputHelper)
     {
-        _factory = factory;
-        _client = factory.CreateClient();
+        Factory = factory;
+        Client = factory.CreateClient();
     }
 
     public Task InitializeAsync()
@@ -52,29 +47,7 @@ public class SettlementReportControllerTests :
 
     public Task DisposeAsync()
     {
-        _client.Dispose();
+        Client.Dispose();
         return Task.CompletedTask;
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsSettlementReport(
-        Mock<ISettlementReportApplicationService> mock,
-        string settlementReportContent)
-    {
-        // Arrange
-        var batchId = Guid.NewGuid();
-        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(settlementReportContent));
-        var settlementReport = new SettlementReportDto(stream);
-        mock
-            .Setup(service => service.GetSettlementReportAsync(batchId))
-            .ReturnsAsync(settlementReport);
-        _factory.SettlementReportApplicationServiceMock = mock;
-
-        // Act
-        var actualContent = await _client.GetStringAsync($"/v2.3/settlementreport?batchId={batchId.ToString()}");
-
-        // Assert
-        actualContent.Should().Be(settlementReportContent);
     }
 }

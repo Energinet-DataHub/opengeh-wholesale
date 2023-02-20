@@ -23,9 +23,8 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 /// <summary>
 /// Calculated result.
 /// </summary>
-[ApiController]
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}")]
-public class ProcessStepResultController : ControllerBase
+public class ProcessStepResultController : V3ControllerBase
 {
     private readonly IProcessStepApplicationService _processStepApplicationService;
     private readonly IProcessStepResultFactory _processStepResultFactory;

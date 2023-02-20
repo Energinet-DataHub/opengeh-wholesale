@@ -22,9 +22,8 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepEnergySupplier;
 /// <summary>
 /// Energy suppliers for which batch results have been calculated.
 /// </summary>
-[ApiController]
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers")]
-public class ProcessStepEnergySupplierController : ControllerBase
+public class ProcessStepEnergySupplierController : V3ControllerBase
 {
     private readonly IProcessStepApplicationService _processStepApplicationService;
 

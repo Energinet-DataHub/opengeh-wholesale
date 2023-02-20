@@ -21,42 +21,22 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V2;
 
-[Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class BatchControllerTests :
-    WebApiTestBase<WholesaleWebApiFixture>,
-    IClassFixture<WholesaleWebApiFixture>,
-    IClassFixture<WebApiFactory>,
-    IAsyncLifetime
+public class BatchControllerTests : WebApiTestBase
 {
-    private readonly WebApiFactory _factory;
-    private readonly HttpClient _client;
-
     public BatchControllerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
-        : base(wholesaleWebApiFixture, testOutputHelper)
+        : base(wholesaleWebApiFixture, factory, testOutputHelper)
     {
-        _factory = factory;
-        _client = factory.CreateClient();
-    }
-
-    public Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task DisposeAsync()
-    {
-        _client.Dispose();
-        return Task.CompletedTask;
     }
 
     [Theory]
@@ -69,10 +49,10 @@ public class BatchControllerTests :
         var batchRequest = CreateBatchRequestDto();
         mock.Setup(service => service.CreateAsync(batchRequest))
             .ReturnsAsync(batchId);
-        _factory.BatchApplicationServiceMock = mock;
+        Factory.BatchApplicationServiceMock = mock;
 
         // Act
-        var actual = await _client.PostAsJsonAsync("/v2/batch", batchRequest, CancellationToken.None);
+        var actual = await Client.PostAsJsonAsync("/v2/batch", batchRequest, CancellationToken.None);
 
         // Assert
         actual.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -90,10 +70,10 @@ public class BatchControllerTests :
         var batchSearchDto = new BatchSearchDto(minExecutionTime, maxExecutionTime);
         mock.Setup(service => service.SearchAsync(batchSearchDto))
             .ReturnsAsync(batchDtos);
-        _factory.BatchApplicationServiceMock = mock;
+        Factory.BatchApplicationServiceMock = mock;
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v2/batch/Search", batchSearchDto, CancellationToken.None);
+        var response = await Client.PostAsJsonAsync("/v2/batch/Search", batchSearchDto, CancellationToken.None);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -108,10 +88,10 @@ public class BatchControllerTests :
         // Arrange
         mock.Setup(service => service.GetAsync(batchDto.BatchId))
             .ReturnsAsync(batchDto);
-        _factory.BatchApplicationServiceMock = mock;
+        Factory.BatchApplicationServiceMock = mock;
 
         // Act
-        var response = await _client.GetAsync($"/v2/batch?batchId={batchDto.BatchId.ToString()}");
+        var response = await Client.GetAsync($"/v2/batch?batchId={batchDto.BatchId.ToString()}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -134,7 +114,7 @@ public class BatchControllerTests :
             periodStart,
             periodEnd);
         // Act
-        var response = await _client.PostAsJsonAsync(baseUrl, batchRequest, CancellationToken.None);
+        var response = await Client.PostAsJsonAsync(baseUrl, batchRequest, CancellationToken.None);
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }

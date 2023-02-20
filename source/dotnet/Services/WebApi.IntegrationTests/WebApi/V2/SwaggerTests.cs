@@ -12,42 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
+using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V2;
 
-[Collection(nameof(WholesaleWebApiCollectionFixture))]
-public abstract class WebApiTestBase :
-    WebApiTestBase<WholesaleWebApiFixture>,
-    IClassFixture<WholesaleWebApiFixture>,
-    IClassFixture<WebApiFactory>,
-    IAsyncLifetime
+public class SwaggerTests : WebApiTestBase
 {
-    protected HttpClient Client { get; }
-
-    protected WebApiFactory Factory { get; }
-
-    protected WebApiTestBase(
+    public SwaggerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
-        : base(wholesaleWebApiFixture, testOutputHelper)
+        : base(wholesaleWebApiFixture, factory, testOutputHelper)
     {
-        Factory = factory;
-        Client = factory.CreateClient();
     }
 
-    public Task InitializeAsync()
+    [Fact]
+    public async Task Given_WebAPI_When_GettingOpenApiSpec_Then_ReturnsSpecificationInJson()
     {
-        return Task.CompletedTask;
-    }
+        // Arrange
+        const string expectedOpenApiSpecUrl = "/swagger/v2/swagger.json";
 
-    public Task DisposeAsync()
-    {
-        Client.Dispose();
-        return Task.CompletedTask;
+        // Act
+        var actualResponse = await Client.GetAsync(expectedOpenApiSpecUrl);
+
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var actualContent = await actualResponse.Content.ReadAsStringAsync();
+        var actualContentJObject = JObject.Parse(actualContent);
+        actualContentJObject.Should().NotBeNull();
     }
 }
