@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 /// Calculated result.
 /// </summary>
 [ApiController]
-[Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/market-role/{marketRole}")]
+[Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/")]
 public class ProcessStepResultController : ControllerBase
 {
     private readonly IProcessStepApplicationService _processStepApplicationService;
@@ -42,18 +42,24 @@ public class ProcessStepResultController : ControllerBase
     }
 
     /// <summary>
-    /// Get calculation result for a specific actor by GLN.
+    /// TODO: LRN Write new documentation.
     /// </summary>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpGet("{gln}")]
-    public async Task<ProcessStepResultDto> GetForActorAsync(
+    [HttpGet]
+    public async Task<ProcessStepResultDto> GetResultAsync(
         [FromRoute] Guid batchId,
         [FromRoute] string gridAreaCode,
         [FromRoute] TimeSeriesType timeSeriesType,
-        [FromQuery] string gln,
-        [FromRoute] MarketRole marketRole)
+        [FromQuery] string? energySupplierGln,
+        [FromRoute] string? balanceResponsiblePartyGln)
     {
-        var stepResult = await _processStepApplicationService.GetResultAsync(batchId, gridAreaCode, timeSeriesType, gln, marketRole).ConfigureAwait(false);
+        var stepResult = await _processStepApplicationService.GetResultAsync(
+            batchId,
+            gridAreaCode,
+            timeSeriesType,
+            energySupplierGln,
+            balanceResponsiblePartyGln).ConfigureAwait(false);
+
         var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
 
         return _processStepResultFactory.Create(stepResult, batch);

@@ -90,7 +90,7 @@ public class ProcessStepControllerTests :
     {
         // Arrange
         applicationServiceMock
-            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, "grid_area"))
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => expectedProcessStepResult);
         _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
@@ -114,7 +114,7 @@ public class ProcessStepControllerTests :
     {
         // Arrange
         applicationServiceMock
-            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, "grid_area"))
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => expectedProcessStepResult);
         _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
@@ -138,7 +138,7 @@ public class ProcessStepControllerTests :
     {
         // Arrange
         applicationServiceMock
-            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, "grid_area"))
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => expectedProcessStepResult);
         _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
@@ -162,7 +162,7 @@ public class ProcessStepControllerTests :
     {
         // Arrange
         applicationServiceMock
-            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, request.TimeSeriesType, request.Gln))
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, request.TimeSeriesType, request.Gln, null))
             .ReturnsAsync(() => expectedProcessStepResult);
         _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 

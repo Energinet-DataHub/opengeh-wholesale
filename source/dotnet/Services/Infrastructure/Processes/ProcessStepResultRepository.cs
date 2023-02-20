@@ -23,6 +23,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 public class ProcessStepResultRepository : IProcessStepResultRepository
 {
+    private const string EnergySupplierGridArea = "es_ga";
+    private const string BalanceResponsiblePartyGridArea = "brp_ga";
+    private const string TotalGridArea = "total_ga";
     private readonly IDataLakeClient _dataLakeClient;
     private readonly IJsonNewlineSerializer _jsonNewlineSerializer;
 
@@ -38,13 +41,31 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         Guid batchId,
         GridAreaCode gridAreaCode,
         TimeSeriesType timeSeriesType,
-        string? gln,
-        MarketRole marketRole)
+        string? energySupplierGln,
+        string? balanceResponsiblePartyGln)
     {
-        var (directory, extension) = marketRole != MarketRole.GridAccessProvider ? GetResultFilePerGridAreaSpecification(batchId, gridAreaCode, timeSeriesType, gln, marketRole)
-            : GetResultFileTotalGridAreaSpecification(batchId, gridAreaCode, timeSeriesType, marketRole);
+        if (balanceResponsiblePartyGln != null && energySupplierGln == null)
+            return await GetResultAsync(batchId, GetDirectoryForBrpGridAreaGrouping(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyGln)).ConfigureAwait(false);
 
-        var dataLakeFileClient = await _dataLakeClient.GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
+        if (energySupplierGln != null && balanceResponsiblePartyGln == null)
+            return await GetResultAsync(batchId, GetDirectoryForEsGridAreaGrouping(batchId, gridAreaCode, timeSeriesType, energySupplierGln)).ConfigureAwait(false);
+
+        return await GetResultAsync(batchId, GetDirectoryForTotalGridAreaGrouping(batchId, gridAreaCode, timeSeriesType)).ConfigureAwait(false);
+    }
+
+    public static string GetDirectoryForBrpGridAreaGrouping(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln)
+        => $"calculation-output/batch_id={batchId}/result/grouping={BalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/gln={balanceResponsiblePartyGln}/";
+
+    public static string GetDirectoryForEsGridAreaGrouping(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string energySupplierGln)
+        => $"calculation-output/batch_id={batchId}/result/grouping={EnergySupplierGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/gln={energySupplierGln}/";
+
+    public static string GetDirectoryForTotalGridAreaGrouping(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType)
+        => $"calculation-output/batch_id={batchId}/result/grouping={TotalGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/";
+
+    private async Task<ProcessStepResult> GetResultAsync(Guid batchId, string directory)
+    {
+        var dataLakeFileClient =
+            await _dataLakeClient.GetDataLakeFileClientAsync(directory, ".json").ConfigureAwait(false);
         if (dataLakeFileClient == null)
         {
             throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
@@ -56,14 +77,7 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         return MapToProcessStepResultDto(points);
     }
 
-    // cant find es_brp_ga
-    public static (string Directory, string Extension) GetResultFilePerGridAreaSpecification(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string gln, MarketRole marketRole)
-        => ($"calculation-output/batch_id={batchId}/result/{MarketRoleMapper.Map(marketRole)}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/gln={gln}/", ".json");
-
-    public static (string Directory, string Extension) GetResultFileTotalGridAreaSpecification(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, MarketRole marketRole)
-        => ($"calculation-output/batch_id={batchId}/result/{MarketRoleMapper.Map(marketRole)}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/", ".json");
-
-    private static ProcessStepResult MapToProcessStepResultDto(List<ProcessResultPoint> points)
+    private static ProcessStepResult MapToProcessStepResultDto(IEnumerable<ProcessResultPoint> points)
     {
         var pointsDto = points.Select(
                 point => new TimeSeriesPoint(

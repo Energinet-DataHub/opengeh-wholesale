@@ -56,15 +56,15 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,
-        string gln,
-        MarketRole marketRole)
+        string? energySupplierGln,
+        string? balanceResponsibleParty)
     {
         var processActorResult = await _processStepResultRepository.GetAsync(
                 batchId,
                 new GridAreaCode(gridAreaCode),
                 TimeSeriesTypeMapper.Map(timeSeriesType),
-                gln,
-                MarketRoleMapper.Map(marketRole))
+                energySupplierGln,
+                balanceResponsibleParty)
             .ConfigureAwait(false);
 
         return _processStepResultMapper.MapToDto(processActorResult);

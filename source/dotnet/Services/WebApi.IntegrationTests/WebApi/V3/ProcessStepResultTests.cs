@@ -52,7 +52,7 @@ public class ProcessStepResultTests : WebApiTestBase
         request.SetPrivateProperty(r => r.Type, TimeSeriesType.Production);
         result.SetPrivateProperty(r => r.TimeSeriesPoints, new TimeSeriesPointDto[] { new(DateTimeOffset.Now, decimal.One, "A04") });
         processStepApplicationServiceMock
-            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, "grid_area"))
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => result);
         batchApplicationServiceMock.Setup(service => service.GetAsync(request.BatchId)).ReturnsAsync(batchDto);
         Factory.ProcessStepApplicationServiceMock = processStepApplicationServiceMock;

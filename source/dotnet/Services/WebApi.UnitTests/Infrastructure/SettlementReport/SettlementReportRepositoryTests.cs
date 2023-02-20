@@ -204,7 +204,7 @@ public class SettlementReportRepositoryTests
             new ProcessStepResultMapper(),
             actorRepositoryMock.Object);
 
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area"))
+        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, null, null))
             .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         // Act
@@ -212,7 +212,8 @@ public class SettlementReportRepositoryTests
                 batchId,
                 gridAreaCode,
                 Contracts.TimeSeriesType.Production,
-                "grid_area");
+                null,
+                null);
 
         // Assert
         actual.TimeSeriesPoints.First().Time.Should().Be(time);

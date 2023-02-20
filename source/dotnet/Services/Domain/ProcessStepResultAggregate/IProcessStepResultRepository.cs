@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
 namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
@@ -23,6 +22,6 @@ public interface IProcessStepResultRepository
         Guid batchId,
         GridAreaCode gridAreaCode,
         TimeSeriesType timeSeriesType,
-        string gln,
-        MarketRole marketRole);
+        string? energySupplierGln,
+        string? balanceResponsiblePartyGln);
 }
