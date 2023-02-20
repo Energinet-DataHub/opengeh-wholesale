@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
