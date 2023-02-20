@@ -12,36 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
+using System.Net;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
-using Moq;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V2;
 
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class SettlementReportControllerTests :
+public class SwaggerTests :
     WebApiTestBase<WholesaleWebApiFixture>,
     IClassFixture<WholesaleWebApiFixture>,
     IClassFixture<WebApiFactory>,
     IAsyncLifetime
 {
     private readonly HttpClient _client;
-    private readonly WebApiFactory _factory;
 
-    public SettlementReportControllerTests(
+    public SwaggerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
         : base(wholesaleWebApiFixture, testOutputHelper)
     {
-        _factory = factory;
         _client = factory.CreateClient();
     }
 
@@ -56,25 +51,20 @@ public class SettlementReportControllerTests :
         return Task.CompletedTask;
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsSettlementReport(
-        Mock<ISettlementReportApplicationService> mock,
-        string settlementReportContent)
+    [Fact]
+    public async Task Given_WebAPI_When_GettingOpenApiSpec_Then_ReturnsSpecificationInJson()
     {
         // Arrange
-        var batchId = Guid.NewGuid();
-        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(settlementReportContent));
-        var settlementReport = new SettlementReportDto(stream);
-        mock
-            .Setup(service => service.GetSettlementReportAsync(batchId))
-            .ReturnsAsync(settlementReport);
-        _factory.SettlementReportApplicationServiceMock = mock;
+        const string expectedOpenApiSpecUrl = "/swagger/v2/swagger.json";
 
         // Act
-        var actualContent = await _client.GetStringAsync($"/v2.3/settlementreport?batchId={batchId.ToString()}");
+        var actualResponse = await _client.GetAsync(expectedOpenApiSpecUrl);
 
         // Assert
-        actualContent.Should().Be(settlementReportContent);
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var actualContent = await actualResponse.Content.ReadAsStringAsync();
+        var actualContentJObject = JObject.Parse(actualContent);
+        actualContentJObject.Should().NotBeNull();
     }
 }

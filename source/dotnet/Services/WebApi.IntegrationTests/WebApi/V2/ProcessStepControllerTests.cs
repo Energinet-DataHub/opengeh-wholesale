@@ -24,7 +24,7 @@ using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V2;
 
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
 public class ProcessStepControllerTests :

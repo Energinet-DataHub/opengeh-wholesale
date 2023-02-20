@@ -16,10 +16,11 @@ using System.Net;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 
 [Collection(nameof(WholesaleWebApiCollectionFixture))]
 public class SwaggerTests :
@@ -51,13 +52,19 @@ public class SwaggerTests :
     }
 
     [Fact]
-    public async Task Given_WebAPI_When_GettingSwaggerUi_Then_ReturnsHtmlPage()
+    public async Task Given_WebAPI_When_GettingOpenApiSpec_Then_ReturnsSpecificationInJson()
     {
+        // Arrange
+        const string expectedOpenApiSpecUrl = "/swagger/v3/swagger.json";
+
         // Act
-        var actualResponse = await _client.GetAsync("/swagger/index.html");
+        var actualResponse = await _client.GetAsync(expectedOpenApiSpecUrl);
 
         // Assert
-        actualResponse.Content.Headers.ContentType!.ToString().Should().StartWith("text/html");
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var actualContent = await actualResponse.Content.ReadAsStringAsync();
+        var actualContentJObject = JObject.Parse(actualContent);
+        actualContentJObject.Should().NotBeNull();
     }
 }
