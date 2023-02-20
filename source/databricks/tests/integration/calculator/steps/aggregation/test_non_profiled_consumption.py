@@ -19,6 +19,7 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.steps.aggregation import (
+    aggregate_non_profiled_consumption_ga_es,
     aggregate_non_profiled_consumption_ga_brp,
     aggregate_non_profiled_consumption_ga,
 )
@@ -202,6 +203,25 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_ti
         and aggregated_df_collect[2][Colname.time_window]["end"]
         == datetime(2020, 1, 1, 1, 0)
     )
+
+
+def test_non_profiled_consumption_calculation_per_ga_and_es(agg_result_factory) -> None:
+    consumption = create_dataframe_from_aggregation_result_schema(
+        metadata, agg_result_factory()
+    )
+    aggregated_df = aggregate_non_profiled_consumption_ga_es(
+        consumption, metadata
+    ).sort(Colname.grid_area, Colname.energy_supplier_id, Colname.time_window)
+    aggregated_df_collect = aggregated_df.collect()
+    assert aggregated_df_collect[0][Colname.balance_responsible_id] is None
+    assert aggregated_df_collect[0][Colname.grid_area] == "1"
+    assert aggregated_df_collect[0][Colname.energy_supplier_id] == "1"
+    assert aggregated_df_collect[0][Colname.sum_quantity] == Decimal(1)
+    assert aggregated_df_collect[1][Colname.sum_quantity] == Decimal(1)
+    assert aggregated_df_collect[2][Colname.sum_quantity] == Decimal(1)
+    assert aggregated_df_collect[3][Colname.sum_quantity] == Decimal(1)
+    assert aggregated_df_collect[4][Colname.sum_quantity] == Decimal(1)
+    assert aggregated_df_collect[5][Colname.sum_quantity] == Decimal(1)
 
 
 def test_non_profiled_consumption_calculation_per_ga_and_brp(

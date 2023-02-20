@@ -251,7 +251,7 @@ def _aggregate_per_ga_and_brp_and_es(
         Colname.energy_supplier_id,
         Colname.time_window,
     ]
-    result = __aggregate_sum_and_set_quality(result, "quarter_quantity", sum_group_by)
+    result = _aggregate_sum_and_set_quality(result, "quarter_quantity", sum_group_by)
 
     win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
 
@@ -284,6 +284,52 @@ def _aggregate_per_ga_and_brp_and_es(
         )
     )
 
+    return create_dataframe_from_aggregation_result_schema(metadata, result)
+
+
+def aggregate_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
+    return _aggregate_per_ga_and_es(
+        results[ResultKeyName.production_with_system_correction_and_grid_loss],
+        MeteringPointType.production,
+        metadata,
+    )
+
+
+def aggregate_non_profiled_consumption_ga_es(
+    non_profiled_consumption: DataFrame, metadata: Metadata
+) -> DataFrame:
+    return _aggregate_per_ga_and_es(
+        non_profiled_consumption,
+        MeteringPointType.consumption,
+        metadata,
+    )
+
+
+def aggregate_flex_consumption_ga_es(results: dict, metadata: Metadata) -> DataFrame:
+    return _aggregate_per_ga_and_es(
+        results[ResultKeyName.flex_consumption_with_grid_loss],
+        MeteringPointType.consumption,
+        metadata,
+    )
+
+
+# Function to aggregate sum per grid area and energy supplier (step 12, 13 and 14)
+def _aggregate_per_ga_and_es(
+    df: DataFrame,
+    market_evaluation_point_type: MeteringPointType,
+    metadata: Metadata,
+) -> DataFrame:
+    group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
+    result = _aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
+
+    result = result.select(
+        Colname.grid_area,
+        Colname.energy_supplier_id,
+        Colname.time_window,
+        Colname.quality,
+        Colname.sum_quantity,
+        lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
+    )
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
@@ -320,7 +366,7 @@ def _aggregate_per_ga_and_brp(
     metadata: Metadata,
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.balance_responsible_id, Colname.time_window]
-    result = __aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
+    result = _aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
 
     result = result.select(
         Colname.grid_area,
@@ -366,7 +412,7 @@ def _aggregate_per_ga(
     metadata: Metadata,
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.time_window]
-    result = __aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
+    result = _aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
 
     result = result.withColumnRenamed(
         f"sum({Colname.sum_quantity})", Colname.sum_quantity
@@ -381,7 +427,7 @@ def _aggregate_per_ga(
     return create_dataframe_from_aggregation_result_schema(metadata, result)
 
 
-def __aggregate_sum_and_set_quality(
+def _aggregate_sum_and_set_quality(
     result: DataFrame, quantity_col_name: str, group_by: list[str]
 ) -> DataFrame:
     result = result.na.fill(value=0, subset=[quantity_col_name])
