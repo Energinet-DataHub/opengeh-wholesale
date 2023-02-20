@@ -53,7 +53,7 @@ public class ActorRepository : IActorRepository
         GridAreaCode gridAreaCode,
         TimeSeriesType timeSeriesType)
     {
-        return ($"calculation-output/batch_id={batchId}/actors/{TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/", ".json");
+        return ($"calculation-output/batch_id={batchId}/actors//time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/", ".json");
     }
 
     private static Domain.ActorAggregate.Actor[] MapToBatchActor(IEnumerable<Actor> actors)

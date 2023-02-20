@@ -32,7 +32,7 @@ class ActorsWriter:
             Colname.energy_supplier_id, "energy_supplier_gln"
         )
 
-        actors_directory = f"{self.__output_path}/{time_series_type.value}"
+        actors_directory = f"{self.__output_path}/time_series_type={time_series_type.value}"
 
         (
             actors_df.repartition("grid_area")
