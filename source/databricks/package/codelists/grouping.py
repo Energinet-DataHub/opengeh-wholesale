@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class CalculationName:
+class Grouping:
     total_ga = "total_ga"
     es_per_brp_per_ga = "es_brp_ga"
     es_per_ga = "es_ga"

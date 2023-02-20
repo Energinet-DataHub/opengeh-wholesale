@@ -25,7 +25,7 @@ from package.calculator_job import (
     _start,
 )
 from package.calculator_args import CalculatorArgs
-from package.codelists import TimeSeriesType, CalculationName
+from package.codelists import TimeSeriesType, Grouping
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from tests.helpers.file_utils import find_file
@@ -185,31 +185,31 @@ def test__result_is_generated_for_requested_grid_areas(
 ) -> None:
     # Arrange
     expected_ga_gln_type = [
-        ["805", None, TimeSeriesType.PRODUCTION, CalculationName.total_ga],
-        ["806", None, TimeSeriesType.PRODUCTION, CalculationName.total_ga],
+        ["805", None, TimeSeriesType.PRODUCTION, Grouping.total_ga],
+        ["806", None, TimeSeriesType.PRODUCTION, Grouping.total_ga],
         [
             "805",
             energy_supplier_gln_a,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            CalculationName.es_per_ga,
+            Grouping.es_per_ga,
         ],
         [
             "806",
             energy_supplier_gln_a,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            CalculationName.es_per_ga,
+            Grouping.es_per_ga,
         ],
         [
             "805",
             energy_supplier_gln_b,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            CalculationName.es_per_ga,
+            Grouping.es_per_ga,
         ],
         [
             "806",
             energy_supplier_gln_b,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            CalculationName.es_per_ga,
+            Grouping.es_per_ga,
         ],
     ]
 
@@ -217,9 +217,9 @@ def test__result_is_generated_for_requested_grid_areas(
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    for grid_area, gln, time_series_type, calculation_name in expected_ga_gln_type:
+    for grid_area, gln, time_series_type, grouping in expected_ga_gln_type:
         result_path = infra.get_result_file_relative_path(
-            executed_batch_id, grid_area, gln, time_series_type, calculation_name
+            executed_batch_id, grid_area, gln, time_series_type, grouping
         )
         result = spark.read.json(f"{data_lake_path}/{worker_id}/{result_path}")
         assert result.count() >= 1, "Calculator job failed to write files"
@@ -264,7 +264,7 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
         "805",
         None,
         TimeSeriesType.PRODUCTION,
-        CalculationName.total_ga,
+        Grouping.total_ga,
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
@@ -292,7 +292,7 @@ def test__quantity_is_with_precision_3(
         "805",
         None,
         TimeSeriesType.PRODUCTION,
-        CalculationName.total_ga,
+        Grouping.total_ga,
     )
 
     result_relative_path_non_profiled_consumption = infra.get_result_file_relative_path(
@@ -300,7 +300,7 @@ def test__quantity_is_with_precision_3(
         "805",
         energy_supplier_gln_a,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        CalculationName.es_per_ga,
+        Grouping.es_per_ga,
     )
 
     # Act
@@ -332,7 +332,7 @@ def test__result_file_has_correct_expected_number_of_rows_for_consumption(
         "806",
         energy_supplier_gln_a,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        CalculationName.es_per_ga,
+        Grouping.es_per_ga,
     )
 
     # Act
@@ -357,7 +357,7 @@ def test__result_file_has_correct_expected_number_of_rows_for_production(
         "806",
         None,
         TimeSeriesType.PRODUCTION,
-        CalculationName.total_ga,
+        Grouping.total_ga,
     )
 
     # Act

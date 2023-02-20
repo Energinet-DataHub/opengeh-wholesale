@@ -38,10 +38,10 @@ def get_result_file_relative_path(
     grid_area: str,
     gln: str | None,
     time_series_type: TimeSeriesType,
-    calculation_name: str,
+    grouping: str,
 ) -> str:
     batch_path = get_batch_relative_path(batch_id)
-    relative_path = f"{batch_path}/{RESULT_FOLDER}/{calculation_name}/time_series_type={time_series_type.value}/grid_area={grid_area}"
+    relative_path = f"{batch_path}/{RESULT_FOLDER}/grouping={grouping}/time_series_type={time_series_type.value}/grid_area={grid_area}"
     if gln is None:
         return relative_path
     else:

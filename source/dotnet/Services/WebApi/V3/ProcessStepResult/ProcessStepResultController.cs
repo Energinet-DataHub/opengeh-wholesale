@@ -27,9 +27,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/market-role/{marketRole}")]
 public class ProcessStepResultController : ControllerBase
 {
+    private readonly IBatchApplicationService _batchApplicationService;
     private readonly IProcessStepApplicationService _processStepApplicationService;
     private readonly IProcessStepResultFactory _processStepResultFactory;
-    private readonly IBatchApplicationService _batchApplicationService;
 
     public ProcessStepResultController(
         IProcessStepApplicationService processStepApplicationService,
@@ -50,8 +50,9 @@ public class ProcessStepResultController : ControllerBase
         [FromRoute] Guid batchId,
         [FromRoute] string gridAreaCode,
         [FromRoute] TimeSeriesType timeSeriesType,
-        [FromQuery] string gln,
-        [FromRoute] MarketRole marketRole)
+        [FromRoute] MarketRole marketRole,
+        [FromQuery] string? gln,
+        [FromQuery] string? energy_supplier_gln)
     {
         var stepResult = await _processStepApplicationService.GetResultAsync(batchId, gridAreaCode, timeSeriesType, gln, marketRole).ConfigureAwait(false);
         var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);

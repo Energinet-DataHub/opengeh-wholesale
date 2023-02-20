@@ -23,7 +23,7 @@ from package.codelists import (
     TimeSeriesQuality,
     MarketRole,
     TimeSeriesType,
-    CalculationName,
+    Grouping,
 )
 from package.constants import Colname
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
@@ -102,7 +102,7 @@ def test__write_per_ga__does_not_call_actors_writer(
 
     # Act
     sut.write_per_ga(
-        result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION, CalculationName.total_ga
+        result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION, Grouping.total_ga
     )
 
     # Assert
@@ -138,7 +138,7 @@ def test__write_per_ga_per_actor__actors_file_has_expected_gln(
 
     # Act
     sut.write_per_ga_per_actor(
-        result_df, time_series_type, market_role, CalculationName.es_per_ga
+        result_df, time_series_type, market_role, Grouping.es_per_ga
     )
 
     # Assert
@@ -182,7 +182,7 @@ def test__write_per_ga_per_actor__actors_file_path_matches_contract(
         result_df,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.ENERGY_SUPPLIER,
-        CalculationName.es_per_ga,
+        Grouping.es_per_ga,
     )
 
     # Assert
@@ -212,7 +212,7 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
         DEFAULT_GRID_AREA,
         DEFAULT_ENERGY_SUPPLIER_ID,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        CalculationName.es_per_ga,
+        Grouping.es_per_ga,
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
@@ -221,7 +221,7 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
         result_df,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.ENERGY_SUPPLIER,
-        CalculationName.es_per_ga,
+        Grouping.es_per_ga,
     )
 
     # Assert
