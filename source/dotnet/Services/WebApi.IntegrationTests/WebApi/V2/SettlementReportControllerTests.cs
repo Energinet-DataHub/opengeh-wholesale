@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -25,35 +26,14 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V2;
 
-[Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class SettlementReportControllerTests :
-    WebApiTestBase<WholesaleWebApiFixture>,
-    IClassFixture<WholesaleWebApiFixture>,
-    IClassFixture<WebApiFactory>,
-    IAsyncLifetime
+public class SettlementReportControllerTests : WebApiTestBase
 {
-    private readonly HttpClient _client;
-    private readonly WebApiFactory _factory;
-
     public SettlementReportControllerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
-        : base(wholesaleWebApiFixture, testOutputHelper)
+        : base(wholesaleWebApiFixture, factory, testOutputHelper)
     {
-        _factory = factory;
-        _client = factory.CreateClient();
-    }
-
-    public Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task DisposeAsync()
-    {
-        _client.Dispose();
-        return Task.CompletedTask;
     }
 
     [Theory]
@@ -69,10 +49,10 @@ public class SettlementReportControllerTests :
         mock
             .Setup(service => service.GetSettlementReportAsync(batchId))
             .ReturnsAsync(settlementReport);
-        _factory.SettlementReportApplicationServiceMock = mock;
+        Factory.SettlementReportApplicationServiceMock = mock;
 
         // Act
-        var actualContent = await _client.GetStringAsync($"/v2.3/settlementreport?batchId={batchId.ToString()}");
+        var actualContent = await Client.GetStringAsync($"/v2.3/settlementreport?batchId={batchId.ToString()}");
 
         // Assert
         actualContent.Should().Be(settlementReportContent);
