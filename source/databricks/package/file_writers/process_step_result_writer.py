@@ -30,23 +30,21 @@ class ProcessStepResultWriter:
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
-        calculation_name: str,
+        grouping: str,
     ) -> None:
         result_df = self._prepare_result_for_output(
             result_df,
         )
         result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
         partition_by = ["grid_area"]
-        self._write_result_df(
-            result_df, partition_by, time_series_type, calculation_name
-        )
+        self._write_result_df(result_df, partition_by, time_series_type, grouping)
 
     def write_per_ga_per_actor(
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
         market_role: MarketRole,
-        calculation_name: str,
+        grouping: str,
     ) -> None:
         result_df = self._prepare_result_for_output(
             result_df,
@@ -54,9 +52,7 @@ class ProcessStepResultWriter:
         result_df = self._add_gln(result_df, market_role)
         result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
         partition_by = ["grid_area", Colname.gln]
-        self._write_result_df(
-            result_df, partition_by, time_series_type, calculation_name
-        )
+        self._write_result_df(result_df, partition_by, time_series_type, grouping)
         actors_writer.write(
             self.__output_path, result_df, market_role, time_series_type
         )
@@ -98,9 +94,9 @@ class ProcessStepResultWriter:
         result_df: DataFrame,
         partition_by: list[str],
         time_series_type: TimeSeriesType,
-        calculation_name: str,
+        grouping: str,
     ) -> None:
-        result_data_directory = f"{self.__output_path}/result/{calculation_name}/time_series_type={time_series_type.value}"
+        result_data_directory = f"{self.__output_path}/result/grouping={grouping}/time_series_type={time_series_type.value}"
 
         # First repartition to co-locate all rows for a grid area on a single executor.
         # This ensures that only one file is being written/created for each grid area
