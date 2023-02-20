@@ -138,7 +138,7 @@ def test__write_per_ga_per_actor__actors_file_path_matches_contract(
     sut = ActorsWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act
-    sut.Wrtie(result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION)
+    sut.write(result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION)
 
     # Assert
     actual_result_file = find_file(
