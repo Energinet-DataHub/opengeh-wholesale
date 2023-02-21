@@ -58,7 +58,7 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
         string? energySupplierGln,
         string? balanceResponsibleParty)
     {
-        var processActorResult = await _processStepResultRepository.GetAsync(
+        var processStepResult = await _processStepResultRepository.GetAsync(
                 batchId,
                 new GridAreaCode(gridAreaCode),
                 TimeSeriesTypeMapper.Map(timeSeriesType),
@@ -66,6 +66,6 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
                 balanceResponsibleParty)
             .ConfigureAwait(false);
 
-        return _processStepResultMapper.MapToDto(processActorResult);
+        return _processStepResultMapper.MapToDto(processStepResult);
     }
 }

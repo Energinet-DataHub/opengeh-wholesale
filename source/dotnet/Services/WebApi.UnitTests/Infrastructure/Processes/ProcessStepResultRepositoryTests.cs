@@ -74,7 +74,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFileTotalGa;
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForTotalGridAreaGrouping(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production);
+        var actual = ProcessStepResultRepository.GetDirectoryForTotalGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production);
 
         // Assert
         actual.Should().MatchRegex(expected.DirectoryExpression);
@@ -90,7 +90,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForEsGridAreaGrouping(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "energySupplierGln");
+        var actual = ProcessStepResultRepository.GetDirectoryForEsGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "energySupplierGln");
 
         // Assert
         actual.Should().MatchRegex(expected.DirectoryExpression);
@@ -107,7 +107,7 @@ public class ProcessStepResultRepositoryTests
         const string gridAreaCode = "123";
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForTotalGridAreaGrouping(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType);
+        var actual = ProcessStepResultRepository.GetDirectoryForTotalGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType);
 
         // Assert
         actual.Should().Contain(expectedTimeSeriesType);
