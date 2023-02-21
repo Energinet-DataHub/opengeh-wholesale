@@ -48,7 +48,7 @@ public class BatchControllerV21 : ControllerBase
     [HttpPost("Search")]
     [MapToApiVersion(Version)]
     [AllowAnonymous]
-    public async Task<IActionResult> SearchAsync([FromBody] BatchSearchDtoV21 batchSearchDto)
+    public async Task<IActionResult> SearchAsync([FromBody] BatchSearchDtoV2 batchSearchDto)
     {
         var batchesDto = await _batchApplicationService.SearchAsync(batchSearchDto).ConfigureAwait(false);
         var batches = batchesDto.Select(_batchDtoV2Mapper.Map).ToList();

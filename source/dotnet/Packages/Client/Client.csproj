@@ -81,8 +81,8 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchSearchDto.cs">
       <Link>Dtos\BatchSearchDto.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\BatchSearchDtoV21.cs">
-      <Link>Dtos\BatchSearchDtoV21.cs</Link>
+    <Compile Include="..\..\Contracts\BatchSearchDtoV2.cs">
+      <Link>Dtos\BatchSearchDtoV2.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Model\BatchState.cs</Link>

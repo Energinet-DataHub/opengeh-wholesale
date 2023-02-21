@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Wholesale.Contracts;
 /// <summary>
 /// An immutable criteria for batch search.
 /// </summary>
-public sealed record BatchSearchDtoV21(
+public sealed record BatchSearchDtoV2(
     DateTimeOffset MinExecutionTime,
     DateTimeOffset MaxExecutionTime,
     DateTimeOffset PeriodStart,

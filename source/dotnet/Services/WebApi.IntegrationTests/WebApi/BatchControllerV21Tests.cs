@@ -69,7 +69,7 @@ public class BatchControllerV21Tests :
         var maxExecutionTime = minExecutionTime + TimeSpan.FromMinutes(33);
         var periodStart = DateTimeOffset.Now.Date.AddDays(-3);
         var periodEnd = DateTimeOffset.Now.Date.AddDays(3);
-        var batchSearchDto = new BatchSearchDtoV21(minExecutionTime, maxExecutionTime, periodStart, periodEnd);
+        var batchSearchDto = new BatchSearchDtoV2(minExecutionTime, maxExecutionTime, periodStart, periodEnd, BatchState.Completed);
         mock.Setup(service => service.SearchAsync(batchSearchDto))
             .ReturnsAsync(batchDtos);
         _factory.BatchApplicationServiceMock = mock;

@@ -35,7 +35,7 @@ public interface IWholesaleClient
     /// Returns batches matching the search criteria.
     /// In case of errors an exception is thrown.
     /// </summary>
-    Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(BatchSearchDtoV21 batchSearchDto);
+    Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(BatchSearchDtoV2 batchSearchDto);
 
     Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId);
 

@@ -88,7 +88,7 @@ public class BatchApplicationService : IBatchApplicationService
         return batches.Select(_batchDtoMapper.Map);
     }
 
-    public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDtoV21 batchSearchDto)
+    public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDtoV2 batchSearchDto)
     {
         var executionStateFilter = batchSearchDto.FilterByExecutionState switch
         {

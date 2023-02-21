@@ -37,7 +37,7 @@ public interface IBatchApplicationService
 
     Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto);
 
-    Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDtoV21 batchSearchDto);
+    Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDtoV2 batchSearchDto);
 
     Task<BatchDto> GetAsync(Guid batchId);
 }

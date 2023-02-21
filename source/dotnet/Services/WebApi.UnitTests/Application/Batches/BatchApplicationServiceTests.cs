@@ -125,14 +125,14 @@ public class BatchApplicationServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task SearchV21Async_NoMatchingBatches_ReturnsZeroBatches(
+    public async Task SearchV2Async_NoMatchingBatches_ReturnsZeroBatches(
        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
        BatchApplicationService sut)
     {
         // Arrange
         var noBatches = new List<Batch>();
-        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
-        var batchSearchDto = new BatchSearchDtoV21(DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now);
+        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<IReadOnlyCollection<BatchExecutionState>>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
+        var batchSearchDto = new BatchSearchDtoV2(DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, BatchState.Completed);
 
         // Act
         var searchResult = await sut.SearchAsync(batchSearchDto);
@@ -143,16 +143,16 @@ public class BatchApplicationServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task SearchV21Async_NoMatchingBatches_DoesNotThrowException(
+    public async Task SearchV2Async_NoMatchingBatches_DoesNotThrowException(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         BatchApplicationService sut)
     {
         // Arrange
         var noBatches = new List<Batch>();
-        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
+        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<IReadOnlyCollection<BatchExecutionState>>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
 
         // Act
-        var batchSearchDto = new BatchSearchDtoV21(DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now);
+        var batchSearchDto = new BatchSearchDtoV2(DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, BatchState.Completed);
         await sut.SearchAsync(batchSearchDto);
 
         // Assert
@@ -161,7 +161,7 @@ public class BatchApplicationServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task SearchV21Async_ReturnsCorrectNumberOfBatches(
+    public async Task SearchV2Async_ReturnsCorrectNumberOfBatches(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         BatchApplicationService sut)
     {
@@ -173,10 +173,10 @@ public class BatchApplicationServiceTests
             new BatchBuilder().Build(),
             new BatchBuilder().Build(),
         };
-        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(batches);
+        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<IReadOnlyCollection<BatchExecutionState>>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(batches);
 
         // Act
-        var batchSearchDto = new BatchSearchDtoV21(DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now);
+        var batchSearchDto = new BatchSearchDtoV2(DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, BatchState.Completed);
         var searchResult = await sut.SearchAsync(batchSearchDto);
 
         // Assert

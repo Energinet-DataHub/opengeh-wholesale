@@ -53,7 +53,7 @@ public class WholesaleClient : IWholesaleClient
     }
 
     public async Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(
-        BatchSearchDtoV21 batchSearchDto)
+        BatchSearchDtoV2 batchSearchDto)
     {
         var response = await _httpClient
             .PostAsJsonAsync("v2.1/Batch/search", batchSearchDto)
