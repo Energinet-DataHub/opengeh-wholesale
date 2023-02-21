@@ -26,6 +26,7 @@ limitations under the License.
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="7.2.9" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.9" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
@@ -44,7 +45,7 @@ limitations under the License.
 
   <ItemGroup>
     <Compile Include="..\..\Contracts\BatchDtoV2.cs">
-      <Link>Controllers\V2\BatchDtoV2.cs</Link>
+      <Link>V2\BatchDtoV2.cs</Link>
     </Compile>
   </ItemGroup>
 
