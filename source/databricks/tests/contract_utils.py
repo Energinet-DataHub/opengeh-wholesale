@@ -59,7 +59,9 @@ def assert_codelist_matches_contract(codelist: List, contract_path: str) -> None
         )
         if supported_arg is None:
             raise Exception(f"Literal '{literal.name}' does not exist in contract.")
-        assert literal.value == supported_arg["value"]
+        assert (
+            literal.value == supported_arg["value"]
+        ), f"""The value {literal.value} of {literal.name} does not match expected value {supported_arg["value"]}"""
 
 
 def get_message_type(contract_path: str) -> None:

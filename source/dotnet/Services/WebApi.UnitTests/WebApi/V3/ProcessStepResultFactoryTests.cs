@@ -16,32 +16,12 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using FluentAssertions;
-using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
 public class ProcessStepResultFactoryTests
 {
-    [Theory]
-    [InlineAutoMoqData("A02", "missing")]
-    [InlineAutoMoqData("A03", "estimated")]
-    [InlineAutoMoqData("A04", "measured")]
-    [InlineAutoMoqData("A06", "calculated")]
-    public void MapQuality_ReturnsExpectedQuality(string inputQuality, string expectedQuality)
-    {
-        var actualQuality = ProcessStepResultFactory.MapQuality(inputQuality);
-        actualQuality.Should().Be(expectedQuality);
-    }
-
-    [Fact]
-    public void MapQuality_WhenInvalidQuality_ThrowsArgumentException()
-    {
-        var invalidQuality = "some-invalid-quality-value";
-        var action = () => ProcessStepResultFactory.MapQuality(invalidQuality);
-        action.Should().ThrowExactly<ArgumentException>();
-    }
-
     [Theory]
     [InlineAutoMoqData]
     public void Create_ReturnsExpectedStepResult(
@@ -51,7 +31,6 @@ public class ProcessStepResultFactoryTests
     {
         // Arrange
         var point = resultDto.TimeSeriesPoints.First();
-        point.SetPrivateProperty(p => p.Quality, "A02");
         resultDto = resultDto with { TimeSeriesPoints = new[] { point } };
         var expected = new ProcessStepResultDto(
             resultDto.Sum,
@@ -63,7 +42,7 @@ public class ProcessStepResultFactoryTests
             batchDto.Unit,
             new TimeSeriesPointDto[]
             {
-                new(point.Time, point.Quantity, "missing"),
+                new(point.Time, point.Quantity, point.Quality),
             });
 
         // Act

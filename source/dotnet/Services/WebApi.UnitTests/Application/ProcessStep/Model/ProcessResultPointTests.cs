@@ -25,7 +25,7 @@ public sealed class ProcessResultPointTests
     [Fact]
     public async Task PropertyNamesAndTypesMatchContractWithCalculator()
     {
-        await using var stream = EmbeddedResources.GetStream("Sender.Infrastructure.Calculator.calculator-result.json");
+        await using var stream = EmbeddedResources.GetStream("Infrastructure.Integration.CalculationOutput.calculator-result.json");
 
         await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<ProcessResultPoint>(stream);
     }
