@@ -29,49 +29,48 @@ def apply(args: MigrationScriptArgs) -> None:
         credential=args.storage_account_key,
     )
 
-    # Get a list of paths inside the 'calculation-output' folder
-    directories = file_system_client.get_paths(path=directory_name, recursive=False)
+    if file_system_client.exists():
+        # Get a list of paths inside the 'calculation-output' folder
+        directories = file_system_client.get_paths(path=directory_name, recursive=False)
 
-    for directory in directories:
-        actors_path = path.join(directory.name, "actors")
-        directory_client = file_system_client.get_directory_client(
-            directory=actors_path
-        )
-
-        if directory_client.exists():
-            actors_temp_path = path.join(directory.name, "actors_temp")
-
-            rename_folder(
-                directory_client=directory_client,
-                current_directory_name=actors_path,
-                new_directory_name=actors_temp_path,
-                container=container,
-            )
+        for directory in directories:
+            actors_path = path.join(directory.name, "actors")
             directory_client = file_system_client.get_directory_client(
-                directory=actors_temp_path
-            )
-            if not directory_client.exists():
-                return  # renaming went wrong!?!
-
-            actors_write_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{actors_path}"
-            actors_read_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{actors_temp_path}"
-
-            df = spark.read.json(actors_read_path)
-
-            # rename gln column and remove market role (we don't want it as a directory level anymore)
-            new_df = df.withColumnRenamed("gln", "energy_supplier_gln").drop(
-                "market_role"
+                directory=actors_path
             )
 
-            # write the dataframe back into the datalake with new partition
-            (
-                new_df.repartition("grid_area")
-                .write.mode("overwrite")
-                .partitionBy("time_series_type", "grid_area")
-                .json(actors_write_path)
-            )
+            if directory_client.exists():
+                actors_temp_path = path.join(directory.name, "actors_temp")
 
-            return
+                rename_folder(
+                    directory_client=directory_client,
+                    current_directory_name=actors_path,
+                    new_directory_name=actors_temp_path,
+                    container=container,
+                )
+                directory_client = file_system_client.get_directory_client(
+                    directory=actors_temp_path
+                )
+                if not directory_client.exists():
+                    return  # renaming went wrong!?!
+
+                actors_write_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{actors_path}"
+                actors_read_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{actors_temp_path}"
+
+                df = spark.read.json(actors_read_path)
+
+                # rename gln column and remove market role (we don't want it as a directory level anymore)
+                new_df = df.withColumnRenamed("gln", "energy_supplier_gln").drop(
+                    "market_role"
+                )
+
+                # write the dataframe back into the datalake with new partition
+                (
+                    new_df.repartition("grid_area")
+                    .write.mode("overwrite")
+                    .partitionBy("time_series_type", "grid_area")
+                    .json(actors_write_path)
+                )
 
 
 def rename_folder(
