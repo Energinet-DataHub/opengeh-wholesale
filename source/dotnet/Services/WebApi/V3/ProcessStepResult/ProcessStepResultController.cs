@@ -42,8 +42,17 @@ public class ProcessStepResultController : ControllerBase
     }
 
     /// <summary>
-    /// TODO: LRN Write new documentation.
+    /// Calculation results provided by the following method:
+    /// if only a 'energySupplierGln' is provided, a result is returned for a energy supplier for the requested grid area, for the specified time series type.
+    /// if only a 'balanceResponsiblePartyGln' is provided, a result is returned for a balance responsible party for the requested grid area, for the specified time series type.
+    /// if both 'balanceResponsiblePartyGln' and 'energySupplierGln' is provided, a result is returned for the balance responsible party's energy supplier for requested grid area, for the specified time series type.
+    /// if no 'balanceResponsiblePartyGln' and 'energySupplierGln' is provided, a result is returned for the requested grid area, for the specified time series type.
     /// </summary>
+    /// <param name="batchId">The id to identify the batch the request is for</param>
+    /// <param name="gridAreaCode">The grid area the requested result is in</param>
+    /// <param name="timeSeriesType">The time series type the result has</param>
+    /// <param name="energySupplierGln">The GLN for the energy supplier the requested result</param>
+    /// <param name="balanceResponsiblePartyGln">The GLN for the balance responsible party the requested result</param>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpGet]
     public async Task<ProcessStepResultDto> GetResultAsync(
