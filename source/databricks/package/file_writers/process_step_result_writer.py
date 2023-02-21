@@ -103,7 +103,7 @@ class ProcessStepResultWriter:
         # When writing/creating the files. The partition by creates a folder for each grid area.
         (
             result_df.repartition("grid_area")
-            .write.mode("append")
+            .write.mode("errorifexists")
             .partitionBy(partition_by)
             .json(result_data_directory)
         )
