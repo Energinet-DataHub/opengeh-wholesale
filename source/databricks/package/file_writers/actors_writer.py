@@ -26,19 +26,18 @@ class ActorsWriter:
         )
 
     def write(self, result_df: DataFrame, time_series_type: TimeSeriesType) -> None:
+        output_path = f"{self.__output_path}/time_series_type={time_series_type.value}"
         result_df = result_df.withColumnRenamed(Colname.grid_area, "grid_area")
 
         actors_df = result_df.select("grid_area", Colname.energy_supplier_id).distinct()
         actors_df = actors_df.withColumnRenamed(
             Colname.energy_supplier_id, "energy_supplier_gln"
         )
-        actors_df = actors_df.withColumn(
-            Colname.time_series_type, lit(time_series_type.value)
-        )
 
+        # In the partitioning hierarchy time_series_type is above grid_area. This is done to avoid having to do 'append' for each time_series_type
         (
             actors_df.repartition("grid_area")
-            .write.mode("overwrite")
+            .write.mode("errorifexists")
             .partitionBy(Colname.time_series_type, "grid_area")
-            .json(self.__output_path)
+            .json(output_path)
         )

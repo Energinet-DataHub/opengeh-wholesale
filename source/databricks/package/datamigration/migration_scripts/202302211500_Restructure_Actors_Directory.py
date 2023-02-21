@@ -67,7 +67,7 @@ def apply(args: MigrationScriptArgs) -> None:
                 # write the dataframe back into the datalake with new partition
                 (
                     new_df.repartition("grid_area")
-                    .write.mode("overwrite")
+                    .write.mode("errorifexists")
                     .partitionBy("time_series_type", "grid_area")
                     .json(actors_write_path)
                 )
