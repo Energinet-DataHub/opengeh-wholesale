@@ -37,8 +37,6 @@ def apply(args: MigrationScriptArgs) -> None:
         result_path = path.join(directory.name, "result")
         result_temp_path = path.join(directory.name, "result_temp")
 
-        print(directory.name)
-
         directory_client = file_system_client.get_directory_client(
             directory=result_path
         )
