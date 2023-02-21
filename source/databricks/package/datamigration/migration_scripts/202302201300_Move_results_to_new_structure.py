@@ -85,9 +85,6 @@ def apply(args: MigrationScriptArgs) -> None:
                 .json(result_path)
             )
 
-            if directory_client.exists():
-                directory_client_temp.delete_directory()
-
 
 def move_and_rename_folder(
     directory_client: DataLakeDirectoryClient,
