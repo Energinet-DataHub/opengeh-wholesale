@@ -156,4 +156,28 @@ public class ProcessStepControllerTests : WebApiTestBase
         var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
         actualActors.Should().BeEquivalentTo(expectedProcessStepResult);
     }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetResultAsync_POST_V2_4_ReturnsExpectedResponse(
+        Mock<IProcessStepApplicationService> applicationServiceMock,
+        ProcessStepResultRequestDtoV3 request,
+        ProcessStepResultDto expectedProcessStepResult)
+    {
+        // Arrange
+        applicationServiceMock
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, request.TimeSeriesType, request.EnergySupplierGln, request.BalanceResponsiblePartyGln))
+            .ReturnsAsync(() => expectedProcessStepResult);
+        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+
+        // Act
+        const string expectedUrl = "/v2.4/processstepresult";
+        var actualContent = await Client.PostAsJsonAsync(expectedUrl, request);
+
+        // Assert: Response HTTP status code
+        actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert: Response body
+        var actualResult = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
+        actualResult.Should().BeEquivalentTo(expectedProcessStepResult);
+    }
 }

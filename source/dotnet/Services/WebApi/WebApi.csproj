@@ -47,6 +47,9 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchDtoV2.cs">
       <Link>V2\BatchDtoV2.cs</Link>
     </Compile>
+    <Compile Include="..\..\Contracts\ProcessStepResultRequestDtoV3.cs">
+      <Link>V2\ProcessStepResultRequestDtoV3.cs</Link>
+    </Compile>
   </ItemGroup>
 
 </Project>
