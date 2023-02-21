@@ -77,26 +77,10 @@ public class BatchApplicationService : IBatchApplicationService
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
+    public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
     {
-        return SearchAsync(batchSearchDto.MinExecutionTime, batchSearchDto.MaxExecutionTime);
-    }
-
-    public Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDtoV21 batchSearchDto)
-    {
-        return SearchAsync(batchSearchDto.MinExecutionTime, batchSearchDto.MaxExecutionTime, batchSearchDto.PeriodStart, batchSearchDto.PeriodEnd);
-    }
-
-    public async Task<BatchDto> GetAsync(Guid batchId)
-    {
-        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
-        return _batchDtoMapper.Map(batch);
-    }
-
-    private async Task<IEnumerable<BatchDto>> SearchAsync(DateTimeOffset minExecutionTime, DateTimeOffset maxExecutionTime)
-    {
-        var minExecutionTimeStart = Instant.FromDateTimeOffset(minExecutionTime);
-        var maxExecutionTimeStart = Instant.FromDateTimeOffset(maxExecutionTime);
+        var minExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MinExecutionTime);
+        var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
 
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
             .ConfigureAwait(false);
@@ -104,17 +88,23 @@ public class BatchApplicationService : IBatchApplicationService
         return batches.Select(_batchDtoMapper.Map);
     }
 
-    private async Task<IEnumerable<BatchDto>> SearchAsync(DateTimeOffset minExecutionTime, DateTimeOffset maxExecutionTime, DateTimeOffset periodStart, DateTimeOffset periodEnd)
+    public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDtoV21 batchSearchDto)
     {
-        var minExecutionTimeStart = Instant.FromDateTimeOffset(minExecutionTime);
-        var maxExecutionTimeStart = Instant.FromDateTimeOffset(maxExecutionTime);
+        var minExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MinExecutionTime);
+        var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
 
-        var periodStartInstant = Instant.FromDateTimeOffset(periodStart);
-        var periodEndInstant = Instant.FromDateTimeOffset(periodEnd);
+        var periodStartInstant = Instant.FromDateTimeOffset(batchSearchDto.PeriodStart);
+        var periodEndInstant = Instant.FromDateTimeOffset(batchSearchDto.PeriodEnd);
 
         var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart, periodStartInstant, periodEndInstant)
             .ConfigureAwait(false);
 
         return batches.Select(_batchDtoMapper.Map);
+    }
+
+    public async Task<BatchDto> GetAsync(Guid batchId)
+    {
+        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
+        return _batchDtoMapper.Map(batch);
     }
 }
