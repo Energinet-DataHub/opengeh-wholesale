@@ -13,11 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V2;
 
@@ -35,9 +33,7 @@ public class BatchControllerV21 : ControllerBase
 
     public BatchControllerV21(
         IBatchApplicationService batchApplicationService,
-        IBatchDtoV2Mapper batchDtoV2Mapper,
-        IBatchRequestDtoValidator batchRequestDtoValidator,
-        DateTimeZone dateTimeZone)
+        IBatchDtoV2Mapper batchDtoV2Mapper)
     {
         _batchApplicationService = batchApplicationService;
         _batchDtoV2Mapper = batchDtoV2Mapper;

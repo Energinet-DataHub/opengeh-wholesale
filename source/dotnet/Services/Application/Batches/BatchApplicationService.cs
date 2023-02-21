@@ -79,7 +79,7 @@ public class BatchApplicationService : IBatchApplicationService
 
     public Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
     {
-        return SearchAsync(batchSearchDto.MinExecutionTime, batchSearchDto.MaxExecutionTime, DateTimeOffset.MinValue, DateTimeOffset.MaxValue);
+        return SearchAsync(batchSearchDto.MinExecutionTime, batchSearchDto.MaxExecutionTime);
     }
 
     public Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDtoV21 batchSearchDto)
@@ -91,6 +91,17 @@ public class BatchApplicationService : IBatchApplicationService
     {
         var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
         return _batchDtoMapper.Map(batch);
+    }
+
+    private async Task<IEnumerable<BatchDto>> SearchAsync(DateTimeOffset minExecutionTime, DateTimeOffset maxExecutionTime)
+    {
+        var minExecutionTimeStart = Instant.FromDateTimeOffset(minExecutionTime);
+        var maxExecutionTimeStart = Instant.FromDateTimeOffset(maxExecutionTime);
+
+        var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
+            .ConfigureAwait(false);
+
+        return batches.Select(_batchDtoMapper.Map);
     }
 
     private async Task<IEnumerable<BatchDto>> SearchAsync(DateTimeOffset minExecutionTime, DateTimeOffset maxExecutionTime, DateTimeOffset periodStart, DateTimeOffset periodEnd)

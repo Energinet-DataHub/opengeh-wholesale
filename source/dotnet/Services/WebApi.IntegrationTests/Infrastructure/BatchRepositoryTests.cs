@@ -105,10 +105,12 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     }
 
     [Theory]
+    [InlineData("2021-12-31T23:00Z", "2022-01-31T23:00Z", true)]
     [InlineData("2022-01-01T23:00Z", "2022-01-30T23:00Z", true)]
     [InlineData("2022-01-30T23:00Z", "2022-02-02T23:00Z", true)]
-    [InlineData("2021-12-25T23:00Z", "2021-12-31T23:00Z", true)]
     [InlineData("2021-12-30T23:00Z", "2022-02-01T23:00Z", true)]
+    [InlineData("2021-12-25T23:00Z", "2022-01-01T23:00Z", true)]
+    [InlineData("2021-12-25T23:00Z", "2021-12-31T23:00Z", false)]
     [InlineData("2021-12-21T23:00Z", "2021-12-29T23:00Z", false)]
     [InlineData("2022-01-31T23:00Z", "2022-02-01T23:00Z", false)]
     public async Task GetAsync_FiltersOnPeriod(DateTimeOffset start, DateTimeOffset end, bool expected)
@@ -122,7 +124,11 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         await writeContext.SaveChangesAsync();
 
         // Act
-        var actual = await sut.GetAsync(Instant.MinValue, Instant.MaxValue, Instant.FromDateTimeOffset(start), Instant.FromDateTimeOffset(end));
+        var actual = await sut.GetAsync(
+            Instant.FromUtc(2000, 1, 1, 0, 0),
+            Instant.FromUtc(2100, 1, 1, 0, 0),
+            Instant.FromDateTimeOffset(start),
+            Instant.FromDateTimeOffset(end));
 
         // Assert
         if (expected)
