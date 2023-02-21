@@ -281,3 +281,307 @@ resource "azurerm_key_vault_secret" "kvs-shared-tenant-id" {
     azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
   ]
 }
+
+resource "azurerm_storage_account" "playground" {
+  name                     = "samigrationplayground"
+  resource_group_name      = azurerm_resource_group.integration-test-rg.name
+  location                 = azurerm_resource_group.integration-test-rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+data "azuread_client_config" "current" {}
+
+resource "azuread_application" "app_databricks_migration" {
+  display_name = "sp-databricks-migration-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
+  owners       = [
+    data.azuread_client_config.current.object_id
+  ]
+}
+
+resource "azuread_service_principal" "spn_databricks_migration" {
+  application_id               = azuread_application.app_databricks_migration.application_id
+  app_role_assignment_required = false
+  owners                       = [
+    data.azuread_client_config.current.object_id
+  ]
+}
+
+resource "azurerm_role_assignment" "ra_migrations_playground_contributor" {
+  scope                = azurerm_storage_account.playground.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azuread_service_principal.spn_databricks_migration.id
+}
+
+resource "azurerm_storage_container" "playground" {
+  name                  = "playground"
+  storage_account_name  = azurerm_storage_account.playground.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "playground_timeseries_testdata" {
+  name                  = "timeseries-testdata"
+  storage_account_name  = azurerm_storage_account.playground.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "playground_meteringpoints_testdata" {
+  name                  = "meteringpoints-testdata"
+  storage_account_name  = azurerm_storage_account.playground.name
+  container_access_type = "private"
+}
+
+resource "databricks_git_credential" "ado" {
+  git_username          = var.github_username
+  git_provider          = "gitHub"
+  personal_access_token = var.github_personal_access_token
+}
+
+resource "azurerm_databricks_workspace" "playground" {
+  name                = "databricks-playground"
+  resource_group_name = azurerm_resource_group.integration-test-rg.name
+  location            = azurerm_resource_group.integration-test-rg.location
+  sku                 = "premium"
+}
+
+resource "azuread_application_password" "secret" {
+  application_object_id = azuread_application.app_databricks_migration.object_id
+}
+
+resource "databricks_secret_scope" "spn_app_id" {
+  name = "spn-id-scope"
+}
+
+resource "databricks_secret" "spn_app_id" {
+  key          = "spn_app_id"
+  string_value = azuread_application.app_databricks_migration.application_id
+  scope        = databricks_secret_scope.spn_app_id.id
+}
+
+resource "databricks_secret_scope" "spn_app_secret" {
+  name = "spn-secret-scope"
+}
+
+resource "databricks_secret" "spn_app_secret" {
+  key          = "spn_app_secret"
+  string_value = azuread_application_password.secret.value
+  scope        = databricks_secret_scope.spn_app_secret.id
+}
+
+resource "databricks_cluster" "shared_autoscaling" {
+  cluster_name            = "Playground_job_cluster"
+  spark_version           = data.databricks_spark_version.latest_lts.id
+  node_type_id            = "Standard_DS3_v2"
+  num_workers             = 1
+  autotermination_minutes = 60
+  spark_conf = {
+        "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.playground.name}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
+        "fs.azure.account.auth.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net": "OAuth"
+        "fs.azure.account.oauth.provider.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth2.client.id.${azurerm_storage_account.playground.name}.dfs.core.windows.net": databricks_secret.spn_app_id.config_reference
+        "fs.azure.account.oauth2.client.secret.${azurerm_storage_account.playground.name}.dfs.core.windows.net": databricks_secret.spn_app_secret.config_reference
+        "spark.databricks.delta.preview.enabled": true
+        "spark.databricks.io.cache.enabled": true
+        "spark.master": "local[*, 4]"
+      }
+}
+
+data "external" "databricks_token_playground" {
+  program = ["pwsh", "${path.cwd}/scripts/generate-pat-token.ps1", azurerm_databricks_workspace.playground.id, "https://${azurerm_databricks_workspace.playground.workspace_url}"]
+  depends_on = [
+    azurerm_databricks_workspace.playground
+  ]
+}
+
+data "databricks_spark_version" "latest_lts" {
+  long_term_support = true
+}
+
+module "kvs_databricks_dbw_playground_workspace_token" {
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+
+  name          = "dbw-playground-workspace-token"
+  value         = data.external.databricks_token_playground.result.pat_token
+  key_vault_id  = azurerm_key_vault.integration-test-kv.id
+}
+
+module "kvs_databricks_dbw_playground_workspace_url" {
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+
+  name          = "dbw-playground-workspace-url"
+  value         = azurerm_databricks_workspace.playground.workspace_url
+  key_vault_id  = azurerm_key_vault.integration-test-kv.id
+}
+
+module "kvs_databricks_dbw_playground_workspace_id" {
+  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+
+  name          = "dbw-playground-workspace-id"
+  value         = azurerm_databricks_workspace.playground.id
+  key_vault_id  = azurerm_key_vault.integration-test-kv.id
+}
+
+resource "databricks_job" "migration_playground_workflow" {
+  name = "Landing_To_Wholesale_Gold_Fully_In_Playground"
+  
+  git_source {
+    url = "https://github.com/Energinet-DataHub/opengeh-migration.git"
+    provider = "gitHub"
+    branch   = "main"
+  }
+
+  task {
+    task_key = "playground_setup"
+
+    library {
+      whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
+    }
+
+    notebook_task {  
+      notebook_path     = "source/DataMigration/config/playground_setup"
+      base_parameters   = {
+        batch_execution = true
+        use_playground = true
+      }
+    }
+    existing_cluster_id = databricks_cluster.shared_autoscaling.id
+  }
+
+  task {
+    task_key = "check_schemas"
+    depends_on {
+      task_key = "playground_setup"
+    }
+    
+    notebook_task {
+      notebook_path = "source/DataMigration/config/schema_validation"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    existing_cluster_id = databricks_cluster.shared_autoscaling.id
+  }
+
+  task {
+    task_key = "autoloader_time_series"
+    depends_on {
+      task_key = "check_schemas"
+    }
+
+    notebook_task {
+      notebook_path     = "source/DataMigration/bronze/autoloader_time_series"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    existing_cluster_id = databricks_cluster.shared_autoscaling.id
+  }
+
+  task {
+    task_key = "autoloader_metering_points"
+    depends_on {
+      task_key = "check_schemas"
+    }
+
+    notebook_task {
+      notebook_path     = "source/DataMigration/bronze/autoloader_metering_points"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    existing_cluster_id = databricks_cluster.shared_autoscaling.id
+  }
+
+  task {
+    task_key = "bronze_to_silver_time_series"
+    depends_on {
+      task_key = "autoloader_time_series"
+    }
+
+    notebook_task {
+      notebook_path     = "source/DataMigration/silver/time_series"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    existing_cluster_id = databricks_cluster.shared_autoscaling.id
+  }
+
+  task {
+    task_key = "bronze_to_silver_metering_points"
+    depends_on {
+      task_key = "autoloader_metering_points"
+    }
+
+    notebook_task {
+      notebook_path     = "source/DataMigration/silver/metering_points"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    existing_cluster_id = databricks_cluster.shared_autoscaling.id
+  }
+
+  task {
+    task_key = "silver_to_gold_time_series"
+    depends_on {
+      task_key = "bronze_to_silver_time_series"
+    }
+    depends_on {
+     task_key = "bronze_to_silver_metering_points"
+    }    
+
+    notebook_task {
+      notebook_path     = "source/DataMigration/gold/wholesale_time_series"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    existing_cluster_id = databricks_cluster.shared_autoscaling.id
+  }
+
+  task {
+    task_key = "silver_to_gold_metering_points"
+    depends_on {
+      task_key = "bronze_to_silver_metering_points"
+    }
+
+    notebook_task {
+      notebook_path     = "source/DataMigration/gold/wholesale_metering_points"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    existing_cluster_id = databricks_cluster.shared_autoscaling.id
+  }
+
+  task {
+    task_key = "time_series_system_test"
+    depends_on {
+      task_key = "silver_to_gold_time_series"
+    }
+
+    notebook_task {
+      notebook_path     = "source/DataMigration/systemtest/time_series/time_series_tests"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    existing_cluster_id = databricks_cluster.shared_autoscaling.id
+  }
+
+  task {
+    task_key = "metering_points_system_test"
+    depends_on {
+      task_key = "silver_to_gold_metering_points"
+    }
+
+    notebook_task {
+      notebook_path     = "source/DataMigration/systemtest/metering_points/metering_points_tests"
+      base_parameters   = {
+        BatchExecution = true
+      }
+    }
+    existing_cluster_id = databricks_cluster.shared_autoscaling.id
+  }
+}
