@@ -40,7 +40,7 @@ public class ProcessStepV22Controller : ControllerBase
             processStepResultRequestDtoV2.GridAreaCode,
             processStepResultRequestDtoV2.TimeSeriesType,
             processStepResultRequestDtoV2.Gln,
-            MarketRole.EnergySupplier).ConfigureAwait(false);
+            null).ConfigureAwait(false); // This means we ONLY can return results for energy suppliers.
         return Ok(resultDto);
     }
 }

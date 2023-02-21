@@ -58,14 +58,30 @@ public class ProcessStepResultRepositoryTests
             jsonNewlineSerializerMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, "grid_area");
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, null, null);
 
         // Assert
         actual.Should().NotBeNull();
     }
 
     [Fact]
-    public static async Task GetResultFileSpecification_MatchesContract()
+    public static async Task GetDirectoryForTotalGridAreaGrouping_MatchesContract()
+    {
+        // Arrange
+        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string gridAreaCode = "123";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.ResultFileForTotalGridArea;
+
+        // Act
+        var actual = ProcessStepResultRepository.GetDirectoryForTotalGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production);
+
+        // Assert
+        actual.Should().MatchRegex(expected.DirectoryExpression);
+    }
+
+    [Fact]
+    public static async Task GetDirectoryForEsGridAreaGrouping_MatchesContract()
     {
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
@@ -74,11 +90,10 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var (directory, extension, _) = ProcessStepResultRepository.GetResultFilePerGridAreaSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area");
+        var actual = ProcessStepResultRepository.GetDirectoryForEsGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "energySupplierGln");
 
         // Assert
-        extension.Should().Be(expected.Extension);
-        directory.Should().MatchRegex(expected.DirectoryExpression);
+        actual.Should().MatchRegex(expected.DirectoryExpression);
     }
 
     [Theory]
@@ -92,9 +107,9 @@ public class ProcessStepResultRepositoryTests
         const string gridAreaCode = "123";
 
         // Act
-        var (directory, _, _) = ProcessStepResultRepository.GetResultFilePerGridAreaSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, "grid_area");
+        var actual = ProcessStepResultRepository.GetDirectoryForTotalGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType);
 
         // Assert
-        directory.Should().Contain(expectedTimeSeriesType);
+        actual.Should().Contain(expectedTimeSeriesType);
     }
 }

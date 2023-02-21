@@ -43,8 +43,8 @@ public class ProcessStepV21Controller : ControllerBase
             processStepResultRequestDto.BatchId,
             processStepResultRequestDto.GridAreaCode,
             TimeSeriesType.Production,
-            "grid_area",
-            MarketRole.GridAccessProvider).ConfigureAwait(false);
+            null,
+            null).ConfigureAwait(false);
 
         return Ok(resultDto);
     }

@@ -27,6 +27,6 @@ public interface IProcessStepApplicationService
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,
-        string gln,
-        MarketRole marketRole);
+        string? energySupplierGln,
+        string? balanceResponsibleParty);
 }

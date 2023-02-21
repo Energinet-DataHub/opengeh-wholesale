@@ -19,42 +19,22 @@ using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V2;
 
-[Collection(nameof(WholesaleWebApiCollectionFixture))]
-public class ProcessStepControllerTests :
-    WebApiTestBase<WholesaleWebApiFixture>,
-    IClassFixture<WholesaleWebApiFixture>,
-    IClassFixture<WebApiFactory>,
-    IAsyncLifetime
+public class ProcessStepControllerTests : WebApiTestBase
 {
-    private readonly HttpClient _client;
-    private readonly WebApiFactory _factory;
-
     public ProcessStepControllerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
-        : base(wholesaleWebApiFixture, testOutputHelper)
+        : base(wholesaleWebApiFixture, factory, testOutputHelper)
     {
-        _factory = factory;
-        _client = factory.CreateClient();
-    }
-
-    public Task InitializeAsync()
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task DisposeAsync()
-    {
-        _client.Dispose();
-        return Task.CompletedTask;
     }
 
     [Theory]
@@ -69,10 +49,10 @@ public class ProcessStepControllerTests :
         applicationServiceMock
             .Setup(service => service.GetActorsAsync(request))
             .ReturnsAsync(() => new[] { expectedActor });
-        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
-        var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
+        var actualContent = await Client.PostAsJsonAsync(expectedUrl, request);
 
         // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -90,13 +70,13 @@ public class ProcessStepControllerTests :
     {
         // Arrange
         applicationServiceMock
-            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, "grid_area"))
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => expectedProcessStepResult);
-        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         const string expectedUrl = "/v2/processstepresult";
-        var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
+        var actualContent = await Client.PostAsJsonAsync(expectedUrl, request);
 
         // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -114,13 +94,13 @@ public class ProcessStepControllerTests :
     {
         // Arrange
         applicationServiceMock
-            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, "grid_area"))
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => expectedProcessStepResult);
-        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         const string expectedUrl = "/v2.0/processstepresult";
-        var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
+        var actualContent = await Client.PostAsJsonAsync(expectedUrl, request);
 
         // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -138,13 +118,13 @@ public class ProcessStepControllerTests :
     {
         // Arrange
         applicationServiceMock
-            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, "grid_area"))
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => expectedProcessStepResult);
-        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         const string expectedUrl = "/v2.1/processstepresult";
-        var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
+        var actualContent = await Client.PostAsJsonAsync(expectedUrl, request);
 
         // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -162,13 +142,13 @@ public class ProcessStepControllerTests :
     {
         // Arrange
         applicationServiceMock
-            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, request.TimeSeriesType, request.Gln))
+            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, request.TimeSeriesType, request.Gln, null))
             .ReturnsAsync(() => expectedProcessStepResult);
-        _factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
         // Act
         const string expectedUrl = "/v2.2/processstepresult";
-        var actualContent = await _client.PostAsJsonAsync(expectedUrl, request);
+        var actualContent = await Client.PostAsJsonAsync(expectedUrl, request);
 
         // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);

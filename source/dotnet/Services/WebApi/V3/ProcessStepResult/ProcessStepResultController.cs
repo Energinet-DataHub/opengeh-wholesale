@@ -23,13 +23,12 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 /// <summary>
 /// Calculated result.
 /// </summary>
-[ApiController]
-[Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/market-role/{marketRole}")]
-public class ProcessStepResultController : ControllerBase
+[Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}")]
+public class ProcessStepResultController : V3ControllerBase
 {
-    private readonly IBatchApplicationService _batchApplicationService;
     private readonly IProcessStepApplicationService _processStepApplicationService;
     private readonly IProcessStepResultFactory _processStepResultFactory;
+    private readonly IBatchApplicationService _batchApplicationService;
 
     public ProcessStepResultController(
         IProcessStepApplicationService processStepApplicationService,
@@ -42,19 +41,33 @@ public class ProcessStepResultController : ControllerBase
     }
 
     /// <summary>
-    /// Get calculation result for a specific actor by GLN.
+    /// Calculation results provided by the following method:
+    /// When only 'energySupplierGln' is provided, a result is returned for a energy supplier for the requested grid area, for the specified time series type.
+    /// if only a 'balanceResponsiblePartyGln' is provided, a result is returned for a balance responsible party for the requested grid area, for the specified time series type.
+    /// if both 'balanceResponsiblePartyGln' and 'energySupplierGln' is provided, a result is returned for the balance responsible party's energy supplier for requested grid area, for the specified time series type.
+    /// if no 'balanceResponsiblePartyGln' and 'energySupplierGln' is provided, a result is returned for the requested grid area, for the specified time series type.
     /// </summary>
+    /// <param name="batchId">The id to identify the batch the request is for</param>
+    /// <param name="gridAreaCode">The grid area the requested result is in</param>
+    /// <param name="timeSeriesType">The time series type the result has</param>
+    /// <param name="energySupplierGln">The GLN for the energy supplier the requested result</param>
+    /// <param name="balanceResponsiblePartyGln">The GLN for the balance responsible party the requested result</param>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpGet("{gln}")]
-    public async Task<ProcessStepResultDto> GetForActorAsync(
+    [HttpGet]
+    public async Task<ProcessStepResultDto> GetResultAsync(
         [FromRoute] Guid batchId,
         [FromRoute] string gridAreaCode,
         [FromRoute] TimeSeriesType timeSeriesType,
-        [FromRoute] MarketRole marketRole,
-        [FromQuery] string? gln,
-        [FromQuery] string? energy_supplier_gln)
+        [FromQuery] string? energySupplierGln,
+        [FromRoute] string? balanceResponsiblePartyGln)
     {
-        var stepResult = await _processStepApplicationService.GetResultAsync(batchId, gridAreaCode, timeSeriesType, gln, marketRole).ConfigureAwait(false);
+        var stepResult = await _processStepApplicationService.GetResultAsync(
+            batchId,
+            gridAreaCode,
+            timeSeriesType,
+            energySupplierGln,
+            balanceResponsiblePartyGln).ConfigureAwait(false);
+
         var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
 
         return _processStepResultFactory.Create(stepResult, batch);

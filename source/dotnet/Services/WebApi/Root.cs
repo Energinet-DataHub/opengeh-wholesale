@@ -12,16 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+namespace Energinet.DataHub.Wholesale.WebApi;
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-
-public interface IProcessStepResultRepository
+public static class Root
 {
-    Task<ProcessStepResult> GetAsync(
-        Guid batchId,
-        GridAreaCode gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln);
+    /// <summary>
+    /// The "root namespace" of the assembly.
+    /// </summary>
+    public static string Namespace => typeof(Root).Namespace!;
 }

@@ -54,7 +54,7 @@ public class ProcessStepApplicationServiceTests
             new ProcessStepResultMapper(),
             actorRepositoryMock.Object);
 
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area"))
+        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, null, null))
             .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         // Act
@@ -62,7 +62,8 @@ public class ProcessStepApplicationServiceTests
                 batchId,
                 gridAreaCode,
                 Contracts.TimeSeriesType.Production,
-                "grid_area");
+                null,
+                null);
 
         // Assert
         actual.TimeSeriesPoints.First().Time.Should().Be(time);
@@ -140,14 +141,14 @@ public class ProcessStepApplicationServiceTests
         // Arrange
         request.SetPrivateProperty(dto => dto.GridAreaCode, "123");
         repositoryMock
-            .Setup(repository => repository.GetAsync(request.BatchId, new GridAreaCode(request.GridAreaCode), TimeSeriesType.Production, "grid_area"))
+            .Setup(repository => repository.GetAsync(request.BatchId, new GridAreaCode(request.GridAreaCode), TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => result);
         mapperMock
             .Setup(mapper => mapper.MapToDto(result))
             .Returns(() => resultDto);
 
         // Act
-        var actual = await sut.GetResultAsync(request.BatchId, request.GridAreaCode, Contracts.TimeSeriesType.Production, "grid_area");
+        var actual = await sut.GetResultAsync(request.BatchId, request.GridAreaCode, Contracts.TimeSeriesType.Production, null, null);
 
         actual.Should().BeEquivalentTo(resultDto);
     }

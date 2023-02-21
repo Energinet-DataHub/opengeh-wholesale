@@ -26,8 +26,6 @@ public static class MarketRoleMapper
                 return Domain.ActorAggregate.MarketRole.EnergySupplier;
             case MarketRole.BalanceResponsibleParty:
                 return Domain.ActorAggregate.MarketRole.BalanceResponsibleParty;
-            case MarketRole.GridAccessProvider:
-                return Domain.ActorAggregate.MarketRole.GridAccessProvider;
             default:
                 throw new ArgumentOutOfRangeException(nameof(marketRole), marketRole, null);
         }
