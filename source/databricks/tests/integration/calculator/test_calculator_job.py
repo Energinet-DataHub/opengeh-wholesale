@@ -235,7 +235,7 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 def test__calculator_result_schema_must_match_contract_with_dotnet(
     spark,
     data_lake_path,
-    source_path,
+    contracts_path,
     worker_id,
     executed_calculation_job,
 ):
@@ -255,7 +255,7 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
     result_805 = spark.read.json(result_path)
 
     assert_contract_matches_schema(
-        f"{source_path}/contracts/internal/calculator-result.json",
+        f"{contracts_path}/internal/calculator-result.json",
         result_805.schema,
     )
 

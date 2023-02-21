@@ -70,10 +70,10 @@ limitations under the License.
       <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\contracts\internal\calculator-result.json">
-      <Link>Sender\Infrastructure\Calculator\calculator-result.json</Link>
+      <Link>Infrastructure\Integration\CalculationOutput\calculator-result.json</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\contracts\internal\quality.json">
-      <Link>Sender\Infrastructure\quality.json</Link>
+      <Link>Infrastructure\Integration\CalculationOutput\quality.json</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
     <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />

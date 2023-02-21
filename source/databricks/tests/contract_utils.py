@@ -48,7 +48,9 @@ def assert_codelist_matches_contract(codelist: List, contract_path: str) -> None
     literals = [member for member in codelist]
 
     # Assert: The enum is a subset of contract
-    assert len(literals) <= len(supported_literals)
+    assert len(literals) <= len(
+        supported_literals
+    ), f"The number of literals ({len(literals)}) does not meet the expectation ({len(supported_literals)}) of the contract"
 
     # Assert: The enum values must match contract
     for literal in literals:
