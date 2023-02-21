@@ -75,7 +75,7 @@ public class BatchControllerV21Tests :
         _factory.BatchApplicationServiceMock = mock;
 
         // Act
-        var response = await _client.PostAsJsonAsync("/v21/batch/Search", batchSearchDto, CancellationToken.None);
+        var response = await _client.PostAsJsonAsync("/v2.1/batch/Search", batchSearchDto, CancellationToken.None);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
