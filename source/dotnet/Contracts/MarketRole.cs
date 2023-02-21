@@ -18,5 +18,4 @@ public enum MarketRole
 {
     EnergySupplier = 0,
     BalanceResponsibleParty = 1,
-    GridAccessProvider = 2,
 }
