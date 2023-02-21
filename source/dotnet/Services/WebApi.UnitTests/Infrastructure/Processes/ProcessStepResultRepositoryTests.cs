@@ -71,7 +71,7 @@ public class ProcessStepResultRepositoryTests
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
-        var expected = calculationFilePathsContract.ResultFileTotalGa;
+        var expected = calculationFilePathsContract.ResultFileForTotalGridArea;
 
         // Act
         var actual = ProcessStepResultRepository.GetDirectoryForTotalGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production);
