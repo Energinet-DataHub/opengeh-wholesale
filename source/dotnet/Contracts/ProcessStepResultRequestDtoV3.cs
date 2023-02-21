@@ -14,8 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts;
 
-public enum MarketRole
-{
-    EnergySupplier = 0,
-    BalanceResponsibleParty = 1,
-}
+public sealed record ProcessStepResultRequestDtoV3(Guid BatchId, string GridAreaCode, TimeSeriesType TimeSeriesType, string? EnergySupplierGln, string? BalanceResponsiblePartyGln);
