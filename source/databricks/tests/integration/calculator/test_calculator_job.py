@@ -251,7 +251,7 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
     )
 
 
-def test__calculator_result_schema_must_match_contract_with_dotnet(
+def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
     spark: SparkSession,
     data_lake_path: str,
     source_path: str,
@@ -265,6 +265,35 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
         None,
         TimeSeriesType.PRODUCTION,
         Grouping.total_ga,
+    )
+    result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
+
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
+    # Assert
+    result_805 = spark.read.json(result_path)
+
+    assert_contract_matches_schema(
+        f"{source_path}/contracts/internal/calculator-result.json",
+        result_805.schema,
+    )
+
+
+def test__calculator_result_es_per_ga_schema_must_match_contract_with_dotnet(
+    spark: SparkSession,
+    data_lake_path: str,
+    source_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    result_relative_path = infra.get_result_file_relative_path(
+        executed_batch_id,
+        "805",
+        energy_supplier_gln_a,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        Grouping.es_per_ga,
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
