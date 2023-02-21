@@ -15,9 +15,9 @@
 from enum import Enum
 
 
-class CalculationResultQuality(Enum):
-    missing = "missing"
-    estimated = "estimated"
-    measured = "measured"
-    incomplete = "incomplete"
-    calculated = "calculated"
+class MigratedTimeSeriesQuality(Enum):
+    missing = "A02"
+    estimated = "A03"
+    measured = "A04"
+    incomplete = "A05"
+    calculated = "A06"

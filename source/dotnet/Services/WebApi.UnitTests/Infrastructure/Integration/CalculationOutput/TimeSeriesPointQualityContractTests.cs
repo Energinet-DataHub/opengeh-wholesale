@@ -23,7 +23,7 @@ public class TimeSeriesPointQualityContractTests
     [Fact]
     public async Task TimeSeriesPointQualityEnum_Matches_Contract()
     {
-        await using var stream = EmbeddedResources.GetStream("Infrastructure.Integration.CalculationOutput.calculation-result-quality.json");
+        await using var stream = EmbeddedResources.GetStream("Infrastructure.Integration.CalculationOutput.time-series-point-quality.json");
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TimeSeriesPointQuality>(stream);
     }
 }

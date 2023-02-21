@@ -17,10 +17,11 @@ import sys
 import configargparse
 import package.calculation_input as calculation_input
 from configargparse import argparse
+from package.constants import Colname
+from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
 from package import (
     calculate_balance_fixing,
     db_logging,
-    debug,
     infrastructure,
     initialize_spark,
     log,
@@ -29,6 +30,7 @@ from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import Row
+import pyspark.sql.functions as F
 
 from .args_helper import valid_date, valid_list, valid_log_level
 from .calculator_args import CalculatorArgs
@@ -70,6 +72,30 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         .format("delta")
         .load(
             f"{args.wholesale_container_path}/calculation-input-v2/time-series-points"
+        )
+        .withColumn(
+            Colname.quality,
+            F.when(
+                F.col(Colname.quality) == MigratedTimeSeriesQuality.missing.value,
+                TimeSeriesQuality.missing.value,
+            )
+            .when(
+                F.col(Colname.quality) == MigratedTimeSeriesQuality.estimated.value,
+                TimeSeriesQuality.estimated.value,
+            )
+            .when(
+                F.col(Colname.quality) == MigratedTimeSeriesQuality.measured.value,
+                TimeSeriesQuality.measured.value,
+            )
+            .when(
+                F.col(Colname.quality) == MigratedTimeSeriesQuality.incomplete.value,
+                TimeSeriesQuality.incomplete.value,
+            )
+            .when(
+                F.col(Colname.quality) == MigratedTimeSeriesQuality.calculated.value,
+                TimeSeriesQuality.calculated.value,
+            )
+            .otherwise("UNKNOWN"),
         )
     )
     metering_points_periods_df = (

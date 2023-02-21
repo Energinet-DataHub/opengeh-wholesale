@@ -13,9 +13,9 @@
 # limitations under the License.
 
 from tests.contract_utils import assert_codelist_matches_contract
-from package.codelists.calculation_result_quality import CalculationResultQuality
+from package.codelists import TimeSeriesQuality
 
 
 def test_quality_codelist_matches_contract(contracts_path):
-    contract_path = f"{contracts_path}/internal/calculation-result-quality.json"
-    assert_codelist_matches_contract(CalculationResultQuality, contract_path)
+    contract_path = f"{contracts_path}/internal/time-series-point-quality.json"
+    assert_codelist_matches_contract(TimeSeriesQuality, contract_path)

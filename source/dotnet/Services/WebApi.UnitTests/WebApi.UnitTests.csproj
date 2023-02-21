@@ -72,8 +72,8 @@ limitations under the License.
     <EmbeddedResource Include="..\..\..\contracts\internal\calculator-result.json">
       <Link>Infrastructure\Integration\CalculationOutput\calculator-result.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\contracts\internal\calculation-result-quality.json">
-      <Link>Infrastructure\Integration\CalculationOutput\calculation-result-quality.json</Link>
+    <EmbeddedResource Include="..\..\..\contracts\internal\time-series-point-quality.json">
+      <Link>Infrastructure\Integration\CalculationOutput\time-series-point-quality.json</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
     <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
