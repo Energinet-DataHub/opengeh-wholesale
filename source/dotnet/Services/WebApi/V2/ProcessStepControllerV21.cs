@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Energinet.DataHub.Wholesale.WebApi.V2;
 
 [ApiController]
+[Produces("application/json")]
 [Route("v{version:apiVersion}/ProcessStepResult")]
 public class ProcessStepV21Controller : ControllerBase
 {
