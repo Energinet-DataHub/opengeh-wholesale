@@ -40,7 +40,6 @@ def apply(args: MigrationScriptArgs) -> None:
 
         if directory_client.exists():
             actors_temp_path = path.join(directory.name, "actors_temp")
-            print(actors_temp_path)
 
             rename_folder(
                 directory_client=directory_client,
