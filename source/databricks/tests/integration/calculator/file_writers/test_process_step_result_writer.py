@@ -230,5 +230,43 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
         f"{relative_output_path}/part-*.json",
     )
     assert_file_path_match_contract(
-        contracts_path, actual_result_file, CalculationFileType.ResultFile
+        contracts_path,
+        actual_result_file,
+        CalculationFileType.ResultFile,
+    )
+
+
+def test__write_per_ga__result_file_path_matches_contract(
+    spark: SparkSession,
+    contracts_path: str,
+    tmpdir: Path,
+) -> None:
+    # Arrange
+    row = [_create_result_row(grid_area=DEFAULT_GRID_AREA, energy_supplier_id="None")]
+    result_df = spark.createDataFrame(data=row)
+    relative_output_path = infra.get_result_file_relative_path(
+        DEFAULT_BATCH_ID,
+        DEFAULT_GRID_AREA,
+        None,
+        TimeSeriesType.PRODUCTION,
+        Grouping.total_ga,
+    )
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+
+    # Act: Executed in fixture executed_calculation_job
+    sut.write_per_ga(
+        result_df,
+        TimeSeriesType.PRODUCTION,
+        Grouping.total_ga,
+    )
+
+    # Assert
+    actual_result_file = find_file(
+        f"{str(tmpdir)}/",
+        f"{relative_output_path}/part-*.json",
+    )
+    assert_file_path_match_contract(
+        contracts_path,
+        actual_result_file,
+        CalculationFileType.ResultFileForTotalGridArea,
     )
