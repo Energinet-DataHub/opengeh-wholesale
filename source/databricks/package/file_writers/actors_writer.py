@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
-from package.constants import Colname
-from package.codelists.time_series_type import TimeSeriesType
 import package.infrastructure as infra
+from package.codelists.time_series_type import TimeSeriesType
+from package.constants import Colname
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import lit
 
 
 class ActorsWriter:
@@ -31,12 +32,13 @@ class ActorsWriter:
         actors_df = actors_df.withColumnRenamed(
             Colname.energy_supplier_id, "energy_supplier_gln"
         )
-
-        actors_directory = f"{self.__output_path}/time_series_type={time_series_type.value}"
+        actors_df = actors_df.withColumn(
+            Colname.time_series_type, lit(time_series_type.value)
+        )
 
         (
             actors_df.repartition("grid_area")
             .write.mode("overwrite")
-            .partitionBy("grid_area")
-            .json(actors_directory)
+            .partitionBy(Colname.time_series_type, "grid_area")
+            .json(self.__output_path)
         )
