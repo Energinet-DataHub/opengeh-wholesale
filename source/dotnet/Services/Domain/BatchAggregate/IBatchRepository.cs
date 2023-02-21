@@ -34,5 +34,10 @@ public interface IBatchRepository
 
     Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart);
 
-    Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart, Instant periodStart, Instant periodEnd);
+    Task<List<Batch>> GetAsync(
+        IReadOnlyCollection<BatchExecutionState> executionStateFilter,
+        Instant minExecutionTimeStart,
+        Instant maxExecutionTimeStart,
+        Instant periodStart,
+        Instant periodEnd);
 }

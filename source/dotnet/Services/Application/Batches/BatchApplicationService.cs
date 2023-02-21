@@ -90,13 +90,28 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDtoV21 batchSearchDto)
     {
+        var executionStateFilter = batchSearchDto.FilterByExecutionState switch
+        {
+            BatchState.Pending => new[] { BatchExecutionState.Created, BatchExecutionState.Submitted, BatchExecutionState.Pending },
+            BatchState.Executing => new[] { BatchExecutionState.Executing },
+            BatchState.Completed => new[] { BatchExecutionState.Completed },
+            BatchState.Failed => new[] { BatchExecutionState.Failed },
+            _ => throw new ArgumentOutOfRangeException(nameof(batchSearchDto.FilterByExecutionState)),
+        };
+
         var minExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MinExecutionTime);
         var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
 
         var periodStartInstant = Instant.FromDateTimeOffset(batchSearchDto.PeriodStart);
         var periodEndInstant = Instant.FromDateTimeOffset(batchSearchDto.PeriodEnd);
 
-        var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart, periodStartInstant, periodEndInstant)
+        var batches = await _batchRepository
+            .GetAsync(
+                executionStateFilter,
+                minExecutionTimeStart,
+                maxExecutionTimeStart,
+                periodStartInstant,
+                periodEndInstant)
             .ConfigureAwait(false);
 
         return batches.Select(_batchDtoMapper.Map);

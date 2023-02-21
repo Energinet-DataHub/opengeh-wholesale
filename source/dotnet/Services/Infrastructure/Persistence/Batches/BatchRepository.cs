@@ -63,14 +63,24 @@ public class BatchRepository : IBatchRepository
             .ConfigureAwait(false);
     }
 
-    public async Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart, Instant periodStart, Instant periodEnd)
+    public Task<List<Batch>> GetAsync(
+        IReadOnlyCollection<BatchExecutionState> executionStateFilter,
+        Instant minExecutionTimeStart,
+        Instant maxExecutionTimeStart,
+        Instant periodStart,
+        Instant periodEnd)
     {
-        return await _context
+        var query = _context
             .Batches
             .Where(b => b.ExecutionTimeStart >= minExecutionTimeStart && b.ExecutionTimeStart <= maxExecutionTimeStart)
-            .Where(b => b.PeriodStart < periodEnd && b.PeriodEnd > periodStart)
-            .ToListAsync()
-            .ConfigureAwait(false);
+            .Where(b => b.PeriodStart < periodEnd && b.PeriodEnd > periodStart);
+
+        if (executionStateFilter.Any())
+        {
+            query = query.Where(b => executionStateFilter.Contains(b.ExecutionState));
+        }
+
+        return query.ToListAsync();
     }
 
     private async Task<List<Batch>> GetByStateAsync(BatchExecutionState state)
