@@ -43,7 +43,7 @@ public class ProcessStepResultController : ControllerBase
 
     /// <summary>
     /// Calculation results provided by the following method:
-    /// if only a 'energySupplierGln' is provided, a result is returned for a energy supplier for the requested grid area, for the specified time series type.
+    /// When only 'energySupplierGln' is provided, a result is returned for a energy supplier for the requested grid area, for the specified time series type.
     /// if only a 'balanceResponsiblePartyGln' is provided, a result is returned for a balance responsible party for the requested grid area, for the specified time series type.
     /// if both 'balanceResponsiblePartyGln' and 'energySupplierGln' is provided, a result is returned for the balance responsible party's energy supplier for requested grid area, for the specified time series type.
     /// if no 'balanceResponsiblePartyGln' and 'energySupplierGln' is provided, a result is returned for the requested grid area, for the specified time series type.
