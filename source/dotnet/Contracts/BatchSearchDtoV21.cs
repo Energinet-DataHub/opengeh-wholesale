@@ -12,25 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-
-public interface IBatchRepository
-{
-    Task AddAsync(Batch batch);
-
-    Task<Batch> GetAsync(Guid batchId);
-
-    Task<List<Batch>> GetCreatedAsync();
-
-    Task<List<Batch>> GetPendingAsync();
-
-    Task<List<Batch>> GetExecutingAsync();
-
-    Task<List<Batch>> GetByStatesAsync(IEnumerable<BatchExecutionState> states);
-
-    Task<List<Batch>> GetCompletedAsync();
-
-    Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart, Instant periodStart, Instant periodEnd);
-}
+/// <summary>
+/// An immutable criteria for batch search.
+/// </summary>
+public sealed record BatchSearchDtoV21(DateTimeOffset MinExecutionTime, DateTimeOffset MaxExecutionTime, DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd);

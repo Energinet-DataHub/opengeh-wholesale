@@ -104,6 +104,33 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         actual.ExecutionTimeStart.Should().NotBeNull();
     }
 
+    [Theory]
+    [InlineData("2022-01-01T23:00Z", "2022-01-30T23:00Z", true)]
+    [InlineData("2022-01-30T23:00Z", "2022-02-02T23:00Z", true)]
+    [InlineData("2021-12-25T23:00Z", "2021-12-31T23:00Z", true)]
+    [InlineData("2021-12-30T23:00Z", "2022-02-01T23:00Z", true)]
+    [InlineData("2021-12-21T23:00Z", "2021-12-29T23:00Z", false)]
+    [InlineData("2022-01-31T23:00Z", "2022-02-01T23:00Z", false)]
+    public async Task GetAsync_FiltersOnPeriod(DateTimeOffset start, DateTimeOffset end, bool expected)
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
+        var batch = CreateBatch(someGridAreasIds);
+        var sut = new BatchRepository(writeContext);
+        await sut.AddAsync(batch);
+        await writeContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.GetAsync(Instant.MinValue, Instant.MaxValue, Instant.FromDateTimeOffset(start), Instant.FromDateTimeOffset(end));
+
+        // Assert
+        if (expected)
+            actual.Should().Contain(batch);
+        else
+            actual.Should().NotContain(batch);
+    }
+
     private static Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;

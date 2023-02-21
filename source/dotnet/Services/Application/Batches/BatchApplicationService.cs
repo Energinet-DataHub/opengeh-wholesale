@@ -77,20 +77,33 @@ public class BatchApplicationService : IBatchApplicationService
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
+    public Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
     {
-        var minExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MinExecutionTime);
-        var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
+        return SearchAsync(batchSearchDto.MinExecutionTime, batchSearchDto.MaxExecutionTime, DateTimeOffset.MinValue, DateTimeOffset.MaxValue);
+    }
 
-        var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
-            .ConfigureAwait(false);
-
-        return batches.Select(_batchDtoMapper.Map);
+    public Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDtoV21 batchSearchDto)
+    {
+        return SearchAsync(batchSearchDto.MinExecutionTime, batchSearchDto.MaxExecutionTime, batchSearchDto.PeriodStart, batchSearchDto.PeriodEnd);
     }
 
     public async Task<BatchDto> GetAsync(Guid batchId)
     {
         var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
         return _batchDtoMapper.Map(batch);
+    }
+
+    private async Task<IEnumerable<BatchDto>> SearchAsync(DateTimeOffset minExecutionTime, DateTimeOffset maxExecutionTime, DateTimeOffset periodStart, DateTimeOffset periodEnd)
+    {
+        var minExecutionTimeStart = Instant.FromDateTimeOffset(minExecutionTime);
+        var maxExecutionTimeStart = Instant.FromDateTimeOffset(maxExecutionTime);
+
+        var periodStartInstant = Instant.FromDateTimeOffset(periodStart);
+        var periodEndInstant = Instant.FromDateTimeOffset(periodEnd);
+
+        var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart, periodStartInstant, periodEndInstant)
+            .ConfigureAwait(false);
+
+        return batches.Select(_batchDtoMapper.Map);
     }
 }

@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.8
+
+Search batch by period.
+
 ## Version 5.0.7
 
 No functional changes.

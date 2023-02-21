@@ -40,7 +40,7 @@ public class BatchApplicationServiceTests
     {
         // Arrange
         var noBatches = new List<Batch>();
-        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
+        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
         var batchSearchDto = new BatchSearchDto(DateTimeOffset.Now, DateTimeOffset.Now);
 
         // Act
@@ -58,7 +58,7 @@ public class BatchApplicationServiceTests
     {
         // Arrange
         var noBatches = new List<Batch>();
-        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
+        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
 
         // Act
         var batchSearchDto = new BatchSearchDto(DateTimeOffset.Now, DateTimeOffset.Now);
@@ -82,7 +82,7 @@ public class BatchApplicationServiceTests
             new BatchBuilder().Build(),
             new BatchBuilder().Build(),
         };
-        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(batches);
+        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(batches);
 
         // Act
         var batchSearchDto = new BatchSearchDto(DateTimeOffset.Now, DateTimeOffset.Now);
