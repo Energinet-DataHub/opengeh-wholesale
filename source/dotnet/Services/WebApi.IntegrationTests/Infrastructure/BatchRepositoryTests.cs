@@ -125,7 +125,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
         // Act
         var actual = await sut.GetAsync(
-            new[] { BatchExecutionState.Completed },
+            new[] { BatchExecutionState.Created },
             Instant.FromUtc(2000, 1, 1, 0, 0),
             Instant.FromUtc(2100, 1, 1, 0, 0),
             Instant.FromDateTimeOffset(start),
