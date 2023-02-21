@@ -88,10 +88,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
                 TimeSeriesQuality.measured.value,
             )
             .when(
-                F.col(Colname.quality) == MigratedTimeSeriesQuality.incomplete.value,
-                TimeSeriesQuality.incomplete.value,
-            )
-            .when(
                 F.col(Colname.quality) == MigratedTimeSeriesQuality.calculated.value,
                 TimeSeriesQuality.calculated.value,
             )
