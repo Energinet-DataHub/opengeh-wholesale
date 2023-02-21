@@ -20,7 +20,7 @@ from pyspark.sql.functions import col, lit
 
 def apply(args: MigrationScriptArgs) -> None:
     container = "wholesale"
-    directory_name = "test-calculation-output"
+    directory_name = "calculation-output"
     spark = args.spark
 
     # Get the file system client
