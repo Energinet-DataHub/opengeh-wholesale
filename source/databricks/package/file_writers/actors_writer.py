@@ -38,6 +38,6 @@ class ActorsWriter:
         (
             actors_df.repartition("grid_area")
             .write.mode("errorifexists")
-            .partitionBy(Colname.time_series_type, "grid_area")
+            .partitionBy("grid_area")
             .json(output_path)
         )
