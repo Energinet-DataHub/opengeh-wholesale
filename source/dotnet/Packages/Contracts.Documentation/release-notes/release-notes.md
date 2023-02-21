@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 2.0.8
+
+Add `BatchSearchV21Dto`.
+
 ## Version 2.0.6
 
 No functional changes.
