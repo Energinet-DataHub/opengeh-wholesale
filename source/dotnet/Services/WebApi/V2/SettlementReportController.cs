@@ -19,6 +19,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V2;
 
 [ApiController]
 [ApiVersion(Version)]
+[Produces("application/json")]
 [Route("v{version:apiVersion}/[controller]")]
 public class SettlementReportController : ControllerBase
 {
