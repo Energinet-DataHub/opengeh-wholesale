@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
@@ -44,11 +45,11 @@ public class BatchTests
     }
 
     [Fact]
-    public void Ctor_WhenNoGridAreaCodes_ThrowsArgumentException()
+    public void Ctor_WhenNoGridAreaCodes_ThrowsBusinessValidationException()
     {
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
-        var actual = Assert.Throws<ArgumentException>(() => new Batch(
+        var actual = Assert.Throws<BusinessValidationException>(() => new Batch(
             ProcessType.BalanceFixing,
             emptyGridAreaCodes,
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
@@ -91,10 +92,10 @@ public class BatchTests
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenComplete_ThrowsInvalidOperationException()
+    public void MarkAsCompleted_WhenComplete_ThrowsBusinessValidationException()
     {
         var sut = new BatchBuilder().WithStateCompleted().Build();
-        Assert.Throws<InvalidOperationException>(() => sut.MarkAsCompleted(It.IsAny<Instant>()));
+        Assert.Throws<BusinessValidationException>(() => sut.MarkAsCompleted(It.IsAny<Instant>()));
     }
 
     [Theory]
@@ -102,14 +103,14 @@ public class BatchTests
     [InlineData("2023-01-31T22:59:59Z", "Europe/Copenhagen")]
     [InlineData("2023-01-31T22:59:59.9999999Z", "Europe/Copenhagen")]
     [InlineData("2023-01-31T23:00:00Z", "Asia/Tokyo")]
-    public void Ctor_WhenPeriodEndIsNotMidnight_ThrowsArgumentException(string periodEndString, string timeZoneId)
+    public void Ctor_WhenPeriodEndIsNotMidnight_ThrowsBusinessValidationException(string periodEndString, string timeZoneId)
     {
         // Arrange
         var periodEnd = DateTimeOffset.Parse(periodEndString).ToInstant();
         var gridAreaCode = new GridAreaCode("113");
 
         // Act
-        var actual = Assert.Throws<ArgumentException>(() => new Batch(
+        var actual = Assert.Throws<BusinessValidationException>(() => new Batch(
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { gridAreaCode },
             Instant.MinValue,
@@ -125,14 +126,14 @@ public class BatchTests
     [InlineData("2023-01-31T22:59:00.9999999Z", "Europe/Copenhagen")]
     [InlineData("2023-01-31T23:00:00.9999999Z", "Europe/Copenhagen")]
     [InlineData("2023-01-31T23:00:00Z", "America/Cayman")]
-    public void Ctor_WhenPeriodStartIsNotMidnight_ThrowsArgumentException(string periodStartString, string timeZoneId)
+    public void Ctor_WhenPeriodStartIsNotMidnight_ThrowsBusinessValidationException(string periodStartString, string timeZoneId)
     {
         // Arrange
         var startPeriod = DateTimeOffset.Parse(periodStartString).ToInstant();
         var gridAreaCode = new GridAreaCode("113");
 
         // Act
-        var actual = Assert.Throws<ArgumentException>(() => new Batch(
+        var actual = Assert.Throws<BusinessValidationException>(() => new Batch(
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { gridAreaCode },
             startPeriod,
@@ -173,14 +174,14 @@ public class BatchTests
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenExecutionTimeEndLessThanStart_ThrowsArgumentException()
+    public void MarkAsCompleted_WhenExecutionTimeEndLessThanStart_ThrowsBusinessValidationException()
     {
         // Arrange
         var sut = new BatchBuilder().WithStateExecuting().Build();
         var executionTimeEndLessThanStart = sut.ExecutionTimeStart.Minus(Duration.FromDays(2));
 
         // Act
-        var actual = Assert.Throws<ArgumentException>(() => sut.MarkAsCompleted(executionTimeEndLessThanStart));
+        var actual = Assert.Throws<BusinessValidationException>(() => sut.MarkAsCompleted(executionTimeEndLessThanStart));
 
         // Assert
         sut.ExecutionTimeEnd.Should().BeNull();
@@ -188,17 +189,17 @@ public class BatchTests
     }
 
     [Fact]
-    public void MarkAsExecuting_WhenExecuting_ThrowsInvalidOperationException()
+    public void MarkAsExecuting_WhenExecuting_ThrowsBusinessValidationException()
     {
         var sut = new BatchBuilder().WithStateExecuting().Build();
-        Assert.Throws<InvalidOperationException>(() => sut.MarkAsExecuting());
+        Assert.Throws<BusinessValidationException>(() => sut.MarkAsExecuting());
     }
 
     [Fact]
-    public void MarkAsExecuting_WhenComplete_ThrowsInvalidOperationException()
+    public void MarkAsExecuting_WhenComplete_ThrowsBusinessValidationException()
     {
         var sut = new BatchBuilder().WithStateCompleted().Build();
-        Assert.Throws<InvalidOperationException>(() => sut.MarkAsExecuting());
+        Assert.Throws<BusinessValidationException>(() => sut.MarkAsExecuting());
     }
 
     [Fact]
@@ -242,9 +243,9 @@ public class BatchTests
     }
 
     [Fact]
-    public void Reset_WhenCompleted_Throws()
+    public void Reset_WhenCompleted_ThrowsBusinessValidationException()
     {
         var sut = new BatchBuilder().WithStateCompleted().Build();
-        Assert.Throws<InvalidOperationException>(() => sut.Reset());
+        Assert.Throws<BusinessValidationException>(() => sut.Reset());
     }
 }

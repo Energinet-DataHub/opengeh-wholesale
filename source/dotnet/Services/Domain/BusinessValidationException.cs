@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Domain;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
-
-public interface IBatchRequestDtoValidator
+public class BusinessValidationException : Exception
 {
-    bool IsValid(BatchRequestDto batchRequestDto, out IEnumerable<string> errorMessages);
+    public BusinessValidationException(string message)
+        : base(message)
+    {
+    }
 }

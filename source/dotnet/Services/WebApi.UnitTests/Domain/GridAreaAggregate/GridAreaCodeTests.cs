@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using FluentAssertions;
 using Xunit;
@@ -47,8 +48,8 @@ public class GridAreaCodeTests
     [InlineData("99e")]
     [InlineData("")]
     [InlineData("   ")]
-    public void Ctor_WhenNotZeroLeftPadded3DigitString_ThrowsArgumentException(string codeString)
+    public void Ctor_WhenNotZeroLeftPadded3DigitString_ThrowsBusinessValidationException(string codeString)
     {
-        Assert.Throws<ArgumentException>(() => new GridAreaCode(codeString));
+        Assert.Throws<BusinessValidationException>(() => new GridAreaCode(codeString));
     }
 }
