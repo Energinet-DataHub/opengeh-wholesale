@@ -14,8 +14,8 @@
 
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
-from package.codelists.time_series_type import TimeSeriesType
-from package.codelists.market_role import MarketRole
+from package.codelists import TimeSeriesType
+from typing import Union
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
 
@@ -36,7 +36,7 @@ def get_container_root_path(storage_account_name: str) -> str:
 def get_result_file_relative_path(
     batch_id: str,
     grid_area: str,
-    gln: str | None,
+    gln: Union[str, None],
     time_series_type: TimeSeriesType,
     grouping: str,
 ) -> str:
