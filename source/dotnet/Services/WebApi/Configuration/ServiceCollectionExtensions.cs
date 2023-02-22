@@ -34,7 +34,6 @@ using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -53,12 +52,11 @@ internal static class ServiceCollectionExtensions
     /// <summary>
     /// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
     /// </summary>
-    /// <param name="serviceCollection">ServiceCollection container</param>
-    public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection)
+    public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        var externalOpenIdUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ExternalOpenIdUrl);
-        var internalOpenIdUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.InternalOpenIdUrl);
-        var backendAppId = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BackendAppId);
+        var externalOpenIdUrl = configuration[ConfigurationSettingNames.ExternalOpenIdUrl];
+        var internalOpenIdUrl = configuration[ConfigurationSettingNames.InternalOpenIdUrl];
+        var backendAppId = configuration[ConfigurationSettingNames.BackendAppId];
 
         serviceCollection.AddJwtBearerAuthentication(externalOpenIdUrl, internalOpenIdUrl, backendAppId);
         serviceCollection.AddPermissionAuthorization();
@@ -66,9 +64,9 @@ internal static class ServiceCollectionExtensions
 
     public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString(EnvironmentSettingNames.DbConnectionString);
+        var connectionString = configuration.GetConnectionString(ConfigurationSettingNames.DbConnectionString);
         if (connectionString == null)
-            throw new ArgumentNullException(EnvironmentSettingNames.DbConnectionString, "does not exist in configuration settings");
+            throw new ArgumentNullException(ConfigurationSettingNames.DbConnectionString, "does not exist in configuration settings");
 
         services.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(connectionString, o =>
@@ -83,8 +81,8 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<IStreamZipper, StreamZipper>();
-        var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
-        var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
+        var calculationStorageConnectionString = configuration[ConfigurationSettingNames.CalculationStorageConnectionString];
+        var calculationStorageContainerName = configuration[ConfigurationSettingNames.CalculationStorageContainerName];
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         services.AddSingleton(dataLakeFileSystemClient);
         services.AddScoped<HttpClient>(_ => null!);
@@ -99,8 +97,8 @@ internal static class ServiceCollectionExtensions
 
         services.AddSingleton(_ =>
         {
-            var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
-            var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
+            var dbwUrl = configuration[ConfigurationSettingNames.DatabricksWorkspaceUrl];
+            var dbwToken = configuration[ConfigurationSettingNames.DatabricksWorkspaceToken];
 
             return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
         });
@@ -109,7 +107,6 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
         services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
         services.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
-        services.AddScoped<IBatchRequestDtoValidator, BatchRequestDtoValidator>();
         services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IActorRepository, ActorRepository>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
@@ -117,34 +114,34 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IJsonSerializer, JsonSerializer>();
         services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
 
-        RegisterDomainEventPublisher(services);
+        RegisterDomainEventPublisher(services, configuration);
 
-        services.ConfigureDateTime();
+        services.ConfigureDateTime(configuration);
     }
 
-    private static void RegisterDomainEventPublisher(IServiceCollection services)
+    private static void RegisterDomainEventPublisher(IServiceCollection services, IConfiguration configuration)
     {
         var serviceBusConnectionString =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusSendConnectionString);
+            configuration[ConfigurationSettingNames.ServiceBusSendConnectionString];
         var messageTypes = new Dictionary<Type, string>
         {
             {
                 typeof(BatchCreatedDomainEventDto),
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.BatchCreatedEventName)
+                configuration[ConfigurationSettingNames.BatchCreatedEventName]
             },
         };
 
-        var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        var domainEventTopicName = configuration[ConfigurationSettingNames.DomainEventsTopicName];
         services.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
     }
 
-    private static void ConfigureDateTime(this IServiceCollection serviceCollection)
+    private static void ConfigureDateTime(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
-        var dateTimeZoneId = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DateTimeZoneId);
+        var dateTimeZoneId = configuration[ConfigurationSettingNames.DateTimeZoneId];
         var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId);
         if (dateTimeZone == null)
-            throw new ArgumentNullException($"Cannot resolve date time zone object for zone id '{dateTimeZoneId}' from application setting '{EnvironmentSettingNames.DateTimeZoneId}'");
+            throw new ArgumentNullException($"Cannot resolve date time zone object for zone id '{dateTimeZoneId}' from application setting '{ConfigurationSettingNames.DateTimeZoneId}'");
         serviceCollection.AddSingleton(dateTimeZone);
     }
 }

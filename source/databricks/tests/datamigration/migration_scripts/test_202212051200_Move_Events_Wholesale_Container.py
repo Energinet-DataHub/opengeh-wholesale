@@ -25,10 +25,9 @@ from package.datamigration.migration_script_args import MigrationScriptArgs
 def test__apply__directory_client_contructed_with_correct_arguments(
     mock_directory_client: Mock,
 ) -> None:
-
     # Arrange
     sut = get_migration_script()
-    migration_args = MigrationScriptArgs("", "", ANY)
+    migration_args = MigrationScriptArgs("", "", "", ANY)
     source_container = "integration-events"
     events_source_directory = "events"
     events_checkpoint_source_directory = "events-checkpoint"
@@ -53,10 +52,9 @@ def test__apply__directory_client_contructed_with_correct_arguments(
 def test__apply__calls_rename_directory_with_correct_arguments(
     mock_directory_client: Mock,
 ) -> None:
-
     # Arrange
     sut = get_migration_script()
-    migration_args = MigrationScriptArgs("", "", ANY)
+    migration_args = MigrationScriptArgs("", "", "", ANY)
     mock_directory_client.return_value.exists.return_value = True
     expected_calls = [
         call(new_name="wholesale/events"),
@@ -76,10 +74,9 @@ def test__apply__calls_rename_directory_with_correct_arguments(
 def test__apply__when_source_directory_not_exist__never_call_rename_directory(
     mock_directory_client: Mock,
 ) -> None:
-
     # Arrange
     sut = get_migration_script()
-    migration_args = MigrationScriptArgs("", "", ANY)
+    migration_args = MigrationScriptArgs("", "", "", ANY)
     mock_directory_client.return_value.exists.return_value = False
 
     # Act

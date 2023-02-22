@@ -1,8 +1,12 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.9
+
+Functionality to also filter by period, grid areas and execution state in batch searches has been added.
+
 ## Version 5.0.8
 
-Functionality to also filter by period in batch searches has been added.
+Added a new `WholesaleClient.GetProcessStepResultAsync(ProcessStepResultRequestDtoV3)`
 
 ## Version 5.0.7
 

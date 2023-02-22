@@ -13,13 +13,10 @@
 # limitations under the License.
 
 import package.infrastructure as infra
-from package.codelists.market_role import MarketRole
-from package.codelists.time_series_type import TimeSeriesType
+from package.codelists import MarketRole, TimeSeriesType
 from package.constants import Colname
-from package.file_writers import actors_writer
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, lit
-from package.constants.partition_naming import GLN_VALUE_FOR_GRID_AREA
+from pyspark.sql.functions import col
 
 
 class ProcessStepResultWriter:
@@ -29,40 +26,38 @@ class ProcessStepResultWriter:
         )
 
     def write_per_ga(
-        self, result_df: DataFrame, time_series_type: TimeSeriesType
+        self,
+        result_df: DataFrame,
+        time_series_type: TimeSeriesType,
+        grouping: str,
     ) -> None:
-        result_df = self._add_gln_without_market_role(result_df)
         result_df = self._prepare_result_for_output(
             result_df,
-            time_series_type,
         )
-        self._write_result_df(result_df)
+        result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
+        partition_by = ["grid_area"]
+        self._write_result_df(result_df, partition_by, time_series_type, grouping)
 
     def write_per_ga_per_actor(
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
         market_role: MarketRole,
+        grouping: str,
     ) -> None:
-        result_df = self._add_gln(result_df, market_role)
         result_df = self._prepare_result_for_output(
             result_df,
-            time_series_type,
         )
-        self._write_result_df(result_df)
-        actors_writer.write(self.__output_path, result_df, market_role)
+        result_df = self._add_gln(result_df, market_role)
+        result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
+        partition_by = ["grid_area", Colname.gln]
+        self._write_result_df(result_df, partition_by, time_series_type, grouping)
 
-    def _prepare_result_for_output(
-        self, result_df: DataFrame, time_series_type: TimeSeriesType
-    ) -> DataFrame:
-        result_df = result_df.withColumn(
-            Colname.time_series_type, lit(time_series_type.value)
-        )
-
+    def _prepare_result_for_output(self, result_df: DataFrame) -> DataFrame:
         result_df = result_df.select(
             col(Colname.grid_area).alias("grid_area"),
-            Colname.gln,
-            Colname.time_series_type,
+            Colname.energy_supplier_id,
+            Colname.balance_responsible_id,
             col(Colname.sum_quantity).alias("quantity").cast("string"),
             col(Colname.quality).alias("quality"),
             col(Colname.time_window_start).alias("quarter_time"),
@@ -90,22 +85,21 @@ class ProcessStepResultWriter:
 
         return result_df
 
-    def _add_gln_without_market_role(
+    def _write_result_df(
         self,
         result_df: DataFrame,
-    ) -> DataFrame:
-        result_df = result_df.withColumn(Colname.gln, lit(GLN_VALUE_FOR_GRID_AREA))
-        return result_df
-
-    def _write_result_df(self, result_df: DataFrame) -> None:
-        result_data_directory = f"{self.__output_path}/result"
+        partition_by: list[str],
+        time_series_type: TimeSeriesType,
+        grouping: str,
+    ) -> None:
+        result_data_directory = f"{self.__output_path}/result/grouping={grouping}/time_series_type={time_series_type.value}"
 
         # First repartition to co-locate all rows for a grid area on a single executor.
         # This ensures that only one file is being written/created for each grid area
         # When writing/creating the files. The partition by creates a folder for each grid area.
         (
             result_df.repartition("grid_area")
-            .write.mode("append")
-            .partitionBy("grid_area", Colname.gln, Colname.time_series_type)
+            .write.mode("errorifexists")
+            .partitionBy(partition_by)
             .json(result_data_directory)
         )

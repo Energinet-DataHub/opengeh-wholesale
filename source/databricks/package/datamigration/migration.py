@@ -59,7 +59,6 @@ def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -
 
 
 def _migrate_data_lake(storage_account_name: str, storage_account_key: str) -> None:
-
     spark = initialize_spark(
         storage_account_name,
         storage_account_key,
@@ -78,7 +77,10 @@ def _migrate_data_lake(storage_account_name: str, storage_account_key: str) -> N
     )
 
     migration_args = MigrationScriptArgs(
-        storage_account_url, storage_account_key, spark
+        data_storage_account_url=storage_account_url,
+        data_storage_account_name=storage_account_name,
+        data_storage_account_key=storage_account_key,
+        spark=spark,
     )
 
     for name in uncommitted_migrations:

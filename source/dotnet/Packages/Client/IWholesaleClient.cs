@@ -46,4 +46,13 @@ public interface IWholesaleClient
     Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
 
     Task<WholesaleActorDto[]?> GetProcessStepActorsAsync(ProcessStepActorsRequest processStepActorsRequest);
+
+    /// <summary>
+    /// Process step results provided by the following method:
+    /// When only 'EnergySupplierGln' is provided, a result is returned for a energy supplier for the requested grid area, for the specified time series type.
+    /// if only a 'BalanceResponsiblePartyGln' is provided, a result is returned for a balance responsible party for the requested grid area, for the specified time series type.
+    /// if both 'BalanceResponsiblePartyGln' and 'EnergySupplierGln' is provided, a result is returned for the balance responsible party's energy supplier for requested grid area, for the specified time series type.
+    /// if no 'BalanceResponsiblePartyGln' and 'EnergySupplierGln' is provided, a result is returned for the requested grid area, for the specified time series type.
+    /// </summary>
+    Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDtoV3 processStepResultRequestDtoV3);
 }
