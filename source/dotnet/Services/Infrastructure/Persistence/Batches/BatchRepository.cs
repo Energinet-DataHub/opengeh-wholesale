@@ -64,7 +64,7 @@ public class BatchRepository : IBatchRepository
             .ConfigureAwait(false);
     }
 
-    public Task<List<Batch>> SearchAsync(
+    public async Task<List<Batch>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
         IReadOnlyCollection<BatchExecutionState> filterByExecutionState,
         Instant? minExecutionTimeStart,
@@ -74,14 +74,17 @@ public class BatchRepository : IBatchRepository
     {
         var query = _context
             .Batches
-            .Where(b => b.ExecutionTimeStart >= minExecutionTimeStart)
-            .Where(b => b.ExecutionTimeStart <= maxExecutionTimeStart)
-            .Where(b => b.PeriodStart < periodEnd)
-            .Where(b => b.PeriodEnd > periodStart)
-            .Where(b => filterByExecutionState.Count == 0 || filterByExecutionState.Contains(b.ExecutionState))
-            .Where(b => filterByGridAreaCode.Count == 0 || b.GridAreaCodes.Any(filterByGridAreaCode.Contains));
+            .Where(b => minExecutionTimeStart == null || b.ExecutionTimeStart >= minExecutionTimeStart)
+            .Where(b => maxExecutionTimeStart == null || b.ExecutionTimeStart <= maxExecutionTimeStart)
+            .Where(b => periodEnd == null || b.PeriodStart < periodEnd)
+            .Where(b => periodStart == null || b.PeriodEnd > periodStart)
+            .Where(b => filterByExecutionState.Count == 0 || filterByExecutionState.Contains(b.ExecutionState));
 
-        return query.ToListAsync();
+        var foundBatches = await query.ToListAsync().ConfigureAwait(false);
+
+        return foundBatches
+            .Where(b => filterByGridAreaCode.Count == 0 || b.GridAreaCodes.Any(filterByGridAreaCode.Contains))
+            .ToList();
     }
 
     private async Task<List<Batch>> GetByStateAsync(BatchExecutionState state)
