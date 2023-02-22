@@ -13,5 +13,8 @@
 # limitations under the License.
 
 
-GLN_VALUE_FOR_GRID_AREA = "grid_area"
-"""When a result includes the entire grid area we use this text to set the folder name ("gln=grid_area")"""
+class Grouping:
+    total_ga = "total_ga"
+    es_per_brp_per_ga = "es_brp_ga"
+    es_per_ga = "es_ga"
+    brp_per_ga = "brp_ga"

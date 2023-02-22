@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessStep;
 
@@ -50,15 +51,21 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
         return actors.Select(batchActor => new WholesaleActorDto(batchActor.Gln)).ToArray();
     }
 
-    public async Task<ProcessStepResultDto> GetResultAsync(Guid batchId, string gridAreaCode, Contracts.TimeSeriesType timeSeriesType, string gln)
+    public async Task<ProcessStepResultDto> GetResultAsync(
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        string? energySupplierGln,
+        string? balanceResponsibleParty)
     {
-        var processActorResult = await _processStepResultRepository.GetAsync(
+        var processStepResult = await _processStepResultRepository.GetAsync(
                 batchId,
                 new GridAreaCode(gridAreaCode),
                 TimeSeriesTypeMapper.Map(timeSeriesType),
-                gln)
+                energySupplierGln,
+                balanceResponsibleParty)
             .ConfigureAwait(false);
 
-        return _processStepResultMapper.MapToDto(processActorResult);
+        return _processStepResultMapper.MapToDto(processStepResult);
     }
 }
