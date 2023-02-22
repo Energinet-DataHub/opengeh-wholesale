@@ -39,7 +39,7 @@ public class ActorRepository : IActorRepository
         TimeSeriesType timeSeriesType,
         MarketRole marketRole)
     {
-        var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType, marketRole);
+        var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType);
         var dataLakeFileClient = await _dataLakeClient.GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
@@ -51,14 +51,13 @@ public class ActorRepository : IActorRepository
     public static (string Directory, string Extension) GetActorListFileSpecification(
         Guid batchId,
         GridAreaCode gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        MarketRole marketRole)
+        TimeSeriesType timeSeriesType)
     {
-        return ($"calculation-output/batch_id={batchId}/actors/grid_area={gridAreaCode.Code}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/market_role={MarketRoleMapper.Map(marketRole)}/", ".json");
+        return ($"calculation-output/batch_id={batchId}/actors/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/", ".json");
     }
 
     private static Domain.ActorAggregate.Actor[] MapToBatchActor(IEnumerable<Actor> actors)
     {
-        return actors.Select(actor => new Domain.ActorAggregate.Actor(actor.gln)).ToArray();
+        return actors.Select(actor => new Domain.ActorAggregate.Actor(actor.energy_supplier_gln)).ToArray();
     }
 }

@@ -1,7 +1,7 @@
 {
     "fields": [
       {
-        "name": "gln",
+        "name": "energy_supplier_gln",
         "type": "string"
       }
     ]
