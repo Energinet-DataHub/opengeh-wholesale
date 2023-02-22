@@ -18,6 +18,9 @@ limitations under the License.
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.WebApi</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.WebApi</RootNamespace>
+    <!-- In order to use user secrets create and configure the file
+         `C:\Users\<username>\AppData\Roaming\Microsoft\UserSecrets\opengeh-wholesale-webapi\secrets.json` -->
+    <UserSecretsId>opengeh-wholesale-webapi</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

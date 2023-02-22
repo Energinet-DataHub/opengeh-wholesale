@@ -60,35 +60,35 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
 
             // Overwrites the setting so the Web Api app uses the database we have control of in the test
             Environment.SetEnvironmentVariable(
-                $"CONNECTIONSTRINGS:{EnvironmentSettingNames.DbConnectionString}",
+                $"CONNECTIONSTRINGS:{ConfigurationSettingNames.DbConnectionString}",
                 DatabaseManager.ConnectionString);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ExternalOpenIdUrl, "disabled");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.InternalOpenIdUrl, "disabled");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.BackendAppId, "disabled");
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.ExternalOpenIdUrl, "disabled");
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.InternalOpenIdUrl, "disabled");
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendAppId, "disabled");
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, "wholesale");
 
             await ServiceBusResourceProvider
                 .BuildTopic("domain-events")
-                .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
+                .SetEnvironmentVariableToTopicName(ConfigurationSettingNames.DomainEventsTopicName)
                 .CreateAsync();
 
             // Create storage container - ought to be a Data Lake file system
             var blobContainerClient = new BlobContainerClient(
-                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
-                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+                Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString),
+                Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName));
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCreatedEventName, "batch-created");
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.BatchCreatedEventName, "batch-created");
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.DateTimeZoneId, "Europe/Copenhagen");
 
             if (!await blobContainerClient.ExistsAsync())
                 await blobContainerClient.CreateAsync();

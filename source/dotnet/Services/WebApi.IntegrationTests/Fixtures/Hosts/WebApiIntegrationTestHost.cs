@@ -58,20 +58,20 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         const string anyValue = "fake_value";
         const string anyServiceBusConnectionString = "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=someKeyName;SharedAccessKey=someKeyValue";
 
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.BackendAppId, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ExternalOpenIdUrl, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.InternalOpenIdUrl, anyValue);
-        Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{EnvironmentSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, anyServiceBusConnectionString);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, anyServiceBusConnectionString);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCreatedEventName, "batch-created");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DomainEventsTopicName, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, "http://localhost/");
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, "no_token");
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.AppInsightsInstrumentationKey, anyValue);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendAppId, anyValue);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.ExternalOpenIdUrl, anyValue);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.InternalOpenIdUrl, anyValue);
+        Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{ConfigurationSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, anyValue);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusManageConnectionString, anyServiceBusConnectionString);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusSendConnectionString, anyServiceBusConnectionString);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.BatchCreatedEventName, "batch-created");
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.DomainEventsTopicName, anyValue);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.DateTimeZoneId, "Europe/Copenhagen");
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceUrl, "http://localhost/");
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceToken, "no_token");
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
