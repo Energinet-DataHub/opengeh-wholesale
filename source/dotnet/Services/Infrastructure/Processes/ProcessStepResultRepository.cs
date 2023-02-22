@@ -44,12 +44,12 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         string? balanceResponsiblePartyGln)
     {
         if (balanceResponsiblePartyGln != null && energySupplierGln == null)
-            return await GetResultAsync(batchId, GetDirectoryForBrpGridArea(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyGln)).ConfigureAwait(false);
+            return await GetResultAsync(batchId, GetDirectoryForBrpGridArea(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyGln), timeSeriesType).ConfigureAwait(false);
 
         if (energySupplierGln != null && balanceResponsiblePartyGln == null)
-            return await GetResultAsync(batchId, GetDirectoryForEsGridArea(batchId, gridAreaCode, timeSeriesType, energySupplierGln)).ConfigureAwait(false);
+            return await GetResultAsync(batchId, GetDirectoryForEsGridArea(batchId, gridAreaCode, timeSeriesType, energySupplierGln), timeSeriesType).ConfigureAwait(false);
 
-        return await GetResultAsync(batchId, GetDirectoryForTotalGridArea(batchId, gridAreaCode, timeSeriesType)).ConfigureAwait(false);
+        return await GetResultAsync(batchId, GetDirectoryForTotalGridArea(batchId, gridAreaCode, timeSeriesType), timeSeriesType).ConfigureAwait(false);
     }
 
     public static string GetDirectoryForBrpGridArea(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln)
@@ -61,7 +61,7 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
     public static string GetDirectoryForTotalGridArea(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType)
         => $"calculation-output/batch_id={batchId}/result/grouping={TotalGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/";
 
-    private async Task<ProcessStepResult> GetResultAsync(Guid batchId, string directory)
+    private async Task<ProcessStepResult> GetResultAsync(Guid batchId, string directory, TimeSeriesType timeSeriesType)
     {
         var dataLakeFileClient =
             await _dataLakeClient.GetDataLakeFileClientAsync(directory, ".json").ConfigureAwait(false);
@@ -73,10 +73,12 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
         var points = await _jsonNewlineSerializer.DeserializeAsync<ProcessResultPoint>(resultStream).ConfigureAwait(false);
 
-        return MapToProcessStepResultDto(points);
+        return MapToProcessStepResultDto(timeSeriesType, points);
     }
 
-    private static ProcessStepResult MapToProcessStepResultDto(IEnumerable<ProcessResultPoint> points)
+    private static ProcessStepResult MapToProcessStepResultDto(
+        TimeSeriesType timeSeriesType,
+        IEnumerable<ProcessResultPoint> points)
     {
         var pointsDto = points.Select(
                 point => new TimeSeriesPoint(
@@ -85,6 +87,6 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
                     point.quality))
             .ToList();
 
-        return new ProcessStepResult(pointsDto.ToArray());
+        return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
     }
 }
