@@ -29,10 +29,13 @@ class ActorsWriter:
         output_path = f"{self.__output_path}/time_series_type={time_series_type.value}"
         result_df = result_df.withColumnRenamed(Colname.grid_area, "grid_area")
 
-        actors_df = result_df.select("grid_area", Colname.energy_supplier_id).distinct()
+        actors_df = result_df.select(
+            "grid_area", Colname.energy_supplier_id, Colname.balance_responsible_id
+        ).distinct()
+
         actors_df = actors_df.withColumnRenamed(
             Colname.energy_supplier_id, "energy_supplier_gln"
-        )
+        ).withColumnRenamed(Colname.balance_responsible_id, "balance_responsible_gln")
 
         # In the partitioning hierarchy time_series_type is above grid_area. This is done to avoid having to do 'append' for each time_series_type
         (
