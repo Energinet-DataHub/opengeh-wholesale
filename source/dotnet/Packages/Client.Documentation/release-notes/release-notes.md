@@ -2,7 +2,7 @@
 
 ## Version 5.0.8
 
-Search batch by period.
+Functionality to also filter by period in batch searches has been added.
 
 ## Version 5.0.7
 
