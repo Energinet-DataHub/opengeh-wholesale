@@ -44,7 +44,7 @@ public class ProcessStepApplicationServiceTests
         // Arrange
         var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
         var quantity = 1.000m;
-        var quality = "A04";
+        var quality = "measured";
 
         const string gridAreaCode = "805";
         var batchId = Guid.NewGuid();
