@@ -42,47 +42,51 @@ def apply(args: MigrationScriptArgs) -> None:
                 directory=result_path
             )
 
-            move_and_rename_folder(
-                directory_client=directory_client,
-                current_directory_name=result_path,
-                new_directory_name=result_temp_path,
-                container=container,
-            )
-
-            directory_client_temp = file_system_client.get_directory_client(
-                directory=result_temp_path
-            )
-
-            if directory_client_temp.exists():
-                result_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_path}"
-                result_temp_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_temp_path}"
-                df = spark.read.json(result_temp_path)
-
-                df_production = df.filter(col("time_series_type") == "production")
-                df_production = df_production.withColumn(
-                    "grouping", lit("total_ga")
-                ).drop("gln")
-                df_non_profiled_consumption = df.filter(
-                    col("time_series_type") == "non_profiled_consumption"
-                )
-                df_non_profiled_consumption = df_non_profiled_consumption.withColumn(
-                    "grouping", lit("es_ga")
+            if directory_client.exists():
+                directory_client_temp = file_system_client.get_directory_client(
+                    directory=result_temp_path
                 )
 
-                # write the dataframe back into the datalake with new partition
-                (
-                    df_production.repartition("grid_area")
-                    .write.mode("append")
-                    .partitionBy("grouping", "time_series_type", "grid_area")
-                    .json(result_path)
+                if directory_client_temp.exists():
+                    continue
+
+                move_and_rename_folder(
+                    directory_client=directory_client,
+                    current_directory_name=result_path,
+                    new_directory_name=result_temp_path,
+                    container=container,
                 )
 
-                (
-                    df_non_profiled_consumption.repartition("grid_area")
-                    .write.mode("append")
-                    .partitionBy("grouping", "time_series_type", "grid_area", "gln")
-                    .json(result_path)
-                )
+                if directory_client_temp.exists():
+                    result_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_path}"
+                    result_temp_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_temp_path}"
+                    df = spark.read.json(result_temp_path)
+
+                    df_production = df.filter(col("time_series_type") == "production")
+                    df_production = df_production.withColumn(
+                        "grouping", lit("total_ga")
+                    ).drop("gln")
+                    df_non_profiled_consumption = df.filter(
+                        col("time_series_type") == "non_profiled_consumption"
+                    )
+                    df_non_profiled_consumption = (
+                        df_non_profiled_consumption.withColumn("grouping", lit("es_ga"))
+                    )
+
+                    # write the dataframe back into the datalake with new partition
+                    (
+                        df_production.repartition("grid_area")
+                        .write.mode("append")
+                        .partitionBy("grouping", "time_series_type", "grid_area")
+                        .json(result_path)
+                    )
+
+                    (
+                        df_non_profiled_consumption.repartition("grid_area")
+                        .write.mode("append")
+                        .partitionBy("grouping", "time_series_type", "grid_area", "gln")
+                        .json(result_path)
+                    )
 
 
 def move_and_rename_folder(
