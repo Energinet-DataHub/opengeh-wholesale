@@ -205,7 +205,9 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_ti
     )
 
 
-def test_non_profiled_consumption_calculation_per_ga_and_es(agg_result_factory) -> None:
+def test_non_profiled_consumption_calculation_per_ga_and_es(
+    agg_result_factory: Callable[..., DataFrame]
+) -> None:
     consumption = create_dataframe_from_aggregation_result_schema(
         metadata, agg_result_factory()
     )

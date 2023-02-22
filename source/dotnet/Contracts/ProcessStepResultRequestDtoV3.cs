@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Core;
+namespace Energinet.DataHub.Wholesale.Contracts;
 
-public static class EnvironmentVariableExtensions
-{
-    public static string Val(this string environmentVariable) =>
-        EnvironmentVariableHelper.GetEnvVariable(environmentVariable);
-}
+public sealed record ProcessStepResultRequestDtoV3(Guid BatchId, string GridAreaCode, TimeSeriesType TimeSeriesType, string? EnergySupplierGln, string? BalanceResponsiblePartyGln);

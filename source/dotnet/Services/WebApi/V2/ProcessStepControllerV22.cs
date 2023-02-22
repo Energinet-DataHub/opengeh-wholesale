@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Energinet.DataHub.Wholesale.WebApi.V2;
 
 [ApiController]
+[Produces("application/json")]
 [Route("v2.2/ProcessStepResult")]
 public class ProcessStepV22Controller : ControllerBase
 {
@@ -39,7 +40,8 @@ public class ProcessStepV22Controller : ControllerBase
             processStepResultRequestDtoV2.BatchId,
             processStepResultRequestDtoV2.GridAreaCode,
             processStepResultRequestDtoV2.TimeSeriesType,
-            processStepResultRequestDtoV2.Gln).ConfigureAwait(false);
+            processStepResultRequestDtoV2.Gln,
+            null).ConfigureAwait(false); // This means we ONLY can return results for energy suppliers.
         return Ok(resultDto);
     }
 }

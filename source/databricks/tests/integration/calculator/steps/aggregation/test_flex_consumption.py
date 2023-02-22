@@ -106,7 +106,9 @@ def test_data_factory(
     return factory
 
 
-def test_flex_consumption_calculation_per_ga_and_es(test_data_factory):
+def test_flex_consumption_calculation_per_ga_and_es(
+    test_data_factory: Callable[..., DataFrame]
+) -> None:
     results = {}
     results[
         ResultKeyName.flex_consumption_with_grid_loss

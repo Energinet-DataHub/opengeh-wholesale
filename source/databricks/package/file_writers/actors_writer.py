@@ -16,6 +16,7 @@ import package.infrastructure as infra
 from package.codelists.time_series_type import TimeSeriesType
 from package.constants import Colname
 from pyspark.sql import DataFrame
+from pyspark.sql.functions import lit
 
 
 class ActorsWriter:

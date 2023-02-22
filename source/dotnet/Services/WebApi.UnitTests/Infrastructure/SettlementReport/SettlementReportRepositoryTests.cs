@@ -194,7 +194,7 @@ public class SettlementReportRepositoryTests
         // Arrange
         var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
         var quantity = 1.000m;
-        var quality = "A04";
+        var quality = "measured";
 
         const string gridAreaCode = "805";
         var batchId = Guid.NewGuid();
@@ -204,7 +204,7 @@ public class SettlementReportRepositoryTests
             new ProcessStepResultMapper(),
             actorRepositoryMock.Object);
 
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area"))
+        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, null, null))
             .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         // Act
@@ -212,7 +212,8 @@ public class SettlementReportRepositoryTests
                 batchId,
                 gridAreaCode,
                 Contracts.TimeSeriesType.Production,
-                "grid_area");
+                null,
+                null);
 
         // Assert
         actual.TimeSeriesPoints.First().Time.Should().Be(time);
