@@ -15,7 +15,6 @@
 import package.infrastructure as infra
 from package.codelists import MarketRole, TimeSeriesType
 from package.constants import Colname
-from package.file_writers import actors_writer
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit
 
@@ -53,9 +52,6 @@ class ProcessStepResultWriter:
         result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
         partition_by = ["grid_area", Colname.gln]
         self._write_result_df(result_df, partition_by, time_series_type, grouping)
-        actors_writer.write(
-            self.__output_path, result_df, market_role, time_series_type
-        )
 
     def _prepare_result_for_output(self, result_df: DataFrame) -> DataFrame:
         result_df = result_df.select(

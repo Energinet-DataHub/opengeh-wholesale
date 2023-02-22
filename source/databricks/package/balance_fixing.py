@@ -20,17 +20,18 @@ from package.codelists import MeteringPointResolution
 from package.constants import Colname
 from package.codelists import MarketRole, TimeSeriesType, Grouping
 from package.db_logging import debug
-from package.shared.data_classes import Metadata
+from package.file_writers.actors_writer import ActorsWriter
 from package.file_writers.basis_data_writer import BasisDataWriter
-from package.file_writers.process_step_result_writer import (
-    ProcessStepResultWriter,
-)
+from package.file_writers.process_step_result_writer import \
+    ProcessStepResultWriter
+from package.shared.data_classes import Metadata
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, explode, expr, first, sum
+from pyspark.sql.functions import col, explode, expr
 from pyspark.sql.types import DecimalType
 
 
 def calculate_balance_fixing(
+    actors_writer: ActorsWriter,
     basis_data_writer: BasisDataWriter,
     process_step_result_writer: ProcessStepResultWriter,
     metering_points_periods_df: DataFrame,
@@ -55,7 +56,7 @@ def calculate_balance_fixing(
         time_zone,
     )
 
-    _calculate(process_step_result_writer, enriched_time_series_point_df)
+    _calculate(actors_writer, process_step_result_writer, enriched_time_series_point_df)
 
 
 def _create_and_write_basis_data(
@@ -83,14 +84,16 @@ def _create_and_write_basis_data(
 
 
 def _calculate(
-    result_writer: ProcessStepResultWriter, enriched_time_series_point_df: DataFrame
+    actors_writer: ActorsWriter,
+    result_writer: ProcessStepResultWriter,
+    enriched_time_series_point_df: DataFrame,
 ) -> None:
     metadata_fake = Metadata("1", "1", "1", "1")
 
     _calculate_production(result_writer, enriched_time_series_point_df, metadata_fake)
 
     _calculate_non_profiled_consumption(
-        result_writer, enriched_time_series_point_df, metadata_fake
+        actors_writer, result_writer, enriched_time_series_point_df, metadata_fake
     )
 
 
@@ -112,6 +115,7 @@ def _calculate_production(
 
 
 def _calculate_non_profiled_consumption(
+    actors_writer: ActorsWriter,
     result_writer: ProcessStepResultWriter,
     enriched_time_series_point_df: DataFrame,
     metadata: Metadata,
@@ -145,6 +149,11 @@ def _calculate_non_profiled_consumption(
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.BALANCE_RESPONSIBLE_PARTY,
         Grouping.brp_per_ga,
+    )
+
+    # write actors list to datalake
+    actors_writer.write(
+        consumption_per_ga_and_brp_and_es, TimeSeriesType.NON_PROFILED_CONSUMPTION
     )
 
 

@@ -12,37 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
+import package.infrastructure as infra
+from package.codelists.time_series_type import TimeSeriesType
 from package.constants import Colname
+from pyspark.sql import DataFrame
 from pyspark.sql.functions import lit
-from package.codelists import MarketRole, TimeSeriesType
 
 
-def write(
-    output_path: str,
-    result_df: DataFrame,
-    market_role: MarketRole,
-    time_series_type: TimeSeriesType,
-) -> None:
-    result_df = result_df.withColumn(
-        Colname.time_series_type, lit(time_series_type.value)
-    )
-    actors_df = _get_actors(result_df, market_role)
+class ActorsWriter:
+    def __init__(self, container_path: str, batch_id: str):
+        self.__output_path = (
+            f"{container_path}/{infra.get_batch_relative_path(batch_id)}/actors/"
+        )
 
-    actors_directory = f"{output_path}/actors"
-    (
-        actors_df.repartition("grid_area")
-        .write.mode("append")
-        .partitionBy("grid_area", Colname.time_series_type, Colname.market_role)
-        .json(actors_directory)
-    )
+    def write(self, result_df: DataFrame, time_series_type: TimeSeriesType) -> None:
+        output_path = f"{self.__output_path}/time_series_type={time_series_type.value}"
+        result_df = result_df.withColumnRenamed(Colname.grid_area, "grid_area")
 
+        actors_df = result_df.select("grid_area", Colname.energy_supplier_id).distinct()
+        actors_df = actors_df.withColumnRenamed(
+            Colname.energy_supplier_id, "energy_supplier_gln"
+        )
 
-def _get_actors(result_df: DataFrame, market_role: MarketRole) -> DataFrame:
-    actors_df = result_df.select(
-        "grid_area", Colname.gln, Colname.time_series_type
-    ).distinct()
-
-    actors_df = actors_df.withColumn(Colname.market_role, lit(market_role.value))
-
-    return actors_df
+        # In the partitioning hierarchy time_series_type is above grid_area. This is done to avoid having to do 'append' for each time_series_type
+        (
+            actors_df.repartition("grid_area")
+            .write.mode("errorifexists")
+            .partitionBy("grid_area")
+            .json(output_path)
+        )

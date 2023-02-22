@@ -27,6 +27,7 @@ from package import (
 )
 from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
+from package.file_writers.actors_writer import ActorsWriter
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import Row
 
@@ -95,8 +96,10 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.wholesale_container_path, args.batch_id
     )
     basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
+    actors_writer = ActorsWriter(args.wholesale_container_path, args.batch_id)
 
     calculate_balance_fixing(
+        actors_writer,
         basis_data_writer,
         process_step_result_writer,
         metering_point_periods_df,
