@@ -16,7 +16,7 @@ import package.infrastructure as infra
 from package.codelists import MarketRole, TimeSeriesType
 from package.constants import Colname
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, lit
+from pyspark.sql.functions import col
 
 
 class ProcessStepResultWriter:
