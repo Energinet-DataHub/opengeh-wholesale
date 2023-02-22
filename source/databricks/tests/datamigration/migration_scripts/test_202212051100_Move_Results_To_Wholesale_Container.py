@@ -28,7 +28,7 @@ def test__apply__directory_client_contructed_with_correct_arguments(
 
     # Arrange
     sut = get_migration_script()
-    migration_args = MigrationScriptArgs("", "", None)
+    migration_args = MigrationScriptArgs("", "", "", None)
     processes_container = "processes"
     results_source_directory = "results"
 
@@ -50,7 +50,7 @@ def test__apply__calls_rename_directory_with_correct_arguments(
 
     # Arrange
     sut = get_migration_script()
-    migration_args = MigrationScriptArgs("", "", None)
+    migration_args = MigrationScriptArgs("", "", "", None)
     mock_directory_client.return_value.exists.return_value = True
 
     # Act
@@ -71,7 +71,7 @@ def test__apply__when_source_directory_not_exist__never_call_rename_directory(
 
     # Arrange
     sut = get_migration_script()
-    migration_args = MigrationScriptArgs("", "", None)
+    migration_args = MigrationScriptArgs("", "", "", None)
     mock_directory_client.return_value.exists.return_value = False
 
     # Act

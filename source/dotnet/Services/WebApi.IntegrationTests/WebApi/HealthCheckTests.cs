@@ -23,40 +23,21 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi
 {
-    [Collection(nameof(WholesaleWebApiCollectionFixture))]
-    public class HealthCheckTests :
-        WebApiTestBase<WholesaleWebApiFixture>,
-        IClassFixture<WholesaleWebApiFixture>,
-        IClassFixture<WebApiFactory>,
-        IAsyncLifetime
+    public class HealthCheckTests : WebApiTestBase
     {
-        private readonly HttpClient _client;
-
         public HealthCheckTests(
             WholesaleWebApiFixture wholesaleWebApiFixture,
             WebApiFactory factory,
             ITestOutputHelper testOutputHelper)
-            : base(wholesaleWebApiFixture, testOutputHelper)
+            : base(wholesaleWebApiFixture, factory, testOutputHelper)
         {
-            _client = factory.CreateClient();
-        }
-
-        public Task InitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task DisposeAsync()
-        {
-            _client.Dispose();
-            return Task.CompletedTask;
         }
 
         [Fact]
         public async Task When_RequestLivenessStatus_Then_ResponseIsOkAndHealthy()
         {
             // Arrange + Act
-            var actualResponse = await _client.GetAsync(HealthChecksConstants.LiveHealthCheckEndpointRoute);
+            var actualResponse = await Client.GetAsync(HealthChecksConstants.LiveHealthCheckEndpointRoute);
 
             // Assert
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -69,7 +50,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi
         public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
         {
             // Act
-            var actualResponse = await _client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
+            var actualResponse = await Client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
 
             // Assert
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);

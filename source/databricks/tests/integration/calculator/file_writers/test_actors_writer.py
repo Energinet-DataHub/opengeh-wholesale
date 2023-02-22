@@ -22,7 +22,7 @@ from package.codelists import MeteringPointResolution, TimeSeriesQuality
 from package.constants import Colname
 from package.codelists.market_role import MarketRole
 from package.codelists.time_series_type import TimeSeriesType
-from package.file_writers.process_step_result_writer import ProcessStepResultWriter
+from package.file_writers.actors_writer import ActorsWriter
 import package.infrastructure as infra
 from pyspark.sql import SparkSession
 from tests.helpers.assert_calculation_file_path import (
@@ -58,7 +58,69 @@ def _create_result_row(
     return row
 
 
-def test__write_per_ga_per_actor__result_file_path_matches_contract(
+def _get_gln_from_actors_file(
+    output_path: str, batch_id: str, grid_area: str, time_series_type: TimeSeriesType
+) -> list[str]:
+    actors_path = infra.get_actors_file_relative_path(
+        batch_id, grid_area, time_series_type
+    )
+    actors_json = find_file(output_path, f"{actors_path}/part-*.json")
+
+    gln = []
+    with open(actors_json, "r") as json_file:
+        for line in json_file:
+            json_data = json.loads(line)
+            gln.append(json_data["energy_supplier_gln"])
+
+    return gln
+
+
+def test__write__actors_file_has_expected_gln(
+    spark: SparkSession, tmpdir: Path
+) -> None:
+    # Arrange
+    output_path = str(tmpdir)
+    expected_gln_805 = ["123", "234"]
+    expected_gln_806 = ["123", "345"]
+    time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
+
+    rows = []
+    rows.append(
+        _create_result_row(grid_area="805", energy_supplier_id=expected_gln_805[0])
+    )
+    rows.append(
+        _create_result_row(grid_area="805", energy_supplier_id=expected_gln_805[1])
+    )
+    rows.append(
+        _create_result_row(grid_area="806", energy_supplier_id=expected_gln_806[0])
+    )
+    rows.append(
+        _create_result_row(grid_area="806", energy_supplier_id=expected_gln_806[1])
+    )
+    result_df = spark.createDataFrame(rows)
+
+    sut = ActorsWriter(output_path, DEFAULT_BATCH_ID)
+
+    # Act
+    sut.write(result_df, time_series_type)
+
+    # Assert
+    actual_gln_805 = _get_gln_from_actors_file(
+        output_path, DEFAULT_BATCH_ID, "805", time_series_type
+    )
+    actual_gln_806 = _get_gln_from_actors_file(
+        output_path, DEFAULT_BATCH_ID, "806", time_series_type
+    )
+
+    assert len(actual_gln_805) == len(expected_gln_805) and len(actual_gln_806) == len(
+        expected_gln_806
+    )
+    assert set(actual_gln_805) == set(expected_gln_805) and set(actual_gln_806) == set(
+        expected_gln_806
+    )
+
+
+def test__write_per_ga_per_actor__actors_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
     tmpdir,
@@ -70,18 +132,13 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
         )
     ]
     result_df = spark.createDataFrame(data=row)
-    relative_output_path = infra.get_result_file_relative_path(
-        DEFAULT_BATCH_ID,
-        DEFAULT_GRID_AREA,
-        DEFAULT_ENERGY_SUPPLIER_ID,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+    relative_output_path = infra.get_actors_file_relative_path(
+        DEFAULT_BATCH_ID, DEFAULT_GRID_AREA, TimeSeriesType.NON_PROFILED_CONSUMPTION
     )
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ActorsWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-    # Act: Executed in fixture executed_calculation_job
-    sut.write_per_ga_per_actor(
-        result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION, MarketRole.ENERGY_SUPPLIER
-    )
+    # Act
+    sut.write(result_df, TimeSeriesType.NON_PROFILED_CONSUMPTION)
 
     # Assert
     actual_result_file = find_file(
@@ -89,5 +146,5 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
         f"{relative_output_path}/part-*.json",
     )
     assert_file_path_match_contract(
-        contracts_path, actual_result_file, CalculationFileType.ResultFile
+        contracts_path, actual_result_file, CalculationFileType.ActorsFile
     )
