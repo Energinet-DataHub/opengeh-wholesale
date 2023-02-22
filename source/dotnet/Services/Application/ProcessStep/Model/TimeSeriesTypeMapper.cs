@@ -28,4 +28,15 @@ public static class TimeSeriesTypeMapper
             _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
         };
     }
+
+    public static Contracts.TimeSeriesType Map(TimeSeriesType timeSeriesType)
+    {
+        return timeSeriesType switch
+        {
+            TimeSeriesType.NonProfiledConsumption => Contracts.TimeSeriesType.NonProfiledConsumption,
+            TimeSeriesType.FlexConsumption => Contracts.TimeSeriesType.FlexConsumption,
+            TimeSeriesType.Production => Contracts.TimeSeriesType.Production,
+            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
+        };
+    }
 }

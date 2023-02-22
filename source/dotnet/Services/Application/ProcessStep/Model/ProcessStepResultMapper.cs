@@ -24,7 +24,7 @@ public class ProcessStepResultMapper : IProcessStepResultMapper
         ArgumentNullException.ThrowIfNull(processStepResult);
 
         return new ProcessStepResultDto(
-            ProcessStepMeteringPointType.Production,
+            TimeSeriesTypeMapper.Map(processStepResult.TimeSeriesType),
             processStepResult.Sum,
             processStepResult.Min,
             processStepResult.Max,
