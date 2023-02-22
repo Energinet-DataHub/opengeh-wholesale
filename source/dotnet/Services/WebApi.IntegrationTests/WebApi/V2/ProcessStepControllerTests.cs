@@ -19,7 +19,6 @@ using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 using FluentAssertions;
 using Moq;
 using Xunit;

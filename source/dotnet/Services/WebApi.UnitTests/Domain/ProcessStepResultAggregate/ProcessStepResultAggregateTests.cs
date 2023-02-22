@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
 using Xunit;
@@ -20,17 +21,25 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.ProcessStepResultA
 
 public class ProcessStepResultAggregateTests
 {
-    [Fact]
-    public void Ctor_WhenNoPoints_ThrowsArgumentException()
+    [Theory]
+    [InlineAutoMoqData]
+    public void Ctor_WhenNoPoints_ThrowsArgumentException(TimeSeriesType anyTimeSeriesType)
     {
-        Assert.Throws<ArgumentException>(() => new ProcessStepResult(new TimeSeriesPoint[] { }));
+        var emptyTimeSeriesPoints = new TimeSeriesPoint[] { };
+        Assert.Throws<ArgumentException>(() => new ProcessStepResult(anyTimeSeriesType, emptyTimeSeriesPoints));
     }
 
     [Theory]
     [MemberData(nameof(Data))]
     public void CalculatedProperties_ReturnsExpectedValue(List<TimeSeriesPoint> points, decimal expectedMin, decimal expectedMax, decimal expectedSum)
     {
-        var sut = new ProcessStepResult(points.ToArray());
+        // Arrange
+        var anyTimeSeriesType = TimeSeriesType.Production;
+
+        // Act
+        var sut = new ProcessStepResult(anyTimeSeriesType, points.ToArray());
+
+        // Assert
         sut.Min.Should().Be(expectedMin);
         sut.Max.Should().Be(expectedMax);
         sut.Sum.Should().Be(expectedSum);
