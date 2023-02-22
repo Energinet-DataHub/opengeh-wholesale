@@ -94,6 +94,8 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
             .otherwise("UNKNOWN"),
         )
     )
+    timeseries_points_df = _map_cim_quality_to_wholesale_quality(timeseries_points_df)
+
     metering_points_periods_df = (
         spark.read.option("mode", "FAILFAST")
         .format("delta")
@@ -126,6 +128,30 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.time_zone,
+    )
+
+
+def _map_cim_quality_to_wholesale_quality(timeseries_point_df: DataFrame) -> DataFrame:
+    "Map input CIM quality names to wholesale quality names"
+    timeseries_point_df = timeseries_point_df.withColumn(
+        Colname.quality,
+        F.when(
+            F.col(Colname.quality) == MigratedTimeSeriesQuality.missing.value,
+            TimeSeriesQuality.missing.value,
+        )
+        .when(
+            F.col(Colname.quality) == MigratedTimeSeriesQuality.estimated.value,
+            TimeSeriesQuality.estimated.value,
+        )
+        .when(
+            F.col(Colname.quality) == MigratedTimeSeriesQuality.measured.value,
+            TimeSeriesQuality.measured.value,
+        )
+        .when(
+            F.col(Colname.quality) == MigratedTimeSeriesQuality.calculated.value,
+            TimeSeriesQuality.calculated.value,
+        )
+        .otherwise("UNKNOWN"),
     )
 
 
