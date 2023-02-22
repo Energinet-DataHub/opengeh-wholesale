@@ -15,17 +15,19 @@
 using System.Net;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 using FluentAssertions;
+using Microsoft.OpenApi.Readers;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V2;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 
-public class SwaggerTests : WebApiTestBase
+public class OpenApiSpecificationTests : WebApiTestBase
 {
-    public SwaggerTests(
+    private const string OpenApiSpecUrl = "/swagger/v3/swagger.json";
+
+    public OpenApiSpecificationTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
@@ -36,11 +38,8 @@ public class SwaggerTests : WebApiTestBase
     [Fact]
     public async Task Given_WebAPI_When_GettingOpenApiSpec_Then_ReturnsSpecificationInJson()
     {
-        // Arrange
-        const string expectedOpenApiSpecUrl = "/swagger/v2/swagger.json";
-
         // Act
-        var actualResponse = await Client.GetAsync(expectedOpenApiSpecUrl);
+        var actualResponse = await Client.GetAsync(OpenApiSpecUrl);
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -48,5 +47,28 @@ public class SwaggerTests : WebApiTestBase
         var actualContent = await actualResponse.Content.ReadAsStringAsync();
         var actualContentJObject = JObject.Parse(actualContent);
         actualContentJObject.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task All_Endpoints_Have_MediaType_ApplicationJson()
+    {
+        // Act
+        var stream = await Client.GetStreamAsync(OpenApiSpecUrl);
+
+        // Assert
+        var openApiDocument = new OpenApiStreamReader().Read(stream, out _);
+        foreach (var path in openApiDocument.Paths)
+        {
+            foreach (var operation in path.Value.Operations)
+            {
+                foreach (var response in operation.Value.Responses)
+                {
+                    foreach (var content in response.Value.Content)
+                    {
+                        content.Key.Should().Be("application/json");
+                    }
+                }
+            }
+        }
     }
 }
