@@ -22,8 +22,7 @@ from package.codelists import MarketRole, TimeSeriesType, Grouping
 from package.db_logging import debug
 from package.file_writers.actors_writer import ActorsWriter
 from package.file_writers.basis_data_writer import BasisDataWriter
-from package.file_writers.process_step_result_writer import \
-    ProcessStepResultWriter
+from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from package.shared.data_classes import Metadata
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, explode, expr
@@ -149,11 +148,6 @@ def _calculate_non_profiled_consumption(
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.BALANCE_RESPONSIBLE_PARTY,
         Grouping.brp_per_ga,
-    )
-
-    # write actors list to datalake
-    actors_writer.write(
-        consumption_per_ga_and_brp_and_es, TimeSeriesType.NON_PROFILED_CONSUMPTION
     )
 
     # write actors list to datalake

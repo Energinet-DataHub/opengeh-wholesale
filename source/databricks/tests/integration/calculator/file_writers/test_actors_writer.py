@@ -63,22 +63,21 @@ def _create_result_row(
 
 def _get_gln_from_actors_file(
     output_path: str, batch_id: str, grid_area: str, time_series_type: TimeSeriesType
-) -> list[str]:
+) -> tuple[list[str], list[str]]:
     actors_path = infra.get_actors_file_relative_path(
         batch_id, grid_area, time_series_type
     )
     actors_json = find_file(output_path, f"{actors_path}/part-*.json")
 
-    gln = []
+    es_gln = []
+    blr_gln = []
     with open(actors_json, "r") as json_file:
         for line in json_file:
             json_data = json.loads(line)
-            es_gln = json_data["energy_supplier_gln"]
-            blr_gln = json_data["balance_responsible_gln"]
-            gln.append([es_gln, blr_gln])
+            es_gln.append(json_data["energy_supplier_gln"])
+            blr_gln.append(json_data["balance_responsible_gln"])
 
-    print(gln)
-    return gln
+    return es_gln, blr_gln
 
 
 def test__write__actors_file_has_expected_gln(
@@ -87,9 +86,9 @@ def test__write__actors_file_has_expected_gln(
     # Arrange
     output_path = str(tmpdir)
     expected_es_gln_805 = ["123", "234"]
-    expected_blr_gln_805 = ["321", "321"]
+    expected_brp_gln_805 = ["321", "321"]
     expected_es_gln_806 = ["123", "345"]
-    expected_blr_gln_806 = ["321", "543"]
+    expected_brp_gln_806 = ["321", "543"]
     time_series_type = TimeSeriesType.NON_PROFILED_CONSUMPTION
 
     rows = []
@@ -97,28 +96,28 @@ def test__write__actors_file_has_expected_gln(
         _create_result_row(
             grid_area="805",
             energy_supplier_id=expected_es_gln_805[0],
-            balance_responsible_id=expected_blr_gln_805[0],
+            balance_responsible_id=expected_brp_gln_805[0],
         )
     )
     rows.append(
         _create_result_row(
             grid_area="805",
             energy_supplier_id=expected_es_gln_805[1],
-            balance_responsible_id=expected_blr_gln_805[1],
+            balance_responsible_id=expected_brp_gln_805[1],
         )
     )
     rows.append(
         _create_result_row(
             grid_area="806",
             energy_supplier_id=expected_es_gln_806[0],
-            balance_responsible_id=expected_blr_gln_806[0],
+            balance_responsible_id=expected_brp_gln_806[0],
         )
     )
     rows.append(
         _create_result_row(
             grid_area="806",
             energy_supplier_id=expected_es_gln_806[1],
-            balance_responsible_id=expected_blr_gln_806[1],
+            balance_responsible_id=expected_brp_gln_806[1],
         )
     )
     result_df = spark.createDataFrame(rows)
@@ -129,19 +128,28 @@ def test__write__actors_file_has_expected_gln(
     sut.write(result_df, time_series_type)
 
     # Assert
-    actual_gln_805 = _get_gln_from_actors_file(
+    actual_es_gln_805, actual_brp_gln_805 = _get_gln_from_actors_file(
         output_path, DEFAULT_BATCH_ID, "805", time_series_type
     )
-    actual_gln_806 = _get_gln_from_actors_file(
+    actual_es_gln_806, actual_brp_gln_806 = _get_gln_from_actors_file(
         output_path, DEFAULT_BATCH_ID, "806", time_series_type
     )
 
-    assert len(actual_gln_805) == len(expected_es_gln_805) and len(actual_gln_806) == len(
-        expected_es_gln_806
-    )
-    assert set(actual_gln_805) == set(expected_gln_805) and set(actual_gln_806) == set(
-        expected_gln_806
-    )
+    # assert es
+    assert len(actual_es_gln_805) == len(expected_es_gln_805) and len(
+        actual_es_gln_806
+    ) == len(expected_es_gln_806)
+    assert set(actual_es_gln_805) == set(expected_es_gln_805) and set(
+        actual_es_gln_806
+    ) == set(expected_es_gln_806)
+
+    # assert brp
+    assert len(actual_brp_gln_805) == len(expected_brp_gln_805) and len(
+        actual_brp_gln_806
+    ) == len(expected_brp_gln_806)
+    assert set(actual_brp_gln_805) == set(expected_brp_gln_805) and set(
+        actual_brp_gln_806
+    ) == set(expected_brp_gln_806)
 
 
 def test__write_per_ga_per_actor__actors_file_path_matches_contract(
