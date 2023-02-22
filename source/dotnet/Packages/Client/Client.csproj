@@ -96,9 +96,6 @@ limitations under the License.
     <Compile Include="..\..\Contracts\ProcessStepActorsRequest.cs">
       <Link>Dtos\ProcessStepActorsRequest.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
-      <Link>Dtos\ProcessStepMeteringPointType.cs</Link>
-    </Compile>
     <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
       <Link>Dtos\ProcessStepResultDto.cs</Link>
     </Compile>

@@ -1,8 +1,13 @@
 # Wholesale Client Package Release notes
 
-## Version 5.0.9
+## Version 5.0.10
 
 Functionality to also filter by period, grid areas and execution state in batch searches has been added.
+
+## Version 5.0.9
+
+Breaking bug fix. `ProcessStepResultDto` now has a `TimeSeriesType` property instead of a `ProcessStepMeteringPointType` property.
+The latter type has been removed.
 
 ## Version 5.0.8
 

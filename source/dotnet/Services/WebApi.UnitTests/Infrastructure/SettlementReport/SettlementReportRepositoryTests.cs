@@ -20,7 +20,6 @@ using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
-using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
@@ -205,7 +204,7 @@ public class SettlementReportRepositoryTests
             actorRepositoryMock.Object);
 
         processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, null, null))
-            .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
+            .ReturnsAsync(new ProcessStepResult(TimeSeriesType.Production, new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         // Act
         var actual = await sut.GetResultAsync(

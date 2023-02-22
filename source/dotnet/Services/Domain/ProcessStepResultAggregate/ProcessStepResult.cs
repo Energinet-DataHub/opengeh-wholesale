@@ -19,11 +19,12 @@ namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 /// </summary>
 public sealed class ProcessStepResult
 {
-    public ProcessStepResult(TimeSeriesPoint[] timeSeriesPoints)
+    public ProcessStepResult(TimeSeriesType timeSeriesType, TimeSeriesPoint[] timeSeriesPoints)
     {
         if (timeSeriesPoints.Length == 0)
             throw new ArgumentException("Time series points empty");
 
+        TimeSeriesType = timeSeriesType;
         TimeSeriesPoints = timeSeriesPoints;
         Min = timeSeriesPoints.Min(point => point.Quantity);
         Max = timeSeriesPoints.Max(point => point.Quantity);
@@ -35,6 +36,9 @@ public sealed class ProcessStepResult
     public decimal Min { get; }
 
     public decimal Max { get; }
+
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local - setter used in test
+    public TimeSeriesType TimeSeriesType { get; private set; }
 
     public TimeSeriesPoint[] TimeSeriesPoints { get; }
 }
