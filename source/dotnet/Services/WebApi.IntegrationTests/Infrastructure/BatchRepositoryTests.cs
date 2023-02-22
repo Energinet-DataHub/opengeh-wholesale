@@ -104,16 +104,8 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         actual.ExecutionTimeStart.Should().NotBeNull();
     }
 
-    [Theory]
-    [InlineData("2021-12-31T23:00Z", "2022-01-31T23:00Z", true)]
-    [InlineData("2022-01-01T23:00Z", "2022-01-30T23:00Z", true)]
-    [InlineData("2022-01-30T23:00Z", "2022-02-02T23:00Z", true)]
-    [InlineData("2021-12-30T23:00Z", "2022-02-01T23:00Z", true)]
-    [InlineData("2021-12-25T23:00Z", "2022-01-01T23:00Z", true)]
-    [InlineData("2021-12-25T23:00Z", "2021-12-31T23:00Z", false)]
-    [InlineData("2021-12-21T23:00Z", "2021-12-29T23:00Z", false)]
-    [InlineData("2022-01-31T23:00Z", "2022-02-01T23:00Z", false)]
-    public async Task GetAsync_FiltersOnPeriod(DateTimeOffset start, DateTimeOffset end, bool expected)
+    [Fact]
+    public async Task SearchAsync_HasGridAreaFilter_FiltersAsExpected()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
@@ -124,10 +116,67 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         await writeContext.SaveChangesAsync();
 
         // Act
-        var actual = await sut.GetAsync(
+        var actual = await sut.SearchAsync(
+            new[] { new GridAreaCode("004") },
+            Array.Empty<BatchExecutionState>(),
+            null,
+            null,
+            null,
+            null);
+
+        // Assert
+        actual.Should().Contain(batch);
+    }
+
+    [Fact]
+    public async Task SearchAsync_HasBatchExecutionStateFilter_FiltersAsExpected()
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
+        var batch = CreateBatch(someGridAreasIds);
+        var sut = new BatchRepository(writeContext);
+        await sut.AddAsync(batch);
+        await writeContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.SearchAsync(
+            Array.Empty<GridAreaCode>(),
             new[] { BatchExecutionState.Created },
-            Instant.FromUtc(2000, 1, 1, 0, 0),
-            Instant.FromUtc(2100, 1, 1, 0, 0),
+            null,
+            null,
+            null,
+            null);
+
+        // Assert
+        actual.Should().Contain(batch);
+    }
+
+    [Theory]
+    [InlineData("2021-12-31T23:00Z", "2022-01-31T23:00Z", true)] // Period overlaps batch interval
+    [InlineData("2022-01-01T23:00Z", "2022-01-30T23:00Z", true)] // Period inside of batch interval
+    [InlineData("2022-01-30T23:00Z", "2022-02-02T23:00Z", true)] // Period overlaps end of batch interval
+    [InlineData("2021-12-30T23:00Z", "2022-02-01T23:00Z", true)] // Period overlaps entire batch interval
+    [InlineData("2021-12-25T23:00Z", "2022-01-01T23:00Z", true)] // Period overlaps start of batch interval
+    [InlineData("2021-12-25T23:00Z", "2021-12-31T23:00Z", false)] // Period before start of batch interval, exclude batch start
+    [InlineData("2021-12-21T23:00Z", "2021-12-29T23:00Z", false)] // Period before start of batch interval, complete miss
+    [InlineData("2022-01-31T23:00Z", "2022-02-01T23:00Z", false)] // Period past end of batch interval, exclude batch end
+    public async Task SearchAsync_HasPeriodFilter_FiltersAsExpected(DateTimeOffset start, DateTimeOffset end, bool expected)
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
+        var batch = CreateBatch(someGridAreasIds);
+        var sut = new BatchRepository(writeContext);
+        await sut.AddAsync(batch);
+        await writeContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.SearchAsync(
+            Array.Empty<GridAreaCode>(),
+            Array.Empty<BatchExecutionState>(),
+            null,
+            null,
             Instant.FromDateTimeOffset(start),
             Instant.FromDateTimeOffset(end));
 

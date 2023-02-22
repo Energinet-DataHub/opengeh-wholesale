@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
@@ -131,32 +132,29 @@ public class BatchApplicationServiceTests
     {
         // Arrange
         var noBatches = new List<Batch>();
-        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<IReadOnlyCollection<BatchExecutionState>>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
-        var batchSearchDto = new BatchSearchDtoV2(DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, BatchState.Completed);
+        batchRepositoryMock
+            .Setup(x => x.SearchAsync(
+                Array.Empty<GridAreaCode>(),
+                Array.Empty<BatchExecutionState>(),
+                null,
+                null,
+                null,
+                null))
+            .ReturnsAsync(noBatches);
+
+        var batchSearchDto = new BatchSearchDtoV2(
+            Array.Empty<string>(),
+            null,
+            null,
+            null,
+            null,
+            null);
 
         // Act
         var searchResult = await sut.SearchAsync(batchSearchDto);
 
         // Assert
         searchResult.Count().Should().Be(0);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task SearchV2Async_NoMatchingBatches_DoesNotThrowException(
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-        BatchApplicationService sut)
-    {
-        // Arrange
-        var noBatches = new List<Batch>();
-        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<IReadOnlyCollection<BatchExecutionState>>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(noBatches);
-
-        // Act
-        var batchSearchDto = new BatchSearchDtoV2(DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, BatchState.Completed);
-        await sut.SearchAsync(batchSearchDto);
-
-        // Assert
-        // --- If we had an exception the test will fail - so no need for more assert
     }
 
     [Theory]
@@ -173,10 +171,26 @@ public class BatchApplicationServiceTests
             new BatchBuilder().Build(),
             new BatchBuilder().Build(),
         };
-        batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<IReadOnlyCollection<BatchExecutionState>>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>(), It.IsAny<Instant>())).ReturnsAsync(batches);
+
+        batchRepositoryMock
+            .Setup(x => x.SearchAsync(
+                Array.Empty<GridAreaCode>(),
+                Array.Empty<BatchExecutionState>(),
+                null,
+                null,
+                null,
+                null))
+            .ReturnsAsync(batches);
+
+        var batchSearchDto = new BatchSearchDtoV2(
+            Array.Empty<string>(),
+            null,
+            null,
+            null,
+            null,
+            null);
 
         // Act
-        var batchSearchDto = new BatchSearchDtoV2(DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, DateTimeOffset.Now, BatchState.Completed);
         var searchResult = await sut.SearchAsync(batchSearchDto);
 
         // Assert

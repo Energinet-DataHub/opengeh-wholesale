@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
@@ -63,22 +64,22 @@ public class BatchRepository : IBatchRepository
             .ConfigureAwait(false);
     }
 
-    public Task<List<Batch>> GetAsync(
-        IReadOnlyCollection<BatchExecutionState> executionStateFilter,
-        Instant minExecutionTimeStart,
-        Instant maxExecutionTimeStart,
-        Instant periodStart,
-        Instant periodEnd)
+    public Task<List<Batch>> SearchAsync(
+        IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
+        IReadOnlyCollection<BatchExecutionState> filterByExecutionState,
+        Instant? minExecutionTimeStart,
+        Instant? maxExecutionTimeStart,
+        Instant? periodStart,
+        Instant? periodEnd)
     {
         var query = _context
             .Batches
-            .Where(b => b.ExecutionTimeStart >= minExecutionTimeStart && b.ExecutionTimeStart <= maxExecutionTimeStart)
-            .Where(b => b.PeriodStart < periodEnd && b.PeriodEnd > periodStart);
-
-        if (executionStateFilter.Any())
-        {
-            query = query.Where(b => executionStateFilter.Contains(b.ExecutionState));
-        }
+            .Where(b => b.ExecutionTimeStart >= minExecutionTimeStart)
+            .Where(b => b.ExecutionTimeStart <= maxExecutionTimeStart)
+            .Where(b => b.PeriodStart < periodEnd)
+            .Where(b => b.PeriodEnd > periodStart)
+            .Where(b => filterByExecutionState.Count == 0 || filterByExecutionState.Contains(b.ExecutionState))
+            .Where(b => filterByGridAreaCode.Count == 0 || b.GridAreaCodes.Any(filterByGridAreaCode.Contains));
 
         return query.ToListAsync();
     }

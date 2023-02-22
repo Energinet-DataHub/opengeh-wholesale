@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -34,10 +35,11 @@ public interface IBatchRepository
 
     Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart);
 
-    Task<List<Batch>> GetAsync(
-        IReadOnlyCollection<BatchExecutionState> executionStateFilter,
-        Instant minExecutionTimeStart,
-        Instant maxExecutionTimeStart,
-        Instant periodStart,
-        Instant periodEnd);
+    Task<List<Batch>> SearchAsync(
+        IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
+        IReadOnlyCollection<BatchExecutionState> filterByExecutionState,
+        Instant? minExecutionTimeStart,
+        Instant? maxExecutionTimeStart,
+        Instant? periodStart,
+        Instant? periodEnd);
 }
