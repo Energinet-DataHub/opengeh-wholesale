@@ -24,10 +24,10 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 public class ProcessStepResultFactoryTests
 {
     [Theory]
-    [InlineAutoMoqData("A02", "missing")]
-    [InlineAutoMoqData("A03", "estimated")]
-    [InlineAutoMoqData("A04", "measured")]
-    [InlineAutoMoqData("A06", "calculated")]
+    [InlineAutoMoqData("missing", "missing")]
+    [InlineAutoMoqData("estimated", "estimated")]
+    [InlineAutoMoqData("measured", "measured")]
+    [InlineAutoMoqData("calculated", "calculated")]
     public void MapQuality_ReturnsExpectedQuality(string inputQuality, string expectedQuality)
     {
         var actualQuality = ProcessStepResultFactory.MapQuality(inputQuality);
@@ -51,7 +51,7 @@ public class ProcessStepResultFactoryTests
     {
         // Arrange
         var point = resultDto.TimeSeriesPoints.First();
-        point.SetPrivateProperty(p => p.Quality, "A02");
+        point.SetPrivateProperty(p => p.Quality, "missing");
         resultDto = resultDto with { TimeSeriesPoints = new[] { point } };
         var expected = new ProcessStepResultDto(
             resultDto.Sum,

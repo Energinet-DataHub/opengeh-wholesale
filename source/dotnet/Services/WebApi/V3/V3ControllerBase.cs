@@ -18,6 +18,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3;
 
 [ApiController]
 [ApiVersion(Version)]
+[Produces("application/json")]
 public abstract class V3ControllerBase : ControllerBase
 {
     protected const string Version = "3.0";

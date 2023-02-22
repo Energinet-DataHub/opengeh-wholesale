@@ -34,10 +34,10 @@ public class ProcessStepResultFactory : IProcessStepResultFactory
     public static string MapQuality(string quality) =>
         quality switch
         {
-            "A02" => TimeSeriesPointQuality.Missing.ToString().ToLower(),
-            "A03" => TimeSeriesPointQuality.Estimated.ToString().ToLower(),
-            "A04" => TimeSeriesPointQuality.Measured.ToString().ToLower(),
-            "A06" => TimeSeriesPointQuality.Calculated.ToString().ToLower(),
+            "missing" => TimeSeriesPointQuality.Missing.ToString().ToLower(),
+            "estimated" => TimeSeriesPointQuality.Estimated.ToString().ToLower(),
+            "measured" => TimeSeriesPointQuality.Measured.ToString().ToLower(),
+            "calculated" => TimeSeriesPointQuality.Calculated.ToString().ToLower(),
             _ => throw new ArgumentException($"No mapping defined for quantity quality '{quality}'"),
         };
 
