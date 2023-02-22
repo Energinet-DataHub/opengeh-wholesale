@@ -107,7 +107,9 @@ def test_data_factory(
     return factory
 
 
-def test_production_calculation_per_ga_and_es(test_data_factory):
+def test_production_calculation_per_ga_and_es(
+    test_data_factory: Callable[..., DataFrame]
+) -> None:
     results = {}
     results[
         ResultKeyName.production_with_system_correction_and_grid_loss

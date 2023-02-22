@@ -17,9 +17,8 @@ from datetime import datetime
 import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
 from package.codelists import MeteringPointResolution
-from package.codelists.market_role import MarketRole
-from package.codelists.time_series_type import TimeSeriesType
 from package.constants import Colname
+from package.codelists import MarketRole, TimeSeriesType, Grouping
 from package.db_logging import debug
 from package.file_writers.actors_writer import ActorsWriter
 from package.file_writers.basis_data_writer import BasisDataWriter
@@ -110,7 +109,9 @@ def _calculate_production(
         production_per_per_ga_and_brp_and_es, metadata
     )
 
-    result_writer.write_per_ga(production_per_ga, TimeSeriesType.PRODUCTION)
+    result_writer.write_per_ga(
+        production_per_ga, TimeSeriesType.PRODUCTION, Grouping.total_ga
+    )
 
 
 def _calculate_non_profiled_consumption(
@@ -135,6 +136,7 @@ def _calculate_non_profiled_consumption(
         consumption_per_ga_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.ENERGY_SUPPLIER,
+        Grouping.es_per_ga,
     )
 
     # Non-profiled consumption per balance responsible
@@ -146,6 +148,7 @@ def _calculate_non_profiled_consumption(
         consumption_per_ga_and_brp,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         MarketRole.BALANCE_RESPONSIBLE_PARTY,
+        Grouping.brp_per_ga,
     )
 
     # write actors list to datalake

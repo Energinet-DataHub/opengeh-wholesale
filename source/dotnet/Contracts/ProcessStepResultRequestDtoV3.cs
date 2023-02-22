@@ -12,16 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+namespace Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-
-public interface IProcessStepResultRepository
-{
-    Task<ProcessStepResult> GetAsync(
-        Guid batchId,
-        GridAreaCode gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln);
-}
+public sealed record ProcessStepResultRequestDtoV3(Guid BatchId, string GridAreaCode, TimeSeriesType TimeSeriesType, string? EnergySupplierGln, string? BalanceResponsiblePartyGln);
