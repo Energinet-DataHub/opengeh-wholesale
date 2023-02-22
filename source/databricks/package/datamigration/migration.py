@@ -59,7 +59,6 @@ def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -
 
 
 def _migrate_data_lake(storage_account_name: str, storage_account_key: str) -> None:
-
     spark = initialize_spark(
         storage_account_name,
         storage_account_key,

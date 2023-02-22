@@ -25,7 +25,6 @@ from package.datamigration.migration_script_args import MigrationScriptArgs
 def test__apply__directory_client_contructed_with_correct_arguments(
     mock_directory_client: Mock,
 ) -> None:
-
     # Arrange
     sut = get_migration_script()
     migration_args = MigrationScriptArgs("", "", "", ANY)
@@ -47,7 +46,6 @@ def test__apply__directory_client_contructed_with_correct_arguments(
 def test__apply__calls_rename_directory_with_correct_arguments(
     mock_directory_client: Mock,
 ) -> None:
-
     # Arrange
     sut = get_migration_script()
     migration_args = MigrationScriptArgs("", "", "", ANY)
@@ -67,7 +65,6 @@ def test__apply__calls_rename_directory_with_correct_arguments(
 def test__apply__when_source_directory_not_exist__never_call_rename_directory(
     mock_directory_client: Mock,
 ) -> None:
-
     # Arrange
     sut = get_migration_script()
     migration_args = MigrationScriptArgs("", "", "", ANY)
