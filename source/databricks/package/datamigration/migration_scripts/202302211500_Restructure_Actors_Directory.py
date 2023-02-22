@@ -42,6 +42,13 @@ def apply(args: MigrationScriptArgs) -> None:
             if directory_client.exists():
                 actors_temp_path = path.join(directory.name, "actors_temp")
 
+                # If actors_temp_path already exists we will skip this batch and go to the next
+                directory_client_temp = file_system_client.get_directory_client(
+                    directory=actors_temp_path
+                )
+                if directory_client_temp.exists():
+                    continue
+
                 rename_folder(
                     directory_client=directory_client,
                     current_directory_name=actors_path,
