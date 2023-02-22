@@ -75,7 +75,7 @@ public class ActorRepositoryTests
         var expected = calculationFilePathsContract.ActorsFile;
 
         // Act
-        var (directory, extension) = ActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType, MarketRole.EnergySupplier);
+        var (directory, extension) = ActorRepository.GetActorListFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), timeSeriesType);
 
         // Assert
         extension.Should().Be(expected.Extension);

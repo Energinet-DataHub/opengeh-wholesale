@@ -28,7 +28,7 @@ def test__apply__directory_client_contructed_with_correct_arguments(
 
     # Arrange
     sut = get_migration_script()
-    migration_args = MigrationScriptArgs("", "", ANY)
+    migration_args = MigrationScriptArgs("", "", "", ANY)
     source_container = "wholesale"
     source_directory = "results"
 
@@ -50,7 +50,7 @@ def test__apply__calls_rename_directory_with_correct_arguments(
 
     # Arrange
     sut = get_migration_script()
-    migration_args = MigrationScriptArgs("", "", ANY)
+    migration_args = MigrationScriptArgs("", "", "", ANY)
 
     # Act
     sut.apply(migration_args)
@@ -70,7 +70,7 @@ def test__apply__when_source_directory_not_exist__never_call_rename_directory(
 
     # Arrange
     sut = get_migration_script()
-    migration_args = MigrationScriptArgs("", "", ANY)
+    migration_args = MigrationScriptArgs("", "", "", ANY)
     mock_directory_client.return_value.exists.return_value = False
 
     # Act
