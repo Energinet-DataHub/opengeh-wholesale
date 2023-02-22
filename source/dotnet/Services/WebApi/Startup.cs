@@ -59,7 +59,7 @@ public class Startup
         });
         services.ConfigureOptions<ConfigureSwaggerOptions>();
 
-        services.AddJwtTokenSecurity();
+        services.AddJwtTokenSecurity(Configuration);
         services.AddCommandStack(Configuration);
         services.AddApplicationInsightsTelemetry();
         RegisterCorrelationContext(services);
@@ -104,12 +104,12 @@ public class Startup
         });
     }
 
-    private static void ConfigureHealthChecks(IServiceCollection services)
+    private void ConfigureHealthChecks(IServiceCollection services)
     {
         var serviceBusConnectionString =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
+            Configuration[ConfigurationSettingNames.ServiceBusManageConnectionString];
         var domainEventsTopicName =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+            Configuration[ConfigurationSettingNames.DomainEventsTopicName];
 
         services.AddHealthChecks()
             .AddLiveCheck()
@@ -118,8 +118,8 @@ public class Startup
             // It is, however, not easily tested so for now we stick with testing resource existence
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
-                EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
-                EnvironmentSettingNames.CalculationStorageContainerName.Val())
+                Configuration[ConfigurationSettingNames.CalculationStorageConnectionString],
+                Configuration[ConfigurationSettingNames.CalculationStorageContainerName])
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,
