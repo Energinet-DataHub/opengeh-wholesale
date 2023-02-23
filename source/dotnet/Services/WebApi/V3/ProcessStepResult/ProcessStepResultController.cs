@@ -41,39 +41,32 @@ public class ProcessStepResultController : V3ControllerBase
     }
 
     /// <summary>
-    /// Get calculation result for a specific actor by GLN.
+    /// Calculation results provided by the following method:
+    /// When only 'energySupplierGln' is provided, a result is returned for a energy supplier for the requested grid area, for the specified time series type.
+    /// if only a 'balanceResponsiblePartyGln' is provided, a result is returned for a balance responsible party for the requested grid area, for the specified time series type.
+    /// if both 'balanceResponsiblePartyGln' and 'energySupplierGln' is provided, a result is returned for the balance responsible party's energy supplier for requested grid area, for the specified time series type.
+    /// if no 'balanceResponsiblePartyGln' and 'energySupplierGln' is provided, a result is returned for the requested grid area, for the specified time series type.
     /// </summary>
+    /// <param name="batchId">The id to identify the batch the request is for</param>
+    /// <param name="gridAreaCode">The grid area the requested result is in</param>
+    /// <param name="timeSeriesType">The time series type the result has</param>
+    /// <param name="energySupplierGln">The GLN for the energy supplier the requested result</param>
+    /// <param name="balanceResponsiblePartyGln">The GLN for the balance responsible party the requested result</param>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpGet("{gln}")]
-    public async Task<ProcessStepResultDto> GetForActorAsync(
+    [HttpGet]
+    public async Task<ProcessStepResultDto> GetResultAsync(
         [FromRoute] Guid batchId,
         [FromRoute] string gridAreaCode,
         [FromRoute] TimeSeriesType timeSeriesType,
-        [FromQuery] string gln)
+        [FromQuery] string? energySupplierGln,
+        [FromRoute] string? balanceResponsiblePartyGln)
     {
-        var stepResult = await _processStepApplicationService.GetResultAsync(batchId, gridAreaCode, timeSeriesType, gln).ConfigureAwait(false);
-        var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
-
-        return _processStepResultFactory.Create(stepResult, batch);
-    }
-
-    /// <summary>
-    /// Get calculation result for a grid area.
-    /// </summary>
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpGet]
-    public async Task<ProcessStepResultDto> GetForActorAsync(
-        [FromRoute] Guid batchId,
-        [FromRoute] string gridAreaCode,
-        [FromRoute] TimeSeriesType timeSeriesType)
-    {
-        if (timeSeriesType != TimeSeriesType.Production) throw new NotImplementedException();
-
         var stepResult = await _processStepApplicationService.GetResultAsync(
             batchId,
             gridAreaCode,
             timeSeriesType,
-            "grid_area").ConfigureAwait(false);
+            energySupplierGln,
+            balanceResponsiblePartyGln).ConfigureAwait(false);
 
         var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
 

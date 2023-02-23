@@ -37,6 +37,8 @@ public class CalculationFilePathsContract
 
     public ContractFile ResultFile { get; set; } = null!;
 
+    public ContractFile ResultFileForTotalGridArea { get; set; } = null!;
+
     public ContractFile ActorsFile { get; set; } = null!;
 
     public static async Task<CalculationFilePathsContract> GetAsync()

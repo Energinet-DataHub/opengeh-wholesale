@@ -34,13 +34,14 @@ public class ProcessStepV22Controller : ControllerBase
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
     [ApiVersion("2.2")]
-    public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
+    public async Task<ProcessStepResultDto> GetAsync([FromBody] ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2)
     {
         var resultDto = await _processStepApplicationService.GetResultAsync(
             processStepResultRequestDtoV2.BatchId,
             processStepResultRequestDtoV2.GridAreaCode,
             processStepResultRequestDtoV2.TimeSeriesType,
-            processStepResultRequestDtoV2.Gln).ConfigureAwait(false);
-        return Ok(resultDto);
+            processStepResultRequestDtoV2.Gln,
+            null).ConfigureAwait(false); // This means we ONLY can return results for energy suppliers.
+        return resultDto;
     }
 }

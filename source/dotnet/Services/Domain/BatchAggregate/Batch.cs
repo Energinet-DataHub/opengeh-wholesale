@@ -33,7 +33,7 @@ public class Batch
     {
         _gridAreaCodes = gridAreaCodes.ToList();
         if (!IsValid(_gridAreaCodes, periodStart, periodEnd, dateTimeZone, out var errorMessages))
-            throw new ArgumentException(string.Join(" ", errorMessages));
+            throw new BusinessValidationException(string.Join(" ", errorMessages));
 
         ExecutionState = BatchExecutionState.Created;
         ProcessType = processType;
@@ -177,7 +177,7 @@ public class Batch
 
         if (executionTimeEnd < ExecutionTimeStart)
         {
-            throw new ArgumentException(
+            throw new BusinessValidationException(
                 $"Execution time end '{executionTimeEnd}' cannot be before execution time start '{ExecutionTimeStart}'");
         }
 
@@ -206,6 +206,6 @@ public class Batch
 
     private void ThrowInvalidStateTransitionException(BatchExecutionState currentState, BatchExecutionState desiredState)
     {
-        throw new InvalidOperationException($"Cannot change batchExecutionState from {currentState} to {desiredState}");
+        throw new BusinessValidationException($"Cannot change batchExecutionState from {currentState} to {desiredState}");
     }
 }

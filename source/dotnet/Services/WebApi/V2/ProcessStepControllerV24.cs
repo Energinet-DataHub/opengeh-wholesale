@@ -12,41 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.Client;
+namespace Energinet.DataHub.Wholesale.WebApi.V2;
 
-public interface IWholesaleClient
+[ApiController]
+[Route("v2.4/ProcessStepResult")]
+public class ProcessStepV24Controller : ControllerBase
 {
-    /// <summary>
-    /// Start processes by creating a batch request.
-    /// Returns the batch ID
-    /// In case of errors an exception is thrown.
-    /// </summary>
-    Task<Guid> CreateBatchAsync(BatchRequestDto wholesaleBatchRequestDto);
+    private readonly IProcessStepApplicationService _processStepApplicationService;
+
+    public ProcessStepV24Controller(IProcessStepApplicationService processStepApplicationService)
+    {
+        _processStepApplicationService = processStepApplicationService;
+    }
 
     /// <summary>
-    /// Returns batches matching the search criteria.
-    /// In case of errors an exception is thrown.
-    /// </summary>
-    Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(BatchSearchDto batchSearchDto);
-
-    Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId);
-
-    Task<BatchDtoV2?> GetBatchAsync(Guid batchId);
-
-    Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);
-
-    Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDtoV2 processStepResultRequestDtoV2);
-
-    Task<WholesaleActorDto[]?> GetProcessStepActorsAsync(ProcessStepActorsRequest processStepActorsRequest);
-
-    /// <summary>
-    /// Process step results provided by the following method:
+    /// Calculation results provided by the following method:
     /// When only 'EnergySupplierGln' is provided, a result is returned for a energy supplier for the requested grid area, for the specified time series type.
     /// if only a 'BalanceResponsiblePartyGln' is provided, a result is returned for a balance responsible party for the requested grid area, for the specified time series type.
     /// if both 'BalanceResponsiblePartyGln' and 'EnergySupplierGln' is provided, a result is returned for the balance responsible party's energy supplier for requested grid area, for the specified time series type.
     /// if no 'BalanceResponsiblePartyGln' and 'EnergySupplierGln' is provided, a result is returned for the requested grid area, for the specified time series type.
     /// </summary>
-    Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDtoV3 processStepResultRequestDtoV3);
+    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
+    [HttpPost]
+    [ApiVersion("2.4")]
+    public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDtoV3 processStepResultRequestDtoV3)
+    {
+        var resultDto = await _processStepApplicationService.GetResultAsync(
+            processStepResultRequestDtoV3.BatchId,
+            processStepResultRequestDtoV3.GridAreaCode,
+            processStepResultRequestDtoV3.TimeSeriesType,
+            processStepResultRequestDtoV3.EnergySupplierGln,
+            processStepResultRequestDtoV3.BalanceResponsiblePartyGln).ConfigureAwait(false);
+
+        return Ok(resultDto);
+    }
 }
