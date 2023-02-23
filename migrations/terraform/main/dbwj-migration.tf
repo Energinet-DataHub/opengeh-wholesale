@@ -24,6 +24,12 @@ resource "databricks_secret" "spn_app_secret" {
   scope        = databricks_secret_scope.spn_app_secret.id
 }
 
+resource "databricks_secret" "appi_instrumentation_key" {
+  key          = "appi_instrumentation_key"
+  string_value = data.azurerm_key_vault_secret.appi_instrumentation_key.value
+  scope        = databricks_secret_scope.spn_app_secret.id
+}
+
 resource "databricks_job" "this" {
   name = "Landing_To_Gold"
 
@@ -54,7 +60,7 @@ resource "databricks_job" "this" {
         "spark.master": "local[*, 4]"
       }
       spark_env_vars = {
-        "APPI_INSTRUMENTATION_KEY" = data.azurerm_key_vault_secret.appi_instrumentation_key.value
+        "APPI_INSTRUMENTATION_KEY" = databricks_secret.appi_instrumentation_key.config_reference
       }
     }
   }
