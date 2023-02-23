@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .result_key_name import ResultKeyName
-from .colname import Colname
-from .partition_key_name import PartitionKeyName
+
+class PartitionKeyName:
+    ENERGY_SUPPLIER_GLN: str = "energy_supplier_gln"
+    BALANCE_RESPONSIBLE_PARTY_GLN: str = "balance_responsible_party_gln"
+    GRID_AREA: str = "grid_area"
+    GLN: str = "gln"
