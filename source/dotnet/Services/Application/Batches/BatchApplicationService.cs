@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
@@ -77,12 +78,41 @@ public class BatchApplicationService : IBatchApplicationService
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
+    public async Task<IEnumerable<BatchDto>> SearchAsync(
+        IEnumerable<string> filterByGridAreaCodes,
+        BatchState? filterByExecutionState,
+        DateTimeOffset? minExecutionTime,
+        DateTimeOffset? maxExecutionTime,
+        DateTimeOffset? periodStart,
+        DateTimeOffset? periodEnd)
     {
-        var minExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MinExecutionTime);
-        var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
+        var executionStateFilter = filterByExecutionState switch
+        {
+            null => Array.Empty<BatchExecutionState>(),
+            BatchState.Pending => new[] { BatchExecutionState.Created, BatchExecutionState.Submitted, BatchExecutionState.Pending },
+            BatchState.Executing => new[] { BatchExecutionState.Executing },
+            BatchState.Completed => new[] { BatchExecutionState.Completed },
+            BatchState.Failed => new[] { BatchExecutionState.Failed },
+            _ => throw new ArgumentOutOfRangeException(nameof(filterByExecutionState)),
+        };
 
-        var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
+        var gridAreaFilter = filterByGridAreaCodes
+            .Select(g => new GridAreaCode(g))
+            .ToList();
+
+        var minExecutionTimeStart = ConvertToInstant(minExecutionTime);
+        var maxExecutionTimeStart = ConvertToInstant(maxExecutionTime);
+        var periodStartInstant = ConvertToInstant(periodStart);
+        var periodEndInstant = ConvertToInstant(periodEnd);
+
+        var batches = await _batchRepository
+            .SearchAsync(
+                gridAreaFilter,
+                executionStateFilter,
+                minExecutionTimeStart,
+                maxExecutionTimeStart,
+                periodStartInstant,
+                periodEndInstant)
             .ConfigureAwait(false);
 
         return batches.Select(_batchDtoMapper.Map);
@@ -92,5 +122,12 @@ public class BatchApplicationService : IBatchApplicationService
     {
         var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
         return _batchDtoMapper.Map(batch);
+    }
+
+    private static Instant? ConvertToInstant(DateTimeOffset? dateTimeOffset)
+    {
+        return dateTimeOffset == null
+            ? null
+            : Instant.FromDateTimeOffset(dateTimeOffset.Value);
     }
 }
