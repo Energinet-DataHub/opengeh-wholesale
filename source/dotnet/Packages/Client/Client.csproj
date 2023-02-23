@@ -24,7 +24,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Client</PackageId>
-    <PackageVersion>5.0.8$(VersionSuffix)</PackageVersion>
+    <PackageVersion>5.0.9$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Client</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -92,9 +92,6 @@ limitations under the License.
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepActorsRequest.cs">
       <Link>Dtos\ProcessStepActorsRequest.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
-      <Link>Dtos\ProcessStepMeteringPointType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
       <Link>Dtos\ProcessStepResultDto.cs</Link>

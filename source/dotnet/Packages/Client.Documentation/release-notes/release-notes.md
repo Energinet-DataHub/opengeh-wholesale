@@ -1,5 +1,10 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.9
+
+Breaking bug fix. `ProcessStepResultDto` now has a `TimeSeriesType` property instead of a `ProcessStepMeteringPointType` property.
+The latter type has been removed.
+
 ## Version 5.0.8
 
 Added a new `WholesaleClient.GetProcessStepResultAsync(ProcessStepResultRequestDtoV3)`
