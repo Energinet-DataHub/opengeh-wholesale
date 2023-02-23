@@ -45,7 +45,7 @@ public class ActorRepository : IActorRepository
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
         var actors = await _jsonNewlineSerializer.DeserializeAsync<Actor>(resultStream).ConfigureAwait(false);
 
-        return MapToBatchActor(actors);
+        return MapToBatchActor(actors.Distinct());
     }
 
     public static (string Directory, string Extension) GetActorListFileSpecification(
