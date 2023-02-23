@@ -3,6 +3,10 @@
       {
         "name": "energy_supplier_gln",
         "type": "string"
+      },
+      {
+        "name": "balance_responsible_gln",
+        "type": "string"
       }
     ]
   }
