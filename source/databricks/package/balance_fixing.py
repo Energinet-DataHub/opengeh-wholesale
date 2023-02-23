@@ -22,8 +22,7 @@ from package.codelists import MarketRole, TimeSeriesType, Grouping
 from package.db_logging import debug
 from package.file_writers.actors_writer import ActorsWriter
 from package.file_writers.basis_data_writer import BasisDataWriter
-from package.file_writers.process_step_result_writer import \
-    ProcessStepResultWriter
+from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from package.shared.data_classes import Metadata
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, explode, expr
@@ -111,6 +110,12 @@ def _calculate_production(
 
     result_writer.write_per_ga(
         production_per_ga, TimeSeriesType.PRODUCTION, Grouping.total_ga
+    )
+
+    result_writer.write_per_ga_per_brp_per_es(
+        production_per_per_ga_and_brp_and_es,
+        TimeSeriesType.PRODUCTION,
+        Grouping.es_per_brp_per_ga,
     )
 
 
