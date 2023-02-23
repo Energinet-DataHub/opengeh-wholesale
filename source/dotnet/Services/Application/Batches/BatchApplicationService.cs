@@ -78,38 +78,32 @@ public class BatchApplicationService : IBatchApplicationService
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto)
+    public async Task<IEnumerable<BatchDto>> SearchAsync(
+        IEnumerable<string> filterByGridAreaCodes,
+        BatchState? filterByExecutionState,
+        DateTimeOffset? minExecutionTime,
+        DateTimeOffset? maxExecutionTime,
+        DateTimeOffset? periodStart,
+        DateTimeOffset? periodEnd)
     {
-        var minExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MinExecutionTime);
-        var maxExecutionTimeStart = Instant.FromDateTimeOffset(batchSearchDto.MaxExecutionTime);
-
-        var batches = await _batchRepository.GetAsync(minExecutionTimeStart, maxExecutionTimeStart)
-            .ConfigureAwait(false);
-
-        return batches.Select(_batchDtoMapper.Map);
-    }
-
-    public async Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDtoV2 batchSearchDto)
-    {
-        var executionStateFilter = batchSearchDto.FilterByExecutionState switch
+        var executionStateFilter = filterByExecutionState switch
         {
             null => Array.Empty<BatchExecutionState>(),
             BatchState.Pending => new[] { BatchExecutionState.Created, BatchExecutionState.Submitted, BatchExecutionState.Pending },
             BatchState.Executing => new[] { BatchExecutionState.Executing },
             BatchState.Completed => new[] { BatchExecutionState.Completed },
             BatchState.Failed => new[] { BatchExecutionState.Failed },
-            _ => throw new ArgumentOutOfRangeException(nameof(batchSearchDto.FilterByExecutionState)),
+            _ => throw new ArgumentOutOfRangeException(nameof(filterByExecutionState)),
         };
 
-        var gridAreaFilter = batchSearchDto
-            .FilterByGridAreaCodes
+        var gridAreaFilter = filterByGridAreaCodes
             .Select(g => new GridAreaCode(g))
             .ToList();
 
-        var minExecutionTimeStart = ConvertToInstant(batchSearchDto.MinExecutionTime);
-        var maxExecutionTimeStart = ConvertToInstant(batchSearchDto.MaxExecutionTime);
-        var periodStartInstant = ConvertToInstant(batchSearchDto.PeriodStart);
-        var periodEndInstant = ConvertToInstant(batchSearchDto.PeriodEnd);
+        var minExecutionTimeStart = ConvertToInstant(minExecutionTime);
+        var maxExecutionTimeStart = ConvertToInstant(maxExecutionTime);
+        var periodStartInstant = ConvertToInstant(periodStart);
+        var periodEndInstant = ConvertToInstant(periodEnd);
 
         var batches = await _batchRepository
             .SearchAsync(

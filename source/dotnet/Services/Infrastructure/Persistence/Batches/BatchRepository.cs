@@ -55,16 +55,7 @@ public class BatchRepository : IBatchRepository
 
     public Task<List<Batch>> GetCompletedAsync() => GetByStateAsync(BatchExecutionState.Completed);
 
-    public async Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart)
-    {
-        return await _context
-            .Batches
-            .Where(b => b.ExecutionTimeStart >= minExecutionTimeStart && b.ExecutionTimeStart <= maxExecutionTimeStart)
-            .ToListAsync()
-            .ConfigureAwait(false);
-    }
-
-    public async Task<List<Batch>> SearchAsync(
+    public async Task<IReadOnlyCollection<Batch>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
         IReadOnlyCollection<BatchExecutionState> filterByExecutionState,
         Instant? minExecutionTimeStart,

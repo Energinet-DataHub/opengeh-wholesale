@@ -50,7 +50,14 @@ public class BatchControllerV21 : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> SearchAsync([FromBody] BatchSearchDtoV2 batchSearchDto)
     {
-        var batchesDto = await _batchApplicationService.SearchAsync(batchSearchDto).ConfigureAwait(false);
+        var batchesDto = await _batchApplicationService.SearchAsync(
+            batchSearchDto.FilterByGridAreaCodes,
+            batchSearchDto.FilterByExecutionState,
+            batchSearchDto.MinExecutionTime,
+            batchSearchDto.MaxExecutionTime,
+            batchSearchDto.PeriodStart,
+            batchSearchDto.PeriodEnd).ConfigureAwait(false);
+
         var batches = batchesDto.Select(_batchDtoV2Mapper.Map).ToList();
 
         // Subtract 1 ms from period end as it is currently the expectation of the API

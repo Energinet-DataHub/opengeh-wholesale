@@ -33,9 +33,7 @@ public interface IBatchRepository
 
     Task<List<Batch>> GetCompletedAsync();
 
-    Task<List<Batch>> GetAsync(Instant minExecutionTimeStart, Instant maxExecutionTimeStart);
-
-    Task<List<Batch>> SearchAsync(
+    Task<IReadOnlyCollection<Batch>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
         IReadOnlyCollection<BatchExecutionState> filterByExecutionState,
         Instant? minExecutionTimeStart,

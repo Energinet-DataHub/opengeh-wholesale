@@ -77,7 +77,13 @@ public class BatchControllerV21Tests :
             periodStart,
             periodEnd);
 
-        mock.Setup(service => service.SearchAsync(batchSearchDto))
+        mock.Setup(service => service.SearchAsync(
+                batchSearchDto.FilterByGridAreaCodes,
+                batchSearchDto.FilterByExecutionState,
+                batchSearchDto.MinExecutionTime,
+                batchSearchDto.MaxExecutionTime,
+                batchSearchDto.PeriodStart,
+                batchSearchDto.PeriodEnd))
             .ReturnsAsync(batchDtos);
 
         _factory.BatchApplicationServiceMock = mock;
