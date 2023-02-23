@@ -48,8 +48,8 @@ public class ActorRepositoryTests
         dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(dataLakeFileClientMock.Object);
 
-        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Wholesale.Domain.ActorAggregate.Actor>(stream.Object))
-            .ReturnsAsync(new List<Wholesale.Domain.ActorAggregate.Actor>());
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ActorRelation>(stream.Object))
+            .ReturnsAsync(new List<ActorRelation>());
 
         var sut = new ActorRepository(
             dataLakeClientMock.Object,
@@ -60,6 +60,42 @@ public class ActorRepositoryTests
 
         // Assert
         actual.Should().NotBeNull();
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task GetAsync_WhenDuplicateEnergySuppliers_ReturnsDistinctActorsList(
+        [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
+    {
+        // Arrange
+        var actorRelationsDeserialized = new List<ActorRelation>
+        {
+            new ActorRelation("123", "111"),
+            new ActorRelation("234", "222"),
+            new ActorRelation("123", "333"),
+        };
+        var expectedGln = new List<string>() { "123", "234" }; // distinct gln list
+
+        dataLakeFileClientMock
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
+            .ReturnsAsync(It.IsAny<Stream>());
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(dataLakeFileClientMock.Object);
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ActorRelation>(It.IsAny<Stream>()))
+            .ReturnsAsync(actorRelationsDeserialized);
+
+        var sut = new ActorRepository(
+            dataLakeClientMock.Object,
+            jsonNewlineSerializerMock.Object);
+
+        // Act
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRole.EnergySupplier);
+
+        // Assert
+        var actualGln = actual.Select(a => a.Gln);
+        actualGln.Should().BeEquivalentTo(expectedGln);
     }
 
     [Theory]

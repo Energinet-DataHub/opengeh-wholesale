@@ -19,4 +19,4 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 /// All values of the Actor must be in lower casing to conform with the spark json output.
 /// </summary>
 #pragma warning disable SA1300
-public sealed record Actor(string energy_supplier_gln, string balance_responsible_gln);
+public sealed record ActorRelation(string energy_supplier_gln, string balance_responsible_gln);

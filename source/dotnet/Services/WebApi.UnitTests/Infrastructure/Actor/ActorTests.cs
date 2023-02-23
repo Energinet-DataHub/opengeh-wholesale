@@ -26,6 +26,6 @@ public class ActorTests
     {
         await using var stream = EmbeddedResources.GetStream("Infrastructure.Actor.calculator-actor.json");
 
-        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<Wholesale.Infrastructure.BatchActor.Actor>(stream);
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<Wholesale.Infrastructure.BatchActor.ActorRelation>(stream);
     }
 }
