@@ -35,7 +35,13 @@ public interface IBatchApplicationService
 
     Task UpdateExecutionStateAsync();
 
-    Task<IEnumerable<BatchDto>> SearchAsync(BatchSearchDto batchSearchDto);
+    Task<IEnumerable<BatchDto>> SearchAsync(
+        IEnumerable<string> filterByGridAreaCodes,
+        BatchState? filterByExecutionState,
+        DateTimeOffset? minExecutionTime,
+        DateTimeOffset? maxExecutionTime,
+        DateTimeOffset? periodStart,
+        DateTimeOffset? periodEnd);
 
     Task<BatchDto> GetAsync(Guid batchId);
 }
