@@ -14,7 +14,7 @@
 
 import package.infrastructure as infra
 from package.codelists import MarketRole, TimeSeriesType
-from package.constants import Colname
+from package.constants import Colname, PartitionKeyName
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
@@ -35,7 +35,7 @@ class ProcessStepResultWriter:
             result_df,
         )
         result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
-        partition_by = ["grid_area"]
+        partition_by = [PartitionKeyName.GRID_AREA]
         self._write_result_df(result_df, partition_by, time_series_type, grouping)
 
     def write_per_ga_per_actor(
@@ -50,12 +50,32 @@ class ProcessStepResultWriter:
         )
         result_df = self._add_gln(result_df, market_role)
         result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
-        partition_by = ["grid_area", Colname.gln]
+        partition_by = [PartitionKeyName.GRID_AREA, PartitionKeyName.GLN]
+        self._write_result_df(result_df, partition_by, time_series_type, grouping)
+
+    def write_per_ga_per_brp_per_es(
+        self,
+        result_df: DataFrame,
+        time_series_type: TimeSeriesType,
+        grouping: str,
+    ) -> None:
+        result_df = self._prepare_result_for_output(
+            result_df,
+        )
+        result_df = result_df.withColumnRenamed(
+            Colname.balance_responsible_id, PartitionKeyName.BALANCE_RESPONSIBLE_PARTY_GLN
+        ).withColumnRenamed(Colname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN)
+
+        partition_by = [
+            PartitionKeyName.GRID_AREA,
+            PartitionKeyName.BALANCE_RESPONSIBLE_PARTY_GLN,
+            PartitionKeyName.ENERGY_SUPPLIER_GLN,
+        ]
         self._write_result_df(result_df, partition_by, time_series_type, grouping)
 
     def _prepare_result_for_output(self, result_df: DataFrame) -> DataFrame:
         result_df = result_df.select(
-            col(Colname.grid_area).alias("grid_area"),
+            col(Colname.grid_area).alias(PartitionKeyName.GRID_AREA),
             Colname.energy_supplier_id,
             Colname.balance_responsible_id,
             col(Colname.sum_quantity).alias("quantity").cast("string"),
@@ -98,7 +118,7 @@ class ProcessStepResultWriter:
         # This ensures that only one file is being written/created for each grid area
         # When writing/creating the files. The partition by creates a folder for each grid area.
         (
-            result_df.repartition("grid_area")
+            result_df.repartition(PartitionKeyName.GRID_AREA)
             .write.mode("errorifexists")
             .partitionBy(partition_by)
             .json(result_data_directory)
