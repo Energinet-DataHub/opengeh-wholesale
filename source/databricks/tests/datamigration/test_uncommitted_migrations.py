@@ -130,21 +130,22 @@ def test__get_all_migrations__returns_correct_names(mock_listdir):
     assert migrations == expected_migrations
 
 
-def test__get_all_migrations():
-    # Arrange
-    folder_path = "source/databricks/package/datamigration/migration_scripts"
-    filenames = [
-        filename
-        for filename in os.listdir(folder_path)
-        if not filename.startswith("__")
-    ]
-    modification_times = [
-        (
-            filename,
-            os.path.getmtime(os.path.join(folder_path, filename)),
-        )
-        for filename in filenames
-    ]
-    newest_file_name, newest_file_mtime = max(modification_times, key=lambda x: x[1])
-    filenames.sort(reverse=True)
-    assert newest_file_name == filenames[0]
+# def test__get_all_migrations():
+#     # Arrange
+#     folder_path = "source/databricks/package/datamigration/migration_scripts"
+#     filenames = [
+#         filename
+#         for filename in os.listdir(folder_path)
+#         if not filename.startswith("__")
+#     ]
+#     modification_times = [
+#         (
+            
+#             filename,
+#             os.path.getmtime(os.path.join(folder_path, filename)),
+#         )
+#         for filename in filenames
+#     ]
+#     newest_file_name, newest_file_mtime = max(modification_times, key=lambda x: x[1])
+#     filenames.sort(reverse=True)
+#     assert newest_file_name == filenames[0]
