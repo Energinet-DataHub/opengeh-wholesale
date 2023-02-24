@@ -43,17 +43,18 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
 
     public async Task<WholesaleActorDto[]> GetActorsAsync(ProcessStepActorsRequest processStepActorsRequest)
     {
-        var batchActors = await _actorRepository.GetAsync(
-            processStepActorsRequest.BatchId,
-            new GridAreaCode(processStepActorsRequest.GridAreaCode),
-            TimeSeriesTypeMapper.Map(processStepActorsRequest.Type)).ConfigureAwait(false);
-
+        var batchId = processStepActorsRequest.BatchId;
+        var gridAreaCode = new GridAreaCode(processStepActorsRequest.GridAreaCode);
+        var timeSeriesType = TimeSeriesTypeMapper.Map(processStepActorsRequest.Type);
         switch (processStepActorsRequest.MarketRole)
         {
             case MarketRole.EnergySupplier:
-                return Map(batchActors.GetEnergySuppliers());
+                var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+                return Map(energySuppliers);
             case MarketRole.BalanceResponsibleParty:
-                return Map(batchActors.GetBalanceResponsibleParties());
+                var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+                return Map(balanceResponsibleParties);
+
             default:
                 throw new ArgumentOutOfRangeException(processStepActorsRequest.MarketRole.ToString(), "Unexpected MarketRole. Cannot perform mapping.");
         }

@@ -84,12 +84,12 @@ public class ProcessStepApplicationServiceTests
             Contracts.MarketRole.EnergySupplier);
 
         actorRepositoryMock
-            .Setup(x => x.GetAsync(
+            .Setup(x => x.GetEnergySuppliersAsync(
                 actorsRequest.BatchId,
                 new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production)).ReturnsAsync(new BatchActors(Array.Empty<ActorRelation>()));
+                TimeSeriesType.Production)).ReturnsAsync(Array.Empty<Actor>());
 
-        // Act
+    // Act
         var actors = await sut.GetActorsAsync(actorsRequest);
 
         // Assert
@@ -110,19 +110,18 @@ public class ProcessStepApplicationServiceTests
             Contracts.TimeSeriesType.Production,
             Contracts.MarketRole.EnergySupplier);
 
-        var actorRelation = new ActorRelation("ExpectedEnergySupplierGln", "ExpectedBalanceResponsibleGln");
-        var batchActors = new BatchActors(new[] { actorRelation });
+        var expectedGlnNumber = "ExpectedGlnNumber";
         actorRepositoryMock
-            .Setup(x => x.GetAsync(
+            .Setup(x => x.GetEnergySuppliersAsync(
                 actorsRequest.BatchId,
                 new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production)).ReturnsAsync(batchActors);
+                TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
 
         // Act
         var actors = await sut.GetActorsAsync(actorsRequest);
 
         // Assert
-        actors.Single().Gln.Should().Be(actorRelation.EnergySupplierGln);
+        actors.Single().Gln.Should().Be(expectedGlnNumber);
     }
 
     [Theory]
@@ -139,19 +138,18 @@ public class ProcessStepApplicationServiceTests
             Contracts.TimeSeriesType.Production,
             Contracts.MarketRole.BalanceResponsibleParty);
 
-        var actorRelation = new ActorRelation("ExpectedEnergySupplierGln", "ExpectedBalanceResponsibleGln");
-        var batchActors = new BatchActors(new[] { actorRelation });
+        var expectedGlnNumber = "ExpectedGlnNumber";
         actorRepositoryMock
-            .Setup(x => x.GetAsync(
+            .Setup(x => x.GetBalanceResponsiblePartiesAsync(
                 actorsRequest.BatchId,
                 new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production)).ReturnsAsync(batchActors);
+                TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
 
         // Act
         var actors = await sut.GetActorsAsync(actorsRequest);
 
         // Assert
-        actors.Single().Gln.Should().Be(actorRelation.BalanceResponsibleGln);
+        actors.Single().Gln.Should().Be(expectedGlnNumber);
     }
 
     [Theory]
