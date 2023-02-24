@@ -44,7 +44,7 @@ public class ActorRepository : IActorRepository
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
         var actorRelations = await _jsonNewlineSerializer.DeserializeAsync<ActorRelation>(resultStream).ConfigureAwait(false);
 
-        return new BatchActors(Map(actorRelations));
+        return new BatchActors(actorRelations.Select(ActorRelationMapper.Map).ToArray());
     }
 
     public static (string Directory, string Extension) GetActorListFileSpecification(
@@ -53,10 +53,5 @@ public class ActorRepository : IActorRepository
         TimeSeriesType timeSeriesType)
     {
         return ($"calculation-output/batch_id={batchId}/actors/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/", ".json");
-    }
-
-    private static Domain.ActorAggregate.ActorRelation[] Map(IEnumerable<ActorRelation> actors)
-    {
-        return actors.Select(relation => new Domain.ActorAggregate.ActorRelation(relation.energy_supplier_gln, relation.balance_responsible_party_gln)).Distinct().ToArray();
     }
 }

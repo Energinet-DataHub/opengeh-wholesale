@@ -12,10 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ActorAggregate;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 
-public enum MarketRole
+namespace Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
+
+public static class ActorRelationMapper
 {
-    EnergySupplier = 0,
-    BalanceResponsibleParty = 1,
+    public static Domain.ActorAggregate.ActorRelation Map(ActorRelation actorRelation)
+    {
+        return new Domain.ActorAggregate.ActorRelation(actorRelation.energy_supplier_gln, actorRelation.balance_responsible_party_gln);
+    }
 }

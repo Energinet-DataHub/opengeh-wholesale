@@ -25,8 +25,6 @@ using Moq;
 using Test.Core;
 using Xunit;
 using Xunit.Categories;
-using Actor = Energinet.DataHub.Wholesale.Domain.ActorAggregate.Actor;
-using MarketRole = Energinet.DataHub.Wholesale.Domain.ActorAggregate.MarketRole;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.ProcessStep;
