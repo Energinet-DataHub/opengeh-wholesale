@@ -96,6 +96,22 @@ public class ProcessStepResultRepositoryTests
         actual.Should().MatchRegex(expected.DirectoryExpression);
     }
 
+    [Fact]
+    public static async Task GetDirectoryForEsBrpGridAreaGrouping_MatchesContract()
+    {
+        // Arrange
+        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string gridAreaCode = "123";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.ResultFileForGaBrpEs;
+
+        // Act
+        var actual = ProcessStepResultRepository.GetDirectoryForEsBrpGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "balanceResponsiblePartyGln", "energySupplierGln");
+
+        // Assert
+        actual.Should().MatchRegex(expected.DirectoryExpression);
+    }
+
     [Theory]
     [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
     [InlineData(TimeSeriesType.FlexConsumption, "consumption")]
