@@ -57,6 +57,6 @@ public class ActorRepository : IActorRepository
 
     private static Domain.ActorAggregate.ActorRelation[] Map(IEnumerable<ActorRelation> actors)
     {
-        return actors.Select(relation => new Domain.ActorAggregate.ActorRelation(relation.energy_supplier_gln, relation.balance_responsible_gln)).Distinct().ToArray();
+        return actors.Select(relation => new Domain.ActorAggregate.ActorRelation(relation.energy_supplier_gln, relation.balance_responsible_party_gln)).Distinct().ToArray();
     }
 }

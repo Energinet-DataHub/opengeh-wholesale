@@ -35,7 +35,9 @@ class ActorsWriter:
 
         actors_df = actors_df.withColumnRenamed(
             Colname.energy_supplier_id, "energy_supplier_gln"
-        ).withColumnRenamed(Colname.balance_responsible_id, "balance_responsible_gln")
+        ).withColumnRenamed(
+            Colname.balance_responsible_id, "balance_responsible_party_gln"
+        )
 
         # In the partitioning hierarchy time_series_type is above grid_area. This is done to avoid having to do 'append' for each time_series_type
         (

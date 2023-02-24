@@ -5,7 +5,7 @@
         "type": "string"
       },
       {
-        "name": "balance_responsible_gln",
+        "name": "balance_responsible_party_gln",
         "type": "string"
       }
     ]

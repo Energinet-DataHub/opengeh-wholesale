@@ -70,14 +70,14 @@ def _get_gln_from_actors_file(
     actors_json = find_file(output_path, f"{actors_path}/part-*.json")
 
     es_gln = []
-    blr_gln = []
+    brp_gln = []
     with open(actors_json, "r") as json_file:
         for line in json_file:
             json_data = json.loads(line)
             es_gln.append(json_data["energy_supplier_gln"])
-            blr_gln.append(json_data["balance_responsible_gln"])
+            brp_gln.append(json_data["balance_responsible_party_gln"])
 
-    return es_gln, blr_gln
+    return es_gln, brp_gln
 
 
 def test__write__actors_file_has_expected_gln(
