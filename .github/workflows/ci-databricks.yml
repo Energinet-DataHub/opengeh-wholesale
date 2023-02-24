@@ -33,7 +33,7 @@ jobs:
 
       - name: Get files from current branch
         run: |
-          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -printf "%f\n" | sort -r)
+          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -printf "%f\n" | sort)
           echo "::set-output name=current_files::$CURRENT_FILES"
 
       - name: Checkout main branch
@@ -43,16 +43,27 @@ jobs:
 
       - name: Get files from main branch
         run: |
-          MAIN_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -printf "%f\n" | sort -r)
+          MAIN_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -printf "%f\n" | sort)
           echo "::set-output name=main_files::$MAIN_FILES"
 
       - name: Compare file lists
         run: |
-          echo "Files in current branch:"
-          echo "${{ steps.get_files.outputs.current_files }}"
+          CURRENT_FILES="${{ steps.get_files.outputs.current_files }}"
+          MAIN_FILES="${{ steps.get_files.outputs.main_files }}"
 
+          # Get the files that are new in the current branch
+          NEW_FILES=$(comm -23 <(echo "$CURRENT_FILES") <(echo "$MAIN_FILES") | sort)
+
+          # Get the files that are common to both branches
+          COMMON_FILES=$(comm -12 <(echo "$CURRENT_FILES") <(echo "$MAIN_FILES"))
+
+          # Print the sorted list of files
           echo "Files in main branch:"
-          echo "${{ steps.get_files.outputs.main_files }}"
+          echo "$MAIN_FILES"
+
+          echo "Files in current branch, new files come after main:"
+          echo "$COMMON_FILES"
+          echo "$NEW_FILES"
 
   databricks_ci_test:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
