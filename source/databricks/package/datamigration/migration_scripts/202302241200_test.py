@@ -18,25 +18,26 @@ from os import path
 
 
 def apply(args: MigrationScriptArgs) -> None:
-    container = "wholesale"
-    directory_name = "calculation-output"
+    # container = "wholesale"
+    # directory_name = "calculation-output"
 
-    # Get the file system client
-    file_system_client = FileSystemClient(
-        account_url=args.storage_account_url,
-        file_system_name=container,
-        credential=args.storage_account_key,
-    )
-    if file_system_client.exists():
-        # Get a list of paths inside the 'calculation-output' folder
-        directories = file_system_client.get_paths(path=directory_name, recursive=False)
+    # # Get the file system client
+    # file_system_client = FileSystemClient(
+    #     account_url=args.storage_account_url,
+    #     file_system_name=container,
+    #     credential=args.storage_account_key,
+    # )
+    # if file_system_client.exists():
+    #     # Get a list of paths inside the 'calculation-output' folder
+    #     directories = file_system_client.get_paths(path=directory_name, recursive=False)
 
-        for directory in directories:
-            result_temp_path = path.join(directory.name, "result_temp")
+    #     for directory in directories:
+    #         result_temp_path = path.join(directory.name, "result_temp")
 
-            directory_client_temp = file_system_client.get_directory_client(
-                directory=result_temp_path
-            )
+    #         directory_client_temp = file_system_client.get_directory_client(
+    #             directory=result_temp_path
+    #         )
 
-            if directory_client_temp.exists():
-                directory_client_temp.delete_directory()
+    #         if directory_client_temp.exists():
+    #             directory_client_temp.delete_directory()
+    return
