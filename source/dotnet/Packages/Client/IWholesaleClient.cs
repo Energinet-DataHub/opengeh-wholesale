@@ -39,6 +39,8 @@ public interface IWholesaleClient
 
     Task<Stream> GetZippedBasisDataStreamAsync(Guid batchId);
 
+    Task<Stream> GetSettlementReportAsStreamAsync(Guid batchId, string gridAreaCode);
+
     Task<BatchDtoV2?> GetBatchAsync(Guid batchId);
 
     Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDto processStepResultRequestDto);

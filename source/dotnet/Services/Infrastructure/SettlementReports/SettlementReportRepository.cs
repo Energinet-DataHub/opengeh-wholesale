@@ -16,7 +16,6 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 

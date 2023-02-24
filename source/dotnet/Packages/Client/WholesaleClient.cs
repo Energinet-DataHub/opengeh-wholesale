@@ -78,6 +78,18 @@ public class WholesaleClient : IWholesaleClient
         return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
     }
 
+    public async Task<Stream> GetSettlementReportAsStreamAsync(Guid batchId, string gridAreaCode)
+    {
+        var response = await _httpClient
+            .GetAsync($"v2.4/SettlementReport?batchId={batchId}&gridAreaCode={gridAreaCode}")
+            .ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
+
+        return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+    }
+
     public async Task<BatchDtoV2?> GetBatchAsync(Guid batchId)
     {
         var response = await _httpClient.GetAsync($"v2/Batch?batchId={batchId}").ConfigureAwait(false);

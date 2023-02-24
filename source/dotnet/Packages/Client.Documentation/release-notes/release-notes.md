@@ -1,5 +1,9 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.11
+
+Get settlement report for batch id and grid area code.
+
 ## Version 5.0.10
 
 Functionality to also filter by period, grid areas and execution state in batch searches has been added.
