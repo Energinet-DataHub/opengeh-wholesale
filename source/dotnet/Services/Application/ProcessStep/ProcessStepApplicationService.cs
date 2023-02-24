@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using MarketRole = Energinet.DataHub.Wholesale.Contracts.MarketRole;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessStep;
@@ -42,13 +43,20 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
 
     public async Task<WholesaleActorDto[]> GetActorsAsync(ProcessStepActorsRequest processStepActorsRequest)
     {
-        var actors = await _actorRepository.GetAsync(
+        var batchActors = await _actorRepository.GetAsync(
             processStepActorsRequest.BatchId,
             new GridAreaCode(processStepActorsRequest.GridAreaCode),
-            TimeSeriesTypeMapper.Map(processStepActorsRequest.Type),
-            MarketRoleMapper.Map(processStepActorsRequest.MarketRole)).ConfigureAwait(false);
+            TimeSeriesTypeMapper.Map(processStepActorsRequest.Type)).ConfigureAwait(false);
 
-        return actors.Select(batchActor => new WholesaleActorDto(batchActor.Gln)).ToArray();
+        switch (processStepActorsRequest.MarketRole)
+        {
+            case MarketRole.EnergySupplier:
+                return Map(batchActors.GetEnergySuppliers());
+            case MarketRole.BalanceResponsibleParty:
+                return Map(batchActors.GetBalanceResponsibleParties());
+            default:
+                throw new ArgumentOutOfRangeException(processStepActorsRequest.MarketRole.ToString(), "Unexpected MarketRole. Cannot perform mapping.");
+        }
     }
 
     public async Task<ProcessStepResultDto> GetResultAsync(
@@ -67,5 +75,10 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
             .ConfigureAwait(false);
 
         return _processStepResultMapper.MapToDto(processStepResult);
+    }
+
+    private WholesaleActorDto[] Map(Actor[] actors)
+    {
+        return actors.Select(batchActor => new WholesaleActorDto(batchActor.Gln)).ToArray();
     }
 }

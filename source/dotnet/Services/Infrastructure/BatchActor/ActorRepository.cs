@@ -33,11 +33,10 @@ public class ActorRepository : IActorRepository
         _jsonNewlineSerializer = jsonNewlineSerializer;
     }
 
-    public async Task<Actor[]> GetAsync(
+    public async Task<BatchActors> GetAsync(
         Guid batchId,
         GridAreaCode gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        MarketRole marketRole)
+        TimeSeriesType timeSeriesType)
     {
         var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType);
         var dataLakeFileClient = await _dataLakeClient.GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
@@ -45,7 +44,7 @@ public class ActorRepository : IActorRepository
         var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
         var actorRelations = await _jsonNewlineSerializer.DeserializeAsync<ActorRelation>(resultStream).ConfigureAwait(false);
 
-        return GetEnergySuppliers(actorRelations);
+        return new BatchActors(Map(actorRelations));
     }
 
     public static (string Directory, string Extension) GetActorListFileSpecification(
@@ -56,8 +55,8 @@ public class ActorRepository : IActorRepository
         return ($"calculation-output/batch_id={batchId}/actors/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/", ".json");
     }
 
-    private static Actor[] GetEnergySuppliers(IEnumerable<ActorRelation> actors)
+    private static Domain.ActorAggregate.ActorRelation[] Map(IEnumerable<ActorRelation> actors)
     {
-        return actors.Select(actor => new Actor(actor.energy_supplier_gln)).Distinct().ToArray();
+        return actors.Select(relation => new Domain.ActorAggregate.ActorRelation(relation.energy_supplier_gln, relation.balance_responsible_gln)).Distinct().ToArray();
     }
 }

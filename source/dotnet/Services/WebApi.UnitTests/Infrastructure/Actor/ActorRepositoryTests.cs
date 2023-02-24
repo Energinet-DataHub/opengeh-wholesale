@@ -48,15 +48,15 @@ public class ActorRepositoryTests
         dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(dataLakeFileClientMock.Object);
 
-        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ActorRelation>(stream.Object))
-            .ReturnsAsync(new List<ActorRelation>());
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>(stream.Object))
+            .ReturnsAsync(new List<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>());
 
         var sut = new ActorRepository(
             dataLakeClientMock.Object,
             jsonNewlineSerializerMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRole.EnergySupplier);
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production);
 
         // Assert
         actual.Should().NotBeNull();
@@ -64,26 +64,27 @@ public class ActorRepositoryTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetAsync_WhenDuplicateEnergySuppliers_ReturnsDistinctActorsList(
+    public async Task GetAsync_WhenDuplicateActors_ReturnsDistinctActorsList(
         [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
-        var actorRelationsDeserialized = new List<ActorRelation>
+        var actorRelationsDeserialized = new List<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>
         {
-            new ActorRelation("123", "111"),
-            new ActorRelation("234", "222"),
-            new ActorRelation("123", "333"),
+            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("123", "111"),
+            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("234", "333"),
+            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("123", "333"),
         };
-        var expectedGln = new List<string>() { "123", "234" }; // distinct gln list
+        var expectedEnergySupplierGln = new List<string>() { "123", "234" }; // distinct gln list
+        var expectedBalanceResponsibleGln = new List<string>() { "111", "333" }; // distinct gln list
 
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(It.IsAny<Stream>());
         dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(dataLakeFileClientMock.Object);
-        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ActorRelation>(It.IsAny<Stream>()))
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>(It.IsAny<Stream>()))
             .ReturnsAsync(actorRelationsDeserialized);
 
         var sut = new ActorRepository(
@@ -91,11 +92,13 @@ public class ActorRepositoryTests
             jsonNewlineSerializerMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRole.EnergySupplier);
+        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production);
 
         // Assert
-        var actualGln = actual.Select(a => a.Gln);
-        actualGln.Should().BeEquivalentTo(expectedGln);
+        var actualEnergySupplierGln = actual.GetEnergySuppliers().Select(a => a.Gln);
+        actualEnergySupplierGln.Should().BeEquivalentTo(expectedEnergySupplierGln);
+        var actualBalanceResponsibleGln = actual.GetBalanceResponsibleParties().Select(a => a.Gln);
+        actualBalanceResponsibleGln.Should().BeEquivalentTo(expectedBalanceResponsibleGln);
     }
 
     [Theory]

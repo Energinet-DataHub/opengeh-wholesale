@@ -12,12 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-
 namespace Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 
-public interface IActorRepository
-{
-    Task<BatchActors> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType);
-}
+public record ActorRelation(string EnergySupplierGln, string BalanceResponsibleGln);
