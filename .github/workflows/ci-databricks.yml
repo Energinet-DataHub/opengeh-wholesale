@@ -53,9 +53,6 @@ jobs:
 
           echo "Files in main branch:"
           echo "${{ steps.get_files.outputs.main_files }}"
-        env:
-          CURRENT_FILES: ${{ steps.get_files.outputs.current_files }}
-          MAIN_FILES: ${{ steps.get_files.outputs.main_files }}
 
   databricks_ci_test:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
