@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3;
@@ -19,6 +20,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3;
 [ApiController]
 [ApiVersion(Version)]
 [Produces("application/json")]
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public abstract class V3ControllerBase : ControllerBase
 {
     protected const string Version = "3.0";
