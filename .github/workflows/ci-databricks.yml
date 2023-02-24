@@ -33,7 +33,7 @@ jobs:
 
       - name: Get files from current branch
         run: |
-          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -printf "%f\n" | sort)
+          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f\n" | sort -r)
           echo "::set-output name=current_files::$CURRENT_FILES"
 
       - name: Checkout main branch
@@ -43,7 +43,7 @@ jobs:
 
       - name: Get files from main branch
         run: |
-          MAIN_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -printf "%f\n" | sort)
+          MAIN_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f\n" | sort -r)
           echo "::set-output name=main_files::$MAIN_FILES"
 
       - name: Compare file lists
@@ -53,6 +53,9 @@ jobs:
 
           echo "Files in main branch:"
           echo "${{ steps.get_files.outputs.main_files }}"
+        env:
+          CURRENT_FILES: ${{ steps.get_files.outputs.current_files }}
+          MAIN_FILES: ${{ steps.get_files.outputs.main_files }}
 
   databricks_ci_test:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
