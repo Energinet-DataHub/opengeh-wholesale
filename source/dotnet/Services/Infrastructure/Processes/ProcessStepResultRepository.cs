@@ -49,6 +49,9 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         if (energySupplierGln != null && balanceResponsiblePartyGln == null)
             return await GetResultAsync(batchId, GetDirectoryForEsGridArea(batchId, gridAreaCode, timeSeriesType, energySupplierGln), timeSeriesType).ConfigureAwait(false);
 
+        if (energySupplierGln != null && balanceResponsiblePartyGln != null)
+            return await GetResultAsync(batchId, GetDirectoryForEsBrpGridArea(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyGln, energySupplierGln), timeSeriesType).ConfigureAwait(false);
+
         return await GetResultAsync(batchId, GetDirectoryForTotalGridArea(batchId, gridAreaCode, timeSeriesType), timeSeriesType).ConfigureAwait(false);
     }
 
@@ -60,6 +63,9 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
 
     public static string GetDirectoryForTotalGridArea(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType)
         => $"calculation-output/batch_id={batchId}/result/grouping={TotalGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/";
+
+    public static string GetDirectoryForEsBrpGridArea(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln, string energySupplierGln)
+        => $"calculation-output/batch_id={batchId}/result/grouping={BalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/balance_responsible_party_gln={balanceResponsiblePartyGln}/energy_supplier_gln={energySupplierGln}/";
 
     private async Task<ProcessStepResult> GetResultAsync(Guid batchId, string directory, TimeSeriesType timeSeriesType)
     {

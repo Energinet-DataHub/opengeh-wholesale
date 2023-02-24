@@ -41,6 +41,7 @@ executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 grid_area_gln = "grid_area"
 energy_supplier_gln_a = "8100000000108"
 energy_supplier_gln_b = "8100000000109"
+balance_responsible_party_gln_a = "1"
 
 
 # Code snippet from https://joelmccune.com/python-dictionary-as-object/
@@ -185,31 +186,49 @@ def test__result_is_generated_for_requested_grid_areas(
 ) -> None:
     # Arrange
     expected_ga_gln_type = [
-        ["805", None, TimeSeriesType.PRODUCTION, Grouping.total_ga],
-        ["806", None, TimeSeriesType.PRODUCTION, Grouping.total_ga],
+        ["805", None, None, TimeSeriesType.PRODUCTION, Grouping.total_ga],
+        ["806", None, None, TimeSeriesType.PRODUCTION, Grouping.total_ga],
         [
             "805",
             energy_supplier_gln_a,
+            None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
             Grouping.es_per_ga,
         ],
         [
             "806",
             energy_supplier_gln_a,
+            None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
             Grouping.es_per_ga,
         ],
         [
             "805",
             energy_supplier_gln_b,
+            None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
             Grouping.es_per_ga,
         ],
         [
             "806",
             energy_supplier_gln_b,
+            None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
             Grouping.es_per_ga,
+        ],  # ga brp es
+        [
+            "805",
+            energy_supplier_gln_a,
+            balance_responsible_party_gln_a,
+            TimeSeriesType.PRODUCTION,
+            Grouping.es_per_brp_per_ga,
+        ],
+        [
+            "806",
+            energy_supplier_gln_a,
+            balance_responsible_party_gln_a,
+            TimeSeriesType.PRODUCTION,
+            Grouping.es_per_brp_per_ga,
         ],
     ]
 
@@ -217,9 +236,20 @@ def test__result_is_generated_for_requested_grid_areas(
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    for grid_area, gln, time_series_type, grouping in expected_ga_gln_type:
+    for (
+        grid_area,
+        energy_supplier_gln,
+        balance_responsible_party_gln,
+        time_series_type,
+        grouping,
+    ) in expected_ga_gln_type:
         result_path = infra.get_result_file_relative_path(
-            executed_batch_id, grid_area, gln, time_series_type, grouping
+            executed_batch_id,
+            grid_area,
+            energy_supplier_gln,
+            balance_responsible_party_gln,
+            time_series_type,
+            grouping,
         )
         result = spark.read.json(f"{data_lake_path}/{worker_id}/{result_path}")
         assert result.count() >= 1, "Calculator job failed to write files"
@@ -263,6 +293,7 @@ def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
         executed_batch_id,
         "805",
         None,
+        None,
         TimeSeriesType.PRODUCTION,
         Grouping.total_ga,
     )
@@ -292,6 +323,7 @@ def test__calculator_result_es_per_ga_schema_must_match_contract_with_dotnet(
         executed_batch_id,
         "805",
         energy_supplier_gln_a,
+        None,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         Grouping.es_per_ga,
     )
@@ -320,6 +352,7 @@ def test__quantity_is_with_precision_3(
         executed_batch_id,
         "805",
         None,
+        None,
         TimeSeriesType.PRODUCTION,
         Grouping.total_ga,
     )
@@ -328,6 +361,7 @@ def test__quantity_is_with_precision_3(
         executed_batch_id,
         "805",
         energy_supplier_gln_a,
+        None,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         Grouping.es_per_ga,
     )
@@ -360,6 +394,7 @@ def test__result_file_has_correct_expected_number_of_rows_for_consumption(
         executed_batch_id,
         "806",
         energy_supplier_gln_a,
+        None,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         Grouping.es_per_ga,
     )
@@ -384,6 +419,7 @@ def test__result_file_has_correct_expected_number_of_rows_for_production(
     result_relative_path = infra.get_result_file_relative_path(
         executed_batch_id,
         "806",
+        None,
         None,
         TimeSeriesType.PRODUCTION,
         Grouping.total_ga,

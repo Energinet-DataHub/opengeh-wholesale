@@ -10,8 +10,13 @@ result_file:
     extension: .json
 
 result_file_for_total_grid_area:
-    # Example: calculation-output/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/result/total_ga/time_series_type=production/grid_area=806/gln=grid_area/
+    # Example: calculation-output/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/result/total_ga/time_series_type=production/grid_area=806/
     directory_expression: calculation-output/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/result/grouping=.*/time_series_type=.*/grid_area=\d{3}/
+    extension: .json
+
+result_file_for_ga_brp_es:
+    # Example: calculation-output/batch_id=0b15a420-9fc8-409a-a169-fbd49479d718/result/total_ga/time_series_type=production/grid_area=806/balance_responsible_party_gln=1234567/energy_supplier_gln=1234567//
+    directory_expression: calculation-output/batch_id=\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/result/grouping=.*/time_series_type=.*/grid_area=\d{3}/balance_responsible_party_gln=.*/energy_supplier_gln=.*/
     extension: .json
 
 actors_file:

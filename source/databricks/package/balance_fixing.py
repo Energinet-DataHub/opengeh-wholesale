@@ -112,6 +112,12 @@ def _calculate_production(
         production_per_ga, TimeSeriesType.PRODUCTION, Grouping.total_ga
     )
 
+    result_writer.write_per_ga_per_brp_per_es(
+        production_per_per_ga_and_brp_and_es,
+        TimeSeriesType.PRODUCTION,
+        Grouping.es_per_brp_per_ga,
+    )
+
 
 def _calculate_non_profiled_consumption(
     actors_writer: ActorsWriter,

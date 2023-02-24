@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from unittest.mock import patch, Mock
 
 from package.codelists import (
     MeteringPointResolution,
@@ -44,7 +42,7 @@ DEFAULT_BALANCE_RESPONSIBLE_ID = "123456789"
 
 def _create_result_row(
     grid_area: str,
-    energy_supplier_id: str,
+    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
     quantity: str = "1.1",
     quality: TimeSeriesQuality = TimeSeriesQuality.measured,
@@ -81,6 +79,7 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
         DEFAULT_BATCH_ID,
         DEFAULT_GRID_AREA,
         DEFAULT_ENERGY_SUPPLIER_ID,
+        None,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         Grouping.es_per_ga,
     )
@@ -118,6 +117,7 @@ def test__write_per_ga__result_file_path_matches_contract(
         DEFAULT_BATCH_ID,
         DEFAULT_GRID_AREA,
         None,
+        None,
         TimeSeriesType.PRODUCTION,
         Grouping.total_ga,
     )
@@ -139,4 +139,47 @@ def test__write_per_ga__result_file_path_matches_contract(
         contracts_path,
         actual_result_file,
         CalculationFileType.ResultFileForTotalGridArea,
+    )
+
+
+def test__write_ga_brp_es__result_file_path_matches_contract(
+    spark: SparkSession,
+    contracts_path: str,
+    tmpdir: Path,
+) -> None:
+    # Arrange
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA,
+            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
+            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
+        )
+    ]
+    result_df = spark.createDataFrame(data=row)
+    relative_output_path = infra.get_result_file_relative_path(
+        DEFAULT_BATCH_ID,
+        DEFAULT_GRID_AREA,
+        DEFAULT_ENERGY_SUPPLIER_ID,
+        DEFAULT_BALANCE_RESPONSIBLE_ID,
+        TimeSeriesType.PRODUCTION,
+        Grouping.es_per_brp_per_ga,
+    )
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+
+    # Act: Executed in fixture executed_calculation_job
+    sut.write_per_ga_per_brp_per_es(
+        result_df,
+        TimeSeriesType.PRODUCTION,
+        Grouping.es_per_brp_per_ga,
+    )
+
+    # Assert
+    actual_result_file = find_file(
+        f"{str(tmpdir)}/",
+        f"{relative_output_path}/part-*.json",
+    )
+    assert_file_path_match_contract(
+        contracts_path,
+        actual_result_file,
+        CalculationFileType.ResultFileForGaBrpEs,
     )
