@@ -76,7 +76,7 @@ public class ActorRepositoryTests
             new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("234", "222"),
             new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("123", "333"),
         };
-        var expectedGln = new List<string>() { "123", "234" }; // distinct gln list
+        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor>() { new Wholesale.Domain.ActorAggregate.Actor("123"), new Wholesale.Domain.ActorAggregate.Actor("234") }; // distinct gln list
 
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
@@ -111,7 +111,8 @@ public class ActorRepositoryTests
             new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("234", "111"),
             new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("345", "333"),
         };
-        var expectedGln = new List<string>() { "111", "333" }; // distinct gln list
+
+        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor>() { new Wholesale.Domain.ActorAggregate.Actor("111"), new Wholesale.Domain.ActorAggregate.Actor("333") }; // distinct gln list
 
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
