@@ -52,9 +52,11 @@ jobs:
         run: |
           CURRENT_FILE="${{ steps.get_current_file.outputs.current_file }}"
           DATE=$(date -d "${CURRENT_FILE:0:8} ${CURRENT_FILE:8:2}:${CURRENT_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
+          DATETIME=$(date +"%Y-%m-%d %H:%M:%S")
           MAIN_FILE="${{ steps.get_main_file.outputs.main_file }}"
           echo $CURRENT_FILE
           echo $DATE
+          echo $DATETIME
           echo $MAIN_FILE
 
 
