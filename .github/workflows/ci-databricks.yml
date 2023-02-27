@@ -77,19 +77,14 @@ jobs:
           done
 
           echo "---------------------combined----------------------"
-          if [[ ! " ${current_files_sorted_array[@]} " =~ " banana " ]]; then
-            echo "Array contains 'banana'"
-          else
-            echo "Array does not contain 'banana'"
-          fi
-          # unique_arr=()
-          # for item in "${current_files_sorted_array[@]}"
-          # do
-          #   if [[ ! " ${main_files_sorted_array[@]} " =~ " ${item} " ]]; then
-          #     unique_arr+=("$item")
-          #   fi
-          # done
-          # echo "$unique_arr"
+          unique_arr=()
+          for item in "${current_files_sorted_array[@]}"
+          do
+            if [[ ! " ${main_files_sorted_array[@]} " =~ " ${item} " ]]; then
+              unique_arr+=("$item")
+            fi
+          done
+          echo "$unique_arr[@]"
 
 
           # MAIN_FILE_DATE=$(date -d "${MAIN_FILE:0:8} ${MAIN_FILE:8:2}:${MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
