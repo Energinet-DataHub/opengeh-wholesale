@@ -51,20 +51,8 @@ jobs:
         run: |
           CURRENT_FILES="${{ steps.get_files.outputs.current_files }}"
           MAIN_FILES="${{ steps.get_files.outputs.main_files }}"
+          echo "CURRENT_FILES"
 
-          # Get the files that are new in the current branch
-          NEW_FILES=$(comm -23 <(echo "$CURRENT_FILES") <(echo "$MAIN_FILES") | sort)
-
-          # Get the files that are common to both branches
-          COMMON_FILES=$(comm -12 <(echo "$CURRENT_FILES") <(echo "$MAIN_FILES"))
-
-          # Print the sorted list of files
-          echo "Files in main branch:"
-          echo "$MAIN_FILES"
-
-          echo "Files in current branch, new files come after main:"
-          echo "$COMMON_FILES"
-          echo "$NEW_FILES"
 
   databricks_ci_test:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
