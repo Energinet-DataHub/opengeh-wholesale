@@ -45,7 +45,7 @@ jobs:
               exit 1
             fi
           done
-          echo "::set-output name=current_file::$CURRENT_FILES"
+          echo "::set-output name=current_file::$CURRENT_FILES[@]"
 
       - name: Checkout main branch
         uses: actions/checkout@v2
