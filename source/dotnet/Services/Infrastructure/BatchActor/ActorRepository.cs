@@ -33,19 +33,17 @@ public class ActorRepository : IActorRepository
         _jsonNewlineSerializer = jsonNewlineSerializer;
     }
 
-    public async Task<Domain.ActorAggregate.Actor[]> GetAsync(
-        Guid batchId,
-        GridAreaCode gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        MarketRole marketRole)
+    public async Task<Actor[]> GetEnergySuppliersAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType)
     {
-        var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType);
-        var dataLakeFileClient = await _dataLakeClient.GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
+        var actorRelations = await GetActorRelationsAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+        return actorRelations.Select(relation => new Actor(relation.energy_supplier_gln)).Distinct().ToArray();
+    }
 
-        var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
-        var actors = await _jsonNewlineSerializer.DeserializeAsync<Actor>(resultStream).ConfigureAwait(false);
-
-        return MapToBatchActor(actors);
+    public async Task<Actor[]> GetBalanceResponsiblePartiesAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType)
+    {
+        var actorRelations = await GetActorRelationsAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+        return actorRelations.Select(relation => new Actor(relation.balance_responsible_party_gln)).Distinct()
+            .ToArray();
     }
 
     public static (string Directory, string Extension) GetActorListFileSpecification(
@@ -53,11 +51,21 @@ public class ActorRepository : IActorRepository
         GridAreaCode gridAreaCode,
         TimeSeriesType timeSeriesType)
     {
-        return ($"calculation-output/batch_id={batchId}/actors/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/", ".json");
+        return (
+            $"calculation-output/batch_id={batchId}/actors/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/",
+            ".json");
     }
 
-    private static Domain.ActorAggregate.Actor[] MapToBatchActor(IEnumerable<Actor> actors)
+    private async Task<List<ActorRelation>> GetActorRelationsAsync(
+        Guid batchId,
+        GridAreaCode gridAreaCode,
+        TimeSeriesType timeSeriesType)
     {
-        return actors.Select(actor => new Domain.ActorAggregate.Actor(actor.energy_supplier_gln)).ToArray();
+        var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType);
+        var dataLakeFileClient =
+            await _dataLakeClient.GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
+
+        var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
+        return await _jsonNewlineSerializer.DeserializeAsync<ActorRelation>(resultStream).ConfigureAwait(false);
     }
 }
