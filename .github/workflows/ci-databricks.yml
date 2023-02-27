@@ -78,9 +78,9 @@ jobs:
 
           echo "---------------------combined----------------------"
           unique_arr=()
-          for item in "${main_files_sorted_array[@]}"
+          for item in "${current_files_sorted_array[@]}"
           do
-            if [[ ! " ${current_files_sorted_array[@]} " =~ " ${item} " ]]; then
+            if [[ ! " ${main_files_sorted_array[@]} " =~ " ${item} " ]]; then
               unique_arr+=("$item")
             fi
           done
