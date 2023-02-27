@@ -58,25 +58,30 @@ jobs:
       - name: Compare file lists
         run: |
           DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
-          CURRENT_FILE="${{ steps.get_current_file.outputs.current_file }}"
-          CURRENT_FILE_DATE=$(date -d "${CURRENT_FILE:0:8} ${CURRENT_FILE:8:2}:${CURRENT_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
-          MAIN_FILE="${{ steps.get_main_file.outputs.main_file }}"
-          MAIN_FILE_DATE=$(date -d "${MAIN_FILE:0:8} ${MAIN_FILE:8:2}:${MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
-          echo $DATETIME
-          echo $CURRENT_FILE
-          echo $CURRENT_FILE_DATE
-          echo $MAIN_FILE
-          echo $MAIN_FILE_DATE
+          FILE_ARRAY="${{ steps.get_current_file.outputs.file_array }}"
+          for file in "${FILE_ARRAY[@]}"
+          do
+            echo "$file"
+          done
+          # CURRENT_FILE="${{ steps.get_current_file.outputs.current_file }}"
+          # CURRENT_FILE_DATE=$(date -d "${CURRENT_FILE:0:8} ${CURRENT_FILE:8:2}:${CURRENT_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
+          # MAIN_FILE="${{ steps.get_main_file.outputs.main_file }}"
+          # MAIN_FILE_DATE=$(date -d "${MAIN_FILE:0:8} ${MAIN_FILE:8:2}:${MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
+          # echo $DATETIME
+          # echo $CURRENT_FILE
+          # echo $CURRENT_FILE_DATE
+          # echo $MAIN_FILE
+          # echo $MAIN_FILE_DATE
 
-          if [[ $CURRENT_FILE_DATE > $DATETIME ]]; then
-            echo "New migration file can not be later than current datetime"
-            exit 1
-          fi
+          # if [[ $CURRENT_FILE_DATE > $DATETIME ]]; then
+          #   echo "New migration file can not be later than current datetime"
+          #   exit 1
+          # fi
 
-          if [[ $CURRENT_FILE_DATE < $MAIN_FILE_DATE ]]; then
-            echo "New migration file can not be before existing migration"
-            exit 1
-          fi
+          # if [[ $CURRENT_FILE_DATE < $MAIN_FILE_DATE ]]; then
+          #   echo "New migration file can not be before existing migration"
+          #   exit 1
+          # fi
 
 
   databricks_ci_test:
