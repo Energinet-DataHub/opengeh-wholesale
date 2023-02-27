@@ -77,11 +77,11 @@ jobs:
           done
 
           echo "---------------------combined----------------------"
-          # if [[ " ${current_files_sorted_array[@]} " =~ " banana " ]]; then
-          #   echo "Array contains 'banana'"
-          # else
-          #   echo "Array does not contain 'banana'"
-          # fi
+          if [[! " ${current_files_sorted_array[@]} " =~ " banana " ]]; then
+            echo "Array contains 'banana'"
+          else
+            echo "Array does not contain 'banana'"
+          fi
           # unique_arr=()
           # for item in "${current_files_sorted_array[@]}"
           # do
