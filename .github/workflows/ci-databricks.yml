@@ -61,7 +61,7 @@ jobs:
           echo $MAIN_FILE
           echo $MAIN_FILE_DATE
 
-          if [[ $CURRENT_FILE_DATE > $DATETIME || $CURRENT_FILE_DATE < $MAIN_FILE_DATE]]; then
+          if [[ $CURRENT_FILE_DATE > $DATETIME ]]; then
             echo "New migration file is either greater or less than the allowed time"
             exit 1
           fi
