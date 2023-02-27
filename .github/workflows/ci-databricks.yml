@@ -52,7 +52,7 @@ jobs:
         run: |
           DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
           CURRENT_FILES="${{ steps.get_current_file.outputs.current_file }}"
-          for file in "${CURRENT_FILES[@]}"
+          for file in "${CURRENT_FILES}"
           do
             echo "$file"
           done
