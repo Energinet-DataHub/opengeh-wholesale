@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Get file from current branch
-        id: get_current_file
+        id: get_current_files
         run: |
           CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f," | sort -r)
           readarray -td ',' CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
@@ -52,13 +52,14 @@ jobs:
       - name: Compare file lists
         run: |
           DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
-          CURRENT_FILE="${{ steps.get_current_file.outputs.current_file }}"
-          CURRENT_FILE_DATE=$(date -d "${CURRENT_FILE:0:8} ${CURRENT_FILE:8:2}:${CURRENT_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
-          MAIN_FILE="${{ steps.get_main_file.outputs.main_file }}"
-          MAIN_FILE_DATE=$(date -d "${MAIN_FILE:0:8} ${MAIN_FILE:8:2}:${MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
           echo $DATETIME
+          CURRENT_FILES="${{ steps.get_current_files.outputs.current_file }}"
+          CURRENT_FILE="${CURRENT_FILES[0]}"
+          CURRENT_FILE_DATE=$(date -d "${CURRENT_FILE:0:8} ${CURRENT_FILE:8:2}:${CURRENT_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
           echo $CURRENT_FILE
           echo $CURRENT_FILE_DATE
+          MAIN_FILE="${{ steps.get_main_file.outputs.main_file }}"
+          MAIN_FILE_DATE=$(date -d "${MAIN_FILE:0:8} ${MAIN_FILE:8:2}:${MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
           echo $MAIN_FILE
           echo $MAIN_FILE_DATE
 
