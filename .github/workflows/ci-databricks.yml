@@ -25,6 +25,35 @@ jobs:
       ARCHITECTURE: 'x64'
       WHEEL_WORKING_DIRECTORY: './source/databricks'
 
+  migration_scripts_verification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+
+      - name: Get files from current branch
+        id: get_files
+        run: |
+          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f\n" | sort -r)
+          echo "::set-output name=current_files::$CURRENT_FILES"
+
+      - name: Checkout main branch
+        uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - name: Get files from main branch
+        run: |
+          MAIN_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f\n" | sort -r)
+          echo "::set-output name=main_files::$MAIN_FILES"
+
+      - name: Compare file lists
+        run: |
+          CURRENT_FILES="${{ steps.get_files.outputs.current_files }}"
+          MAIN_FILES="${{ steps.get_files.outputs.main_files }}"
+          echo CURRENT_FILES
+
+
   databricks_ci_test:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
     with:
