@@ -37,6 +37,7 @@ jobs:
           CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f," | sort -r)
           readarray -td ',' CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
           echo "::set-output name=current_files::${CURRENT_FILES_ARRAY[@]}"
+          echo "$CURRENT_FILES_ARRAY[0]"
 
       - name: Checkout main branch
         uses: actions/checkout@v2
