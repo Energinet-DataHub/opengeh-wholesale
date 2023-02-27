@@ -52,6 +52,7 @@ jobs:
           CURRENT_FILES="${{ steps.get_files.outputs.current_files }}"
           MAIN_FILES="${{ steps.get_files.outputs.main_files }}"
           echo $CURRENT_FILES
+          echo $MAIN_FILES
 
 
   databricks_ci_test:
