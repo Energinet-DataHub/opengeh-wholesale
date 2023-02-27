@@ -52,7 +52,7 @@ jobs:
         run: |
           CURRENT_FILES="${{ steps.get_current_files.outputs.current_files }}"
           MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
-          echo $CURRENT_FILES
+          echo $CURRENT_FILES:0:14
           echo $MAIN_FILES
 
 
