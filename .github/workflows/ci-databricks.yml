@@ -34,7 +34,7 @@ jobs:
       - name: Get files from current branch
         id: get_current_files
         run: |
-          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f | grep -v '^./source/databricks/package/datamigration/migration_scripts/__init__.py$' | grep -v '^[0-9]\{12\}.*$')
+          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f | grep -v '^./source/databricks/package/datamigration/migration_scripts/__init__.py$' | grep -v '^[0-9]\{12\}.*$' | xargs -I{} basename {})
           if [ -n "$CURRENT_FILES" ]; then
             echo "Error: the following files in the migration_scripts directory do not have the expected timestamp prefix: $CURRENT_FILES"
             exit 1
