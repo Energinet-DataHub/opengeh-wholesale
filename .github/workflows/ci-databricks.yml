@@ -55,8 +55,8 @@ jobs:
           MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
           CURRENT_FILES_ARRAY=(${CURRENT_FILES//,/ })
           MAIN_FILES_ARRAY=(${MAIN_FILES//,/ })
-          CURRENT_FILE=$CURRENT_FILES_ARRAY[0]
-          MAIN_FILE=$MAIN_FILES_ARRAY[0]
+          CURRENT_FILE=${CURRENT_FILES_ARRAY[0]}
+          MAIN_FILE=${MAIN_FILES_ARRAY[0]}
           echo "::set-output name=current_files_array::$CURRENT_FILES_ARRAY"
           echo "::set-output name=main_files_array::$MAIN_FILES_ARRAY"
           CURRENT_FILE_DATE=$(date -d "${CURRENT_FILE:0:8} ${CURRENT_FILE:8:2}:${CURRENT_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
