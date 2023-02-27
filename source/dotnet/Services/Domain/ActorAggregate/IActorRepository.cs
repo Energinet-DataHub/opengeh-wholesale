@@ -19,5 +19,7 @@ namespace Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 
 public interface IActorRepository
 {
-    Task<Actor[]> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, MarketRole marketRole);
+    Task<Actor[]> GetEnergySuppliersAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType);
+
+    Task<Actor[]> GetBalanceResponsiblePartiesAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType);
 }
