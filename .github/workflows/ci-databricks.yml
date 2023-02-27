@@ -41,8 +41,8 @@ jobs:
             echo "$file"
             FILE_ARRAY+=("$file")
           done
-          echo "{file_array}={$FILE_ARRAY[@]}" >> $GITHUB_OUTPUT
-          echo "::set-output name=current_file::$CURRENT_FILES[@]"
+          echo "::set-output name=file_array::$FILE_ARRAY"
+          echo "::set-output name=current_file::$CURRENT_FILES"
 
       - name: Checkout main branch
         uses: actions/checkout@v2
