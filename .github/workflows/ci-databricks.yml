@@ -34,13 +34,12 @@ jobs:
       - name: Get file from current branch
         id: get_current_files
         run: |
-          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f\n" | sort -r)
+          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f," | sort -r)
           DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
-          FILES_ARRAY=()
-          for file in "${CURRENT_FILES[@]}"
+          readarray -t CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
+          for file in "${CURRENT_FILES_ARRAY[@]}"
           do
             echo "$file"
-            FILES_ARRAY+=("$file")
             CURRENT_FILE_DATE=$(date -d "${file:0:8} ${file:8:2}:${file:10:2}" +"%Y-%m-%d %H:%M:%S")
             if [[ $CURRENT_FILE_DATE > $DATETIME ]]; then
               echo "New migration file can not be later than current datetime"
@@ -48,7 +47,6 @@ jobs:
             fi
           done
           echo "::set-output name=current_file::$CURRENT_FILES"
-          echo "::set-output name=files_array::$FILES_ARRAY"
 
       - name: Checkout main branch
         uses: actions/checkout@v2
@@ -65,8 +63,7 @@ jobs:
         run: |
           DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
           CURRENT_FILES="${{ steps.get_current_files.outputs.current_file }}"
-          FILES_ARRAY="${{ steps.get_current_files.outputs.files_array }}"
-          for file in "${FILES_ARRAY[@]}"
+          for file in "${CURRENT_FILES[@]}"
           do
             echo "$file"
           done
