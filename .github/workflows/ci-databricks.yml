@@ -41,7 +41,7 @@ jobs:
             echo "$file"
             FILE_ARRAY+=("$file")
           done
-          echo "::set-output name=file_array::$FILE_ARRAY[@]"
+          echo "::set-output name=file_array::$FILE_ARRAY[0]"
           echo "::set-output name=current_file::$CURRENT_FILES[@]"
 
       - name: Checkout main branch
