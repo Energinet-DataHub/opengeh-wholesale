@@ -48,18 +48,89 @@ public class ActorRepositoryTests
         dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(dataLakeFileClientMock.Object);
 
-        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Wholesale.Domain.ActorAggregate.Actor>(stream.Object))
-            .ReturnsAsync(new List<Wholesale.Domain.ActorAggregate.Actor>());
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>(stream.Object))
+            .ReturnsAsync(new List<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>());
 
         var sut = new ActorRepository(
             dataLakeClientMock.Object,
             jsonNewlineSerializerMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, MarketRole.EnergySupplier);
+        var actual = await sut.GetEnergySuppliersAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production);
 
         // Assert
         actual.Should().NotBeNull();
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task GetAsync_WhenDuplicateEnergySuppliers_ReturnsDistinctActorsList(
+        [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
+    {
+        // Arrange
+        var actorRelationsDeserialized = new List<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>
+        {
+            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("123", "111"),
+            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("234", "222"),
+            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("123", "333"),
+        };
+        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor>() { new Wholesale.Domain.ActorAggregate.Actor("123"), new Wholesale.Domain.ActorAggregate.Actor("234") }; // distinct gln list
+
+        dataLakeFileClientMock
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
+            .ReturnsAsync(It.IsAny<Stream>());
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(dataLakeFileClientMock.Object);
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>(It.IsAny<Stream>()))
+            .ReturnsAsync(actorRelationsDeserialized);
+
+        var sut = new ActorRepository(
+            dataLakeClientMock.Object,
+            jsonNewlineSerializerMock.Object);
+
+        // Act
+        var actual = await sut.GetEnergySuppliersAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expectedGln);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task GetAsync_WhenDuplicateBalanceResponsibleParies_ReturnsDistinctActorsList(
+        [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
+    {
+        // Arrange
+        var actorRelationsDeserialized = new List<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>
+        {
+            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("123", "111"),
+            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("234", "111"),
+            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("345", "333"),
+        };
+
+        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor>() { new Wholesale.Domain.ActorAggregate.Actor("111"), new Wholesale.Domain.ActorAggregate.Actor("333") }; // distinct gln list
+
+        dataLakeFileClientMock
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
+            .ReturnsAsync(It.IsAny<Stream>());
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(dataLakeFileClientMock.Object);
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>(It.IsAny<Stream>()))
+            .ReturnsAsync(actorRelationsDeserialized);
+
+        var sut = new ActorRepository(
+            dataLakeClientMock.Object,
+            jsonNewlineSerializerMock.Object);
+
+        // Act
+        var actual = await sut.GetBalanceResponsiblePartiesAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expectedGln);
     }
 
     [Theory]
