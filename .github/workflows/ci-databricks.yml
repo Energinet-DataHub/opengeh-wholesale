@@ -56,11 +56,11 @@ jobs:
           do
             echo "$file"
           done
+          echo $CURRENT_FILES
           # CURRENT_FILE_DATE=$(date -d "${CURRENT_FILE:0:8} ${CURRENT_FILE:8:2}:${CURRENT_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
           # MAIN_FILE="${{ steps.get_main_file.outputs.main_file }}"
           # MAIN_FILE_DATE=$(date -d "${MAIN_FILE:0:8} ${MAIN_FILE:8:2}:${MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
           # echo $DATETIME
-          # echo $CURRENT_FILE
           # echo $CURRENT_FILE_DATE
           # echo $MAIN_FILE
           # echo $MAIN_FILE_DATE
