@@ -64,12 +64,10 @@ jobs:
           if [[ $CURRENT_FILE_DATE > $DATETIME ]]; then
             echo "New migration file can not be later than current datetime"
             exit 1
-          fi
 
           if [[ $CURRENT_FILE_DATE < $MAIN_FILE_DATE ]]; then
             echo "New migration file can not be before existing migration"
             exit 1
-          fi
 
 
   databricks_ci_test:
