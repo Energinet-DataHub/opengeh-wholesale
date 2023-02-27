@@ -2,7 +2,7 @@
 
 ## Version 5.0.11
 
-Get settlement report for batch id and grid area code.
+Added a method to get settlement reports by batch id and grid area code.
 
 ## Version 5.0.10
 
