@@ -46,7 +46,7 @@ public class ProcessStepControllerTests : WebApiTestBase
         // Arrange
         const string expectedUrl = "/v2.3/ProcessStepResult";
         applicationServiceMock
-            .Setup(service => service.GetActorsAsync(request))
+            .Setup(service => service.GetActorsAsync(request, TODO, TODO, TODO, TODO))
             .ReturnsAsync(() => new[] { expectedActor });
         Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 

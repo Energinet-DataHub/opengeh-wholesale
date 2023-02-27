@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,39 +34,36 @@ public class ProcessStepEnergySupplierController : V3ControllerBase
     }
 
     /// <summary>
-    /// Energy supplier identified by GLN.
-    /// </summary>
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpGet]
-    [Route("{gln}")]
-    public Task<ActorDto> GetByGlnAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType, [FromRoute] string gln)
-    {
-        // TODO: missing implementation
-        return Task.FromResult<ActorDto>(null!);
-    }
-
-    /// <summary>
     /// Energy suppliers associated with the balance responsible party specified by the <paramref name="balanceResponsibleParty"/>.
     /// </summary>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpGet]
     public async Task<List<ActorDto>> GetAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType, [FromQuery] string? balanceResponsibleParty)
     {
-        if (balanceResponsibleParty == null)
-            return await GetAllAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+        if (balanceResponsibleParty != null)
+            return await GetByBalanceResponsiblePartyAsync(batchId, gridAreaCode, timeSeriesType, balanceResponsibleParty).ConfigureAwait(false);
 
-        // TODO: missing implementation
-        return null!;
+        return await GetAllAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Energy suppliers.
+    /// All energy suppliers.
     /// </summary>
     private async Task<List<ActorDto>> GetAllAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType)
     {
-        var processStepActorsRequest = new ProcessStepActorsRequest(batchId, gridAreaCode, timeSeriesType, MarketRole.EnergySupplier);
+        var actors = await _processStepApplicationService.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
 
-        var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
+        return actors
+            .Select(a => new ActorDto(a.Gln))
+            .ToList();
+    }
+
+    /// <summary>
+    /// Energy suppliers associated with the balance responsible party specified by the <paramref name="balanceResponsibleParty"/>.
+    /// </summary>
+    private async Task<List<ActorDto>> GetByBalanceResponsiblePartyAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsibleParty)
+    {
+        var actors = await _processStepApplicationService.GetEnergySuppliersByBalanceResponsiblePartyAsync(batchId, gridAreaCode, timeSeriesType, balanceResponsibleParty).ConfigureAwait(false);
 
         return actors
             .Select(a => new ActorDto(a.Gln))

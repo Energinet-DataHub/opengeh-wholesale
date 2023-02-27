@@ -90,7 +90,7 @@ public class ProcessStepApplicationServiceTests
                 TimeSeriesType.Production)).ReturnsAsync(Array.Empty<Actor>());
 
     // Act
-        var actors = await sut.GetActorsAsync(actorsRequest);
+        var actors = await sut.GetActorsAsync(actorsRequest, TODO, TODO, TODO, TODO);
 
         // Assert
         actors.Should().BeEmpty();
@@ -118,7 +118,7 @@ public class ProcessStepApplicationServiceTests
                 TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
 
         // Act
-        var actors = await sut.GetActorsAsync(actorsRequest);
+        var actors = await sut.GetActorsAsync(actorsRequest, TODO, TODO, TODO, TODO);
 
         // Assert
         actors.Single().Gln.Should().Be(expectedGlnNumber);
@@ -146,7 +146,7 @@ public class ProcessStepApplicationServiceTests
                 TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
 
         // Act
-        var actors = await sut.GetActorsAsync(actorsRequest);
+        var actors = await sut.GetActorsAsync(actorsRequest, TODO, TODO, TODO, TODO);
 
         // Assert
         actors.Single().Gln.Should().Be(expectedGlnNumber);

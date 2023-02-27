@@ -66,7 +66,7 @@ public class ProcessStepBalanceResponsiblePartyTests : WebApiTestBase
         var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/balance-responsible-parties";
 
         applicationServiceMock
-            .Setup(service => service.GetActorsAsync(request))
+            .Setup(service => service.GetActorsAsync(request, TODO, TODO, TODO, TODO))
             .ReturnsAsync(() => new[] { expectedActor });
         Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessStep;
 
@@ -21,7 +22,11 @@ namespace Energinet.DataHub.Wholesale.Application.ProcessStep;
 /// </summary>
 public interface IProcessStepApplicationService
 {
-    Task<WholesaleActorDto[]> GetActorsAsync(ProcessStepActorsRequest processStepActorsRequest);
+    Task<WholesaleActorDto[]> GetEnergySuppliersAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType);
+
+    Task<WholesaleActorDto[]> GetEnergySuppliersByBalanceResponsiblePartyAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln);
+
+    Task<WholesaleActorDto[]> GetBalanceResponsiblePartiesAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType);
 
     Task<ProcessStepResultDto> GetResultAsync(
         Guid batchId,

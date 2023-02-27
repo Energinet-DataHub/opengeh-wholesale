@@ -40,23 +40,41 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
         _actorRepository = actorRepository;
     }
 
-    public async Task<WholesaleActorDto[]> GetActorsAsync(ProcessStepActorsRequest processStepActorsRequest)
+    // public async Task<WholesaleActorDto[]> GetActorsAsync(Guid BatchId, string GridAreaCode, Domain.ProcessStepResultAggregate.TimeSeriesType timeSeriesType1,
+    //     MarketRole MarketRole)
+    // {
+    //     var batchId = processStepActorsRequest.BatchId;
+    //     var gridAreaCode = new GridAreaCode(processStepActorsRequest.GridAreaCode);
+    //     var timeSeriesType = TimeSeriesTypeMapper.Map(processStepActorsRequest.Type);
+    //     switch (processStepActorsRequest.MarketRole)
+    //     {
+    //         case MarketRole.EnergySupplier:
+    //             var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+    //             return Map(energySuppliers);
+    //         case MarketRole.BalanceResponsibleParty:
+    //             var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+    //             return Map(balanceResponsibleParties);
+    //
+    //         default:
+    //             throw new ArgumentOutOfRangeException(processStepActorsRequest.MarketRole.ToString(), "Unexpected MarketRole. Cannot perform mapping.");
+    //     }
+    // }
+    public async Task<WholesaleActorDto[]> GetBalanceResponsiblePartiesAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType)
     {
-        var batchId = processStepActorsRequest.BatchId;
-        var gridAreaCode = new GridAreaCode(processStepActorsRequest.GridAreaCode);
-        var timeSeriesType = TimeSeriesTypeMapper.Map(processStepActorsRequest.Type);
-        switch (processStepActorsRequest.MarketRole)
-        {
-            case MarketRole.EnergySupplier:
-                var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
-                return Map(energySuppliers);
-            case MarketRole.BalanceResponsibleParty:
-                var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
-                return Map(balanceResponsibleParties);
+        var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesTypeMapper.Map(timeSeriesType)).ConfigureAwait(false);
+        return Map(balanceResponsibleParties);
+    }
 
-            default:
-                throw new ArgumentOutOfRangeException(processStepActorsRequest.MarketRole.ToString(), "Unexpected MarketRole. Cannot perform mapping.");
-        }
+    public async Task<WholesaleActorDto[]> GetEnergySuppliersAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType)
+    {
+        var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesTypeMapper.Map(timeSeriesType)).ConfigureAwait(false);
+        return Map(energySuppliers);
+    }
+
+    public async Task<WholesaleActorDto[]> GetEnergySuppliersByBalanceResponsiblePartyAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln)
+    {
+        var energySuppliers = await _actorRepository.GetEnergySuppliersByBalanceResponsiblePartyAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesTypeMapper.Map(timeSeriesType), balanceResponsiblePartyGln).ConfigureAwait(false);
+        return Map(energySuppliers);
     }
 
     public async Task<ProcessStepResultDto> GetResultAsync(
