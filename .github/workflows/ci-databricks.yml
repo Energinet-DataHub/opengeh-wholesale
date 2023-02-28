@@ -25,6 +25,64 @@ jobs:
       ARCHITECTURE: 'x64'
       WHEEL_WORKING_DIRECTORY: './source/databricks'
 
+  migration_scripts_verification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+
+      - name: Get file from current branch
+        id: get_current_files
+        run: |
+          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f,")
+          echo "::set-output name=current_files::$CURRENT_FILES"
+
+      - name: Checkout main branch
+        uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - name: Get file from main branch
+        id: get_main_files
+        run: |
+          MAIN_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f,")
+          echo "::set-output name=main_files::$MAIN_FILES"
+
+      - name: Validate migration script names
+        run: |
+          CURRENT_DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
+          IFS=','
+
+          CURRENT_FILES="${{ steps.get_current_files.outputs.current_files }}"
+          read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
+
+          MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
+          read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
+
+          main_files_sorted_array=($(echo "${MAIN_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
+          read -ra LATEST_MAIN_FILE <<<"$main_files_sorted_array"
+
+          LATEST_MAIN_FILE_DATE=$(date -d "${LATEST_MAIN_FILE[0]:0:8} ${LATEST_MAIN_FILE[0]:8:2}:${LATEST_MAIN_FILE[0]:10:2}" +"%Y-%m-%d %H:%M:%S")
+          
+          for item in "${CURRENT_FILES_ARRAY[@]}"
+          do
+            if [[ ! " ${MAIN_FILES_ARRAY[@]} " =~ "${item}" ]]; then
+              CURRENT_UNIQUE_FILE_DATE=$(date -d "${item:0:8} ${item:8:2}:${item:10:2}" +"%Y-%m-%d %H:%M:%S")
+              if [[ $CURRENT_UNIQUE_FILE_DATE < $LATEST_MAIN_FILE_DATE ]]; then
+                echo "New migration file: ${item} can not be before the latest migration script"
+                exit 1
+              fi
+              if [[ $CURRENT_UNIQUE_FILE_DATE == $LATEST_MAIN_FILE_DATE ]]; then
+                echo "New migration file: ${item} can not be the same time as the latest migration script"
+                exit 1
+              fi
+              if [[ $CURRENT_UNIQUE_FILE_DATE > $CURRENT_DATETIME ]]; then
+                echo "New migration file: ${item} can not be later than current datetime"
+                exit 1
+              fi
+            fi
+          done
+
   databricks_ci_test:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
     with:
