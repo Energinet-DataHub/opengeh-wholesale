@@ -59,14 +59,42 @@ public class ProcessStepEnergySupplierTests : WebApiTestBase
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsExpectedActorInJson(
         Mock<IProcessStepApplicationService> applicationServiceMock,
-        ProcessStepActorsRequest request,
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
         WholesaleActorDto expectedActor)
     {
         // Arrange
-        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/energy-suppliers";
+        var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers";
 
         applicationServiceMock
-            .Setup(service => service.GetEnergySuppliersAsync(request.BatchId, request.GridAreaCode, request.Type))
+            .Setup(service => service.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType))
+            .ReturnsAsync(() => new[] { expectedActor });
+        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+
+        // Act
+        var actualContent = await Client.GetAsync(url);
+
+        // Assert
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<List<ActorDto>>();
+        actualActors!.Single().Should().BeEquivalentTo(expectedActor);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_WithBalanceResponsibleGln_ReturnsExpectedActorInJson(
+        Mock<IProcessStepApplicationService> applicationServiceMock,
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        string balanceResponsiblePartyGln,
+        WholesaleActorDto expectedActor)
+    {
+        // Arrange
+        var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers/?balanceResponsibleParty={balanceResponsiblePartyGln}";
+
+        applicationServiceMock
+            .Setup(service => service.GetEnergySuppliersByBalanceResponsiblePartyAsync(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyGln))
             .ReturnsAsync(() => new[] { expectedActor });
         Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
