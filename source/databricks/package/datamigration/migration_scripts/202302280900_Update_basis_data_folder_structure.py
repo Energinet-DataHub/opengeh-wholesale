@@ -73,6 +73,9 @@ def migrate_batch(
         )
 
         for grid_area_directory in grid_area_directories:
+            if not path.basename(grid_area_directory.name).startswith("grid_area="):
+                continue
+
             source_path = path.join(grid_area_directory.name, "gln=grid_area")
 
             # Create parent directory of the target directory because otherwise directory_client.rename_directory will fail
@@ -91,7 +94,8 @@ def migrate_batch(
             move_and_rename_folder(file_system_client, source_path, target_path)
 
             # Remove old empty parent directory
-            if not is_directory_empty(file_system_client, time_series_type_path):
+            if not is_directory_empty(file_system_client, grid_area_directory.name):
                 raise MigrationError(
-                    f"Directory '{time_series_type_path}' not removed because it is not empty"
+                    f"Directory '{grid_area_directory.name}' not removed because it is not empty"
                 )
+            file_system_client.delete_directory(grid_area_directory.name)

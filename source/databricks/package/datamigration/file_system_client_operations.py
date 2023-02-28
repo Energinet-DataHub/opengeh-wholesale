@@ -20,8 +20,8 @@ def is_directory_empty(file_system_client: FileSystemClient, path: str) -> bool:
     sub_paths = file_system_client.get_paths(path)
     # ItemPaged has no __len__ method, so we need to iterate in order to determine whether there are any items
     for unused in sub_paths:
-        return True
-    return False
+        return False
+    return True
 
 
 def move_and_rename_folder(
