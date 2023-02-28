@@ -33,9 +33,6 @@ Only periods meeting the following requirements are included:
 Data must be stored in a Delta table.
 The table holds all consumption, production, exchange, and child metering points.
 
-It is important to partition by to-date instead of from-date as it will ensure efficient data filtering.
-This is because most periods will have a to-date prior to the calculation period start date.
-
 The table data must always contain updated periods.
 """
 metering_point_period_schema = StructType(
@@ -44,7 +41,7 @@ metering_point_period_schema = StructType(
         # Used in balance fixing and settlement.
         # Example: 578710000000000103
         StructField("MeteringPointId", StringType(), False),
-        # "E17" (consumption) | "E18" (production) | "E20" (exchange) | "D01", "D03"-"D16", "D19", "D21"-"D98" (child)
+        # "E17" (consumption) | "E18" (production) | "E20" (exchange) | "D01", "D05"-"D12", "D14", "D15", "D19" (child)
         # Used in balance fixing and settlement. However, child metering points are only used in settlement.
         # Example: E20
         StructField("Type", StringType(), False),
