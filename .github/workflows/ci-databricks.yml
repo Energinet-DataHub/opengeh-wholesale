@@ -55,8 +55,7 @@ jobs:
           echo "-------------------current files-----------------------"
           CURRENT_FILES="${{ steps.get_current_files.outputs.current_files }}"
           read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
-          current_files_sorted=($(echo "${CURRENT_FILES_ARRAY[@]}" | tr ' ' ',' | sort -r))
-          read -ra CURRENT_FILES_REVERSE_SORTED_ARRAY <<<"$current_files_sorted"
+          current_files_sorted=($(echo "${CURRENT_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
           for file in "${current_files_sorted[@]}"
           do
             echo "$file"
@@ -66,16 +65,13 @@ jobs:
               exit 1
             fi
           done
-          echo "${CURRENT_FILES_REVERSE_SORTED_ARRAY[1]}"
 
           echo "-------------------main files-----------------------"
           MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
           read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
           main_files_sorted_array=($(echo "${MAIN_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
-          for file in "${main_files_sorted_array[@]}"
-          do
-            echo "$file"
-          done
+          read -ra LATEST_MAIN_FILE <<<"$main_files_sorted_array"
+          LATEST_MAIN_FILE_DATE=$(date -d "${LATEST_MAIN_FILE:0:8} ${LATEST_MAIN_FILE:8:2}:${LATEST_MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
           echo "test 1"
           echo "${main_files_sorted_array[0]}"
           echo "test 2"
@@ -89,6 +85,7 @@ jobs:
             fi
           done
           echo "${unique_arr[@]}"
+          echo "${unique_arr[1]}"
 
           # MAIN_FILE_DATE=$(date -d "${MAIN_FILE:0:8} ${MAIN_FILE:8:2}:${MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
           # echo $DATETIME
