@@ -40,25 +40,6 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
         _actorRepository = actorRepository;
     }
 
-    // public async Task<WholesaleActorDto[]> GetActorsAsync(Guid BatchId, string GridAreaCode, Domain.ProcessStepResultAggregate.TimeSeriesType timeSeriesType1,
-    //     MarketRole MarketRole)
-    // {
-    //     var batchId = processStepActorsRequest.BatchId;
-    //     var gridAreaCode = new GridAreaCode(processStepActorsRequest.GridAreaCode);
-    //     var timeSeriesType = TimeSeriesTypeMapper.Map(processStepActorsRequest.Type);
-    //     switch (processStepActorsRequest.MarketRole)
-    //     {
-    //         case MarketRole.EnergySupplier:
-    //             var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
-    //             return Map(energySuppliers);
-    //         case MarketRole.BalanceResponsibleParty:
-    //             var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
-    //             return Map(balanceResponsibleParties);
-    //
-    //         default:
-    //             throw new ArgumentOutOfRangeException(processStepActorsRequest.MarketRole.ToString(), "Unexpected MarketRole. Cannot perform mapping.");
-    //     }
-    // }
     public async Task<WholesaleActorDto[]> GetBalanceResponsiblePartiesAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType)
     {
         var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesTypeMapper.Map(timeSeriesType)).ConfigureAwait(false);
@@ -95,7 +76,7 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
         return _processStepResultMapper.MapToDto(processStepResult);
     }
 
-    private WholesaleActorDto[] Map(Actor[] actors)
+    private static WholesaleActorDto[] Map(Actor[] actors)
     {
         return actors.Select(batchActor => new WholesaleActorDto(batchActor.Gln)).ToArray();
     }
