@@ -86,6 +86,25 @@ jobs:
           done
           echo "${unique_arr[@]}"
 
+          array1=("string1" "string2" "string3")
+          array2=("string2" "string4" "string5")
+          in_array1_not_array2=()
+          in_array2_not_array1=()
+          for item in "${array1[@]}"
+          do
+            if [[ ! " ${array2[@]} " =~ "${item}" ]]; then
+              in_array1_not_array2+=("$item")
+            fi
+          done
+          for item in "${array2[@]}"
+          do
+            if [[ ! " ${array1[@]} " =~ "${item}" ]]; then
+              in_array2_not_array1+=("$item")
+            fi
+          done
+          echo "Elements in array1 but not in array2: ${in_array1_not_array2[@]}"
+          echo "Elements in array2 but not in array1: ${in_array2_not_array1[@]}"
+
           # MAIN_FILE_DATE=$(date -d "${MAIN_FILE:0:8} ${MAIN_FILE:8:2}:${MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
           # echo $DATETIME
           # echo $CURRENT_FILE_DATE
