@@ -61,7 +61,7 @@ jobs:
           # Turns comma seperated string in to an array using the IFS
           read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
 
-          # Get the comma seperated string saved to output main_files
+          # Get the comma separated string saved to output main_files
           MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
           # Turns comma seperated string in to an array using the IFS
           read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
