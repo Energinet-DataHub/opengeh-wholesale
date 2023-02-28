@@ -71,7 +71,7 @@ jobs:
           read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
           main_files_sorted_array=($(echo "${MAIN_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
           read -ra LATEST_MAIN_FILE <<<"$main_files_sorted_array"
-          LATEST_MAIN_FILE_DATE=$(date -d "${LATEST_MAIN_FILE:0:8} ${LATEST_MAIN_FILE:8:2}:${LATEST_MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
+          LATEST_MAIN_FILE_DATE=$(date -d "${LATEST_MAIN_FILE[0]:0:8} ${LATEST_MAIN_FILE[0]:8:2}:${LATEST_MAIN_FILE[0]:10:2}" +"%Y-%m-%d %H:%M:%S")
 
           echo "---------------------combined----------------------"
           for item in "${CURRENT_FILES_ARRAY[@]}"
