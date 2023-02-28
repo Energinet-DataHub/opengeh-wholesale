@@ -29,9 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Get files from current branch
+      - name: Get files from PR branch
         id: get_current_files
         run: |
           # Gets all files in migration_scripts folder on the branch being merged excluding the __init__ file and put them into at comma seperated string
@@ -39,7 +39,7 @@ jobs:
           echo "::set-output name=current_files::$CURRENT_FILES"
 
       - name: Checkout main branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: main
 
@@ -66,7 +66,7 @@ jobs:
           # Turns comma seperated string in to an array using the IFS
           read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
 
-          # Reverse sort the MAIN_FILES_ARRAY to get the get the file with the latest prefix datetime first
+          # Reverse sort the MAIN_FILES_ARRAY to get the file with the latest prefix datetime first
           main_files_sorted=($(echo "${MAIN_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
           # Turn main_files_sorted into a array (the array will only have one item, since it wont look past a new line)
           read -ra LATEST_MAIN_FILE <<<"$main_files_sorted"
