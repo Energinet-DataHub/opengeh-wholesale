@@ -75,7 +75,10 @@ jobs:
           do
             echo "$file"
           done
-
+          echo "test 1"
+          echo "${main_files_sorted_array[0]}"
+          echo "test 2"
+          echo "${MAIN_FILES_ARRAY[0]}"
           echo "---------------------combined----------------------"
           unique_arr=()
           for item in "${CURRENT_FILES_ARRAY[@]}"
