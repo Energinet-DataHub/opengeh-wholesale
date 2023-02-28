@@ -68,8 +68,8 @@ jobs:
           do
             if [[ ! " ${MAIN_FILES_ARRAY[@]} " =~ "${item}" ]]; then
               CURRENT_UNIQUE_FILE_DATE=$(date -d "${item:0:8} ${item:8:2}:${item:10:2}" +"%Y-%m-%d %H:%M:%S")
-              if [[ $CURRENT_UNIQUE_FILE_DATE < $LATEST_MAIN_FILE_DATE ]]; then
-                echo "New migration file: ${item} can not be before the latest migration"
+              if [[ $CURRENT_UNIQUE_FILE_DATE <= $LATEST_MAIN_FILE_DATE ]]; then
+                echo "New migration file: ${item} can not be before or at the same time of the latest migration script"
                 exit 1
               fi
               if [[ $CURRENT_UNIQUE_FILE_DATE > $DATETIME ]]; then
