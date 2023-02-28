@@ -55,7 +55,7 @@ jobs:
           echo "-------------------current files-----------------------"
           CURRENT_FILES="${{ steps.get_current_files.outputs.current_files }}"
           read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
-          current_files_sorted=($(echo "${CURRENT_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
+          current_files_sorted=($(echo "${CURRENT_FILES_ARRAY[@]}" | tr ' ' ',' | sort -r))
           read -ra CURRENT_FILES_REVERSE_SORTED_ARRAY <<<"$current_files_sorted"
           for file in "${current_files_sorted[@]}"
           do
