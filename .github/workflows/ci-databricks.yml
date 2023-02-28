@@ -65,12 +65,12 @@ jobs:
               exit 1
             fi
           done
-          echo $CURRENT_FILES_ARRAY[0]
+          echo "${CURRENT_FILES_ARRAY[0]}"
 
           echo "-------------------main files-----------------------"
           MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
           read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
-          main_files_sorted_array=($(echo "${MAIN_FILES_ARRAY[@]}" | sort -r))
+          main_files_sorted_array=($(echo "${MAIN_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
           for file in "${main_files_sorted_array[@]}"
           do
             echo "$file"
