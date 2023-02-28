@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import package.infrastructure as infra
-from package.constants import PartitionKeyName
 from package.constants import Colname
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import lit
@@ -34,21 +33,19 @@ class BasisDataWriter:
         basis_data_directory = f"{self.__output_path}/basis_data"
 
         self._write_basis_data_to_csv(
-            f"{basis_data_directory}/time_series_quarter/grouping=total_ga",
-            timeseries_quarter_df,
+            f"{basis_data_directory}/time_series_quarter", timeseries_quarter_df
         )
         self._write_basis_data_to_csv(
-            f"{basis_data_directory}/time_series_hour/grouping=total_ga",
-            timeseries_hour_df,
+            f"{basis_data_directory}/time_series_hour", timeseries_hour_df
         )
         self._write_basis_data_to_csv(
-            f"{basis_data_directory}/master_basis_data/grouping=total_ga",
-            master_basis_data_df,
+            f"{basis_data_directory}/master_basis_data", master_basis_data_df
         )
 
     def _write_basis_data_to_csv(self, path: str, df: DataFrame) -> None:
-        df = df.withColumnRenamed("GridAreaCode", PartitionKeyName.GRID_AREA)
+        df = df.withColumnRenamed("GridAreaCode", "grid_area")
+        df = df.withColumn("gln", lit("grid_area"))
 
-        df.repartition(PartitionKeyName.GRID_AREA).write.mode("overwrite").partitionBy(
-            PartitionKeyName.GRID_AREA
+        df.repartition("grid_area").write.mode("overwrite").partitionBy(
+            "grid_area", Colname.gln
         ).option("header", True).csv(path)

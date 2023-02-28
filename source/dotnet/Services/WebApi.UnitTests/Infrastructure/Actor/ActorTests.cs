@@ -12,12 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
+using Xunit;
+using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Domain.ActorAggregate;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Actor;
 
-public interface IActorRepository
+[UnitTest]
+public class ActorTests
 {
-    Task<Actor[]> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, MarketRole marketRole);
+    [Fact]
+    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
+    {
+        await using var stream = EmbeddedResources.GetStream("Infrastructure.Actor.calculator-actor.json");
+
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<Wholesale.Infrastructure.BatchActor.Actor>(stream);
+    }
 }

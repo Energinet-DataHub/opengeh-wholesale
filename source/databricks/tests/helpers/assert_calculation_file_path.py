@@ -56,6 +56,4 @@ def assert_file_path_match_contract(
         extension,
     )
 
-    assert re.match(
-        expected_path_expression, actual_file_path
-    ), f"Actual path '{actual_file_path}' does not match expected path '{expected_path_expression}'"
+    assert re.match(expected_path_expression, actual_file_path)

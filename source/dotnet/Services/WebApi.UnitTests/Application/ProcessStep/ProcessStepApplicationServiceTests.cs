@@ -25,6 +25,8 @@ using Moq;
 using Test.Core;
 using Xunit;
 using Xunit.Categories;
+using Actor = Energinet.DataHub.Wholesale.Domain.ActorAggregate.Actor;
+using MarketRole = Energinet.DataHub.Wholesale.Domain.ActorAggregate.MarketRole;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.ProcessStep;
@@ -84,12 +86,13 @@ public class ProcessStepApplicationServiceTests
             Contracts.MarketRole.EnergySupplier);
 
         actorRepositoryMock
-            .Setup(x => x.GetEnergySuppliersAsync(
+            .Setup(x => x.GetAsync(
                 actorsRequest.BatchId,
                 new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production)).ReturnsAsync(Array.Empty<Actor>());
+                TimeSeriesType.Production,
+                MarketRole.EnergySupplier)).ReturnsAsync(new Actor[] { });
 
-    // Act
+        // Act
         var actors = await sut.GetActorsAsync(actorsRequest);
 
         // Assert
@@ -98,7 +101,7 @@ public class ProcessStepApplicationServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetActorsAsync_WhenMarketRoleIsEnergySupplier_ReturnsEnergySupplierGlns(
+    public async Task GetActorsAsync_ReturnsActors(
         Guid batchId,
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
         ProcessStepApplicationService sut)
@@ -112,38 +115,11 @@ public class ProcessStepApplicationServiceTests
 
         var expectedGlnNumber = "ExpectedGlnNumber";
         actorRepositoryMock
-            .Setup(x => x.GetEnergySuppliersAsync(
+            .Setup(x => x.GetAsync(
                 actorsRequest.BatchId,
                 new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
-
-        // Act
-        var actors = await sut.GetActorsAsync(actorsRequest);
-
-        // Assert
-        actors.Single().Gln.Should().Be(expectedGlnNumber);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetActorsAsync_WhenMarketRoleIsBalanceResponsible_ReturnsBalanceResponsibleGlns(
-        Guid batchId,
-        [Frozen] Mock<IActorRepository> actorRepositoryMock,
-        ProcessStepApplicationService sut)
-    {
-        // Arrange
-        var actorsRequest = new ProcessStepActorsRequest(
-            batchId,
-            "805",
-            Contracts.TimeSeriesType.Production,
-            Contracts.MarketRole.BalanceResponsibleParty);
-
-        var expectedGlnNumber = "ExpectedGlnNumber";
-        actorRepositoryMock
-            .Setup(x => x.GetBalanceResponsiblePartiesAsync(
-                actorsRequest.BatchId,
-                new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
+                TimeSeriesType.Production,
+                MarketRole.EnergySupplier)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
 
         // Act
         var actors = await sut.GetActorsAsync(actorsRequest);

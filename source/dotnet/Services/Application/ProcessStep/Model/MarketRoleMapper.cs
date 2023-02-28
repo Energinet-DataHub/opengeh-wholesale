@@ -12,12 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Domain.ActorAggregate;
+namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 
-public interface IActorRepository
+public static class MarketRoleMapper
 {
-    Task<Actor[]> GetAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, MarketRole marketRole);
+    public static Domain.ActorAggregate.MarketRole Map(MarketRole marketRole)
+    {
+        switch (marketRole)
+        {
+            case MarketRole.EnergySupplier:
+                return Domain.ActorAggregate.MarketRole.EnergySupplier;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(marketRole), marketRole, null);
+        }
+    }
 }

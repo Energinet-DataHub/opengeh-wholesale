@@ -12,20 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
+using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Actor;
 
 [UnitTest]
-public class ActorRelationTests
+public class MarketRoleMapperTests
 {
-    [Fact]
-    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
+    [Theory]
+    [InlineData(MarketRole.EnergySupplier, "energy_supplier")]
+    [InlineData(MarketRole.BalanceResponsibleParty, "balance_responsible_party")]
+    public void WhenMapIsCalled_ThenCorrectStringIsReturned(MarketRole role, string expected)
     {
-        await using var stream = EmbeddedResources.GetStream("Infrastructure.Actor.calculator-actor.json");
-
-        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<Wholesale.Infrastructure.BatchActor.ActorRelation>(stream);
+        var marketRoles = Enum.GetValues(typeof(MarketRole)).Cast<MarketRole>();
+        foreach (var marketRole in marketRoles)
+        {
+            var actual = MarketRoleMapper.Map(marketRole);
+            if (marketRole == role)
+                actual.Should().Be(expected);
+        }
     }
 }
