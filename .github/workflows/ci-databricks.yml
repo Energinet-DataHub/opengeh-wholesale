@@ -32,11 +32,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Get files from PR branch
-        id: get_current_files
+        id: get_script_files_in_pr
         run: |
           # Gets all files in migration_scripts folder on the branch being merged excluding the __init__ file and put them into at comma seperated string
-          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
-          echo "::set-output name=current_files::$CURRENT_FILES"
+          SCRIPT_FILES_IN_PR=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
+          echo "::set-output name=script_files_in_pr::$SCRIPT_FILES_IN_PR"
 
       - name: Checkout main branch
         uses: actions/checkout@v3
@@ -44,11 +44,11 @@ jobs:
           ref: main
 
       - name: Get files from main branch
-        id: get_main_files
+        id: get_script_files_in_main
         run: |
         # Gets all files in migration_scripts folder on the main branch excluding the __init__ file and put them into at comma seperated string
-          MAIN_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
-          echo "::set-output name=main_files::$MAIN_FILES"
+          SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
+          echo "::set-output name=script_files_in_main::$SCRIPT_FILES_IN_MAIN"
 
       - name: Verify migration script names
         run: |
@@ -56,43 +56,43 @@ jobs:
           #Internal Field Seperator
           IFS=','
 
-          # Get the comma seperated string saved to output current_files
-          CURRENT_FILES="${{ steps.get_current_files.outputs.current_files }}"
+          # Get the comma seperated string saved to output script_files_in_pr
+          SCRIPT_FILES_IN_PR="${{ steps.get_script_files_in_pr.outputs.script_files_in_pr }}"
           # Turns comma seperated string in to an array using the IFS
-          read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
+          read -ra SCRIPT_FILES_IN_PR_ARRAY <<<"$SCRIPT_FILES_IN_PR"
 
-          # Get the comma separated string saved to output main_files
-          MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
+          # Get the comma separated string saved to output script_files_in_main
+          SCRIPT_FILES_IN_MAIN="${{ steps.get_script_files_in_main.outputs.script_files_in_main }}"
           # Turns comma seperated string in to an array using the IFS
-          read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
+          read -ra SCRIPT_FILES_IN_MAIN_ARRAY <<<"$SCRIPT_FILES_IN_MAIN"
 
-          # Reverse sort the MAIN_FILES_ARRAY to get the file with the latest prefix datetime first
-          main_files_sorted=($(echo "${MAIN_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
-          # Turn main_files_sorted into a array (the array will only have one item, since it wont look past a new line)
-          read -ra LATEST_MAIN_FILE <<<"$main_files_sorted"
+          # Reverse sort the SCRIPT_FILES_IN_MAIN_ARRAY to get the file with the latest prefix datetime first
+          script_files_in_main_reverse_sorted=($(echo "${SCRIPT_FILES_IN_MAIN_ARRAY[@]}" | tr ' ' '\n' | sort -r))
+          # Turn script_files_in_main_reverse_sorted into a array (the array will only have one item, since it wont look past a new line)
+          read -ra LATEST_SCRIPT_FILE_IN_MAIN <<<"$script_files_in_main_reverse_sorted"
 
-          # Create a datetime from the prefix of the first item in the LATEST_MAIN_FILE array
-          LATEST_MAIN_FILE_DATE=$(date -d "${LATEST_MAIN_FILE[0]:0:8} ${LATEST_MAIN_FILE[0]:8:2}:${LATEST_MAIN_FILE[0]:10:2}" +"%Y-%m-%d %H:%M:%S")
+          # Create a datetime from the prefix of the first item in the LATEST_SCRIPT_FILE_IN_MAIN array
+          LATEST_SCRIPT_FILE_IN_MAIN_DATETIME=$(date -d "${LATEST_SCRIPT_FILE_IN_MAIN[0]:0:8} ${LATEST_SCRIPT_FILE_IN_MAIN[0]:8:2}:${LATEST_SCRIPT_FILE_IN_MAIN[0]:10:2}" +"%Y-%m-%d %H:%M:%S")
           
-          for item in "${CURRENT_FILES_ARRAY[@]}"
+          for item in "${SCRIPT_FILES_IN_PR_ARRAY[@]}"
           do
-            # If a item from the CURRENT_FILES_ARRAY does not exist in the MAIN_FILES_ARRAY then
-            if [[ ! " ${MAIN_FILES_ARRAY[@]} " =~ "${item}" ]]; then
-              # Create a datetime from the prefix of the item that was not in the MAIN_FILES_ARRAY
-              CURRENT_UNIQUE_FILE_DATE=$(date -d "${item:0:8} ${item:8:2}:${item:10:2}" +"%Y-%m-%d %H:%M:%S")
-              # Fail if the items datetime is less than the LATEST_MAIN_FILE_DATE
-              if [[ $CURRENT_UNIQUE_FILE_DATE < $LATEST_MAIN_FILE_DATE ]]; then
-                echo "New migration file: ${item} can not be before the latest migration script"
+            # If a item from the SCRIPT_FILES_IN_PR_ARRAY does not exist in the SCRIPT_FILES_IN_MAIN_ARRAY then
+            if [[ ! " ${SCRIPT_FILES_IN_MAIN_ARRAY[@]} " =~ "${item}" ]]; then
+              # Create a datetime from the prefix of the item that was not in the SCRIPT_FILES_IN_MAIN_ARRAY
+              UNIQUE_SCRIPT_FILE_IN_PR_DATETIME=$(date -d "${item:0:8} ${item:8:2}:${item:10:2}" +"%Y-%m-%d %H:%M:%S")
+              # Fail if the items datetime is less than the LATEST_SCRIPT_FILE_IN_MAIN_DATETIME
+              if [[ $UNIQUE_SCRIPT_FILE_IN_PR_DATETIME < $LATEST_SCRIPT_FILE_IN_MAIN_DATETIME ]]; then
+                echo "New migration script file: ${item} can not be before the latest migration script"
                 exit 1
               fi
-              # Fail if the items datetime is equal the LATEST_MAIN_FILE_DATE
-              if [[ $CURRENT_UNIQUE_FILE_DATE == $LATEST_MAIN_FILE_DATE ]]; then
-                echo "New migration file: ${item} can not be the same time as the latest migration script"
+              # Fail if the items datetime is equal the LATEST_SCRIPT_FILE_IN_MAIN_DATETIME
+              if [[ $UNIQUE_SCRIPT_FILE_IN_PR_DATETIME == $LATEST_SCRIPT_FILE_IN_MAIN_DATETIME ]]; then
+                echo "New migration script file: ${item} can not be the same time as the latest migration script"
                 exit 1
               fi
               # Fail if the items datetime is greater than the CURRENT_DATETIME
-              if [[ $CURRENT_UNIQUE_FILE_DATE > $CURRENT_DATETIME ]]; then
-                echo "New migration file: ${item} can not be later than current datetime"
+              if [[ $UNIQUE_SCRIPT_FILE_IN_PR_DATETIME > $CURRENT_DATETIME ]]; then
+                echo "New migration script file: ${item} can not be later than current datetime"
                 exit 1
               fi
             fi
