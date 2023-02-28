@@ -284,7 +284,7 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
     spark: SparkSession,
     data_lake_path: str,
-    source_path: str,
+    contracts_path: str,
     worker_id: str,
     executed_calculation_job: None,
 ) -> None:
@@ -292,10 +292,8 @@ def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
     result_relative_path = infra.get_result_file_relative_path(
         executed_batch_id,
         "805",
-        None,
-        None,
+        grid_area_gln,
         TimeSeriesType.PRODUCTION,
-        Grouping.total_ga,
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
@@ -306,7 +304,7 @@ def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
     result_805 = spark.read.json(result_path)
 
     assert_contract_matches_schema(
-        f"{source_path}/contracts/internal/calculator-result.json",
+        f"{contracts_path}/internal/calculator-result.json",
         result_805.schema,
     )
 
