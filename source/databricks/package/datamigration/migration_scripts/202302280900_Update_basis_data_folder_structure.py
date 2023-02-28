@@ -14,8 +14,13 @@
 
 from azure.storage.filedatalake import FileSystemClient
 from azure.core.paging import ItemPaged
-from package.datamigration.migration_script_args import MigrationScriptArgs
 from os import path
+from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.datamigration.migration_error import MigrationError
+from package.datamigration.file_system_client_operations import (
+    is_directory_empty,
+    move_and_rename_folder,
+)
 
 
 def apply(args: MigrationScriptArgs) -> None:
@@ -37,7 +42,7 @@ def apply(args: MigrationScriptArgs) -> None:
 
     if not file_system_client.exists():
         error = f"Unable to create file system client. File system '{container}' does not exist"
-        raise FileSystemNotFoundException(error)
+        raise MigrationError(error)
 
     batch_directories = file_system_client.get_paths(
         path=calculation_output_path, recursive=False
@@ -57,33 +62,36 @@ def migrate_batch(
             batch_directory.name, f"basis_data/{time_series_type}"
         )
 
+        directory_client = file_system_client.get_directory_client(
+            time_series_type_path
+        )
+        if not directory_client.exists():
+            continue
+
         grid_area_directories = file_system_client.get_paths(
             path=time_series_type_path, recursive=False
         )
 
         for grid_area_directory in grid_area_directories:
             source_path = path.join(grid_area_directory.name, "gln=grid_area")
+
+            # Create parent directory of the target directory because otherwise directory_client.rename_directory will fail
+            target_parent_path = path.join(
+                time_series_type_path,
+                "grouping=total_ga",
+            )
+            file_system_client.create_directory(target_parent_path)
+
             target_path = path.join(
                 time_series_type_path,
                 "grouping=total_ga",
-                path.dirname(grid_area_directory.name),
+                path.basename(grid_area_directory.name),
             )
+
             move_and_rename_folder(file_system_client, source_path, target_path)
 
-
-def move_and_rename_folder(
-    file_system_client: FileSystemClient, source_path: str, target_path: str
-) -> None:
-    directory_client = file_system_client.get_directory_client(source_path)
-    if not directory_client.exists():
-        print(
-            f"Skipping migration ({__file__}). Source directory not found:{source_path}"
-        )
-        return
-
-    target_path = path.join(file_system_client.file_system_name, target_path)
-    directory_client.rename_directory(new_name=target_path)
-
-
-class FileSystemNotFoundException(Exception):
-    pass
+            # Remove old empty parent directory
+            if not is_directory_empty(file_system_client, time_series_type_path):
+                raise MigrationError(
+                    f"Directory '{time_series_type_path}' not removed because it is not empty"
+                )
