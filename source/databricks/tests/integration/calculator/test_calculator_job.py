@@ -38,7 +38,6 @@ from datetime import datetime
 
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
-grid_area_gln = "grid_area"
 energy_supplier_gln_a = "8100000000108"
 energy_supplier_gln_b = "8100000000109"
 balance_responsible_party_gln_a = "1"
@@ -443,7 +442,7 @@ def test__creates_hour_csv_with_expected_columns_names(
 ) -> None:
     # Arrange
     basis_data_relative_path = infra.get_time_series_hour_relative_path(
-        executed_batch_id, "805", grid_area_gln
+        executed_batch_id, "805"
     )
 
     # Act
@@ -469,7 +468,7 @@ def test__creates_quarter_csv_with_expected_columns_names(
 ) -> None:
     # Arrange
     relative_path = infra.get_time_series_quarter_relative_path(
-        executed_batch_id, "805", grid_area_gln
+        executed_batch_id, "805"
     )
 
     # Act
@@ -496,10 +495,10 @@ def test__creates_csv_per_grid_area(
 ) -> None:
     # Arrange
     basis_data_relative_path_805 = infra.get_time_series_quarter_relative_path(
-        executed_batch_id, "805", grid_area_gln
+        executed_batch_id, "805"
     )
     basis_data_relative_path_806 = infra.get_time_series_quarter_relative_path(
-        executed_batch_id, "806", grid_area_gln
+        executed_batch_id, "806"
     )
 
     # Act
@@ -531,7 +530,7 @@ def test__master_data_csv_with_expected_columns_names(
 ) -> None:
     # Arrange
     basis_data_path = infra.get_master_basis_data_relative_path(
-        executed_batch_id, "805", grid_area_gln
+        executed_batch_id, "805"
     )
 
     # Act
@@ -563,10 +562,10 @@ def test__creates_master_data_csv_per_grid_area(
 ) -> None:
     # Arrange
     basis_data_path_805 = infra.get_master_basis_data_relative_path(
-        executed_batch_id, "805", grid_area_gln
+        executed_batch_id, "805"
     )
     basis_data_path_806 = infra.get_master_basis_data_relative_path(
-        executed_batch_id, "806", grid_area_gln
+        executed_batch_id, "806"
     )
 
     # Act: Executed in fixture executed_calculation_job
@@ -597,7 +596,7 @@ def test__master_basis_data_file_matches_contract(
 ) -> None:
     # Arrange
     master_basis_data_path = infra.get_master_basis_data_relative_path(
-        executed_batch_id, "805", grid_area_gln
+        executed_batch_id, "805"
     )
 
     # Act: Executed in fixture executed_calculation_job
@@ -620,7 +619,7 @@ def test__hourly_basis_data_file_matches_contract(
 ) -> None:
     # Arrange
     relative_output_path = infra.get_time_series_hour_relative_path(
-        executed_batch_id, "805", grid_area_gln
+        executed_batch_id, "805"
     )
 
     # Act: Executed in fixture executed_calculation_job
@@ -642,7 +641,7 @@ def test__quarterly_basis_data_file_matches_contract(
 ) -> None:
     # Arrange
     relative_output_path = infra.get_time_series_quarter_relative_path(
-        executed_batch_id, "805", grid_area_gln
+        executed_batch_id, "805"
     )
 
     # Act: Executed in fixture executed_calculation_job

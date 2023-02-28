@@ -59,17 +59,17 @@ public class SettlementReportRepository : ISettlementReportRepository
     }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/batch_id={batchId}/basis_data/time_series_hour/grid_area={gridAreaCode.Code}/gln=grid_area/",
+        => ($"calculation-output/batch_id={batchId}/basis_data/time_series_hour/grouping=total_ga/grid_area={gridAreaCode.Code}/",
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT1H.csv");
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesQuarterBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/batch_id={batchId}/basis_data/time_series_quarter/grid_area={gridAreaCode.Code}/gln=grid_area/",
+        => ($"calculation-output/batch_id={batchId}/basis_data/time_series_quarter/grouping=total_ga/grid_area={gridAreaCode.Code}/",
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT15M.csv");
 
     public static (string Directory, string Extension, string ZipEntryPath) GetMasterBasisDataFileSpecification(Guid batchId, GridAreaCode gridAreaCode)
-        => ($"calculation-output/batch_id={batchId}/basis_data/master_basis_data/grid_area={gridAreaCode.Code}/gln=grid_area/",
+        => ($"calculation-output/batch_id={batchId}/basis_data/master_basis_data/grouping=total_ga/grid_area={gridAreaCode.Code}/",
             ".csv",
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
 
