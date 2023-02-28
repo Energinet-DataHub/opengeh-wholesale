@@ -75,13 +75,12 @@ jobs:
           do
             echo "$file"
           done
-          echo "${main_files_sorted_array[@]}"
 
           echo "---------------------combined----------------------"
           unique_arr=()
           for item in "${current_files_sorted_array[@]}"
           do
-            if [[ ! " ${main_files_sorted_array[@]} " =~ "${item}" ]]; then
+            if [[ ! " ${main_files_sorted_array[@]} " == *"${item// /}"* ]]; then
               unique_arr+=("$item")
             fi
           done
