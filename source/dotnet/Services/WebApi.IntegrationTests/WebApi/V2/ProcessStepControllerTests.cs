@@ -38,7 +38,7 @@ public class ProcessStepControllerTests : WebApiTestBase
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetActorsAsync_POST_V2_3_ReturnsExpectedResponse(
+    public async Task GetEnergySuppliersAsync_POST_V2_3_ReturnsExpectedResponse(
         Mock<IProcessStepApplicationService> applicationServiceMock,
         ProcessStepActorsRequest request,
         WholesaleActorDto expectedActor)
@@ -46,7 +46,7 @@ public class ProcessStepControllerTests : WebApiTestBase
         // Arrange
         const string expectedUrl = "/v2.3/ProcessStepResult";
         applicationServiceMock
-            .Setup(service => service.GetActorsAsync(request, TODO, TODO, TODO, TODO))
+            .Setup(service => service.GetEnergySuppliersAsync(request.BatchId, request.GridAreaCode, request.Type))
             .ReturnsAsync(() => new[] { expectedActor });
         Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 

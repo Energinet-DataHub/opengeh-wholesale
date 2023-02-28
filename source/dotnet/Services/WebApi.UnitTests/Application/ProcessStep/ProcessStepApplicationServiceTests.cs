@@ -33,6 +33,102 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.ProcessStep;
 public class ProcessStepApplicationServiceTests
 {
     [Theory]
+    [InlineAutoMoqData]
+    public async Task GetEnergySuppliersAsync_WhenNoActors_ReturnsEmptyCollection(
+        Guid batchId,
+        [Frozen] Mock<IActorRepository> actorRepositoryMock,
+        ProcessStepApplicationService sut)
+    {
+        // Arrange
+        const string gridAreaCode = "805";
+        const Contracts.TimeSeriesType timeSeriesType = Contracts.TimeSeriesType.Production;
+
+        actorRepositoryMock
+            .Setup(x => x.GetEnergySuppliersAsync(
+                batchId,
+                new GridAreaCode(gridAreaCode),
+                TimeSeriesType.Production)).ReturnsAsync(Array.Empty<Actor>());
+
+        // Act
+        var actors = await sut.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType);
+
+        // Assert
+        actors.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetBalanceResponsiblePartiesAsync_WhenNoActors_ReturnsEmptyCollection(
+        Guid batchId,
+        [Frozen] Mock<IActorRepository> actorRepositoryMock,
+        ProcessStepApplicationService sut)
+    {
+        // Arrange
+        const string gridAreaCode = "805";
+        const Contracts.TimeSeriesType timeSeriesType = Contracts.TimeSeriesType.Production;
+
+        actorRepositoryMock
+            .Setup(x => x.GetBalanceResponsiblePartiesAsync(
+                batchId,
+                new GridAreaCode(gridAreaCode),
+                TimeSeriesType.Production)).ReturnsAsync(Array.Empty<Actor>());
+
+        // Act
+        var actors = await sut.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType);
+
+        // Assert
+        actors.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetEnergySuppliersAsync_ReturnsExpectedGlns(
+        Guid batchId,
+        [Frozen] Mock<IActorRepository> actorRepositoryMock,
+        ProcessStepApplicationService sut)
+    {
+        // Arrange
+        const string gridAreaCode = "805";
+        const Contracts.TimeSeriesType timeSeriesType = Contracts.TimeSeriesType.Production;
+        const string expectedGlnNumber = "ExpectedGlnNumber";
+        actorRepositoryMock
+            .Setup(x => x.GetEnergySuppliersAsync(
+                batchId,
+                new GridAreaCode(gridAreaCode),
+                TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
+
+        // Act
+        var actors = await sut.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType);
+
+        // Assert
+        actors.Single().Gln.Should().Be(expectedGlnNumber);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetBalanceResponsiblePartiesAsync_ReturnsExpectedGlns(
+        Guid batchId,
+        [Frozen] Mock<IActorRepository> actorRepositoryMock,
+        ProcessStepApplicationService sut)
+    {
+        // Arrange
+        const string gridAreaCode = "805";
+        const Contracts.TimeSeriesType timeSeriesType = Contracts.TimeSeriesType.Production;
+        const string expectedGlnNumber = "ExpectedGlnNumber";
+        actorRepositoryMock
+            .Setup(x => x.GetBalanceResponsiblePartiesAsync(
+                batchId,
+                new GridAreaCode(gridAreaCode),
+                TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
+
+        // Act
+        var actors = await sut.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType);
+
+        // Assert
+        actors.Single().Gln.Should().Be(expectedGlnNumber);
+    }
+
+    [Theory]
     [AutoMoqData]
     public async Task GetResultAsync_TimeSeriesPoint_IsRead(
         [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock,
@@ -57,99 +153,16 @@ public class ProcessStepApplicationServiceTests
 
         // Act
         var actual = await sut.GetResultAsync(
-                batchId,
-                gridAreaCode,
-                Contracts.TimeSeriesType.Production,
-                null,
-                null);
+            batchId,
+            gridAreaCode,
+            Contracts.TimeSeriesType.Production,
+            null,
+            null);
 
         // Assert
         actual.TimeSeriesPoints.First().Time.Should().Be(time);
         actual.TimeSeriesPoints.First().Quantity.Should().Be(quantity);
         actual.TimeSeriesPoints.First().Quality.Should().Be(quality);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetActorsAsync_WhenNoActors_ReturnsEmptyCollection(
-        Guid batchId,
-        [Frozen] Mock<IActorRepository> actorRepositoryMock,
-        ProcessStepApplicationService sut)
-    {
-        // Arrange
-        var actorsRequest = new ProcessStepActorsRequest(
-            batchId,
-            "805",
-            Contracts.TimeSeriesType.Production,
-            Contracts.MarketRole.EnergySupplier);
-
-        actorRepositoryMock
-            .Setup(x => x.GetEnergySuppliersAsync(
-                actorsRequest.BatchId,
-                new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production)).ReturnsAsync(Array.Empty<Actor>());
-
-    // Act
-        var actors = await sut.GetActorsAsync(actorsRequest, TODO, TODO, TODO, TODO);
-
-        // Assert
-        actors.Should().BeEmpty();
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetActorsAsync_WhenMarketRoleIsEnergySupplier_ReturnsEnergySupplierGlns(
-        Guid batchId,
-        [Frozen] Mock<IActorRepository> actorRepositoryMock,
-        ProcessStepApplicationService sut)
-    {
-        // Arrange
-        var actorsRequest = new ProcessStepActorsRequest(
-            batchId,
-            "805",
-            Contracts.TimeSeriesType.Production,
-            Contracts.MarketRole.EnergySupplier);
-
-        var expectedGlnNumber = "ExpectedGlnNumber";
-        actorRepositoryMock
-            .Setup(x => x.GetEnergySuppliersAsync(
-                actorsRequest.BatchId,
-                new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
-
-        // Act
-        var actors = await sut.GetActorsAsync(actorsRequest, TODO, TODO, TODO, TODO);
-
-        // Assert
-        actors.Single().Gln.Should().Be(expectedGlnNumber);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetActorsAsync_WhenMarketRoleIsBalanceResponsible_ReturnsBalanceResponsibleGlns(
-        Guid batchId,
-        [Frozen] Mock<IActorRepository> actorRepositoryMock,
-        ProcessStepApplicationService sut)
-    {
-        // Arrange
-        var actorsRequest = new ProcessStepActorsRequest(
-            batchId,
-            "805",
-            Contracts.TimeSeriesType.Production,
-            Contracts.MarketRole.BalanceResponsibleParty);
-
-        var expectedGlnNumber = "ExpectedGlnNumber";
-        actorRepositoryMock
-            .Setup(x => x.GetBalanceResponsiblePartiesAsync(
-                actorsRequest.BatchId,
-                new GridAreaCode(actorsRequest.GridAreaCode),
-                TimeSeriesType.Production)).ReturnsAsync(new Actor[] { new(expectedGlnNumber) });
-
-        // Act
-        var actors = await sut.GetActorsAsync(actorsRequest, TODO, TODO, TODO, TODO);
-
-        // Assert
-        actors.Single().Gln.Should().Be(expectedGlnNumber);
     }
 
     [Theory]
