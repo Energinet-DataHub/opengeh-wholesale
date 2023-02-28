@@ -75,6 +75,7 @@ jobs:
           do
             echo "$file"
           done
+          echo "${main_files_sorted_array[@]}"
 
           echo "---------------------combined----------------------"
           unique_arr=()
