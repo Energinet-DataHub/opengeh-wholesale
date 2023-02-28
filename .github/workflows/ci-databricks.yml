@@ -25,6 +25,79 @@ jobs:
       ARCHITECTURE: 'x64'
       WHEEL_WORKING_DIRECTORY: './source/databricks'
 
+  migration_scripts_verification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+
+      - name: Get files from current branch
+        id: get_current_files
+        run: |
+          # Gets all files in migration_scripts folder on the branch being merged excluding the __init__ file and put them into at comma seperated string
+          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
+          echo "::set-output name=current_files::$CURRENT_FILES"
+
+      - name: Checkout main branch
+        uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - name: Get files from main branch
+        id: get_main_files
+        run: |
+        # Gets all files in migration_scripts folder on the main branch excluding the __init__ file and put them into at comma seperated string
+          MAIN_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
+          echo "::set-output name=main_files::$MAIN_FILES"
+
+      - name: Verify migration script names
+        run: |
+          CURRENT_DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
+          #Internal Field Seperator
+          IFS=','
+
+          # Get the comma seperated string saved to output current_files
+          CURRENT_FILES="${{ steps.get_current_files.outputs.current_files }}"
+          # Turns comma seperated string in to an array using the IFS
+          read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
+
+          # Get the comma seperated string saved to output main_files
+          MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
+          # Turns comma seperated string in to an array using the IFS
+          read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
+
+          # Reverse sort the MAIN_FILES_ARRAY to get the get the file with the latest prefix datetime first
+          main_files_sorted=($(echo "${MAIN_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
+          # Turn main_files_sorted into a array (the array will only have one item, since it wont look past a new line)
+          read -ra LATEST_MAIN_FILE <<<"$main_files_sorted"
+
+          # Create a datetime from the prefix of the first item in the LATEST_MAIN_FILE array
+          LATEST_MAIN_FILE_DATE=$(date -d "${LATEST_MAIN_FILE[0]:0:8} ${LATEST_MAIN_FILE[0]:8:2}:${LATEST_MAIN_FILE[0]:10:2}" +"%Y-%m-%d %H:%M:%S")
+          
+          for item in "${CURRENT_FILES_ARRAY[@]}"
+          do
+            # If a item from the CURRENT_FILES_ARRAY does not exist in the MAIN_FILES_ARRAY then
+            if [[ ! " ${MAIN_FILES_ARRAY[@]} " =~ "${item}" ]]; then
+              # Create a datetime from the prefix of the item that was not in the MAIN_FILES_ARRAY
+              CURRENT_UNIQUE_FILE_DATE=$(date -d "${item:0:8} ${item:8:2}:${item:10:2}" +"%Y-%m-%d %H:%M:%S")
+              # Fail if the items datetime is less than the LATEST_MAIN_FILE_DATE
+              if [[ $CURRENT_UNIQUE_FILE_DATE < $LATEST_MAIN_FILE_DATE ]]; then
+                echo "New migration file: ${item} can not be before the latest migration script"
+                exit 1
+              fi
+              # Fail if the items datetime is equal the LATEST_MAIN_FILE_DATE
+              if [[ $CURRENT_UNIQUE_FILE_DATE == $LATEST_MAIN_FILE_DATE ]]; then
+                echo "New migration file: ${item} can not be the same time as the latest migration script"
+                exit 1
+              fi
+              # Fail if the items datetime is greater than the CURRENT_DATETIME
+              if [[ $CURRENT_UNIQUE_FILE_DATE > $CURRENT_DATETIME ]]; then
+                echo "New migration file: ${item} can not be later than current datetime"
+                exit 1
+              fi
+            fi
+          done
+
   databricks_ci_test:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
     with:
