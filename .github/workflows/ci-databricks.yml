@@ -55,7 +55,7 @@ jobs:
           IFS=','
           echo "-------------------current files-----------------------"
           CURRENT_FILES="${{ steps.get_current_files.outputs.current_files }}"
-          echo "${CURRENT_FILES}"
+          echo "${CURRENT_FILES[@]}"
           echo "${CURRENT_FILES[0]}"
           # read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
           # current_files_sorted_array=($(echo "${CURRENT_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
