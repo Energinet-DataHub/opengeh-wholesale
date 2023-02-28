@@ -77,16 +77,10 @@ jobs:
           done
 
           echo "---------------------combined----------------------"
-          for i in "${!current_files_sorted_array[@]}"; do
-            current_files_sorted_array[i]=${current_files_sorted_array[i]// /}   # remove all spaces
-          done
-          for i in "${!main_files_sorted_array[@]}"; do
-            main_files_sorted_array[i]=${main_files_sorted_array[i]// /}   # remove all spaces
-          done
           unique_arr=()
-          for item in "${current_files_sorted_array[@]}"
+          for item in "${CURRENT_FILES_ARRAY[@]}"
           do
-            if [[ ! " ${main_files_sorted_array[@]} " =~ "${item}" ]]; then
+            if [[ ! " ${MAIN_FILES_ARRAY[@]} " =~ "${item}" ]]; then
               unique_arr+=("$item")
             fi
           done
