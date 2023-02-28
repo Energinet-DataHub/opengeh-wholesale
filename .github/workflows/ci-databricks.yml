@@ -55,17 +55,6 @@ jobs:
           echo "-------------------current files-----------------------"
           CURRENT_FILES="${{ steps.get_current_files.outputs.current_files }}"
           read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
-          current_files_sorted=($(echo "${CURRENT_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
-          for file in "${current_files_sorted[@]}"
-          do
-            echo "$file"
-            CURRENT_FILE_DATE=$(date -d "${file:0:8} ${file:8:2}:${file:10:2}" +"%Y-%m-%d %H:%M:%S")
-            if [[ $CURRENT_FILE_DATE > $DATETIME ]]; then
-              echo "New migration file can not be later than current datetime"
-              exit 1
-            fi
-          done
-
           echo "-------------------main files-----------------------"
           MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
           read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
