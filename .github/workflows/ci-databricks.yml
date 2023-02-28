@@ -60,15 +60,15 @@ jobs:
           # read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
           # current_files_sorted_array=($(echo "${CURRENT_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
           # read -ra CURRENT_FILES_ARRAY2 <<<"$current_files_sorted_array"
-          # for file in "${current_files_sorted_array[@]}"
-          # do
-          #   echo "$file"
-          #   CURRENT_FILE_DATE=$(date -d "${file:0:8} ${file:8:2}:${file:10:2}" +"%Y-%m-%d %H:%M:%S")
-          #   if [[ $CURRENT_FILE_DATE > $DATETIME ]]; then
-          #     echo "New migration file can not be later than current datetime"
-          #     exit 1
-          #   fi
-          # done
+          for file in "${CURRENT_FILES[@]}"
+          do
+            echo "$file"
+            CURRENT_FILE_DATE=$(date -d "${file:0:8} ${file:8:2}:${file:10:2}" +"%Y-%m-%d %H:%M:%S")
+            if [[ $CURRENT_FILE_DATE > $DATETIME ]]; then
+              echo "New migration file can not be later than current datetime"
+              exit 1
+            fi
+          done
           # echo "${CURRENT_FILES_ARRAY2[0]}"
 
           # echo "-------------------main files-----------------------"
