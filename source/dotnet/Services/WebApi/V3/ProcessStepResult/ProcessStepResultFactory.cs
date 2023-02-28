@@ -28,7 +28,8 @@ public class ProcessStepResultFactory : IProcessStepResultFactory
             batch.PeriodEnd,
             batch.Resolution,
             batch.Unit,
-            stepResult.TimeSeriesPoints.Select(MapTimeSeriesPoint()).ToArray());
+            stepResult.TimeSeriesPoints.Select(MapTimeSeriesPoint()).ToArray(),
+            batch.ProcessType);
     }
 
     public static string MapQuality(string quality) =>

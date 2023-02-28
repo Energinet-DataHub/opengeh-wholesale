@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
@@ -20,6 +21,13 @@ namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
 
 public class BatchDtoMapper : IBatchDtoMapper
 {
+    private readonly IProcessTypeMapper _processTypeMapper;
+
+    public BatchDtoMapper(IProcessTypeMapper processTypeMapper)
+    {
+        _processTypeMapper = processTypeMapper;
+    }
+
     public BatchDto Map(Batch batch)
     {
         return new BatchDto(
@@ -33,7 +41,8 @@ public class BatchDtoMapper : IBatchDtoMapper
             batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
             MapState(batch.ExecutionState),
             batch.AreSettlementReportsCreated,
-            MapGridAreaCodes(batch.GridAreaCodes));
+            MapGridAreaCodes(batch.GridAreaCodes),
+            _processTypeMapper.MapFrom(batch.ProcessType));
     }
 
     private static BatchState MapState(BatchExecutionState state)
