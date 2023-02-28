@@ -50,9 +50,11 @@ public class OpenApiSpecificationTests : WebApiTestBase
     }
 
     [Fact]
-    public async Task All_Endpoints_Have_MediaType_ApplicationJson()
+    public async Task All_Endpoints_Have_Correct_MediaType()
     {
         // Act
+        var operationToContentTypeLookup =
+            new Dictionary<string, string> { { "Get /v3/SettlementReport", "application/zip" } };
         var stream = await Client.GetStreamAsync(OpenApiSpecUrl);
 
         // Assert
@@ -65,7 +67,12 @@ public class OpenApiSpecificationTests : WebApiTestBase
                 {
                     foreach (var content in response.Value.Content)
                     {
-                        content.Key.Should().Be("application/json");
+                        var key = $"{operation.Key} {path.Key}";
+
+                        content.Key.Should().Be(
+                            operationToContentTypeLookup.TryGetValue(key, out var contentType)
+                                ? contentType
+                                : "application/json");
                     }
                 }
             }
