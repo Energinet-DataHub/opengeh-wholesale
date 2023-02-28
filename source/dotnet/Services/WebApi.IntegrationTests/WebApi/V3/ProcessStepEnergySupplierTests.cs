@@ -66,7 +66,7 @@ public class ProcessStepEnergySupplierTests : WebApiTestBase
         var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/energy-suppliers";
 
         applicationServiceMock
-            .Setup(service => service.GetEnergySuppliersAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.NonProfiledConsumption))
+            .Setup(service => service.GetEnergySuppliersAsync(request.BatchId, request.GridAreaCode, request.Type))
             .ReturnsAsync(() => new[] { expectedActor });
         Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
