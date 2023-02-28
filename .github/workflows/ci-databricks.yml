@@ -34,7 +34,7 @@ jobs:
       - name: Get file from current branch
         id: get_current_files
         run: |
-          read -ra CURRENT_FILES <<<"$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f," | sort -r)"
+          read -ra CURRENT_FILES <<<"$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f\n" | sort -r)"
           # CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f,")
           echo "::set-output name=current_files::$CURRENT_FILES"
 
