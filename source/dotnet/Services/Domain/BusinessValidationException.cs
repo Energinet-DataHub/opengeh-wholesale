@@ -12,20 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
-using Xunit;
-using Xunit.Categories;
+namespace Energinet.DataHub.Wholesale.Domain;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Actor;
-
-[UnitTest]
-public class ActorTests
+public class BusinessValidationException : Exception
 {
-    [Fact]
-    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
+    public BusinessValidationException(string message)
+        : base(message)
     {
-        await using var stream = EmbeddedResources.GetStream("Infrastructure.Actor.calculator-actor.json");
-
-        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<Wholesale.Infrastructure.BatchActor.Actor>(stream);
     }
 }

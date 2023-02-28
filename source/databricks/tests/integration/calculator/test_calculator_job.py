@@ -16,7 +16,7 @@ from os import path
 from shutil import rmtree
 from pyspark.sql import SparkSession
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from tests.contract_utils import assert_contract_matches_schema
 from package.calculator_job import (
     _get_valid_args_or_throw,
@@ -25,21 +25,23 @@ from package.calculator_job import (
     _start,
 )
 from package.calculator_args import CalculatorArgs
-from package.codelists.time_series_type import TimeSeriesType
+from package.codelists import TimeSeriesType, Grouping
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
-from pyspark.sql.functions import lit
 from tests.helpers.file_utils import find_file
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
 )
+from typing import Callable, Optional
+from datetime import datetime
 
 
 executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 grid_area_gln = "grid_area"
 energy_supplier_gln_a = "8100000000108"
 energy_supplier_gln_b = "8100000000109"
+balance_responsible_party_gln_a = "1"
 
 
 # Code snippet from https://joelmccune.com/python-dictionary-as-object/
@@ -57,9 +59,9 @@ class DictObj:
 
 @pytest.fixture(scope="session")
 def test_data_job_parameters(
-    data_lake_path,
-    timestamp_factory,
-    worker_id,
+    data_lake_path: str,
+    timestamp_factory: Callable[[str], Optional[datetime]],
+    worker_id: str,
 ) -> CalculatorArgs:
     return DictObj(
         {
@@ -80,10 +82,10 @@ def test_data_job_parameters(
 @pytest.fixture(scope="session")
 def executed_calculation_job(
     spark: SparkSession,
-    test_data_job_parameters,
-    test_files_folder_path,
-    data_lake_path,
-    worker_id,
+    test_data_job_parameters: CalculatorArgs,
+    test_files_folder_path: str,
+    data_lake_path: str,
+    worker_id: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -101,7 +103,7 @@ def executed_calculation_job(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         header=True,
         schema=metering_point_period_schema,
-    ).withColumn("gln", lit(grid_area_gln))
+    )
     metering_points_df.write.format("delta").save(
         f"{data_lake_path}/{worker_id}/calculation-input-v2/metering-point-periods",
         mode="overwrite",
@@ -110,7 +112,7 @@ def executed_calculation_job(
         f"{test_files_folder_path}/TimeSeriesPoints.csv",
         header=True,
         schema=time_series_point_schema,
-    ).withColumn("gln", lit(grid_area_gln))
+    )
 
     timeseries_points_df.write.format("delta").save(
         f"{data_lake_path}/{worker_id}/calculation-input-v2/time-series-points",
@@ -120,7 +122,7 @@ def executed_calculation_job(
     _start_calculator(spark, test_data_job_parameters)
 
 
-def _get_process_manager_parameters(filename):
+def _get_process_manager_parameters(filename: str) -> list[str]:
     """Get the parameters as they are expected to be received from the process manager."""
     with open(filename) as file:
         text = file.read()
@@ -152,18 +154,19 @@ def dummy_job_parameters(source_path: str) -> list[str]:
     return command_line_args
 
 
-def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails():
+def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails() -> (
+    None
+):
     # Act
     with pytest.raises(SystemExit) as excinfo:
-        _get_valid_args_or_throw("--unexpected-arg")
+        _get_valid_args_or_throw(["--unexpected-arg"])
     # Assert
     assert excinfo.value.code == 2
 
 
 def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
-    dummy_job_parameters,
-):
-
+    dummy_job_parameters: list[str],
+) -> None:
     """
     This test works in tandem with a .NET test ensuring that the calculator job accepts
     the arguments that are provided by the calling process manager.
@@ -177,38 +180,84 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 
 def test__result_is_generated_for_requested_grid_areas(
     spark: SparkSession,
-    data_lake_path,
-    worker_id,
-    executed_calculation_job,
-):
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     expected_ga_gln_type = [
-        ["805", grid_area_gln, TimeSeriesType.PRODUCTION],
-        ["806", grid_area_gln, TimeSeriesType.PRODUCTION],
-        ["805", energy_supplier_gln_a, TimeSeriesType.NON_PROFILED_CONSUMPTION],
-        ["806", energy_supplier_gln_a, TimeSeriesType.NON_PROFILED_CONSUMPTION],
-        ["805", energy_supplier_gln_b, TimeSeriesType.NON_PROFILED_CONSUMPTION],
-        ["806", energy_supplier_gln_b, TimeSeriesType.NON_PROFILED_CONSUMPTION],
+        ["805", None, None, TimeSeriesType.PRODUCTION, Grouping.total_ga],
+        ["806", None, None, TimeSeriesType.PRODUCTION, Grouping.total_ga],
+        [
+            "805",
+            energy_supplier_gln_a,
+            None,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            Grouping.es_per_ga,
+        ],
+        [
+            "806",
+            energy_supplier_gln_a,
+            None,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            Grouping.es_per_ga,
+        ],
+        [
+            "805",
+            energy_supplier_gln_b,
+            None,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            Grouping.es_per_ga,
+        ],
+        [
+            "806",
+            energy_supplier_gln_b,
+            None,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            Grouping.es_per_ga,
+        ],  # ga brp es
+        [
+            "805",
+            energy_supplier_gln_a,
+            balance_responsible_party_gln_a,
+            TimeSeriesType.PRODUCTION,
+            Grouping.es_per_brp_per_ga,
+        ],
+        [
+            "806",
+            energy_supplier_gln_a,
+            balance_responsible_party_gln_a,
+            TimeSeriesType.PRODUCTION,
+            Grouping.es_per_brp_per_ga,
+        ],
     ]
 
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    for grid_area, gln, time_series_type in expected_ga_gln_type:
+    for (
+        grid_area,
+        energy_supplier_gln,
+        balance_responsible_party_gln,
+        time_series_type,
+        grouping,
+    ) in expected_ga_gln_type:
         result_path = infra.get_result_file_relative_path(
             executed_batch_id,
             grid_area,
-            gln,
+            energy_supplier_gln,
+            balance_responsible_party_gln,
             time_series_type,
+            grouping,
         )
         result = spark.read.json(f"{data_lake_path}/{worker_id}/{result_path}")
         assert result.count() >= 1, "Calculator job failed to write files"
 
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
-    spark: SparkSession, test_files_folder_path, executed_calculation_job
-):
+    spark: SparkSession, test_files_folder_path: str, executed_calculation_job: None
+) -> None:
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
@@ -232,19 +281,21 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
     )
 
 
-def test__calculator_result_schema_must_match_contract_with_dotnet(
-    spark,
-    data_lake_path,
-    contracts_path,
-    worker_id,
-    executed_calculation_job,
-):
+def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
+    spark: SparkSession,
+    data_lake_path: str,
+    source_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     result_relative_path = infra.get_result_file_relative_path(
         executed_batch_id,
         "805",
-        grid_area_gln,
+        None,
+        None,
         TimeSeriesType.PRODUCTION,
+        Grouping.total_ga,
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
@@ -255,30 +306,64 @@ def test__calculator_result_schema_must_match_contract_with_dotnet(
     result_805 = spark.read.json(result_path)
 
     assert_contract_matches_schema(
-        f"{contracts_path}/internal/calculator-result.json",
+        f"{source_path}/contracts/internal/calculator-result.json",
+        result_805.schema,
+    )
+
+
+def test__calculator_result_es_per_ga_schema_must_match_contract_with_dotnet(
+    spark: SparkSession,
+    data_lake_path: str,
+    source_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    result_relative_path = infra.get_result_file_relative_path(
+        executed_batch_id,
+        "805",
+        energy_supplier_gln_a,
+        None,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        Grouping.es_per_ga,
+    )
+    result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
+
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
+    # Assert
+    result_805 = spark.read.json(result_path)
+
+    assert_contract_matches_schema(
+        f"{source_path}/contracts/internal/calculator-result.json",
         result_805.schema,
     )
 
 
 def test__quantity_is_with_precision_3(
-    spark,
-    data_lake_path,
-    worker_id,
-    executed_calculation_job,
-):
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     result_relative_path_production = infra.get_result_file_relative_path(
         executed_batch_id,
         "805",
-        grid_area_gln,
+        None,
+        None,
         TimeSeriesType.PRODUCTION,
+        Grouping.total_ga,
     )
 
     result_relative_path_non_profiled_consumption = infra.get_result_file_relative_path(
         executed_batch_id,
         "805",
         energy_supplier_gln_a,
+        None,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        Grouping.es_per_ga,
     )
 
     # Act
@@ -299,17 +384,19 @@ def test__quantity_is_with_precision_3(
 
 
 def test__result_file_has_correct_expected_number_of_rows_for_consumption(
-    spark,
-    data_lake_path,
-    worker_id,
-    executed_calculation_job,
-):
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     result_relative_path = infra.get_result_file_relative_path(
         executed_batch_id,
         "806",
         energy_supplier_gln_a,
+        None,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        Grouping.es_per_ga,
     )
 
     # Act
@@ -323,17 +410,19 @@ def test__result_file_has_correct_expected_number_of_rows_for_consumption(
 
 
 def test__result_file_has_correct_expected_number_of_rows_for_production(
-    spark,
-    data_lake_path,
-    worker_id,
-    executed_calculation_job,
-):
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     result_relative_path = infra.get_result_file_relative_path(
         executed_batch_id,
         "806",
-        grid_area_gln,
+        None,
+        None,
         TimeSeriesType.PRODUCTION,
+        Grouping.total_ga,
     )
 
     # Act
@@ -347,11 +436,11 @@ def test__result_file_has_correct_expected_number_of_rows_for_production(
 
 
 def test__creates_hour_csv_with_expected_columns_names(
-    spark,
-    data_lake_path,
-    executed_calculation_job,
-    worker_id,
-):
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     basis_data_relative_path = infra.get_time_series_hour_relative_path(
         executed_batch_id, "805", grid_area_gln
@@ -373,8 +462,11 @@ def test__creates_hour_csv_with_expected_columns_names(
 
 
 def test__creates_quarter_csv_with_expected_columns_names(
-    spark, data_lake_path, executed_calculation_job, worker_id
-):
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     relative_path = infra.get_time_series_quarter_relative_path(
         executed_batch_id, "805", grid_area_gln
@@ -397,8 +489,11 @@ def test__creates_quarter_csv_with_expected_columns_names(
 
 
 def test__creates_csv_per_grid_area(
-    spark, data_lake_path, executed_calculation_job, worker_id
-):
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     basis_data_relative_path_805 = infra.get_time_series_quarter_relative_path(
         executed_batch_id, "805", grid_area_gln
@@ -429,8 +524,11 @@ def test__creates_csv_per_grid_area(
 
 
 def test__master_data_csv_with_expected_columns_names(
-    spark, data_lake_path, executed_calculation_job, worker_id
-):
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     basis_data_path = infra.get_master_basis_data_relative_path(
         executed_batch_id, "805", grid_area_gln
@@ -458,8 +556,11 @@ def test__master_data_csv_with_expected_columns_names(
 
 
 def test__creates_master_data_csv_per_grid_area(
-    spark, data_lake_path, executed_calculation_job, worker_id
-):
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     basis_data_path_805 = infra.get_master_basis_data_relative_path(
         executed_batch_id, "805", grid_area_gln
@@ -489,11 +590,11 @@ def test__creates_master_data_csv_per_grid_area(
 
 
 def test__master_basis_data_file_matches_contract(
-    data_lake_path,
-    worker_id,
-    contracts_path,
-    executed_calculation_job,
-):
+    data_lake_path: str,
+    worker_id: str,
+    contracts_path: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     master_basis_data_path = infra.get_master_basis_data_relative_path(
         executed_batch_id, "805", grid_area_gln
@@ -512,11 +613,11 @@ def test__master_basis_data_file_matches_contract(
 
 
 def test__hourly_basis_data_file_matches_contract(
-    data_lake_path,
-    worker_id,
-    contracts_path,
-    executed_calculation_job,
-):
+    data_lake_path: str,
+    worker_id: str,
+    contracts_path: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     relative_output_path = infra.get_time_series_hour_relative_path(
         executed_batch_id, "805", grid_area_gln
@@ -534,11 +635,11 @@ def test__hourly_basis_data_file_matches_contract(
 
 
 def test__quarterly_basis_data_file_matches_contract(
-    data_lake_path,
-    worker_id,
-    contracts_path,
-    executed_calculation_job,
-):
+    data_lake_path: str,
+    worker_id: str,
+    contracts_path: str,
+    executed_calculation_job: None,
+) -> None:
     # Arrange
     relative_output_path = infra.get_time_series_quarter_relative_path(
         executed_batch_id, "805", grid_area_gln
@@ -557,7 +658,9 @@ def test__quarterly_basis_data_file_matches_contract(
 
 @patch("package.calculator_job._get_valid_args_or_throw")
 @patch("package.calculator_job.islocked")
-def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked, mock_args_parser):
+def test__when_data_lake_is_locked__return_exit_code_3(
+    mock_islocked: Mock, mock_args_parser: Mock
+) -> None:
     # Arrange
     mock_islocked.return_value = True
     # Act
@@ -571,8 +674,11 @@ def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked, mock_args_
 @patch("package.calculator_job.islocked")
 @patch("package.calculator_job._start_calculator")
 def test__start__start_calculator_called_without_exceptions(
-    mock_start_calculator, mock_is_locked, mock_init_spark, dummy_job_parameters
-):
+    mock_start_calculator: Mock,
+    mock_is_locked: Mock,
+    mock_init_spark: Mock,
+    dummy_job_parameters: list[str],
+) -> None:
     # Arrange
     mock_is_locked.return_value = False
 

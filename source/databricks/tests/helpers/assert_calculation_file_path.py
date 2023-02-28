@@ -23,6 +23,8 @@ class CalculationFileType(Enum):
     TimeSeriesQuarterBasisData = "time_series_quarter_basis_data_file"
     TimeSeriesHourBasisData = "time_series_hour_basis_data_file"
     MasterBasisData = "master_basis_data_file"
+    ResultFileForTotalGridArea = "result_file_for_total_grid_area"
+    ResultFileForGaBrpEs = "result_file_for_ga_brp_es"
     ResultFile = "result_file"
     ActorsFile = "actors_file"
 

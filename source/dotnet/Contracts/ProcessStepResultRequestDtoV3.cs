@@ -14,10 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts;
 
-/// <summary>
-/// Represents which kind of metering point type the step was calculated on
-/// </summary>
-public enum ProcessStepMeteringPointType
-{
-    Production = 0,
-}
+public sealed record ProcessStepResultRequestDtoV3(Guid BatchId, string GridAreaCode, TimeSeriesType TimeSeriesType, string? EnergySupplierGln, string? BalanceResponsiblePartyGln);

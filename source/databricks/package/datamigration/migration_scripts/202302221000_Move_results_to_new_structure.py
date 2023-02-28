@@ -15,6 +15,7 @@
 from azure.storage.filedatalake import FileSystemClient, DataLakeDirectoryClient
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from os import path
+from pyspark.sql.functions import col, lit
 
 
 def apply(args: MigrationScriptArgs) -> None:
@@ -34,53 +35,60 @@ def apply(args: MigrationScriptArgs) -> None:
         directories = file_system_client.get_paths(path=directory_name, recursive=False)
 
         for directory in directories:
-            actors_path = path.join(directory.name, "actors")
+            result_path = path.join(directory.name, "result")
+            result_temp_path = path.join(directory.name, "result_temp")
+
             directory_client = file_system_client.get_directory_client(
-                directory=actors_path
+                directory=result_path
             )
 
             if directory_client.exists():
-                actors_temp_path = path.join(directory.name, "actors_temp")
-
-                # If actors_temp_path already exists we will skip this batch and go to the next
                 directory_client_temp = file_system_client.get_directory_client(
-                    directory=actors_temp_path
+                    directory=result_temp_path
                 )
+
                 if directory_client_temp.exists():
                     continue
 
-                rename_folder(
+                move_and_rename_folder(
                     directory_client=directory_client,
-                    current_directory_name=actors_path,
-                    new_directory_name=actors_temp_path,
+                    current_directory_name=result_path,
+                    new_directory_name=result_temp_path,
                     container=container,
                 )
-                directory_client = file_system_client.get_directory_client(
-                    directory=actors_temp_path
+
+                result_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_path}"
+                result_temp_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_temp_path}"
+                df = spark.read.json(result_temp_path)
+
+                df_production = df.filter(col("time_series_type") == "production")
+                df_production = df_production.withColumn(
+                    "grouping", lit("total_ga")
+                ).drop("gln")
+                df_non_profiled_consumption = df.filter(
+                    col("time_series_type") == "non_profiled_consumption"
                 )
-                if not directory_client.exists():
-                    return  # renaming went wrong!?!
-
-                actors_write_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{actors_path}"
-                actors_read_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{actors_temp_path}"
-
-                df = spark.read.json(actors_read_path)
-
-                # rename gln column and remove market role (we don't want it as a directory level anymore)
-                new_df = df.withColumnRenamed("gln", "energy_supplier_gln").drop(
-                    "market_role"
+                df_non_profiled_consumption = (
+                    df_non_profiled_consumption.withColumn("grouping", lit("es_ga"))
                 )
 
                 # write the dataframe back into the datalake with new partition
                 (
-                    new_df.repartition("grid_area")
-                    .write.mode("errorifexists")
-                    .partitionBy("time_series_type", "grid_area")
-                    .json(actors_write_path)
+                    df_production.repartition("grid_area")
+                    .write.mode("append")
+                    .partitionBy("grouping", "time_series_type", "grid_area")
+                    .json(result_path)
+                )
+
+                (
+                    df_non_profiled_consumption.repartition("grid_area")
+                    .write.mode("append")
+                    .partitionBy("grouping", "time_series_type", "grid_area", "gln")
+                    .json(result_path)
                 )
 
 
-def rename_folder(
+def move_and_rename_folder(
     directory_client: DataLakeDirectoryClient,
     current_directory_name: str,
     new_directory_name: str,

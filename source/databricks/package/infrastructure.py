@@ -14,8 +14,9 @@
 
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
-from package.codelists.time_series_type import TimeSeriesType
-from package.codelists.market_role import MarketRole
+from package.codelists import TimeSeriesType
+from package.constants import PartitionKeyName
+from typing import Union
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
 
@@ -36,11 +37,24 @@ def get_container_root_path(storage_account_name: str) -> str:
 def get_result_file_relative_path(
     batch_id: str,
     grid_area: str,
-    gln: str,
+    energy_supplier_gln: Union[str, None],
+    balance_responsible_gln: Union[str, None],
     time_series_type: TimeSeriesType,
+    grouping: str,
 ) -> str:
     batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{RESULT_FOLDER}/grid_area={grid_area}/gln={gln}/time_series_type={time_series_type.value}"
+    relative_path = f"{batch_path}/{RESULT_FOLDER}/grouping={grouping}/time_series_type={time_series_type.value}/grid_area={grid_area}"
+
+    if (energy_supplier_gln is None) and (balance_responsible_gln is None):
+        return relative_path
+
+    if balance_responsible_gln is None:
+        return f"{relative_path}/gln={energy_supplier_gln}"
+
+    if energy_supplier_gln is None:
+        return f"{relative_path}/gln={balance_responsible_gln}"
+
+    return f"{relative_path}/{PartitionKeyName.BALANCE_RESPONSIBLE_PARTY_GLN}={balance_responsible_gln}/{PartitionKeyName.ENERGY_SUPPLIER_GLN}={energy_supplier_gln}"
 
 
 def get_actors_file_relative_path(

@@ -20,7 +20,6 @@ using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
-using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
@@ -194,7 +193,7 @@ public class SettlementReportRepositoryTests
         // Arrange
         var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
         var quantity = 1.000m;
-        var quality = "A04";
+        var quality = "measured";
 
         const string gridAreaCode = "805";
         var batchId = Guid.NewGuid();
@@ -204,15 +203,16 @@ public class SettlementReportRepositoryTests
             new ProcessStepResultMapper(),
             actorRepositoryMock.Object);
 
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "grid_area"))
-            .ReturnsAsync(new ProcessStepResult(new[] { new TimeSeriesPoint(time, quantity, quality) }));
+        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, null, null))
+            .ReturnsAsync(new ProcessStepResult(TimeSeriesType.Production, new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         // Act
         var actual = await sut.GetResultAsync(
                 batchId,
                 gridAreaCode,
                 Contracts.TimeSeriesType.Production,
-                "grid_area");
+                null,
+                null);
 
         // Assert
         actual.TimeSeriesPoints.First().Time.Should().Be(time);

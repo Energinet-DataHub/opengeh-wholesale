@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -24,7 +24,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Client</PackageId>
-    <PackageVersion>5.0.7$(VersionSuffix)</PackageVersion>
+    <PackageVersion>5.0.10$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Client</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -69,6 +69,9 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Contracts\ProcessStepResultRequestDtoV3.cs">
+      <Link>Dtos\ProcessStepResultRequestDtoV3.cs</Link>
+    </Compile>
     <Compile Include="..\..\Contracts\WholesaleActorDto.cs">
       <Link>Dtos\WholesaleActorDto.cs</Link>
     </Compile>
@@ -81,6 +84,9 @@ limitations under the License.
     <Compile Include="..\..\Contracts\BatchSearchDto.cs">
       <Link>Dtos\BatchSearchDto.cs</Link>
     </Compile>
+    <Compile Include="..\..\Contracts\BatchSearchDtoV2.cs">
+      <Link>Dtos\BatchSearchDtoV2.cs</Link>
+    </Compile>
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Model\BatchState.cs</Link>
     </Compile>
@@ -89,9 +95,6 @@ limitations under the License.
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepActorsRequest.cs">
       <Link>Dtos\ProcessStepActorsRequest.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
-      <Link>Dtos\ProcessStepMeteringPointType.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
       <Link>Dtos\ProcessStepResultDto.cs</Link>

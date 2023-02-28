@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -36,7 +36,7 @@ limitations under the License.
 
   <PropertyGroup>
       <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-      <PackageVersion>2.0.7$(VersionSuffix)</PackageVersion>
+      <PackageVersion>2.0.10$(VersionSuffix)</PackageVersion>
       <Title>Wholesale Contracts</Title>
       <Company>Energinet-DataHub</Company>
       <Authors>Energinet-DataHub</Authors>

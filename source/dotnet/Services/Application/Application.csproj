@@ -36,9 +36,6 @@ limitations under the License.
     <Compile Include="..\..\Contracts\ProcessStepActorsRequest.cs">
       <Link>ProcessStep\Model\ProcessStepActorsRequest.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\ProcessStepMeteringPointType.cs">
-      <Link>ProcessStep\Model\ProcessStepMeteringPointType.cs</Link>
-    </Compile>
     <Compile Include="..\..\Contracts\ProcessStepResultDto.cs">
       <Link>ProcessStep\Model\ProcessStepResultDto.cs</Link>
     </Compile>
@@ -62,6 +59,9 @@ limitations under the License.
     </Compile>
     <Compile Include="..\..\Contracts\BatchSearchDto.cs">
       <Link>Batches\Model\BatchSearchDto.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Contracts\BatchSearchDtoV2.cs">
+      <Link>Batches\Model\BatchSearchDtoV2.cs</Link>
     </Compile>
     <Compile Include="..\..\Contracts\BatchState.cs">
       <Link>Batches\Model\BatchState.cs</Link>

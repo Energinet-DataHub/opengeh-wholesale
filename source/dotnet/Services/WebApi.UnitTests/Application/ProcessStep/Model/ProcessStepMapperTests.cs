@@ -17,7 +17,9 @@ using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
+using Test.Core;
 using Xunit;
+using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.ProcessStep.Model;
 
@@ -34,13 +36,19 @@ public class ProcessStepMapperTests
     [InlineAutoMoqData]
     public void MapToDto_ReturnsDto(ProcessStepResultMapper sut, ProcessStepResult processStepResult)
     {
+        // Arrange
+        processStepResult.SetPrivateProperty(p => p.TimeSeriesType, Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType.Production);
         var expected = new ProcessStepResultDto(
-            ProcessStepMeteringPointType.Production,
+            TimeSeriesType.Production,
             processStepResult.Sum,
             processStepResult.Min,
             processStepResult.Max,
             processStepResult.TimeSeriesPoints.Select(point => new TimeSeriesPointDto(point.Time, point.Quantity, point.Quality)).ToArray());
+
+        // Act
         var actual = sut.MapToDto(processStepResult);
+
+        // Assert
         actual.Should().BeEquivalentTo(expected);
     }
 }

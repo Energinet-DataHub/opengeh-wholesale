@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -68,7 +67,13 @@ public class BatchControllerTests : WebApiTestBase
         var minExecutionTime = new DateTimeOffset(2022, 01, 02, 1, 2, 3, 50, TimeSpan.Zero);
         var maxExecutionTime = minExecutionTime + TimeSpan.FromMinutes(33);
         var batchSearchDto = new BatchSearchDto(minExecutionTime, maxExecutionTime);
-        mock.Setup(service => service.SearchAsync(batchSearchDto))
+        mock.Setup(service => service.SearchAsync(
+                Enumerable.Empty<string>(),
+                null,
+                minExecutionTime,
+                maxExecutionTime,
+                null,
+                null))
             .ReturnsAsync(batchDtos);
         Factory.BatchApplicationServiceMock = mock;
 

@@ -233,8 +233,8 @@ public static class Program
             // It is, however, not easily tested so for now we stick with testing resource existence
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
-                EnvironmentSettingNames.CalculationStorageConnectionString.Val(),
-                EnvironmentSettingNames.CalculationStorageContainerName.Val())
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName))
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,
                 topicName: integrationEventsTopicName,

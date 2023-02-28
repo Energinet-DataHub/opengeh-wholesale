@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessStep;
 
@@ -41,24 +42,43 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
 
     public async Task<WholesaleActorDto[]> GetActorsAsync(ProcessStepActorsRequest processStepActorsRequest)
     {
-        var actors = await _actorRepository.GetAsync(
-            processStepActorsRequest.BatchId,
-            new GridAreaCode(processStepActorsRequest.GridAreaCode),
-            TimeSeriesTypeMapper.Map(processStepActorsRequest.Type),
-            MarketRoleMapper.Map(processStepActorsRequest.MarketRole)).ConfigureAwait(false);
+        var batchId = processStepActorsRequest.BatchId;
+        var gridAreaCode = new GridAreaCode(processStepActorsRequest.GridAreaCode);
+        var timeSeriesType = TimeSeriesTypeMapper.Map(processStepActorsRequest.Type);
+        switch (processStepActorsRequest.MarketRole)
+        {
+            case MarketRole.EnergySupplier:
+                var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+                return Map(energySuppliers);
+            case MarketRole.BalanceResponsibleParty:
+                var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+                return Map(balanceResponsibleParties);
 
-        return actors.Select(batchActor => new WholesaleActorDto(batchActor.Gln)).ToArray();
+            default:
+                throw new ArgumentOutOfRangeException(processStepActorsRequest.MarketRole.ToString(), "Unexpected MarketRole. Cannot perform mapping.");
+        }
     }
 
-    public async Task<ProcessStepResultDto> GetResultAsync(Guid batchId, string gridAreaCode, Contracts.TimeSeriesType timeSeriesType, string gln)
+    public async Task<ProcessStepResultDto> GetResultAsync(
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        string? energySupplierGln,
+        string? balanceResponsibleParty)
     {
-        var processActorResult = await _processStepResultRepository.GetAsync(
+        var processStepResult = await _processStepResultRepository.GetAsync(
                 batchId,
                 new GridAreaCode(gridAreaCode),
                 TimeSeriesTypeMapper.Map(timeSeriesType),
-                gln)
+                energySupplierGln,
+                balanceResponsibleParty)
             .ConfigureAwait(false);
 
-        return _processStepResultMapper.MapToDto(processActorResult);
+        return _processStepResultMapper.MapToDto(processStepResult);
+    }
+
+    private WholesaleActorDto[] Map(Actor[] actors)
+    {
+        return actors.Select(batchActor => new WholesaleActorDto(batchActor.Gln)).ToArray();
     }
 }

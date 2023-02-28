@@ -52,6 +52,20 @@ public class WholesaleClient : IWholesaleClient
         return batches ?? new List<BatchDtoV2>();
     }
 
+    public async Task<IEnumerable<BatchDtoV2>> GetBatchesAsync(
+        BatchSearchDtoV2 batchSearchDto)
+    {
+        var response = await _httpClient
+            .PostAsJsonAsync("v2.1/Batch/search", batchSearchDto)
+            .ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
+
+        var batches = await response.Content.ReadFromJsonAsync<IEnumerable<BatchDtoV2>>().ConfigureAwait(false);
+        return batches ?? new List<BatchDtoV2>();
+    }
+
     public async Task<Stream> GetZippedBasisDataStreamAsync(
         Guid batchId)
     {
@@ -107,5 +121,16 @@ public class WholesaleClient : IWholesaleClient
             throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
 
         return await response.Content.ReadFromJsonAsync<WholesaleActorDto[]>().ConfigureAwait(false);
+    }
+
+    public async Task<ProcessStepResultDto?> GetProcessStepResultAsync(ProcessStepResultRequestDtoV3 processStepResultRequestDtoV3)
+    {
+        var response = await _httpClient.PostAsJsonAsync($"v2.4/ProcessStepResult", processStepResultRequestDtoV3).ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Wholesale backend returned HTTP status code {(int)response.StatusCode}");
+
+        var batch = await response.Content.ReadFromJsonAsync<ProcessStepResultDto>().ConfigureAwait(false);
+        return batch;
     }
 }
