@@ -33,7 +33,7 @@ public class ProcessStepEnergySupplierController : V3ControllerBase
     }
 
     /// <summary>
-    /// Energy suppliers associated with the balance responsible party specified by the <paramref name="balanceResponsibleParty"/>.
+    /// Returns a list of Energy suppliers. If balance responsible party is specified by the <paramref name="balanceResponsibleParty"/> parameter only the energy suppliers associated with that balance responsible party is returned
     /// </summary>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpGet]
