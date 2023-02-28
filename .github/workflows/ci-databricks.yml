@@ -34,7 +34,8 @@ jobs:
       - name: Get file from current branch
         id: get_current_files
         run: |
-          CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f,")
+          read -ra CURRENT_FILES <<<"$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f," | sort -r)"
+          # CURRENT_FILES=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__*' -printf "%f,")
           echo "::set-output name=current_files::$CURRENT_FILES"
 
       - name: Checkout main branch
@@ -55,41 +56,42 @@ jobs:
           echo "-------------------current files-----------------------"
           CURRENT_FILES="${{ steps.get_current_files.outputs.current_files }}"
           echo "${CURRENT_FILES}"
-          read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
-          current_files_sorted_array=($(echo "${CURRENT_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
-          read -ra CURRENT_FILES_ARRAY2 <<<"$current_files_sorted_array"
-          for file in "${current_files_sorted_array[@]}"
-          do
-            echo "$file"
-            CURRENT_FILE_DATE=$(date -d "${file:0:8} ${file:8:2}:${file:10:2}" +"%Y-%m-%d %H:%M:%S")
-            if [[ $CURRENT_FILE_DATE > $DATETIME ]]; then
-              echo "New migration file can not be later than current datetime"
-              exit 1
-            fi
-          done
-          echo "${CURRENT_FILES_ARRAY2[0]}"
+          echo "${CURRENT_FILES[0]}"
+          # read -ra CURRENT_FILES_ARRAY <<<"$CURRENT_FILES"
+          # current_files_sorted_array=($(echo "${CURRENT_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
+          # read -ra CURRENT_FILES_ARRAY2 <<<"$current_files_sorted_array"
+          # for file in "${current_files_sorted_array[@]}"
+          # do
+          #   echo "$file"
+          #   CURRENT_FILE_DATE=$(date -d "${file:0:8} ${file:8:2}:${file:10:2}" +"%Y-%m-%d %H:%M:%S")
+          #   if [[ $CURRENT_FILE_DATE > $DATETIME ]]; then
+          #     echo "New migration file can not be later than current datetime"
+          #     exit 1
+          #   fi
+          # done
+          # echo "${CURRENT_FILES_ARRAY2[0]}"
 
-          echo "-------------------main files-----------------------"
-          MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
-          read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
-          main_files_sorted_array=($(echo "${MAIN_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
-          for file in "${main_files_sorted_array[@]}"
-          do
-            echo "$file"
-          done
-          echo "test 1"
-          echo "${main_files_sorted_array[0]}"
-          echo "test 2"
-          echo "${MAIN_FILES_ARRAY[0]}"
-          echo "---------------------combined----------------------"
-          unique_arr=()
-          for item in "${CURRENT_FILES_ARRAY[@]}"
-          do
-            if [[ ! " ${MAIN_FILES_ARRAY[@]} " =~ "${item}" ]]; then
-              unique_arr+=("$item")
-            fi
-          done
-          echo "${unique_arr[@]}"
+          # echo "-------------------main files-----------------------"
+          # MAIN_FILES="${{ steps.get_main_files.outputs.main_files }}"
+          # read -ra MAIN_FILES_ARRAY <<<"$MAIN_FILES"
+          # main_files_sorted_array=($(echo "${MAIN_FILES_ARRAY[@]}" | tr ' ' '\n' | sort -r))
+          # for file in "${main_files_sorted_array[@]}"
+          # do
+          #   echo "$file"
+          # done
+          # echo "test 1"
+          # echo "${main_files_sorted_array[0]}"
+          # echo "test 2"
+          # echo "${MAIN_FILES_ARRAY[0]}"
+          # echo "---------------------combined----------------------"
+          # unique_arr=()
+          # for item in "${CURRENT_FILES_ARRAY[@]}"
+          # do
+          #   if [[ ! " ${MAIN_FILES_ARRAY[@]} " =~ "${item}" ]]; then
+          #     unique_arr+=("$item")
+          #   fi
+          # done
+          # echo "${unique_arr[@]}"
 
           # MAIN_FILE_DATE=$(date -d "${MAIN_FILE:0:8} ${MAIN_FILE:8:2}:${MAIN_FILE:10:2}" +"%Y-%m-%d %H:%M:%S")
           # echo $DATETIME
