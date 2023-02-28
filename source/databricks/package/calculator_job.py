@@ -74,26 +74,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         .load(
             f"{args.wholesale_container_path}/calculation-input-v2/time-series-points"
         )
-        .withColumn(
-            Colname.quality,
-            F.when(
-                F.col(Colname.quality) == MigratedTimeSeriesQuality.missing.value,
-                TimeSeriesQuality.missing.value,
-            )
-            .when(
-                F.col(Colname.quality) == MigratedTimeSeriesQuality.estimated.value,
-                TimeSeriesQuality.estimated.value,
-            )
-            .when(
-                F.col(Colname.quality) == MigratedTimeSeriesQuality.measured.value,
-                TimeSeriesQuality.measured.value,
-            )
-            .when(
-                F.col(Colname.quality) == MigratedTimeSeriesQuality.calculated.value,
-                TimeSeriesQuality.calculated.value,
-            )
-            .otherwise("UNKNOWN"),
-        )
     )
     timeseries_points_df = _map_cim_quality_to_wholesale_quality(timeseries_points_df)
 
@@ -136,7 +116,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
 def _map_cim_quality_to_wholesale_quality(timeseries_point_df: DataFrame) -> DataFrame:
     "Map input CIM quality names to wholesale quality names"
-    timeseries_point_df = timeseries_point_df.withColumn(
+    return timeseries_point_df.withColumn(
         Colname.quality,
         F.when(
             F.col(Colname.quality) == MigratedTimeSeriesQuality.missing.value,
