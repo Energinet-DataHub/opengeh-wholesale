@@ -15,18 +15,16 @@
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V2;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 
 [ApiController]
-[ApiVersion(Version)]
 [Produces("application/zip")]
-[Route("v{version:apiVersion}/[controller]")]
-public class SettlementReportControllerV24 : ControllerBase
+[Route("v3/[controller]")]
+public class SettlementReportController : V3ControllerBase
 {
-    private const string Version = "2.4";
     private readonly ISettlementReportApplicationService _settlementReportApplicationService;
 
-    public SettlementReportControllerV24(ISettlementReportApplicationService settlementReportApplicationService)
+    public SettlementReportController(ISettlementReportApplicationService settlementReportApplicationService)
     {
         _settlementReportApplicationService = settlementReportApplicationService;
     }
@@ -37,7 +35,6 @@ public class SettlementReportControllerV24 : ControllerBase
     /// <param name="batchId">BatchId</param>
     /// <param name="gridAreaCode">GridAreaCode</param>
     [HttpGet]
-    [MapToApiVersion(Version)]
     public async Task<IActionResult> GetAsync(Guid batchId, string gridAreaCode)
     {
         var report = await _settlementReportApplicationService.GetSettlementReportAsync(batchId, gridAreaCode)
