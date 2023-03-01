@@ -38,15 +38,39 @@ public class ProcessStepControllerTests : WebApiTestBase
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetActorsAsync_POST_V2_3_ReturnsExpectedResponse(
+    public async Task GetEnergySuppliersAsync_POST_V2_3_ReturnsExpectedResponse(
         Mock<IProcessStepApplicationService> applicationServiceMock,
-        ProcessStepActorsRequest request,
         WholesaleActorDto expectedActor)
     {
         // Arrange
         const string expectedUrl = "/v2.3/ProcessStepResult";
+        var request = new ProcessStepActorsRequest(Guid.NewGuid(), "105", TimeSeriesType.NonProfiledConsumption, MarketRole.EnergySupplier);
         applicationServiceMock
-            .Setup(service => service.GetActorsAsync(request))
+            .Setup(service => service.GetEnergySuppliersAsync(request.BatchId, request.GridAreaCode, request.Type))
+            .ReturnsAsync(() => new[] { expectedActor });
+        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+
+        // Act
+        var actualContent = await Client.PostAsJsonAsync(expectedUrl, request);
+
+        // Assert: Response HTTP status code
+        actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert: Response body
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<List<WholesaleActorDto>>();
+        actualActors!.Single().Should().BeEquivalentTo(expectedActor);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetBalanceResponsiblePartiesAsync_POST_V2_3_ReturnsExpectedResponse(
+        Mock<IProcessStepApplicationService> applicationServiceMock,
+        WholesaleActorDto expectedActor)
+    {
+        // Arrange
+        const string expectedUrl = "/v2.3/ProcessStepResult";
+        var request = new ProcessStepActorsRequest(Guid.NewGuid(), "105", TimeSeriesType.NonProfiledConsumption, MarketRole.BalanceResponsibleParty);
+        applicationServiceMock
+            .Setup(service => service.GetBalanceResponsiblePartiesAsync(request.BatchId, request.GridAreaCode, request.Type))
             .ReturnsAsync(() => new[] { expectedActor });
         Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
 
