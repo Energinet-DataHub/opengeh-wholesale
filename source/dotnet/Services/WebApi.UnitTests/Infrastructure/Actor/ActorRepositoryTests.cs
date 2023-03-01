@@ -14,7 +14,6 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
@@ -34,7 +33,7 @@ public class ActorRepositoryTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task GetAsync_ReturnsBatchActor(
+    public async Task GetEnergySuppliersAsync_ReturnsBatchActor(
         [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
@@ -45,15 +44,11 @@ public class ActorRepositoryTests
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(stream.Object);
-        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(dataLakeFileClientMock.Object);
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(dataLakeFileClientMock.Object);
 
-        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>(stream.Object))
-            .ReturnsAsync(new List<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>());
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ActorRelation>(stream.Object)).ReturnsAsync(new List<ActorRelation>());
 
-        var sut = new ActorRepository(
-            dataLakeClientMock.Object,
-            jsonNewlineSerializerMock.Object);
+        var sut = new ActorRepository(dataLakeClientMock.Object, jsonNewlineSerializerMock.Object);
 
         // Act
         var actual = await sut.GetEnergySuppliersAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production);
@@ -64,27 +59,25 @@ public class ActorRepositoryTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetAsync_WhenDuplicateEnergySuppliers_ReturnsDistinctActorsList(
+    public async Task GetEnergySuppliersAsync_WhenDuplicateEnergySuppliers_ReturnsDistinctActorsList(
         [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
-        var actorRelationsDeserialized = new List<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>
+        var actorRelationsDeserialized = new List<ActorRelation>
         {
-            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("123", "111"),
-            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("234", "222"),
-            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("123", "333"),
+            new("123", "111"),
+            new("234", "222"),
+            new("123", "333"),
         };
-        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor>() { new Wholesale.Domain.ActorAggregate.Actor("123"), new Wholesale.Domain.ActorAggregate.Actor("234") }; // distinct gln list
+        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor>() { new("123"), new("234") }; // distinct gln list
 
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(It.IsAny<Stream>());
-        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(dataLakeFileClientMock.Object);
-        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>(It.IsAny<Stream>()))
-            .ReturnsAsync(actorRelationsDeserialized);
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(dataLakeFileClientMock.Object);
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ActorRelation>(It.IsAny<Stream>())).ReturnsAsync(actorRelationsDeserialized);
 
         var sut = new ActorRepository(
             dataLakeClientMock.Object,
@@ -99,28 +92,26 @@ public class ActorRepositoryTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetAsync_WhenDuplicateBalanceResponsibleParies_ReturnsDistinctActorsList(
+    public async Task GetBalanceResponsiblePartiesAsync_WhenDuplicateBalanceResponsibleParties_ReturnsDistinctActorsList(
         [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
-        var actorRelationsDeserialized = new List<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>
+        var actorRelationsDeserialized = new List<ActorRelation>
         {
-            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("123", "111"),
-            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("234", "111"),
-            new Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation("345", "333"),
+            new("123", "111"),
+            new("234", "111"),
+            new("345", "333"),
         };
 
-        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor>() { new Wholesale.Domain.ActorAggregate.Actor("111"), new Wholesale.Domain.ActorAggregate.Actor("333") }; // distinct gln list
+        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor>() { new("111"), new("333") }; // distinct gln list
 
         dataLakeFileClientMock
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
             .ReturnsAsync(It.IsAny<Stream>());
-        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(dataLakeFileClientMock.Object);
-        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<Energinet.DataHub.Wholesale.Infrastructure.BatchActor.ActorRelation>(It.IsAny<Stream>()))
-            .ReturnsAsync(actorRelationsDeserialized);
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(dataLakeFileClientMock.Object);
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ActorRelation>(It.IsAny<Stream>())).ReturnsAsync(actorRelationsDeserialized);
 
         var sut = new ActorRepository(
             dataLakeClientMock.Object,
@@ -131,6 +122,116 @@ public class ActorRepositoryTests
 
         // Assert
         actual.Should().BeEquivalentTo(expectedGln);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task GetEnergySuppliersByBalanceResponsiblePartyAsync_ReturnsExpectedActors(
+        [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
+    {
+        // Arrange
+        const string targetBrpGln = "TargetBrpGln";
+        const string otherBrpGln = "OtherGln";
+        const string targetEs1Gln = "TargetEs1Gln";
+        const string targetEs2Gln = "TargetEs2Gln";
+        var actorRelationsDeserialized = new List<ActorRelation>
+        {
+            new(targetEs1Gln, targetBrpGln),
+            new("123", otherBrpGln),
+            new(targetEs2Gln, targetBrpGln),
+        };
+
+        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor>() { new(targetEs1Gln), new(targetEs2Gln) };
+
+        dataLakeFileClientMock
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
+            .ReturnsAsync(It.IsAny<Stream>());
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(dataLakeFileClientMock.Object);
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ActorRelation>(It.IsAny<Stream>())).ReturnsAsync(actorRelationsDeserialized);
+
+        var sut = new ActorRepository(
+            dataLakeClientMock.Object,
+            jsonNewlineSerializerMock.Object);
+
+        // Act
+        var actual = await sut.GetEnergySuppliersByBalanceResponsiblePartyAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, targetBrpGln);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expectedGln);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task GetEnergySuppliersByBalanceResponsiblePartyAsync_WhenNoMatchingBrp_ReturnsEmptyList(
+        [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
+    {
+        // Arrange
+        const string targetBrpGln = "TargetBrpGln";
+        const string otherBrpGln = "OtherGln";
+        var actorRelationsDeserialized = new List<ActorRelation>
+        {
+            new("123", otherBrpGln),
+            new("234", otherBrpGln),
+            new("345", otherBrpGln),
+        };
+
+        dataLakeFileClientMock
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
+            .ReturnsAsync(It.IsAny<Stream>());
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(dataLakeFileClientMock.Object);
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ActorRelation>(It.IsAny<Stream>())).ReturnsAsync(actorRelationsDeserialized);
+
+        var sut = new ActorRepository(
+            dataLakeClientMock.Object,
+            jsonNewlineSerializerMock.Object);
+
+        // Act
+        var actual = await sut.GetEnergySuppliersByBalanceResponsiblePartyAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, targetBrpGln);
+
+        // Assert
+        actual.Length.Should().Be(0);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task GetEnergySuppliersByBalanceResponsiblePartyAsync_WhenEsHasTwoBrps_ReturnsEsForBothBrps(
+        [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
+    {
+        // Arrange
+        const string brp1Gln = "Brp1Gln";
+        const string brp2Gln = "Brp2Gln";
+        const string energySupplierGln = "EsGln";
+
+        var actorRelationsDeserialized = new List<ActorRelation>
+        {
+            new(energySupplierGln, brp1Gln),
+            new(energySupplierGln, brp2Gln),
+        };
+        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor>() { new(energySupplierGln) };
+
+        dataLakeFileClientMock
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
+            .ReturnsAsync(It.IsAny<Stream>());
+        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(dataLakeFileClientMock.Object);
+        jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ActorRelation>(It.IsAny<Stream>())).ReturnsAsync(actorRelationsDeserialized);
+
+        var sut = new ActorRepository(
+            dataLakeClientMock.Object,
+            jsonNewlineSerializerMock.Object);
+
+        // Act
+        var actual1 = await sut.GetEnergySuppliersByBalanceResponsiblePartyAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, brp1Gln);
+        var actual2 = await sut.GetEnergySuppliersByBalanceResponsiblePartyAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production, brp2Gln);
+
+        // Assert
+        actual1.Should().BeEquivalentTo(expectedGln);
+        actual2.Should().BeEquivalentTo(expectedGln);
     }
 
     [Theory]
