@@ -104,7 +104,7 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
         basis_data_directory: str,
-    ):
+    ) -> None:
         partition_keys = [
             PartitionKeyName.GRID_AREA,
             PartitionKeyName.ENERGY_SUPPLIER_GLN,
