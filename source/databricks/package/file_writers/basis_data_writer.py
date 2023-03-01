@@ -19,6 +19,7 @@ import package.basis_data as basis_data
 import package.infrastructure as infra
 from package.constants import PartitionKeyName
 from package.constants import Colname
+from package.codelists import Grouping
 
 
 class BasisDataWriter:
@@ -77,7 +78,7 @@ class BasisDataWriter:
         basis_data_directory: str,
     ) -> None:
         partition_keys = [PartitionKeyName.GRID_AREA]
-        grouping_folder_name = "grouping=total_ga"
+        grouping_folder_name = f"grouping={Grouping.total_ga}"
 
         timeseries_quarter_df = timeseries_quarter_df.drop(Colname.energy_supplier_id)
         timeseries_hour_df = timeseries_hour_df.drop(Colname.energy_supplier_id)
@@ -109,7 +110,7 @@ class BasisDataWriter:
             PartitionKeyName.GRID_AREA,
             PartitionKeyName.ENERGY_SUPPLIER_GLN,
         ]
-        grouping_folder_name = "grouping=es_ga"
+        grouping_folder_name = f"grouping={Grouping.es_per_ga}"
 
         timeseries_quarter_df = timeseries_quarter_df.withColumnRenamed(
             Colname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
