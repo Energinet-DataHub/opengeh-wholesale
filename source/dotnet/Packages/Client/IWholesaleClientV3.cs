@@ -12,16 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Client;
 
-namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
-
-public interface ISettlementReportApplicationService
+public interface IWholesaleClientV3
 {
-    Task CreateSettlementReportAsync(BatchCompletedEventDto batchCompletedEvent);
-
-    Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId);
-
-    Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId, string gridAreaCode);
+    Task<Stream> GetSettlementReportAsStreamAsync(Guid batchId, string gridAreaCode);
 }
