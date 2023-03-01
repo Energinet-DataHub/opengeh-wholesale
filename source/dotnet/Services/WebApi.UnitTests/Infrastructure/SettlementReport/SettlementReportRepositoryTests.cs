@@ -36,18 +36,20 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Settlement
 [UnitTest]
 public class SettlementReportRepositoryTests
 {
+    private const string AnyActorId = "1234567890123";
+
     [Fact]
-    public static async Task GetMasterBasisDataFileSpecification_MatchesContract()
+    public static async Task GetMasterBasisDataForTotalGridAreaFileSpecification_MatchesContract()
     {
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
-        var expected = calculationFilePathsContract.MasterBasisDataFile;
+        var expected = calculationFilePathsContract.MasterBasisDataFileForTotalGridArea;
 
         // Act
         var actual =
-            SettlementReportRepository.GetMasterBasisDataFileSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
+            SettlementReportRepository.GetMasterBasisDataFileForTotalGridAreaSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode));
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -55,17 +57,17 @@ public class SettlementReportRepositoryTests
     }
 
     [Fact]
-    public static async Task GetTimeSeriesHourBasisDataFileSpecification_MatchesContract()
+    public static async Task GetTimeSeriesHourBasisDataForTotalGridAreaFileSpecification_MatchesContract()
     {
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
-        var expected = calculationFilePathsContract.TimeSeriesHourBasisDataFile;
+        var expected = calculationFilePathsContract.TimeSeriesHourBasisDataFileForTotalGridArea;
 
         // Act
         var actual =
-            SettlementReportRepository.GetTimeSeriesHourBasisDataFileSpecification(
+            SettlementReportRepository.GetTimeSeriesHourBasisDataForTotalGridAreaFileSpecification(
                 new Guid(batchId),
                 new GridAreaCode(gridAreaCode));
 
@@ -75,19 +77,79 @@ public class SettlementReportRepositoryTests
     }
 
     [Fact]
-    public static async Task GetTimeSeriesQuarterBasisDataFileSpecification_MatchesContract()
+    public static async Task GetTimeSeriesQuarterBasisDataForTotalGridAreaFileSpecification_MatchesContract()
     {
         // Arrange
         const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
-        var expected = calculationFilePathsContract.TimeSeriesQuarterBasisDataFile;
+        var expected = calculationFilePathsContract.TimeSeriesQuarterBasisDataFileForTotalGridArea;
 
         // Act
         var actual =
-            SettlementReportRepository.GetTimeSeriesQuarterBasisDataFileSpecification(
+            SettlementReportRepository.GetTimeSeriesQuarterBasisDataForTotalGridAreaFileSpecification(
                 new Guid(batchId),
                 new GridAreaCode(gridAreaCode));
+
+        // Assert
+        actual.Extension.Should().Be(expected.Extension);
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
+    }
+
+    [Fact]
+    public static async Task GetMasterBasisDataForEsPerGaFileSpecification_MatchesContract()
+    {
+        // Arrange
+        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string gridAreaCode = "123";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.MasterBasisDataFileForEsPerGa;
+
+        // Act
+        var actual =
+            SettlementReportRepository.GetMasterBasisDataFileForForEsPerGaSpecification(new Guid(batchId), new GridAreaCode(gridAreaCode), AnyActorId);
+
+        // Assert
+        actual.Extension.Should().Be(expected.Extension);
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
+    }
+
+    [Fact]
+    public static async Task GetTimeSeriesHourBasisDataForEsPerGaFileSpecification_MatchesContract()
+    {
+        // Arrange
+        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string gridAreaCode = "123";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.TimeSeriesHourBasisDataFileForEsPerGa;
+
+        // Act
+        var actual =
+            SettlementReportRepository.GetTimeSeriesHourBasisDataForEsPerGaGridAreaFileSpecification(
+                new Guid(batchId),
+                new GridAreaCode(gridAreaCode),
+                AnyActorId);
+
+        // Assert
+        actual.Extension.Should().Be(expected.Extension);
+        actual.Directory.Should().MatchRegex(expected.DirectoryExpression);
+    }
+
+    [Fact]
+    public static async Task GetTimeSeriesQuarterBasisDataForEsPerGaFileSpecification_MatchesContract()
+    {
+        // Arrange
+        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string gridAreaCode = "123";
+        var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
+        var expected = calculationFilePathsContract.TimeSeriesQuarterBasisDataFileForEsPerGa;
+
+        // Act
+        var actual =
+            SettlementReportRepository.GetTimeSeriesQuarterBasisDataForEsPerGaFileSpecification(
+                new Guid(batchId),
+                new GridAreaCode(gridAreaCode),
+                AnyActorId);
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
