@@ -487,7 +487,7 @@ def test__creates_quarter_csv_with_expected_columns_names(
     ]
 
 
-def test__creates_csv_per_grid_area(
+def test__creates_quarter_csv_per_grid_area(
     spark: SparkSession,
     data_lake_path: str,
     worker_id: str,
@@ -498,6 +498,41 @@ def test__creates_csv_per_grid_area(
         executed_batch_id, "805"
     )
     basis_data_relative_path_806 = infra.get_time_series_quarter_for_total_ga_relative_path(
+        executed_batch_id, "806"
+    )
+
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
+    # Assert
+    basis_data_805 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_805}"
+    )
+
+    basis_data_806 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_806}"
+    )
+
+    assert (
+        basis_data_805.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 805"
+
+    assert (
+        basis_data_806.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 806"
+
+
+def test__creates_hour_csv_per_grid_area(
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    basis_data_relative_path_805 = infra.get_time_series_hour_for_total_ga_relative_path(
+        executed_batch_id, "805"
+    )
+    basis_data_relative_path_806 = infra.get_time_series_hour_for_total_ga_relative_path(
         executed_batch_id, "806"
     )
 
@@ -588,7 +623,7 @@ def test__creates_master_data_csv_per_grid_area(
     ), "Calculator job failed to write master basis data files for grid area 806"
 
 
-def test__master_basis_data_for_total_ga_file_matches_contract(
+def test__master_basis_data_for_total_ga_filepath_matches_contract(
     data_lake_path: str,
     worker_id: str,
     contracts_path: str,
@@ -611,7 +646,7 @@ def test__master_basis_data_for_total_ga_file_matches_contract(
     )
 
 
-def test__hourly_basis_data_for_total_ga_file_matches_contract(
+def test__hourly_basis_data_for_total_ga_filepath_matches_contract(
     data_lake_path: str,
     worker_id: str,
     contracts_path: str,
@@ -633,7 +668,7 @@ def test__hourly_basis_data_for_total_ga_file_matches_contract(
     )
 
 
-def test__quarterly_basis_data_for_total_ga_file_matches_contract(
+def test__quarterly_basis_data_for_total_ga_filepath_matches_contract(
     data_lake_path: str,
     worker_id: str,
     contracts_path: str,
@@ -655,7 +690,7 @@ def test__quarterly_basis_data_for_total_ga_file_matches_contract(
     )
 
 
-def test__master_basis_data_for_es_per_ga_file_matches_contract(
+def test__master_basis_data_for_es_per_ga_filepath_matches_contract(
     data_lake_path: str,
     worker_id: str,
     contracts_path: str,
@@ -678,7 +713,7 @@ def test__master_basis_data_for_es_per_ga_file_matches_contract(
     )
 
 
-def test__hourly_basis_data_for_es_per_ga_file_matches_contract(
+def test__hourly_basis_data_for_es_per_ga_filepath_matches_contract(
     data_lake_path: str,
     worker_id: str,
     contracts_path: str,
@@ -700,7 +735,7 @@ def test__hourly_basis_data_for_es_per_ga_file_matches_contract(
     )
 
 
-def test__quarterly_basis_data_for_es_per_ga_file_matches_contract(
+def test__quarterly_basis_data_for_es_per_ga_filepath_matches_contract(
     data_lake_path: str,
     worker_id: str,
     contracts_path: str,
