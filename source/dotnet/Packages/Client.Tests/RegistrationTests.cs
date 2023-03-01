@@ -26,5 +26,6 @@ public class RegistrationTests
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.AddWholesaleClient(new Uri("http://some.base.uri"), _ => "some-authorization-token");
         serviceCollection.BuildServiceProvider().GetRequiredService<IWholesaleClient>();
+        serviceCollection.BuildServiceProvider().GetRequiredService<IWholesaleClientV3>();
     }
 }
