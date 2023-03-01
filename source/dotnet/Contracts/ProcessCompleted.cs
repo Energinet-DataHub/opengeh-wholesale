@@ -21,4 +21,9 @@ public partial class ProcessCompleted
     /// The message type for balance-fixing-completed transport message meta data in accordance with ADR-008.
     /// </summary>
     public const string BalanceFixingProcessType = "BalanceFixingCompleted";
+
+    /// <summary>
+    /// The message type for aggregation-completed transport message meta data in accordance with ADR-008.
+    /// </summary>
+    public const string AggregationProcessType = "AggregationProcessType";
 }

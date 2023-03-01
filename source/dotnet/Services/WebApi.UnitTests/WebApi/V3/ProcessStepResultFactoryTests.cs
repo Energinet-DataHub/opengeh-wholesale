@@ -65,7 +65,7 @@ public class ProcessStepResultFactoryTests
             {
                 new(point.Time, point.Quantity, "missing"),
             },
-            Contracts.ProcessType.BalanceFixing);
+            batchDto.ProcessType);
 
         // Act
         var actual = sut.Create(resultDto, batchDto);
