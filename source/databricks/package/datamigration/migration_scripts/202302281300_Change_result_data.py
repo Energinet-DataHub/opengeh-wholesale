@@ -15,8 +15,7 @@
 from azure.storage.filedatalake import FileSystemClient, DataLakeDirectoryClient
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from os import path
-from pyspark.sql.functions import col, lit, when
-from pyspark.sql import DataFrame
+from pyspark.sql.functions import col, when
 
 
 def apply(args: MigrationScriptArgs) -> None:
@@ -61,10 +60,38 @@ def apply(args: MigrationScriptArgs) -> None:
                 result_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_path}"
                 result_temp_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_temp_path}"
                 df = spark.read.json(result_temp_path)
-                new_df = _map_cim_quality_to_wholesale_quality(df)
+                time_series_quality_migrated = df.withColumn(
+                    "Quality",
+                    when(
+                        col("Quality") == "A02",
+                        "missing",
+                    )
+                    .when(
+                        col("Quality") == "A03",
+                        "estimated",
+                    )
+                    .when(
+                        col("Quality") == "A04",
+                        "measured",
+                    )
+                    .when(
+                        col("Quality") == "A05",
+                        "incomplete",
+                    )
+                    .when(
+                        col("Quality") == "A06",
+                        "calculated",
+                    )
+                    .otherwise("UNKNOWN"),
+                )
 
-                df_production = new_df.filter(col("grouping") == "total_ga").drop("gln")
-                df_everything_else = df.filter(col("grouping") != "total_ga")
+                df_production = time_series_quality_migrated.filter(
+                    col("grouping") == "total_ga"
+                ).drop("gln")
+
+                df_everything_else = time_series_quality_migrated.filter(
+                    col("grouping") != "total_ga"
+                )
 
                 # write the dataframe back into the datalake with new partition
                 (
@@ -80,34 +107,6 @@ def apply(args: MigrationScriptArgs) -> None:
                     .partitionBy("grouping", "time_series_type", "grid_area", "gln")
                     .json(result_path)
                 )
-
-
-def _map_cim_quality_to_wholesale_quality(df: DataFrame) -> DataFrame:
-    "Map input CIM Quality names to wholesale Quality names"
-    return df.withColumn(
-        "Quality",
-        when(
-            col("Quality") == "A02",
-            "missing",
-        )
-        .when(
-            col("Quality") == "A03",
-            "estimated",
-        )
-        .when(
-            col("Quality") == "A04",
-            "measured",
-        )
-        .when(
-            col("Quality") == "A05",
-            "incomplete",
-        )
-        .when(
-            col("Quality") == "A06",
-            "calculated",
-        )
-        .otherwise("UNKNOWN"),
-    )
 
 
 def move_and_rename_folder(
