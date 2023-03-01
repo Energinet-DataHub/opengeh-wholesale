@@ -46,6 +46,13 @@ public class ActorRepository : IActorRepository
             .ToArray();
     }
 
+    public async Task<Actor[]> GetEnergySuppliersByBalanceResponsiblePartyAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsibleGln)
+    {
+        var actorRelations = await GetActorRelationsAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+        return actorRelations.Where(relation => relation.balance_responsible_party_gln == balanceResponsibleGln).Select(relation => new Actor(relation.energy_supplier_gln)).Distinct()
+            .ToArray();
+    }
+
     public static (string Directory, string Extension) GetActorListFileSpecification(
         Guid batchId,
         GridAreaCode gridAreaCode,

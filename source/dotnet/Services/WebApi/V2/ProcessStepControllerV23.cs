@@ -37,7 +37,16 @@ public class ProcessStepV23Controller : ControllerBase
     [ApiVersion("2.3")]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
     {
-        var actors = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
-        return Ok(actors);
+        switch (processStepActorsRequest.MarketRole)
+        {
+            case MarketRole.EnergySupplier:
+                var energySuppliers = await _processStepApplicationService.GetEnergySuppliersAsync(processStepActorsRequest.BatchId, processStepActorsRequest.GridAreaCode, processStepActorsRequest.Type).ConfigureAwait(false);
+                return Ok(energySuppliers);
+            case MarketRole.BalanceResponsibleParty:
+                var balanceResponsibleParties = await _processStepApplicationService.GetBalanceResponsiblePartiesAsync(processStepActorsRequest.BatchId, processStepActorsRequest.GridAreaCode, processStepActorsRequest.Type).ConfigureAwait(false);
+                return Ok(balanceResponsibleParties);
+            default:
+                throw new ArgumentOutOfRangeException(processStepActorsRequest.MarketRole.ToString(), "Unexpected MarketRole. Cannot perform mapping.");
+        }
     }
 }
