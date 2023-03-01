@@ -61,7 +61,7 @@ def get_master_basis_data_df(
             col("FromGridAreaCode").alias("FROMGRIDAREA"),
             col("Type").alias("TYPEOFMP"),
             col("SettlementMethod").alias("SETTLEMENTMETHOD"),
-            col("EnergySupplierId").alias(("ENERGYSUPPLIERID")),
+            col(Colname.energy_supplier_id).alias(("ENERGYSUPPLIERID")),
         )
     )
 
@@ -91,38 +91,42 @@ def _get_time_series_basis_data_by_resolution(
     resolution: str,
     time_zone: str,
 ) -> DataFrame:
-    w = Window.partitionBy("MeteringPointId", "localDate").orderBy(
+    w = Window.partitionBy(Colname.metering_point_id, "localDate").orderBy(
         Colname.observation_time
     )
 
     timeseries_basis_data_df = (
-        enriched_time_series_point_df.where(col("Resolution") == resolution)
+        enriched_time_series_point_df.where(col(Colname.resolution) == resolution)
         .withColumn(
             "localDate",
             to_date(from_utc_timestamp(col(Colname.observation_time), time_zone)),
         )
-        .withColumn("position", concat(lit("ENERGYQUANTITY"), row_number().over(w)))
+        .withColumn(
+            Colname.position, concat(lit("ENERGYQUANTITY"), row_number().over(w))
+        )
         .withColumn("STARTDATETIME", first(Colname.observation_time).over(w))
         .groupBy(
-            "MeteringPointId",
+            Colname.metering_point_id,
             "localDate",
             "STARTDATETIME",
-            "GridAreaCode",
-            "Type",
-            "Resolution",
+            Colname.grid_area,
+            Colname.metering_point_type,
+            Colname.resolution,
+            Colname.energy_supplier_id,
         )
-        .pivot("position")
-        .agg(first("Quantity"))
-        .withColumnRenamed("MeteringPointId", "METERINGPOINTID")
-        .withColumn("TYPEOFMP", col("Type"))
+        .pivot(Colname.position)
+        .agg(first(Colname.quantity))
+        .withColumnRenamed(Colname.metering_point_id, "METERINGPOINTID")
+        .withColumn("TYPEOFMP", col(Colname.metering_point_type))
     )
 
     quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data_df)
     timeseries_basis_data_df = timeseries_basis_data_df.select(
-        "GridAreaCode",
+        Colname.grid_area,
         "METERINGPOINTID",
         "TYPEOFMP",
         "STARTDATETIME",
+        Colname.energy_supplier_id,
         *quantity_columns,
     )
     return timeseries_basis_data_df

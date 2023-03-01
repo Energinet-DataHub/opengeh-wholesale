@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
@@ -46,5 +44,10 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
         var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
         var report = await _settlementReportRepository.GetSettlementReportAsync(batch).ConfigureAwait(false);
         return new SettlementReportDto(report.Stream);
+    }
+
+    public Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId, string gridAreaCode)
+    {
+        return Task.FromResult(new SettlementReportDto(Stream.Null));
     }
 }
