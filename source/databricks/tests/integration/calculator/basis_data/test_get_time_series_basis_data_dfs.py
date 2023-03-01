@@ -54,13 +54,13 @@ def enriched_time_series_factory(spark, timestamp_factory):
                 StructField("Quantity", DecimalType(18, 3), True),
                 StructField("MeteringPointId", StringType(), True),
                 StructField("Type", StringType(), True),
+                StructField(Colname.energy_supplier_id, StringType(), True),
             ]
         )
 
         time = timestamp_factory(time)
 
         for i in range(number_of_points):
-
             df_array.append(
                 {
                     "GridAreaCode": grid_area,
@@ -70,6 +70,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
                     "Quantity": quantity + i,
                     "MeteringPointId": metering_point_id,
                     "MeteringPointType": metering_point_type,
+                    Colname.energy_supplier_id: "some-id",
                 }
             )
             time = (
