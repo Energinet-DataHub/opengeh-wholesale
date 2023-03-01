@@ -43,7 +43,6 @@ executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 energy_supplier_gln_a = "8100000000108"
 energy_supplier_gln_b = "8100000000109"
 balance_responsible_party_gln_a = "1"
-grid_area_gln = "805"
 
 
 # Code snippet from https://joelmccune.com/python-dictionary-as-object/
@@ -294,8 +293,10 @@ def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
     result_relative_path = infra.get_result_file_relative_path(
         executed_batch_id,
         "805",
-        grid_area_gln,
+        None,
+        None,
         TimeSeriesType.PRODUCTION,
+        Grouping.total_ga,
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
