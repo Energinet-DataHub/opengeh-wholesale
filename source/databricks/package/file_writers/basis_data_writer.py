@@ -81,9 +81,6 @@ class BasisDataWriter:
 
         timeseries_quarter_df = timeseries_quarter_df.drop(Colname.energy_supplier_id)
         timeseries_hour_df = timeseries_hour_df.drop(Colname.energy_supplier_id)
-        # master_basis_data_df = master_basis_data_df.withColumnRenamed(
-        #     "ENERGYSUPPLIERID", PartitionKeyName.ENERGY_SUPPLIER_GLN
-        # )
 
         self._write_basis_data_to_csv(
             f"{basis_data_directory}/time_series_quarter/{grouping_folder_name}",
