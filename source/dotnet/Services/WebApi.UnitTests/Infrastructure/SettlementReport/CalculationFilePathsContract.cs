@@ -29,11 +29,17 @@ public class CalculationFilePathsContract
         public string Extension { get; set; } = null!;
     }
 
-    public ContractFile TimeSeriesHourBasisDataFile { get; set; } = null!;
+    public ContractFile TimeSeriesHourBasisDataFileForTotalGridArea { get; set; } = null!;
 
-    public ContractFile TimeSeriesQuarterBasisDataFile { get; set; } = null!;
+    public ContractFile TimeSeriesQuarterBasisDataFileForTotalGridArea { get; set; } = null!;
 
-    public ContractFile MasterBasisDataFile { get; set; } = null!;
+    public ContractFile MasterBasisDataFileForTotalGridArea { get; set; } = null!;
+
+    public ContractFile TimeSeriesHourBasisDataFileForEsPerGa { get; set; } = null!;
+
+    public ContractFile TimeSeriesQuarterBasisDataFileForEsPerGa { get; set; } = null!;
+
+    public ContractFile MasterBasisDataFileForEsPerGa { get; set; } = null!;
 
     public ContractFile ResultFile { get; set; } = null!;
 
