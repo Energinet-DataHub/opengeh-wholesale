@@ -16,7 +16,6 @@ from azure.storage.filedatalake import FileSystemClient, DataLakeDirectoryClient
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from os import path
 from pyspark.sql.functions import col, when
-from pyspark.sql.types import StringType
 from pyspark.sql import DataFrame
 
 
