@@ -31,18 +31,8 @@ public class ProcessStepResultFactory : IProcessStepResultFactory
             stepResult.TimeSeriesPoints.Select(MapTimeSeriesPoint()).ToArray());
     }
 
-    public static string MapQuality(string quality) =>
-        quality switch
-        {
-            "missing" => TimeSeriesPointQuality.Missing.ToString().ToLower(),
-            "estimated" => TimeSeriesPointQuality.Estimated.ToString().ToLower(),
-            "measured" => TimeSeriesPointQuality.Measured.ToString().ToLower(),
-            "calculated" => TimeSeriesPointQuality.Calculated.ToString().ToLower(),
-            _ => throw new ArgumentException($"No mapping defined for quantity quality '{quality}'"),
-        };
-
     private static Func<Contracts.TimeSeriesPointDto, TimeSeriesPointDto> MapTimeSeriesPoint()
     {
-        return p => new TimeSeriesPointDto(p.Time, p.Quantity, MapQuality(p.Quality));
+        return p => new TimeSeriesPointDto(p.Time, p.Quantity, p.Quality);
     }
 }

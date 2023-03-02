@@ -22,5 +22,6 @@ public enum TimeSeriesPointQuality
     Missing,
     Estimated,
     Measured,
+    Incomplete,
     Calculated,
 }
