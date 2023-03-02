@@ -42,27 +42,10 @@ public class ProcessStepBalanceResponsiblePartyController : V3ControllerBase
         [FromRoute] string gridAreaCode,
         [FromRoute] TimeSeriesType timeSeriesType)
     {
-        var processStepActorsRequest = new ProcessStepActorsRequest(batchId, gridAreaCode, timeSeriesType, MarketRole.BalanceResponsibleParty);
+        var balanceResponsibleParties = await _processStepApplicationService.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
 
-        var brps = await _processStepApplicationService.GetActorsAsync(processStepActorsRequest).ConfigureAwait(false);
-
-        return brps
+        return balanceResponsibleParties
             .Select(a => new ActorDto(a.Gln))
             .ToList();
-    }
-
-    /// <summary>
-    /// Balance responsible party.
-    /// </summary>
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpGet]
-    [Route("{gln}")]
-    public Task<ActorDto> GetByGlnAsync(
-        [FromRoute] Guid batchId,
-        [FromRoute] string gridAreaCode,
-        [FromRoute] TimeSeriesType timeSeriesType,
-        [FromRoute] string gln)
-    {
-        return Task.FromResult<ActorDto>(null!);
     }
 }

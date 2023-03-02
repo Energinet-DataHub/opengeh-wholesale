@@ -47,6 +47,12 @@ public static class Registration
             return new WholesaleClient(httpClientFactory, wholesaleBaseUri);
         });
 
+        serviceCollection.AddScoped<IWholesaleClientV3, WholesaleClientV3>(provider =>
+        {
+            var httpClientFactory = provider.GetRequiredService<AuthorizedHttpClientFactory>();
+            return new WholesaleClientV3(httpClientFactory, wholesaleBaseUri);
+        });
+
         return serviceCollection;
     }
 }

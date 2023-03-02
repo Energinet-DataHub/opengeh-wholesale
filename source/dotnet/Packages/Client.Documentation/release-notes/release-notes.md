@@ -1,8 +1,12 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.12
+
+Added v3 client registration.
+
 ## Version 5.0.11
 
-No functional changes.
+Added a method to get settlement reports by batch id and grid area code.
 
 ## Version 5.0.10
 

@@ -66,17 +66,17 @@ public sealed class SettlementReportApplicationServiceTests
         var zipExtractDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         ZipFile.ExtractToDirectory(zipFileName, zipExtractDirectory);
 
-        var (masterDataDir, _, masterDataPath) = SettlementReportRepository.GetMasterBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
+        var (masterDataDir, _, masterDataPath) = SettlementReportRepository.GetMasterBasisDataFileForTotalGridAreaSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, masterDataPath)).Should().BeTrue();
         var masterDataContent = File.ReadLines(Path.Combine(zipExtractDirectory, masterDataPath)).First();
         masterDataContent.Should().BeEquivalentTo(masterDataDir);
 
-        var (quarterDir, _, quarterPath) = SettlementReportRepository.GetTimeSeriesQuarterBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
+        var (quarterDir, _, quarterPath) = SettlementReportRepository.GetTimeSeriesQuarterBasisDataForTotalGridAreaFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, quarterPath)).Should().BeTrue();
         var quarterContent = File.ReadLines(Path.Combine(zipExtractDirectory, quarterPath)).First();
         quarterContent.Should().BeEquivalentTo(quarterDir);
 
-        var (hourDir, _, hourPath) = SettlementReportRepository.GetTimeSeriesHourBasisDataFileSpecification(batch.Id, batch.GridAreaCodes.Single());
+        var (hourDir, _, hourPath) = SettlementReportRepository.GetTimeSeriesHourBasisDataForTotalGridAreaFileSpecification(batch.Id, batch.GridAreaCodes.Single());
         File.Exists(Path.Combine(zipExtractDirectory, hourPath)).Should().BeTrue();
         var hourContent = File.ReadLines(Path.Combine(zipExtractDirectory, hourPath)).First();
         hourContent.Should().BeEquivalentTo(hourDir);

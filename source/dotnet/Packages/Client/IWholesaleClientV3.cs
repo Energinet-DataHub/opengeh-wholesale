@@ -12,20 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Client;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+namespace Energinet.DataHub.Wholesale.Client;
 
-namespace Client.Tests;
-
-public class RegistrationTests
+public interface IWholesaleClientV3
 {
-    [Fact]
-    public void AddWholesaleClient_EnablesResolvingAClient()
-    {
-        IServiceCollection serviceCollection = new ServiceCollection();
-        serviceCollection.AddWholesaleClient(new Uri("http://some.base.uri"), _ => "some-authorization-token");
-        serviceCollection.BuildServiceProvider().GetRequiredService<IWholesaleClient>();
-        serviceCollection.BuildServiceProvider().GetRequiredService<IWholesaleClientV3>();
-    }
+    Task<Stream> GetSettlementReportAsStreamAsync(Guid batchId, string gridAreaCode);
 }

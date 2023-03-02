@@ -14,7 +14,6 @@
 
 from datetime import datetime
 
-import package.basis_data as basis_data
 import package.steps.aggregation as agg_steps
 from package.codelists import MeteringPointResolution
 from package.constants import Colname
@@ -46,8 +45,7 @@ def calculate_balance_fixing(
         period_end_datetime,
     )
 
-    _create_and_write_basis_data(
-        basis_data_writer,
+    basis_data_writer.write(
         metering_points_periods_df,
         enriched_time_series_point_df,
         period_start_datetime,
@@ -56,30 +54,6 @@ def calculate_balance_fixing(
     )
 
     _calculate(actors_writer, process_step_result_writer, enriched_time_series_point_df)
-
-
-def _create_and_write_basis_data(
-    basis_data_writer: BasisDataWriter,
-    metering_points_periods_df: DataFrame,
-    enriched_time_series_point_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
-    time_zone: str,
-) -> None:
-    (
-        timeseries_quarter_df,
-        timeseries_hour_df,
-    ) = basis_data.get_time_series_basis_data_dfs(
-        enriched_time_series_point_df, time_zone
-    )
-
-    master_basis_data_df = basis_data.get_master_basis_data_df(
-        metering_points_periods_df, period_start_datetime, period_end_datetime
-    )
-
-    basis_data_writer.write(
-        master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
-    )
 
 
 def _calculate(
