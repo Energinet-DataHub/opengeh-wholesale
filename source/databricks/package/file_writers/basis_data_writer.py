@@ -122,13 +122,12 @@ class BasisDataWriter:
 
         timeseries_quarter_df = timeseries_quarter_df.withColumnRenamed(
             CsvColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        ).withColumn(PartitionKeyName.GRID_AREA, col(CsvColname.grid_area))
+        ).withColumnRenamed(CsvColname.grid_area, PartitionKeyName.GRID_AREA)
         timeseries_hour_df = timeseries_hour_df.withColumnRenamed(
             CsvColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        ).withColumn(PartitionKeyName.GRID_AREA, col(CsvColname.grid_area))
-        master_basis_data_df = master_basis_data_df.withColumn(
-            PartitionKeyName.ENERGY_SUPPLIER_GLN,
-            col(CsvColname.energy_supplier_id),
+        ).withColumnRenamed(CsvColname.grid_area, PartitionKeyName.GRID_AREA)
+        master_basis_data_df = master_basis_data_df.withColumnRenamed(
+            CsvColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
         ).withColumn(PartitionKeyName.GRID_AREA, col(CsvColname.grid_area))
 
         self._write_basis_data_to_csv(
