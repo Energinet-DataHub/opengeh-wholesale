@@ -67,7 +67,6 @@ def test__get_master_basis_data_has_expected_columns(
 
     # Assert
     assert master_basis_data.columns == [
-        "GridAreaCode",
         "METERINGPOINTID",
         "VALIDFROM",
         "VALIDTO",

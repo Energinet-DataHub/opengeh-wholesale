@@ -28,7 +28,7 @@ from pyspark.sql.window import Window
 from package.codelists import (
     MeteringPointResolution,
 )
-from package.constants import Colname
+from package.constants import Colname, CsvColname
 from package.db_logging import debug
 from datetime import datetime
 
@@ -40,28 +40,27 @@ def get_master_basis_data_df(
 ) -> DataFrame:
     return (
         metering_point_df.withColumn(
-            "FromDate",
+            Colname.from_date,
             when(
-                col("FromDate") < period_start_datetime, period_start_datetime
-            ).otherwise(col("FromDate")),
+                col(Colname.from_date) < period_start_datetime, period_start_datetime
+            ).otherwise(col(Colname.from_date)),
         )
         .withColumn(
-            "ToDate",
-            when(col("ToDate") > period_end_datetime, period_end_datetime).otherwise(
-                col("ToDate")
-            ),
+            Colname.to_date,
+            when(
+                col(Colname.to_date) > period_end_datetime, period_end_datetime
+            ).otherwise(col(Colname.to_date)),
         )
         .select(
-            col("GridAreaCode"),  # column is only used for partitioning
-            col("MeteringPointId").alias("METERINGPOINTID"),
-            col("FromDate").alias("VALIDFROM"),
-            col("ToDate").alias("VALIDTO"),
-            col("GridAreaCode").alias("GRIDAREA"),
-            col("ToGridAreaCode").alias("TOGRIDAREA"),
-            col("FromGridAreaCode").alias("FROMGRIDAREA"),
-            col("Type").alias("TYPEOFMP"),
-            col("SettlementMethod").alias("SETTLEMENTMETHOD"),
-            col(Colname.energy_supplier_id).alias(("ENERGYSUPPLIERID")),
+            col(Colname.metering_point_id).alias(CsvColname.metering_point_id),
+            col(Colname.from_date).alias(CsvColname.valid_from),
+            col(Colname.to_date).alias(CsvColname.valid_to),
+            col(Colname.grid_area).alias(CsvColname.grid_area),
+            col(Colname.out_grid_area).alias(CsvColname.out_grid_area),
+            col(Colname.in_grid_area).alias(CsvColname.in_grid_area),
+            col(Colname.metering_point_type).alias(CsvColname.metering_point_type),
+            col(Colname.settlement_method).alias(CsvColname.settlement_method),
+            col(Colname.energy_supplier_id).alias((CsvColname.energy_supplier_id)),
         )
     )
 
@@ -91,24 +90,25 @@ def _get_time_series_basis_data_by_resolution(
     resolution: str,
     time_zone: str,
 ) -> DataFrame:
-    w = Window.partitionBy(Colname.metering_point_id, "localDate").orderBy(
+    w = Window.partitionBy(Colname.metering_point_id, Colname.local_date).orderBy(
         Colname.observation_time
     )
 
     timeseries_basis_data_df = (
         enriched_time_series_point_df.where(col(Colname.resolution) == resolution)
         .withColumn(
-            "localDate",
+            Colname.local_date,
             to_date(from_utc_timestamp(col(Colname.observation_time), time_zone)),
         )
         .withColumn(
-            Colname.position, concat(lit("ENERGYQUANTITY"), row_number().over(w))
+            Colname.position,
+            concat(lit(CsvColname.quantity_prefix), row_number().over(w)),
         )
-        .withColumn("STARTDATETIME", first(Colname.observation_time).over(w))
+        .withColumn(Colname.start_datetime, first(Colname.observation_time).over(w))
         .groupBy(
             Colname.metering_point_id,
-            "localDate",
-            "STARTDATETIME",
+            Colname.local_date,
+            Colname.start_datetime,
             Colname.grid_area,
             Colname.metering_point_type,
             Colname.resolution,
@@ -116,17 +116,15 @@ def _get_time_series_basis_data_by_resolution(
         )
         .pivot(Colname.position)
         .agg(first(Colname.quantity))
-        .withColumnRenamed(Colname.metering_point_id, "METERINGPOINTID")
-        .withColumn("TYPEOFMP", col(Colname.metering_point_type))
     )
 
     quantity_columns = _get_sorted_quantity_columns(timeseries_basis_data_df)
     timeseries_basis_data_df = timeseries_basis_data_df.select(
-        Colname.grid_area,
-        "METERINGPOINTID",
-        "TYPEOFMP",
-        "STARTDATETIME",
-        Colname.energy_supplier_id,
+        col(Colname.grid_area).alias(CsvColname.grid_area),
+        col(Colname.metering_point_id).alias(CsvColname.metering_point_id),
+        col(Colname.metering_point_type).alias(CsvColname.metering_point_type),
+        col(Colname.start_datetime).alias(CsvColname.start_datetime),
+        col(Colname.energy_supplier_id).alias(CsvColname.energy_supplier_id),
         *quantity_columns,
     )
     return timeseries_basis_data_df
@@ -140,7 +138,9 @@ def _get_sorted_quantity_columns(timeseries_basis_data: DataFrame) -> list[str]:
         return list(map(int, re.findall(r"\d+", col_name)))[0]
 
     quantity_columns = [
-        c for c in timeseries_basis_data.columns if c.startswith("ENERGYQUANTITY")
+        c
+        for c in timeseries_basis_data.columns
+        if c.startswith(CsvColname.quantity_prefix)
     ]
     quantity_columns.sort(key=num_sort)
     return quantity_columns

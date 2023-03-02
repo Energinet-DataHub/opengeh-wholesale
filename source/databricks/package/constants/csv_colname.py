@@ -12,7 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .result_key_name import ResultKeyName
-from .colname import Colname
-from .csv_colname import CsvColname
-from .partition_key_name import PartitionKeyName
+
+class CsvColname:
+    "Column names of the basis data CSV files"
+
+    energy_supplier_id = "ENERGYSUPPLIERID"
+    grid_area = "GRIDAREA"
+    in_grid_area = "FROMGRIDAREA"
+    metering_point_id = "METERINGPOINTID"
+    metering_point_type = "TYPEOFMP"
+    out_grid_area = "TOGRIDAREA"
+    quantity_prefix = "ENERGYQUANTITY"
+    "The column name prefix. The full quantity column names are suffixed with a number. E.g. 'ENERGYQUANTITY1'"
+    settlement_method = "SETTLEMENTMETHOD"
+    start_datetime = "STARTDATETIME"
+    valid_from = "VALIDFROM"
+    valid_to = "VALIDTO"

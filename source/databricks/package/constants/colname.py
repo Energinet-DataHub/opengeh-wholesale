@@ -45,6 +45,7 @@ class Colname:
     is_grid_loss = "is_grid_loss"
     is_system_correction = "is_system_correction"
     job_id = "job_id"
+    local_date = "localDate"
     metering_method = "metering_method"
     metering_point_id = "MeteringPointId"
     metering_point_type = "Type"
