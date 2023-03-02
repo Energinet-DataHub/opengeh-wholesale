@@ -1,6 +1,6 @@
 # Wholesale Client Package Release notes
 
-## Version 5.0.12
+## Version 5.0.13
 
 No functional changes
 
