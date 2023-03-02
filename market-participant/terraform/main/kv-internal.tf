@@ -14,13 +14,13 @@ module "kv_internal" {
   allowed_subnet_ids              = [
     data.azurerm_key_vault_secret.snet_vnet_integrations_id.value,
   ]
-  access_policies                 = [
-    {
-      object_id               = module.func_entrypoint_marketparticipant.identity.0
-      secret_permissions      = ["List", "Get"]
-      key_permissions         = ["List", "Get", "Sign"]
-    }
-  ]
+}
+
+module "kv_internal_access_policy_func_entrypoint_marketparticipant" {
+  source                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-access-policy?ref=v10"
+
+  key_vault_id              = module.kv_internal.id
+  app_identity              = module.func_entrypoint_marketparticipant.identity.0
 }
 
 module "kvs_sendgrid_api_key" {
