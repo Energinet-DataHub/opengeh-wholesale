@@ -30,7 +30,7 @@ public class DataLakeClientTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task GetDataLakeFileClientAsync_WhenDirectoryDoesNotExist_ThrowsException(
+    public async Task FindAndOpenFileAsync_WhenDirectoryDoesNotExist_ThrowsException(
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<Response<bool>> responseMock)
@@ -46,14 +46,14 @@ public class DataLakeClientTests
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetDataLakeFileClientAsync(string.Empty, string.Empty))
+            .Invoking(s => s.FindAndOpenFileAsync(string.Empty, string.Empty))
             .Should()
             .ThrowAsync<InvalidOperationException>();
     }
 
     [Theory]
     [AutoMoqData]
-    public async Task GetDataLakeFileClientAsync_WhenFileExtensionNotFound_ThrowException(
+    public async Task FindAndOpenFileAsync_WhenFileExtensionNotFound_ThrowException(
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<Response<bool>> responseMock)
@@ -76,14 +76,14 @@ public class DataLakeClientTests
 
         // Act and Assert
         await sut
-            .Invoking(s => s.GetDataLakeFileClientAsync(string.Empty, string.Empty))
+            .Invoking(s => s.FindAndOpenFileAsync(string.Empty, string.Empty))
             .Should()
             .ThrowAsync<Exception>();
     }
 
     [Theory]
     [AutoMoqData]
-    public async Task GetDataLakeFileClientAsync_WhenFileExtensionFound_IsNotNull(
+    public async Task FindAndOpenFileAsync_WhenFileExtensionFound_IsNotNull(
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
         [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock,
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
@@ -107,10 +107,15 @@ public class DataLakeClientTests
             .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
             .Returns(asyncPageableWithOnePathItem);
 
+        var stream = new Mock<Stream>();
+        dataLakeFileClientMock
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
+            .ReturnsAsync(stream.Object);
+
         var sut = new DataLakeClient(dataLakeFileSystemClientMock.Object);
 
         // Act
-        var dataLakeFileClient = await sut.GetDataLakeFileClientAsync(fileName, fileExtension);
+        var dataLakeFileClient = await sut.FindAndOpenFileAsync(fileName, fileExtension);
 
         // Assert
         dataLakeFileClient.Should().NotBeNull();

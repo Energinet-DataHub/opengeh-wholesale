@@ -38,17 +38,11 @@ public class ProcessStepResultRepositoryTests
     [AutoMoqData]
     public async Task GetAsync_ReturnsProcessActorResult(
         [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
-        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
         var stream = new Mock<Stream>();
-
-        dataLakeFileClientMock
-            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), default))
-            .ReturnsAsync(stream.Object);
-        dataLakeClientMock.Setup(x => x.GetDataLakeFileClientAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(dataLakeFileClientMock.Object);
+        dataLakeClientMock.Setup(x => x.FindAndOpenFileAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(stream.Object);
         var processResultPoint = new ProcessResultPoint("1.00", "measured", "2022-05-31T22:00:00");
         jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ProcessResultPoint>(stream.Object))
             .ReturnsAsync(new List<ProcessResultPoint>
