@@ -16,12 +16,13 @@ from azure.storage.filedatalake import FileSystemClient, DataLakeDirectoryClient
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from os import path
 from pyspark.sql.functions import col, when
+from pyspark.sql.types import StringType
 from pyspark.sql import DataFrame
 
 
 def apply(args: MigrationScriptArgs) -> None:
     container = "wholesale"
-    directory_name = "test-calculation-output"
+    directory_name = "calculation-output"
     spark = args.spark
 
     # Get the file system client
@@ -61,48 +62,50 @@ def apply(args: MigrationScriptArgs) -> None:
                 result_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_path}/"
 
                 # Migrate brp_ga results
-                brp_ga_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_temp_path}/grouping=brp_ga/"
+                brp_ga_dir = f"{result_temp_path}/grouping=brp_ga/"
                 brp_ga_directory_client = file_system_client.get_directory_client(
-                    directory=brp_ga_path
+                    directory=brp_ga_dir
                 )
                 if brp_ga_directory_client.exists():
-                    df = spark.read.json(brp_ga_path)
+                    df = spark.read.json(
+                        f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{brp_ga_dir}"
+                    )
                     time_series_quality_migrated = (
                         _map_cim_quality_to_wholesale_quality(df)
                     )
-                    time_series_quality_migrated.repartition(
-                        "grid_area", "gln"
-                    ).write.mode("append").partitionBy(
-                        "time_series_type", "grid_area", "gln"
-                    ).json(
+                    time_series_quality_migrated.repartition("grid_area").write.mode(
+                        "append"
+                    ).partitionBy("time_series_type", "grid_area", "gln").json(
                         f"{result_path}/grouping=brp_ga"
                     )
 
                 # Migrate es_ga results
-                es_ga_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_temp_path}/grouping=es_ga/"
+                es_ga_dir = f"{result_temp_path}/grouping=es_ga"
                 es_ga_directory_client = file_system_client.get_directory_client(
-                    directory=es_ga_path
+                    directory=es_ga_dir
                 )
                 if es_ga_directory_client.exists():
-                    df = spark.read.json(es_ga_path)
+                    df = spark.read.json(
+                        f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{es_ga_dir}"
+                    )
                     time_series_quality_migrated = (
                         _map_cim_quality_to_wholesale_quality(df)
                     )
-                    time_series_quality_migrated.repartition(
-                        "grid_area", "gln"
-                    ).write.mode("append").partitionBy(
-                        "time_series_type", "grid_area", "gln"
-                    ).json(
+                    time_series_quality_migrated.repartition("grid_area").write.mode(
+                        "append"
+                    ).partitionBy("time_series_type", "grid_area", "gln").json(
                         f"{result_path}/grouping=es_ga"
                     )
 
                 # Migrate Quality for total ga
-                total_ga_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_temp_path}/grouping=total_ga"
+                total_ga_dir = f"{result_temp_path}/grouping=total_ga"
                 total_ga_directory_client = file_system_client.get_directory_client(
-                    directory=total_ga_path
+                    directory=total_ga_dir
                 )
                 if total_ga_directory_client.exists():
-                    df = spark.read.json(total_ga_path)
+                    df = spark.read.json(
+                        f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{total_ga_dir}"
+                    )
                     total_ga_time_series_quality_migrated = (
                         _map_cim_quality_to_wholesale_quality(df)
                     )
@@ -110,34 +113,33 @@ def apply(args: MigrationScriptArgs) -> None:
                     total_ga_time_series_quality_migrated.repartition(
                         "grid_area"
                     ).write.mode("append").partitionBy(
-                        "grouping",
                         "time_series_type",
                         "grid_area",
                     ).json(
-                        result_path
+                        f"{result_path}/grouping=total_ga"
                     )
 
                 # Migrate Quality for es_brp_ga
-                es_brp_ga_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{result_temp_path}/grouping=es_brp_ga"
+                es_brp_ga_dir = f"{result_temp_path}/grouping=es_brp_ga"
                 es_brp_ga_directory_client = file_system_client.get_directory_client(
-                    directory=es_brp_ga_path
+                    directory=es_brp_ga_dir
                 )
                 if es_brp_ga_directory_client.exists():
-                    df = spark.read.json(es_brp_ga_path)
+                    df = spark.read.json(
+                        f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/{es_brp_ga_dir}"
+                    )
                     es_brp_ga_time_series_quality_migrated = (
                         _map_cim_quality_to_wholesale_quality(df)
                     )
-
                     es_brp_ga_time_series_quality_migrated.repartition(
-                        "grid_area"
+                        "grid_area",
                     ).write.mode("append").partitionBy(
-                        "grouping",
                         "time_series_type",
                         "grid_area",
-                        "balance_responisble_party_gln",
+                        "balance_responsible_party_gln",
                         "energy_supplier_gln",
                     ).json(
-                        result_path
+                        f"{result_path}/grouping=es_brp_ga"
                     )
 
 
@@ -165,7 +167,7 @@ def _map_cim_quality_to_wholesale_quality(df: DataFrame) -> DataFrame:
             col("Quality") == "A06",
             "calculated",
         )
-        .otherwise(col("Quality")),  # TODO: SHOULD BE UNKNOWN
+        .otherwise("missing"),
     )
 
 
