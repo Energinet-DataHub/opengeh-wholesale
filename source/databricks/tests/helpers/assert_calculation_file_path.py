@@ -20,16 +20,19 @@ from tests.helpers import file_utils
 
 
 class CalculationFileType(Enum):
-    TimeSeriesQuarterBasisData = "time_series_quarter_basis_data_file"
-    TimeSeriesHourBasisData = "time_series_hour_basis_data_file"
-    MasterBasisData = "master_basis_data_file"
+    TimeSeriesQuarterBasisDataForTotalGa = "time_series_quarter_basis_data_file_for_total_grid_area"
+    TimeSeriesHourBasisData = "time_series_hour_basis_data_file_for_total_grid_area"
+    MasterBasisDataForTotalGa = "master_basis_data_file_for_total_grid_area"
+    TimeSeriesQuarterBasisDataForEsPerGa = "time_series_quarter_basis_data_file_for_es_per_ga"
+    TimeSeriesHourBasisDataForEsPerGa = "time_series_hour_basis_data_file_for_es_per_ga"
+    MasterBasisDataForEsPerGa = "master_basis_data_file_for_es_per_ga"
     ResultFileForTotalGridArea = "result_file_for_total_grid_area"
     ResultFileForGaBrpEs = "result_file_for_ga_brp_es"
     ResultFile = "result_file"
     ActorsFile = "actors_file"
 
 
-def calculation_file_paths_contract(
+def _calculation_file_paths_contract(
     contracts_path: str, calculation_file_type: CalculationFileType
 ) -> tuple[str, str]:
     with open(f"{contracts_path}/calculation-file-paths.yml", "r") as stream:
@@ -47,7 +50,7 @@ def assert_file_path_match_contract(
     actual_file_path: str,
     calculation_file_type: CalculationFileType,
 ) -> None:
-    (directory_expression, extension) = calculation_file_paths_contract(
+    (directory_expression, extension) = _calculation_file_paths_contract(
         contracts_path, calculation_file_type
     )
 

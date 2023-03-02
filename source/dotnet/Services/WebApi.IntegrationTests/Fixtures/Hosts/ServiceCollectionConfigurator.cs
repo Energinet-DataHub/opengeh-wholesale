@@ -73,9 +73,9 @@ public class ServiceCollectionConfigurator
             var fileDescriptorProviders =
                 new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
                 {
-                    SettlementReportRepository.GetTimeSeriesHourBasisDataFileSpecification,
-                    SettlementReportRepository.GetTimeSeriesQuarterBasisDataFileSpecification,
-                    SettlementReportRepository.GetMasterBasisDataFileSpecification,
+                    SettlementReportRepository.GetTimeSeriesHourBasisDataForTotalGridAreaFileSpecification,
+                    SettlementReportRepository.GetTimeSeriesQuarterBasisDataForTotalGridAreaFileSpecification,
+                    SettlementReportRepository.GetMasterBasisDataFileForTotalGridAreaSpecification,
                 };
 
             // Mock each basis data files for the process
