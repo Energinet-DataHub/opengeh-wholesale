@@ -2,6 +2,10 @@
 
 ## Version 5.0.12
 
+No functional changes
+
+## Version 5.0.12
+
 Added v3 client registration.
 
 ## Version 5.0.11

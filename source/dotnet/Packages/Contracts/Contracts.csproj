@@ -23,7 +23,7 @@ limitations under the License.
     </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.21.12" />
+    <PackageReference Include="Google.Protobuf" Version="3.21.13" />
     <PackageReference Include="Grpc.Tools" Version="2.51.0" PrivateAssets="All" />
   </ItemGroup>
 
