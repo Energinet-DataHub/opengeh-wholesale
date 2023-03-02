@@ -43,7 +43,7 @@ public class ProcessStepResultTests : WebApiTestBase
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
         Mock<IProcessStepApplicationService> processStepApplicationServiceMock,
         Mock<IBatchApplicationService> batchApplicationServiceMock,
-        Contracts.ProcessStepResultDto result,
+        ProcessStepResultDto result,
         BatchDto batchDto,
         ProcessStepActorsRequest request)
     {

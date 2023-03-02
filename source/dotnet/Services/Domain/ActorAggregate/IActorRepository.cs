@@ -22,4 +22,6 @@ public interface IActorRepository
     Task<Actor[]> GetEnergySuppliersAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType);
 
     Task<Actor[]> GetBalanceResponsiblePartiesAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType);
+
+    Task<Actor[]> GetEnergySuppliersByBalanceResponsiblePartyAsync(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsibleGln);
 }
