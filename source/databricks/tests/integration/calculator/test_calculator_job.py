@@ -15,6 +15,7 @@
 from os import path
 from shutil import rmtree
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 import pytest
 from unittest.mock import patch, Mock
 from tests.contract_utils import assert_contract_matches_schema
@@ -23,9 +24,10 @@ from package.calculator_job import (
     _start_calculator,
     start,
     _start,
+    _map_cim_quality_to_wholesale_quality,
 )
 from package.calculator_args import CalculatorArgs
-from package.codelists import TimeSeriesType, Grouping
+from package.codelists import TimeSeriesType, Grouping, TimeSeriesQuality
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from tests.helpers.file_utils import find_file
@@ -547,11 +549,15 @@ def test__creates_quarter_for_total_ga__per_grid_area(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_805 = infra.get_time_series_quarter_for_total_ga_relative_path(
-        executed_batch_id, "805"
+    basis_data_relative_path_805 = (
+        infra.get_time_series_quarter_for_total_ga_relative_path(
+            executed_batch_id, "805"
+        )
     )
-    basis_data_relative_path_806 = infra.get_time_series_quarter_for_total_ga_relative_path(
-        executed_batch_id, "806"
+    basis_data_relative_path_806 = (
+        infra.get_time_series_quarter_for_total_ga_relative_path(
+            executed_batch_id, "806"
+        )
     )
 
     # Act
@@ -582,11 +588,15 @@ def test__creates_quarter_for_es_per_ga__per_energy_supplier(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_a = infra.get_time_series_quarter_for_es_per_ga_relative_path(
-        executed_batch_id, "805", energy_supplier_gln_a
+    basis_data_relative_path_a = (
+        infra.get_time_series_quarter_for_es_per_ga_relative_path(
+            executed_batch_id, "805", energy_supplier_gln_a
+        )
     )
-    basis_data_relative_path_b = infra.get_time_series_quarter_for_es_per_ga_relative_path(
-        executed_batch_id, "805", energy_supplier_gln_b
+    basis_data_relative_path_b = (
+        infra.get_time_series_quarter_for_es_per_ga_relative_path(
+            executed_batch_id, "805", energy_supplier_gln_b
+        )
     )
 
     # Act
@@ -617,11 +627,11 @@ def test__creates_hour_for_total_ga__per_grid_area(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_805 = infra.get_time_series_hour_for_total_ga_relative_path(
-        executed_batch_id, "805"
+    basis_data_relative_path_805 = (
+        infra.get_time_series_hour_for_total_ga_relative_path(executed_batch_id, "805")
     )
-    basis_data_relative_path_806 = infra.get_time_series_hour_for_total_ga_relative_path(
-        executed_batch_id, "806"
+    basis_data_relative_path_806 = (
+        infra.get_time_series_hour_for_total_ga_relative_path(executed_batch_id, "806")
     )
 
     # Act
@@ -840,7 +850,9 @@ def test__quarterly_basis_data_for_total_ga_filepath_matches_contract(
         f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
     )
     assert_file_path_match_contract(
-        contracts_path, actual_file_path, CalculationFileType.TimeSeriesQuarterBasisDataForTotalGa
+        contracts_path,
+        actual_file_path,
+        CalculationFileType.TimeSeriesQuarterBasisDataForTotalGa,
     )
 
 
@@ -885,7 +897,9 @@ def test__hourly_basis_data_for_es_per_ga_filepath_matches_contract(
         f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
     )
     assert_file_path_match_contract(
-        contracts_path, actual_file_path, CalculationFileType.TimeSeriesHourBasisDataForEsPerGa
+        contracts_path,
+        actual_file_path,
+        CalculationFileType.TimeSeriesHourBasisDataForEsPerGa,
     )
 
 
@@ -907,7 +921,9 @@ def test__quarterly_basis_data_for_es_per_ga_filepath_matches_contract(
         f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
     )
     assert_file_path_match_contract(
-        contracts_path, actual_file_path, CalculationFileType.TimeSeriesQuarterBasisDataForEsPerGa
+        contracts_path,
+        actual_file_path,
+        CalculationFileType.TimeSeriesQuarterBasisDataForEsPerGa,
     )
 
 
@@ -961,5 +977,5 @@ def test__map_timeseriesquality_from_cim_to_wholesale(
 
     # Assert
     assert (
-        actual.filter(F.col("Quality").isin(expected_values)).count() == 0
+        actual.filter(col("Quality").isin(expected_values)).count() == 0
     ), "Quality contains unexpected values"
