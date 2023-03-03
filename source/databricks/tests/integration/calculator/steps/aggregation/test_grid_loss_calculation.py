@@ -25,7 +25,6 @@ from package.steps.aggregation import (
     calculate_grid_loss,
     calculate_residual_ga,
 )
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -39,8 +38,6 @@ date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
-
-metadata = Metadata("1", "1", "1", "1")
 
 
 class AggregationMethod(Enum):
@@ -502,28 +499,27 @@ def agg_hourly_production_factory(spark, agg_consumption_and_production_schema):
 
 
 def test_grid_loss_calculation(agg_result_factory):
-    metadata = Metadata("1", "1", "1", "1")
     results = {}
     results[
         ResultKeyName.net_exchange_per_ga
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory(agg_method=AggregationMethod.net_exchange)
+        agg_result_factory(agg_method=AggregationMethod.net_exchange)
     )
     results[
         ResultKeyName.non_profiled_consumption
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory(agg_method=AggregationMethod.hourly_consumption)
+        agg_result_factory(agg_method=AggregationMethod.hourly_consumption)
     )
     results[
         ResultKeyName.flex_consumption
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory(agg_method=AggregationMethod.flex_consumption)
+        agg_result_factory(agg_method=AggregationMethod.flex_consumption)
     )
     results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory(agg_method=AggregationMethod.production)
+        agg_result_factory(agg_method=AggregationMethod.production)
     )
 
-    result = calculate_grid_loss(results, metadata)
+    result = calculate_grid_loss(results)
 
     # Verify the calculation result is correct by checking 50+i + 20+i - (13+i + 14+i) equals 43 for all i in range 0 to 9
     assert result.filter(col(Colname.sum_quantity) != 43).count() == 0
@@ -535,30 +531,23 @@ def test_grid_loss_calculation_calculates_correctly_on_grid_area(
     agg_flex_consumption_factory,
     agg_hourly_production_factory,
 ):
-    metadata = Metadata("1", "1", "1", "1")
     results = {}
     results[
         ResultKeyName.net_exchange_per_ga
-    ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_net_exchange_factory()
-    )
+    ] = create_dataframe_from_aggregation_result_schema(agg_net_exchange_factory())
     results[
         ResultKeyName.non_profiled_consumption_ga
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_hourly_consumption_factory()
+        agg_hourly_consumption_factory()
     )
     results[
         ResultKeyName.flex_consumption_ga
-    ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_flex_consumption_factory()
-    )
+    ] = create_dataframe_from_aggregation_result_schema(agg_flex_consumption_factory())
     results[
         ResultKeyName.production_ga
-    ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_hourly_production_factory()
-    )
+    ] = create_dataframe_from_aggregation_result_schema(agg_hourly_production_factory())
 
-    result = calculate_residual_ga(results, metadata)
+    result = calculate_residual_ga(results)
 
     result_collect = result.collect()
     assert result_collect[0][Colname.sum_quantity] == Decimal("6")

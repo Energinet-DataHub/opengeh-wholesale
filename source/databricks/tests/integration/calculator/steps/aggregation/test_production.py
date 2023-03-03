@@ -24,7 +24,6 @@ from package.steps.aggregation import (
     aggregate_production_ga_brp,
     aggregate_production_ga,
 )
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -39,8 +38,6 @@ date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
-
-metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
@@ -113,8 +110,8 @@ def test_production_calculation_per_ga_and_es(
     results = {}
     results[
         ResultKeyName.production_with_system_correction_and_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_production_ga_es(results, metadata).sort(
+    ] = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    result = aggregate_production_ga_es(results).sort(
         Colname.grid_area, Colname.energy_supplier_id
     )
     result_collect = result.collect()
@@ -133,8 +130,8 @@ def test_production_calculation_per_ga_and_brp(
     results = {}
     results[
         ResultKeyName.production_with_system_correction_and_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_production_ga_brp(results, metadata).sort(
+    ] = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    result = aggregate_production_ga_brp(results).sort(
         Colname.grid_area, Colname.balance_responsible_id
     )
     result_collect = result.collect()
@@ -151,10 +148,10 @@ def test_production_calculation_per_ga(
     test_data_factory: Callable[..., DataFrame]
 ) -> None:
     production_with_system_correction_and_grid_loss = (
-        create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
+        create_dataframe_from_aggregation_result_schema(test_data_factory())
     )
     result = aggregate_production_ga(
-        production_with_system_correction_and_grid_loss, metadata
+        production_with_system_correction_and_grid_loss
     ).sort(Colname.grid_area)
     result_collect = result.collect()
     assert result_collect[0][Colname.balance_responsible_id] is None

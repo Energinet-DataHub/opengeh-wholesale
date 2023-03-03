@@ -22,7 +22,6 @@ from package.db_logging import debug
 from package.file_writers.actors_writer import ActorsWriter
 from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
-from package.shared.data_classes import Metadata
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, explode, expr
 from pyspark.sql.types import DecimalType
@@ -61,25 +60,21 @@ def _calculate(
     result_writer: ProcessStepResultWriter,
     enriched_time_series_point_df: DataFrame,
 ) -> None:
-    metadata_fake = Metadata("1", "1", "1", "1")
-
-    _calculate_production(result_writer, enriched_time_series_point_df, metadata_fake)
+    _calculate_production(result_writer, enriched_time_series_point_df)
 
     _calculate_non_profiled_consumption(
-        actors_writer, result_writer, enriched_time_series_point_df, metadata_fake
+        actors_writer, result_writer, enriched_time_series_point_df
     )
 
 
 def _calculate_production(
-    result_writer: ProcessStepResultWriter,
-    enriched_time_series: DataFrame,
-    metadata: Metadata,
+    result_writer: ProcessStepResultWriter, enriched_time_series: DataFrame
 ) -> None:
     production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production_ga_brp_es(
-        enriched_time_series, metadata
+        enriched_time_series
     )
     production_per_ga = agg_steps.aggregate_production_ga(
-        production_per_per_ga_and_brp_and_es, metadata
+        production_per_per_ga_and_brp_and_es
     )
 
     result_writer.write_per_ga(
@@ -97,18 +92,17 @@ def _calculate_non_profiled_consumption(
     actors_writer: ActorsWriter,
     result_writer: ProcessStepResultWriter,
     enriched_time_series_point_df: DataFrame,
-    metadata: Metadata,
 ) -> None:
     # Non-profiled consumption per balance responsible party and energy supplier
     consumption_per_ga_and_brp_and_es = (
         agg_steps.aggregate_non_profiled_consumption_ga_brp_es(
-            enriched_time_series_point_df, metadata
+            enriched_time_series_point_df
         )
     )
 
     # Non-profiled consumption per energy supplier
     consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
-        consumption_per_ga_and_brp_and_es, metadata
+        consumption_per_ga_and_brp_and_es
     )
 
     result_writer.write_per_ga_per_actor(
@@ -120,7 +114,7 @@ def _calculate_non_profiled_consumption(
 
     # Non-profiled consumption per balance responsible
     consumption_per_ga_and_brp = agg_steps.aggregate_non_profiled_consumption_ga_brp(
-        consumption_per_ga_and_brp_and_es, metadata
+        consumption_per_ga_and_brp_and_es
     )
 
     result_writer.write_per_ga_per_actor(
