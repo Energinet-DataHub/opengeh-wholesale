@@ -59,7 +59,7 @@ public class ProcessStepResultController : V3ControllerBase
         [FromRoute] string gridAreaCode,
         [FromRoute] TimeSeriesType timeSeriesType,
         [FromQuery] string? energySupplierGln,
-        [FromRoute] string? balanceResponsiblePartyGln)
+        [FromQuery] string? balanceResponsiblePartyGln)
     {
         var stepResult = await _processStepApplicationService.GetResultAsync(
             batchId,

@@ -25,10 +25,6 @@ from pyspark.sql.types import (
 
 aggregation_result_schema = StructType(
     [
-        StructField(Colname.job_id, StringType(), False),  # from metadata
-        StructField(Colname.result_id, StringType(), False),  # from metadata
-        StructField(Colname.result_name, StringType(), False),  # from metadata
-        StructField(Colname.result_path, StringType(), False),  # from metadata
         StructField(Colname.grid_area, StringType(), False),
         StructField(Colname.in_grid_area, StringType(), True),
         StructField(Colname.out_grid_area, StringType(), True),

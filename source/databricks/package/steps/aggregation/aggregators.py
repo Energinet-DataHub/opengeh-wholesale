@@ -20,7 +20,6 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.constants import Colname, ResultKeyName
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -50,9 +49,7 @@ exchange_out_out_grid_area = "ExOut_OutMeteringGridArea_Domain_mRID"
 
 
 # Function to aggregate hourly net exchange per neighbouring grid areas (step 1)
-def aggregate_net_exchange_per_neighbour_ga(
-    results: dict, metadata: Metadata
-) -> DataFrame:
+def aggregate_net_exchange_per_neighbour_ga(results: dict) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe].filter(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
@@ -107,11 +104,11 @@ def aggregate_net_exchange_per_neighbour_ga(
             lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
         )
     )
-    return create_dataframe_from_aggregation_result_schema(metadata, exchange)
+    return create_dataframe_from_aggregation_result_schema(exchange)
 
 
 # Function to aggregate hourly net exchange per grid area (step 2)
-def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_net_exchange_per_ga(results: dict) -> DataFrame:
     df = results[ResultKeyName.aggregation_base_dataframe]
     exchangeIn = df.filter(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
@@ -156,36 +153,30 @@ def aggregate_net_exchange_per_ga(results: dict, metadata: Metadata) -> DataFram
             lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
         )
     )
-    return create_dataframe_from_aggregation_result_schema(metadata, resultDf)
+    return create_dataframe_from_aggregation_result_schema(resultDf)
 
 
 def aggregate_non_profiled_consumption_ga_brp_es(
-    enriched_time_series: DataFrame, metadata: Metadata
+    enriched_time_series: DataFrame,
 ) -> DataFrame:
     return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.non_profiled,
-        metadata,
     )
 
 
-def aggregate_flex_consumption_ga_brp_es(
-    enriched_time_series: DataFrame, metadata: Metadata
-) -> DataFrame:
+def aggregate_flex_consumption_ga_brp_es(enriched_time_series: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.flex,
-        metadata,
     )
 
 
-def aggregate_production_ga_brp_es(
-    enriched_time_series: DataFrame, metadata: Metadata
-) -> DataFrame:
+def aggregate_production_ga_brp_es(enriched_time_series: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_brp_and_es(
-        enriched_time_series, MeteringPointType.production, None, metadata
+        enriched_time_series, MeteringPointType.production, None
     )
 
 
@@ -194,7 +185,6 @@ def _aggregate_per_ga_and_brp_and_es(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
     settlement_method: Union[SettlementMethod, None],
-    metadata: Metadata,
 ) -> DataFrame:
     """This function creates a intermediate result, which is subsequently used as input to achieve result for different process steps.
 
@@ -284,40 +274,35 @@ def _aggregate_per_ga_and_brp_and_es(
         )
     )
 
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+    return create_dataframe_from_aggregation_result_schema(result)
 
 
-def aggregate_production_ga_es(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga_es(results: dict) -> DataFrame:
     return _aggregate_per_ga_and_es(
         results[ResultKeyName.production_with_system_correction_and_grid_loss],
         MeteringPointType.production,
-        metadata,
     )
 
 
 def aggregate_non_profiled_consumption_ga_es(
-    non_profiled_consumption: DataFrame, metadata: Metadata
+    non_profiled_consumption: DataFrame,
 ) -> DataFrame:
     return _aggregate_per_ga_and_es(
         non_profiled_consumption,
         MeteringPointType.consumption,
-        metadata,
     )
 
 
-def aggregate_flex_consumption_ga_es(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_flex_consumption_ga_es(results: dict) -> DataFrame:
     return _aggregate_per_ga_and_es(
         results[ResultKeyName.flex_consumption_with_grid_loss],
         MeteringPointType.consumption,
-        metadata,
     )
 
 
 # Function to aggregate sum per grid area and energy supplier (step 12, 13 and 14)
 def _aggregate_per_ga_and_es(
-    df: DataFrame,
-    market_evaluation_point_type: MeteringPointType,
-    metadata: Metadata,
+    df: DataFrame, market_evaluation_point_type: MeteringPointType
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
     result = _aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
@@ -330,32 +315,27 @@ def _aggregate_per_ga_and_es(
         Colname.sum_quantity,
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+    return create_dataframe_from_aggregation_result_schema(result)
 
 
-def aggregate_production_ga_brp(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga_brp(results: dict) -> DataFrame:
     return _aggregate_per_ga_and_brp(
         results[ResultKeyName.production_with_system_correction_and_grid_loss],
         MeteringPointType.production,
-        metadata,
     )
 
 
-def aggregate_non_profiled_consumption_ga_brp(
-    result: DataFrame, metadata: Metadata
-) -> DataFrame:
+def aggregate_non_profiled_consumption_ga_brp(result: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_brp(
         result,
         MeteringPointType.consumption,
-        metadata,
     )
 
 
-def aggregate_flex_consumption_ga_brp(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_flex_consumption_ga_brp(results: dict) -> DataFrame:
     return _aggregate_per_ga_and_brp(
         results[ResultKeyName.flex_consumption_with_grid_loss],
         MeteringPointType.consumption,
-        metadata,
     )
 
 
@@ -363,7 +343,6 @@ def aggregate_flex_consumption_ga_brp(results: dict, metadata: Metadata) -> Data
 def _aggregate_per_ga_and_brp(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
-    metadata: Metadata,
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.balance_responsible_id, Colname.time_window]
     result = _aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
@@ -376,32 +355,27 @@ def _aggregate_per_ga_and_brp(
         Colname.sum_quantity,
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+    return create_dataframe_from_aggregation_result_schema(result)
 
 
-def aggregate_production_ga(production: DataFrame, metadata: Metadata) -> DataFrame:
+def aggregate_production_ga(production: DataFrame) -> DataFrame:
     return _aggregate_per_ga(
         production,
         MeteringPointType.production,
-        metadata,
     )
 
 
-def aggregate_non_profiled_consumption_ga(
-    consumption: DataFrame, metadata: Metadata
-) -> DataFrame:
+def aggregate_non_profiled_consumption_ga(consumption: DataFrame) -> DataFrame:
     return _aggregate_per_ga(
         consumption,
         MeteringPointType.consumption,
-        metadata,
     )
 
 
-def aggregate_flex_consumption_ga(results: dict, metadata: Metadata) -> DataFrame:
+def aggregate_flex_consumption_ga(results: dict) -> DataFrame:
     return _aggregate_per_ga(
         results[ResultKeyName.flex_consumption_with_grid_loss],
         MeteringPointType.consumption,
-        metadata,
     )
 
 
@@ -409,7 +383,6 @@ def aggregate_flex_consumption_ga(results: dict, metadata: Metadata) -> DataFram
 def _aggregate_per_ga(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
-    metadata: Metadata,
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.time_window]
     result = _aggregate_sum_and_set_quality(df, Colname.sum_quantity, group_by)
@@ -424,7 +397,7 @@ def _aggregate_per_ga(
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
 
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+    return create_dataframe_from_aggregation_result_schema(result)
 
 
 def _aggregate_sum_and_set_quality(
