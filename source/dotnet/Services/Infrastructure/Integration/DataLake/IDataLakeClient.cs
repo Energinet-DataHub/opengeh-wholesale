@@ -18,5 +18,8 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 
 public interface IDataLakeClient
 {
-    Task<DataLakeFileClient> GetDataLakeFileClientAsync(string directory, string extension);
+    /// <summary>
+    /// Search for a file by a given extension in a blob directory.
+    /// </summary>
+    Task<Stream> FindAndOpenFileAsync(string directory, string extension);
 }
