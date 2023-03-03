@@ -56,10 +56,6 @@ def create_dataframe_from_aggregation_result_schema(
     # Create data frame from RDD in order to be able to apply the schema
     return SparkSession.builder.getOrCreate().createDataFrame(
         result.select(
-            lit(metadata.JobId).alias(Colname.job_id),
-            lit(metadata.ResultId).alias(Colname.result_id),
-            lit(metadata.ResultName).alias(Colname.result_name),
-            lit(metadata.ResultPath).alias(Colname.result_path),
             Colname.grid_area,
             Colname.in_grid_area,
             Colname.out_grid_area,

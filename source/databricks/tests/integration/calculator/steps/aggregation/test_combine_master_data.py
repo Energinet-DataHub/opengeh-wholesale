@@ -37,10 +37,6 @@ from package.constants import Colname, ResultKeyName
 @pytest.fixture(scope="module")
 def aggregation_result_factory(spark):
     def factory(
-        job_id=DataframeDefaults.default_job_id,
-        result_id=DataframeDefaults.default_result_id,
-        result_name=DataframeDefaults.default_result_name,
-        result_path=DataframeDefaults.default_result_path,
         grid_area=DataframeDefaults.default_grid_area,
         in_grid_area=None,
         out_grid_area=None,
@@ -59,10 +55,6 @@ def aggregation_result_factory(spark):
         pandas_df = pd.DataFrame().append(
             [
                 {
-                    Colname.job_id: job_id,
-                    Colname.result_id: result_id,
-                    Colname.result_name: result_name,
-                    Colname.result_path: result_path,
                     Colname.grid_area: grid_area,
                     Colname.in_grid_area: in_grid_area,
                     Colname.out_grid_area: out_grid_area,
