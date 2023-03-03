@@ -89,31 +89,27 @@ public class SettlementReportRepository : ISettlementReportRepository
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
 
     public static (string Directory, string Extension, string ZipEntryPath)
-        GetTimeSeriesHourBasisDataForEsPerGaGridAreaFileSpecification(Guid batchId, GridAreaCode gridAreaCode,
-            string energySupplierId)
+        GetTimeSeriesHourBasisDataForEsPerGaGridAreaFileSpecification(Guid batchId, GridAreaCode gridAreaCode, string energySupplierId)
         => (
             $"calculation-output/batch_id={batchId}/basis_data/time_series_hour/grouping=es_ga/grid_area={gridAreaCode.Code}/energy_supplier_gln={energySupplierId}/",
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT1H.csv");
 
     public static (string Directory, string Extension, string ZipEntryPath)
-        GetTimeSeriesQuarterBasisDataForEsPerGaFileSpecification(Guid batchId, GridAreaCode gridAreaCode,
-            string energySupplierId)
+        GetTimeSeriesQuarterBasisDataForEsPerGaFileSpecification(Guid batchId, GridAreaCode gridAreaCode, string energySupplierId)
         => (
             $"calculation-output/batch_id={batchId}/basis_data/time_series_quarter/grouping=es_ga/grid_area={gridAreaCode.Code}/energy_supplier_gln={energySupplierId}/",
             ".csv",
             $"{gridAreaCode.Code}/Timeseries_PT15M.csv");
 
     public static (string Directory, string Extension, string ZipEntryPath)
-        GetMasterBasisDataFileForForEsPerGaSpecification(Guid batchId, GridAreaCode gridAreaCode,
-            string energySupplierId)
+        GetMasterBasisDataFileForForEsPerGaSpecification(Guid batchId, GridAreaCode gridAreaCode, string energySupplierId)
         => (
             $"calculation-output/batch_id={batchId}/basis_data/master_basis_data/grouping=es_ga/grid_area={gridAreaCode.Code}/energy_supplier_gln={energySupplierId}/",
             ".csv",
             $"{gridAreaCode.Code}/MeteringPointMasterData.csv");
 
-    public static string GetZipFileName(Batch batch) =>
-        $"calculation-output/batch_id={batch.Id}/zip/gln=grid_area/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
+    public static string GetZipFileName(Batch batch) => $"calculation-output/batch_id={batch.Id}/zip/gln=grid_area/batch_{batch.Id}_{batch.PeriodStart}_{batch.PeriodEnd}.zip";
 
     private async Task<IEnumerable<(Stream FileStream, string EntryPath)>> GetBatchBasisFileStreamsAsync(Batch batch)
     {
@@ -128,8 +124,7 @@ public class SettlementReportRepository : ISettlementReportRepository
         return batchBasisFiles;
     }
 
-    private async Task<List<(Stream FileStream, string EntryPath)>> GetProcessBasisFileStreamsAsync(Guid batchId,
-        GridAreaCode gridAreaCode)
+    private async Task<List<(Stream FileStream, string EntryPath)>> GetProcessBasisFileStreamsAsync(Guid batchId, GridAreaCode gridAreaCode)
     {
         var processDataFilesUrls = new List<(Stream FileStream, string EntryPath)>();
 
