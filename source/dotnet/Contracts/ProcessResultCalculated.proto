@@ -18,22 +18,35 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
 
+/* TODO
+	Grouping = grid area | energy-supplier | ...
+	ReceivingActor?
+		Gln
+		ActorRole
+*/
+
 /*
- * ProcessCompleted Integration Event.
- * A process is uniquely identified by the batch ID and grid area code together.
+ * ProcessResultCalculated Integration Event.
  *
  * The process type is provided in the MessageType, which is available in the message meta data according to ADR-008.
  * See file `./ProcessCompleted.cs` for currently supported process types.
  */
-message ProcessCompleted {
+message ProcessResultCalculated {
 
   /*
    * The ID of the batch containing the process.
    * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
    * Example: 65801e3c-5131-426e-b1bb-7b186349c996
    */ 
-  string batch_id = 1;
+  string batch_id = 1; // TODO: Message meta data?
 
+  ProcessType process_type = 2;
+  
+  enum ProcessType {
+    BALANCE_FIXING = 0;
+    AGGREGATION = 1;
+  }
+  
   /*
    * The grid area code uniquely defining the process in the batch.
    * The grid area code is a 3 character string consisting solely of digits.
@@ -41,18 +54,54 @@ message ProcessCompleted {
    *   543
    *   020
    */
-  string grid_area_code = 2;
+  string grid_area_code = 3;
 
+  TimeSeriesType time_series_type = 4; 
+  
+  enum TimeSeriesType {
+    TOTAL_PRODUCTION = 0;
+    NON_PROFILED_CONSUMPTION = 1;
+  }
+  
   /*
-   * The begining of the calculation period.
+   * The beginning of the calculation period.
    * The time is included in the period and is identical to the time of the first time series point
    * in the process time series type results.
    */
-  google.protobuf.Timestamp period_start_utc = 3;
+  google.protobuf.Timestamp period_start_utc = 5;
 
   /*
    * The end of the calculation period.
    * The time is excluded from the period.
    */
-  google.protobuf.Timestamp period_end_utc = 4;
+  google.protobuf.Timestamp period_end_utc = 6;
+  
+  Resolution resolution = 7;
+  
+  enum Resolution {
+    QUARTER = 0;
+  }
+  
+  QuantityUnit quantity_unit = 8;
+  
+  enum QuantityUnit {
+    KWH = 0;
+  }
+  
+  repeated TimeSeriesPoint points = 9;
+  
+  message TimeSeriesPoint {
+    int32 position = 1;
+    
+    DecimalValue quantity = 2;
+    
+    QuantityQuality quantity_quality = 3;
+    
+    enum QuantityQuality {
+      READ = 0;
+      MEASURED = 1;
+      MISSING = 2;
+      CALCULATED = 3;
+    }
+  }
 }
