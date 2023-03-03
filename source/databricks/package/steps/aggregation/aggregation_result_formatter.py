@@ -14,7 +14,6 @@
 from pyspark.sql import DataFrame, SparkSession
 
 from pyspark.sql.functions import lit
-from package.shared.data_classes import Metadata
 from package.constants import Colname
 from package.schemas.output import aggregation_result_schema
 from package.codelists import TimeSeriesQuality
@@ -40,9 +39,7 @@ def __add_missing_nullable_columns(result: DataFrame) -> DataFrame:
     return result
 
 
-def create_dataframe_from_aggregation_result_schema(
-    metadata: Metadata, result: DataFrame
-) -> DataFrame:
+def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFrame:
     "Fit result in a general DataFrame. This is used for all results and missing columns will be null."
 
     result = __add_missing_nullable_columns(result)

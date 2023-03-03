@@ -23,7 +23,6 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, sum, lit
@@ -49,8 +48,6 @@ default_quantity = Decimal(1)
 default_quality = TimeSeriesQuality.measured.value
 default_resolution = MeteringPointResolution.quarter.value
 default_obs_time_string = "2020-01-01T00:00:00.000Z"
-
-metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture
@@ -158,7 +155,7 @@ def test_production_aggregator_filters_out_incorrect_point_type(
     enriched_time_series = enriched_time_series_factory(
         metering_point_type=metering_point_type
     )
-    aggregated_df = aggregate_production_ga_brp_es(enriched_time_series, metadata)
+    aggregated_df = aggregate_production_ga_brp_es(enriched_time_series)
     assert aggregated_df.count() == 0
 
 
@@ -173,7 +170,7 @@ def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
     row2_df = enriched_time_series_factory(quantity=Decimal(2))
 
     enriched_time_series = row1_df.union(row2_df)
-    aggregated_df = aggregate_production_ga_brp_es(enriched_time_series, metadata)
+    aggregated_df = aggregate_production_ga_brp_es(enriched_time_series)
 
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
@@ -203,7 +200,7 @@ def test_production_aggregator_returns_distinct_rows_for_observations_in_differe
     row1_df = enriched_time_series_factory()
     row2_df = enriched_time_series_factory(obs_time_string="2020-01-01T01:00:00.000Z")
     time_series = row1_df.union(row2_df)
-    aggregated_df = aggregate_production_ga_brp_es(time_series, metadata)
+    aggregated_df = aggregate_production_ga_brp_es(time_series)
 
     assert aggregated_df.count() == 2
 
@@ -244,7 +241,7 @@ def test_production_aggregator_returns_correct_schema(
     and time window (from the quarter-hour resolution specified in the aggregator).
     """
     time_series = enriched_time_series_factory()
-    aggregated_df = aggregate_production_ga_brp_es(time_series, metadata)
+    aggregated_df = aggregate_production_ga_brp_es(time_series)
     assert aggregated_df.schema == aggregation_result_schema
 
 
@@ -253,7 +250,7 @@ def test_production_test_filter_by_domain_is_pressent(
 ) -> None:
     df = enriched_time_series_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
+        df, MeteringPointType.production, None
     )
     assert aggregated_df.count() == 1
 
@@ -266,9 +263,7 @@ def test__quarterly_sums_correctly(
     df = enriched_time_series_quarterly_same_time_factory(
         first_quantity=Decimal("1"), second_quantity=Decimal("2")
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().sum_quantity == 3
 
 
@@ -303,9 +298,7 @@ def test__hourly_sums_are_rounded_correctly(
         resolution=MeteringPointResolution.hour.value, quantity=quantity
     )
 
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
 
     assert result_df.count() == 4  # one hourly quantity should yield 4 points
     assert (
@@ -326,9 +319,7 @@ def test__quarterly_and_hourly_sums_correctly(
         second_resolution=MeteringPointResolution.hour.value,
         second_quantity=second_quantity,
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     sum_quant = result_df.agg(sum(Colname.sum_quantity).alias("sum_quant"))
     assert sum_quant.first()["sum_quant"] == first_quantity + second_quantity
 
@@ -343,9 +334,7 @@ def test__points_with_same_time_quantities_are_on_same_position(
         second_resolution=MeteringPointResolution.hour.value,
         second_quantity=Decimal("2"),
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     # total 'Quantity' on first position
     assert result_df.first().sum_quantity == Decimal("2.5")
     # first point with quarter resolution 'quantity' is 2, second is 2 but is hourly so 0.5 should be added to first position
@@ -366,7 +355,7 @@ def test__position_is_based_on_time_correctly(
         second_grid_area_code=grid_area_code_805,
     )
     result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
+        df, MeteringPointType.production, None
     ).collect()
 
     assert result_df[0]["position"] == 1
@@ -387,9 +376,7 @@ def test__that_hourly_quantity_is_summed_as_quarterly(
         first_obs_time_string="2022-06-08T12:09:15.000Z",
         second_obs_time_string="2022-06-08T13:09:15.000Z",
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.count() == 8
     actual = result_df.collect()
     assert actual[0].sum_quantity == Decimal("1")
@@ -401,9 +388,7 @@ def test__that_grid_area_code_in_input_is_in_output(
 ) -> None:
     "Test that the grid area codes in input are in result"
     df = enriched_time_series_quarterly_same_time_factory()
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().GridAreaCode == str(grid_area_code_805)
 
 
@@ -412,9 +397,7 @@ def test__each_grid_area_has_a_sum(
 ) -> None:
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.where("GridAreaCode == 805").count() == 1
     assert result_df.where("GridAreaCode == 806").count() == 1
 
@@ -443,9 +426,7 @@ def test__final_sum_of_different_magnitudes_should_not_lose_precision(
             )
         )
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.count() == 4
     assert result_df.where(col(Colname.sum_quantity) == "100000000000.001").count() == 4
 
@@ -491,9 +472,7 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
         .union(enriched_time_series_factory(quality=quality_2))
         .union(enriched_time_series_factory(quality=quality_3))
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().Quality == expected_quality
 
 
@@ -502,9 +481,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
 ) -> None:
     df = enriched_time_series_factory().withColumn("quality", lit(None))
 
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().Quality == TimeSeriesQuality.missing.value
 
 
@@ -514,7 +491,5 @@ def test__when_time_series_point_is_missing__quantity_is_0(
     df = enriched_time_series_factory().withColumn(
         Colname.quantity, lit(None).cast(DecimalType())
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.production, None, metadata
-    )
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().sum_quantity == Decimal("0.000")

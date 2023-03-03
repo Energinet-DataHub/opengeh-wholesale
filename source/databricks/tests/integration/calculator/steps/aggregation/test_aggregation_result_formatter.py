@@ -21,7 +21,6 @@ from package.codelists import (
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
-from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 import pytest
 import pandas as pd
@@ -110,10 +109,9 @@ def test__create_dataframe_from_aggregation_result_schema__can_create_a_datafram
     agg_result_factory,
 ):
     # Arrange
-    metadata = Metadata("1", "1", "1", "1")
     result = agg_result_factory()
     # Act
-    actual = create_dataframe_from_aggregation_result_schema(metadata, result)
+    actual = create_dataframe_from_aggregation_result_schema(result)
     # Assert
     assert actual.schema == aggregation_result_schema
 
@@ -122,7 +120,6 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
     agg_result_factory, aggregation_result_factory
 ):
     # Arrange
-    metadata = Metadata("1", "1", "1", "1")
     result = agg_result_factory()
     expected = aggregation_result_factory(
         grid_area="A",
@@ -133,6 +130,6 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
         metering_point_type=MeteringPointType.consumption.value,
     )
     # Act
-    actual = create_dataframe_from_aggregation_result_schema(metadata, result)
+    actual = create_dataframe_from_aggregation_result_schema(result)
     # Assert
     assert actual.collect() == expected.collect()

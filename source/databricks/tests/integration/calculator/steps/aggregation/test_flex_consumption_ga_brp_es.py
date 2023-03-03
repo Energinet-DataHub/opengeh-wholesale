@@ -23,7 +23,6 @@ from package.codelists import (
     SettlementMethod,
     TimeSeriesQuality,
 )
-from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import (
@@ -57,8 +56,6 @@ date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
-
-metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
@@ -158,7 +155,7 @@ def test_filters_out_incorrect_point_type(
     Aggregator should filter out all non "E17" MarketEvaluationPointType rows
     """
     df = time_series_row_factory(point_type=point_type)
-    aggregated_df = aggregate_flex_consumption_ga_brp_es(df, metadata)
+    aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
     assert aggregated_df.count() == 0
 
 
@@ -175,7 +172,7 @@ def test_filters_out_incorrect_settlement_method(
     Aggregator should filter out all non "D01" SettlementMethod rows
     """
     df = time_series_row_factory(settlement_method=settlement_method)
-    aggregated_df = aggregate_flex_consumption_ga_brp_es(df, metadata)
+    aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
     assert aggregated_df.count() == 0
 
 
@@ -189,7 +186,7 @@ def test_aggregates_observations_in_same_hour(
     row1_df = time_series_row_factory(quantity=Decimal(1))
     row2_df = time_series_row_factory(quantity=Decimal(2))
     df = row1_df.union(row2_df)
-    aggregated_df = aggregate_flex_consumption_ga_brp_es(df, metadata)
+    aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
 
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
@@ -222,9 +219,7 @@ def test_returns_distinct_rows_for_observations_in_different_hours(
     row1_df = time_series_row_factory()
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
     df = row1_df.union(row2_df)
-    aggregated_df = aggregate_flex_consumption_ga_brp_es(df, metadata).sort(
-        Colname.time_window
-    )
+    aggregated_df = aggregate_flex_consumption_ga_brp_es(df).sort(Colname.time_window)
 
     assert aggregated_df.count() == 2
 
@@ -265,7 +260,7 @@ def test_returns_correct_schema(
     and time window (from the quarter-hour resolution specified in the aggregator).
     """
     df = time_series_row_factory()
-    aggregated_df = aggregate_flex_consumption_ga_brp_es(df, metadata)
+    aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
     assert aggregated_df.schema == aggregation_result_schema
 
 
@@ -277,7 +272,6 @@ def test_flex_consumption_test_filter_by_domain_is_present(
         df,
         MeteringPointType.consumption,
         SettlementMethod.flex,
-        metadata,
     )
     assert aggregated_df.count() == 1
 
@@ -290,6 +284,5 @@ def test_flex_consumption_test_filter_by_domain_is_not_present(
         df,
         MeteringPointType.consumption,
         SettlementMethod.non_profiled,
-        metadata,
     )
     assert aggregated_df.count() == 0

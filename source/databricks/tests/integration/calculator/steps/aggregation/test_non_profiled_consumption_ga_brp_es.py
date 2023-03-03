@@ -23,7 +23,6 @@ from package.codelists import (
     SettlementMethod,
     TimeSeriesQuality,
 )
-from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
@@ -49,8 +48,6 @@ date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
-
-metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
@@ -142,7 +139,7 @@ def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
     Aggregator should filter out all non "E17" MarketEvaluationPointType rows
     """
     time_series = time_series_row_factory(point_type=e_18)
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series, metadata)
+    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
     assert aggregated_df.count() == 0
 
 
@@ -156,7 +153,7 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
     row1_df = time_series_row_factory(quantity=Decimal(1))
     row2_df = time_series_row_factory(quantity=Decimal(2))
     time_series = row1_df.union(row2_df)
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series, metadata)
+    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
 
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
@@ -189,9 +186,9 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
     row1_df = time_series_row_factory()
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
     time_series = row1_df.union(row2_df)
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(
-        time_series, metadata
-    ).sort(Colname.time_window)
+    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series).sort(
+        Colname.time_window
+    )
 
     assert aggregated_df.count() == 2
 
@@ -232,7 +229,7 @@ def test_consumption_supplier_aggregator_returns_correct_schema(
     and time window (from the quarter-hour resolution specified in the aggregator).
     """
     time_series = time_series_row_factory()
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series, metadata)
+    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
     assert aggregated_df.schema == aggregation_result_schema
 
 
@@ -244,7 +241,6 @@ def test_consumption_test_filter_by_domain_is_pressent(
         df,
         MeteringPointType.consumption,
         SettlementMethod.non_profiled,
-        metadata,
     )
     assert aggregated_df.count() == 1
 
@@ -257,12 +253,11 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
         df,
         MeteringPointType.consumption,
         SettlementMethod.flex,
-        metadata,
     )
     assert aggregated_df.count() == 0
 
 
 def test_expected_schema(time_series_row_factory: Callable[..., DataFrame]) -> None:
     time_series = time_series_row_factory()
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series, metadata)
+    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
     assert aggregated_df.schema == aggregation_result_schema

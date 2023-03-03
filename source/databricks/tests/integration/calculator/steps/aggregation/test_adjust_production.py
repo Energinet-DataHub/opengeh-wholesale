@@ -19,7 +19,6 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.steps.aggregation import adjust_production
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -56,8 +55,6 @@ default_valid_from = datetime.strptime(
 default_valid_to = datetime.strptime(
     "2020-01-01T01:00:00+0000", date_time_formatting_string
 )
-
-metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
@@ -254,20 +251,20 @@ def test_grid_area_system_correction_is_added_to_system_correction_energy_respon
 ):
     results = {}
     results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
-        metadata, hourly_production_result_row_factory(supplier="A")
+        hourly_production_result_row_factory(supplier="A")
     )
 
     results[
         ResultKeyName.added_system_correction
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, added_system_correction_result_row_factory()
+        added_system_correction_result_row_factory()
     )
 
     results[ResultKeyName.grid_loss_sys_cor_master_data] = sys_cor_row_factory(
         supplier="A"
     )
 
-    result_df = adjust_production(results, metadata)
+    result_df = adjust_production(results)
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -284,20 +281,20 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
 ):
     results = {}
     results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
-        metadata, hourly_production_result_row_factory(supplier="A")
+        hourly_production_result_row_factory(supplier="A")
     )
 
     results[
         ResultKeyName.added_system_correction
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, added_system_correction_result_row_factory()
+        added_system_correction_result_row_factory()
     )
 
     results[ResultKeyName.grid_loss_sys_cor_master_data] = sys_cor_row_factory(
         supplier="B"
     )
 
-    result_df = adjust_production(results, metadata)
+    result_df = adjust_production(results)
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -318,20 +315,20 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     hp_row_3 = hourly_production_result_row_factory(supplier="C")
 
     results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
-        metadata, hp_row_1.union(hp_row_2).union(hp_row_3)
+        hp_row_1.union(hp_row_2).union(hp_row_3)
     )
 
     results[
         ResultKeyName.added_system_correction
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, added_system_correction_result_row_factory()
+        added_system_correction_result_row_factory()
     )
 
     results[ResultKeyName.grid_loss_sys_cor_master_data] = sys_cor_row_factory(
         supplier="C"
     )
 
-    result_df = adjust_production(results, metadata)
+    result_df = adjust_production(results)
 
     result_df_collect = result_df.collect()
     assert result_df.count() == 3
@@ -370,7 +367,7 @@ def test_correct_system_correction_entry_is_used_to_determine_energy_responsible
     )
 
     results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
-        metadata, hp_row_1.union(hp_row_2).union(hp_row_3)
+        hp_row_1.union(hp_row_2).union(hp_row_3)
     )
 
     gasc_result_1 = Decimal(1)
@@ -390,7 +387,7 @@ def test_correct_system_correction_entry_is_used_to_determine_energy_responsible
     results[
         ResultKeyName.added_system_correction
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, gasc_row_1.union(gasc_row_2).union(gasc_row_3)
+        gasc_row_1.union(gasc_row_2).union(gasc_row_3)
     )
 
     sc_row_1 = sys_cor_row_factory(
@@ -407,7 +404,7 @@ def test_correct_system_correction_entry_is_used_to_determine_energy_responsible
         sc_row_2
     ).union(sc_row_3)
 
-    result_df = adjust_production(results, metadata)
+    result_df = adjust_production(results)
 
     assert result_df.count() == 3
     assert (

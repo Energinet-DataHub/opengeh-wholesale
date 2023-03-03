@@ -13,7 +13,6 @@
 # limitations under the License.
 from package.codelists import MeteringPointResolution
 from package.codelists import MeteringPointType
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -28,7 +27,7 @@ adjusted_sum_quantity = "adjusted_sum_quantity"
 
 
 # step 11
-def adjust_production(results: dict, metadata: Metadata) -> DataFrame:
+def adjust_production(results: dict) -> DataFrame:
     hourly_production_result_df = results[ResultKeyName.production]
     added_system_correction_result_df = results[ResultKeyName.added_system_correction]
     sys_cor_df = results[ResultKeyName.grid_loss_sys_cor_master_data]
@@ -107,4 +106,4 @@ def adjust_production(results: dict, metadata: Metadata) -> DataFrame:
         Colname.time_window,
     )
 
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+    return create_dataframe_from_aggregation_result_schema(result)
