@@ -18,7 +18,7 @@ from pyspark.sql.functions import col
 
 import package.basis_data as basis_data
 import package.infrastructure as infra
-from package.constants import PartitionKeyName, CsvColname
+from package.constants import PartitionKeyName, BasisDataColname
 from package.codelists import Grouping
 
 
@@ -81,13 +81,13 @@ class BasisDataWriter:
 
         partition_keys = [PartitionKeyName.GRID_AREA]
         timeseries_quarter_df = timeseries_quarter_df.drop(
-            CsvColname.energy_supplier_id
-        ).withColumnRenamed(CsvColname.grid_area, PartitionKeyName.GRID_AREA)
+            BasisDataColname.energy_supplier_id
+        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
         timeseries_hour_df = timeseries_hour_df.drop(
-            CsvColname.energy_supplier_id
-        ).withColumnRenamed(CsvColname.grid_area, PartitionKeyName.GRID_AREA)
+            BasisDataColname.energy_supplier_id
+        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
         master_basis_data_df = master_basis_data_df.withColumn(
-            PartitionKeyName.GRID_AREA, col(CsvColname.grid_area)
+            PartitionKeyName.GRID_AREA, col(BasisDataColname.grid_area)
         )
 
         self._write_basis_data_to_csv(
@@ -121,14 +121,14 @@ class BasisDataWriter:
         ]
 
         timeseries_quarter_df = timeseries_quarter_df.withColumnRenamed(
-            CsvColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        ).withColumnRenamed(CsvColname.grid_area, PartitionKeyName.GRID_AREA)
+            BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
+        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
         timeseries_hour_df = timeseries_hour_df.withColumnRenamed(
-            CsvColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        ).withColumnRenamed(CsvColname.grid_area, PartitionKeyName.GRID_AREA)
+            BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
+        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
         master_basis_data_df = master_basis_data_df.withColumnRenamed(
-            CsvColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        ).withColumn(PartitionKeyName.GRID_AREA, col(CsvColname.grid_area))
+            BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
+        ).withColumn(PartitionKeyName.GRID_AREA, col(BasisDataColname.grid_area))
 
         self._write_basis_data_to_csv(
             f"{basis_data_directory}/time_series_quarter/{grouping_folder_name}",

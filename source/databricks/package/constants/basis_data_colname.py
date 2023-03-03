@@ -13,9 +13,7 @@
 # limitations under the License.
 
 
-class CsvColname:
-    "Column names of the basis data CSV files"
-
+class BasisDataColname:
     energy_supplier_id = "ENERGYSUPPLIERID"
     grid_area = "GRIDAREA"
     in_grid_area = "FROMGRIDAREA"
