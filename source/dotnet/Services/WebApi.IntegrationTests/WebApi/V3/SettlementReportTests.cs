@@ -15,7 +15,6 @@
 using System.Net;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
@@ -49,8 +48,7 @@ public sealed class SettlementReportTests : WebApiTestBase
         const HttpStatusCode expectedHttpStatusCode = HttpStatusCode.OK;
 
         settlementReportApplicationService
-            .Setup(service => service.GetSettlementReportAsync(batchId, gridAreaCode))
-            .ReturnsAsync(new SettlementReportDto(Stream.Null));
+            .Setup(service => service.GetSettlementReportAsync(batchId, gridAreaCode, Stream.Null));
 
         Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
 

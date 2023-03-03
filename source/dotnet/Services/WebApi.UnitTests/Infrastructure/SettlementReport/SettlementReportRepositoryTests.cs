@@ -215,6 +215,111 @@ public class SettlementReportRepositoryTests
 
     [Theory]
     [AutoMoqData]
+    public async Task GetSettlementReportAsync_WhenGivenBatchAndGridAreaCode_WritesToOutputStream(
+        [Frozen] Mock<IStreamZipper> streamZipperMock,
+        [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
+        [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock,
+        [Frozen] Mock<DataLakeDirectoryClient> dataLakeDirectoryClientMock)
+    {
+        // Arrange
+        const string expectedOutput = "test";
+
+        var fileStream = new MemoryStream(Encoding.UTF8.GetBytes(expectedOutput));
+
+        const string anyStringValue = "anyStringValue";
+
+        var fileDownloadResponse = Response.FromValue(
+            DataLakeModelFactory.FileDownloadInfo(
+                fileStream.Length,
+                fileStream,
+                null,
+                DataLakeModelFactory.FileDownloadDetails(
+                    DateTimeOffset.Now,
+                    new Dictionary<string, string>(),
+                    anyStringValue,
+                    ETag.All,
+                    anyStringValue,
+                    anyStringValue,
+                    anyStringValue,
+                    anyStringValue,
+                    DateTimeOffset.Now,
+                    anyStringValue,
+                    anyStringValue,
+                    anyStringValue,
+                    new Uri("https://notarealadresszxc.com"),
+                    CopyStatus.Success,
+                    DataLakeLeaseDuration.Fixed,
+                    DataLakeLeaseState.Available,
+                    DataLakeLeaseStatus.Locked,
+                    anyStringValue,
+                    false,
+                    anyStringValue,
+                    Encoding.UTF8.GetBytes(expectedOutput))),
+            null!);
+
+        dataLakeFileClientMock.Setup(x => x.ReadAsync())
+            .ReturnsAsync(fileDownloadResponse);
+
+        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(It.IsAny<string>()))
+            .Returns(dataLakeFileClientMock.Object);
+
+        var sut = new SettlementReportRepository(
+            dataLakeFileSystemClientMock.Object,
+            streamZipperMock.Object);
+
+        dataLakeDirectoryClientMock.Setup(x => x.ExistsAsync(CancellationToken.None))
+            .ReturnsAsync(Response.FromValue(true, null!));
+
+        var pathItem = DataLakeModelFactory.PathItem(
+            "fake.csv",
+            false,
+            DateTimeOffset.Now,
+            ETag.All,
+            0,
+            "owner",
+            "group",
+            "permissions");
+
+        dataLakeDirectoryClientMock
+            .Setup(x => x.GetPathsAsync(It.IsAny<bool>(), It.IsAny<bool>(), CancellationToken.None))
+            .Returns(AsyncPageable<PathItem>.FromPages(new[]
+            {
+                Page<PathItem>.FromValues(new[] { pathItem }, null, null!),
+            }));
+
+        dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
+            .Returns(dataLakeDirectoryClientMock.Object);
+
+        var batch = new BatchBuilder().Build();
+        var gridAreaCode = new GridAreaCode("001");
+
+        using var outputStream = new MemoryStream();
+
+        // ReSharper disable AccessToDisposedClosure
+        streamZipperMock.Setup(x =>
+                x.ZipAsync(
+                    It.Is<IEnumerable<(Stream Stream, string Name)>>(files =>
+                        files.All(file => file.Stream == fileStream && file.Name.StartsWith(gridAreaCode.Code))),
+                    outputStream))
+            .Callback(() =>
+            {
+                fileStream.CopyTo(outputStream);
+                outputStream.Position = 0;
+            });
+        // ReSharper restore AccessToDisposedClosure
+
+        // Act
+        await sut.GetSettlementReportAsync(batch, gridAreaCode, outputStream).ConfigureAwait(false);
+
+        using var streamReader = new StreamReader(outputStream);
+        var actual = await streamReader.ReadLineAsync();
+
+        // Assert
+        actual.Should().Be(expectedOutput);
+    }
+
+    [Theory]
+    [AutoMoqData]
     public async Task CreateSettlementReportAsync_CreatesSettlementReportFile_WhenDataDirectoryIsNotFound(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
         [Frozen] Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock,
