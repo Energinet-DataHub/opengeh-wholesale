@@ -69,14 +69,7 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
 
     private async Task<ProcessStepResult> GetResultAsync(Guid batchId, string directory, TimeSeriesType timeSeriesType)
     {
-        var dataLakeFileClient =
-            await _dataLakeClient.GetDataLakeFileClientAsync(directory, ".json").ConfigureAwait(false);
-        if (dataLakeFileClient == null)
-        {
-            throw new InvalidOperationException($"Blob for batch with id={batchId} was not found.");
-        }
-
-        var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
+        var resultStream = await _dataLakeClient.FindAndOpenFileAsync(directory, ".json").ConfigureAwait(false);
         var points = await _jsonNewlineSerializer.DeserializeAsync<ProcessResultPoint>(resultStream).ConfigureAwait(false);
 
         return MapToProcessStepResultDto(timeSeriesType, points);

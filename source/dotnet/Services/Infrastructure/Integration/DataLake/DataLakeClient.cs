@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IdentityModel.Tokens.Jwt;
 using Azure.Storage.Files.DataLake;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
@@ -30,8 +31,15 @@ public sealed class DataLakeClient : IDataLakeClient
     /// </summary>
     /// <param name="directory"></param>
     /// <param name="extension"></param>
-    /// <returns>The first file with matching file extension. If no directory was found, return null</returns>
-    public async Task<DataLakeFileClient> GetDataLakeFileClientAsync(string directory, string extension)
+    /// <returns>The first file with matching file extension. If the file cannot be found, an exception is thrown</returns>
+    public async Task<Stream> FindAndOpenFileAsync(string directory, string extension)
+    {
+        var path = await FindFileAsync(directory, extension).ConfigureAwait(false);
+        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(path);
+        return await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
+    }
+
+    private async Task<string> FindFileAsync(string directory, string extension)
     {
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
         var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
@@ -41,9 +49,15 @@ public sealed class DataLakeClient : IDataLakeClient
         await foreach (var pathItem in directoryClient.GetPathsAsync())
         {
             if (Path.GetExtension(pathItem.Name) == extension)
-                return _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
+                return pathItem.Name;
         }
 
         throw new Exception($"No Data Lake file with extension '{extension}' was found in directory '{directory}'");
+    }
+
+    private async Task<Stream> OpenReadAsync(string path)
+    {
+        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(path);
+        return await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
     }
 }
