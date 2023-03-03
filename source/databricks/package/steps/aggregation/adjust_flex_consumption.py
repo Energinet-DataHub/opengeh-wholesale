@@ -13,7 +13,6 @@
 # # limitations under the License.
 from package.codelists import MeteringPointResolution
 from package.codelists import MeteringPointType
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -28,7 +27,7 @@ adjusted_sum_quantity = "adjusted_sum_quantity"
 
 
 # step 10
-def adjust_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
+def adjust_flex_consumption(results: dict) -> DataFrame:
     flex_consumption_result_df = results[ResultKeyName.flex_consumption]
     added_grid_loss_result_df = results[ResultKeyName.added_grid_loss]
     grid_loss_sys_cor_df = results[ResultKeyName.grid_loss_sys_cor_master_data]
@@ -100,4 +99,4 @@ def adjust_flex_consumption(results: dict, metadata: Metadata) -> DataFrame:
         Colname.energy_supplier_id,
         Colname.time_window,
     )
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+    return create_dataframe_from_aggregation_result_schema(result)
