@@ -18,13 +18,6 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
 
-/* TODO
-	Grouping = grid area | energy-supplier | ...
-	ReceivingActor?
-		Gln
-		ActorRole
-*/
-
 /*
  * ProcessResultCalculated Integration Event.
  *
@@ -40,6 +33,18 @@ message ProcessResultCalculated {
    */ 
   string batch_id = 1; // TODO: Message meta data?
 
+  // TODO: Rearrange indexes
+  Grouping grouping = 999;
+  
+  enum Grouping {
+    GRID_AREA = 0;
+    ENERGY_SUPPLIER = 1;
+    BALANCE_RESPONSIBLE_PARTY = 2;
+    ENERGY_SUPPLIER_PER_BALANCE_RESPONSIBLE_PARTY = 3;
+  }
+
+  optional string GroupingActorGln = 998;
+  
   ProcessType process_type = 2;
   
   enum ProcessType {
@@ -61,6 +66,7 @@ message ProcessResultCalculated {
   enum TimeSeriesType {
     TOTAL_PRODUCTION = 0;
     NON_PROFILED_CONSUMPTION = 1;
+    FLEX_CONSUMPTION = 2;
   }
   
   /*
@@ -91,17 +97,32 @@ message ProcessResultCalculated {
   repeated TimeSeriesPoint points = 9;
   
   message TimeSeriesPoint {
-    int32 position = 1;
+    google.protobuf.Timestamp time = 1;
     
     DecimalValue quantity = 2;
+
+    message DecimalValue {
+
+      // The whole units of the amount.
+      int64 units = 1;
+
+      // Number of nano (10^-9) units of the amount.
+      // The value must be between -999,999,999 and +999,999,999 inclusive.
+      // If `units` is positive, `nanos` must be positive or zero.
+      // If `units` is zero, `nanos` can be positive, zero, or negative.
+      // If `units` is negative, `nanos` must be negative or zero.
+      // For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.
+      int32 nanos = 2;
+    }
     
-    QuantityQuality quantity_quality = 3;
+    // TODO: We'll exactly one until we change the behavior due to eBIX
+    repeated QuantityQuality quantity_qualities = 3;
     
     enum QuantityQuality {
       READ = 0;
       MEASURED = 1;
       MISSING = 2;
-      CALCULATED = 3;
+      CALCULATED = 3; // TODO: Include this one? What about INCOMPLETE?
     }
   }
 }
