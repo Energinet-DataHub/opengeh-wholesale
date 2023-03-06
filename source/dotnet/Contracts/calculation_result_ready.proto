@@ -67,7 +67,7 @@ message CalculationResultReady {
   
   QuantityUnit quantity_unit = 10;
   
-  repeated TimeSeriesPoint points = 11;
+  repeated TimeSeriesPoint time_series_points = 11;
 }
 
 enum Grouping {
