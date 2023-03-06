@@ -15,6 +15,7 @@
 from os import path
 from shutil import rmtree
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 import pytest
 from unittest.mock import patch, Mock
 from tests.contract_utils import assert_contract_matches_schema
@@ -23,9 +24,10 @@ from package.calculator_job import (
     _start_calculator,
     start,
     _start,
+    _map_cim_quality_to_wholesale_quality,
 )
 from package.calculator_args import CalculatorArgs
-from package.codelists import TimeSeriesType, Grouping
+from package.codelists import TimeSeriesType, Grouping, TimeSeriesQuality
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from tests.helpers.file_utils import find_file
@@ -434,14 +436,14 @@ def test__result_file_has_correct_expected_number_of_rows_for_production(
     assert production_806.count() == 192  # period is from 01-01 -> 01-03
 
 
-def test__creates_hour_csv_with_expected_columns_names(
+def test__creates_hour_for_total_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
     worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path = infra.get_time_series_hour_relative_path(
+    basis_data_relative_path = infra.get_time_series_hour_for_total_ga_relative_path(
         executed_batch_id, "805"
     )
 
@@ -460,14 +462,40 @@ def test__creates_hour_csv_with_expected_columns_names(
     ]
 
 
-def test__creates_quarter_csv_with_expected_columns_names(
+def test__creates_hour_for_es_per_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
     worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    relative_path = infra.get_time_series_quarter_relative_path(
+    basis_data_relative_path = infra.get_time_series_hour_for_es_per_ga_relative_path(
+        executed_batch_id, "805", energy_supplier_gln_a
+    )
+
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path}"
+    )
+    assert actual.columns == [
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        *[f"ENERGYQUANTITY{i+1}" for i in range(24)],
+    ]
+
+
+def test__creates_quarter_for_total_ga__with_expected_columns_names(
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    relative_path = infra.get_time_series_quarter_for_total_ga_relative_path(
         executed_batch_id, "805"
     )
 
@@ -487,18 +515,49 @@ def test__creates_quarter_csv_with_expected_columns_names(
     ]
 
 
-def test__creates_csv_per_grid_area(
+def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
     worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_805 = infra.get_time_series_quarter_relative_path(
-        executed_batch_id, "805"
+    relative_path = infra.get_time_series_quarter_for_es_per_ga_relative_path(
+        executed_batch_id, "805", energy_supplier_gln_a
     )
-    basis_data_relative_path_806 = infra.get_time_series_quarter_relative_path(
-        executed_batch_id, "806"
+
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{relative_path}"
+    )
+
+    assert actual.columns == [
+        "METERINGPOINTID",
+        "TYPEOFMP",
+        "STARTDATETIME",
+        *[f"ENERGYQUANTITY{i+1}" for i in range(96)],
+    ]
+
+
+def test__creates_quarter_for_total_ga__per_grid_area(
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    basis_data_relative_path_805 = (
+        infra.get_time_series_quarter_for_total_ga_relative_path(
+            executed_batch_id, "805"
+        )
+    )
+    basis_data_relative_path_806 = (
+        infra.get_time_series_quarter_for_total_ga_relative_path(
+            executed_batch_id, "806"
+        )
     )
 
     # Act
@@ -522,14 +581,123 @@ def test__creates_csv_per_grid_area(
     ), "Calculator job failed to write basis data files for grid area 806"
 
 
-def test__master_data_csv_with_expected_columns_names(
+def test__creates_quarter_for_es_per_ga__per_energy_supplier(
     spark: SparkSession,
     data_lake_path: str,
     worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_path = infra.get_master_basis_data_relative_path(
+    basis_data_relative_path_a = (
+        infra.get_time_series_quarter_for_es_per_ga_relative_path(
+            executed_batch_id, "805", energy_supplier_gln_a
+        )
+    )
+    basis_data_relative_path_b = (
+        infra.get_time_series_quarter_for_es_per_ga_relative_path(
+            executed_batch_id, "805", energy_supplier_gln_b
+        )
+    )
+
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
+    # Assert
+    basis_data_a = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_a}"
+    )
+
+    basis_data_b = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_b}"
+    )
+
+    assert (
+        basis_data_a.count() >= 1
+    ), "Calculator job failed to write basis data files for energy supplier a correctly"
+
+    assert (
+        basis_data_b.count() >= 1
+    ), "Calculator job failed to write basis data files for energy supplier b correctly"
+
+
+def test__creates_hour_for_total_ga__per_grid_area(
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    basis_data_relative_path_805 = (
+        infra.get_time_series_hour_for_total_ga_relative_path(executed_batch_id, "805")
+    )
+    basis_data_relative_path_806 = (
+        infra.get_time_series_hour_for_total_ga_relative_path(executed_batch_id, "806")
+    )
+
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
+    # Assert
+    basis_data_805 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_805}"
+    )
+
+    basis_data_806 = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_806}"
+    )
+
+    assert (
+        basis_data_805.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 805"
+
+    assert (
+        basis_data_806.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 806"
+
+
+def test__creates_hour_for_es_per_ga__per_energy_supplier(
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    basis_data_relative_path_a = infra.get_time_series_hour_for_es_per_ga_relative_path(
+        executed_batch_id, "805", energy_supplier_gln_a
+    )
+    basis_data_relative_path_b = infra.get_time_series_hour_for_es_per_ga_relative_path(
+        executed_batch_id, "805", energy_supplier_gln_b
+    )
+
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
+    # Assert
+    basis_data_a = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_a}"
+    )
+
+    basis_data_b = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_b}"
+    )
+
+    assert (
+        basis_data_a.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 805"
+
+    assert (
+        basis_data_b.count() >= 1
+    ), "Calculator job failed to write basis data files for grid area 806"
+
+
+def test__master_basis_data_for_total_ga_has_expected_columns_names(
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    basis_data_path = infra.get_master_basis_data_for_total_ga_relative_path(
         executed_batch_id, "805"
     )
 
@@ -554,17 +722,48 @@ def test__master_data_csv_with_expected_columns_names(
     ]
 
 
-def test__creates_master_data_csv_per_grid_area(
+def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
     worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_path_805 = infra.get_master_basis_data_relative_path(
+    basis_data_path = infra.get_master_basis_data_for_es_per_ga_relative_path(
+        executed_batch_id, "805", energy_supplier_gln_a
+    )
+
+    # Act
+    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{worker_id}/{basis_data_path}"
+    )
+
+    assert actual.columns == [
+        "METERINGPOINTID",
+        "VALIDFROM",
+        "VALIDTO",
+        "GRIDAREA",
+        "TOGRIDAREA",
+        "FROMGRIDAREA",
+        "TYPEOFMP",
+        "SETTLEMENTMETHOD",
+    ]
+
+
+def test__creates_master_basis_data_per_grid_area(
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    basis_data_path_805 = infra.get_master_basis_data_for_total_ga_relative_path(
         executed_batch_id, "805"
     )
-    basis_data_path_806 = infra.get_master_basis_data_relative_path(
+    basis_data_path_806 = infra.get_master_basis_data_for_total_ga_relative_path(
         executed_batch_id, "806"
     )
 
@@ -588,14 +787,14 @@ def test__creates_master_data_csv_per_grid_area(
     ), "Calculator job failed to write master basis data files for grid area 806"
 
 
-def test__master_basis_data_file_matches_contract(
+def test__master_basis_data_for_total_ga_filepath_matches_contract(
     data_lake_path: str,
     worker_id: str,
     contracts_path: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    master_basis_data_path = infra.get_master_basis_data_relative_path(
+    master_basis_data_path = infra.get_master_basis_data_for_total_ga_relative_path(
         executed_batch_id, "805"
     )
 
@@ -607,18 +806,18 @@ def test__master_basis_data_file_matches_contract(
         f"{master_basis_data_path}/part-*.csv",
     )
     assert_file_path_match_contract(
-        contracts_path, actual_file_path, CalculationFileType.MasterBasisData
+        contracts_path, actual_file_path, CalculationFileType.MasterBasisDataForTotalGa
     )
 
 
-def test__hourly_basis_data_file_matches_contract(
+def test__hourly_basis_data_for_total_ga_filepath_matches_contract(
     data_lake_path: str,
     worker_id: str,
     contracts_path: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    relative_output_path = infra.get_time_series_hour_relative_path(
+    relative_output_path = infra.get_time_series_hour_for_total_ga_relative_path(
         executed_batch_id, "805"
     )
 
@@ -633,14 +832,14 @@ def test__hourly_basis_data_file_matches_contract(
     )
 
 
-def test__quarterly_basis_data_file_matches_contract(
+def test__quarterly_basis_data_for_total_ga_filepath_matches_contract(
     data_lake_path: str,
     worker_id: str,
     contracts_path: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    relative_output_path = infra.get_time_series_quarter_relative_path(
+    relative_output_path = infra.get_time_series_quarter_for_total_ga_relative_path(
         executed_batch_id, "805"
     )
 
@@ -651,7 +850,80 @@ def test__quarterly_basis_data_file_matches_contract(
         f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
     )
     assert_file_path_match_contract(
-        contracts_path, actual_file_path, CalculationFileType.TimeSeriesQuarterBasisData
+        contracts_path,
+        actual_file_path,
+        CalculationFileType.TimeSeriesQuarterBasisDataForTotalGa,
+    )
+
+
+def test__master_basis_data_for_es_per_ga_filepath_matches_contract(
+    data_lake_path: str,
+    worker_id: str,
+    contracts_path: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    master_basis_data_path = infra.get_master_basis_data_for_es_per_ga_relative_path(
+        executed_batch_id, "805", energy_supplier_gln_a
+    )
+
+    # Act: Executed in fixture executed_calculation_job
+
+    # Assert
+    actual_file_path = find_file(
+        f"{data_lake_path}/{worker_id}/",
+        f"{master_basis_data_path}/part-*.csv",
+    )
+    assert_file_path_match_contract(
+        contracts_path, actual_file_path, CalculationFileType.MasterBasisDataForEsPerGa
+    )
+
+
+def test__hourly_basis_data_for_es_per_ga_filepath_matches_contract(
+    data_lake_path: str,
+    worker_id: str,
+    contracts_path: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    relative_output_path = infra.get_time_series_hour_for_es_per_ga_relative_path(
+        executed_batch_id, "805", energy_supplier_gln_a
+    )
+
+    # Act: Executed in fixture executed_calculation_job
+
+    # Assert
+    actual_file_path = find_file(
+        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
+    )
+    assert_file_path_match_contract(
+        contracts_path,
+        actual_file_path,
+        CalculationFileType.TimeSeriesHourBasisDataForEsPerGa,
+    )
+
+
+def test__quarterly_basis_data_for_es_per_ga_filepath_matches_contract(
+    data_lake_path: str,
+    worker_id: str,
+    contracts_path: str,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    relative_output_path = infra.get_time_series_quarter_for_es_per_ga_relative_path(
+        executed_batch_id, "805", energy_supplier_gln_a
+    )
+
+    # Act: Executed in fixture executed_calculation_job
+
+    # Assert
+    actual_file_path = find_file(
+        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
+    )
+    assert_file_path_match_contract(
+        contracts_path,
+        actual_file_path,
+        CalculationFileType.TimeSeriesQuarterBasisDataForEsPerGa,
     )
 
 
@@ -686,3 +958,24 @@ def test__start__start_calculator_called_without_exceptions(
 
     # Assert
     mock_start_calculator.assert_called_once()
+
+
+def test__map_timeseriesquality_from_cim_to_wholesale(
+    spark: SparkSession,
+    data_lake_path: str,
+    worker_id: str,
+) -> None:
+    # Arrange
+    expected_values = [e.value for e in TimeSeriesQuality]
+
+    time_series_points = spark.read.format("delta").load(
+        f"{data_lake_path}/{worker_id}/calculation-input-v2/time-series-points",
+    )
+
+    # Act
+    actual = _map_cim_quality_to_wholesale_quality(time_series_points)
+
+    # Assert
+    assert (
+        actual.filter(col("Quality").isin(expected_values)).count() == 0
+    ), "Quality contains unexpected values"

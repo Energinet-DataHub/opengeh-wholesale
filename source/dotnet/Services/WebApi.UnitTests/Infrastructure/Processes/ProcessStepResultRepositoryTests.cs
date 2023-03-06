@@ -31,6 +31,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 [UnitTest]
 public class ProcessStepResultRepositoryTests
 {
+    private static string _anyEnergySupplierGln = "1234567890123";
+    private static string _anyBalanceResponsiblePartyGln = "1234567890123";
+
     [Theory]
     [AutoMoqData]
     public async Task GetAsync_ReturnsProcessActorResult(
@@ -90,7 +93,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForEsGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "energySupplierGln");
+        var actual = ProcessStepResultRepository.GetDirectoryForEsGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, _anyEnergySupplierGln);
 
         // Assert
         actual.Should().MatchRegex(expected.DirectoryExpression);
@@ -106,7 +109,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFileForGaBrpEs;
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForEsBrpGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, "balanceResponsiblePartyGln", "energySupplierGln");
+        var actual = ProcessStepResultRepository.GetDirectoryForEsBrpGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, _anyBalanceResponsiblePartyGln, _anyEnergySupplierGln);
 
         // Assert
         actual.Should().MatchRegex(expected.DirectoryExpression);

@@ -64,19 +64,34 @@ def get_actors_file_relative_path(
     return f"{batch_path}/{ACTORS_FOLDER}/time_series_type={time_series_type.value}/grid_area={grid_area}"
 
 
-def get_time_series_quarter_relative_path(batch_id: str, grid_area: str) -> str:
+def get_time_series_quarter_for_total_ga_relative_path(batch_id: str, grid_area: str) -> str:
     batch_path = get_batch_relative_path(batch_id)
     return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_quarter/grouping=total_ga/grid_area={grid_area}"
 
 
-def get_time_series_hour_relative_path(batch_id: str, grid_area: str) -> str:
+def get_time_series_hour_for_total_ga_relative_path(batch_id: str, grid_area: str) -> str:
     batch_path = get_batch_relative_path(batch_id)
     return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_hour/grouping=total_ga/grid_area={grid_area}"
 
 
-def get_master_basis_data_relative_path(batch_id: str, grid_area: str) -> str:
+def get_master_basis_data_for_total_ga_relative_path(batch_id: str, grid_area: str) -> str:
     batch_path = get_batch_relative_path(batch_id)
     return f"{batch_path}/{BASIS_DATA_FOLDER}/master_basis_data/grouping=total_ga/grid_area={grid_area}"
+
+
+def get_time_series_quarter_for_es_per_ga_relative_path(batch_id: str, grid_area: str, energy_supplier_id: str) -> str:
+    batch_path = get_batch_relative_path(batch_id)
+    return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_quarter/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
+
+
+def get_time_series_hour_for_es_per_ga_relative_path(batch_id: str, grid_area: str, energy_supplier_id: str) -> str:
+    batch_path = get_batch_relative_path(batch_id)
+    return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_hour/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
+
+
+def get_master_basis_data_for_es_per_ga_relative_path(batch_id: str, grid_area: str, energy_supplier_id: str) -> str:
+    batch_path = get_batch_relative_path(batch_id)
+    return f"{batch_path}/{BASIS_DATA_FOLDER}/master_basis_data/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
 
 
 def get_batch_relative_path(batch_id: str) -> str:
