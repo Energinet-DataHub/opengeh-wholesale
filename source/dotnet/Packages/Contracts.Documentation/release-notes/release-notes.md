@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 5.0.14
+
+Added process type to contract.
+
 ## Version 2.0.13
 
 No functional changes.
