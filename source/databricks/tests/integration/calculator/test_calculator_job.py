@@ -211,7 +211,7 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
             None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
             Grouping.es_per_ga,
-        ),  # ga brp es
+        ),
         (
             "805",
             energy_supplier_gln_a,
@@ -247,11 +247,11 @@ def test__result_is_generated_for_requested_grid_areas(
     data_lake_path: str,
     worker_id: str,
     executed_calculation_job: None,
-    grid_area,
-    energy_supplier_gln,
-    balance_responsible_party_gln,
-    time_series_type,
-    grouping,
+    grid_area: str,
+    energy_supplier_gln: str,
+    balance_responsible_party_gln: str,
+    time_series_type: TimeSeriesType,
+    grouping: str,
 ) -> None:
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
