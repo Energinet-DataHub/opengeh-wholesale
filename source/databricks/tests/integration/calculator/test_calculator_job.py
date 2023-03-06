@@ -179,81 +179,95 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
     _get_valid_args_or_throw(dummy_job_parameters)
 
 
+@pytest.mark.parametrize(
+    "grid_area,energy_supplier_gln,balance_responsible_party_gln,time_series_type,grouping",
+    [
+        ("805", None, None, TimeSeriesType.PRODUCTION, Grouping.total_ga),
+        ("806", None, None, TimeSeriesType.PRODUCTION, Grouping.total_ga),
+        (
+            "805",
+            energy_supplier_gln_a,
+            None,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            Grouping.es_per_ga,
+        ),
+        (
+            "806",
+            energy_supplier_gln_a,
+            None,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            Grouping.es_per_ga,
+        ),
+        (
+            "805",
+            energy_supplier_gln_b,
+            None,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            Grouping.es_per_ga,
+        ),
+        (
+            "806",
+            energy_supplier_gln_b,
+            None,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            Grouping.es_per_ga,
+        ),
+        (
+            "805",
+            energy_supplier_gln_a,
+            balance_responsible_party_gln_a,
+            TimeSeriesType.PRODUCTION,
+            Grouping.es_per_brp_per_ga,
+        ),
+        (
+            "806",
+            energy_supplier_gln_a,
+            balance_responsible_party_gln_a,
+            TimeSeriesType.PRODUCTION,
+            Grouping.es_per_brp_per_ga,
+        ),
+        (
+            "805",
+            None,
+            None,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            Grouping.total_ga,
+        ),
+        (
+            "806",
+            None,
+            None,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            Grouping.total_ga,
+        ),
+    ],
+)
 def test__result_is_generated_for_requested_grid_areas(
     spark: SparkSession,
     data_lake_path: str,
     worker_id: str,
     executed_calculation_job: None,
+    grid_area: str,
+    energy_supplier_gln: str,
+    balance_responsible_party_gln: str,
+    time_series_type: TimeSeriesType,
+    grouping: str,
 ) -> None:
-    # Arrange
-    expected_ga_gln_type = [
-        ["805", None, None, TimeSeriesType.PRODUCTION, Grouping.total_ga],
-        ["806", None, None, TimeSeriesType.PRODUCTION, Grouping.total_ga],
-        [
-            "805",
-            energy_supplier_gln_a,
-            None,
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            Grouping.es_per_ga,
-        ],
-        [
-            "806",
-            energy_supplier_gln_a,
-            None,
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            Grouping.es_per_ga,
-        ],
-        [
-            "805",
-            energy_supplier_gln_b,
-            None,
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            Grouping.es_per_ga,
-        ],
-        [
-            "806",
-            energy_supplier_gln_b,
-            None,
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            Grouping.es_per_ga,
-        ],  # ga brp es
-        [
-            "805",
-            energy_supplier_gln_a,
-            balance_responsible_party_gln_a,
-            TimeSeriesType.PRODUCTION,
-            Grouping.es_per_brp_per_ga,
-        ],
-        [
-            "806",
-            energy_supplier_gln_a,
-            balance_responsible_party_gln_a,
-            TimeSeriesType.PRODUCTION,
-            Grouping.es_per_brp_per_ga,
-        ],
-    ]
-
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
 
     # Assert
-    for (
+    result_path = infra.get_result_file_relative_path(
+        executed_batch_id,
         grid_area,
         energy_supplier_gln,
         balance_responsible_party_gln,
         time_series_type,
         grouping,
-    ) in expected_ga_gln_type:
-        result_path = infra.get_result_file_relative_path(
-            executed_batch_id,
-            grid_area,
-            energy_supplier_gln,
-            balance_responsible_party_gln,
-            time_series_type,
-            grouping,
-        )
-        result = spark.read.json(f"{data_lake_path}/{worker_id}/{result_path}")
-        assert result.count() >= 1, "Calculator job failed to write files"
+    )
+    print(result_path)
+    result = spark.read.json(f"{data_lake_path}/{worker_id}/{result_path}")
+    assert result.count() >= 1, "Calculator job failed to write files"
 
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(

@@ -124,6 +124,17 @@ def _calculate_non_profiled_consumption(
         Grouping.brp_per_ga,
     )
 
+    # Non-profiled consumption per grid area
+    consumption_per_ga = agg_steps.aggregate_non_profiled_consumption_ga(
+        consumption_per_ga_and_brp_and_es
+    )
+
+    result_writer.write_per_ga(
+        consumption_per_ga,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        Grouping.total_ga,
+    )
+
     # write actors list to datalake
     actors_writer.write(
         consumption_per_ga_and_brp_and_es, TimeSeriesType.NON_PROFILED_CONSUMPTION
