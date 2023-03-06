@@ -45,9 +45,6 @@ resource "databricks_sql_global_config" "this" {
     "spark.hadoop.fs.azure.account.oauth2.client.secret.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": databricks_secret.spn_app_secret.config_reference,
     "spark.hadoop.fs.azure.account.oauth2.client.endpoint.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
   }
-  sql_config_params = {
-    "ANSI_MODE" : "true"
-  }
 }
 
 resource "databricks_job" "this" {
