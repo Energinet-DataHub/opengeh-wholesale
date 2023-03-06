@@ -102,9 +102,8 @@ resource "databricks_job" "this" {
         landing_storage_account = data.azurerm_storage_account.drop.name # Should we use this or another datalake for dump
         datalake_storage_account = module.st_migrations.name
         datalake_shared_storage_account = data.azurerm_key_vault_secret.st_data_lake_name.value
-        time_series_container = "timeseries-testdata"
-        metering_point_container = "meteringpoints-testdata"
-        wholesale_database = "gold_wholesale_cicd_temp"
+        time_series_container = "dh2-timeseries"
+        metering_point_container = "dh2-metering-point-history"
       }
     }
     job_cluster_key = "Shared_job_cluster"
