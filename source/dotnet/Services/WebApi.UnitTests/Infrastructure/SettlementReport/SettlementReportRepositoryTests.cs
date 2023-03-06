@@ -164,44 +164,20 @@ public class SettlementReportRepositoryTests
         [Frozen] Mock<DataLakeFileClient> dataLakeFileClientMock)
     {
         // Arrange
-        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(It.IsAny<string>()))
-            .Returns(dataLakeFileClientMock.Object);
         var basisDataBuffer = Encoding.UTF8.GetBytes("test");
         var memoryStream = new MemoryStream(basisDataBuffer);
-        const string anyStringValue = "anyStringValue";
-        var fileDownloadResponse = Response.FromValue(
-            DataLakeModelFactory.FileDownloadInfo(
-                memoryStream.Length,
-                memoryStream,
-                null,
-                DataLakeModelFactory.FileDownloadDetails(
-                    DateTimeOffset.Now,
-                    new Dictionary<string,
-                        string>(),
-                    anyStringValue,
-                    ETag.All,
-                    anyStringValue,
-                    anyStringValue,
-                    anyStringValue,
-                    anyStringValue,
-                    DateTimeOffset.Now,
-                    anyStringValue,
-                    anyStringValue,
-                    anyStringValue,
-                    new Uri("https://notarealadresszxc.com"),
-                    CopyStatus.Success,
-                    DataLakeLeaseDuration.Fixed,
-                    DataLakeLeaseState.Available,
-                    DataLakeLeaseStatus.Locked,
-                    anyStringValue,
-                    false,
-                    anyStringValue,
-                    basisDataBuffer)),
-            null!);
-        dataLakeFileClientMock.Setup(x => x.ReadAsync()).ReturnsAsync(fileDownloadResponse);
+        var fileDownloadResponse = CreateFileDownloadResponse(memoryStream);
+
+        dataLakeFileClientMock.Setup(x => x.ReadAsync())
+            .ReturnsAsync(fileDownloadResponse);
+
+        dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(It.IsAny<string>()))
+            .Returns(dataLakeFileClientMock.Object);
+
         var sut = new SettlementReportRepository(
             dataLakeFileSystemClientMock.Object,
             streamZipperMock.Object);
+
         var batch = new BatchBuilder().Build();
 
         // Act
@@ -223,39 +199,11 @@ public class SettlementReportRepositoryTests
     {
         // Arrange
         const string expectedOutput = "test";
-
         var fileStream = new MemoryStream(Encoding.UTF8.GetBytes(expectedOutput));
-
-        const string anyStringValue = "anyStringValue";
-
-        var fileDownloadResponse = Response.FromValue(
-            DataLakeModelFactory.FileDownloadInfo(
-                fileStream.Length,
-                fileStream,
-                null,
-                DataLakeModelFactory.FileDownloadDetails(
-                    DateTimeOffset.Now,
-                    new Dictionary<string, string>(),
-                    anyStringValue,
-                    ETag.All,
-                    anyStringValue,
-                    anyStringValue,
-                    anyStringValue,
-                    anyStringValue,
-                    DateTimeOffset.Now,
-                    anyStringValue,
-                    anyStringValue,
-                    anyStringValue,
-                    new Uri("https://notarealadresszxc.com"),
-                    CopyStatus.Success,
-                    DataLakeLeaseDuration.Fixed,
-                    DataLakeLeaseState.Available,
-                    DataLakeLeaseStatus.Locked,
-                    anyStringValue,
-                    false,
-                    anyStringValue,
-                    Encoding.UTF8.GetBytes(expectedOutput))),
-            null!);
+        var pathItem = CreatePathItem("fake.csv");
+        var fileDownloadResponse = CreateFileDownloadResponse(fileStream);
+        var batch = new BatchBuilder().Build();
+        var gridAreaCode = new GridAreaCode("001");
 
         dataLakeFileClientMock.Setup(x => x.ReadAsync())
             .ReturnsAsync(fileDownloadResponse);
@@ -263,22 +211,8 @@ public class SettlementReportRepositoryTests
         dataLakeFileSystemClientMock.Setup(x => x.GetFileClient(It.IsAny<string>()))
             .Returns(dataLakeFileClientMock.Object);
 
-        var sut = new SettlementReportRepository(
-            dataLakeFileSystemClientMock.Object,
-            streamZipperMock.Object);
-
         dataLakeDirectoryClientMock.Setup(x => x.ExistsAsync(CancellationToken.None))
             .ReturnsAsync(Response.FromValue(true, null!));
-
-        var pathItem = DataLakeModelFactory.PathItem(
-            "fake.csv",
-            false,
-            DateTimeOffset.Now,
-            ETag.All,
-            0,
-            "owner",
-            "group",
-            "permissions");
 
         dataLakeDirectoryClientMock
             .Setup(x => x.GetPathsAsync(It.IsAny<bool>(), It.IsAny<bool>(), CancellationToken.None))
@@ -290,13 +224,10 @@ public class SettlementReportRepositoryTests
         dataLakeFileSystemClientMock.Setup(x => x.GetDirectoryClient(It.IsAny<string>()))
             .Returns(dataLakeDirectoryClientMock.Object);
 
-        var batch = new BatchBuilder().Build();
-        var gridAreaCode = new GridAreaCode("001");
-
         using var outputStream = new MemoryStream();
 
-        // ReSharper disable AccessToDisposedClosure
         streamZipperMock.Setup(x =>
+                // ReSharper disable AccessToDisposedClosure
                 x.ZipAsync(
                     It.Is<IEnumerable<(Stream Stream, string Name)>>(files =>
                         files.All(file => file.Stream == fileStream && file.Name.StartsWith(gridAreaCode.Code))),
@@ -305,8 +236,12 @@ public class SettlementReportRepositoryTests
             {
                 fileStream.CopyTo(outputStream);
                 outputStream.Position = 0;
+                // ReSharper restore AccessToDisposedClosure
             });
-        // ReSharper restore AccessToDisposedClosure
+
+        var sut = new SettlementReportRepository(
+            dataLakeFileSystemClientMock.Object,
+            streamZipperMock.Object);
 
         // Act
         await sut.GetSettlementReportAsync(batch, gridAreaCode, outputStream).ConfigureAwait(false);
@@ -359,10 +294,11 @@ public class SettlementReportRepositoryTests
     {
         // Arrange
         var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
-        var quantity = 1.000m;
-        var quality = "measured";
 
+        const decimal quantity = 1.000m;
+        const string quality = "measured";
         const string gridAreaCode = "805";
+
         var batchId = Guid.NewGuid();
 
         var sut = new ProcessStepApplicationService(
@@ -385,5 +321,52 @@ public class SettlementReportRepositoryTests
         actual.TimeSeriesPoints.First().Time.Should().Be(time);
         actual.TimeSeriesPoints.First().Quantity.Should().Be(quantity);
         actual.TimeSeriesPoints.First().Quality.Should().Be(quality);
+    }
+
+    private static Response<FileDownloadInfo> CreateFileDownloadResponse(Stream fileStream)
+    {
+        const string anyStringValue = "anyStringValue";
+
+        return Response.FromValue(
+            DataLakeModelFactory.FileDownloadInfo(
+                fileStream.Length,
+                fileStream,
+                null,
+                DataLakeModelFactory.FileDownloadDetails(
+                    DateTimeOffset.Now,
+                    new Dictionary<string, string>(),
+                    anyStringValue,
+                    ETag.All,
+                    anyStringValue,
+                    anyStringValue,
+                    anyStringValue,
+                    anyStringValue,
+                    DateTimeOffset.Now,
+                    anyStringValue,
+                    anyStringValue,
+                    anyStringValue,
+                    new Uri("https://notarealadresszxc.com"),
+                    CopyStatus.Success,
+                    DataLakeLeaseDuration.Fixed,
+                    DataLakeLeaseState.Available,
+                    DataLakeLeaseStatus.Locked,
+                    anyStringValue,
+                    false,
+                    anyStringValue,
+                    Encoding.UTF8.GetBytes(fileStream.GetHashCode().ToString()))),
+            null!);
+    }
+
+    private static PathItem CreatePathItem(string fakeCsv)
+    {
+        return DataLakeModelFactory.PathItem(
+            fakeCsv,
+            false,
+            DateTimeOffset.Now,
+            ETag.All,
+            0,
+            "owner",
+            "group",
+            "permissions");
     }
 }
