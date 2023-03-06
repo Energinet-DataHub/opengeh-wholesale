@@ -1,0 +1,133 @@
+/* Copyright 2020 Energinet DataHub A/S
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License2");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
+
+/*
+ * CalculationResultReady Integration Event.
+ *
+ * A calculation will result in one or more calculation results. Each result is
+ * publishes as an instance of this type.
+ */
+message CalculationResultReady {
+
+  /*
+   * The ID of the calculation.
+   * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
+   * Example: 65801e3c-5131-426e-b1bb-7b186349c996
+   */ 
+  string calculation_id = 1;
+
+  Grouping grouping = 2;
+  
+  optional string GroupingActorGln = 3;
+  
+  ProcessType process_type = 4;
+  
+  /*
+   * The grid area code uniquely defining the process in the batch.
+   * The grid area code is a 3 character string consisting solely of digits.
+   * Examples:
+   *   543
+   *   020
+   */
+  string grid_area_code = 5;
+
+  TimeSeriesType time_series_type = 6; 
+  
+  /*
+   * The beginning of the calculation period.
+   * The time is included in the period and is identical to the time of the first time series point
+   * in the process time series type results.
+   */
+  google.protobuf.Timestamp period_start_utc = 7;
+
+  /*
+   * The end of the calculation period.
+   * The time is excluded from the period.
+   */
+  google.protobuf.Timestamp period_end_utc = 8;
+  
+  Resolution resolution = 9;
+  
+  QuantityUnit quantity_unit = 10;
+  
+  repeated TimeSeriesPoint points = 11;
+}
+
+enum Grouping {
+  GROUPING_UNSPECIFIED = 0;
+  GROUPING_GRID_AREA = 1;
+  GROUPING_ENERGY_SUPPLIER = 2;
+  GROUPING_BALANCE_RESPONSIBLE_PARTY = 3;
+  GROUPING_ENERGY_SUPPLIER_PER_BALANCE_RESPONSIBLE_PARTY = 4;
+}
+
+enum ProcessType {
+  PROCESS_TYPE_UNSPECIFIED = 0;
+  PROCESS_TYPE_BALANCE_FIXING = 1;
+  PROCESS_TYPE_AGGREGATION = 2;
+}
+
+enum TimeSeriesType {
+  TIME_SERIES_TYPE_UNSPECIFIED = 0;
+  TIME_SERIES_TYPE_TOTAL_PRODUCTION = 1;
+  TIME_SERIES_TYPE_NON_PROFILED_CONSUMPTION = 2;
+  TIME_SERIES_TYPE_FLEX_CONSUMPTION = 3;
+}
+
+enum Resolution {
+  RESOLUTION_UNSPECIFIED = 0;
+  RESOLUTION_QUARTER = 1;
+}
+
+enum QuantityUnit {
+  QUANTITY_UNIT_UNSPECIFIED = 0;
+  QUANTITY_UNIT_KWH = 1;
+}
+
+enum QuantityQuality {
+  QUANTITY_QUALITY_UNSPECIFIED = 0;
+  QUANTITY_QUALITY_READ = 1;
+  QUANTITY_QUALITY_MEASURED = 2;
+  QUANTITY_QUALITY_MISSING = 3;
+  QUANTITY_QUALITY_CALCULATED = 4; // TODO: Include this one? What about INCOMPLETE?
+}
+
+message TimeSeriesPoint {
+  google.protobuf.Timestamp time = 1;
+
+  DecimalValue quantity = 2;
+
+  // TODO: We'll exactly one until we change the behavior due to eBIX
+  repeated QuantityQuality quantity_qualities = 3;
+}
+
+message DecimalValue {
+
+  // The whole units of the amount.
+  int64 units = 1;
+
+  // Number of nano (10^-9) units of the amount.
+  // The value must be between -999,999,999 and +999,999,999 inclusive.
+  // If `units` is positive, `nanos` must be positive or zero.
+  // If `units` is zero, `nanos` can be positive, zero, or negative.
+  // If `units` is negative, `nanos` must be negative or zero.
+  // For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.
+  int32 nanos = 2;
+}
