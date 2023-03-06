@@ -543,6 +543,21 @@ resource "databricks_job" "migration_playground_workflow" {
     }
 
     notebook_task {
+      notebook_path = "source/DataMigration/gold/time_series"
+      base_parameters = {
+        BatchExecution = true
+      }
+    }
+    job_cluster_key = "playground_job_cluster"
+  }
+
+  task {
+    task_key = "gold_to_wholesale_time_series"
+    depends_on {
+      task_key = "silver_to_gold_time_series"
+    }
+
+    notebook_task {
       notebook_path = "source/DataMigration/gold/wholesale_time_series"
       base_parameters = {
         BatchExecution = true
@@ -569,7 +584,7 @@ resource "databricks_job" "migration_playground_workflow" {
   task {
     task_key = "time_series_system_test"
     depends_on {
-      task_key = "silver_to_gold_time_series"
+      task_key = "gold_to_wholesale_time_series"
     }
 
     notebook_task {

@@ -107,7 +107,7 @@ resource "databricks_job" "this" {
         datalake_shared_storage_account = data.azurerm_key_vault_secret.st_data_lake_name.value
         time_series_container = "timeseries-testdata"
         metering_point_container = "meteringpoints-testdata"
-        gold_database = "gold_wholesale_cicd_temp"
+        wholesale_database = "gold_wholesale_cicd_temp"
       }
     }
     job_cluster_key = "Shared_job_cluster"
@@ -198,7 +198,7 @@ resource "databricks_job" "this" {
     }
 
     notebook_task {
-      notebook_path     = "source/DataMigration/gold/wholesale_time_series"
+      notebook_path     = "source/DataMigration/gold/time_series"
       base_parameters   = {
         BatchExecution = true
       }
