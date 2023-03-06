@@ -19,7 +19,6 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.steps.aggregation import calculate_added_grid_loss
-from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
@@ -113,12 +112,11 @@ def agg_result_factory(spark, grid_loss_schema):
 
 
 def call_calculate_grid_loss(agg_result_factory) -> DataFrame:
-    metadata = Metadata("1", "1", "1", "1")
     results = {}
     results[ResultKeyName.grid_loss] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory()
+        agg_result_factory()
     )
-    return calculate_added_grid_loss(results, metadata)
+    return calculate_added_grid_loss(results)
 
 
 def test_grid_area_grid_loss_has_no_values_below_zero(agg_result_factory):

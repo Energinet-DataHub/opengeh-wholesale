@@ -19,7 +19,6 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.steps.aggregation import adjust_flex_consumption
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -241,9 +240,6 @@ def grid_loss_sys_cor_row_factory(spark, grid_loss_sys_cor_schema):
     return factory
 
 
-metadata = Metadata("1", "1", "1", "1")
-
-
 def test_grid_area_grid_loss_is_added_to_grid_loss_energy_responsible(
     flex_consumption_result_row_factory,
     added_grid_loss_result_row_factory,
@@ -253,20 +249,20 @@ def test_grid_area_grid_loss_is_added_to_grid_loss_energy_responsible(
     results[
         ResultKeyName.flex_consumption
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, flex_consumption_result_row_factory(supplier="A")
+        flex_consumption_result_row_factory(supplier="A")
     )
 
     results[
         ResultKeyName.added_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, added_grid_loss_result_row_factory()
+        added_grid_loss_result_row_factory()
     )
 
     results[
         ResultKeyName.grid_loss_sys_cor_master_data
     ] = grid_loss_sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_flex_consumption(results, metadata)
+    result_df = adjust_flex_consumption(results)
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -285,20 +281,20 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     results[
         ResultKeyName.flex_consumption
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, flex_consumption_result_row_factory(supplier="A")
+        flex_consumption_result_row_factory(supplier="A")
     )
 
     results[
         ResultKeyName.added_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, added_grid_loss_result_row_factory()
+        added_grid_loss_result_row_factory()
     )
 
     results[
         ResultKeyName.grid_loss_sys_cor_master_data
     ] = grid_loss_sys_cor_row_factory(supplier="B")
 
-    result_df = adjust_flex_consumption(results, metadata)
+    result_df = adjust_flex_consumption(results)
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -321,20 +317,20 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     results[
         ResultKeyName.flex_consumption
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, fc_row_1.union(fc_row_2).union(fc_row_3)
+        fc_row_1.union(fc_row_2).union(fc_row_3)
     )
 
     results[
         ResultKeyName.added_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, added_grid_loss_result_row_factory()
+        added_grid_loss_result_row_factory()
     )
 
     results[
         ResultKeyName.grid_loss_sys_cor_master_data
     ] = grid_loss_sys_cor_row_factory(supplier="C")
 
-    result_df = adjust_flex_consumption(results, metadata)
+    result_df = adjust_flex_consumption(results)
 
     result_df_collect = result_df.collect()
     assert result_df.count() == 3
@@ -375,7 +371,7 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
     results[
         ResultKeyName.flex_consumption
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, fc_row_1.union(fc_row_2).union(fc_row_3)
+        fc_row_1.union(fc_row_2).union(fc_row_3)
     )
 
     gagl_result_1 = Decimal(1)
@@ -395,7 +391,7 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
     results[
         ResultKeyName.added_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, gagl_row_1.union(gagl_row_2).union(gagl_row_3)
+        gagl_row_1.union(gagl_row_2).union(gagl_row_3)
     )
 
     glsc_row_1 = grid_loss_sys_cor_row_factory(
@@ -412,7 +408,7 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         glsc_row_2
     ).union(glsc_row_3)
 
-    result_df = adjust_flex_consumption(results, metadata)
+    result_df = adjust_flex_consumption(results)
 
     assert result_df.count() == 3
     assert (

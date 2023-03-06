@@ -20,7 +20,6 @@ from package.codelists import (
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
 from .aggregate_quality import aggregate_total_consumption_quality
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -36,7 +35,7 @@ prod_result = "prod_result"
 
 
 # Function used to calculate grid loss (step 6)
-def calculate_grid_loss(results: dict, metadata: Metadata) -> DataFrame:
+def calculate_grid_loss(results: dict) -> DataFrame:
     agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
     agg_hourly_consumption = results[ResultKeyName.non_profiled_consumption]
     agg_flex_consumption = results[ResultKeyName.flex_consumption]
@@ -46,11 +45,10 @@ def calculate_grid_loss(results: dict, metadata: Metadata) -> DataFrame:
         agg_hourly_consumption,
         agg_flex_consumption,
         agg_production,
-        metadata,
     )
 
 
-def calculate_residual_ga(results: dict, metadata: Metadata) -> DataFrame:
+def calculate_residual_ga(results: dict) -> DataFrame:
     agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
     agg_hourly_consumption = results[ResultKeyName.non_profiled_consumption_ga]
     agg_flex_consumption = results[ResultKeyName.flex_consumption_ga]
@@ -60,7 +58,6 @@ def calculate_residual_ga(results: dict, metadata: Metadata) -> DataFrame:
         agg_hourly_consumption,
         agg_flex_consumption,
         agg_production,
-        metadata,
     )
 
 
@@ -69,7 +66,6 @@ def __calculate_grid_loss_or_residual_ga(
     agg_hourly_consumption: DataFrame,
     agg_flex_consumption: DataFrame,
     agg_production: DataFrame,
-    metadata: Metadata,
 ) -> DataFrame:
     agg_net_exchange_result = agg_net_exchange.selectExpr(
         Colname.grid_area,
@@ -137,11 +133,11 @@ def __calculate_grid_loss_or_residual_ga(
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         lit(TimeSeriesQuality.calculated.value).alias(Colname.quality),
     )
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+    return create_dataframe_from_aggregation_result_schema(result)
 
 
 # Function to calculate system correction to be added (step 8)
-def calculate_added_system_correction(results: dict, metadata: Metadata) -> DataFrame:
+def calculate_added_system_correction(results: dict) -> DataFrame:
     df = results[ResultKeyName.grid_loss]
     result = df.withColumn(
         Colname.added_system_correction,
@@ -157,11 +153,11 @@ def calculate_added_system_correction(results: dict, metadata: Metadata) -> Data
         lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+    return create_dataframe_from_aggregation_result_schema(result)
 
 
 # Function to calculate grid loss to be added (step 9)
-def calculate_added_grid_loss(results: dict, metadata: Metadata) -> DataFrame:
+def calculate_added_grid_loss(results: dict) -> DataFrame:
     df = results[ResultKeyName.grid_loss]
     result = df.withColumn(
         Colname.added_grid_loss,
@@ -175,11 +171,11 @@ def calculate_added_grid_loss(results: dict, metadata: Metadata) -> DataFrame:
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+    return create_dataframe_from_aggregation_result_schema(result)
 
 
 # Function to calculate total consumption (step 21)
-def calculate_total_consumption(results: dict, metadata: Metadata) -> DataFrame:
+def calculate_total_consumption(results: dict) -> DataFrame:
     agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
     agg_production = results[ResultKeyName.production_ga]
     result_production = (
@@ -226,4 +222,4 @@ def calculate_total_consumption(results: dict, metadata: Metadata) -> DataFrame:
         )
     )
 
-    return create_dataframe_from_aggregation_result_schema(metadata, result)
+    return create_dataframe_from_aggregation_result_schema(result)

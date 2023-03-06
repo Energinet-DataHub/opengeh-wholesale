@@ -18,7 +18,6 @@ from datetime import datetime, timedelta
 from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import aggregate_net_exchange_per_ga
 from package.codelists import MeteringPointType, TimeSeriesQuality
-from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
@@ -31,8 +30,6 @@ default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
 numberOfTestHours = 24
-
-metadata = Metadata("1", "1", "1", "1")
 
 # Time series schema
 
@@ -195,7 +192,7 @@ def aggregated_data_frame(time_series_data_frame):
     """Perform aggregation"""
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = time_series_data_frame
-    result = aggregate_net_exchange_per_ga(results, metadata)
+    result = aggregate_net_exchange_per_ga(results)
     return result
 
 

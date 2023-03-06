@@ -22,7 +22,6 @@ from package.codelists import (
 )
 
 from package.steps.aggregation import calculate_total_consumption
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -30,8 +29,6 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
 from package.constants import Colname, ResultKeyName
-
-metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
@@ -296,15 +293,11 @@ def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_fa
     results = {}
     results[
         ResultKeyName.net_exchange_per_ga
-    ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_net_exchange_factory()
-    )
+    ] = create_dataframe_from_aggregation_result_schema(agg_net_exchange_factory())
     results[
         ResultKeyName.production_ga
-    ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_production_factory()
-    )
-    aggregated_df = calculate_total_consumption(results, metadata)
+    ] = create_dataframe_from_aggregation_result_schema(agg_production_factory())
+    aggregated_df = calculate_total_consumption(results)
     aggregated_df_collect = aggregated_df.collect()
     assert (
         aggregated_df_collect[0][Colname.sum_quantity] == Decimal("14.0")
@@ -355,19 +348,18 @@ def test_aggregated_quality(
     ex_quality,
     expected_quality,
 ):
-
     results = {}
     results[
         ResultKeyName.net_exchange_per_ga
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_total_net_exchange_factory(ex_quality)
+        agg_total_net_exchange_factory(ex_quality)
     )
     results[
         ResultKeyName.production_ga
     ] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_total_production_factory(prod_quality)
+        agg_total_production_factory(prod_quality)
     )
 
-    result_df = calculate_total_consumption(results, metadata)
+    result_df = calculate_total_consumption(results)
 
     assert result_df.collect()[0][Colname.quality] == expected_quality

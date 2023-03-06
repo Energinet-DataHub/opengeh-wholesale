@@ -67,7 +67,6 @@ def test__get_master_basis_data_has_expected_columns(
 
     # Assert
     assert master_basis_data.columns == [
-        "GridAreaCode",
         "METERINGPOINTID",
         "VALIDFROM",
         "VALIDTO",
@@ -130,7 +129,7 @@ def test__columns_have_expected_values(
     # Assert
     actual = master_basis_data_df.first()
 
-    assert actual.GridAreaCode == expected_grid_area_code
+    assert actual.GRIDAREA == expected_grid_area_code
     assert actual.METERINGPOINTID == expected_meteringpoint_id
     assert actual.VALIDFROM == str(expected_from_date)
     assert actual.VALIDTO == str(expected_to_date)

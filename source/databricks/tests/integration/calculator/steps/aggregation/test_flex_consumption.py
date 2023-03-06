@@ -23,7 +23,6 @@ from package.steps.aggregation import (
     aggregate_flex_consumption_ga_brp,
     aggregate_flex_consumption_ga,
 )
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -38,8 +37,6 @@ date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
-
-metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
@@ -112,8 +109,8 @@ def test_flex_consumption_calculation_per_ga_and_es(
     results = {}
     results[
         ResultKeyName.flex_consumption_with_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_consumption_ga_es(results, metadata).sort(
+    ] = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    result = aggregate_flex_consumption_ga_es(results).sort(
         Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
     )
     result_collect = result.collect()
@@ -132,8 +129,8 @@ def test_flex_consumption_calculation_per_ga_and_brp(
     results = {}
     results[
         ResultKeyName.flex_consumption_with_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_consumption_ga_brp(results, metadata).sort(
+    ] = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    result = aggregate_flex_consumption_ga_brp(results).sort(
         Colname.grid_area, Colname.balance_responsible_id, Colname.time_window
     )
     result_collect = result.collect()
@@ -152,8 +149,8 @@ def test_flex_consumption_calculation_per_ga(
     results = {}
     results[
         ResultKeyName.flex_consumption_with_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(metadata, test_data_factory())
-    result = aggregate_flex_consumption_ga(results, metadata).sort(
+    ] = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    result = aggregate_flex_consumption_ga(results).sort(
         Colname.grid_area, Colname.time_window
     )
     result_collect = result.collect()

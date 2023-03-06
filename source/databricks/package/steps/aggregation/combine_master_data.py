@@ -14,15 +14,12 @@
 from package.constants import Colname, ResultKeyName
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when
-from package.shared.data_classes import Metadata
 
 
 metering_grid_area_domain_mrid_drop = "MeteringGridArea_Domain_mRID_drop"
 
 
-def combine_added_system_correction_with_master_data(
-    results: dict, metadata: Metadata
-) -> DataFrame:
+def combine_added_system_correction_with_master_data(results: dict) -> DataFrame:
     added_system_correction_df = results[ResultKeyName.added_system_correction]
     grid_loss_sys_cor_master_data_df = results[
         ResultKeyName.grid_loss_sys_cor_master_data
@@ -35,9 +32,7 @@ def combine_added_system_correction_with_master_data(
     )
 
 
-def combine_added_grid_loss_with_master_data(
-    results: dict, metadata: Metadata
-) -> DataFrame:
+def combine_added_grid_loss_with_master_data(results: dict) -> DataFrame:
     added_grid_loss_df = results[ResultKeyName.added_grid_loss]
     grid_loss_sys_cor_master_data_df = results[
         ResultKeyName.grid_loss_sys_cor_master_data
