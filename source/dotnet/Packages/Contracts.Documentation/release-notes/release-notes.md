@@ -2,7 +2,7 @@
 
 ## Version 5.0.14
 
-Added process type to contract.
+No functional changes.
 
 ## Version 2.0.13
 
