@@ -50,6 +50,7 @@ public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegr
         processType switch
         {
             ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
+            ProcessType.Aggregation => ProcessCompleted.AggregationProcessType,
             _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
         };
 }
