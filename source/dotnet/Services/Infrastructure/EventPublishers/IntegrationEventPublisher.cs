@@ -19,10 +19,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Google.Protobuf;
-using Google.Protobuf.Collections;
-using static Energinet.DataHub.Wholesale.Contracts.ProcessType;
-using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
-using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesType;
+using ProcessType = Energinet.DataHub.Wholesale.Contracts.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
@@ -52,7 +49,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
 
     public Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
     {
-        var integrationEvent = new CalculationResultReady
+        var integrationEvent = new CalculationResultCompleted()
         {
             BatchId = processCompletedEventDto.BatchId.ToString(),
             Resolution = Resolution.Quarter,
