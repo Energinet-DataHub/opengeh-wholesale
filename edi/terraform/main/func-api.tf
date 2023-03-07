@@ -13,7 +13,7 @@ module "func_receiver" {
   vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integrations_id.value
   private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   always_on                                = true
-  dotnet_framework_version                 = "v7.0"
+  dotnet_framework_version                 = "7"
   use_dotnet_isolated_runtime              = true
   health_check_path                        = "/api/monitor/ready"
   app_settings = {
