@@ -52,6 +52,9 @@ limitations under the License.
       <OutputDir>obj\contracts</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
+    <Protobuf Update="..\..\Contracts\CalculationResultReady.proto">
+      <Link>Integration\CalculationResultReady.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
   <ItemGroup>

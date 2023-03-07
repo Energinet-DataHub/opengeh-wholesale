@@ -15,7 +15,6 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
@@ -24,6 +23,7 @@ using Google.Protobuf;
 using Moq;
 using NodaTime;
 using Xunit;
+using C =Energinet.DataHub.Wholesale.Contracts;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 
@@ -56,9 +56,9 @@ public class ProcessCompletedIntegrationEventPublisherTests
     }
 
     [Theory]
-    [InlineAutoMoqData(ProcessType.BalanceFixing, ProcessCompleted.BalanceFixingProcessType)]
+    [InlineAutoMoqData(C.ProcessType.BalanceFixing, ProcessCompleted.BalanceFixingProcessType)]
     public async Task PublishAsync_PublishesWithCorrectMessageType(
-        ProcessType processType,
+        C.ProcessType processType,
         string expectedMessageType,
         ProcessCompleted processCompleted,
         Mock<IServiceBusMessageFactory> factoryMock,
@@ -89,7 +89,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
             Times.Once);
     }
 
-    private static ProcessCompletedEventDto CreateProcessCompletedEventDto(ProcessType processType)
+    private static ProcessCompletedEventDto CreateProcessCompletedEventDto(C.ProcessType processType)
     {
         return new ProcessCompletedEventDto(
             "some-grid-area",

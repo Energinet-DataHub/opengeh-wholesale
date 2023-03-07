@@ -14,6 +14,8 @@
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
@@ -22,15 +24,18 @@ public class ProcessApplicationService : IProcessApplicationService
     private readonly IProcessCompletedIntegrationEventPublisher _processCompletedIntegrationEventPublisher;
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
     private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly IProcessStepResultRepository _processStepResultRepository;
 
     public ProcessApplicationService(
         IProcessCompletedIntegrationEventPublisher processCompletedIntegrationEventPublisher,
         IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
-        IDomainEventPublisher domainEventPublisher)
+        IDomainEventPublisher domainEventPublisher,
+        IProcessStepResultRepository processStepResultRepository)
     {
         _processCompletedIntegrationEventPublisher = processCompletedIntegrationEventPublisher;
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
+        _processStepResultRepository = processStepResultRepository;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
@@ -44,8 +49,11 @@ public class ProcessApplicationService : IProcessApplicationService
         await _processCompletedIntegrationEventPublisher.PublishAsync(processCompletedEvent).ConfigureAwait(false);
     }
 
-    public Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
+    public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
-        throw new NotImplementedException();
+        // Get result for Total GA Production
+        var productionForTotalGa = await _processStepResultRepository
+            .GetAsync(processCompletedEvent.BatchId, new GridAreaCode(processCompletedEvent.GridAreaCode), TimeSeriesType.Production, null, null)
+            .ConfigureAwait(false);
     }
 }
