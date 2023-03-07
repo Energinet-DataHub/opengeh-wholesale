@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IdentityModel.Tokens.Jwt;
 using Azure.Storage.Files.DataLake;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 
+/// <inheritdoc />
 public sealed class DataLakeClient : IDataLakeClient
 {
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
@@ -26,12 +26,7 @@ public sealed class DataLakeClient : IDataLakeClient
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
     }
 
-    /// <summary>
-    /// Search for a file by a given extension in a blob directory.
-    /// </summary>
-    /// <param name="directory"></param>
-    /// <param name="extension"></param>
-    /// <returns>The first file with matching file extension. If the file cannot be found, an exception is thrown</returns>
+    /// <inheritdoc />
     public async Task<Stream> FindAndOpenFileAsync(string directory, string extension)
     {
         var path = await FindFileAsync(directory, extension).ConfigureAwait(false);
@@ -39,12 +34,26 @@ public sealed class DataLakeClient : IDataLakeClient
         return await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
+    public Task<Stream> GetWriteableFileStreamAsync(string filename)
+    {
+        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(filename);
+        return dataLakeFileClient.OpenWriteAsync(false);
+    }
+
+    /// <inheritdoc />
+    public Task<Stream> GetReadableFileStreamAsync(string filename)
+    {
+        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(filename);
+        return dataLakeFileClient.OpenReadAsync(false);
+    }
+
     private async Task<string> FindFileAsync(string directory, string extension)
     {
         var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
         var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
         if (!directoryExists.Value)
-            throw new InvalidOperationException($"No directory was found on path: {directory}");
+            throw new DataLakeDirectoryNotFoundException($"No directory was found on path: {directory}");
 
         await foreach (var pathItem in directoryClient.GetPathsAsync())
         {
@@ -53,11 +62,5 @@ public sealed class DataLakeClient : IDataLakeClient
         }
 
         throw new Exception($"No Data Lake file with extension '{extension}' was found in directory '{directory}'");
-    }
-
-    private async Task<Stream> OpenReadAsync(string path)
-    {
-        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(path);
-        return await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
     }
 }

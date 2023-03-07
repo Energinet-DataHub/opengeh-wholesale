@@ -121,6 +121,62 @@ public class DataLakeClientTests
         dataLakeFileClient.Should().NotBeNull();
     }
 
+    [Theory]
+    [AutoMoqData]
+    public async Task GetWriteableFileStreamAsync_ReturnsStream(
+        Mock<DataLakeFileClient> dataLakeFileClientMock,
+        Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock)
+    {
+        // arrange
+        const string filename = "A0FEE5F8-1938-4363-9AAF-3B4DBBCCBD71.cvs";
+
+        using var stream = new MemoryStream();
+
+        dataLakeFileSystemClientMock
+            .Setup(x => x.GetFileClient(filename))
+            .Returns(dataLakeFileClientMock.Object);
+
+        dataLakeFileClientMock
+            .Setup(x => x.OpenWriteAsync(false, null, default))
+            .ReturnsAsync(stream);
+
+        var sut = new DataLakeClient(dataLakeFileSystemClientMock.Object);
+
+        // act
+        var actual = await sut.GetWriteableFileStreamAsync(filename);
+
+        // assert
+        actual.Should().BeSameAs(stream);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task GetReadableFileStreamAsync_ReturnsStream(
+        Mock<DataLakeFileClient> dataLakeFileClientMock,
+        Mock<DataLakeFileSystemClient> dataLakeFileSystemClientMock)
+    {
+        // arrange
+        const string filename = "C5B4B4FA-8808-40F5-A635-39A281E6866A.csv";
+
+        using var stream = new MemoryStream();
+
+        dataLakeFileSystemClientMock
+            .Setup(x => x.GetFileClient(filename))
+            .Returns(dataLakeFileClientMock.Object);
+
+        dataLakeFileClientMock
+            .Setup(x => x.OpenReadAsync(false, default, default, default))
+            .ReturnsAsync(stream);
+
+        var sut = new DataLakeClient(dataLakeFileSystemClientMock.Object);
+
+        // act
+        var actual = await sut.GetReadableFileStreamAsync(filename);
+
+        // assert
+        actual.Should().BeSameAs(stream);
+    }
+
     private static AsyncPageable<PathItem> CreateAsyncPageableWithOnePathItem(string path)
     {
         var pathItem = DataLakeModelFactory

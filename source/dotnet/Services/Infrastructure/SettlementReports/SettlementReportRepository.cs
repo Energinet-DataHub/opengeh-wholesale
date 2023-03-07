@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 
 public class SettlementReportRepository : ISettlementReportRepository
 {
-    private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
+    private readonly IDataLakeClient _dataLakeClient;
 
     private readonly List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         _fileIdentifierProviders;
@@ -29,10 +29,10 @@ public class SettlementReportRepository : ISettlementReportRepository
     private readonly IStreamZipper _streamZipper;
 
     public SettlementReportRepository(
-        DataLakeFileSystemClient dataLakeFileSystemClient,
+        IDataLakeClient dataLakeClient,
         IStreamZipper streamZipper)
     {
-        _dataLakeFileSystemClient = dataLakeFileSystemClient;
+        _dataLakeClient = dataLakeClient;
         _streamZipper = streamZipper;
         _fileIdentifierProviders = new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
         {
@@ -55,8 +55,7 @@ public class SettlementReportRepository : ISettlementReportRepository
     public async Task<SettlementReport> GetSettlementReportAsync(Batch batch)
     {
         var zipFileName = GetZipFileName(batch);
-        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(zipFileName);
-        var stream = (await dataLakeFileClient.ReadAsync().ConfigureAwait(false)).Value.Content;
+        var stream = await _dataLakeClient.GetReadableFileStreamAsync(zipFileName).ConfigureAwait(false);
         return new SettlementReport(stream);
     }
 
@@ -119,40 +118,22 @@ public class SettlementReportRepository : ISettlementReportRepository
         foreach (var fileIdentifierProvider in _fileIdentifierProviders)
         {
             var (directory, extension, entryPath) = fileIdentifierProvider(batchId, gridAreaCode);
-            var processDataFile = await GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
-            if (processDataFile == null) continue;
-            var response = await processDataFile.ReadAsync().ConfigureAwait(false);
-            processDataFilesUrls.Add((response.Value.Content, entryPath));
+            try
+            {
+                var stream = await _dataLakeClient.FindAndOpenFileAsync(directory, extension).ConfigureAwait(false);
+                processDataFilesUrls.Add((stream, entryPath));
+            }
+            catch (DataLakeDirectoryNotFoundException)
+            {
+                // ignored
+            }
         }
 
         return processDataFilesUrls;
     }
 
-    /// <summary>
-    /// Search for a file by a given extension in a blob directory.
-    /// </summary>
-    /// <param name="directory"></param>
-    /// <param name="extension"></param>
-    /// <returns>The first file with matching file extension. If no directory was found, return null</returns>
-    private async Task<DataLakeFileClient?> GetDataLakeFileClientAsync(string directory, string extension)
-    {
-        var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
-        var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
-        if (!directoryExists.Value)
-            return null;
-
-        await foreach (var pathItem in directoryClient.GetPathsAsync())
-        {
-            if (Path.GetExtension(pathItem.Name) == extension)
-                return _dataLakeFileSystemClient.GetFileClient(pathItem.Name);
-        }
-
-        throw new Exception($"No Data Lake file with extension '{extension}' was found in directory '{directory}'");
-    }
-
     private Task<Stream> GetWriteStreamAsync(string fileName)
     {
-        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(fileName);
-        return dataLakeFileClient.OpenWriteAsync(false);
+        return _dataLakeClient.GetWriteableFileStreamAsync(fileName);
     }
 }
