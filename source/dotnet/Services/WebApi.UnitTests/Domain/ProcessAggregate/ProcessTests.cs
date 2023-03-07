@@ -12,20 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+using FluentAssertions;
+using Xunit;
 
-/// <summary>
-/// Defines the wholesale process type
-/// </summary>
-public enum ProcessType
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.ProcessAggregate;
+
+public class ProcessTests
 {
-    /// <summary>
-    /// Balance fixing
-    /// </summary>
-    BalanceFixing,
+    [Fact]
+    public void MustEnsureThatProcessTypeCompliesWithTheContract()
+    {
+        // Arrange & Act
+        var domainProcessTypeValues = Enum.GetValues(typeof(ProcessType));
+        var contractProcessTypeValues = Enum.GetValues(typeof(Contracts.ProcessType));
 
-    /// <summary>
-    /// Aggregation.
-    /// </summary>
-    Aggregation,
+        // Assert
+        domainProcessTypeValues.Should().BeEquivalentTo(contractProcessTypeValues);
+    }
 }
