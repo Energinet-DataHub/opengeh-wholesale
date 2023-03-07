@@ -29,7 +29,7 @@ No functional changes.
 No functional changes.
 
 ## Version 2.0.6
-~~~~
+
 No functional changes.
 
 ## Version 2.0.5
