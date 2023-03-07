@@ -27,18 +27,44 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
 message CalculationResultReady {
 
   /*
-   * The ID of the calculation.
+   * The ID of the batch creating the calculation result.
    * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
    * Example: 65801e3c-5131-426e-b1bb-7b186349c996
    */ 
-  string calculation_id = 1;
+  string batch_id = 1;
 
-  Grouping grouping = 2;
+  oneof aggregation_level {
+    AggregationPerGridArea aggregation_per_gridarea = 2;
+    AggregationPerEnergySupplierPerGridArea aggregation_per_energysupplier_per_gridarea = 3;
+    AggregationPerBalanceResponsiblePartyPerGridArea aggregation_per_balanceresponsibleparty_per_gridarea = 4;
+    AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea aggregation_per_energysupplier_per_balanceresponsibleparty_per_gridarea = 5;
+  }
   
-  optional string GroupingActorGln = 3;
+  ProcessType process_type = 10;
   
-  ProcessType process_type = 4;
+  TimeSeriesType time_series_type = 11; 
   
+  /*
+   * The beginning of the calculation period.
+   * The time is included in the period and is identical to the time of the first time series point
+   * in the process time series type results.
+   */
+  google.protobuf.Timestamp period_start_utc = 12;
+
+  /*
+   * The end of the calculation period.
+   * The time is excluded from the period.
+   */
+  google.protobuf.Timestamp period_end_utc = 13;
+  
+  Resolution resolution = 14;
+  
+  QuantityUnit quantity_unit = 15;
+  
+  repeated TimeSeriesPoint time_series_points = 20;
+}
+
+message AggregationPerGridArea {
   /*
    * The grid area code uniquely defining the process in the batch.
    * The grid area code is a 3 character string consisting solely of digits.
@@ -46,36 +72,48 @@ message CalculationResultReady {
    *   543
    *   020
    */
-  string grid_area_code = 5;
-
-  TimeSeriesType time_series_type = 6; 
-  
-  /*
-   * The beginning of the calculation period.
-   * The time is included in the period and is identical to the time of the first time series point
-   * in the process time series type results.
-   */
-  google.protobuf.Timestamp period_start_utc = 7;
-
-  /*
-   * The end of the calculation period.
-   * The time is excluded from the period.
-   */
-  google.protobuf.Timestamp period_end_utc = 8;
-  
-  Resolution resolution = 9;
-  
-  QuantityUnit quantity_unit = 10;
-  
-  repeated TimeSeriesPoint time_series_points = 11;
+  string grid_area_code = 1;
 }
 
-enum Grouping {
-  GROUPING_UNSPECIFIED = 0;
-  GROUPING_GRID_AREA = 1;
-  GROUPING_ENERGY_SUPPLIER = 2;
-  GROUPING_BALANCE_RESPONSIBLE_PARTY = 3;
-  GROUPING_ENERGY_SUPPLIER_PER_BALANCE_RESPONSIBLE_PARTY = 4;
+message AggregationPerEnergySupplierPerGridArea {
+  /*
+   * The grid area code uniquely defining the process in the batch.
+   * The grid area code is a 3 character string consisting solely of digits.
+   * Examples:
+   *   543
+   *   020
+   */
+  string grid_area_code = 1;
+
+  string EnergySupplierGlnOrEic = 2;
+}
+
+message AggregationPerBalanceResponsiblePartyPerGridArea {
+  /*
+   * The grid area code uniquely defining the process in the batch.
+   * The grid area code is a 3 character string consisting solely of digits.
+   * Examples:
+   *   543
+   *   020
+   */
+  string grid_area_code = 1;
+
+  string BalanceResponsiblePartyGlnOrEic = 2;
+}
+
+message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
+  /*
+   * The grid area code uniquely defining the process in the batch.
+   * The grid area code is a 3 character string consisting solely of digits.
+   * Examples:
+   *   543
+   *   020
+   */
+  string grid_area_code = 1;
+
+  string BalanceResponsiblePartyGlnOrEic = 2;
+
+  string EnergySupplierGlnOrEic = 3;
 }
 
 enum ProcessType {
@@ -114,7 +152,7 @@ message TimeSeriesPoint {
 
   DecimalValue quantity = 2;
 
-  // TODO: We'll exactly one until we change the behavior due to eBIX
+  // TODO: We'll provide exactly one until we change the behavior due to eBIX
   repeated QuantityQuality quantity_qualities = 3;
 }
 
