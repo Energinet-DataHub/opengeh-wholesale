@@ -15,20 +15,24 @@
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Google.Protobuf;
-using C = Energinet.DataHub.Wholesale.Contracts;
+using Google.Protobuf.Collections;
+using static Energinet.DataHub.Wholesale.Contracts.ProcessType;
+using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
+using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
-public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegrationEventPublisher
+public class IntegrationEventPublisher : IIntegrationEventPublisher
 {
     private readonly IIntegrationEventTopicServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
 
-    public ProcessCompletedIntegrationEventPublisher(
+    public IntegrationEventPublisher(
         IIntegrationEventTopicServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory,
         IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper)
@@ -46,10 +50,26 @@ public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegr
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
-    private string GetMessageType(C.ProcessType processType) =>
+    public Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
+    {
+        var integrationEvent = new CalculationResultReady
+        {
+            BatchId = processCompletedEventDto.BatchId.ToString(),
+            Resolution = Resolution.Quarter,
+            ProcessType = ProcessType.Aggregation, //?
+            QuantityUnit = QuantityUnit.Kwh,
+            AggregationPerGridarea = new AggregationPerGridArea(), //?
+            PeriodStartUtc = processCompletedEventDto.PeriodStart.ToTimestamp(),
+            PeriodEndUtc = processCompletedEventDto.PeriodEnd.ToTimestamp(),
+            TimeSeriesType = TimeSeriesType.Production,
+        };
+        throw new NotImplementedException();
+    }
+
+    private string GetMessageType(ProcessType processType) =>
         processType switch
         {
-            C.ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
+            ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
             _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
         };
 }

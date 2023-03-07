@@ -21,18 +21,18 @@ namespace Energinet.DataHub.Wholesale.Application.Processes;
 
 public class ProcessApplicationService : IProcessApplicationService
 {
-    private readonly IProcessCompletedIntegrationEventPublisher _processCompletedIntegrationEventPublisher;
+    private readonly IIntegrationEventPublisher _integrationEventPublisher;
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
     private readonly IDomainEventPublisher _domainEventPublisher;
     private readonly IProcessStepResultRepository _processStepResultRepository;
 
     public ProcessApplicationService(
-        IProcessCompletedIntegrationEventPublisher processCompletedIntegrationEventPublisher,
+        IIntegrationEventPublisher integrationEventPublisher,
         IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
         IDomainEventPublisher domainEventPublisher,
         IProcessStepResultRepository processStepResultRepository)
     {
-        _processCompletedIntegrationEventPublisher = processCompletedIntegrationEventPublisher;
+        _integrationEventPublisher = integrationEventPublisher;
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
         _processStepResultRepository = processStepResultRepository;
@@ -46,7 +46,7 @@ public class ProcessApplicationService : IProcessApplicationService
 
     public async Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
-        await _processCompletedIntegrationEventPublisher.PublishAsync(processCompletedEvent).ConfigureAwait(false);
+        await _integrationEventPublisher.PublishAsync(processCompletedEvent).ConfigureAwait(false);
     }
 
     public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
@@ -55,5 +55,7 @@ public class ProcessApplicationService : IProcessApplicationService
         var productionForTotalGa = await _processStepResultRepository
             .GetAsync(processCompletedEvent.BatchId, new GridAreaCode(processCompletedEvent.GridAreaCode), TimeSeriesType.Production, null, null)
             .ConfigureAwait(false);
+
+        await _integrationEventPublisher.PublishAsync(productionForTotalGa, processCompletedEvent).ConfigureAwait(false);
     }
 }

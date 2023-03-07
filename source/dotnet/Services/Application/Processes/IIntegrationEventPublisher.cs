@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-public class CalculationResultReady
+namespace Energinet.DataHub.Wholesale.Application.Processes;
+
+public interface IIntegrationEventPublisher
 {
-    public string GridArea { get; set; } = null!;
+    Task PublishAsync(ProcessCompletedEventDto processCompletedEvent);
 
-    public List<(decimal Quantity, string Quality)> Points { get; set; } = null!;
+    Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto);
 }

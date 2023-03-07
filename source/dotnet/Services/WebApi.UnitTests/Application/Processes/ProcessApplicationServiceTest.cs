@@ -39,7 +39,7 @@ public class ProcessApplicationServiceTest
     [InlineAutoMoqData]
     public async Task PublishProcessCompletedIntegrationEventsAsync_Publishes(
         ProcessCompletedEventDto eventDto,
-        [Frozen] Mock<IProcessCompletedIntegrationEventPublisher> publisherMock,
+        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
         ProcessApplicationService sut)
     {
         await sut.PublishProcessCompletedIntegrationEventsAsync(eventDto);

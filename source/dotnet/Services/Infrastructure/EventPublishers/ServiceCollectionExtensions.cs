@@ -48,7 +48,7 @@ public static class ServiceCollectionExtensions
     {
         ServiceBusClientAndAndMessageFactoryRegistry(serviceCollection, serviceBusConnectionString);
 
-        serviceCollection.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
+        serviceCollection.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
         serviceCollection.AddSingleton<IIntegrationEventTopicServiceBusSender>(provider =>
         {
             var client = provider.GetRequiredService<ServiceBusClient>();

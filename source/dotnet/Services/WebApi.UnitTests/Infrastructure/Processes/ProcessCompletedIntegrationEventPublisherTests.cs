@@ -44,7 +44,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
         mapperMock
             .Setup(mapper => mapper.MapFrom(eventDto))
             .Returns(processCompleted);
-        var sut = new ProcessCompletedIntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object);
+        var sut = new IntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object);
 
         // Act
         await sut.PublishAsync(eventDto);
@@ -76,7 +76,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
             {
                 ApplicationProperties = { { MessageMetaDataConstants.MessageType, expectedMessageType } },
             });
-        var sut = new ProcessCompletedIntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object);
+        var sut = new IntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object);
 
         // Act
         await sut.PublishAsync(eventDto);

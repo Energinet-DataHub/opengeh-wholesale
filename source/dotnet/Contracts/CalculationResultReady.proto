@@ -24,7 +24,7 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
  * A calculation will result in one or more calculation results. Each result is
  * publishes as an instance of this type.
  */
-message CalculationResultReady {
+message CalculationResultCompleted {
 
   /*
    * The ID of the batch creating the calculation result.
@@ -148,10 +148,12 @@ enum QuantityQuality {
 }
 
 message TimeSeriesPoint {
-  DecimalValue quantity = 1;
+  google.protobuf.Timestamp time = 1;
+
+  DecimalValue quantity = 2;
 
   // TODO: We'll provide exactly one until we change the behavior due to eBIX
-  repeated QuantityQuality quantity_qualities = 2;
+  repeated QuantityQuality quantity_qualities = 3;
 }
 
 message DecimalValue {
