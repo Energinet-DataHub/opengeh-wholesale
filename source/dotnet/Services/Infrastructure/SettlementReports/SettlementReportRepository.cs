@@ -47,7 +47,7 @@ public class SettlementReportRepository : ISettlementReportRepository
         var batchBasisFileStreams = await GetBatchBasisFileStreamsAsync(completedBatch).ConfigureAwait(false);
 
         var zipFileName = GetZipFileName(completedBatch);
-        var zipStream = await GetWriteStreamAsync(zipFileName).ConfigureAwait(false);
+        var zipStream = await _dataLakeClient.GetWriteableFileStreamAsync(zipFileName).ConfigureAwait(false);
         await using (zipStream)
             await _streamZipper.ZipAsync(batchBasisFileStreams, zipStream).ConfigureAwait(false);
     }
@@ -130,10 +130,5 @@ public class SettlementReportRepository : ISettlementReportRepository
         }
 
         return processDataFilesUrls;
-    }
-
-    private Task<Stream> GetWriteStreamAsync(string fileName)
-    {
-        return _dataLakeClient.GetWriteableFileStreamAsync(fileName);
     }
 }

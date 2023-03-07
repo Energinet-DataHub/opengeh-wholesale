@@ -158,18 +158,18 @@ public class SettlementReportRepositoryTests
     [AutoMoqData]
     public async Task GetSettlementReportAsync_WhenGivenBatch_ReturnCorrectStream(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
-        [Frozen] Mock<IDataLakeClient> dataLakeFileClientMock)
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
         var basisDataBuffer = Encoding.UTF8.GetBytes("test");
         var memoryStream = new MemoryStream(basisDataBuffer);
 
-        dataLakeFileClientMock
+        dataLakeClientMock
             .Setup(x => x.GetReadableFileStreamAsync(It.IsAny<string>()))
             .ReturnsAsync(memoryStream);
 
         var sut = new SettlementReportRepository(
-            dataLakeFileClientMock.Object,
+            dataLakeClientMock.Object,
             streamZipperMock.Object);
 
         var batch = new BatchBuilder().Build();
