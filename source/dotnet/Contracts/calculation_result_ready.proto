@@ -148,12 +148,10 @@ enum QuantityQuality {
 }
 
 message TimeSeriesPoint {
-  google.protobuf.Timestamp time = 1;
-
-  DecimalValue quantity = 2;
+  DecimalValue quantity = 1;
 
   // TODO: We'll provide exactly one until we change the behavior due to eBIX
-  repeated QuantityQuality quantity_qualities = 3;
+  repeated QuantityQuality quantity_qualities = 2;
 }
 
 message DecimalValue {
