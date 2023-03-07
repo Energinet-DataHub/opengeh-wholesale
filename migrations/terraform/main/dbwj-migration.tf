@@ -55,7 +55,7 @@ resource "databricks_job" "this" {
     new_cluster {
       num_workers   = 0
       spark_version = data.databricks_spark_version.latest_lts.id
-      node_type_id  = "Standard_DS4_v2"
+      node_type_id  = "Standard_DS5_v2"
       spark_conf = {
         "fs.azure.account.oauth2.client.endpoint.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
         "fs.azure.account.oauth2.client.endpoint.${module.st_migrations.name}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
