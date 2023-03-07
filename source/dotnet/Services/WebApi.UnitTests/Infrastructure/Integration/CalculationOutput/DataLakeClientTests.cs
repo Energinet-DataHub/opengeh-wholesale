@@ -48,7 +48,7 @@ public class DataLakeClientTests
         await sut
             .Invoking(s => s.FindAndOpenFileAsync(string.Empty, string.Empty))
             .Should()
-            .ThrowAsync<InvalidOperationException>();
+            .ThrowAsync<DataLakeDirectoryNotFoundException>();
     }
 
     [Theory]

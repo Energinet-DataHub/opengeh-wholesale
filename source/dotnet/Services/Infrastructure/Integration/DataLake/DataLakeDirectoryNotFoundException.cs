@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Files.DataLake;
-
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 
-public class DataLakeDirectoryNotFoundException : Exception
+public sealed class DataLakeDirectoryNotFoundException : InvalidOperationException
 {
     public DataLakeDirectoryNotFoundException(string message)
         : base(message)

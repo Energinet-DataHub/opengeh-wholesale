@@ -236,7 +236,7 @@ public class SettlementReportRepositoryTests
         var completedBatch = new BatchBuilder().Build();
 
         dataLakeClientMock.Setup(x => x.FindAndOpenFileAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ThrowsAsync(new InvalidOperationException("No directory was found"));
+            .ThrowsAsync(new DataLakeDirectoryNotFoundException(string.Empty));
 
         var sut = new SettlementReportRepository(
             dataLakeClientMock.Object,
