@@ -1,12 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{A67891B8-279A-4104-8BB9-4CDB23B49E16}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{A67891B8-279A-4104-8BB9-4CDB23B49E16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Tests", "Client.Tests\Client.Tests.csproj", "{88BA1EA8-B7F4-417D-A30F-D73532196647}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client.Tests", "Client.Tests\Client.Tests.csproj", "{88BA1EA8-B7F4-417D-A30F-D73532196647}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{56830F1C-D882-4609-AF7C-7FAAD35E1EAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{56830F1C-D882-4609-AF7C-7FAAD35E1EAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts.Tests", "Contracts.Tests\Contracts.Tests.csproj", "{8835FB0D-391A-40C6-BB67-27B66845A5B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts.Tests", "Contracts.Tests\Contracts.Tests.csproj", "{8835FB0D-391A-40C6-BB67-27B66845A5B5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02E0A73D-9110-4F9B-968A-30027CE1D15D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +36,10 @@ Global
 		{8835FB0D-391A-40C6-BB67-27B66845A5B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8835FB0D-391A-40C6-BB67-27B66845A5B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8C1B2279-9642-4F62-BF4D-06795980EB31}
 	EndGlobalSection
 EndGlobal
