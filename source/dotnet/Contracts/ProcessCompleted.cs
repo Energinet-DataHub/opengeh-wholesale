@@ -25,5 +25,5 @@ public partial class ProcessCompleted
     /// <summary>
     /// The message type for aggregation-completed transport message meta data in accordance with ADR-008.
     /// </summary>
-    public const string AggregationProcessType = "AggregationProcessType";
+    public const string AggregationProcessType = "AggregationCompleted";
 }
