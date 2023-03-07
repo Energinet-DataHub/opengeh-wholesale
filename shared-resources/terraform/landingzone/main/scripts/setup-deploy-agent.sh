@@ -169,18 +169,17 @@ rm packages-microsoft-prod.deb
 # See https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#how-to-install-other-versions
 #
 
-# COMMENTED because we don't expect we need .NET 5.0 anymore
-### # .NET SDK 5.0
-### sudo apt-get update; \
-###   sudo apt-get install -y apt-transport-https && \
-###   sudo apt-get update && \
-###   sudo apt-get install -y dotnet-sdk-5.0
-
 # .NET SDK 6.0
 sudo apt-get update; \
   sudo apt-get install -y apt-transport-https && \
   sudo apt-get update && \
   sudo apt-get install -y dotnet-sdk-6.0
+
+# .NET SDK 7.0
+sudo apt-get update; \
+  sudo apt-get install -y apt-transport-https && \
+  sudo apt-get update && \
+  sudo apt-get install -y dotnet-sdk-7.0
 
 ##################################
 # Install Powershell
