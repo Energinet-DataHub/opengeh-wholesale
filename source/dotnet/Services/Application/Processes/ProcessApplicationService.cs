@@ -43,4 +43,9 @@ public class ProcessApplicationService : IProcessApplicationService
     {
         await _processCompletedIntegrationEventPublisher.PublishAsync(processCompletedEvent).ConfigureAwait(false);
     }
+
+    public Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
+    {
+        throw new NotImplementedException();
+    }
 }
