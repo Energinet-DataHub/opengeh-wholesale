@@ -14,11 +14,11 @@
 
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Google.Protobuf;
+using ProcessType = Energinet.DataHub.Wholesale.Contracts.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
@@ -50,6 +50,7 @@ public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegr
         processType switch
         {
             ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
+            ProcessType.Aggregation => ProcessCompleted.AggregationProcessType,
             _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
         };
 }
