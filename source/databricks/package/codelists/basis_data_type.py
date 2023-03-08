@@ -12,4 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .basis_data_writer import BasisDataWriter
+from enum import Enum
+
+
+class BasisDataType(Enum):
+    TimeSeriesQuarter = "time_series_quarter"
+    TimeSeriesHour = "time_series_hour"
+    MasterBasisData = "master_basis_data"

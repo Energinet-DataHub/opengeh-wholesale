@@ -17,6 +17,7 @@
 from package.codelists import TimeSeriesType
 from package.constants import PartitionKeyName
 from typing import Union
+from package.codelists import BasisDataType
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
 
@@ -64,35 +65,34 @@ def get_actors_file_relative_path(
     return f"{batch_path}/{ACTORS_FOLDER}/time_series_type={time_series_type.value}/grid_area={grid_area}"
 
 
-def get_time_series_quarter_for_total_ga_relative_path(batch_id: str, grid_area: str) -> str:
+def get_basis_data_root_path(basis_data_type: BasisDataType, batch_id: str) -> str:
     batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_quarter/grouping=total_ga/grid_area={grid_area}"
+    return f"{batch_path}/{BASIS_DATA_FOLDER}/{_get_basis_data_folder_name(basis_data_type)}"
 
 
-def get_time_series_hour_for_total_ga_relative_path(batch_id: str, grid_area: str) -> str:
-    batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_hour/grouping=total_ga/grid_area={grid_area}"
-
-
-def get_master_basis_data_for_total_ga_relative_path(batch_id: str, grid_area: str) -> str:
-    batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{BASIS_DATA_FOLDER}/master_basis_data/grouping=total_ga/grid_area={grid_area}"
-
-
-def get_time_series_quarter_for_es_per_ga_relative_path(batch_id: str, grid_area: str, energy_supplier_id: str) -> str:
-    batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_quarter/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
-
-
-def get_time_series_hour_for_es_per_ga_relative_path(batch_id: str, grid_area: str, energy_supplier_id: str) -> str:
-    batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{BASIS_DATA_FOLDER}/time_series_hour/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
-
-
-def get_master_basis_data_for_es_per_ga_relative_path(batch_id: str, grid_area: str, energy_supplier_id: str) -> str:
-    batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{BASIS_DATA_FOLDER}/master_basis_data/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
+def get_basis_data_path(
+    basis_data_type: BasisDataType,
+    batch_id: str,
+    grid_area: str,
+    energy_supplier_id: Union[str, None] = None,
+) -> str:
+    basis_data_root_path = get_basis_data_root_path(basis_data_type, batch_id)
+    if energy_supplier_id is None:
+        return f"{basis_data_root_path}/grouping=total_ga/grid_area={grid_area}"
+    else:
+        return f"{basis_data_root_path}/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
 
 
 def get_batch_relative_path(batch_id: str) -> str:
     return f"{OUTPUT_FOLDER}/batch_id={batch_id}"
+
+
+def _get_basis_data_folder_name(basis_data_type: BasisDataType) -> str:
+    if basis_data_type == BasisDataType.MasterBasisData:
+        return "master_basis_data"
+    elif basis_data_type == BasisDataType.TimeSeriesHour:
+        return "time_series_hour"
+    elif basis_data_type == BasisDataType.TimeSeriesQuarter:
+        return "time_series_quarter"
+    else:
+        raise ValueError(f"Unexpected BasisDataType: {basis_data_type}")
