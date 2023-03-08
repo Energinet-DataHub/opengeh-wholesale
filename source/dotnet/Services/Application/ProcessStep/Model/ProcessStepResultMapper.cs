@@ -36,6 +36,6 @@ public class ProcessStepResultMapper : IProcessStepResultMapper
 
     private static TimeSeriesPointDto MapTimeSeriesPointToDto(TimeSeriesPoint point)
     {
-        return new TimeSeriesPointDto(point.Time, point.Quantity, point.Quality);
+        return new TimeSeriesPointDto(point.Time, point.Quantity, point.Quality.ToString());
     }
 }

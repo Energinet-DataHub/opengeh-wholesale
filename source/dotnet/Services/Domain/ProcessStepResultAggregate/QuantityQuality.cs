@@ -14,11 +14,11 @@
 
 namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-/// <summary>
-/// Time series point.
-/// Immutable value object.
-/// </summary>
-/// <param name="Time"></param>
-/// <param name="Quantity">In kWh.</param>
-/// <param name="Quality"></param>
-public sealed record TimeSeriesPoint(DateTimeOffset Time, decimal Quantity, QuantityQuality Quality);
+public enum QuantityQuality
+{
+    Missing,
+    Estimated,
+    Measured,
+    Incomplete,
+    Calculated,
+}

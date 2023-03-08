@@ -237,6 +237,8 @@ public class SettlementReportRepositoryTests
     {
         // Arrange
         var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
+        var quantity = 1.000m;
+        var quality = QuantityQuality.Measured;
 
         const decimal quantity = 1.000m;
         const string quality = "measured";
@@ -263,6 +265,6 @@ public class SettlementReportRepositoryTests
         // Assert
         actual.TimeSeriesPoints.First().Time.Should().Be(time);
         actual.TimeSeriesPoints.First().Quantity.Should().Be(quantity);
-        actual.TimeSeriesPoints.First().Quality.Should().Be(quality);
+        actual.TimeSeriesPoints.First().Quality.Should().Be(quality.ToString());
     }
 }
