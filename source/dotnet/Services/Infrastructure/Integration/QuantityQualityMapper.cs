@@ -26,7 +26,7 @@ public static class QuantityQualityMapper
             Domain.ProcessStepResultAggregate.QuantityQuality.Incomplete => QuantityQuality.Incomplete,
             Domain.ProcessStepResultAggregate.QuantityQuality.Measured => QuantityQuality.Measured,
             Domain.ProcessStepResultAggregate.QuantityQuality.Missing => QuantityQuality.Missing,
-            _ => throw new ArgumentException(),
+            _ => throw new ArgumentException($"No matching 'QuantityQuality' for: {quantityQuality.ToString()}"),
         };
     }
 }

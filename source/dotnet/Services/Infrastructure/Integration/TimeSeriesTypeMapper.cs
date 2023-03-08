@@ -26,7 +26,7 @@ public static class TimeSeriesTypeMapper
             Domain.ProcessStepResultAggregate.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
             Domain.ProcessStepResultAggregate.TimeSeriesType.NonProfiledConsumption => TimeSeriesType
                 .NonProfiledConsumption,
-            _ => throw new ArgumentException(),
+            _ => throw new ArgumentException($"No matching 'TimeSeriesType' for: {timeSeriesType.ToString()}"),
         };
     }
 }

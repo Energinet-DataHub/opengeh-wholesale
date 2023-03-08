@@ -24,7 +24,7 @@ public static class ProcessTypeMapper
         {
             Contracts.ProcessType.Aggregation => ProcessType.Aggregation,
             Contracts.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            _ => ProcessType.Unspecified,
+            _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
         };
     }
 }

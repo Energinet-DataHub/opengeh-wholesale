@@ -43,11 +43,11 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
 
         calculationResultCompleted.TimeSeriesPoints
             .AddRange(processStepResultDto.TimeSeriesPoints
-                .Select(x => new TimeSeriesPoint
+                .Select(timeSeriesPoint => new TimeSeriesPoint
                 {
-                    Quantity = new DecimalValue(x.Quantity),
-                    Time = x.Time.ToTimestamp(),
-                    QuantityQuality = QuantityQualityMapper.MapQuantityQuality(x.Quality),
+                    Quantity = new DecimalValue(timeSeriesPoint.Quantity),
+                    Time = timeSeriesPoint.Time.ToTimestamp(),
+                    QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
                 }));
 
         return calculationResultCompleted;
