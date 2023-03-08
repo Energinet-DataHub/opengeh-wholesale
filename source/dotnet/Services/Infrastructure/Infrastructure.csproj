@@ -60,10 +60,4 @@ limitations under the License.
     </Compile>
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="..\..\Contracts\ProcessCompleted.proto">
-      <Link>Integration\ProcessCompleted.proto</Link>
-    </Content>
-  </ItemGroup>
-
 </Project>

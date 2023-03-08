@@ -15,7 +15,6 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
@@ -24,6 +23,7 @@ using Google.Protobuf;
 using Moq;
 using NodaTime;
 using Xunit;
+using ProcessType = Energinet.DataHub.Wholesale.Contracts.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 
