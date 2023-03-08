@@ -98,7 +98,7 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
             "estimated" => TimeSeriesPointQuality.Estimated,
             "incomplete" => TimeSeriesPointQuality.Incomplete,
             "missing" => TimeSeriesPointQuality.Missing,
-            _ => throw ...,
+            _ => throw new ArgumentException($"quality of unknown type:{pointQuality}"),
         };
     }
 }
