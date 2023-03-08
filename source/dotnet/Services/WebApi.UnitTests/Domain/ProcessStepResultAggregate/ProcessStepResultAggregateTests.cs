@@ -52,7 +52,7 @@ public class ProcessStepResultAggregateTests
             {
                 new List<TimeSeriesPoint>
                 {
-                    new(DateTimeOffset.Now, 1m, string.Empty),
+                    new(DateTimeOffset.Now, 1m, TimeSeriesPointQuality.Missing),
                 },
                 1m,
                 1m,
@@ -62,8 +62,8 @@ public class ProcessStepResultAggregateTests
             {
                 new List<TimeSeriesPoint>
                 {
-                    new(DateTimeOffset.Now, 7m, string.Empty),
-                    new(DateTimeOffset.Now, 1m, string.Empty),
+                    new(DateTimeOffset.Now, 7m, TimeSeriesPointQuality.Missing),
+                    new(DateTimeOffset.Now, 1m, TimeSeriesPointQuality.Missing),
                 },
                 1m,
                 7m,
