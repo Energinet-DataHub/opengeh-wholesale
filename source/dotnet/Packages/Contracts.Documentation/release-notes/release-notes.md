@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 2.1.2
+
+Added `ProcessType` to `BatchDtoV2`
+
 ## Version 2.1.1
 
 A few fixes to the contract `CalculationResultCompleted`.
