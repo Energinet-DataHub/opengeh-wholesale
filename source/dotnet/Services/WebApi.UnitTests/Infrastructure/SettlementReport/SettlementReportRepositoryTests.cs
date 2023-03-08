@@ -240,8 +240,6 @@ public class SettlementReportRepositoryTests
         var quantity = 1.000m;
         var quality = QuantityQuality.Measured;
 
-        const decimal quantity = 1.000m;
-        const string quality = "measured";
         const string gridAreaCode = "805";
 
         var batchId = Guid.NewGuid();
