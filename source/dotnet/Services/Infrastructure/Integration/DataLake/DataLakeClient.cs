@@ -27,11 +27,20 @@ public sealed class DataLakeClient : IDataLakeClient
     }
 
     /// <inheritdoc />
-    public async Task<Stream> FindAndOpenFileAsync(string directory, string extension)
+    public async Task<string> FindFileAsync(string directory, string extension)
     {
-        var path = await FindFileAsync(directory, extension).ConfigureAwait(false);
-        var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(path);
-        return await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
+        var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
+        var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
+        if (!directoryExists.Value)
+            throw new InvalidOperationException($"No directory was found on path: {directory}");
+
+        await foreach (var pathItem in directoryClient.GetPathsAsync())
+        {
+            if (Path.GetExtension(pathItem.Name) == extension)
+                return pathItem.Name;
+        }
+
+        throw new Exception($"No Data Lake file with extension '{extension}' was found in directory '{directory}'");
     }
 
     /// <inheritdoc />
@@ -46,21 +55,5 @@ public sealed class DataLakeClient : IDataLakeClient
     {
         var dataLakeFileClient = _dataLakeFileSystemClient.GetFileClient(filename);
         return dataLakeFileClient.OpenReadAsync(false);
-    }
-
-    private async Task<string> FindFileAsync(string directory, string extension)
-    {
-        var directoryClient = _dataLakeFileSystemClient.GetDirectoryClient(directory);
-        var directoryExists = await directoryClient.ExistsAsync().ConfigureAwait(false);
-        if (!directoryExists.Value)
-            throw new DataLakeDirectoryNotFoundException($"No directory was found on path: {directory}");
-
-        await foreach (var pathItem in directoryClient.GetPathsAsync())
-        {
-            if (Path.GetExtension(pathItem.Name) == extension)
-                return pathItem.Name;
-        }
-
-        throw new Exception($"No Data Lake file with extension '{extension}' was found in directory '{directory}'");
     }
 }

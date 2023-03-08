@@ -46,9 +46,9 @@ public class DataLakeClientTests
 
         // Act and Assert
         await sut
-            .Invoking(s => s.FindAndOpenFileAsync(string.Empty, string.Empty))
+            .Invoking(s => s.FindFileAsync(string.Empty, string.Empty))
             .Should()
-            .ThrowAsync<DataLakeDirectoryNotFoundException>();
+            .ThrowAsync<InvalidOperationException>();
     }
 
     [Theory]
@@ -76,7 +76,7 @@ public class DataLakeClientTests
 
         // Act and Assert
         await sut
-            .Invoking(s => s.FindAndOpenFileAsync(string.Empty, string.Empty))
+            .Invoking(s => s.FindFileAsync(string.Empty, string.Empty))
             .Should()
             .ThrowAsync<Exception>();
     }
@@ -115,7 +115,7 @@ public class DataLakeClientTests
         var sut = new DataLakeClient(dataLakeFileSystemClientMock.Object);
 
         // Act
-        var dataLakeFileClient = await sut.FindAndOpenFileAsync(fileName, fileExtension);
+        var dataLakeFileClient = await sut.FindFileAsync(fileName, fileExtension);
 
         // Assert
         dataLakeFileClient.Should().NotBeNull();

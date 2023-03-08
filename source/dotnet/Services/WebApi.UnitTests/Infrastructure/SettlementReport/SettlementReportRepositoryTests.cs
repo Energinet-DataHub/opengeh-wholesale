@@ -186,15 +186,18 @@ public class SettlementReportRepositoryTests
     [AutoMoqData]
     public async Task GetSettlementReportAsync_WhenGivenBatchAndGridAreaCode_WritesToOutputStream(
         [Frozen] Mock<IStreamZipper> streamZipperMock,
-        [Frozen] Mock<IDataLakeClient> dataLakeFileClientMock)
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
         const string expectedOutput = "test";
+        const string filepath = "E31F50D8-8309-4CC4-A8DF-074D933329AD";
         var fileStream = new MemoryStream(Encoding.UTF8.GetBytes(expectedOutput));
         var batch = new BatchBuilder().Build();
         var gridAreaCode = new GridAreaCode("001");
 
-        dataLakeFileClientMock.Setup(x => x.FindAndOpenFileAsync(It.IsAny<string>(), ".csv"))
+        dataLakeClientMock.Setup(x => x.FindFileAsync(It.IsAny<string>(), ".csv"))
+            .ReturnsAsync(filepath);
+        dataLakeClientMock.Setup(x => x.GetReadableFileStreamAsync(filepath))
             .ReturnsAsync(fileStream);
 
         using var outputStream = new MemoryStream();
@@ -213,7 +216,7 @@ public class SettlementReportRepositoryTests
             });
 
         var sut = new SettlementReportRepository(
-            dataLakeFileClientMock.Object,
+            dataLakeClientMock.Object,
             streamZipperMock.Object);
 
         // Act
@@ -224,26 +227,6 @@ public class SettlementReportRepositoryTests
 
         // Assert
         actual.Should().Be(expectedOutput);
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public async Task CreateSettlementReportAsync_CreatesSettlementReportFile_WhenDataDirectoryIsNotFound(
-        [Frozen] Mock<IStreamZipper> streamZipperMock,
-        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
-    {
-        // Arrange
-        var completedBatch = new BatchBuilder().Build();
-
-        dataLakeClientMock.Setup(x => x.FindAndOpenFileAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ThrowsAsync(new DataLakeDirectoryNotFoundException(string.Empty));
-
-        var sut = new SettlementReportRepository(
-            dataLakeClientMock.Object,
-            streamZipperMock.Object);
-
-        // Act & Assert
-        await sut.Invoking(s => s.CreateSettlementReportsAsync(completedBatch)).Should().NotThrowAsync();
     }
 
     [Theory]

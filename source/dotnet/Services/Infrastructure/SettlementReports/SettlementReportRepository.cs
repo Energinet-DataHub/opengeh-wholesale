@@ -118,15 +118,9 @@ public class SettlementReportRepository : ISettlementReportRepository
         foreach (var fileIdentifierProvider in _fileIdentifierProviders)
         {
             var (directory, extension, entryPath) = fileIdentifierProvider(batchId, gridAreaCode);
-            try
-            {
-                var stream = await _dataLakeClient.FindAndOpenFileAsync(directory, extension).ConfigureAwait(false);
-                processDataFilesUrls.Add((stream, entryPath));
-            }
-            catch (DataLakeDirectoryNotFoundException)
-            {
-                // ignored
-            }
+            var filepath = await _dataLakeClient.FindFileAsync(directory, extension).ConfigureAwait(false);
+            var stream = await _dataLakeClient.GetReadableFileStreamAsync(filepath).ConfigureAwait(false);
+            processDataFilesUrls.Add((stream, entryPath));
         }
 
         return processDataFilesUrls;

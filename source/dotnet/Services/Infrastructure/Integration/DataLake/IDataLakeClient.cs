@@ -24,8 +24,8 @@ public interface IDataLakeClient
     /// </summary>
     /// <param name="directory">The directory in which to search.</param>
     /// <param name="extension">The extension to search for.</param>
-    /// <returns>The first file with matching file extension. If the file cannot be found, an exception is thrown</returns>
-    Task<Stream> FindAndOpenFileAsync(string directory, string extension);
+    /// <returns>The path of the first file with matching file extension. If the file cannot be found, an exception is thrown</returns>
+    Task<string> FindFileAsync(string directory, string extension);
 
     /// <summary>
     /// Gets a writeable stream to the file specified.
