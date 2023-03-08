@@ -12,11 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import datetime
+from decimal import Decimal
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 import package.infrastructure as infra
 import pytest
+from package.codelists import (
+    BasisDataType,
+    MeteringPointResolution,
+    MeteringPointType,
+    TimeSeriesQuality,
+)
 from package.constants import Colname
 from package.file_writers import BasisDataWriter
 from pyspark.sql import DataFrame, SparkSession
@@ -25,14 +33,6 @@ from tests.helpers.assert_calculation_file_path import (
     assert_file_path_match_contract,
 )
 from tests.helpers.file_utils import find_file
-from package.codelists import (
-    MeteringPointResolution,
-    MeteringPointType,
-    TimeSeriesQuality,
-)
-from decimal import Decimal
-from datetime import datetime
-from typing import Any
 
 DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
 DEFAULT_GRID_AREA = "105"
@@ -46,8 +46,8 @@ TIME_ZONE = "Europe/Copenhagen"
 def enriched_time_series_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory() -> DataFrame:
         df = []
-        df.append(create_enriched_time_series_point(MeteringPointResolution.hour))
-        df.append(create_enriched_time_series_point(MeteringPointResolution.quarter))
+        df.append(_create_enriched_time_series_point(MeteringPointResolution.hour))
+        df.append(_create_enriched_time_series_point(MeteringPointResolution.quarter))
         return spark.createDataFrame(df)
 
     return factory
@@ -57,14 +57,14 @@ def enriched_time_series_factory(spark: SparkSession) -> Callable[..., DataFrame
 def metering_point_period_df_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory() -> DataFrame:
         df = []
-        df.append(create_metering_point_period(MeteringPointResolution.hour))
-        df.append(create_metering_point_period(MeteringPointResolution.quarter))
+        df.append(_create_metering_point_period(MeteringPointResolution.hour))
+        df.append(_create_metering_point_period(MeteringPointResolution.quarter))
         return spark.createDataFrame(df)
 
     return factory
 
 
-def create_enriched_time_series_point(
+def _create_enriched_time_series_point(
     resolution: MeteringPointResolution,
 ) -> dict[str, Any]:
     data = {
@@ -81,7 +81,7 @@ def create_enriched_time_series_point(
     return data
 
 
-def create_metering_point_period(
+def _create_metering_point_period(
     resolution: MeteringPointResolution,
 ) -> dict[str, Any]:
     data = {
@@ -100,47 +100,50 @@ def create_metering_point_period(
     return data
 
 
-def get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
+def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
     if calculation_filetype == CalculationFileType.MasterBasisDataForTotalGa:
-        return infra.get_master_basis_data_for_total_ga_relative_path(
-            DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
+        return infra.get_basis_data_path(
+            BasisDataType.MasterBasisData, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
     elif calculation_filetype == CalculationFileType.MasterBasisDataForEsPerGa:
-        return infra.get_master_basis_data_for_es_per_ga_relative_path(
-            DEFAULT_BATCH_ID, DEFAULT_GRID_AREA, DEFAULT_ENERGY_SUPPLIER
+        return infra.get_basis_data_path(
+            BasisDataType.MasterBasisData,
+            DEFAULT_BATCH_ID,
+            DEFAULT_GRID_AREA,
+            DEFAULT_ENERGY_SUPPLIER,
         )
     elif (
         calculation_filetype == CalculationFileType.TimeSeriesQuarterBasisDataForTotalGa
     ):
-        return infra.get_time_series_quarter_for_total_ga_relative_path(
-            DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
+        return infra.get_basis_data_path(
+            BasisDataType.TimeSeriesQuarter, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
     elif (
         calculation_filetype == CalculationFileType.TimeSeriesQuarterBasisDataForEsPerGa
     ):
-        return infra.get_time_series_quarter_for_es_per_ga_relative_path(
-            DEFAULT_BATCH_ID, DEFAULT_GRID_AREA, DEFAULT_ENERGY_SUPPLIER
+        return infra.get_basis_data_path(
+            BasisDataType.TimeSeriesQuarter,
+            DEFAULT_BATCH_ID,
+            DEFAULT_GRID_AREA,
+            DEFAULT_ENERGY_SUPPLIER,
         )
     elif calculation_filetype == CalculationFileType.TimeSeriesHourBasisData:
-        return infra.get_time_series_hour_for_total_ga_relative_path(
-            DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
+        return infra.get_basis_data_path(
+            BasisDataType.TimeSeriesHour, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
     elif calculation_filetype == CalculationFileType.TimeSeriesHourBasisDataForEsPerGa:
-        return infra.get_time_series_hour_for_es_per_ga_relative_path(
-            DEFAULT_BATCH_ID, DEFAULT_GRID_AREA, DEFAULT_ENERGY_SUPPLIER
+        return infra.get_basis_data_path(
+            BasisDataType.TimeSeriesHour,
+            DEFAULT_BATCH_ID,
+            DEFAULT_GRID_AREA,
+            DEFAULT_ENERGY_SUPPLIER,
         )
 
-    raise Exception(f"Unexpected CalculationFileType, {calculation_filetype}")
+    raise ValueError(f"Unexpected CalculationFileType, {calculation_filetype}")
 
 
-def test__write__filepath_matches_contract(
-    contracts_path: str,
-    tmpdir: Path,
-    metering_point_period_df_factory: Callable[..., DataFrame],
-    enriched_time_series_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
-    calculation_file_types = [
+def _get_all_basis_data_file_types() -> list[CalculationFileType]:
+    return [
         CalculationFileType.MasterBasisDataForEsPerGa,
         CalculationFileType.MasterBasisDataForTotalGa,
         CalculationFileType.TimeSeriesQuarterBasisDataForTotalGa,
@@ -148,6 +151,15 @@ def test__write__filepath_matches_contract(
         CalculationFileType.TimeSeriesHourBasisData,
         CalculationFileType.TimeSeriesHourBasisDataForEsPerGa,
     ]
+
+
+def test__write__writes_to_paths_that_match_contract(
+    contracts_path: str,
+    tmpdir: Path,
+    metering_point_period_df_factory: Callable[..., DataFrame],
+    enriched_time_series_factory: Callable[..., DataFrame],
+) -> None:
+    # Arrange
     metering_point_period_df = metering_point_period_df_factory()
     enriched_time_series = enriched_time_series_factory()
     sut = BasisDataWriter(str(tmpdir), DEFAULT_BATCH_ID)
@@ -162,14 +174,13 @@ def test__write__filepath_matches_contract(
     )
 
     # Assert
-    for file_type in calculation_file_types:
+    for file_type in _get_all_basis_data_file_types():
         actual_file_path = find_file(
             f"{str(tmpdir)}/",
-            f"{get_basis_data_paths(file_type)}/part-*.csv",
+            f"{_get_basis_data_paths(file_type)}/part-*.csv",
         )
         assert_file_path_match_contract(
             contracts_path,
             actual_file_path,
             file_type,
         )
-

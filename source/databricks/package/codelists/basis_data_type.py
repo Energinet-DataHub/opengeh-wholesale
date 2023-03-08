@@ -12,14 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .basis_data_type import BasisDataType
-from .charge_resolution import ChargeResolution
-from .time_series_quality import TimeSeriesQuality
-from .migrated_time_series_quality import MigratedTimeSeriesQuality
-from .metering_point_type import MeteringPointType
-from .settlement_method import SettlementMethod
-from .metering_point_resolution import MeteringPointResolution
-from .charge_type import ChargeType
-from .time_series_type import TimeSeriesType
-from .grouping import Grouping
-from .market_role import MarketRole
+from enum import Enum
+
+
+class BasisDataType(Enum):
+    TimeSeriesQuarter = "time_series_quarter"
+    TimeSeriesHour = "time_series_hour"
+    MasterBasisData = "master_basis_data"

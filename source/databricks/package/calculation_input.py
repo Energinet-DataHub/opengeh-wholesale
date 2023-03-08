@@ -91,5 +91,5 @@ def get_metering_point_periods_df(
             col(Colname.from_date),
         ),
     )
-    master_basis_data_df = spark
+
     return master_basis_data_df
