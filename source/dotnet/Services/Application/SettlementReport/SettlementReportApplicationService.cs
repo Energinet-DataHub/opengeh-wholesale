@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
@@ -24,7 +25,10 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
     private readonly ISettlementReportRepository _settlementReportRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public SettlementReportApplicationService(IBatchRepository batchRepository, ISettlementReportRepository settlementReportRepository, IUnitOfWork unitOfWork)
+    public SettlementReportApplicationService(
+        IBatchRepository batchRepository,
+        ISettlementReportRepository settlementReportRepository,
+        IUnitOfWork unitOfWork)
     {
         _batchRepository = batchRepository;
         _settlementReportRepository = settlementReportRepository;
@@ -46,8 +50,11 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
         return new SettlementReportDto(report.Stream);
     }
 
-    public Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId, string gridAreaCode)
+    public async Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream)
     {
-        return Task.FromResult(new SettlementReportDto(Stream.Null));
+        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
+        await _settlementReportRepository
+            .GetSettlementReportAsync(batch, new GridAreaCode(gridAreaCode), outputStream)
+            .ConfigureAwait(false);
     }
 }
