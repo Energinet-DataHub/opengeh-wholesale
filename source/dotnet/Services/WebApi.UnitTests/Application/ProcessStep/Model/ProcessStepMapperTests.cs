@@ -43,7 +43,7 @@ public class ProcessStepMapperTests
             processStepResult.Sum,
             processStepResult.Min,
             processStepResult.Max,
-            processStepResult.TimeSeriesPoints.Select(point => new TimeSeriesPointDto(point.Time, point.Quantity, point.Quality)).ToArray());
+            processStepResult.TimeSeriesPoints.Select(point => new TimeSeriesPointDto(point.Time, point.Quantity, point.Quality.ToString())).ToArray());
 
         // Act
         var actual = sut.MapToDto(processStepResult);
