@@ -122,10 +122,9 @@ public class ServiceCollectionConfigurator
                     .Setup(client => client.Uri)
                     .Returns(new Uri(uriString));
 
-                var memoryStream = new MemoryStream(basisDataBuffer);
                 dataLakeFileClientMock
                     .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()))
-                    .ReturnsAsync(memoryStream);
+                    .ReturnsAsync(() => new MemoryStream(basisDataBuffer));
             }
         }
 
@@ -133,6 +132,9 @@ public class ServiceCollectionConfigurator
         var zipFileClient = new Mock<DataLakeFileClient>();
         zipFileClient
             .Setup(client => client.OpenWriteAsync(false, null, default))
+            .ReturnsAsync(() => File.OpenWrite(_withBasisDataFilesForBatch.Value.ZipFileName));
+        zipFileClient
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => File.OpenWrite(_withBasisDataFilesForBatch.Value.ZipFileName));
         dataLakeFileSystemClientMock
             .Setup(client => client.GetFileClient(SettlementReportRepository.GetZipFileName(_withBasisDataFilesForBatch.Value.Batch)))
