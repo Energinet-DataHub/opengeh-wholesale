@@ -255,7 +255,7 @@ public class SettlementReportRepositoryTests
         // Arrange
         var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
         var quantity = 1.000m;
-        var quality = TimeSeriesPointQuality.Measured;
+        var quality = QuantityQuality.Measured;
 
         const string gridAreaCode = "805";
         var batchId = Guid.NewGuid();

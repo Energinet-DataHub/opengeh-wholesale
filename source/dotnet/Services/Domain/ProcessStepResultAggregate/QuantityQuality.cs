@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-public enum TimeSeriesPointQuality
+public enum QuantityQuality
 {
     Missing,
     Estimated,

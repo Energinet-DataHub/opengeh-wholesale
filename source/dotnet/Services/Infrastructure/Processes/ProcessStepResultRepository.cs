@@ -89,16 +89,15 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
     }
 
-    private static TimeSeriesPointQuality MapQuality(string pointQuality)
+    private static QuantityQuality MapQuality(string pointQuality)
     {
         return pointQuality switch
         {
-            "measured" => TimeSeriesPointQuality.Measured,
-            "calculated" => TimeSeriesPointQuality.Calculated,
-            "estimated" => TimeSeriesPointQuality.Estimated,
-            "incomplete" => TimeSeriesPointQuality.Incomplete,
-            "missing" => TimeSeriesPointQuality.Missing,
-            _ => throw new ArgumentException($"quality of unknown type:{pointQuality}"),
+            "measured" => QuantityQuality.Measured,
+            "calculated" => QuantityQuality.Calculated,
+            "estimated" => QuantityQuality.Estimated,
+            "Incomplete" => QuantityQuality.Incomplete,
+            _ =>throw new ArgumentException($"quality of unknown type:{pointQuality}"),
         };
     }
 }
