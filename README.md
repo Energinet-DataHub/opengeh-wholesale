@@ -16,6 +16,7 @@
     * [Databricks](#databricks)
     * [Test](#test)
     * [Where can I get more help?](#where-can-i-get-more-help)
+    * [Integrating](#integrating)
 
 ## Introduction
 
