@@ -97,7 +97,8 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
             "calculated" => TimeSeriesPointQuality.Calculated,
             "estimated" => TimeSeriesPointQuality.Estimated,
             "incomplete" => TimeSeriesPointQuality.Incomplete,
-            _ => TimeSeriesPointQuality.Missing,
+            "missing" => TimeSeriesPointQuality.Missing,
+            _ => throw ...,
         };
     }
 }
