@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 2.1.1
+
+A few fixes to the contract `CalculationResultCompleted`.
+
 ## Version 2.1.0
 
 Add integration event contract `CalculationResultCompleted`.
