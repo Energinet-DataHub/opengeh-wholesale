@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using System.Text;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
@@ -57,5 +58,36 @@ public sealed class SettlementReportTests : WebApiTestBase
 
         // assert
         actual.StatusCode.Should().Be(expectedHttpStatusCode);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_ReturnsExpectedContent(
+        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+    {
+        // arrange
+        const string gridAreaCode = "001";
+        var batchId = Guid.NewGuid();
+
+        var url = $"/v3/SettlementReport?batchId={batchId}&gridAreaCode={gridAreaCode}";
+
+        const string expectedContent = "F33B866D-D97A-42B3-9DFF-5BD1EC28885A";
+
+        settlementReportApplicationService
+            .Setup(service => service.GetSettlementReportAsync(batchId, gridAreaCode, It.IsAny<Stream>()))
+            .Callback<Guid, string, Stream>((_, _, outputStream) => outputStream.Write(Encoding.UTF8.GetBytes(expectedContent)));
+
+        Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
+
+        // act
+        var actual = await Client.GetAsync(url);
+
+        // assert
+        var actualStream = await actual.Content.ReadAsStreamAsync();
+        var actualBytes = new byte[actualStream.Length];
+        _ = await actualStream.ReadAsync(actualBytes);
+        var actualContent = Encoding.UTF8.GetString(actualBytes);
+
+        actualContent.Should().Be(expectedContent);
     }
 }
