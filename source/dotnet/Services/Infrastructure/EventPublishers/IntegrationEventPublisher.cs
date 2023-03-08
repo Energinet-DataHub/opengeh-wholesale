@@ -50,14 +50,13 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
-    public Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
+    public async Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
     {
-        throw new NotImplementedException();
-        // var integrationEvent =
-        //     _calculationResultReadyIntegrationEventMapper.MapFrom(processStepResultDto, processCompletedEventDto);
-        // var messageType = "CalculationResultReady";
-        // var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
-        // await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
+        var integrationEvent =
+            _calculationResultReadyIntegrationEventMapper.MapFrom(processStepResultDto, processCompletedEventDto);
+        var messageType = "CalculationResultReady"; // TODO: What should the message name be?
+        var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
+        await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
     private string GetMessageType(ProcessType processType) =>

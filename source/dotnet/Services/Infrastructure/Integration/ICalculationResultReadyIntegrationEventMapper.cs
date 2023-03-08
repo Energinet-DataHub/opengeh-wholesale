@@ -20,5 +20,5 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
 public interface ICalculationResultReadyIntegrationEventMapper
 {
-    // CalculationResultCompleted MapFrom(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto);
+    CalculationResultCompleted MapFrom(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto);
 }

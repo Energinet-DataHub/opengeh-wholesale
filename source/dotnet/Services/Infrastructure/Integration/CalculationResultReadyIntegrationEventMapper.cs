@@ -13,34 +13,51 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Google.Protobuf.WellKnownTypes;
+using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
 public class CalculationResultReadyIntegrationEventMapper : ICalculationResultReadyIntegrationEventMapper
 {
-    public ProcessStepResult MapFrom(
+    public CalculationResultCompleted MapFrom(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto)
     {
-        // var calculationResultCompleted = new CalculationResultCompleted()
-        // {
-        //     BatchId = processCompletedEventDto.BatchId.ToString(),
-        //     Resolution = Resolution.Quarter,
-        //     ProcessType = MapProcessType(processCompletedEventDto.ProcessType),
-        //     QuantityUnit = QuantityUnit.Kwh,
-        //     AggregationPerGridarea = new AggregationPerGridArea
-        //     {
-        //         GridAreaCode = processCompletedEventDto.GridAreaCode,
-        //     },
-        //     PeriodStartUtc = processCompletedEventDto.PeriodStart.ToTimestamp(),
-        //     PeriodEndUtc = processCompletedEventDto.PeriodEnd.ToTimestamp(),
-        //     TimeSeriesType = Contracts.Events.TimeSeriesType.Production,
-        // };
-        // calculationResultCompleted.TimeSeriesPoints
-        //     .AddRange(processStepResultDto.TimeSeriesPoints
-        //         .Select(x => new TimeSeriesPoint { Quantity = new DecimalValue { Units = (long)x.Quantity }, Time = x.Time.ToTimestamp() })); // How to set DecimalValue correctly? I Dont understand how to use QuantityQuality
-        // return calculationResultCompleted;
+        var calculationResultCompleted = new CalculationResultCompleted()
+        {
+            BatchId = processCompletedEventDto.BatchId.ToString(),
+            Resolution = Resolution.Quarter,
+            ProcessType = MapProcessType(processCompletedEventDto.ProcessType),
+            QuantityUnit = QuantityUnit.Kwh,
+            AggregationPerGridarea = new AggregationPerGridArea
+            {
+                GridAreaCode = processCompletedEventDto.GridAreaCode,
+            },
+            PeriodStartUtc = processCompletedEventDto.PeriodStart.ToTimestamp(),
+            PeriodEndUtc = processCompletedEventDto.PeriodEnd.ToTimestamp(),
+            TimeSeriesType = Contracts.Events.TimeSeriesType.Production,
+        };
+        calculationResultCompleted.TimeSeriesPoints
+            .AddRange(processStepResultDto.TimeSeriesPoints
+                .Select(x => new TimeSeriesPoint { Quantity = new DecimalValue(), Time = x.Time.ToTimestamp(), QuantityQuality = MapQuantityQuality(x.Quality) }));
+        return calculationResultCompleted;
+    }
+
+    private QuantityQuality MapQuantityQuality(string quality)
+    {
         throw new NotImplementedException();
+    }
+
+    private ProcessType MapProcessType(Contracts.ProcessType processType)
+    {
+        return processType switch
+        {
+            Contracts.ProcessType.Aggregation => ProcessType.Aggregation,
+            Contracts.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            _ => ProcessType.Unspecified,
+        };
     }
 }
