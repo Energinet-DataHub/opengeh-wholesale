@@ -45,7 +45,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
     {
         var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEvent);
-        var messageType = GetMessageType(processCompletedEvent.ProcessType);
+        var messageType = GetMessageTypeForProcessCompletedEvent(processCompletedEvent.ProcessType);
         var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
@@ -54,16 +54,24 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     {
         var integrationEvent =
             _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResultDto, processCompletedEventDto);
-        var messageType = "CalculationResultReady"; // TODO: What should the message name be?
+        var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
         var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
-    private string GetMessageType(ProcessType processType) =>
+    private string GetMessageTypeForProcessCompletedEvent(ProcessType processType) =>
         processType switch
         {
             ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
             ProcessType.Aggregation => ProcessCompleted.AggregationProcessType,
+            _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
+        };
+
+    private string GetMessageTypeForCalculationResultCompletedEvent(ProcessType processType) =>
+        processType switch
+        {
+            ProcessType.BalanceFixing => CalculationResultCompleted.BalanceFixingProcessType,
+            ProcessType.Aggregation => CalculationResultCompleted.AggregationProcessType,
             _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
         };
 }
