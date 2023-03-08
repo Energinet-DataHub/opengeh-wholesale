@@ -23,7 +23,7 @@ using Google.Protobuf;
 using Moq;
 using NodaTime;
 using Xunit;
-using C =Energinet.DataHub.Wholesale.Contracts;
+using ProcessType = Energinet.DataHub.Wholesale.Contracts.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 
@@ -37,15 +37,14 @@ public class ProcessCompletedIntegrationEventPublisherTests
         ProcessCompleted processCompleted,
         ProcessCompletedEventDto eventDto,
         Mock<IServiceBusMessageFactory> factoryMock,
-        Mock<IProcessCompletedIntegrationEventMapper> mapperMock,
-        Mock<ICalculationResultReadyIntegrationEventMapper> calculationResultMapperMock)
+        Mock<IProcessCompletedIntegrationEventMapper> mapperMock)
     {
         // Arrange
         var senderMock = new Mock<IIntegrationEventTopicServiceBusSender>();
         mapperMock
             .Setup(mapper => mapper.MapFrom(eventDto))
             .Returns(processCompleted);
-        var sut = new IntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object, calculationResultMapperMock.Object);
+        var sut = new ProcessCompletedIntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object);
 
         // Act
         await sut.PublishAsync(eventDto);
@@ -57,14 +56,13 @@ public class ProcessCompletedIntegrationEventPublisherTests
     }
 
     [Theory]
-    [InlineAutoMoqData(C.ProcessType.BalanceFixing, ProcessCompleted.BalanceFixingProcessType)]
+    [InlineAutoMoqData(ProcessType.BalanceFixing, ProcessCompleted.BalanceFixingProcessType)]
     public async Task PublishAsync_PublishesWithCorrectMessageType(
-        C.ProcessType processType,
+        ProcessType processType,
         string expectedMessageType,
         ProcessCompleted processCompleted,
         Mock<IServiceBusMessageFactory> factoryMock,
-        Mock<IProcessCompletedIntegrationEventMapper> mapperMock,
-        Mock<ICalculationResultReadyIntegrationEventMapper> calculationResultMapperMock)
+        Mock<IProcessCompletedIntegrationEventMapper> mapperMock)
     {
         // Arrange
         var eventDto = CreateProcessCompletedEventDto(processType);
@@ -78,7 +76,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
             {
                 ApplicationProperties = { { MessageMetaDataConstants.MessageType, expectedMessageType } },
             });
-        var sut = new IntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object, calculationResultMapperMock.Object);
+        var sut = new ProcessCompletedIntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object);
 
         // Act
         await sut.PublishAsync(eventDto);
@@ -91,7 +89,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
             Times.Once);
     }
 
-    private static ProcessCompletedEventDto CreateProcessCompletedEventDto(C.ProcessType processType)
+    private static ProcessCompletedEventDto CreateProcessCompletedEventDto(ProcessType processType)
     {
         return new ProcessCompletedEventDto(
             "some-grid-area",

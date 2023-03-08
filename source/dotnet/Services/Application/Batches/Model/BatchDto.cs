@@ -30,4 +30,5 @@ public sealed record BatchDto(
     DateTimeOffset? ExecutionTimeEnd,
     BatchState ExecutionState,
     bool AreSettlementReportsCreated,
-    string[] GridAreaCodes);
+    string[] GridAreaCodes,
+    ProcessType ProcessType);

@@ -36,7 +36,7 @@ limitations under the License.
 
   <PropertyGroup>
       <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-      <PackageVersion>2.0.13$(VersionSuffix)</PackageVersion>
+      <PackageVersion>2.1.0$(VersionSuffix)</PackageVersion>
       <Title>Wholesale Contracts</Title>
       <Company>Energinet-DataHub</Company>
       <Authors>Energinet-DataHub</Authors>
@@ -78,11 +78,6 @@ limitations under the License.
       <Compile Include="..\..\Contracts\ProcessCompleted.cs">
         <Link>ProcessCompleted.cs</Link>
       </Compile>
-    </ItemGroup>
-    <ItemGroup>
-      <Content Include="..\..\Contracts\ProcessCompleted.proto">
-        <Link>ProcessCompleted.proto</Link>
-      </Content>
     </ItemGroup>
 
   <ItemGroup>
