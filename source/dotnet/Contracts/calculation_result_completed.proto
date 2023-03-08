@@ -165,8 +165,11 @@ message TimeSeriesPoint {
   // The start of the time interval where the energy was produces/consumed.
   google.protobuf.Timestamp time = 1;
 
-  // 3 digit scale decimal value of the energy quantity.
-  DecimalValue quantity = 2;
+  /*
+   * 3 digit scale decimal value of the energy quantity.
+   * Value is only set when quality is not set to missing.
+   */
+  optional DecimalValue quantity = 2;
 
   // The aggregated quality currently represents a value suitable for creation of RSM-014 CIM XML messages.
   QuantityQuality quantity_quality = 3;
@@ -181,7 +184,7 @@ enum QuantityQuality {
    * Read more at https://protobuf.dev/programming-guides/style/#enums.
    */
   QUANTITY_QUALITY_UNSPECIFIED = 0;
-  QUANTITY_QUALITY_READ = 1;
+  QUANTITY_QUALITY_ESTIMATED = 1;
   QUANTITY_QUALITY_MEASURED = 2;
   QUANTITY_QUALITY_MISSING = 3;
   QUANTITY_QUALITY_INCOMPLETE = 4;
