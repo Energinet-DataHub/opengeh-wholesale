@@ -66,7 +66,7 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         {
             Domain.ProcessStepResultAggregate.QuantityQuality.Calculated => QuantityQuality.Read, // ?
             Domain.ProcessStepResultAggregate.QuantityQuality.Estimated => QuantityQuality.Read, // ?
-            Domain.ProcessStepResultAggregate.QuantityQuality.Incomplete => QuantityQuality.Read, // ?
+            Domain.ProcessStepResultAggregate.QuantityQuality.Incomplete => QuantityQuality.Incomplete, // ?
             Domain.ProcessStepResultAggregate.QuantityQuality.Measured => QuantityQuality.Measured,
             Domain.ProcessStepResultAggregate.QuantityQuality.Missing => QuantityQuality.Missing,
             _ => throw new ArgumentException(),
