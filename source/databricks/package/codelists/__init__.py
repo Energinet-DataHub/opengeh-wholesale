@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from .basis_data_type import BasisDataType
 from .charge_resolution import ChargeResolution
 from .time_series_quality import TimeSeriesQuality
 from .migrated_time_series_quality import MigratedTimeSeriesQuality

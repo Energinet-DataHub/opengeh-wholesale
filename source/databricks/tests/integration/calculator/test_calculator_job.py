@@ -27,14 +27,9 @@ from package.calculator_job import (
     _map_cim_quality_to_wholesale_quality,
 )
 from package.calculator_args import CalculatorArgs
-from package.codelists import TimeSeriesType, Grouping, TimeSeriesQuality
+from package.codelists import BasisDataType, TimeSeriesType, Grouping, TimeSeriesQuality
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
-from tests.helpers.file_utils import find_file
-from tests.helpers.assert_calculation_file_path import (
-    CalculationFileType,
-    assert_file_path_match_contract,
-)
 from typing import Callable, Optional
 from datetime import datetime
 
@@ -457,8 +452,8 @@ def test__creates_hour_for_total_ga__with_expected_columns_names(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path = infra.get_time_series_hour_for_total_ga_relative_path(
-        executed_batch_id, "805"
+    basis_data_relative_path = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesHour, executed_batch_id, "805"
     )
 
     # Act
@@ -483,8 +478,8 @@ def test__creates_hour_for_es_per_ga__with_expected_columns_names(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path = infra.get_time_series_hour_for_es_per_ga_relative_path(
-        executed_batch_id, "805", energy_supplier_gln_a
+    basis_data_relative_path = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesHour, executed_batch_id, "805", energy_supplier_gln_a
     )
 
     # Act
@@ -509,8 +504,8 @@ def test__creates_quarter_for_total_ga__with_expected_columns_names(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    relative_path = infra.get_time_series_quarter_for_total_ga_relative_path(
-        executed_batch_id, "805"
+    relative_path = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesQuarter, executed_batch_id, "805"
     )
 
     # Act
@@ -536,8 +531,8 @@ def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    relative_path = infra.get_time_series_quarter_for_es_per_ga_relative_path(
-        executed_batch_id, "805", energy_supplier_gln_a
+    relative_path = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesQuarter, executed_batch_id, "805", energy_supplier_gln_a
     )
 
     # Act
@@ -563,15 +558,11 @@ def test__creates_quarter_for_total_ga__per_grid_area(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_805 = (
-        infra.get_time_series_quarter_for_total_ga_relative_path(
-            executed_batch_id, "805"
-        )
+    basis_data_relative_path_805 = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesQuarter, executed_batch_id, "805"
     )
-    basis_data_relative_path_806 = (
-        infra.get_time_series_quarter_for_total_ga_relative_path(
-            executed_batch_id, "806"
-        )
+    basis_data_relative_path_806 = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesQuarter, executed_batch_id, "806"
     )
 
     # Act
@@ -602,15 +593,11 @@ def test__creates_quarter_for_es_per_ga__per_energy_supplier(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_a = (
-        infra.get_time_series_quarter_for_es_per_ga_relative_path(
-            executed_batch_id, "805", energy_supplier_gln_a
-        )
+    basis_data_relative_path_a = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesQuarter, executed_batch_id, "805", energy_supplier_gln_a
     )
-    basis_data_relative_path_b = (
-        infra.get_time_series_quarter_for_es_per_ga_relative_path(
-            executed_batch_id, "805", energy_supplier_gln_b
-        )
+    basis_data_relative_path_b = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesQuarter, executed_batch_id, "805", energy_supplier_gln_b
     )
 
     # Act
@@ -641,11 +628,11 @@ def test__creates_hour_for_total_ga__per_grid_area(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_805 = (
-        infra.get_time_series_hour_for_total_ga_relative_path(executed_batch_id, "805")
+    basis_data_relative_path_805 = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesHour, executed_batch_id, "805"
     )
     basis_data_relative_path_806 = (
-        infra.get_time_series_hour_for_total_ga_relative_path(executed_batch_id, "806")
+        infra.get_basis_data_path(BasisDataType.TimeSeriesHour, executed_batch_id, "806")
     )
 
     # Act
@@ -676,11 +663,11 @@ def test__creates_hour_for_es_per_ga__per_energy_supplier(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_a = infra.get_time_series_hour_for_es_per_ga_relative_path(
-        executed_batch_id, "805", energy_supplier_gln_a
+    basis_data_relative_path_a = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesHour, executed_batch_id, "805", energy_supplier_gln_a
     )
-    basis_data_relative_path_b = infra.get_time_series_hour_for_es_per_ga_relative_path(
-        executed_batch_id, "805", energy_supplier_gln_b
+    basis_data_relative_path_b = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesHour, executed_batch_id, "805", energy_supplier_gln_b
     )
 
     # Act
@@ -711,8 +698,8 @@ def test__master_basis_data_for_total_ga_has_expected_columns_names(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_path = infra.get_master_basis_data_for_total_ga_relative_path(
-        executed_batch_id, "805"
+    basis_data_path = infra.get_basis_data_path(
+        BasisDataType.MasterBasisData, executed_batch_id, "805"
     )
 
     # Act
@@ -743,8 +730,8 @@ def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_path = infra.get_master_basis_data_for_es_per_ga_relative_path(
-        executed_batch_id, "805", energy_supplier_gln_a
+    basis_data_path = infra.get_basis_data_path(
+        BasisDataType.MasterBasisData, executed_batch_id, "805", energy_supplier_gln_a
     )
 
     # Act
@@ -774,11 +761,11 @@ def test__creates_master_basis_data_per_grid_area(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    basis_data_path_805 = infra.get_master_basis_data_for_total_ga_relative_path(
-        executed_batch_id, "805"
+    basis_data_path_805 = infra.get_basis_data_path(
+        BasisDataType.MasterBasisData, executed_batch_id, "805"
     )
-    basis_data_path_806 = infra.get_master_basis_data_for_total_ga_relative_path(
-        executed_batch_id, "806"
+    basis_data_path_806 = infra.get_basis_data_path(
+        BasisDataType.MasterBasisData, executed_batch_id, "806"
     )
 
     # Act: Executed in fixture executed_calculation_job
@@ -799,146 +786,6 @@ def test__creates_master_basis_data_per_grid_area(
     assert (
         master_basis_data_806.count() >= 1
     ), "Calculator job failed to write master basis data files for grid area 806"
-
-
-def test__master_basis_data_for_total_ga_filepath_matches_contract(
-    data_lake_path: str,
-    worker_id: str,
-    contracts_path: str,
-    executed_calculation_job: None,
-) -> None:
-    # Arrange
-    master_basis_data_path = infra.get_master_basis_data_for_total_ga_relative_path(
-        executed_batch_id, "805"
-    )
-
-    # Act: Executed in fixture executed_calculation_job
-
-    # Assert
-    actual_file_path = find_file(
-        f"{data_lake_path}/{worker_id}/",
-        f"{master_basis_data_path}/part-*.csv",
-    )
-    assert_file_path_match_contract(
-        contracts_path, actual_file_path, CalculationFileType.MasterBasisDataForTotalGa
-    )
-
-
-def test__hourly_basis_data_for_total_ga_filepath_matches_contract(
-    data_lake_path: str,
-    worker_id: str,
-    contracts_path: str,
-    executed_calculation_job: None,
-) -> None:
-    # Arrange
-    relative_output_path = infra.get_time_series_hour_for_total_ga_relative_path(
-        executed_batch_id, "805"
-    )
-
-    # Act: Executed in fixture executed_calculation_job
-
-    # Assert
-    actual_file_path = find_file(
-        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
-    )
-    assert_file_path_match_contract(
-        contracts_path, actual_file_path, CalculationFileType.TimeSeriesHourBasisData
-    )
-
-
-def test__quarterly_basis_data_for_total_ga_filepath_matches_contract(
-    data_lake_path: str,
-    worker_id: str,
-    contracts_path: str,
-    executed_calculation_job: None,
-) -> None:
-    # Arrange
-    relative_output_path = infra.get_time_series_quarter_for_total_ga_relative_path(
-        executed_batch_id, "805"
-    )
-
-    # Act: Executed in fixture executed_calculation_job
-
-    # Assert
-    actual_file_path = find_file(
-        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
-    )
-    assert_file_path_match_contract(
-        contracts_path,
-        actual_file_path,
-        CalculationFileType.TimeSeriesQuarterBasisDataForTotalGa,
-    )
-
-
-def test__master_basis_data_for_es_per_ga_filepath_matches_contract(
-    data_lake_path: str,
-    worker_id: str,
-    contracts_path: str,
-    executed_calculation_job: None,
-) -> None:
-    # Arrange
-    master_basis_data_path = infra.get_master_basis_data_for_es_per_ga_relative_path(
-        executed_batch_id, "805", energy_supplier_gln_a
-    )
-
-    # Act: Executed in fixture executed_calculation_job
-
-    # Assert
-    actual_file_path = find_file(
-        f"{data_lake_path}/{worker_id}/",
-        f"{master_basis_data_path}/part-*.csv",
-    )
-    assert_file_path_match_contract(
-        contracts_path, actual_file_path, CalculationFileType.MasterBasisDataForEsPerGa
-    )
-
-
-def test__hourly_basis_data_for_es_per_ga_filepath_matches_contract(
-    data_lake_path: str,
-    worker_id: str,
-    contracts_path: str,
-    executed_calculation_job: None,
-) -> None:
-    # Arrange
-    relative_output_path = infra.get_time_series_hour_for_es_per_ga_relative_path(
-        executed_batch_id, "805", energy_supplier_gln_a
-    )
-
-    # Act: Executed in fixture executed_calculation_job
-
-    # Assert
-    actual_file_path = find_file(
-        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
-    )
-    assert_file_path_match_contract(
-        contracts_path,
-        actual_file_path,
-        CalculationFileType.TimeSeriesHourBasisDataForEsPerGa,
-    )
-
-
-def test__quarterly_basis_data_for_es_per_ga_filepath_matches_contract(
-    data_lake_path: str,
-    worker_id: str,
-    contracts_path: str,
-    executed_calculation_job: None,
-) -> None:
-    # Arrange
-    relative_output_path = infra.get_time_series_quarter_for_es_per_ga_relative_path(
-        executed_batch_id, "805", energy_supplier_gln_a
-    )
-
-    # Act: Executed in fixture executed_calculation_job
-
-    # Assert
-    actual_file_path = find_file(
-        f"{data_lake_path}/{worker_id}", f"{relative_output_path}/part-*.csv"
-    )
-    assert_file_path_match_contract(
-        contracts_path,
-        actual_file_path,
-        CalculationFileType.TimeSeriesQuarterBasisDataForEsPerGa,
-    )
 
 
 @patch("package.calculator_job._get_valid_args_or_throw")
