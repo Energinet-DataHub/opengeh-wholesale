@@ -16,9 +16,7 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Google.Protobuf.WellKnownTypes;
-using QuantityQuality = Energinet.DataHub.Wholesale.Contracts.Events.QuantityQuality;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
-using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
@@ -32,7 +30,7 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         {
             BatchId = processCompletedEventDto.BatchId.ToString(),
             Resolution = Resolution.Quarter,
-            ProcessType = MapProcessType(processCompletedEventDto.ProcessType),
+            ProcessType = ProcessTypeMapper.MapProcessType(processCompletedEventDto.ProcessType),
             QuantityUnit = QuantityUnit.Kwh,
             AggregationPerGridarea = new AggregationPerGridArea
             {
@@ -40,46 +38,18 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
             },
             PeriodStartUtc = processCompletedEventDto.PeriodStart.ToTimestamp(),
             PeriodEndUtc = processCompletedEventDto.PeriodEnd.ToTimestamp(),
-            TimeSeriesType = MapTimeSeriesType(processStepResultDto.TimeSeriesType),
+            TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(processStepResultDto.TimeSeriesType),
         };
+
         calculationResultCompleted.TimeSeriesPoints
             .AddRange(processStepResultDto.TimeSeriesPoints
-                .Select(x => new TimeSeriesPoint { Quantity = new DecimalValue(x.Quantity), Time = x.Time.ToTimestamp(), QuantityQuality = MapQuantityQuality(x.Quality) }));
+                .Select(x => new TimeSeriesPoint
+                {
+                    Quantity = new DecimalValue(x.Quantity),
+                    Time = x.Time.ToTimestamp(),
+                    QuantityQuality = QuantityQualityMapper.MapQuantityQuality(x.Quality),
+                }));
+
         return calculationResultCompleted;
-    }
-
-    private TimeSeriesType MapTimeSeriesType(Domain.ProcessStepResultAggregate.TimeSeriesType timeSeriesType)
-    {
-        return timeSeriesType switch
-        {
-            Domain.ProcessStepResultAggregate.TimeSeriesType.Production => TimeSeriesType.Production,
-            Domain.ProcessStepResultAggregate.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
-            Domain.ProcessStepResultAggregate.TimeSeriesType.NonProfiledConsumption => TimeSeriesType
-                .NonProfiledConsumption,
-            _ => throw new ArgumentException(),
-        };
-    }
-
-    private static QuantityQuality MapQuantityQuality(Domain.ProcessStepResultAggregate.QuantityQuality quantityQuality)
-    {
-        return quantityQuality switch
-        {
-            Domain.ProcessStepResultAggregate.QuantityQuality.Calculated => QuantityQuality.Read, // ?
-            Domain.ProcessStepResultAggregate.QuantityQuality.Estimated => QuantityQuality.Read, // ?
-            Domain.ProcessStepResultAggregate.QuantityQuality.Incomplete => QuantityQuality.Incomplete, // ?
-            Domain.ProcessStepResultAggregate.QuantityQuality.Measured => QuantityQuality.Measured,
-            Domain.ProcessStepResultAggregate.QuantityQuality.Missing => QuantityQuality.Missing,
-            _ => throw new ArgumentException(),
-        };
-    }
-
-    private static ProcessType MapProcessType(Contracts.ProcessType processType)
-    {
-        return processType switch
-        {
-            Contracts.ProcessType.Aggregation => ProcessType.Aggregation,
-            Contracts.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            _ => ProcessType.Unspecified,
-        };
     }
 }
