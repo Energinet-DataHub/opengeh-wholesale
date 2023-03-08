@@ -150,7 +150,10 @@ public class Batch
         ArgumentNullException.ThrowIfNull(calculationId);
         if (ExecutionState is BatchExecutionState.Submitted or BatchExecutionState.Pending
             or BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
+        {
             ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Submitted);
+        }
+
         CalculationId = calculationId;
         ExecutionState = BatchExecutionState.Submitted;
     }
