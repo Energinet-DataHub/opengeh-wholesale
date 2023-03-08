@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import DataFrame
+
 from pyspark.sql.functions import (
     col,
     when,
@@ -31,6 +32,7 @@ def get_metering_point_periods_df(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
+
     grid_area_df = grid_area_df.withColumnRenamed(Colname.grid_area, "ga_GridAreaCode")
     metering_points_in_grid_area = metering_points_periods_df.join(
         grid_area_df,
@@ -91,5 +93,4 @@ def get_metering_point_periods_df(
             col(Colname.from_date),
         ),
     )
-
     return master_basis_data_df
