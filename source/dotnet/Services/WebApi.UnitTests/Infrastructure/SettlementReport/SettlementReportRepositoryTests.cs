@@ -272,7 +272,7 @@ public class SettlementReportRepositoryTests
         var actual = await sut.GetResultAsync(
                 batchId,
                 gridAreaCode,
-                Contracts.TimeSeriesType.Production,
+                Energinet.DataHub.Wholesale.Contracts.TimeSeriesType.Production,
                 null,
                 null);
 
