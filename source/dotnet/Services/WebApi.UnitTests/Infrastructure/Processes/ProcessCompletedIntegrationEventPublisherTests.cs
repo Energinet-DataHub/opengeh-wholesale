@@ -37,14 +37,15 @@ public class ProcessCompletedIntegrationEventPublisherTests
         ProcessCompleted processCompleted,
         ProcessCompletedEventDto eventDto,
         Mock<IServiceBusMessageFactory> factoryMock,
-        Mock<IProcessCompletedIntegrationEventMapper> mapperMock)
+        Mock<IProcessCompletedIntegrationEventMapper> mapperMock,
+        Mock<ICalculationResultReadyIntegrationEventMapper> calculationResultMapperMock)
     {
         // Arrange
         var senderMock = new Mock<IIntegrationEventTopicServiceBusSender>();
         mapperMock
             .Setup(mapper => mapper.MapFrom(eventDto))
             .Returns(processCompleted);
-        var sut = new IntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object);
+        var sut = new IntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object, calculationResultMapperMock.Object);
 
         // Act
         await sut.PublishAsync(eventDto);
@@ -62,7 +63,8 @@ public class ProcessCompletedIntegrationEventPublisherTests
         string expectedMessageType,
         ProcessCompleted processCompleted,
         Mock<IServiceBusMessageFactory> factoryMock,
-        Mock<IProcessCompletedIntegrationEventMapper> mapperMock)
+        Mock<IProcessCompletedIntegrationEventMapper> mapperMock,
+        Mock<ICalculationResultReadyIntegrationEventMapper> calculationResultMapperMock)
     {
         // Arrange
         var eventDto = CreateProcessCompletedEventDto(processType);
@@ -76,7 +78,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
             {
                 ApplicationProperties = { { MessageMetaDataConstants.MessageType, expectedMessageType } },
             });
-        var sut = new IntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object);
+        var sut = new IntegrationEventPublisher(senderMock.Object, factoryMock.Object, mapperMock.Object, calculationResultMapperMock.Object);
 
         // Act
         await sut.PublishAsync(eventDto);

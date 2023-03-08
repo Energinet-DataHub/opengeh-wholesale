@@ -28,15 +28,18 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     private readonly IIntegrationEventTopicServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
+    private readonly ICalculationResultReadyIntegrationEventMapper _calculationResultReadyIntegrationEventMapper;
 
     public IntegrationEventPublisher(
         IIntegrationEventTopicServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory,
-        IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper)
+        IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper,
+        ICalculationResultReadyIntegrationEventMapper calculationResultReadyIntegrationEventMapper)
     {
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
         _processCompletedIntegrationEventMapper = processCompletedIntegrationEventMapper;
+        _calculationResultReadyIntegrationEventMapper = calculationResultReadyIntegrationEventMapper;
     }
 
     public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
@@ -49,18 +52,12 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
 
     public Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
     {
-        var integrationEvent = new CalculationResultCompleted()
-        {
-            BatchId = processCompletedEventDto.BatchId.ToString(),
-            Resolution = Resolution.Quarter,
-            ProcessType = ProcessType.Aggregation, //?
-            QuantityUnit = QuantityUnit.Kwh,
-            AggregationPerGridarea = new AggregationPerGridArea(), //?
-            PeriodStartUtc = processCompletedEventDto.PeriodStart.ToTimestamp(),
-            PeriodEndUtc = processCompletedEventDto.PeriodEnd.ToTimestamp(),
-            TimeSeriesType = TimeSeriesType.Production,
-        };
         throw new NotImplementedException();
+        // var integrationEvent =
+        //     _calculationResultReadyIntegrationEventMapper.MapFrom(processStepResultDto, processCompletedEventDto);
+        // var messageType = "CalculationResultReady";
+        // var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
+        // await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
     private string GetMessageType(ProcessType processType) =>
