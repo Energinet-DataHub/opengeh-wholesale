@@ -2,7 +2,7 @@
 
 ## Version 2.1.2
 
-Added `ProcessType` to `BatchDtoV2`
+No functional changes.
 
 ## Version 2.1.1
 
