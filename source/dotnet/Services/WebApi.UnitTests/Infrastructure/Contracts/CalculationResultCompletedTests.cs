@@ -53,7 +53,7 @@ public class CalculationResultCompletedTests
                     Nanos = 123456789,
                     Units = 123456,
                 },
-                // QuantityQuality = QuantityQuality.Measured,
+                 QuantityQuality = QuantityQuality.Measured,
             });
         }
 
