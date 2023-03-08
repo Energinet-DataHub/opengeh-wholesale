@@ -38,7 +38,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
         ProcessCompletedEventDto eventDto,
         Mock<IServiceBusMessageFactory> factoryMock,
         Mock<IProcessCompletedIntegrationEventMapper> mapperMock,
-        Mock<ICalculationResultReadyIntegrationEventMapper> calculationResultMapperMock)
+        Mock<ICalculationResultReadyIntegrationEventFactory> calculationResultMapperMock)
     {
         // Arrange
         var senderMock = new Mock<IIntegrationEventTopicServiceBusSender>();
@@ -64,7 +64,7 @@ public class ProcessCompletedIntegrationEventPublisherTests
         ProcessCompleted processCompleted,
         Mock<IServiceBusMessageFactory> factoryMock,
         Mock<IProcessCompletedIntegrationEventMapper> mapperMock,
-        Mock<ICalculationResultReadyIntegrationEventMapper> calculationResultMapperMock)
+        Mock<ICalculationResultReadyIntegrationEventFactory> calculationResultMapperMock)
     {
         // Arrange
         var eventDto = CreateProcessCompletedEventDto(processType);

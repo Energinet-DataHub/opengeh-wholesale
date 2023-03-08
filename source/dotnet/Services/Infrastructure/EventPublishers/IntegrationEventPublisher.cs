@@ -28,18 +28,18 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     private readonly IIntegrationEventTopicServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
-    private readonly ICalculationResultReadyIntegrationEventMapper _calculationResultReadyIntegrationEventMapper;
+    private readonly ICalculationResultReadyIntegrationEventFactory _calculationResultReadyIntegrationEventFactory;
 
     public IntegrationEventPublisher(
         IIntegrationEventTopicServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory,
         IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper,
-        ICalculationResultReadyIntegrationEventMapper calculationResultReadyIntegrationEventMapper)
+        ICalculationResultReadyIntegrationEventFactory calculationResultReadyIntegrationEventFactory)
     {
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
         _processCompletedIntegrationEventMapper = processCompletedIntegrationEventMapper;
-        _calculationResultReadyIntegrationEventMapper = calculationResultReadyIntegrationEventMapper;
+        _calculationResultReadyIntegrationEventFactory = calculationResultReadyIntegrationEventFactory;
     }
 
     public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
@@ -53,7 +53,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     public async Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
     {
         var integrationEvent =
-            _calculationResultReadyIntegrationEventMapper.MapFrom(processStepResultDto, processCompletedEventDto);
+            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResultDto, processCompletedEventDto);
         var messageType = "CalculationResultReady"; // TODO: What should the message name be?
         var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);

@@ -97,7 +97,7 @@ public static class Program
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
-        services.AddScoped<ICalculationResultReadyIntegrationEventMapper, CalculationResultReadyIntegrationEventMapper>();
+        services.AddScoped<ICalculationResultReadyIntegrationEventFactory, CalculationResultReadyIntegrationEventFactory>();
     }
 
     private static void Domains(IServiceCollection services)
