@@ -159,6 +159,9 @@ def test__write__writes_to_paths_that_match_contract(
     metering_point_period_df_factory: Callable[..., DataFrame],
     enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
+    """
+    This test calls 'write' once and then asserts on all file contracts. This is done to avoid multiple write operations, and thereby reduce execution time
+    """
     # Arrange
     metering_point_period_df = metering_point_period_df_factory()
     enriched_time_series = enriched_time_series_factory()
