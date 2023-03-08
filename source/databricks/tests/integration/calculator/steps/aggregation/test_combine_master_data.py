@@ -18,7 +18,6 @@ from package.steps.aggregation import (
     combine_added_system_correction_with_master_data,
     combine_added_grid_loss_with_master_data,
 )
-from package.shared.data_classes import Metadata
 from pyspark.sql.types import (
     StructType,
     StringType,
@@ -37,10 +36,6 @@ from package.constants import Colname, ResultKeyName
 @pytest.fixture(scope="module")
 def aggregation_result_factory(spark):
     def factory(
-        job_id=DataframeDefaults.default_job_id,
-        result_id=DataframeDefaults.default_result_id,
-        result_name=DataframeDefaults.default_result_name,
-        result_path=DataframeDefaults.default_result_path,
         grid_area=DataframeDefaults.default_grid_area,
         in_grid_area=None,
         out_grid_area=None,
@@ -59,10 +54,6 @@ def aggregation_result_factory(spark):
         pandas_df = pd.DataFrame().append(
             [
                 {
-                    Colname.job_id: job_id,
-                    Colname.result_id: result_id,
-                    Colname.result_name: result_name,
-                    Colname.result_path: result_path,
                     Colname.grid_area: grid_area,
                     Colname.in_grid_area: in_grid_area,
                     Colname.out_grid_area: out_grid_area,
@@ -213,7 +204,6 @@ def test_combine_added_system_correction_with_master_data(
     aggregation_result_factory,
     expected_combined_data_factory,
 ):
-    metadata = Metadata("1", "1", "1", "1")
     results = {}
     results[
         ResultKeyName.grid_loss_sys_cor_master_data
@@ -241,7 +231,7 @@ def test_combine_added_system_correction_with_master_data(
     )
     expected_combined_data_factory = expected_combined_data_factory()
 
-    result = combine_added_system_correction_with_master_data(results, metadata)
+    result = combine_added_system_correction_with_master_data(results)
 
     # expected data for combine_added_grid_loss_with_master_data is at index 1 in expected_combined_data_factory
     assert result.collect()[0] == expected_combined_data_factory.collect()[1]
@@ -252,7 +242,6 @@ def test_combine_added_grid_loss_with_master_data(
     aggregation_result_factory,
     expected_combined_data_factory,
 ):
-    metadata = Metadata("1", "1", "1", "1")
     results = {}
     results[
         ResultKeyName.grid_loss_sys_cor_master_data
@@ -278,7 +267,7 @@ def test_combine_added_grid_loss_with_master_data(
     results[ResultKeyName.added_grid_loss] = added_grid_loss_1.union(added_grid_loss_2)
     expected_combined_data_factory = expected_combined_data_factory()
 
-    result = combine_added_grid_loss_with_master_data(results, metadata)
+    result = combine_added_grid_loss_with_master_data(results)
 
     # expected data for combine_added_grid_loss_with_master_data is at index 0 in expected_combined_data_factory
     assert result.collect()[0] == expected_combined_data_factory.collect()[0]

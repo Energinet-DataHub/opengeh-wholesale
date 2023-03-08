@@ -23,4 +23,9 @@ public enum ProcessType
     /// Balance fixing
     /// </summary>
     BalanceFixing = 0,
+
+    /// <summary>
+    /// Aggregation.
+    /// </summary>
+    Aggregation = 1,
 }

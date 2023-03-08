@@ -21,4 +21,4 @@ namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 /// <param name="Time"></param>
 /// <param name="Quantity">In kWh.</param>
 /// <param name="Quality"></param>
-public sealed record TimeSeriesPoint(DateTimeOffset Time, decimal Quantity, string Quality);
+public sealed record TimeSeriesPoint(DateTimeOffset Time, decimal Quantity, QuantityQuality Quality);

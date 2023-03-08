@@ -22,6 +22,7 @@ public class ProcessTypeMapper : IProcessTypeMapper
         processType switch
         {
             Domain.ProcessAggregate.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            Domain.ProcessAggregate.ProcessType.Aggregation => ProcessType.Aggregation,
             _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
         };
 
@@ -29,6 +30,7 @@ public class ProcessTypeMapper : IProcessTypeMapper
         processType switch
         {
             ProcessType.BalanceFixing => Domain.ProcessAggregate.ProcessType.BalanceFixing,
+            ProcessType.Aggregation => Domain.ProcessAggregate.ProcessType.Aggregation,
             _ => throw new NotImplementedException($"Cannot map process type '{processType}'"),
         };
 }

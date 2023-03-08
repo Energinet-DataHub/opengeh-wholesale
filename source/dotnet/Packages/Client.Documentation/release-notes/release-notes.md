@@ -1,5 +1,17 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.16
+
+No functional changes
+
+## Version 5.0.15
+
+No functional changes
+
+## Version 5.0.14
+
+Added aggregation process type to contract.
+
 ## Version 5.0.13
 
 No functional changes

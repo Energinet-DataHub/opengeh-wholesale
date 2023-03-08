@@ -21,7 +21,6 @@ from package.codelists import (
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
-from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 import pytest
 import pandas as pd
@@ -32,10 +31,6 @@ from package.constants import Colname
 @pytest.fixture(scope="module")
 def aggregation_result_factory(spark):
     def factory(
-        job_id=DataframeDefaults.default_job_id,
-        result_id=DataframeDefaults.default_result_id,
-        result_name=DataframeDefaults.default_result_name,
-        result_path=DataframeDefaults.default_result_path,
         grid_area=DataframeDefaults.default_grid_area,
         in_grid_area=None,
         out_grid_area=None,
@@ -54,10 +49,6 @@ def aggregation_result_factory(spark):
         pandas_df = pd.DataFrame().append(
             [
                 {
-                    Colname.job_id: job_id,
-                    Colname.result_id: result_id,
-                    Colname.result_name: result_name,
-                    Colname.result_path: result_path,
                     Colname.grid_area: grid_area,
                     Colname.in_grid_area: in_grid_area,
                     Colname.out_grid_area: out_grid_area,
@@ -118,10 +109,9 @@ def test__create_dataframe_from_aggregation_result_schema__can_create_a_datafram
     agg_result_factory,
 ):
     # Arrange
-    metadata = Metadata("1", "1", "1", "1")
     result = agg_result_factory()
     # Act
-    actual = create_dataframe_from_aggregation_result_schema(metadata, result)
+    actual = create_dataframe_from_aggregation_result_schema(result)
     # Assert
     assert actual.schema == aggregation_result_schema
 
@@ -130,7 +120,6 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
     agg_result_factory, aggregation_result_factory
 ):
     # Arrange
-    metadata = Metadata("1", "1", "1", "1")
     result = agg_result_factory()
     expected = aggregation_result_factory(
         grid_area="A",
@@ -141,6 +130,6 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
         metering_point_type=MeteringPointType.consumption.value,
     )
     # Act
-    actual = create_dataframe_from_aggregation_result_schema(metadata, result)
+    actual = create_dataframe_from_aggregation_result_schema(result)
     # Assert
     assert actual.collect() == expected.collect()

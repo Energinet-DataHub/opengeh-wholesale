@@ -21,7 +21,6 @@ from package.steps.aggregation import (
     aggregate_net_exchange_per_neighbour_ga,
 )
 from package.codelists import MeteringPointType, TimeSeriesQuality
-from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 
@@ -33,7 +32,6 @@ default_obs_time = datetime.strptime(
 )
 numberOfTestHours = 24
 estimated_quality = TimeSeriesQuality.estimated.value
-metadata = Metadata("1", "1", "1", "1")
 
 df_template = {
     Colname.grid_area: [],
@@ -166,7 +164,7 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
 def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_hour_test_data):
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = single_hour_test_data
-    df = aggregate_net_exchange_per_neighbour_ga(results, metadata).orderBy(
+    df = aggregate_net_exchange_per_neighbour_ga(results).orderBy(
         Colname.in_grid_area, Colname.out_grid_area, Colname.time_window
     )
     values = df.collect()
@@ -183,7 +181,7 @@ def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_hour_test_da
 def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_hour_test_data):
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = multi_hour_test_data
-    df = aggregate_net_exchange_per_neighbour_ga(results, metadata).orderBy(
+    df = aggregate_net_exchange_per_neighbour_ga(results).orderBy(
         Colname.in_grid_area, Colname.out_grid_area, Colname.time_window
     )
     values = df.collect()
@@ -223,7 +221,7 @@ def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_hour_test_data
 def test_expected_schema(single_hour_test_data):
     results = {}
     results[ResultKeyName.aggregation_base_dataframe] = single_hour_test_data
-    df = aggregate_net_exchange_per_neighbour_ga(results, metadata).orderBy(
+    df = aggregate_net_exchange_per_neighbour_ga(results).orderBy(
         Colname.in_grid_area, Colname.out_grid_area, Colname.time_window
     )
     assert df.schema == aggregation_result_schema

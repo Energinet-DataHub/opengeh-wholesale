@@ -14,19 +14,19 @@
 
 from datetime import datetime
 from pyspark.sql import DataFrame
+from pyspark.sql.functions import col
 
 import package.basis_data as basis_data
 import package.infrastructure as infra
-from package.constants import PartitionKeyName
-from package.constants import Colname
-from package.codelists import Grouping
+from package.constants import PartitionKeyName, BasisDataColname
+from package.codelists import Grouping, BasisDataType
 
 
 class BasisDataWriter:
     def __init__(self, container_path: str, batch_id: str):
-        self.__output_path = (
-            f"{container_path}/{infra.get_batch_relative_path(batch_id)}"
-        )
+        self.__master_basis_data_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.MasterBasisData, batch_id)}"
+        self.__time_series_quarter_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.TimeSeriesQuarter, batch_id)}"
+        self.__time_series_hour_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.TimeSeriesHour, batch_id)}"
 
     def write(
         self,
@@ -55,94 +55,103 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
-        basis_data_directory = f"{self.__output_path}/basis_data"
-
-        self._write_ga_basis_data_to_csv(
+        self._write_ga_basis_data(
             master_basis_data_df,
             timeseries_quarter_df,
             timeseries_hour_df,
-            basis_data_directory,
         )
-        self._write_es_basis_data_to_csv(
+        self._write_es_basis_data(
             master_basis_data_df,
             timeseries_quarter_df,
             timeseries_hour_df,
-            basis_data_directory,
         )
 
-    def _write_ga_basis_data_to_csv(
+    def _write_ga_basis_data(
         self,
         master_basis_data_df: DataFrame,
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
-        basis_data_directory: str,
     ) -> None:
-        partition_keys = [PartitionKeyName.GRID_AREA]
         grouping_folder_name = f"grouping={Grouping.total_ga}"
 
-        timeseries_quarter_df = timeseries_quarter_df.drop(Colname.energy_supplier_id)
-        timeseries_hour_df = timeseries_hour_df.drop(Colname.energy_supplier_id)
+        partition_keys = [PartitionKeyName.GRID_AREA]
+        timeseries_quarter_df = timeseries_quarter_df.drop(
+            BasisDataColname.energy_supplier_id
+        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
+        timeseries_hour_df = timeseries_hour_df.drop(
+            BasisDataColname.energy_supplier_id
+        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
+        master_basis_data_df = master_basis_data_df.withColumn(
+            PartitionKeyName.GRID_AREA, col(BasisDataColname.grid_area)
+        )
 
         self._write_basis_data_to_csv(
-            f"{basis_data_directory}/time_series_quarter/{grouping_folder_name}",
-            timeseries_quarter_df,
-            partition_keys,
-        )
-        self._write_basis_data_to_csv(
-            f"{basis_data_directory}/time_series_hour/{grouping_folder_name}",
-            timeseries_hour_df,
-            partition_keys,
-        )
-        self._write_basis_data_to_csv(
-            f"{basis_data_directory}/master_basis_data/{grouping_folder_name}",
             master_basis_data_df,
+            timeseries_quarter_df,
+            timeseries_hour_df,
+            grouping_folder_name,
             partition_keys,
         )
 
-    def _write_es_basis_data_to_csv(
+    def _write_es_basis_data(
         self,
         master_basis_data_df: DataFrame,
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
-        basis_data_directory: str,
     ) -> None:
+        grouping_folder_name = f"grouping={Grouping.es_per_ga}"
+
         partition_keys = [
             PartitionKeyName.GRID_AREA,
             PartitionKeyName.ENERGY_SUPPLIER_GLN,
         ]
-        grouping_folder_name = f"grouping={Grouping.es_per_ga}"
 
         timeseries_quarter_df = timeseries_quarter_df.withColumnRenamed(
-            Colname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        )
+            BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
+        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
         timeseries_hour_df = timeseries_hour_df.withColumnRenamed(
-            Colname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        )
+            BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
+        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
         master_basis_data_df = master_basis_data_df.withColumnRenamed(
-            Colname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        )
+            BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
+        ).withColumn(PartitionKeyName.GRID_AREA, col(BasisDataColname.grid_area))
 
         self._write_basis_data_to_csv(
-            f"{basis_data_directory}/time_series_quarter/{grouping_folder_name}",
-            timeseries_quarter_df,
-            partition_keys,
-        )
-        self._write_basis_data_to_csv(
-            f"{basis_data_directory}/time_series_hour/{grouping_folder_name}",
-            timeseries_hour_df,
-            partition_keys,
-        )
-        self._write_basis_data_to_csv(
-            f"{basis_data_directory}/master_basis_data/{grouping_folder_name}",
             master_basis_data_df,
+            timeseries_quarter_df,
+            timeseries_hour_df,
+            grouping_folder_name,
             partition_keys,
         )
 
     def _write_basis_data_to_csv(
+        self,
+        master_basis_data_df: DataFrame,
+        timeseries_quarter_df: DataFrame,
+        timeseries_hour_df: DataFrame,
+        grouping_folder_name: str,
+        partition_keys: list[str],
+    ) -> None:
+        self._write_df_to_csv(
+            f"{self.__time_series_quarter_path}/{grouping_folder_name}",
+            timeseries_quarter_df,
+            partition_keys,
+        )
+
+        self._write_df_to_csv(
+            f"{self.__time_series_hour_path}/{grouping_folder_name}",
+            timeseries_hour_df,
+            partition_keys,
+        )
+        self._write_df_to_csv(
+            f"{self.__master_basis_data_path}/{grouping_folder_name}",
+            master_basis_data_df,
+            partition_keys,
+        )
+
+    def _write_df_to_csv(
         self, path: str, df: DataFrame, partition_keys: list[str]
     ) -> None:
-        df = df.withColumnRenamed("GridAreaCode", PartitionKeyName.GRID_AREA)
-
         df.repartition(PartitionKeyName.GRID_AREA).write.mode("overwrite").partitionBy(
             partition_keys
         ).option("header", True).csv(path)

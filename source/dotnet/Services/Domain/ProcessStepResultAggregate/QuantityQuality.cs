@@ -12,20 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-/// <summary>
-/// Defines the wholesale process type
-/// </summary>
-public enum ProcessType
+public enum QuantityQuality
 {
-    /// <summary>
-    /// Balance fixing
-    /// </summary>
-    BalanceFixing,
-
-    /// <summary>
-    /// Aggregation.
-    /// </summary>
-    Aggregation,
+    Missing,
+    Estimated,
+    Measured,
+    Incomplete,
+    Calculated,
 }

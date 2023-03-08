@@ -23,7 +23,6 @@ from package.steps.aggregation import (
     aggregate_non_profiled_consumption_ga_brp,
     aggregate_non_profiled_consumption_ga,
 )
-from package.shared.data_classes import Metadata
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
@@ -38,8 +37,6 @@ date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
-
-metadata = Metadata("1", "1", "1", "1")
 
 
 @pytest.fixture(scope="module")
@@ -142,11 +139,9 @@ def agg_result_factory(
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_time_window(
     agg_result_factory: Callable[..., DataFrame],
 ) -> None:
-    consumption = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory()
-    )
+    consumption = create_dataframe_from_aggregation_result_schema(agg_result_factory())
 
-    aggregated_df = aggregate_non_profiled_consumption_ga(consumption, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
         Colname.grid_area, Colname.time_window
     )
 
@@ -164,11 +159,9 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_different_time_window(
     agg_result_factory: Callable[..., DataFrame],
 ) -> None:
-    consumption = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory()
-    )
+    consumption = create_dataframe_from_aggregation_result_schema(agg_result_factory())
 
-    aggregated_df = aggregate_non_profiled_consumption_ga(consumption, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
         Colname.grid_area, Colname.time_window
     )
 
@@ -186,11 +179,9 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_differe
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_time_window_as_other_grid_area(
     agg_result_factory: Callable[..., DataFrame],
 ) -> None:
-    consumption = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory()
-    )
+    consumption = create_dataframe_from_aggregation_result_schema(agg_result_factory())
 
-    aggregated_df = aggregate_non_profiled_consumption_ga(consumption, metadata).sort(
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
         Colname.grid_area, Colname.time_window
     )
 
@@ -208,12 +199,10 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_ti
 def test_non_profiled_consumption_calculation_per_ga_and_es(
     agg_result_factory: Callable[..., DataFrame]
 ) -> None:
-    consumption = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory()
+    consumption = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    aggregated_df = aggregate_non_profiled_consumption_ga_es(consumption).sort(
+        Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
     )
-    aggregated_df = aggregate_non_profiled_consumption_ga_es(
-        consumption, metadata
-    ).sort(Colname.grid_area, Colname.energy_supplier_id, Colname.time_window)
     aggregated_df_collect = aggregated_df.collect()
     assert aggregated_df_collect[0][Colname.balance_responsible_id] is None
     assert aggregated_df_collect[0][Colname.grid_area] == "1"
@@ -230,10 +219,10 @@ def test_non_profiled_consumption_calculation_per_ga_and_brp(
     agg_result_factory: Callable[..., DataFrame],
 ) -> None:
     non_profiled_consumption = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory()
+        agg_result_factory()
     )
     aggregated_df = aggregate_non_profiled_consumption_ga_brp(
-        non_profiled_consumption, metadata
+        non_profiled_consumption
     ).sort(Colname.grid_area, Colname.balance_responsible_id, Colname.time_window)
     aggregated_df_collect = aggregated_df.collect()
     assert aggregated_df_collect[0][Colname.energy_supplier_id] is None
@@ -248,10 +237,8 @@ def test_non_profiled_consumption_calculation_per_ga_and_brp(
 def test_non_profiled_consumption_calculation_per_ga(
     agg_result_factory: Callable[..., DataFrame]
 ) -> None:
-    consumption = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory()
-    )
-    aggregated_df = aggregate_non_profiled_consumption_ga(consumption, metadata).sort(
+    consumption = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
         Colname.grid_area, Colname.time_window
     )
     aggregated_df_collect = aggregated_df.collect()

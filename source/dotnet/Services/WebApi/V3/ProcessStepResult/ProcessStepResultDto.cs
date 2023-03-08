@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Contracts;
+
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
 /// <summary>
@@ -25,6 +27,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 /// <param name="Resolution"></param>
 /// <param name="Unit">kWh</param>
 /// <param name="TimeSeriesPoints"></param>
+/// <param name="ProcessType"></param>
 public sealed record ProcessStepResultDto(
     decimal Sum,
     decimal Min,
@@ -33,4 +36,5 @@ public sealed record ProcessStepResultDto(
     DateTimeOffset PeriodEnd,
     string Resolution,
     string Unit,
-    TimeSeriesPointDto[] TimeSeriesPoints);
+    TimeSeriesPointDto[] TimeSeriesPoints,
+    ProcessType ProcessType);

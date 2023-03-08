@@ -19,7 +19,6 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.steps.aggregation import calculate_added_system_correction
-from package.shared.data_classes import Metadata
 from package.schemas.output import aggregation_result_schema
 from package.steps.aggregation.aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
@@ -112,12 +111,11 @@ def agg_result_factory(spark, grid_loss_schema):
 
 
 def call_calculate_added_system_correction(agg_result_factory) -> DataFrame:
-    metadata = Metadata("1", "1", "1", "1")
     results = {}
     results[ResultKeyName.grid_loss] = create_dataframe_from_aggregation_result_schema(
-        metadata, agg_result_factory()
+        agg_result_factory()
     )
-    return calculate_added_system_correction(results, metadata)
+    return calculate_added_system_correction(results)
 
 
 def test_added_system_correction_has_no_values_below_zero(agg_result_factory):
@@ -145,6 +143,5 @@ def test_added_system_correction_values_that_are_zero_stay_zero(agg_result_facto
 
 
 def test_returns_correct_schema(agg_result_factory):
-
     result = call_calculate_added_system_correction(agg_result_factory)
     assert result.schema == aggregation_result_schema

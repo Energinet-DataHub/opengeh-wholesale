@@ -69,10 +69,10 @@ public class ActorRepository : IActorRepository
         TimeSeriesType timeSeriesType)
     {
         var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType);
-        var dataLakeFileClient =
-            await _dataLakeClient.GetDataLakeFileClientAsync(directory, extension).ConfigureAwait(false);
 
-        var resultStream = await dataLakeFileClient.OpenReadAsync(false).ConfigureAwait(false);
+        var resultStream =
+            await _dataLakeClient.FindAndOpenFileAsync(directory, extension).ConfigureAwait(false);
+
         return await _jsonNewlineSerializer.DeserializeAsync<ActorRelation>(resultStream).ConfigureAwait(false);
     }
 }
