@@ -17,7 +17,7 @@ using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Contract;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Contracts;
 
 public class CalculationResultCompletedTests
 {
@@ -53,7 +53,7 @@ public class CalculationResultCompletedTests
                     Nanos = 123456789,
                     Units = 123456,
                 },
-                QuantityQualities = { QuantityQuality.Measured },
+                QuantityQuality = QuantityQuality.Measured,
             });
         }
 
