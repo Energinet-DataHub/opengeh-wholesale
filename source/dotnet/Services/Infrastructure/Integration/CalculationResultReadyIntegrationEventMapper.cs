@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Google.Protobuf.WellKnownTypes;
+using QuantityQuality = Energinet.DataHub.Wholesale.Contracts.Events.QuantityQuality;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
@@ -26,7 +27,7 @@ public class CalculationResultReadyIntegrationEventMapper : ICalculationResultRe
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto)
     {
-        var calculationResultCompleted = new CalculationResultCompleted()
+        var calculationResultCompleted = new CalculationResultCompleted
         {
             BatchId = processCompletedEventDto.BatchId.ToString(),
             Resolution = Resolution.Quarter,
@@ -42,13 +43,21 @@ public class CalculationResultReadyIntegrationEventMapper : ICalculationResultRe
         };
         calculationResultCompleted.TimeSeriesPoints
             .AddRange(processStepResultDto.TimeSeriesPoints
-                .Select(x => new TimeSeriesPoint { Quantity = new DecimalValue(), Time = x.Time.ToTimestamp(), QuantityQuality = MapQuantityQuality(x.Quality) }));
+                .Select(x => new TimeSeriesPoint { Quantity = new DecimalValue(x.Quantity), Time = x.Time.ToTimestamp(), QuantityQuality = MapQuantityQuality(x.Quality) }));
         return calculationResultCompleted;
     }
 
-    private QuantityQuality MapQuantityQuality(string quality)
+    private QuantityQuality MapQuantityQuality(Domain.ProcessStepResultAggregate.QuantityQuality quantityQuality)
     {
-        throw new NotImplementedException();
+        return quantityQuality switch
+        {
+            Domain.ProcessStepResultAggregate.QuantityQuality.Calculated => QuantityQuality.Read, // ?
+            Domain.ProcessStepResultAggregate.QuantityQuality.Estimated => QuantityQuality.Read, // ?
+            Domain.ProcessStepResultAggregate.QuantityQuality.Incomplete => QuantityQuality.Read, // ?
+            Domain.ProcessStepResultAggregate.QuantityQuality.Measured => QuantityQuality.Measured,
+            Domain.ProcessStepResultAggregate.QuantityQuality.Missing => QuantityQuality.Missing,
+            _ => throw new ArgumentException(),
+        };
     }
 
     private ProcessType MapProcessType(Contracts.ProcessType processType)
