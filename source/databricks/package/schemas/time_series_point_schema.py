@@ -39,8 +39,8 @@ time_series_point_schema = StructType(
         # Null when quality is missing.
         # Example: 1234.534217
         StructField(Colname.quantity, DecimalType(18, 6), True),
-        # "A02" (missing) | "A03" (estimated) | "A04" (measured) | "A06" (calculated)
-        # Example: A02
+        # "missing" | "estimated" | "measured" | "calculated"
+        # Example: measured
         StructField(Colname.quality, StringType(), False),
         # The time when the energy was consumed/produced/exchanged
         StructField("ObservationTime", TimestampType(), False),
