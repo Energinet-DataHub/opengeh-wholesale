@@ -25,7 +25,9 @@ public class PublishCalculationResultReadyIntegrationEventEndpoint
     private readonly IJsonSerializer _jsonSerializer;
     private readonly IProcessApplicationService _processApplicationService;
 
-    public PublishCalculationResultReadyIntegrationEventEndpoint(IJsonSerializer jsonSerializer, IProcessApplicationService processApplicationService)
+    public PublishCalculationResultReadyIntegrationEventEndpoint(
+        IJsonSerializer jsonSerializer,
+        IProcessApplicationService processApplicationService)
     {
         _jsonSerializer = jsonSerializer;
         _processApplicationService = processApplicationService;
