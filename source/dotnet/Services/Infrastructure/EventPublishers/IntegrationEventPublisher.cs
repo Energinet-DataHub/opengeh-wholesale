@@ -71,8 +71,8 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     private string GetMessageTypeForCalculationResultCompletedEvent(ProcessType processType) =>
         processType switch
         {
-            ProcessType.BalanceFixing => CalculationResultCompleted.BalanceFixingProcessType,
-            ProcessType.Aggregation => CalculationResultCompleted.AggregationProcessType,
+            ProcessType.BalanceFixing => CalculationResultCompleted.BalanceFixingEventName,
+            ProcessType.Aggregation => CalculationResultCompleted.AggregationEventName,
             _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
         };
 }
