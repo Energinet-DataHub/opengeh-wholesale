@@ -40,6 +40,7 @@ public class ProcessStepV24Controller : ControllerBase
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
     [ApiVersion("2.4")]
+    [Produces("application/json", Type = typeof(ProcessStepResultDto))]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDtoV3 processStepResultRequestDtoV3)
     {
         var resultDto = await _processStepApplicationService.GetResultAsync(
