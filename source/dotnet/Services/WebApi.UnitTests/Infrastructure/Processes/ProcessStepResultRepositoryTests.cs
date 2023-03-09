@@ -23,7 +23,6 @@ using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using DataLakeFileClient = Azure.Storage.Files.DataLake.DataLakeFileClient;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
@@ -31,8 +30,8 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 [UnitTest]
 public class ProcessStepResultRepositoryTests
 {
-    private static string _anyEnergySupplierGln = "1234567890123";
-    private static string _anyBalanceResponsiblePartyGln = "1234567890123";
+    private const string AnyEnergySupplierGln = "1234567890123";
+    private const string AnyBalanceResponsiblePartyGln = "1234567890123";
 
     [Theory]
     [AutoMoqData]
@@ -41,8 +40,10 @@ public class ProcessStepResultRepositoryTests
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
         // Arrange
+        const string filepath = "CB5E45C4-DB78-4EF2-A399-B597461B65ED";
         var stream = new Mock<Stream>();
-        dataLakeClientMock.Setup(x => x.FindAndOpenFileAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(stream.Object);
+        dataLakeClientMock.Setup(x => x.FindFileAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(filepath);
+        dataLakeClientMock.Setup(x => x.GetReadableFileStreamAsync(filepath)).ReturnsAsync(stream.Object);
         var processResultPoint = new ProcessResultPoint("1.00", "measured", "2022-05-31T22:00:00");
         jsonNewlineSerializerMock.Setup(x => x.DeserializeAsync<ProcessResultPoint>(stream.Object))
             .ReturnsAsync(new List<ProcessResultPoint>
@@ -87,7 +88,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForEsGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, _anyEnergySupplierGln);
+        var actual = ProcessStepResultRepository.GetDirectoryForEsGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, AnyEnergySupplierGln);
 
         // Assert
         actual.Should().MatchRegex(expected.DirectoryExpression);
@@ -103,7 +104,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFileForGaBrpEs;
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForEsBrpGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, _anyBalanceResponsiblePartyGln, _anyEnergySupplierGln);
+        var actual = ProcessStepResultRepository.GetDirectoryForEsBrpGridArea(new Guid(batchId), new GridAreaCode(gridAreaCode), TimeSeriesType.Production, AnyBalanceResponsiblePartyGln, AnyEnergySupplierGln);
 
         // Assert
         actual.Should().MatchRegex(expected.DirectoryExpression);

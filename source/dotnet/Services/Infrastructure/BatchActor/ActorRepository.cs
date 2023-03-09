@@ -70,8 +70,11 @@ public class ActorRepository : IActorRepository
     {
         var (directory, extension) = GetActorListFileSpecification(batchId, gridAreaCode, timeSeriesType);
 
+        var filepath =
+            await _dataLakeClient.FindFileAsync(directory, extension).ConfigureAwait(false);
+
         var resultStream =
-            await _dataLakeClient.FindAndOpenFileAsync(directory, extension).ConfigureAwait(false);
+            await _dataLakeClient.GetReadableFileStreamAsync(filepath).ConfigureAwait(false);
 
         return await _jsonNewlineSerializer.DeserializeAsync<ActorRelation>(resultStream).ConfigureAwait(false);
     }
