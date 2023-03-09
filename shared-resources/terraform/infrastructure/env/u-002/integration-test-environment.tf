@@ -466,9 +466,6 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/config/schema_validation"
-      base_parameters = {
-        BatchExecution = true
-      }
     }
     job_cluster_key = "playground_job_cluster"
   }
@@ -481,9 +478,6 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/bronze/autoloader_time_series"
-      base_parameters = {
-        BatchExecution = true
-      }
     }
     job_cluster_key = "playground_job_cluster"
   }
@@ -496,9 +490,6 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/bronze/autoloader_metering_points"
-      base_parameters = {
-        BatchExecution = true
-      }
     }
     job_cluster_key = "playground_job_cluster"
   }
@@ -511,9 +502,6 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/silver/time_series"
-      base_parameters = {
-        BatchExecution = true
-      }
     }
     job_cluster_key = "playground_job_cluster"
   }
@@ -526,9 +514,6 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/silver/metering_points"
-      base_parameters = {
-        BatchExecution = true
-      }
     }
     job_cluster_key = "playground_job_cluster"
   }
@@ -544,9 +529,6 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/gold/time_series"
-      base_parameters = {
-        BatchExecution = true
-      }
     }
     job_cluster_key = "playground_job_cluster"
   }
@@ -559,9 +541,6 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/gold/wholesale_time_series"
-      base_parameters = {
-        BatchExecution = true
-      }
     }
     job_cluster_key = "playground_job_cluster"
   }
@@ -574,9 +553,6 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/gold/wholesale_metering_points"
-      base_parameters = {
-        BatchExecution = true
-      }
     }
     job_cluster_key = "playground_job_cluster"
   }
@@ -589,9 +565,6 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/systemtest/time_series/time_series_tests"
-      base_parameters = {
-        BatchExecution = true
-      }
     }
     job_cluster_key = "playground_job_cluster"
   }
@@ -604,9 +577,6 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/systemtest/metering_points/metering_points_tests"
-      base_parameters = {
-        BatchExecution = true
-      }
     }
     job_cluster_key = "playground_job_cluster"
   }

@@ -51,7 +51,39 @@ resource "databricks_job" "this" {
   name = "Landing_To_Gold"
 
   job_cluster {
-    job_cluster_key = "Shared_job_cluster"
+    job_cluster_key = "metering_point_job_cluster"
+    new_cluster {
+      num_workers   = 0
+      spark_version = data.databricks_spark_version.latest_lts.id
+      node_type_id  = "Standard_DS5_v2"
+      spark_conf = {
+        "fs.azure.account.oauth2.client.endpoint.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
+        "fs.azure.account.oauth2.client.endpoint.${module.st_migrations.name}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
+        "fs.azure.account.oauth2.client.endpoint.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
+        "fs.azure.account.auth.type.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": "OAuth"
+        "fs.azure.account.auth.type.${module.st_migrations.name}.dfs.core.windows.net": "OAuth"
+        "fs.azure.account.auth.type.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": "OAuth"
+        "fs.azure.account.oauth.provider.type.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth.provider.type.${module.st_migrations.name}.dfs.core.windows.net": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth.provider.type.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth2.client.id.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": databricks_secret.spn_app_id.config_reference
+        "fs.azure.account.oauth2.client.id.${module.st_migrations.name}.dfs.core.windows.net": databricks_secret.spn_app_id.config_reference
+        "fs.azure.account.oauth2.client.id.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": databricks_secret.spn_app_id.config_reference
+        "fs.azure.account.oauth2.client.secret.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": databricks_secret.spn_app_secret.config_reference
+        "fs.azure.account.oauth2.client.secret.${module.st_migrations.name}.dfs.core.windows.net": databricks_secret.spn_app_secret.config_reference
+        "fs.azure.account.oauth2.client.secret.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net": databricks_secret.spn_app_secret.config_reference
+        "spark.databricks.delta.preview.enabled": true
+        "spark.databricks.io.cache.enabled": true
+        "spark.master": "local[*, 4]"
+      }
+      spark_env_vars = {
+        "APPI_INSTRUMENTATION_KEY" = databricks_secret.appi_instrumentation_key.config_reference
+      }
+    }
+  }
+
+  job_cluster {
+    job_cluster_key = "time_series_job_cluster"
     new_cluster {
       num_workers   = 0
       spark_version = data.databricks_spark_version.latest_lts.id
@@ -90,7 +122,27 @@ resource "databricks_job" "this" {
 
   task {
     # When semantic versioning is ready, remove this uuid as this is only added to trigger a wheel on each merge into main
-    task_key = local.task_start_trigger 
+    task_key = local.task_mp_start_trigger
+    library {
+      whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
+    }
+
+    notebook_task {  
+      notebook_path     = "source/DataMigration/config/workspace_setup"
+      base_parameters   = {
+        batch_execution = true
+        landing_storage_account = data.azurerm_storage_account.drop.name # Should we use this or another datalake for dump
+        datalake_storage_account = module.st_migrations.name
+        datalake_shared_storage_account = data.azurerm_key_vault_secret.st_data_lake_name.value
+        metering_point_container = "dh2-metering-point-history"
+      }
+    }
+    job_cluster_key = "metering_point_job_cluster"
+  }
+
+  task {
+    # When semantic versioning is ready, remove this uuid as this is only added to trigger a wheel on each merge into main
+    task_key = local.task_ts_start_trigger
     library {
       whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
     }
@@ -103,25 +155,24 @@ resource "databricks_job" "this" {
         datalake_storage_account = module.st_migrations.name
         datalake_shared_storage_account = data.azurerm_key_vault_secret.st_data_lake_name.value
         time_series_container = "dh2-timeseries"
-        metering_point_container = "dh2-metering-point-history"
       }
     }
-    job_cluster_key = "Shared_job_cluster"
+    job_cluster_key = "time_series_job_cluster"
   }
 
   task {
     task_key = "check_schemas"
     depends_on {
-      task_key = local.task_start_trigger
+      task_key = local.task_mp_start_trigger
+    }
+    depends_on {
+      task_key = local.task_ts_start_trigger
     }
     
     notebook_task {
       notebook_path = "source/DataMigration/config/schema_validation"
-      base_parameters   = {
-        BatchExecution = true
-      }
     }
-    job_cluster_key = "Shared_job_cluster"
+    job_cluster_key = "metering_point_job_cluster"
   }
 
   task {
@@ -132,11 +183,8 @@ resource "databricks_job" "this" {
 
     notebook_task {
       notebook_path     = "source/DataMigration/bronze/autoloader_time_series"
-      base_parameters   = {
-        BatchExecution = true
-      }
     }
-    job_cluster_key = "Shared_job_cluster"
+    job_cluster_key = "time_series_job_cluster"
   }
 
   task {
@@ -147,11 +195,8 @@ resource "databricks_job" "this" {
 
     notebook_task {
       notebook_path     = "source/DataMigration/bronze/autoloader_metering_points"
-      base_parameters   = {
-        BatchExecution = true
-      }
     }
-    job_cluster_key = "Shared_job_cluster"
+    job_cluster_key = "metering_point_job_cluster"
   }
 
   task {
@@ -162,11 +207,8 @@ resource "databricks_job" "this" {
 
     notebook_task {
       notebook_path     = "source/DataMigration/silver/time_series"
-      base_parameters   = {
-        BatchExecution = true
-      }
     }
-    job_cluster_key = "Shared_job_cluster"
+    job_cluster_key = "time_series_job_cluster"
   }
 
   task {
@@ -177,11 +219,8 @@ resource "databricks_job" "this" {
 
     notebook_task {
       notebook_path     = "source/DataMigration/silver/metering_points"
-      base_parameters   = {
-        BatchExecution = true
-      }
     }
-    job_cluster_key = "Shared_job_cluster"
+    job_cluster_key = "metering_point_job_cluster"
   }
 
   task {
@@ -195,11 +234,8 @@ resource "databricks_job" "this" {
 
     notebook_task {
       notebook_path     = "source/DataMigration/gold/time_series"
-      base_parameters   = {
-        BatchExecution = true
-      }
     }
-    job_cluster_key = "Shared_job_cluster"
+    job_cluster_key = "time_series_job_cluster"
   }
 
   task {
@@ -210,10 +246,7 @@ resource "databricks_job" "this" {
 
     notebook_task {
       notebook_path     = "source/DataMigration/gold/wholesale_metering_points"
-      base_parameters   = {
-        BatchExecution = true
-      }
     }
-    job_cluster_key = "Shared_job_cluster"
+    job_cluster_key = "metering_point_job_cluster"
   }
 }
