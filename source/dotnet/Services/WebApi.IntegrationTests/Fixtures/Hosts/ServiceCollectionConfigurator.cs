@@ -105,7 +105,7 @@ public class ServiceCollectionConfigurator
                 var pathItemName = Path.GetFileName(entryPath);
                 var pathItem = DataLakeModelFactory
                     .PathItem(pathItemName, false, DateTimeOffset.Now, ETag.All, basisDataBuffer.Length, "owner", "group", "permissions");
-                var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Moq.Mock.Of<Response>());
+                var page = Page<PathItem>.FromValues(new[] { pathItem }, null, Mock.Of<Response>());
                 var asyncPageable = AsyncPageable<PathItem>.FromPages(new[] { page });
                 dataLakeDirectoryClient
                     .Setup(client => client.GetPathsAsync(false, false, It.IsAny<CancellationToken>()))
@@ -122,42 +122,9 @@ public class ServiceCollectionConfigurator
                     .Setup(client => client.Uri)
                     .Returns(new Uri(uriString));
 
-                const string anyStringValue = "stringValue";
-                // Enable the IStreamZipper to access the basis data files
-                // The files are represented by mocked names and in-memory streams
-                var memoryStream = new MemoryStream(basisDataBuffer);
-                var fileDownloadResponse = Response.FromValue(
-                    DataLakeModelFactory.FileDownloadInfo(
-                    memoryStream.Length,
-                    memoryStream,
-                    null,
-                    DataLakeModelFactory.FileDownloadDetails(
-                        DateTimeOffset.Now,
-                        new Dictionary<string,
-                            string>(),
-                        anyStringValue,
-                        ETag.All,
-                        anyStringValue,
-                        anyStringValue,
-                        anyStringValue,
-                        anyStringValue,
-                        DateTimeOffset.Now,
-                        anyStringValue,
-                        anyStringValue,
-                        anyStringValue,
-                        new Uri("https://stuff.com"),
-                        CopyStatus.Success,
-                        DataLakeLeaseDuration.Fixed,
-                        DataLakeLeaseState.Available,
-                        DataLakeLeaseStatus.Locked,
-                        anyStringValue,
-                        false,
-                        anyStringValue,
-                        basisDataBuffer)),
-                    null!);
                 dataLakeFileClientMock
-                    .Setup(client => client.ReadAsync())
-                    .ReturnsAsync(() => fileDownloadResponse);
+                    .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()))
+                    .ReturnsAsync(() => new MemoryStream(basisDataBuffer));
             }
         }
 
@@ -165,6 +132,9 @@ public class ServiceCollectionConfigurator
         var zipFileClient = new Mock<DataLakeFileClient>();
         zipFileClient
             .Setup(client => client.OpenWriteAsync(false, null, default))
+            .ReturnsAsync(() => File.OpenWrite(_withBasisDataFilesForBatch.Value.ZipFileName));
+        zipFileClient
+            .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => File.OpenWrite(_withBasisDataFilesForBatch.Value.ZipFileName));
         dataLakeFileSystemClientMock
             .Setup(client => client.GetFileClient(SettlementReportRepository.GetZipFileName(_withBasisDataFilesForBatch.Value.Batch)))

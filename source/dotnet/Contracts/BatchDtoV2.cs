@@ -16,4 +16,4 @@ namespace Energinet.DataHub.Wholesale.Contracts;
 /// <summary>
 /// An immutable batch.
 /// </summary>
-public sealed record BatchDtoV2(Guid BatchNumber, DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeOffset? ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchState ExecutionState, bool IsBasisDataDownloadAvailable, string[] GridAreaCodes);
+public sealed record BatchDtoV2(Guid BatchNumber, DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeOffset? ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchState ExecutionState, bool IsBasisDataDownloadAvailable, string[] GridAreaCodes, ProcessType ProcessType);

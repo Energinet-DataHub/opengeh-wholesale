@@ -149,7 +149,7 @@ public static class Program
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(
             provider => new SettlementReportRepository(
-                provider.GetRequiredService<DataLakeFileSystemClient>(),
+                provider.GetRequiredService<IDataLakeClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
     }
 

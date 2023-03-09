@@ -23,5 +23,5 @@ public interface ISettlementReportApplicationService
 
     Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId);
 
-    Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId, string gridAreaCode);
+    Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream);
 }
