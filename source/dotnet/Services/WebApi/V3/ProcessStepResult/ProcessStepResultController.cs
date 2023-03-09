@@ -54,6 +54,7 @@ public class ProcessStepResultController : V3ControllerBase
     /// <param name="balanceResponsiblePartyGln">The GLN for the balance responsible party the requested result</param>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpGet]
+    [Produces("application/json", Type = typeof(ProcessStepResultDto))]
     public async Task<ProcessStepResultDto> GetResultAsync(
         [FromRoute] Guid batchId,
         [FromRoute] string gridAreaCode,

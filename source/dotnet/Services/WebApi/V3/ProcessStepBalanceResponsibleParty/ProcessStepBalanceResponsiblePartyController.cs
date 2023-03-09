@@ -37,6 +37,7 @@ public class ProcessStepBalanceResponsiblePartyController : V3ControllerBase
     /// </summary>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpGet]
+    [Produces("application/json", Type = typeof(List<ActorDto>))]
     public async Task<List<ActorDto>> GetAllAsync(
         [FromRoute] Guid batchId,
         [FromRoute] string gridAreaCode,
