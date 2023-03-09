@@ -38,6 +38,7 @@ public class ProcessStepV21Controller : ControllerBase
     [HttpPost]
     [ApiVersion("2.0")]
     [ApiVersion("2.1")]
+    [Produces("application/json", Type = typeof(ProcessStepResultDto))]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepResultRequestDto processStepResultRequestDto)
     {
         var resultDto = await _processStepApplicationService.GetResultAsync(
