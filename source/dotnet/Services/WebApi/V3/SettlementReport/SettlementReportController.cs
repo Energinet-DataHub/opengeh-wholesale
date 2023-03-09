@@ -35,10 +35,16 @@ public class SettlementReportController : V3ControllerBase
     /// <param name="batchId">BatchId</param>
     /// <param name="gridAreaCode">GridAreaCode</param>
     [HttpGet]
-    public async Task<Stream> GetAsync(Guid batchId, string gridAreaCode)
+    [MapToApiVersion(Version)]
+    public async Task GetAsync(Guid batchId, string gridAreaCode)
     {
-        var report = await _settlementReportApplicationService.GetSettlementReportAsync(batchId, gridAreaCode)
-            .ConfigureAwait(false);
-        return report.Stream;
+        var outputStream = Response.BodyWriter.AsStream();
+
+        await using (outputStream.ConfigureAwait(false))
+        {
+            await _settlementReportApplicationService
+                .GetSettlementReportAsync(batchId, gridAreaCode, outputStream)
+                .ConfigureAwait(false);
+        }
     }
 }
