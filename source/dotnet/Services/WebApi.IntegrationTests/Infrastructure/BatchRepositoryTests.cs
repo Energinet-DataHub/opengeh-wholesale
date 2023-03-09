@@ -40,7 +40,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var batch = CreateBatch(someGridAreasIds);
+        var batch = CreateBatch(ProcessType.Aggregation, someGridAreasIds);
         var sut = new BatchRepository(writeContext);
 
         // Act
@@ -53,6 +53,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
         actual.Should().BeEquivalentTo(batch);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
+        actual.ProcessType.Should().Be(ProcessType.Aggregation);
     }
 
     [Fact]
@@ -198,7 +199,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
         var period = Periods.January_EuropeCopenhagen_Instant;
         var batch = new Batch(
-           ProcessType.BalanceFixing,
+           Domain.ProcessAggregate.ProcessType.BalanceFixing,
            new List<GridAreaCode> { new("004") },
            period.PeriodStart,
            period.PeriodEnd,
@@ -227,9 +228,14 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
     private static Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
+        return CreateBatch(Domain.ProcessAggregate.ProcessType.BalanceFixing, someGridAreasIds);
+    }
+
+    private static Batch CreateBatch(Domain.ProcessAggregate.ProcessType processType, List<GridAreaCode> someGridAreasIds)
+    {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Batch(
-            ProcessType.BalanceFixing,
+            processType,
             someGridAreasIds,
             period.PeriodStart,
             period.PeriodEnd,

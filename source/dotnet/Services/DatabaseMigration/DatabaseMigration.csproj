@@ -23,6 +23,10 @@ limitations under the License.
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Scripts\202302091300_Add_ProcessType_column_To_Batch.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
       <EmbeddedResource Include="Scripts\202302031200_Drop_MessageHub.sql" />
       <EmbeddedResource Include="Scripts\202206161400_Create_Batch_Table.sql" />
       <EmbeddedResource Include="Scripts\202206281330_Create_MessageHub_Process_Table.sql" />
@@ -33,6 +37,7 @@ limitations under the License.
       <EmbeddedResource Include="Scripts\202209191000_Add_Batch_Execution_Time.sql" />
       <EmbeddedResource Include="Scripts\202210261230_Add_IsBatchDataDownloadAvailable.sql" />
       <EmbeddedResource Include="Scripts\202301241200_Rename_To_Batch_AreSettlementReportsCreated.sql" />
+      <EmbeddedResource Include="Scripts\202302091300_Add_ProcessType_column_To_Batch.sql" />
       <EmbeddedResource Include="Scripts\202302031300_Fix_Batch_PeriodEnds.sql" />
       <EmbeddedResource Include="Scripts\202302020800_Rename_RunId_To_CalculationId.sql" />
     </ItemGroup>
