@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Application;
 
 public interface IIntegrationEventPublisher
 {
