@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Microsoft.EntityFrameworkCore;
+namespace Energinet.DataHub.Wholesale.Domain;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public interface IDatabaseContext
+/// <summary>
+/// Service for publishing outgoing events
+/// </summary>
+public interface IIntegrationEventPublisher
 {
-    DbSet<Batch> Batches { get; }
-
-    DbSet<OutboxMessage> OutboxMessages { get; }
-
     /// <summary>
-    /// Saves changes to the database.
+    /// Publishes an event
     /// </summary>
-    Task<int> SaveChangesAsync();
+    /// <param name="integrationEvent"></param>
+    Task PublishAsync<TEvent>(TEvent integrationEvent);
 }
