@@ -73,21 +73,59 @@ public class BatchTests
         sut.ExecutionTimeStart.Should().NotBeNull();
     }
 
+    [Fact]
+    public void GetResolution_DoesNotThrowExceptionForAllProcessTypes()
+    {
+        // Arrange
+        foreach (var processType in Enum.GetValues(typeof(ProcessType)))
+        {
+            var sut = new BatchBuilder().WithProcessType((ProcessType)processType).Build();
+
+            // Act & Assert
+            sut.GetResolution();
+        }
+    }
+
+    [Fact]
+    public void GetQuantityUnit_DoesNotThrowExceptionForAllProcessTypes()
+    {
+        // Arrange
+        foreach (var processType in Enum.GetValues(typeof(ProcessType)))
+        {
+            var sut = new BatchBuilder().WithProcessType((ProcessType)processType).Build();
+
+            // Act & Assert - Remember to add new [InlineAutoMoqData (...,...)] for new process types in other tests
+            sut.GetQuantityUnit();
+        }
+    }
+
     [Theory]
     [InlineAutoMoqData(Contracts.ProcessType.BalanceFixing, "PT15M")]
+    [InlineAutoMoqData(Contracts.ProcessType.Aggregation, "PT15M")]
     public void GetResolution_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedIso8601Duration)
     {
+        // Arrange
         var sut = new BatchBuilder().WithProcessType(processType).Build();
+
+        // Act
         var actual = sut.GetResolution();
+
+        // Assert
         actual.Should().Be(expectedIso8601Duration);
     }
 
     [Theory]
     [InlineAutoMoqData(ProcessType.BalanceFixing, "kWh")]
+    [InlineAutoMoqData(ProcessType.Aggregation, "kWh")]
     public void GetQuantityUnit_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedQuantityUnit)
     {
+        // Arrange
         var sut = new BatchBuilder().WithProcessType(processType).Build();
+
+        // Act
         var actual = sut.GetQuantityUnit();
+
+        // Assert
         actual.Should().Be(expectedQuantityUnit);
     }
 
