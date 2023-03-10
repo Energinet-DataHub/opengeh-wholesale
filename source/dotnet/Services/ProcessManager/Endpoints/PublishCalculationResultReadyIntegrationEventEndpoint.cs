@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
 public class PublishCalculationResultReadyIntegrationEventEndpoint
 {
-    private const string FunctionName = nameof(PublishProcessCompletedIntegrationEventEndpoint);
+    private const string FunctionName = nameof(PublishCalculationResultReadyIntegrationEventEndpoint);
     private readonly IJsonSerializer _jsonSerializer;
     private readonly IProcessApplicationService _processApplicationService;
 

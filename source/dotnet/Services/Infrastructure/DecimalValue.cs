@@ -14,6 +14,9 @@
 
 namespace Energinet.DataHub.Wholesale.Contracts.Events
 {
+    /// <summary>
+    /// This implementation is taken from https://learn.microsoft.com/en-us/dotnet/architecture/grpc-for-wcf-developers/protobuf-data-types#decimals
+    /// </summary>
     public partial class DecimalValue
     {
         private const decimal NanoFactor = 1_000_000_000;
