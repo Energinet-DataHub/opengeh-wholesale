@@ -42,6 +42,7 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
         builder.Property(b => b.CalculationId).HasConversion(
             calculationId => calculationId == null ? (long?)null : calculationId.Id,
             calculationId => calculationId == null ? null : new CalculationId(calculationId.Value));
+        builder.Property(b => b.ProcessType);
 
         // Grid area IDs are stored as a JSON array
         var gridAreaCodes = builder.Metadata
@@ -52,7 +53,5 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
             .HasConversion(
                 l => JsonSerializer.Serialize(l.Select(code => code.Code), (JsonSerializerOptions?)null),
                 s => JsonSerializer.Deserialize<List<string>>(s, (JsonSerializerOptions?)null)!.Select(code => new GridAreaCode(code)).ToList());
-
-        builder.Property(b => b.ProcessType);
     }
 }

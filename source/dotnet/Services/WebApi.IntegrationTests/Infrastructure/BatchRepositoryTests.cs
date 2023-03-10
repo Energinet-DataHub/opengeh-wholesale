@@ -199,7 +199,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
         var period = Periods.January_EuropeCopenhagen_Instant;
         var batch = new Batch(
-           Domain.ProcessAggregate.ProcessType.BalanceFixing,
+           ProcessType.BalanceFixing,
            new List<GridAreaCode> { new("004") },
            period.PeriodStart,
            period.PeriodEnd,
@@ -228,10 +228,10 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
     private static Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
-        return CreateBatch(Domain.ProcessAggregate.ProcessType.BalanceFixing, someGridAreasIds);
+        return CreateBatch(ProcessType.BalanceFixing, someGridAreasIds);
     }
 
-    private static Batch CreateBatch(Domain.ProcessAggregate.ProcessType processType, List<GridAreaCode> someGridAreasIds)
+    private static Batch CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Batch(
