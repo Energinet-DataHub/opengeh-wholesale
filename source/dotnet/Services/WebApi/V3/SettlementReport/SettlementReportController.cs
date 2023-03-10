@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 
 [ApiController]
-[Produces("application/zip")]
+[Produces("application/zip",  Type = typeof(Stream))]
 [Route("v3/[controller]")]
 public class SettlementReportController : V3ControllerBase
 {
@@ -36,7 +36,7 @@ public class SettlementReportController : V3ControllerBase
     /// <param name="gridAreaCode">GridAreaCode</param>
     [HttpGet]
     [MapToApiVersion(Version)]
-    public async Task GetAsync(Guid batchId, string gridAreaCode)
+    public async Task GetAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode)
     {
         var outputStream = Response.BodyWriter.AsStream();
 
