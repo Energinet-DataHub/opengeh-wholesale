@@ -14,23 +14,20 @@
 
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
+namespace Energinet.DataHub.Wholesale.Domain
 {
     public class OutboxMessage
     {
-        public OutboxMessage(string eventType, string eventData, Instant creationDate)
+        public OutboxMessage(byte[] data, Instant creationDate)
         {
             Id = Guid.NewGuid();
-            EventType = eventType;
-            EventData = eventData;
+            Data = data;
             CreationDate = creationDate;
         }
 
         public Guid Id { get; }
 
-        public string EventType { get; }
-
-        public string EventData { get; }
+        public byte[] Data { get; }
 
         public Instant CreationDate { get; }
 

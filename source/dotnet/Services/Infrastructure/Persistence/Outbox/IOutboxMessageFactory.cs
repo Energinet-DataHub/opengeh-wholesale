@@ -14,23 +14,10 @@
 
 using Energinet.DataHub.Wholesale.Domain;
 using Google.Protobuf;
-using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+
+public interface IOutboxMessageFactory
 {
-    public class OutboxMessageFactory : IOutboxMessageFactory
-    {
-        private readonly IClock _systemDateTimeProvider;
-
-        public OutboxMessageFactory(IClock systemDateTimeProvider)
-        {
-            _systemDateTimeProvider = systemDateTimeProvider;
-        }
-
-        public OutboxMessage CreateFrom(IMessage message)
-        {
-            // TODO AWJ
-            return new OutboxMessage(message.ToByteArray(), _systemDateTimeProvider.GetCurrentInstant());
-        }
-    }
+    OutboxMessage CreateFrom(IMessage message);
 }

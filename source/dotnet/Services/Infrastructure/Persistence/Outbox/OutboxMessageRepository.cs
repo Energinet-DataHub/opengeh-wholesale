@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Domain;
+
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
 {
-    public class OutboxMessageRepository
+    public class OutboxMessageRepository : IOutboxMessageRepository
     {
         private readonly DatabaseContext _context;
 
@@ -23,9 +25,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
             _context = context;
         }
 
-        public void Add(OutboxMessage message)
+        public async Task AddAsync(OutboxMessage message)
         {
-            _context.OutboxMessages.Add(message);
+            await _context.OutboxMessages.AddAsync(message).ConfigureAwait(false);
         }
 
         public OutboxMessage? FirstNotProcessedOrNull()

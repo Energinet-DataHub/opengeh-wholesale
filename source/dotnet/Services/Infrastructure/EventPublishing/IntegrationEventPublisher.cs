@@ -19,25 +19,20 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
 {
     public class IntegrationEventPublisher : IIntegrationEventPublisher
     {
-        private readonly OutboxMessageRepository _outboxProvider;
+        private readonly OutboxMessageRepository _outboxMessageRepository;
         private readonly OutboxMessageFactory _outboxMessageFactory;
-        private readonly IntegrationEventMapper _integrationEventMapper;
 
-        public IntegrationEventPublisher(OutboxMessageRepository outboxProvider, OutboxMessageFactory outboxMessageFactory, IntegrationEventMapper integrationEventMapper)
+        public IntegrationEventPublisher(OutboxMessageRepository outboxMessageRepository, OutboxMessageFactory outboxMessageFactory)
         {
-            _outboxProvider = outboxProvider;
+            _outboxMessageRepository = outboxMessageRepository;
             _outboxMessageFactory = outboxMessageFactory;
-            _integrationEventMapper = integrationEventMapper;
         }
 
         public Task PublishAsync<TEvent>(TEvent integrationEvent)
         {
-            if (integrationEvent == null) throw new ArgumentNullException(nameof(integrationEvent));
-            var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
-            var message = integrationEvent.ToString() ?? throw new InvalidCastException("Message cannot be empty.");
-            var messageType = eventMetadata.EventName;
+            // TODO AJW
+            _outboxMessageRepository.FirstNotProcessedOrNull();
 
-            _outboxProvider.Add(_outboxMessageFactory.CreateFrom(message, messageType));
             return Task.CompletedTask;
         }
     }

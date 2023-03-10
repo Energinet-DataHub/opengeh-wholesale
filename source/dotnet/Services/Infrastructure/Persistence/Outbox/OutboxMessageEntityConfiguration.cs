@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -25,8 +26,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
 
             builder.ToTable(nameof(OutboxMessage));
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.EventData);
-            builder.Property(x => x.EventType);
+            builder.Property(x => x.Data);
             builder.Property(x => x.CreationDate);
             builder.Property(x => x.ProcessedDate);
         }
