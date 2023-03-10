@@ -12,9 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 
-public interface IOutboxMessagePublisher
+public class OutboxService : IOutboxService
 {
-    Task DispatchAsync();
+    public void CreateOutboxMessage()
+    {
+    }
+}
+
+public interface IOutboxService
+{
 }

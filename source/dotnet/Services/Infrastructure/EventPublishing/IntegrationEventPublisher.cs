@@ -13,27 +13,40 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
 {
     public class IntegrationEventPublisher : IIntegrationEventPublisher
     {
         private readonly OutboxMessageRepository _outboxMessageRepository;
-        private readonly OutboxMessageFactory _outboxMessageFactory;
+        private readonly IClock _clock;
+        private readonly IDatabaseContext _context;
 
-        public IntegrationEventPublisher(OutboxMessageRepository outboxMessageRepository, OutboxMessageFactory outboxMessageFactory)
+        // TODO AJW private readonly IIntegrationEventTopicServiceBusSender _serviceBusSender;
+        public IntegrationEventPublisher(
+            OutboxMessageRepository outboxMessageRepository,
+            IClock clock,
+            IDatabaseContext context)
         {
             _outboxMessageRepository = outboxMessageRepository;
-            _outboxMessageFactory = outboxMessageFactory;
+            _clock = clock;
+            _context = context;
         }
 
-        public Task PublishAsync<TEvent>(TEvent integrationEvent)
+        public async Task PublishIntegrationEventsAsync()
         {
-            // TODO AJW
-            _outboxMessageRepository.FirstNotProcessedOrNull();
+            var message = _outboxMessageRepository.FirstNotProcessedOrNull();
 
-            return Task.CompletedTask;
+            var messageData = message?.Data;
+
+            // TODO AJW
+            // await _serviceBusSender.SendMessageAsync(messageData, CancellationToken.None).ConfigureAwait(false);
+            message?.SetProcessed(_clock.GetCurrentInstant());
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

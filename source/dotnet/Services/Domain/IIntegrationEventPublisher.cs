@@ -22,6 +22,5 @@ public interface IIntegrationEventPublisher
     /// <summary>
     /// Publishes an event
     /// </summary>
-    /// <param name="integrationEvent"></param>
-    Task PublishAsync<TEvent>(TEvent integrationEvent);
+    Task PublishIntegrationEventsAsync();
 }
