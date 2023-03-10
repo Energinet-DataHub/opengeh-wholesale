@@ -12,24 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
+using Xunit;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V2;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.ProcessStepResultAggregate;
 
-public class BatchDtoV2Mapper : IBatchDtoV2Mapper
+public class TimeSeriesPointQualityContractTests
 {
-    public BatchDtoV2 Map(BatchDto batchDto)
+    [Fact]
+    public async Task TimeSeriesPointQualityEnum_Matches_Contract()
     {
-        return new BatchDtoV2(
-            batchDto.BatchId,
-            batchDto.PeriodStart,
-            batchDto.PeriodEnd,
-            batchDto.ExecutionTimeStart,
-            batchDto.ExecutionTimeEnd,
-            batchDto.ExecutionState,
-            batchDto.AreSettlementReportsCreated,
-            batchDto.GridAreaCodes,
-            batchDto.ProcessType);
+        await using var stream = EmbeddedResources.GetStream("Infrastructure.Integration.CalculationOutput.time-series-point-quality.json");
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<QuantityQuality>(stream);
     }
 }

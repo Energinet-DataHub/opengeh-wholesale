@@ -12,14 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Files.DataLake;
-
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 
+/// <summary>
+/// Client for accessing data lake.
+/// </summary>
 public interface IDataLakeClient
 {
     /// <summary>
     /// Search for a file by a given extension in a blob directory.
     /// </summary>
-    Task<Stream> FindAndOpenFileAsync(string directory, string extension);
+    /// <param name="directory">The directory in which to search.</param>
+    /// <param name="extension">The extension to search for.</param>
+    /// <returns>The path of the first file with matching file extension. If the file cannot be found, an exception is thrown</returns>
+    Task<string> FindFileAsync(string directory, string extension);
+
+    /// <summary>
+    /// Gets a writeable stream to the file specified.
+    /// </summary>
+    /// <param name="filename">The name of the file.</param>
+    /// <returns>A writeable stream to the file.</returns>
+    Task<Stream> GetWriteableFileStreamAsync(string filename);
+
+    /// <summary>
+    /// Gets a readable stream to the file specified.
+    /// </summary>
+    /// <param name="filename">The name of the file.</param>
+    /// <returns>A readable stream to the file</returns>
+    Task<Stream> GetReadableFileStreamAsync(string filename);
 }

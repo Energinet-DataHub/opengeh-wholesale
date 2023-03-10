@@ -1,8 +1,20 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.17
+
+Added `ProcessType` to `BatchDtoV2`
+
+## Version 5.0.16
+
+No functional changes
+
+## Version 5.0.15
+
+No functional changes
+
 ## Version 5.0.14
 
-Added process type to contract.
+Added aggregation process type to contract.
 
 ## Version 5.0.13
 

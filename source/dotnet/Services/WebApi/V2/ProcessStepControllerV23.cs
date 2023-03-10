@@ -35,6 +35,7 @@ public class ProcessStepV23Controller : ControllerBase
     [Obsolete("Use `/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/market-roles/{marketRole}` instead")]
     [HttpPost]
     [ApiVersion("2.3")]
+    [Produces("application/json", Type = typeof(WholesaleActorDto[]))]
     public async Task<IActionResult> GetAsync([FromBody] ProcessStepActorsRequest processStepActorsRequest)
     {
         switch (processStepActorsRequest.MarketRole)

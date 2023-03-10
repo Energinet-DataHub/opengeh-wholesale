@@ -48,6 +48,7 @@ public class BatchControllerV21 : ControllerBase
     [HttpPost("Search")]
     [MapToApiVersion(Version)]
     [AllowAnonymous]
+    [Produces("application/json", Type = typeof(List<BatchDtoV2>))]
     public async Task<IActionResult> SearchAsync([FromBody] BatchSearchDtoV2 batchSearchDto)
     {
         var batchesDto = await _batchApplicationService.SearchAsync(

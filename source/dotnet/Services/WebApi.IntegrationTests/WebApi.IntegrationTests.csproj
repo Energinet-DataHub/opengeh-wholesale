@@ -70,8 +70,4 @@ limitations under the License.
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Fixtures\TestCommon\Fixture\FunctionApp" />
-  </ItemGroup>
-
 </Project>
