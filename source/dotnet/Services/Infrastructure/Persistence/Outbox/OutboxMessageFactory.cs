@@ -13,19 +13,24 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Microsoft.EntityFrameworkCore;
+using Google.Protobuf;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public interface IDatabaseContext
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
 {
-    DbSet<Batch> Batches { get; }
+    public class OutboxMessageFactory : IOutboxMessageFactory
+    {
+        private readonly IClock _systemDateTimeProvider;
 
-    DbSet<OutboxMessage> OutboxMessages { get; }
+        public OutboxMessageFactory(IClock systemDateTimeProvider)
+        {
+            _systemDateTimeProvider = systemDateTimeProvider;
+        }
 
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
+        public OutboxMessage CreateFrom(IMessage message)
+        {
+            // TODO AWJ
+            return new OutboxMessage(message.ToByteArray(), _systemDateTimeProvider.GetCurrentInstant());
+        }
+    }
 }

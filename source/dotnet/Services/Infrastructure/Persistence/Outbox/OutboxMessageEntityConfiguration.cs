@@ -13,19 +13,22 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public interface IDatabaseContext
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
 {
-    DbSet<Batch> Batches { get; }
+    public class OutboxMessageEntityConfiguration : IEntityTypeConfiguration<OutboxMessage>
+    {
+        public void Configure(EntityTypeBuilder<OutboxMessage> builder)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-    DbSet<OutboxMessage> OutboxMessages { get; }
-
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
+            builder.ToTable(nameof(OutboxMessage));
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Data);
+            builder.Property(x => x.CreationDate);
+            builder.Property(x => x.ProcessedDate);
+        }
+    }
 }

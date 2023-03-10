@@ -12,20 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public interface IDatabaseContext
+namespace Energinet.DataHub.Wholesale.Domain
 {
-    DbSet<Batch> Batches { get; }
+    public class OutboxMessage
+    {
+        public OutboxMessage(byte[] data, Instant creationDate)
+        {
+            Id = Guid.NewGuid();
+            Data = data;
+            CreationDate = creationDate;
+        }
 
-    DbSet<OutboxMessage> OutboxMessages { get; }
+        public Guid Id { get; }
 
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
+        public byte[] Data { get; }
+
+        public Instant CreationDate { get; }
+
+        public Instant? ProcessedDate { get; private set; }
+
+        public void SetProcessed(Instant when)
+        {
+            ProcessedDate = when;
+        }
+    }
 }

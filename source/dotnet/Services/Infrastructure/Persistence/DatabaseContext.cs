@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -34,11 +36,14 @@ public class DatabaseContext : DbContext, IDatabaseContext
 
     public virtual DbSet<Batch> Batches { get; private set; } = null!;
 
+    public DbSet<OutboxMessage> OutboxMessages { get; private set; } = null!;
+
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new BatchEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new OutboxMessageEntityConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }

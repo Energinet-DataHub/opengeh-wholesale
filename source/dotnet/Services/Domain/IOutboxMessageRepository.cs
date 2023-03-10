@@ -12,20 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Microsoft.EntityFrameworkCore;
+namespace Energinet.DataHub.Wholesale.Domain;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public interface IDatabaseContext
+public interface IOutboxMessageRepository
 {
-    DbSet<Batch> Batches { get; }
+    Task AddAsync(OutboxMessage message);
 
-    DbSet<OutboxMessage> OutboxMessages { get; }
-
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
+    public OutboxMessage? FirstNotProcessedOrNull();
 }

@@ -13,19 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Microsoft.EntityFrameworkCore;
+using Google.Protobuf;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 
-public interface IDatabaseContext
+public interface IOutboxMessageFactory
 {
-    DbSet<Batch> Batches { get; }
-
-    DbSet<OutboxMessage> OutboxMessages { get; }
-
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
+    OutboxMessage CreateFrom(IMessage message);
 }
