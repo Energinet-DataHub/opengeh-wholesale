@@ -36,7 +36,7 @@ public class ProcessStepEnergySupplierController : V3ControllerBase
     /// Returns a list of Energy suppliers. If balance responsible party is specified by the <paramref name="balanceResponsibleParty"/> parameter only the energy suppliers associated with that balance responsible party is returned
     /// </summary>
     [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpGet]
+    [HttpGet(Name = "GetListOfEnergySuppliers")]
     [Produces("application/json", Type = typeof(List<ActorDto>))]
     public async Task<List<ActorDto>> GetAsync([FromRoute] Guid batchId, [FromRoute] string gridAreaCode, [FromRoute] TimeSeriesType timeSeriesType, [FromQuery] string? balanceResponsibleParty)
     {
