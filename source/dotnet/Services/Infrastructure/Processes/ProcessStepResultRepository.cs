@@ -96,7 +96,7 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
             "measured" => QuantityQuality.Measured,
             "calculated" => QuantityQuality.Calculated,
             "estimated" => QuantityQuality.Estimated,
-            "Incomplete" => QuantityQuality.Incomplete,
+            "incomplete" => QuantityQuality.Incomplete,
             _ =>throw new ArgumentException($"quality of unknown type:{pointQuality}"),
         };
     }
