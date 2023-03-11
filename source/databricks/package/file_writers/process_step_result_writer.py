@@ -28,56 +28,63 @@ class ProcessStepResultWriter:
             f"{container_path}/{infra.get_batch_relative_path(batch_id)}"
         )
 
-    def write_per_ga(
+    def write(
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
         grouping: Grouping,
     ) -> None:
         result_df = self._prepare_result_for_output(
-            result_df,
+            result_df, time_series_type, grouping
         )
-
         # start: write to delta table (before dropping columns)
         self._write_result_to_table(result_df, time_series_type, grouping)
         # end: write to delta table
 
+        if grouping == Grouping.total_ga:
+            self._write_per_ga(result_df)
+        elif grouping == Grouping.es_per_ga:
+            self._write_per_ga_per_actor(result_df, MarketRole.ENERGY_SUPPLIER)
+        elif grouping == Grouping.brp_per_ga:
+            self._write_per_ga_per_actor(
+                result_df, MarketRole.BALANCE_RESPONSIBLE_PARTY
+            )
+        elif grouping == Grouping.es_per_brp_per_ga:
+            self._write_per_ga_per_brp_per_es(result_df)
+        else:
+            raise ValueError(f"Unsupported grouping, {grouping.value}")
+
+    def _write_per_ga(
+        self,
+        result_df: DataFrame,
+    ) -> None:
         result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
-        partition_by = [PartitionKeyName.GRID_AREA]
-        self._write_result_df(result_df, partition_by, time_series_type, grouping)
+        partition_by = [
+            PartitionKeyName.GROUPING,
+            PartitionKeyName.TIME_SERIES_TYPE,
+            PartitionKeyName.GRID_AREA,
+        ]
+        self._write_result_df(result_df, partition_by)
 
-    def write_per_ga_per_actor(
+    def _write_per_ga_per_actor(
         self,
         result_df: DataFrame,
-        time_series_type: TimeSeriesType,
         market_role: MarketRole,
-        grouping: Grouping,
     ) -> None:
-        result_df = self._prepare_result_for_output(
-            result_df,
-        )
-        # start: write to delta table (before dropping columns)
-        self._write_result_to_table(result_df, time_series_type, grouping)
-        # end: write to delta table
-
         result_df = self._add_gln(result_df, market_role)
         result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
-        partition_by = [PartitionKeyName.GRID_AREA, PartitionKeyName.GLN]
-        self._write_result_df(result_df, partition_by, time_series_type, grouping)
+        partition_by = [
+            PartitionKeyName.GROUPING,
+            PartitionKeyName.TIME_SERIES_TYPE,
+            PartitionKeyName.GRID_AREA,
+            PartitionKeyName.GLN,
+        ]
+        self._write_result_df(result_df, partition_by)
 
-    def write_per_ga_per_brp_per_es(
+    def _write_per_ga_per_brp_per_es(
         self,
         result_df: DataFrame,
-        time_series_type: TimeSeriesType,
-        grouping: Grouping,
     ) -> None:
-        result_df = self._prepare_result_for_output(
-            result_df,
-        )
-        # start: write to delta table (before dropping columns)
-        self._write_result_to_table(result_df, time_series_type, grouping)
-        # end: write to delta table
-
         result_df = result_df.withColumnRenamed(
             Colname.balance_responsible_id,
             PartitionKeyName.BALANCE_RESPONSIBLE_PARTY_GLN,
@@ -86,13 +93,20 @@ class ProcessStepResultWriter:
         )
 
         partition_by = [
+            PartitionKeyName.GROUPING,
+            PartitionKeyName.TIME_SERIES_TYPE,
             PartitionKeyName.GRID_AREA,
             PartitionKeyName.BALANCE_RESPONSIBLE_PARTY_GLN,
             PartitionKeyName.ENERGY_SUPPLIER_GLN,
         ]
-        self._write_result_df(result_df, partition_by, time_series_type, grouping)
+        self._write_result_df(result_df, partition_by)
 
-    def _prepare_result_for_output(self, result_df: DataFrame) -> DataFrame:
+    def _prepare_result_for_output(
+        self,
+        result_df: DataFrame,
+        time_series_type: TimeSeriesType,
+        grouping: Grouping,
+    ) -> DataFrame:
         result_df = result_df.select(
             col(Colname.grid_area).alias(PartitionKeyName.GRID_AREA),
             Colname.energy_supplier_id,
@@ -101,6 +115,10 @@ class ProcessStepResultWriter:
             col(Colname.quality).alias("quality"),
             col(Colname.time_window_start).alias("quarter_time"),
         )
+
+        result_df = result_df.withColumn(
+            PartitionKeyName.GROUPING, lit(grouping.value)
+        ).withColumn(PartitionKeyName.TIME_SERIES_TYPE, lit(time_series_type.value))
 
         return result_df
 
@@ -128,17 +146,15 @@ class ProcessStepResultWriter:
         self,
         result_df: DataFrame,
         partition_by: list[str],
-        time_series_type: TimeSeriesType,
-        grouping: Grouping,
     ) -> None:
-        result_data_directory = f"{self.__output_path}/result/grouping={grouping.value}/time_series_type={time_series_type.value}"
+        result_data_directory = f"{self.__output_path}/result/"
 
         # First repartition to co-locate all rows for a grid area on a single executor.
         # This ensures that only one file is being written/created for each grid area
         # When writing/creating the files. The partition by creates a folder for each grid area.
         (
             result_df.repartition(PartitionKeyName.GRID_AREA)
-            .write.mode("errorifexists")
+            .write.mode("append")
             .partitionBy(partition_by)
             .json(result_data_directory)
         )

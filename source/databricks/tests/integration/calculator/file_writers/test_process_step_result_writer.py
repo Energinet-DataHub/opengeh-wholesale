@@ -86,10 +86,9 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act: Executed in fixture executed_calculation_job
-    sut.write_per_ga_per_actor(
+    sut.write(
         result_df,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        MarketRole.ENERGY_SUPPLIER,
         Grouping.es_per_ga,
     )
 
@@ -124,7 +123,7 @@ def test__write_per_ga__result_file_path_matches_contract(
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act: Executed in fixture executed_calculation_job
-    sut.write_per_ga(
+    sut.write(
         result_df,
         TimeSeriesType.PRODUCTION,
         Grouping.total_ga,
@@ -167,7 +166,7 @@ def test__write_ga_brp_es__result_file_path_matches_contract(
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act: Executed in fixture executed_calculation_job
-    sut.write_per_ga_per_brp_per_es(
+    sut.write(
         result_df,
         TimeSeriesType.PRODUCTION,
         Grouping.es_per_brp_per_ga,
