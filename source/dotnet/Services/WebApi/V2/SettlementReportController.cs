@@ -37,6 +37,7 @@ public class SettlementReportController : ControllerBase
     /// <param name="batchId">BatchId</param>
     [HttpGet]
     [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(Stream))]
     public async Task<IActionResult> GetAsync(Guid batchId)
     {
         var report = await _settlementReportApplicationService.GetSettlementReportAsync(batchId).ConfigureAwait(false);

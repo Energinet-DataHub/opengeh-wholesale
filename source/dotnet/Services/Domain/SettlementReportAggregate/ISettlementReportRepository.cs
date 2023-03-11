@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 
 namespace Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 
@@ -25,4 +26,6 @@ public interface ISettlementReportRepository
     Task CreateSettlementReportsAsync(Batch completedBatch);
 
     Task<SettlementReport> GetSettlementReportAsync(Batch batch);
+
+    Task GetSettlementReportAsync(Batch completedBatch, GridAreaCode gridAreaCode, Stream outputStream);
 }

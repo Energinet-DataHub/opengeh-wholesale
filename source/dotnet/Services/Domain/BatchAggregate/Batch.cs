@@ -125,6 +125,7 @@ public class Batch
         switch (ProcessType)
         {
             case ProcessType.BalanceFixing:
+            case ProcessType.Aggregation:
                 return "PT15M";
             default:
                 throw new NotImplementedException();
@@ -139,6 +140,7 @@ public class Batch
         switch (ProcessType)
         {
             case ProcessType.BalanceFixing:
+            case ProcessType.Aggregation:
                 return "kWh";
             default:
                 throw new NotImplementedException();
