@@ -13,14 +13,17 @@
 # limitations under the License.
 
 import package.infrastructure as infra
-from package.codelists import MarketRole, TimeSeriesType
+from package.codelists import MarketRole, TimeSeriesType, Grouping
 from package.constants import Colname, PartitionKeyName
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, lit
 
 
 class ProcessStepResultWriter:
     def __init__(self, container_path: str, batch_id: str):
+        self.__table_name = "result_table"
+        self.__delta_table_path = f"{container_path}/{infra.get_calculation_output_folder()}/{self.__table_name}"
+        self.__batch_id = batch_id
         self.__output_path = (
             f"{container_path}/{infra.get_batch_relative_path(batch_id)}"
         )
@@ -29,11 +32,16 @@ class ProcessStepResultWriter:
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
-        grouping: str,
+        grouping: Grouping,
     ) -> None:
         result_df = self._prepare_result_for_output(
             result_df,
         )
+
+        # start: write to delta table (before dropping columns)
+        self._write_result_to_table(result_df, time_series_type, grouping)
+        # end: write to delta table
+
         result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
         partition_by = [PartitionKeyName.GRID_AREA]
         self._write_result_df(result_df, partition_by, time_series_type, grouping)
@@ -43,11 +51,15 @@ class ProcessStepResultWriter:
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
         market_role: MarketRole,
-        grouping: str,
+        grouping: Grouping,
     ) -> None:
         result_df = self._prepare_result_for_output(
             result_df,
         )
+        # start: write to delta table (before dropping columns)
+        self._write_result_to_table(result_df, time_series_type, grouping)
+        # end: write to delta table
+
         result_df = self._add_gln(result_df, market_role)
         result_df.drop(Colname.energy_supplier_id).drop(Colname.balance_responsible_id)
         partition_by = [PartitionKeyName.GRID_AREA, PartitionKeyName.GLN]
@@ -57,14 +69,21 @@ class ProcessStepResultWriter:
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
-        grouping: str,
+        grouping: Grouping,
     ) -> None:
         result_df = self._prepare_result_for_output(
             result_df,
         )
+        # start: write to delta table (before dropping columns)
+        self._write_result_to_table(result_df, time_series_type, grouping)
+        # end: write to delta table
+
         result_df = result_df.withColumnRenamed(
-            Colname.balance_responsible_id, PartitionKeyName.BALANCE_RESPONSIBLE_PARTY_GLN
-        ).withColumnRenamed(Colname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN)
+            Colname.balance_responsible_id,
+            PartitionKeyName.BALANCE_RESPONSIBLE_PARTY_GLN,
+        ).withColumnRenamed(
+            Colname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
+        )
 
         partition_by = [
             PartitionKeyName.GRID_AREA,
@@ -110,9 +129,9 @@ class ProcessStepResultWriter:
         result_df: DataFrame,
         partition_by: list[str],
         time_series_type: TimeSeriesType,
-        grouping: str,
+        grouping: Grouping,
     ) -> None:
-        result_data_directory = f"{self.__output_path}/result/grouping={grouping}/time_series_type={time_series_type.value}"
+        result_data_directory = f"{self.__output_path}/result/grouping={grouping.value}/time_series_type={time_series_type.value}"
 
         # First repartition to co-locate all rows for a grid area on a single executor.
         # This ensures that only one file is being written/created for each grid area
@@ -123,3 +142,30 @@ class ProcessStepResultWriter:
             .partitionBy(partition_by)
             .json(result_data_directory)
         )
+
+    def _write_result_to_table(
+        self,
+        df: DataFrame,
+        time_series_type: TimeSeriesType,
+        grouping: Grouping,
+    ) -> None:
+        df = (
+            df.withColumn(Colname.time_series_type, lit(time_series_type.value))
+            .withColumn("grouping", lit(grouping.value))
+            .withColumn(Colname.batch_id, lit(self.__batch_id))
+        )
+
+        if grouping == Grouping.total_ga:
+            df = df.withColumn(
+                Colname.balance_responsible_id, lit(None).cast("string")
+            ).withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
+        elif grouping == Grouping.es_per_ga:
+            df = df.withColumn(Colname.balance_responsible_id, lit(None).cast("string"))
+        elif grouping == Grouping.brp_per_ga:
+            df = df.withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
+        elif grouping != Grouping.es_per_brp_per_ga:
+            raise ValueError(f"Unsupported grouping, {grouping.value}")
+
+        df.write.format("delta").mode("append").option(
+            "path", self.__delta_table_path
+        ).saveAsTable(self.__table_name)
