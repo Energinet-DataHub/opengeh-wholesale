@@ -22,7 +22,7 @@ from pyspark.sql.functions import col, lit
 class ProcessStepResultWriter:
     def __init__(self, container_path: str, batch_id: str):
         self.__table_name = "result_table"
-        self.__delta_table_path = f"{container_path}/{infra.get_calculation_output_folder()}/{self.__table_name}"
+        self.__delta_table_path = f"{container_path}/{infra.OUTPUT_FOLDER}/{self.__table_name}"
         self.__batch_id = batch_id
         self.__output_path = (
             f"{container_path}/{infra.get_batch_relative_path(batch_id)}"
@@ -52,7 +52,7 @@ class ProcessStepResultWriter:
         elif grouping == Grouping.es_per_brp_per_ga:
             self._write_per_ga_per_brp_per_es(result_df)
         else:
-            raise ValueError(f"Unsupported grouping, {grouping.value}")
+            raise ValueError(f"Unsupported grouping, {grouping}")
 
     def _write_per_ga(
         self,
@@ -117,7 +117,7 @@ class ProcessStepResultWriter:
         )
 
         result_df = result_df.withColumn(
-            PartitionKeyName.GROUPING, lit(grouping.value)
+            PartitionKeyName.GROUPING, lit(grouping)
         ).withColumn(PartitionKeyName.TIME_SERIES_TYPE, lit(time_series_type.value))
 
         return result_df
@@ -167,7 +167,7 @@ class ProcessStepResultWriter:
     ) -> None:
         df = (
             df.withColumn(Colname.time_series_type, lit(time_series_type.value))
-            .withColumn("grouping", lit(grouping.value))
+            .withColumn("grouping", lit(grouping))
             .withColumn(Colname.batch_id, lit(self.__batch_id))
         )
 
@@ -180,7 +180,7 @@ class ProcessStepResultWriter:
         elif grouping == Grouping.brp_per_ga:
             df = df.withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
         elif grouping != Grouping.es_per_brp_per_ga:
-            raise ValueError(f"Unsupported grouping, {grouping.value}")
+            raise ValueError(f"Unsupported grouping, {grouping}")
 
         df.write.format("delta").mode("append").option(
             "path", self.__delta_table_path

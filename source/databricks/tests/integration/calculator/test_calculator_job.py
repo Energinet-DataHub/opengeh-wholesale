@@ -631,8 +631,8 @@ def test__creates_hour_for_total_ga__per_grid_area(
     basis_data_relative_path_805 = infra.get_basis_data_path(
         BasisDataType.TimeSeriesHour, executed_batch_id, "805"
     )
-    basis_data_relative_path_806 = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesHour, executed_batch_id, "806"
+    basis_data_relative_path_806 = (
+        infra.get_basis_data_path(BasisDataType.TimeSeriesHour, executed_batch_id, "806")
     )
 
     # Act
