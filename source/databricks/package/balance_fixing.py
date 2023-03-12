@@ -17,7 +17,7 @@ from datetime import datetime
 import package.steps.aggregation as agg_steps
 from package.codelists import MeteringPointResolution
 from package.constants import Colname
-from package.codelists import MarketRole, TimeSeriesType, Grouping
+from package.codelists import TimeSeriesType, Grouping
 from package.db_logging import debug
 from package.file_writers.actors_writer import ActorsWriter
 from package.file_writers.basis_data_writer import BasisDataWriter
