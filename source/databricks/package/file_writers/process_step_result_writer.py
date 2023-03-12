@@ -38,7 +38,7 @@ class ProcessStepResultWriter:
             result_df, time_series_type, grouping
         )
         # start: write to delta table (before dropping columns)
-        self._write_result_to_table(result_df, time_series_type, grouping)
+        self._write_result_to_table(result_df, grouping)
         # end: write to delta table
 
         if grouping == Grouping.total_ga:
@@ -162,14 +162,9 @@ class ProcessStepResultWriter:
     def _write_result_to_table(
         self,
         df: DataFrame,
-        time_series_type: TimeSeriesType,
         grouping: Grouping,
     ) -> None:
-        df = (
-            df.withColumn(Colname.time_series_type, lit(time_series_type.value))
-            .withColumn("grouping", lit(grouping.value))
-            .withColumn(Colname.batch_id, lit(self.__batch_id))
-        )
+        df = df.withColumn(Colname.batch_id, lit(self.__batch_id))
 
         if grouping == Grouping.total_ga:
             df = df.withColumn(

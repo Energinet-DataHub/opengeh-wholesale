@@ -253,3 +253,32 @@ def test__write__writes_time_series_type_column(
     # Assert
     actual_df = spark.read.table(table_name)
     assert actual_df.collect()[0]["time_series_type"] == time_series_type.value
+
+
+def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
+    # Arrange
+    table_name = "result_table"
+    spark.sql(
+        f"DROP TABLE IF EXISTS {table_name}"
+    )  # needed to avoid conflict between parametrized tests
+
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA,
+            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
+            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
+        )
+    ]
+    result_df = spark.createDataFrame(data=row)
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+
+    # Act: Executed in fixture executed_calculation_job
+    sut.write(
+        result_df,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        Grouping.total_ga,
+    )
+
+    # Assert
+    actual_df = spark.read.table(table_name)
+    assert actual_df.collect()[0]["batch_id"] == DEFAULT_BATCH_ID
