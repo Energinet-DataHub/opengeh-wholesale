@@ -44,7 +44,7 @@ def get_result_file_relative_path(
     grouping: Grouping,
 ) -> str:
     batch_path = get_batch_relative_path(batch_id)
-    relative_path = f"{batch_path}/{RESULT_FOLDER}/grouping={grouping}/time_series_type={time_series_type.value}/grid_area={grid_area}"
+    relative_path = f"{batch_path}/{RESULT_FOLDER}/grouping={grouping.value}/time_series_type={time_series_type.value}/grid_area={grid_area}"
 
     if (energy_supplier_gln is None) and (balance_responsible_gln is None):
         return relative_path
@@ -81,6 +81,10 @@ def get_basis_data_path(
         return f"{basis_data_root_path}/grouping=total_ga/grid_area={grid_area}"
     else:
         return f"{basis_data_root_path}/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
+
+
+def get_calculation_output_folder() -> str:
+    return OUTPUT_FOLDER
 
 
 def get_batch_relative_path(batch_id: str) -> str:
