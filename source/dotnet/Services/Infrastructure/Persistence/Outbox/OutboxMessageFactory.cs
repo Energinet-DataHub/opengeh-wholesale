@@ -12,7 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Google.Protobuf;
 using NodaTime;
 
@@ -21,16 +25,27 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
     public class OutboxMessageFactory : IOutboxMessageFactory
     {
         private readonly IClock _systemDateTimeProvider;
+        private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
 
-        public OutboxMessageFactory(IClock systemDateTimeProvider)
+        public OutboxMessageFactory(IClock systemDateTimeProvider, IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper)
         {
             _systemDateTimeProvider = systemDateTimeProvider;
+            _processCompletedIntegrationEventMapper = processCompletedIntegrationEventMapper;
         }
 
-        public OutboxMessage CreateFrom(IMessage message)
+        public OutboxMessage CreateFrom(ProcessCompletedEventDto processCompletedEventDto)
         {
-            // TODO AWJ
-            return new OutboxMessage(message.ToByteArray(), _systemDateTimeProvider.GetCurrentInstant());
+            var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEventDto);
+            var messageType = GetMessageType(processCompletedEventDto.ProcessType);
+            return new OutboxMessage(messageType, integrationEvent.ToByteArray(), _systemDateTimeProvider.GetCurrentInstant());
         }
+
+        private static string GetMessageType(Energinet.DataHub.Wholesale.Contracts.ProcessType processType) =>
+            processType switch
+            {
+                Contracts.ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
+                Contracts.ProcessType.Aggregation => ProcessCompleted.AggregationProcessType,
+                _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
+            };
     }
 }

@@ -12,41 +12,51 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
 {
     public class IntegrationEventPublisher : IIntegrationEventPublisher
     {
-        private readonly OutboxMessageRepository _outboxMessageRepository;
+        private readonly IIntegrationEventTopicServiceBusSender _integrationEventTopicServiceBusSender;
+        private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
+        private readonly IOutboxMessageRepository _outboxMessageRepository;
         private readonly IClock _clock;
         private readonly IDatabaseContext _context;
 
-        // TODO AJW private readonly IIntegrationEventTopicServiceBusSender _serviceBusSender;
         public IntegrationEventPublisher(
-            OutboxMessageRepository outboxMessageRepository,
+            IIntegrationEventTopicServiceBusSender integrationEventTopicServiceBusSender,
+            IServiceBusMessageFactory serviceBusMessageFactory,
+            IOutboxMessageRepository outboxMessageRepository,
             IClock clock,
             IDatabaseContext context)
         {
+            _integrationEventTopicServiceBusSender = integrationEventTopicServiceBusSender;
+            _serviceBusMessageFactory = serviceBusMessageFactory;
             _outboxMessageRepository = outboxMessageRepository;
             _clock = clock;
             _context = context;
         }
 
-        public async Task PublishIntegrationEventsAsync()
+        public async Task PublishIntegrationEventsAsync(CancellationToken token)
         {
-            var message = _outboxMessageRepository.FirstNotProcessedOrNull();
+            // TODO AJH how many to get? try catch? How often? Retry?
+            var outboxMessages = await _outboxMessageRepository.GetAllAsync(token).ConfigureAwait(false);
+            foreach (var outboxMessage in outboxMessages)
+            {
+                outboxMessage.SetProcessed(_clock.GetCurrentInstant());
 
-            var messageData = message?.Data;
+                var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(outboxMessage.Data, outboxMessage.Type);
 
-            // TODO AJW
-            // await _serviceBusSender.SendMessageAsync(messageData, CancellationToken.None).ConfigureAwait(false);
-            message?.SetProcessed(_clock.GetCurrentInstant());
+                await _integrationEventTopicServiceBusSender.SendMessageAsync(serviceBusMessage, token).ConfigureAwait(false);
 
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+                await _context.SaveChangesAsync().ConfigureAwait(false);
+            }
         }
     }
 }

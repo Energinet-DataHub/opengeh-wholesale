@@ -18,5 +18,5 @@ public interface IOutboxMessageRepository
 {
     Task AddAsync(OutboxMessage message);
 
-    public OutboxMessage? FirstNotProcessedOrNull();
+    Task<IList<OutboxMessage>> GetAllAsync(CancellationToken token);
 }

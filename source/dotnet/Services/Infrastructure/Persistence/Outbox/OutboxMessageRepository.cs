@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
 {
@@ -30,11 +31,13 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
             await _context.OutboxMessages.AddAsync(message).ConfigureAwait(false);
         }
 
-        public OutboxMessage? FirstNotProcessedOrNull()
+        public async Task<IList<OutboxMessage>> GetAllAsync(CancellationToken token)
         {
-            return _context.OutboxMessages
-                .OrderBy(message => message.CreationDate)
-                .FirstOrDefault(message => !message.ProcessedDate.HasValue);
+            return await _context.OutboxMessages
+                .Where(x => !x.ProcessedDate.HasValue)
+                .OrderBy(x => x.CreationDate)
+                .ToListAsync(token)
+                .ConfigureAwait(false);
         }
     }
 }

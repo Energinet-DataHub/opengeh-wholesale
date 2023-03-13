@@ -22,10 +22,12 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
     {
         public void Configure(EntityTypeBuilder<OutboxMessage> builder)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-
             builder.ToTable(nameof(OutboxMessage));
             builder.HasKey(x => x.Id);
+            builder
+                .Property(b => b.Id)
+                .ValueGeneratedNever();
+            builder.Property(x => x.Type);
             builder.Property(x => x.Data);
             builder.Property(x => x.CreationDate);
             builder.Property(x => x.ProcessedDate);

@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
@@ -22,15 +24,24 @@ public class ProcessApplicationService : IProcessApplicationService
     private readonly IProcessCompletedIntegrationEventPublisher _processCompletedIntegrationEventPublisher;
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
     private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly IOutboxService _outboxService;
+    private readonly IOutboxMessageFactory _outboxMessageFactory;
+    private readonly IUnitOfWork _unitOfWork;
 
     public ProcessApplicationService(
         IProcessCompletedIntegrationEventPublisher processCompletedIntegrationEventPublisher,
         IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
-        IDomainEventPublisher domainEventPublisher)
+        IDomainEventPublisher domainEventPublisher,
+        IOutboxService outboxService,
+        IOutboxMessageFactory outboxMessageFactory,
+        IUnitOfWork unitOfWork)
     {
         _processCompletedIntegrationEventPublisher = processCompletedIntegrationEventPublisher;
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
+        _outboxService = outboxService;
+        _outboxMessageFactory = outboxMessageFactory;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
@@ -41,6 +52,8 @@ public class ProcessApplicationService : IProcessApplicationService
 
     public async Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
-        await _processCompletedIntegrationEventPublisher.PublishAsync(processCompletedEvent).ConfigureAwait(false);
+        var outboxMessage = _outboxMessageFactory.CreateFrom(processCompletedEvent);
+        await _outboxService.AddAsync(outboxMessage).ConfigureAwait(false);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }

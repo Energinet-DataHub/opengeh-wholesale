@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain;
-using Google.Protobuf;
+namespace Energinet.DataHub.Wholesale.Application;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-
-public interface IOutboxMessageFactory
+/// <summary>
+/// Service for publishing outgoing events.
+/// </summary>
+public interface IIntegrationEventPublisher
 {
-    OutboxMessage CreateFrom(IMessage message);
+    /// <summary>
+    /// Fetches outbox messages and publishes them as integration events.
+    /// </summary>
+    Task PublishIntegrationEventsAsync(CancellationToken token);
 }

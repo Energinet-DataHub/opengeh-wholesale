@@ -12,15 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Domain;
+
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 
 public class OutboxService : IOutboxService
 {
-    public void CreateOutboxMessage()
-    {
-    }
-}
+    private readonly IOutboxMessageRepository _outboxMessageRepository;
 
-public interface IOutboxService
-{
+    public OutboxService(IOutboxMessageRepository outboxMessageRepository)
+    {
+        _outboxMessageRepository = outboxMessageRepository;
+    }
+
+    public async Task AddAsync(OutboxMessage outboxMessage)
+    {
+        await _outboxMessageRepository.AddAsync(outboxMessage).ConfigureAwait(false);
+    }
 }

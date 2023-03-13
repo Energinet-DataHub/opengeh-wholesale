@@ -18,14 +18,17 @@ namespace Energinet.DataHub.Wholesale.Domain
 {
     public class OutboxMessage
     {
-        public OutboxMessage(byte[] data, Instant creationDate)
+        public OutboxMessage(string type, byte[] data, Instant creationDate)
         {
             Id = Guid.NewGuid();
+            Type = type;
             Data = data;
             CreationDate = creationDate;
         }
 
         public Guid Id { get; }
+
+        public string Type { get; }
 
         public byte[] Data { get; }
 

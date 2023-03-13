@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Domain;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+namespace Energinet.DataHub.Wholesale.Application;
 
-public interface IIntegrationEventTopicServiceBusSender
+public interface IOutboxMessageFactory
 {
-    Task SendMessageAsync(ServiceBusMessage serviceBusMessage, CancellationToken cancellationToken);
+    OutboxMessage CreateFrom(ProcessCompletedEventDto processCompletedEventDto);
 }

@@ -14,13 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Domain;
 
-/// <summary>
-/// Service for publishing outgoing events
-/// </summary>
-public interface IIntegrationEventPublisher
+public interface IOutboxService
 {
-    /// <summary>
-    /// Publishes an event
-    /// </summary>
-    Task PublishIntegrationEventsAsync();
+    Task AddAsync(OutboxMessage outboxMessage);
 }

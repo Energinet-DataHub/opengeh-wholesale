@@ -18,15 +18,15 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public class IntegrationEventTopicServiceBusSender : IIntegrationEventTopicServiceBusSender
 {
-    private readonly ServiceBusSender _sender;
+    private readonly ServiceBusSender _serviceBusSender;
 
-    public IntegrationEventTopicServiceBusSender(ServiceBusSender sender)
+    public IntegrationEventTopicServiceBusSender(ServiceBusSender serviceBusSender)
     {
-        _sender = sender;
+        _serviceBusSender = serviceBusSender;
     }
 
-    public async Task SendMessageAsync(ServiceBusMessage message, CancellationToken cancellationToken)
+    public async Task SendMessageAsync(ServiceBusMessage serviceBusMessage, CancellationToken cancellationToken)
     {
-        await _sender.SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
+        await _serviceBusSender.SendMessageAsync(serviceBusMessage, cancellationToken).ConfigureAwait(false);
     }
 }
