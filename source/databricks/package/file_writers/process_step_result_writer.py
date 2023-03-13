@@ -177,6 +177,11 @@ class ProcessStepResultWriter:
         elif grouping != Grouping.es_per_brp_per_ga:
             raise ValueError(f"Unsupported grouping, {grouping.value}")
 
-        df.write.format("delta").mode("append").option(
-            "path", self.__delta_table_path
-        ).saveAsTable(self.__table_name)
+        (
+            df.write.format("delta")
+            .mode("append")
+            .option("mergeSchema", "false")
+            .option("overwriteSchema", "false")
+            .option("path", self.__delta_table_path)
+            .saveAsTable(self.__table_name)
+        )

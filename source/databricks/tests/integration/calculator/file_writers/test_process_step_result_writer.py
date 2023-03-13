@@ -18,7 +18,6 @@ from pathlib import Path
 
 import package.infrastructure as infra
 import pytest
-from delta.tables import DeltaTable
 from package.codelists import (
     Grouping,
     MeteringPointResolution,
@@ -28,6 +27,7 @@ from package.codelists import (
 from package.constants import Colname
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import lit
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
@@ -86,7 +86,7 @@ def test__write___when_grouping_is_es_per_ga__result_file_path_matches_contract(
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-    # Act: Executed in fixture executed_calculation_job
+    # Act
     sut.write(
         result_df,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
@@ -123,7 +123,7 @@ def test__write___when_grouping_is_total_ga__result_file_path_matches_contract(
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-    # Act: Executed in fixture executed_calculation_job
+    # Act
     sut.write(
         result_df,
         TimeSeriesType.PRODUCTION,
@@ -166,7 +166,7 @@ def test__write___when_grouping_is_ga_brp_es__result_file_path_matches_contract(
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-    # Act: Executed in fixture executed_calculation_job
+    # Act
     sut.write(
         result_df,
         TimeSeriesType.PRODUCTION,
@@ -207,7 +207,7 @@ def test__write__writes_grouping_column(
     result_df = spark.createDataFrame(data=row)
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-    # Act: Executed in fixture executed_calculation_job
+    # Act
     sut.write(
         result_df,
         TimeSeriesType.PRODUCTION,
@@ -243,7 +243,7 @@ def test__write__writes_time_series_type_column(
     result_df = spark.createDataFrame(data=row)
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-    # Act: Executed in fixture executed_calculation_job
+    # Act
     sut.write(
         result_df,
         time_series_type,
@@ -272,7 +272,7 @@ def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
     result_df = spark.createDataFrame(data=row)
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-    # Act: Executed in fixture executed_calculation_job
+    # Act
     sut.write(
         result_df,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
@@ -282,3 +282,24 @@ def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
     # Assert
     actual_df = spark.read.table(table_name)
     assert actual_df.collect()[0]["batch_id"] == DEFAULT_BATCH_ID
+
+
+def test__write_result_to_table__when_schema_differs_from_table__raise_exception(
+    spark: SparkSession, tmpdir: Path
+) -> None:
+    # Arrange
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA,
+            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
+            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
+        )
+    ]
+    result_df_1 = spark.createDataFrame(data=row)
+    result_df_2 = result_df_1.withColumn("extra_column", lit("some_value"))
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut._write_result_to_table(result_df_1, Grouping.total_ga)
+
+    # Act and Assert
+    with pytest.raises(Exception):
+        sut._write_result_to_table(result_df_2, Grouping.total_ga)
