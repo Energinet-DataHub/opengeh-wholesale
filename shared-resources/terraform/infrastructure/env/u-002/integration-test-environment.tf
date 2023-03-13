@@ -546,6 +546,18 @@ resource "databricks_job" "migration_playground_workflow" {
   }
 
   task {
+    task_key = "gold_to_eloverblik_time_series"
+    depends_on {
+      task_key = "silver_to_gold_time_series"
+    }
+
+    notebook_task {
+      notebook_path = "source/DataMigration/gold/eloverblik_time_series"
+    }
+    job_cluster_key = "playground_job_cluster"
+  }
+
+  task {
     task_key = "silver_to_gold_metering_points"
     depends_on {
       task_key = "bronze_to_silver_metering_points"
@@ -565,6 +577,18 @@ resource "databricks_job" "migration_playground_workflow" {
 
     notebook_task {
       notebook_path = "source/DataMigration/systemtest/time_series/time_series_tests"
+    }
+    job_cluster_key = "playground_job_cluster"
+  }
+
+  task {
+    task_key = "eloverblik_time_series_system_test"
+    depends_on {
+      task_key = "gold_to_eloverblik_time_series"
+    }
+
+    notebook_task {
+      notebook_path = "source/DataMigration/systemtest/time_series/eloverblik_time_series_tests"
     }
     job_cluster_key = "playground_job_cluster"
   }
