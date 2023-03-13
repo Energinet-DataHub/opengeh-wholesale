@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using FluentAssertions;
 using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.QuantityQuality;
+using TimeSeriesTypeMapper = Energinet.DataHub.Wholesale.Infrastructure.Integration.TimeSeriesTypeMapper;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Integration;
 

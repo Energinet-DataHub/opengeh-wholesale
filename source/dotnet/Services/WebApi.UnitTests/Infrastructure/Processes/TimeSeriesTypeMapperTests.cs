@@ -32,7 +32,7 @@ public class TimeSeriesTypeMapperTests
         var timeSeriesTypes = Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>();
         foreach (var timeSeriesType in timeSeriesTypes)
         {
-            var actual = TimeSeriesTypeToGroupByMapper.Map(timeSeriesType);
+            var actual = TimeSeriesTypeMapper.Map(timeSeriesType);
             if (timeSeriesType == type)
                 actual.Should().Be(expected);
         }

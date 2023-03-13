@@ -56,16 +56,16 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
     }
 
     public static string GetDirectoryForBrpGridArea(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln)
-        => $"calculation-output/batch_id={batchId}/result/grouping={BalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeToGroupByMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/gln={balanceResponsiblePartyGln}/";
+        => $"calculation-output/batch_id={batchId}/result/grouping={BalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/gln={balanceResponsiblePartyGln}/";
 
     public static string GetDirectoryForEsGridArea(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string energySupplierGln)
-        => $"calculation-output/batch_id={batchId}/result/grouping={EnergySupplierGridArea}/time_series_type={TimeSeriesTypeToGroupByMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/gln={energySupplierGln}/";
+        => $"calculation-output/batch_id={batchId}/result/grouping={EnergySupplierGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/gln={energySupplierGln}/";
 
     public static string GetDirectoryForTotalGridArea(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType)
-        => $"calculation-output/batch_id={batchId}/result/grouping={TotalGridArea}/time_series_type={TimeSeriesTypeToGroupByMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/";
+        => $"calculation-output/batch_id={batchId}/result/grouping={TotalGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/";
 
     public static string GetDirectoryForEsBrpGridArea(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln, string energySupplierGln)
-        => $"calculation-output/batch_id={batchId}/result/grouping={BalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeToGroupByMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/balance_responsible_party_gln={balanceResponsiblePartyGln}/energy_supplier_gln={energySupplierGln}/";
+        => $"calculation-output/batch_id={batchId}/result/grouping={BalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/balance_responsible_party_gln={balanceResponsiblePartyGln}/energy_supplier_gln={energySupplierGln}/";
 
     private async Task<ProcessStepResult> GetResultAsync(string directory, TimeSeriesType timeSeriesType)
     {
