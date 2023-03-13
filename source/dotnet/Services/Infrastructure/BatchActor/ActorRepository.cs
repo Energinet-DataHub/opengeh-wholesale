@@ -59,7 +59,7 @@ public class ActorRepository : IActorRepository
         TimeSeriesType timeSeriesType)
     {
         return (
-            $"calculation-output/batch_id={batchId}/actors/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/",
+            $"calculation-output/batch_id={batchId}/actors/time_series_type={TimeSeriesTypeToGroupByMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/",
             ".json");
     }
 
