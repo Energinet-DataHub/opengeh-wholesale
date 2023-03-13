@@ -1,5 +1,17 @@
 # Wholesale Contracts Release notes
 
+## Version 2.1.4
+
+Partial class for `CalculationResultCompleted` for `messagetype` names.
+
+## Version 2.1.3
+
+No functional changes.
+
+## Version 2.1.2
+
+No functional changes.
+
 ## Version 2.1.1
 
 A few fixes to the contract `CalculationResultCompleted`.

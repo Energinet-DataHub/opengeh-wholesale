@@ -12,21 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application;
+// DO NOT CHANGE - this namespace is exposed publicly in the Contracts package
+namespace Energinet.DataHub.Wholesale.Contracts.Events;
 
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-
-namespace Energinet.DataHub.Wholesale.Application;
-
-public interface IIntegrationEventPublisher
+public partial class CalculationResultCompleted
 {
-    Task PublishAsync(ProcessCompletedEventDto processCompletedEvent);
-
-    Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto);
+    /// <summary>
+    /// The message type for balance-fixing-completed transport message meta data in accordance with ADR-008.
+    /// </summary>
+    public const string BalanceFixingEventName = "BalanceFixingCalculationResultCompleted";
 
     /// <summary>
-    /// Fetches outbox messages and publishes them as integration events.
+    /// The message type for aggregation-completed transport message meta data in accordance with ADR-008.
     /// </summary>
-    Task PublishIntegrationEventsAsync(CancellationToken token);
+    public const string AggregationEventName = "AggregationCalculationResultCompleted";
 }

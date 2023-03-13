@@ -25,5 +25,6 @@ public class ProcessCompletedTests
     {
         // This should not be changed as it'll affect external subscribers
         ProcessCompleted.BalanceFixingProcessType.Should().Be("BalanceFixingCompleted");
+        ProcessCompleted.AggregationProcessType.Should().Be("AggregationCompleted");
     }
 }

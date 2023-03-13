@@ -82,6 +82,62 @@ public sealed class SettlementReportApplicationServiceTests
         hourContent.Should().BeEquivalentTo(hourDir);
     }
 
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetSettlementReport_GivenBatchId_ReturnsStream(BatchCompletedEventDto batchCompletedEvent)
+    {
+        // arrange
+        var batch = CreateBatch(batchCompletedEvent);
+        var serviceCollectionConfigurator = new ServiceCollectionConfigurator();
+        var zipFileName = Path.GetTempFileName();
+
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, collection =>
+            serviceCollectionConfigurator
+                .WithBatchFileManagerForBatch(batch, zipFileName)
+                .Configure(collection));
+
+        await using var scope = host.BeginScope();
+        await AddBatchToDatabase(scope, batch);
+
+        var sut = scope.ServiceProvider.GetRequiredService<ISettlementReportApplicationService>();
+        await sut.CreateSettlementReportAsync(batchCompletedEvent);
+
+        // act
+        var actual = await sut.GetSettlementReportAsync(batch.Id);
+
+        // assert
+        actual.Stream.Should().NotBeNull();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetSettlementReport_GivenBatchIdAndGridAreaCode_WritesToOutputStream(BatchCompletedEventDto batchCompletedEvent)
+    {
+        // arrange
+        var batch = CreateBatch(batchCompletedEvent);
+        var serviceCollectionConfigurator = new ServiceCollectionConfigurator();
+        var zipFileName = Path.GetTempFileName();
+
+        using var host = await ProcessManagerIntegrationTestHost.CreateAsync(_processManagerDatabaseFixture.DatabaseManager.ConnectionString, collection =>
+            serviceCollectionConfigurator
+                .WithBatchFileManagerForBatch(batch, zipFileName)
+                .Configure(collection));
+
+        await using var scope = host.BeginScope();
+        await AddBatchToDatabase(scope, batch);
+
+        var sut = scope.ServiceProvider.GetRequiredService<ISettlementReportApplicationService>();
+        await sut.CreateSettlementReportAsync(batchCompletedEvent);
+
+        await using var outputStream = new MemoryStream();
+
+        // act
+        await sut.GetSettlementReportAsync(batch.Id, batch.GridAreaCodes.First().Code, outputStream);
+
+        // assert
+        outputStream.GetBuffer().Length.Should().BeGreaterThan(0);
+    }
+
     private static async Task AddBatchToDatabase(AsyncServiceScope scope, Batch batch)
     {
         var batchRepository = scope.ServiceProvider.GetRequiredService<IBatchRepository>();

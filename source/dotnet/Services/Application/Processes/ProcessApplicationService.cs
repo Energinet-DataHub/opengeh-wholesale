@@ -13,35 +13,29 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
 public class ProcessApplicationService : IProcessApplicationService
 {
-    private readonly IProcessCompletedIntegrationEventPublisher _processCompletedIntegrationEventPublisher;
+    private readonly IIntegrationEventPublisher _integrationEventPublisher;
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
     private readonly IDomainEventPublisher _domainEventPublisher;
-    private readonly IOutboxService _outboxService;
-    private readonly IOutboxMessageFactory _outboxMessageFactory;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IProcessStepResultRepository _processStepResultRepository;
 
     public ProcessApplicationService(
-        IProcessCompletedIntegrationEventPublisher processCompletedIntegrationEventPublisher,
+        IIntegrationEventPublisher integrationEventPublisher,
         IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
         IDomainEventPublisher domainEventPublisher,
-        IOutboxService outboxService,
-        IOutboxMessageFactory outboxMessageFactory,
-        IUnitOfWork unitOfWork)
+        IProcessStepResultRepository processStepResultRepository)
     {
-        _processCompletedIntegrationEventPublisher = processCompletedIntegrationEventPublisher;
+        _integrationEventPublisher = integrationEventPublisher;
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
-        _outboxService = outboxService;
-        _outboxMessageFactory = outboxMessageFactory;
-        _unitOfWork = unitOfWork;
+        _processStepResultRepository = processStepResultRepository;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
@@ -52,8 +46,16 @@ public class ProcessApplicationService : IProcessApplicationService
 
     public async Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
-        var outboxMessage = _outboxMessageFactory.CreateFrom(processCompletedEvent);
-        await _outboxService.AddAsync(outboxMessage).ConfigureAwait(false);
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        await _integrationEventPublisher.PublishAsync(processCompletedEvent).ConfigureAwait(false);
+    }
+
+    public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
+    {
+        // Get result for Total GA Production
+        var productionForTotalGa = await _processStepResultRepository
+            .GetAsync(processCompletedEvent.BatchId, new GridAreaCode(processCompletedEvent.GridAreaCode), TimeSeriesType.Production, null, null)
+            .ConfigureAwait(false);
+
+        await _integrationEventPublisher.PublishAsync(productionForTotalGa, processCompletedEvent).ConfigureAwait(false);
     }
 }

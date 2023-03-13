@@ -1,5 +1,17 @@
 # Wholesale Client Package Release notes
 
+## Version 5.0.19
+
+No functional changes
+
+## Version 5.0.18
+
+No functional changes
+
+## Version 5.0.17
+
+Added `ProcessType` to `BatchDtoV2`
+
 ## Version 5.0.16
 
 No functional changes

@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,7 @@ public class BatchController : ControllerBase
     /// <returns>200 Ok with The batch id, or a 400 with an errormessage</returns>
     [HttpPost]
     [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(Guid))]
     public async Task<Guid> CreateAsync([FromBody] BatchRequestDto batchRequestDto)
     {
         batchRequestDto = batchRequestDto with { EndDate = batchRequestDto.EndDate.AddMilliseconds(1) };
@@ -74,6 +76,7 @@ public class BatchController : ControllerBase
     /// <returns>Batches that matches the search criteria. Always 200 OK</returns>
     [HttpPost("Search")]
     [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(List<BatchDtoV2>))]
     public async Task<IActionResult> SearchAsync([FromBody] BatchSearchDto batchSearchDto)
     {
         var batchesDto = await _batchApplicationService.SearchAsync(
@@ -103,6 +106,7 @@ public class BatchController : ControllerBase
     [Obsolete("Use HTTP GET /v2_3/settlementreport")]
     [HttpPost("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(Stream))]
     public async Task<IActionResult> GetSettlementReportAsync([FromBody] Guid batchId)
     {
         var report = await _settlementReportApplicationService.GetSettlementReportAsync(batchId).ConfigureAwait(false);
@@ -116,6 +120,7 @@ public class BatchController : ControllerBase
     /// <param name="batchId">BatchId</param>
     [HttpGet]
     [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(BatchDtoV2))]
     public async Task<IActionResult> GetAsync(Guid batchId)
     {
         var batchDto = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);

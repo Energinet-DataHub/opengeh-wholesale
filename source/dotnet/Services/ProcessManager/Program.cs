@@ -92,11 +92,12 @@ public static class Program
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
-        services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
+        services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
         services.AddScoped<ICalculationDomainService, CalculationDomainService>();
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
+        services.AddScoped<ICalculationResultReadyIntegrationEventFactory, CalculationResultReadyIntegrationEventFactory>();
     }
 
     private static void Domains(IServiceCollection services)
@@ -148,7 +149,7 @@ public static class Program
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(
             provider => new SettlementReportRepository(
-                provider.GetRequiredService<DataLakeFileSystemClient>(),
+                provider.GetRequiredService<IDataLakeClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
     }
 
