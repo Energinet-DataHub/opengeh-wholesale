@@ -216,8 +216,7 @@ def test__write__writes_grouping_column(
 
     # Assert
     actual_df = spark.read.table(table_name)
-    actual_df.show()
-    assert actual_df.collect()[0]["grouping"] == grouping.value
+    assert actual_df.collect()[0]["AggregationLevel"] == grouping.value
 
 
 @pytest.mark.parametrize(
@@ -288,6 +287,11 @@ def test__write_result_to_table__when_schema_differs_from_table__raise_exception
     spark: SparkSession, tmpdir: Path
 ) -> None:
     # Arrange
+    table_name = "result_table"
+    spark.sql(
+        f"DROP TABLE IF EXISTS {table_name}"
+    )  # needed to avoid conflict between parametrized tests
+
     row = [
         _create_result_row(
             grid_area=DEFAULT_GRID_AREA,
