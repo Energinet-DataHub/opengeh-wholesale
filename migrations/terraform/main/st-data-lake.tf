@@ -39,3 +39,15 @@ resource "azurerm_storage_container" "gold" {
   storage_account_name  = module.st_migrations.name
   container_access_type = "private"
 }
+
+resource "azurerm_storage_container" "eloverblik" {
+  name                  = "eloverblik"
+  storage_account_name  = module.st_migrations.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "wholesale" {
+  name                  = "wholesale"
+  storage_account_name  = module.st_migrations.name
+  container_access_type = "private"
+}
