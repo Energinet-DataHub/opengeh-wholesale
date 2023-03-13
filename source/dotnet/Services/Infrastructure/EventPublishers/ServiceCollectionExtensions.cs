@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
@@ -48,7 +49,7 @@ public static class ServiceCollectionExtensions
     {
         ServiceBusClientAndAndMessageFactoryRegistry(serviceCollection, serviceBusConnectionString);
 
-        serviceCollection.AddScoped<IProcessCompletedIntegrationEventPublisher, ProcessCompletedIntegrationEventPublisher>();
+        serviceCollection.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
         serviceCollection.AddSingleton<IIntegrationEventTopicServiceBusSender>(provider =>
         {
             var client = provider.GetRequiredService<ServiceBusClient>();
