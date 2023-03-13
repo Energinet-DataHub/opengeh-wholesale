@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
@@ -25,17 +26,20 @@ public class ProcessApplicationService : IProcessApplicationService
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
     private readonly IDomainEventPublisher _domainEventPublisher;
     private readonly IProcessStepResultRepository _processStepResultRepository;
+    private readonly IActorRepository _actorRepository;
 
     public ProcessApplicationService(
         IIntegrationEventPublisher integrationEventPublisher,
         IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
         IDomainEventPublisher domainEventPublisher,
-        IProcessStepResultRepository processStepResultRepository)
+        IProcessStepResultRepository processStepResultRepository,
+        IActorRepository actorRepository)
     {
         _integrationEventPublisher = integrationEventPublisher;
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
         _processStepResultRepository = processStepResultRepository;
+        _actorRepository = actorRepository;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
@@ -51,11 +55,39 @@ public class ProcessApplicationService : IProcessApplicationService
 
     public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
+        await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEvent).ConfigureAwait(false);
+
         // Get result for Total GA Production
         var productionForTotalGa = await _processStepResultRepository
             .GetAsync(processCompletedEvent.BatchId, new GridAreaCode(processCompletedEvent.GridAreaCode), TimeSeriesType.Production, null, null)
             .ConfigureAwait(false);
 
         await _integrationEventPublisher.PublishAsync(productionForTotalGa, processCompletedEvent).ConfigureAwait(false);
+    }
+
+    private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent)
+    {
+        var timeSeriesTypes = Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>();
+        foreach (var timeSeriesType in timeSeriesTypes)
+        {
+            var actors = await _actorRepository.GetEnergySuppliersAsync(
+                processCompletedEvent.BatchId,
+                new GridAreaCode(processCompletedEvent.GridAreaCode),
+                timeSeriesType).ConfigureAwait(false);
+
+            foreach (var actor in actors)
+            {
+                var productionForEsGa = await _processStepResultRepository
+                    .GetAsync(
+                        processCompletedEvent.BatchId,
+                        new GridAreaCode(processCompletedEvent.GridAreaCode),
+                        timeSeriesType,
+                        actor.Gln,
+                        null)
+                    .ConfigureAwait(false);
+
+                await _integrationEventPublisher.PublishAsync(productionForEsGa, processCompletedEvent).ConfigureAwait(false);
+            }
+        }
     }
 }
