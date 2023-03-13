@@ -4,7 +4,6 @@
   topic_id            = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
   project_name        = var.domain_name_short
   max_delivery_count  = 10 
-  correlation_filter  = {
-    label   = local.WHOLESALE_PROCESS_COMPLETED_EVENT_TYPE_NAME
-  }
+  filter_type = "SqlFilter"
+  sql_filter = "label = 'BalanceFixingCompleted' OR label = 'AggregationCalculationResultCompleted'"
 }
