@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
@@ -37,7 +37,7 @@ public class SettlementReportController : V3ControllerBase
     /// <param name="gridAreaCode">GridAreaCode</param>
     [HttpGet]
     [MapToApiVersion(Version)]
-    public async Task GetAsync([FromQuery] Guid batchId, [FromQuery] string gridAreaCode)
+    public async Task GetAsync([Required]Guid batchId, [Required]string gridAreaCode)
     {
         var outputStream = Response.BodyWriter.AsStream();
 
