@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "azuread" {
-  tenant_id     = var.b2c_tenant_id
-  client_id     = var.b2c_client_id
-  client_secret = var.b2c_client_secret
+  use_oidc  = true
+  tenant_id = var.b2c_tenant_id
+  client_id = var.b2c_client_id
 }
