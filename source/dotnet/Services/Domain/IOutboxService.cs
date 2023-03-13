@@ -17,4 +17,6 @@ namespace Energinet.DataHub.Wholesale.Domain;
 public interface IOutboxService
 {
     Task AddAsync(OutboxMessage outboxMessage);
+
+    Task DeleteOutboxMessagesOlderThan14DaysAsync();
 }

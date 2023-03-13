@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Domain;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
 {
@@ -38,6 +39,12 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
                 .OrderBy(x => x.CreationDate)
                 .ToListAsync(token)
                 .ConfigureAwait(false);
+        }
+
+        public void DeleteBy(Instant date)
+        {
+            var messagesToDelete = _context.OutboxMessages.Where(x => x.ProcessedDate.HasValue && x.ProcessedDate.Value < date);
+            _context.OutboxMessages.RemoveRange(messagesToDelete);
         }
     }
 }

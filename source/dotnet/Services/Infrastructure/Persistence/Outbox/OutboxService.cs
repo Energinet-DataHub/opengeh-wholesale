@@ -12,21 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Domain;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 
 public class OutboxService : IOutboxService
 {
     private readonly IOutboxMessageRepository _outboxMessageRepository;
+    private readonly IClock _clock;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public OutboxService(IOutboxMessageRepository outboxMessageRepository)
+    public OutboxService(
+        IOutboxMessageRepository outboxMessageRepository,
+        IClock clock,
+        IUnitOfWork unitOfWork)
     {
         _outboxMessageRepository = outboxMessageRepository;
+        _clock = clock;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task AddAsync(OutboxMessage outboxMessage)
     {
         await _outboxMessageRepository.AddAsync(outboxMessage).ConfigureAwait(false);
+    }
+
+    public async Task DeleteOutboxMessagesOlderThan14DaysAsync()
+    {
+        var instant = _clock.GetCurrentInstant();
+        instant = instant.Minus(Duration.FromDays(14));
+        _outboxMessageRepository.DeleteBy(instant);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }
