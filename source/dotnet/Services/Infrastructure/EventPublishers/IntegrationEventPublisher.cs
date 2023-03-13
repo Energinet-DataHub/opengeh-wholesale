@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Google.Protobuf;
@@ -22,35 +24,55 @@ using ProcessType = Energinet.DataHub.Wholesale.Contracts.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
-public class ProcessCompletedIntegrationEventPublisher : IProcessCompletedIntegrationEventPublisher
+public class IntegrationEventPublisher : IIntegrationEventPublisher
 {
     private readonly IIntegrationEventTopicServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
+    private readonly ICalculationResultReadyIntegrationEventFactory _calculationResultReadyIntegrationEventFactory;
 
-    public ProcessCompletedIntegrationEventPublisher(
+    public IntegrationEventPublisher(
         IIntegrationEventTopicServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory,
-        IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper)
+        IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper,
+        ICalculationResultReadyIntegrationEventFactory calculationResultReadyIntegrationEventFactory)
     {
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
         _processCompletedIntegrationEventMapper = processCompletedIntegrationEventMapper;
+        _calculationResultReadyIntegrationEventFactory = calculationResultReadyIntegrationEventFactory;
     }
 
     public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
     {
         var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEvent);
-        var messageType = GetMessageType(processCompletedEvent.ProcessType);
+        var messageType = GetMessageTypeForProcessCompletedEvent(processCompletedEvent.ProcessType);
         var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
-    private string GetMessageType(ProcessType processType) =>
+    public async Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
+    {
+        var integrationEvent =
+            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResultDto, processCompletedEventDto);
+        var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
+        var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
+        await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
+    }
+
+    private string GetMessageTypeForProcessCompletedEvent(ProcessType processType) =>
         processType switch
         {
             ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
             ProcessType.Aggregation => ProcessCompleted.AggregationProcessType,
+            _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
+        };
+
+    private string GetMessageTypeForCalculationResultCompletedEvent(ProcessType processType) =>
+        processType switch
+        {
+            ProcessType.BalanceFixing => CalculationResultCompleted.BalanceFixingEventName,
+            ProcessType.Aggregation => CalculationResultCompleted.AggregationEventName,
             _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
         };
 }

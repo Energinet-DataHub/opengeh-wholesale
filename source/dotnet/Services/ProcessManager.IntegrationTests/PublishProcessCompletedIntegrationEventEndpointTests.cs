@@ -46,7 +46,7 @@ public class PublishProcessCompletedIntegrationEventEndpointTests
 
         public Task DisposeAsync() => Task.CompletedTask;
 
-        [Fact]
+        [Fact(Skip = "Reintroduce after we can integration test datalake")]
         public async Task When_ProcessCompletedDomainEventPublished_Then_ProcessCompletedIntegrationEventPublished()
         {
             // Arrange
