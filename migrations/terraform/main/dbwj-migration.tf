@@ -127,6 +127,10 @@ resource "databricks_job" "this" {
       whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
     }
 
+    depends_on {
+      task_key = local.task_ts_start_trigger
+    }
+
     notebook_task {  
       notebook_path     = "source/DataMigration/config/workspace_setup"
       base_parameters   = {
@@ -164,9 +168,6 @@ resource "databricks_job" "this" {
     task_key = "check_schemas"
     depends_on {
       task_key = local.task_mp_start_trigger
-    }
-    depends_on {
-      task_key = local.task_ts_start_trigger
     }
     
     notebook_task {
