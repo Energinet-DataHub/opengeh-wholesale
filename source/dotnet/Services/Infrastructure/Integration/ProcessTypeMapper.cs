@@ -12,11 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
-public interface IProcessCompletedIntegrationEventPublisher
+public static class ProcessTypeMapper
 {
-    Task PublishAsync(ProcessCompletedEventDto processCompletedEvent);
+    public static ProcessType MapProcessType(Contracts.ProcessType processType)
+    {
+        return processType switch
+        {
+            Contracts.ProcessType.Aggregation => ProcessType.Aggregation,
+            Contracts.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
+        };
+    }
 }
