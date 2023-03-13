@@ -26,6 +26,10 @@ on:
         required: false
         default: ''
         type: string
+      B2C_INFRASTRUCTURE_PATH:
+        required: false
+        default: ''
+        type: string
     secrets:
       PAT_TOKEN:
         required: true
@@ -79,6 +83,26 @@ jobs:
         shell: bash
         run: |
           cp -fR ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
+
+      - name: Terraform validate
+        uses: ./.github/actions/terraform-validate
+        with:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          WORKING_DIRECTORY: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
+
+  # If no environments exists, we still need to validate main folder
+  validate_b2c_environment:
+    if: ${{ inputs.B2C_INFRASTRUCTURE_PATH != '' }}
+    name: Validating B2C configuration
+    runs-on: ${{ inputs.OPERATING_SYSTEM }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Copy infrastructure files
+        shell: bash
+        run: |
+          cp -fR ${{ inputs.B2C_INFRASTRUCTURE_PATH }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
 
       - name: Terraform validate
         uses: ./.github/actions/terraform-validate
@@ -160,6 +184,12 @@ jobs:
         shell: bash
         run: |
           cp -fR ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
+
+      - name: Copy B2C infrastructure files
+        if: ${{ inputs.B2C_INFRASTRUCTURE_PATH != '' }}
+        shell: bash
+        run: |
+          cp -fR ${{ inputs.B2C_INFRASTRUCTURE_PATH }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
 
       - name: Zip files for prerelease
         uses: thedoctor0/zip-release@0.6.2
