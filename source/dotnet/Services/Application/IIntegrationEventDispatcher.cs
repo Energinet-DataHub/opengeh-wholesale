@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.Application;
 
-namespace Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-public interface IOutboxMessageRepository
+public interface IIntegrationEventDispatcher
 {
-    Task AddAsync(OutboxMessage message);
-
-    Task<IList<OutboxMessage>> GetByAsync(int numberOfElements, CancellationToken token);
-
-    void DeleteBy(Instant date);
+    /// <summary>
+    /// Fetches outbox messages and publishes them as integration events.
+    /// </summary>
+    Task PublishIntegrationEventsAsync(CancellationToken token);
 }

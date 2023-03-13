@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
@@ -46,29 +45,12 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
     {
         var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEvent);
-        var messageType = GetMessageTypeForProcessCompletedEvent(processCompletedEvent.ProcessType);
+        var messageType = GetMessageType(processCompletedEvent.ProcessType);
         var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
-    public async Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
-    {
-        var integrationEvent =
-            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResultDto, processCompletedEventDto);
-        var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
-        var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
-        await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
-    }
-
-    private string GetMessageTypeForProcessCompletedEvent(ProcessType processType) =>
-        processType switch
-        {
-            ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
-            ProcessType.Aggregation => ProcessCompleted.AggregationProcessType,
-            _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
-        };
-
-    private string GetMessageTypeForCalculationResultCompletedEvent(ProcessType processType) =>
+    private static string GetMessageType(ProcessType processType) =>
         processType switch
         {
             ProcessType.BalanceFixing => CalculationResultCompleted.BalanceFixingEventName,

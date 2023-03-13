@@ -15,18 +15,8 @@
 namespace Energinet.DataHub.Wholesale.Application;
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-
-namespace Energinet.DataHub.Wholesale.Application;
 
 public interface IIntegrationEventPublisher
 {
     Task PublishAsync(ProcessCompletedEventDto processCompletedEvent);
-
-    Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto);
-
-    /// <summary>
-    /// Fetches outbox messages and publishes them as integration events.
-    /// </summary>
-    Task PublishIntegrationEventsAsync(CancellationToken token);
 }

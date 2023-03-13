@@ -14,10 +14,13 @@
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application;
 
 public interface IOutboxMessageFactory
 {
     OutboxMessage CreateFrom(ProcessCompletedEventDto processCompletedEventDto);
+
+    OutboxMessage CreateFrom(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto);
 }

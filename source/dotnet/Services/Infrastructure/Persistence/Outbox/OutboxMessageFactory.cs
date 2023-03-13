@@ -16,7 +16,9 @@ using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Google.Protobuf;
 using NodaTime;
 
@@ -26,25 +28,41 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
     {
         private readonly IClock _systemDateTimeProvider;
         private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
+        private readonly ICalculationResultReadyIntegrationEventFactory _calculationResultReadyIntegrationEventFactory;
+        private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
 
-        public OutboxMessageFactory(IClock systemDateTimeProvider, IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper)
+        public OutboxMessageFactory(
+            IClock systemDateTimeProvider,
+            IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper,
+            ICalculationResultReadyIntegrationEventFactory calculationResultReadyIntegrationEventFactory,
+            IServiceBusMessageFactory serviceBusMessageFactory)
         {
             _systemDateTimeProvider = systemDateTimeProvider;
             _processCompletedIntegrationEventMapper = processCompletedIntegrationEventMapper;
+            _calculationResultReadyIntegrationEventFactory = calculationResultReadyIntegrationEventFactory;
+            _serviceBusMessageFactory = serviceBusMessageFactory;
         }
 
         public OutboxMessage CreateFrom(ProcessCompletedEventDto processCompletedEventDto)
         {
             var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEventDto);
-            var messageType = GetMessageType(processCompletedEventDto.ProcessType);
+            var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
             return new OutboxMessage(messageType, integrationEvent.ToByteArray(), _systemDateTimeProvider.GetCurrentInstant());
         }
 
-        private static string GetMessageType(Energinet.DataHub.Wholesale.Contracts.ProcessType processType) =>
+        public OutboxMessage CreateFrom(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto)
+        {
+            var integrationEvent = _calculationResultReadyIntegrationEventFactory
+                .CreateCalculationResultCompletedForGridArea(processStepResult, processCompletedEventDto);
+            var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
+            return new OutboxMessage(messageType, integrationEvent.ToByteArray(), _systemDateTimeProvider.GetCurrentInstant());
+        }
+
+        private static string GetMessageTypeForCalculationResultCompletedEvent(Energinet.DataHub.Wholesale.Contracts.ProcessType processType) =>
             processType switch
             {
-                Contracts.ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
-                Contracts.ProcessType.Aggregation => ProcessCompleted.AggregationProcessType,
+                Contracts.ProcessType.BalanceFixing => CalculationResultCompleted.BalanceFixingEventName,
+                Contracts.ProcessType.Aggregation => CalculationResultCompleted.AggregationEventName,
                 _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
             };
     }
