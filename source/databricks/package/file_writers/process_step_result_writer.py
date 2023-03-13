@@ -171,6 +171,7 @@ class ProcessStepResultWriter:
         df = df.withColumnRenamed(
             Colname.quality, "QuantityQuality"
         )  # TODO: use QuantityQuality everywhere
+        df = df.withColumnRenamed("quarter_time", "time")  # TODO: time everywhere
 
         if grouping == Grouping.total_ga:
             df = df.withColumn(
