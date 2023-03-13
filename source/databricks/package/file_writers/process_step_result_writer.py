@@ -165,6 +165,12 @@ class ProcessStepResultWriter:
         grouping: Grouping,
     ) -> None:
         df = df.withColumn(Colname.batch_id, lit(self.__batch_id))
+        df = df.withColumnRenamed(
+            PartitionKeyName.GROUPING, "AggregationLevel"
+        )  # TODO: rename Grouping enum to AggragationLevel
+        df = df.withColumnRenamed(
+            Colname.quality, "QuantityQuality"
+        )  # TODO: use QuantityQuality everywhere
 
         if grouping == Grouping.total_ga:
             df = df.withColumn(
