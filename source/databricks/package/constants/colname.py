@@ -19,6 +19,7 @@ class Colname:
     added_system_correction = "added_system_correction"
     aggregated_quality = "aggregated_quality"
     balance_responsible_id = "BalanceResponsibleId"
+    batch_id = "batch_id"
     charge_count = "charge_count"
     charge_id = "charge_id"
     charge_key = "charge_key"
