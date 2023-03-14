@@ -50,13 +50,13 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
-    public async Task PublishCalculationResultForTotalGridAreaAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
+    public async Task PublishCalculationResultForTotalGridAreaAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto)
     {
         var integrationEvent =
             _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResultDto, processCompletedEventDto);
-        var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
-        var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
-        await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
+        await PublishCalculationResultCompletedAsync(processCompletedEventDto, integrationEvent).ConfigureAwait(false);
     }
 
     public async Task PublishCalculationResultForEnergySupplierAsync(
@@ -66,6 +66,13 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     {
         var integrationEvent =
             _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForEnergySupplier(processStepResultDto, processCompletedEventDto, energySupplierGln);
+        await PublishCalculationResultCompletedAsync(processCompletedEventDto, integrationEvent).ConfigureAwait(false);
+    }
+
+    private async Task PublishCalculationResultCompletedAsync(
+        ProcessCompletedEventDto processCompletedEventDto,
+        CalculationResultCompleted integrationEvent)
+    {
         var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
         var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
