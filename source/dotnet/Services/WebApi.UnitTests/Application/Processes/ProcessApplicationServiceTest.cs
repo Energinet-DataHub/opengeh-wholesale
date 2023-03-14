@@ -17,9 +17,15 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Moq;
+using NodaTime;
 using Xunit;
+using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Processes;
 
@@ -45,5 +51,126 @@ public class ProcessApplicationServiceTest
     {
         await sut.PublishProcessCompletedIntegrationEventsAsync(eventDto);
         publisherMock.Verify(publisher => publisher.PublishAsync(eventDto), Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaProductionOnce(
+        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
+        [Frozen] Mock<IActorRepository> actorRepositoryMock,
+        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        ProcessApplicationService sut)
+    {
+        // Arrange
+        var eventDto = new ProcessCompletedEventDto(
+            "805",
+            Guid.NewGuid(),
+            ProcessType.BalanceFixing,
+            Instant.MinValue,
+            Instant.MinValue);
+
+        var processStepResult = new ProcessStepResult(
+            TimeSeriesType.Production,
+            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+
+        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+            eventDto.BatchId,
+            It.IsAny<GridAreaCode>(),
+            TimeSeriesType.Production,
+            null,
+            null)).ReturnsAsync(processStepResult);
+
+        actorRepositoryMock
+            .Setup(a => a.GetEnergySuppliersAsync(
+                eventDto.BatchId,
+                new GridAreaCode(eventDto.GridAreaCode),
+                It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
+
+        //Act
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+
+        // Assert
+        publisherMock.Verify(publisher => publisher.PublishCalculationResultForTotalGridAreaAsync(processStepResult, eventDto), Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaNonProfiledConsumptionOnce(
+        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
+        [Frozen] Mock<IActorRepository> actorRepositoryMock,
+        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        ProcessApplicationService sut)
+    {
+        // Arrange
+        var eventDto = new ProcessCompletedEventDto(
+            "805",
+            Guid.NewGuid(),
+            ProcessType.BalanceFixing,
+            Instant.MinValue,
+            Instant.MinValue);
+
+        var processStepResult = new ProcessStepResult(
+            TimeSeriesType.Production,
+            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+
+        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+            eventDto.BatchId,
+            It.IsAny<GridAreaCode>(),
+            TimeSeriesType.NonProfiledConsumption,
+            null,
+            null)).ReturnsAsync(processStepResult);
+
+        actorRepositoryMock
+            .Setup(a => a.GetEnergySuppliersAsync(
+                eventDto.BatchId,
+                new GridAreaCode(eventDto.GridAreaCode),
+                It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
+
+        //Act
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+
+        // Assert
+        publisherMock.Verify(publisher => publisher.PublishCalculationResultForTotalGridAreaAsync(processStepResult, eventDto), Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplier(
+        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
+        [Frozen] Mock<IActorRepository> actorRepositoryMock,
+        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        string glnNumber,
+        ProcessApplicationService sut)
+    {
+        // Arrange
+        var eventDto = new ProcessCompletedEventDto(
+            "805",
+            Guid.NewGuid(),
+            ProcessType.BalanceFixing,
+            Instant.MinValue,
+            Instant.MinValue);
+
+        var processStepResult = new ProcessStepResult(
+            TimeSeriesType.NonProfiledConsumption,
+            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+
+        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+            eventDto.BatchId,
+            It.IsAny<GridAreaCode>(),
+            TimeSeriesType.NonProfiledConsumption,
+            glnNumber,
+            null)).ReturnsAsync(processStepResult);
+
+        actorRepositoryMock
+            .Setup(a => a.GetEnergySuppliersAsync(
+                eventDto.BatchId,
+                new GridAreaCode(eventDto.GridAreaCode),
+                It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(glnNumber) });
+
+        //Act
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+
+        // Assert
+        publisherMock.Verify(publisher => publisher.PublishCalculationResultForEnergySupplierAsync(processStepResult, eventDto, glnNumber), Times.Once);
     }
 }

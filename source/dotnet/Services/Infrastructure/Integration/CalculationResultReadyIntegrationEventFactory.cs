@@ -26,16 +26,40 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto)
     {
+        var calculationResultCompleted = Map(processStepResultDto, processCompletedEventDto);
+        calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea
+        {
+            GridAreaCode = processCompletedEventDto.GridAreaCode,
+        };
+
+        return calculationResultCompleted;
+    }
+
+    public CalculationResultCompleted CreateCalculationResultCompletedForEnergySupplier(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string energySupplierGln)
+    {
+        var calculationResultCompleted = Map(processStepResultDto, processCompletedEventDto);
+        calculationResultCompleted.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
+        {
+            GridAreaCode = processCompletedEventDto.GridAreaCode,
+            EnergySupplierGlnOrEic = energySupplierGln,
+        };
+
+        return calculationResultCompleted;
+    }
+
+    private static CalculationResultCompleted Map(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto)
+    {
         var calculationResultCompleted = new CalculationResultCompleted
         {
             BatchId = processCompletedEventDto.BatchId.ToString(),
             Resolution = Resolution.Quarter,
             ProcessType = ProcessTypeMapper.MapProcessType(processCompletedEventDto.ProcessType),
             QuantityUnit = QuantityUnit.Kwh,
-            AggregationPerGridarea = new AggregationPerGridArea
-            {
-                GridAreaCode = processCompletedEventDto.GridAreaCode,
-            },
             PeriodStartUtc = processCompletedEventDto.PeriodStart.ToTimestamp(),
             PeriodEndUtc = processCompletedEventDto.PeriodEnd.ToTimestamp(),
             TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(processStepResultDto.TimeSeriesType),
@@ -49,7 +73,6 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
                     Time = timeSeriesPoint.Time.ToTimestamp(),
                     QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
                 }));
-
         return calculationResultCompleted;
     }
 }
