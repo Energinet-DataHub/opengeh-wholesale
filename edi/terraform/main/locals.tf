@@ -7,5 +7,4 @@ locals {
   # Integration event subscription details
   INTEGRATION_EVENTS_TOPIC_NAME = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-sharedres-integrationevent-received-name)"
   WHOLESALE_PROCESS_COMPLETED_EVENT_SUBSCRIPTION_NAME = "balance-fixing-completed"
-  WHOLESALE_PROCESS_COMPLETED_EVENT_TYPE_NAME = "BalanceFixingCompleted"
 }
