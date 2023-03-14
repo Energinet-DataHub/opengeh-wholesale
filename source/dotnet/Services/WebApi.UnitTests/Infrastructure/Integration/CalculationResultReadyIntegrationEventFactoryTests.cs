@@ -204,7 +204,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     }
 
     [Fact]
-    public void CreateCalculationResultCompletedForBalanceResponsibleParty_WhenCreating_ResultIsForBalanceResponsibleParty()
+    public void CreateCalculationResultCompletedForBalanceResponsibleParty_ReturnsResultForBalanceResponsibleParty()
     {
         // Arrange
         var sut = new CalculationResultReadyIntegrationEventFactory();
