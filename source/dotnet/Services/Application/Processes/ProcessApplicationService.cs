@@ -55,31 +55,32 @@ public class ProcessApplicationService : IProcessApplicationService
 
     public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
-        await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEvent).ConfigureAwait(false);
-        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent).ConfigureAwait(false);
+        // Publish events for energy suppliers
+        await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+
+        // Publish events for total grid area
+        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
+        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
     }
 
-    private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent)
+    private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
-        var productionForTotalGa = await _processStepResultRepository
-            .GetAsync(
-                processCompletedEvent.BatchId,
-                new GridAreaCode(processCompletedEvent.GridAreaCode),
-                TimeSeriesType.Production,
-                null,
-                null)
-            .ConfigureAwait(false);
+            var productionForTotalGa = await _processStepResultRepository
+                .GetAsync(
+                    processCompletedEvent.BatchId,
+                    new GridAreaCode(processCompletedEvent.GridAreaCode),
+                    timeSeriesType,
+                    null,
+                    null)
+                .ConfigureAwait(false);
 
-        await _integrationEventPublisher
-            .PublishCalculationResultForTotalGridAreaAsync(productionForTotalGa, processCompletedEvent)
-            .ConfigureAwait(false);
+            await _integrationEventPublisher
+                .PublishCalculationResultForTotalGridAreaAsync(productionForTotalGa, processCompletedEvent)
+                .ConfigureAwait(false);
     }
 
-    private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent)
+    private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
-        var timeSeriesTypes = Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>();
-        foreach (var timeSeriesType in timeSeriesTypes)
-        {
             var actors = await _actorRepository.GetEnergySuppliersAsync(
                 processCompletedEvent.BatchId,
                 new GridAreaCode(processCompletedEvent.GridAreaCode),
@@ -101,6 +102,5 @@ public class ProcessApplicationService : IProcessApplicationService
                     processCompletedEvent,
                     actor.Gln).ConfigureAwait(false);
             }
-        }
     }
 }
