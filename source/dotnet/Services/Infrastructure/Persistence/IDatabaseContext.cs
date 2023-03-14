@@ -27,5 +27,5 @@ public interface IDatabaseContext
     /// <summary>
     /// Saves changes to the database.
     /// </summary>
-    Task<int> SaveChangesAsync();
+    Task<int> SaveChangesAsync(CancellationToken token = default);
 }

@@ -38,7 +38,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
 
     public DbSet<OutboxMessage> OutboxMessages { get; private set; } = null!;
 
-    public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
+    public new Task<int> SaveChangesAsync(CancellationToken token = default) => base.SaveChangesAsync(token);
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -51,7 +51,7 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     }
 
     [Fact]
-    public async Task GetBy2Async_ReturnTwoOutboxMessages()
+    public async Task GetByTakeAsync_WhenTwo_ReturnsTwoOutboxMessages()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
@@ -66,7 +66,7 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         await writeContext.SaveChangesAsync();
 
         // Act
-        var actual = await sut.GetByAsync(2, default);
+        var actual = await sut.GetByTakeAsync(2, default);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);

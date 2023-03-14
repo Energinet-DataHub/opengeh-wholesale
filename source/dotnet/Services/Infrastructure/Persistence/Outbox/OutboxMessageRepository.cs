@@ -32,9 +32,8 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
             await _context.OutboxMessages.AddAsync(message).ConfigureAwait(false);
         }
 
-        public async Task<IList<OutboxMessage>> GetByAsync(int numberOfElements, CancellationToken token)
+        public async Task<IList<OutboxMessage>> GetByTakeAsync(int numberOfElements, CancellationToken token)
         {
-            // TODO AJW take undersøg tick duration er for lang, tick 2 min
             return await _context.OutboxMessages
                 .Where(x => !x.ProcessedDate.HasValue)
                 .OrderBy(x => x.CreationDate)

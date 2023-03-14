@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
+using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
@@ -30,17 +32,20 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
         private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
         private readonly ICalculationResultReadyIntegrationEventFactory _calculationResultReadyIntegrationEventFactory;
         private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
+        private readonly IJsonSerializer _jsonSerializer;
 
         public OutboxMessageFactory(
             IClock systemDateTimeProvider,
             IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper,
             ICalculationResultReadyIntegrationEventFactory calculationResultReadyIntegrationEventFactory,
-            IServiceBusMessageFactory serviceBusMessageFactory)
+            IServiceBusMessageFactory serviceBusMessageFactory,
+            IJsonSerializer jsonSerializer)
         {
             _systemDateTimeProvider = systemDateTimeProvider;
             _processCompletedIntegrationEventMapper = processCompletedIntegrationEventMapper;
             _calculationResultReadyIntegrationEventFactory = calculationResultReadyIntegrationEventFactory;
             _serviceBusMessageFactory = serviceBusMessageFactory;
+            _jsonSerializer = jsonSerializer;
         }
 
         public OutboxMessage CreateFrom(ProcessCompletedEventDto processCompletedEventDto)
@@ -52,10 +57,12 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
 
         public OutboxMessage CreateFrom(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto)
         {
-            var integrationEvent = _calculationResultReadyIntegrationEventFactory
-                .CreateCalculationResultCompletedForGridArea(processStepResult, processCompletedEventDto);
+            var integrationEvent = _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResult, processCompletedEventDto);
             var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
-            return new OutboxMessage(messageType, integrationEvent.ToByteArray(), _systemDateTimeProvider.GetCurrentInstant());
+            var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
+            var serialized = _jsonSerializer.Serialize(serviceBusMessage);
+            var bytes = Encoding.UTF8.GetBytes(serialized);
+            return new OutboxMessage(messageType, bytes, _systemDateTimeProvider.GetCurrentInstant());
         }
 
         private static string GetMessageTypeForCalculationResultCompletedEvent(Energinet.DataHub.Wholesale.Contracts.ProcessType processType) =>

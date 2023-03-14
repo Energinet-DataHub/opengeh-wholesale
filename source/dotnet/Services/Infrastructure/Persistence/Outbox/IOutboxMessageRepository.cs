@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Domain;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Domain;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 
 public interface IOutboxMessageRepository
 {
     Task AddAsync(OutboxMessage message);
 
-    Task<IList<OutboxMessage>> GetByAsync(int numberOfElements, CancellationToken token);
+    Task<IList<OutboxMessage>> GetByTakeAsync(int numberOfElements, CancellationToken token);
 
     void DeleteByCreationDate(Instant date);
 }
