@@ -56,13 +56,23 @@ public class ProcessApplicationService : IProcessApplicationService
     public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
         await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEvent).ConfigureAwait(false);
+        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent).ConfigureAwait(false);
+    }
 
-        // Get result for Total GA Production
+    private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent)
+    {
         var productionForTotalGa = await _processStepResultRepository
-            .GetAsync(processCompletedEvent.BatchId, new GridAreaCode(processCompletedEvent.GridAreaCode), TimeSeriesType.Production, null, null)
+            .GetAsync(
+                processCompletedEvent.BatchId,
+                new GridAreaCode(processCompletedEvent.GridAreaCode),
+                TimeSeriesType.Production,
+                null,
+                null)
             .ConfigureAwait(false);
 
-        await _integrationEventPublisher.PublishAsync(productionForTotalGa, processCompletedEvent).ConfigureAwait(false);
+        await _integrationEventPublisher
+            .PublishCalculationResultForTotalGridAreaAsync(productionForTotalGa, processCompletedEvent)
+            .ConfigureAwait(false);
     }
 
     private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent)
@@ -77,7 +87,7 @@ public class ProcessApplicationService : IProcessApplicationService
 
             foreach (var actor in actors)
             {
-                var productionForEsGa = await _processStepResultRepository
+                var processStepResultDto = await _processStepResultRepository
                     .GetAsync(
                         processCompletedEvent.BatchId,
                         new GridAreaCode(processCompletedEvent.GridAreaCode),
@@ -86,7 +96,10 @@ public class ProcessApplicationService : IProcessApplicationService
                         null)
                     .ConfigureAwait(false);
 
-                await _integrationEventPublisher.PublishAsync(productionForEsGa, processCompletedEvent).ConfigureAwait(false);
+                await _integrationEventPublisher.PublishCalculationResultForEnergySupplierAsync(
+                    processStepResultDto,
+                    processCompletedEvent,
+                    actor.Gln).ConfigureAwait(false);
             }
         }
     }

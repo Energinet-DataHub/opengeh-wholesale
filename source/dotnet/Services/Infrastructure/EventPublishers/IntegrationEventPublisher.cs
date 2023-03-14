@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
@@ -51,10 +50,22 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
-    public async Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
+    public async Task PublishCalculationResultForTotalGridAreaAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
     {
         var integrationEvent =
             _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResultDto, processCompletedEventDto);
+        var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
+        var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
+        await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
+    }
+
+    public async Task PublishCalculationResultForEnergySupplierAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string energySupplierGln)
+    {
+        var integrationEvent =
+            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForEnergySupplier(processStepResultDto, processCompletedEventDto, energySupplierGln);
         var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
         var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
