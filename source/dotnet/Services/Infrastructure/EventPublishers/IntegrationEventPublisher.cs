@@ -45,12 +45,58 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
     {
         var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEvent);
-        var messageType = GetMessageType(processCompletedEvent.ProcessType);
+        var messageType = GetMessageTypeForProcessCompletedEvent(processCompletedEvent.ProcessType);
         var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
-    private static string GetMessageType(ProcessType processType) =>
+    public async Task PublishCalculationResultForTotalGridAreaAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto)
+    {
+        var integrationEvent =
+            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResultDto, processCompletedEventDto);
+        await PublishCalculationResultCompletedAsync(processCompletedEventDto, integrationEvent).ConfigureAwait(false);
+    }
+
+    public async Task PublishCalculationResultForEnergySupplierAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string energySupplierGln)
+    {
+        var integrationEvent =
+            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForEnergySupplier(processStepResultDto, processCompletedEventDto, energySupplierGln);
+        await PublishCalculationResultCompletedAsync(processCompletedEventDto, integrationEvent).ConfigureAwait(false);
+    }
+
+    public async Task PublishCalculationResultForBalanceResponsiblePartyAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string balanceResponsiblePartyGln)
+    {
+        var integrationEvent =
+            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
+        await PublishCalculationResultCompletedAsync(processCompletedEventDto, integrationEvent).ConfigureAwait(false);
+    }
+
+    private async Task PublishCalculationResultCompletedAsync(
+        ProcessCompletedEventDto processCompletedEventDto,
+        CalculationResultCompleted integrationEvent)
+    {
+        var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
+        var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
+        await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
+    }
+
+    private string GetMessageTypeForProcessCompletedEvent(ProcessType processType) =>
+        processType switch
+        {
+            ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
+            ProcessType.Aggregation => ProcessCompleted.AggregationProcessType,
+            _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
+        };
+
+    private string GetMessageTypeForCalculationResultCompletedEvent(ProcessType processType) =>
         processType switch
         {
             ProcessType.BalanceFixing => CalculationResultCompleted.BalanceFixingEventName,

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
@@ -22,30 +22,24 @@ namespace Energinet.DataHub.Wholesale.Application.Processes;
 
 public class ProcessApplicationService : IProcessApplicationService
 {
+    private readonly IIntegrationEventPublisher _integrationEventPublisher;
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
     private readonly IDomainEventPublisher _domainEventPublisher;
     private readonly IProcessStepResultRepository _processStepResultRepository;
-    private readonly IOutboxService _outboxService;
-    private readonly IOutboxMessageFactory _outboxMessageFactory;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
+    private readonly IActorRepository _actorRepository;
 
     public ProcessApplicationService(
+        IIntegrationEventPublisher integrationEventPublisher,
         IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
         IDomainEventPublisher domainEventPublisher,
         IProcessStepResultRepository processStepResultRepository,
-        IOutboxService outboxService,
-        IOutboxMessageFactory outboxMessageFactory,
-        IUnitOfWork unitOfWork,
-        IIntegrationEventPublisher integrationEventPublisher)
+        IActorRepository actorRepository)
     {
+        _integrationEventPublisher = integrationEventPublisher;
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
         _processStepResultRepository = processStepResultRepository;
-        _outboxService = outboxService;
-        _outboxMessageFactory = outboxMessageFactory;
-        _unitOfWork = unitOfWork;
-        _integrationEventPublisher = integrationEventPublisher;
+        _actorRepository = actorRepository;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
@@ -61,13 +55,80 @@ public class ProcessApplicationService : IProcessApplicationService
 
     public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
-        // Get result for Total GA Production
-        var productionForTotalGa = await _processStepResultRepository
-            .GetAsync(processCompletedEvent.BatchId, new GridAreaCode(processCompletedEvent.GridAreaCode), TimeSeriesType.Production, null, null)
-            .ConfigureAwait(false);
+        // Publish events for energy suppliers
+        await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
-        var outboxMessage = _outboxMessageFactory.CreateFrom(productionForTotalGa, processCompletedEvent);
-        await _outboxService.AddAsync(outboxMessage).ConfigureAwait(false);
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        // Publish events for total grid area
+        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
+        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+
+        // Publish events for balance responsible party
+        await PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+    }
+
+    private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    {
+            var productionForTotalGa = await _processStepResultRepository
+                .GetAsync(
+                    processCompletedEvent.BatchId,
+                    new GridAreaCode(processCompletedEvent.GridAreaCode),
+                    timeSeriesType,
+                    null,
+                    null)
+                .ConfigureAwait(false);
+
+            await _integrationEventPublisher
+                .PublishCalculationResultForTotalGridAreaAsync(productionForTotalGa, processCompletedEvent)
+                .ConfigureAwait(false);
+    }
+
+    private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    {
+            var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(
+                processCompletedEvent.BatchId,
+                new GridAreaCode(processCompletedEvent.GridAreaCode),
+                timeSeriesType).ConfigureAwait(false);
+
+            foreach (var energySupplier in energySuppliers)
+            {
+                var processStepResultDto = await _processStepResultRepository
+                    .GetAsync(
+                        processCompletedEvent.BatchId,
+                        new GridAreaCode(processCompletedEvent.GridAreaCode),
+                        timeSeriesType,
+                        energySupplier.Gln,
+                        null)
+                    .ConfigureAwait(false);
+
+                await _integrationEventPublisher.PublishCalculationResultForEnergySupplierAsync(
+                    processStepResultDto,
+                    processCompletedEvent,
+                    energySupplier.Gln).ConfigureAwait(false);
+            }
+    }
+
+    private async Task PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    {
+        var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(
+            processCompletedEvent.BatchId,
+            new GridAreaCode(processCompletedEvent.GridAreaCode),
+            timeSeriesType).ConfigureAwait(false);
+
+        foreach (var balanceResponsibleParty in balanceResponsibleParties)
+        {
+            var processStepResultDto = await _processStepResultRepository
+                .GetAsync(
+                    processCompletedEvent.BatchId,
+                    new GridAreaCode(processCompletedEvent.GridAreaCode),
+                    timeSeriesType,
+                    balanceResponsibleParty.Gln,
+                    null)
+                .ConfigureAwait(false);
+
+            await _integrationEventPublisher.PublishCalculationResultForBalanceResponsiblePartyAsync(
+                processStepResultDto,
+                processCompletedEvent,
+                balanceResponsibleParty.Gln).ConfigureAwait(false);
+        }
     }
 }
