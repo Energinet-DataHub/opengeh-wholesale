@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
@@ -25,17 +26,20 @@ public class ProcessApplicationService : IProcessApplicationService
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
     private readonly IDomainEventPublisher _domainEventPublisher;
     private readonly IProcessStepResultRepository _processStepResultRepository;
+    private readonly IActorRepository _actorRepository;
 
     public ProcessApplicationService(
         IIntegrationEventPublisher integrationEventPublisher,
         IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
         IDomainEventPublisher domainEventPublisher,
-        IProcessStepResultRepository processStepResultRepository)
+        IProcessStepResultRepository processStepResultRepository,
+        IActorRepository actorRepository)
     {
         _integrationEventPublisher = integrationEventPublisher;
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
         _processStepResultRepository = processStepResultRepository;
+        _actorRepository = actorRepository;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
@@ -51,11 +55,52 @@ public class ProcessApplicationService : IProcessApplicationService
 
     public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
-        // Get result for Total GA Production
-        var productionForTotalGa = await _processStepResultRepository
-            .GetAsync(processCompletedEvent.BatchId, new GridAreaCode(processCompletedEvent.GridAreaCode), TimeSeriesType.Production, null, null)
-            .ConfigureAwait(false);
+        // Publish events for energy suppliers
+        await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
-        await _integrationEventPublisher.PublishAsync(productionForTotalGa, processCompletedEvent).ConfigureAwait(false);
+        // Publish events for total grid area
+        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
+        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+    }
+
+    private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    {
+            var productionForTotalGa = await _processStepResultRepository
+                .GetAsync(
+                    processCompletedEvent.BatchId,
+                    new GridAreaCode(processCompletedEvent.GridAreaCode),
+                    timeSeriesType,
+                    null,
+                    null)
+                .ConfigureAwait(false);
+
+            await _integrationEventPublisher
+                .PublishCalculationResultForTotalGridAreaAsync(productionForTotalGa, processCompletedEvent)
+                .ConfigureAwait(false);
+    }
+
+    private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    {
+            var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(
+                processCompletedEvent.BatchId,
+                new GridAreaCode(processCompletedEvent.GridAreaCode),
+                timeSeriesType).ConfigureAwait(false);
+
+            foreach (var energySupplier in energySuppliers)
+            {
+                var processStepResultDto = await _processStepResultRepository
+                    .GetAsync(
+                        processCompletedEvent.BatchId,
+                        new GridAreaCode(processCompletedEvent.GridAreaCode),
+                        timeSeriesType,
+                        energySupplier.Gln,
+                        null)
+                    .ConfigureAwait(false);
+
+                await _integrationEventPublisher.PublishCalculationResultForEnergySupplierAsync(
+                    processStepResultDto,
+                    processCompletedEvent,
+                    energySupplier.Gln).ConfigureAwait(false);
+            }
     }
 }
