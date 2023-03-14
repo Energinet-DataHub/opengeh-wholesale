@@ -139,6 +139,7 @@ public class ProcessApplicationServiceTest
         [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
         [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        string glnNumber,
         ProcessApplicationService sut)
     {
         // Arrange
@@ -150,26 +151,26 @@ public class ProcessApplicationServiceTest
             Instant.MinValue);
 
         var processStepResult = new ProcessStepResult(
-            TimeSeriesType.Production,
+            TimeSeriesType.NonProfiledConsumption,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
         processStepResultRepositoryMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
             It.IsAny<GridAreaCode>(),
-            TimeSeriesType.Production,
-            null,
+            TimeSeriesType.NonProfiledConsumption,
+            glnNumber,
             null)).ReturnsAsync(processStepResult);
 
         actorRepositoryMock
             .Setup(a => a.GetEnergySuppliersAsync(
                 eventDto.BatchId,
                 new GridAreaCode(eventDto.GridAreaCode),
-                It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
+                It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(glnNumber) });
 
         //Act
         await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        publisherMock.Verify(publisher => publisher.PublishCalculationResultForTotalGridAreaAsync(processStepResult, eventDto), Times.Once);
+        publisherMock.Verify(publisher => publisher.PublishCalculationResultForEnergySupplierAsync(processStepResult, eventDto, glnNumber), Times.Once);
     }
 }
