@@ -119,7 +119,7 @@ class ProcessStepResultWriter:
         )
 
         result_df = result_df.withColumn(
-            PartitionKeyName.GROUPING, lit(AggregationLevel.value)
+            PartitionKeyName.GROUPING, lit(aggregation_level.value)
         ).withColumn(PartitionKeyName.TIME_SERIES_TYPE, lit(time_series_type.value))
 
         return result_df
