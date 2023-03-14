@@ -16,17 +16,18 @@ from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 
+import package.infrastructure as infra
+import pytest
 from package.codelists import (
+    Grouping,
     MeteringPointResolution,
     TimeSeriesQuality,
-    MarketRole,
     TimeSeriesType,
-    Grouping,
 )
 from package.constants import Colname
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
-import package.infrastructure as infra
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import lit
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
@@ -63,7 +64,7 @@ def _create_result_row(
     return row
 
 
-def test__write_per_ga_per_actor__result_file_path_matches_contract(
+def test__write___when_grouping_is_es_per_ga__result_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
     tmpdir: Path,
@@ -85,11 +86,10 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-    # Act: Executed in fixture executed_calculation_job
-    sut.write_per_ga_per_actor(
+    # Act
+    sut.write(
         result_df,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        MarketRole.ENERGY_SUPPLIER,
         Grouping.es_per_ga,
     )
 
@@ -105,7 +105,7 @@ def test__write_per_ga_per_actor__result_file_path_matches_contract(
     )
 
 
-def test__write_per_ga__result_file_path_matches_contract(
+def test__write___when_grouping_is_total_ga__result_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
     tmpdir: Path,
@@ -123,8 +123,8 @@ def test__write_per_ga__result_file_path_matches_contract(
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-    # Act: Executed in fixture executed_calculation_job
-    sut.write_per_ga(
+    # Act
+    sut.write(
         result_df,
         TimeSeriesType.PRODUCTION,
         Grouping.total_ga,
@@ -142,7 +142,7 @@ def test__write_per_ga__result_file_path_matches_contract(
     )
 
 
-def test__write_ga_brp_es__result_file_path_matches_contract(
+def test__write___when_grouping_is_ga_brp_es__result_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
     tmpdir: Path,
@@ -166,8 +166,8 @@ def test__write_ga_brp_es__result_file_path_matches_contract(
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
-    # Act: Executed in fixture executed_calculation_job
-    sut.write_per_ga_per_brp_per_es(
+    # Act
+    sut.write(
         result_df,
         TimeSeriesType.PRODUCTION,
         Grouping.es_per_brp_per_ga,
@@ -183,3 +183,127 @@ def test__write_ga_brp_es__result_file_path_matches_contract(
         actual_result_file,
         CalculationFileType.ResultFileForGaBrpEs,
     )
+
+
+@pytest.mark.parametrize(
+    "grouping",
+    Grouping,
+)
+def test__write__writes_grouping_column(
+    spark: SparkSession, tmpdir: Path, grouping: Grouping
+) -> None:
+    # Arrange
+    table_name = "result_table"
+    spark.sql(
+        f"DROP TABLE IF EXISTS {table_name}"
+    )  # needed to avoid conflict between parametrized tests
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA,
+            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
+            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
+        )
+    ]
+    result_df = spark.createDataFrame(data=row)
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+
+    # Act
+    sut.write(
+        result_df,
+        TimeSeriesType.PRODUCTION,
+        grouping,
+    )
+
+    # Assert
+    actual_df = spark.read.table(table_name)
+    assert actual_df.collect()[0]["AggregationLevel"] == grouping.value
+
+
+@pytest.mark.parametrize(
+    "time_series_type",
+    TimeSeriesType,
+)
+def test__write__writes_time_series_type_column(
+    spark: SparkSession, tmpdir: Path, time_series_type: TimeSeriesType
+) -> None:
+    # Arrange
+    table_name = "result_table"
+    spark.sql(
+        f"DROP TABLE IF EXISTS {table_name}"
+    )  # needed to avoid conflict between parametrized tests
+
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA,
+            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
+            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
+        )
+    ]
+    result_df = spark.createDataFrame(data=row)
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+
+    # Act
+    sut.write(
+        result_df,
+        time_series_type,
+        Grouping.total_ga,
+    )
+
+    # Assert
+    actual_df = spark.read.table(table_name)
+    assert actual_df.collect()[0]["time_series_type"] == time_series_type.value
+
+
+def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
+    # Arrange
+    table_name = "result_table"
+    spark.sql(
+        f"DROP TABLE IF EXISTS {table_name}"
+    )  # needed to avoid conflict between parametrized tests
+
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA,
+            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
+            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
+        )
+    ]
+    result_df = spark.createDataFrame(data=row)
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+
+    # Act
+    sut.write(
+        result_df,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        Grouping.total_ga,
+    )
+
+    # Assert
+    actual_df = spark.read.table(table_name)
+    assert actual_df.collect()[0]["batch_id"] == DEFAULT_BATCH_ID
+
+
+def test__write_result_to_table__when_schema_differs_from_table__raise_exception(
+    spark: SparkSession, tmpdir: Path
+) -> None:
+    # Arrange
+    table_name = "result_table"
+    spark.sql(
+        f"DROP TABLE IF EXISTS {table_name}"
+    )  # needed to avoid conflict between parametrized tests
+
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA,
+            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
+            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
+        )
+    ]
+    result_df_1 = spark.createDataFrame(data=row)
+    result_df_2 = result_df_1.withColumn("extra_column", lit("some_value"))
+    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut._write_result_to_table(result_df_1, Grouping.total_ga)
+
+    # Act and Assert
+    with pytest.raises(Exception):
+        sut._write_result_to_table(result_df_2, Grouping.total_ga)
