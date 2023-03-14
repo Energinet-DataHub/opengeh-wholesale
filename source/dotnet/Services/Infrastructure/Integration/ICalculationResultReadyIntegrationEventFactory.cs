@@ -26,4 +26,9 @@ public interface ICalculationResultReadyIntegrationEventFactory
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto,
         string energySupplierGln);
+
+    CalculationResultCompleted CreateCalculationResultCompletedForBalanceResponsibleParty(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string balanceResponsiblePartyGln);
 }
