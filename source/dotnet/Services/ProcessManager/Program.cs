@@ -28,12 +28,14 @@ using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
+using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
@@ -146,6 +148,7 @@ public static class Program
         });
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
+        serviceCollection.AddScoped<IActorRepository, ActorRepository>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(
             provider => new SettlementReportRepository(
