@@ -19,7 +19,7 @@ jobs:
   infrastructure_ci:
     uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@main
     with:
-      RELEASE_NAME_PREFIX: 'edi_infrastructure'
-      INFRASTRUCTURE_PATH: './edi/terraform'
+      RELEASE_NAME_PREFIX: "edi_infrastructure"
+      INFRASTRUCTURE_PATH: "./edi/terraform"
     secrets:
       PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

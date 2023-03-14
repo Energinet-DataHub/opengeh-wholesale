@@ -36,8 +36,8 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.PAT_TOKEN }}
-          repository: '${{ secrets.DEPLOYMENT_REPOSITORY_PATH }}'
-          event-type: 'market-participant-deployment-request-infrastructure'
+          repository: "${{ secrets.DEPLOYMENT_REPOSITORY_PATH }}"
+          event-type: "market-participant-deployment-request-infrastructure"
           client-payload: '{"infrastructure_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}"}'
 
   #
@@ -45,15 +45,12 @@ jobs:
   #
 
   dispatch_failed:
-    needs: [
-      infrastructure_promote_prerelease,
-      dispatch_deploment_event,
-    ]
+    needs: [infrastructure_promote_prerelease, dispatch_deploment_event]
     if: |
       always() &&
       contains(needs.*.result, 'failure')
     uses: Energinet-DataHub/.github/.github/workflows/notify-team.yml@v10
     with:
-      TEAM_NAME: 'Titans'
-      SUBJECT: 'Deployment dispatch failed: Infrastructure - Market Participant'
+      TEAM_NAME: "Titans"
+      SUBJECT: "Deployment dispatch failed: Infrastructure - Market Participant"
     secrets: inherit

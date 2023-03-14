@@ -13,27 +13,27 @@ on:
     inputs:
       RELEASE_NAME_PREFIX:
         required: false
-        default: 'infrastructure'
+        default: "infrastructure"
         type: string
       INFRASTRUCTURE_PATH:
         required: true
         type: string
       OPERATING_SYSTEM:
         required: false
-        default: 'ubuntu-22.04'
+        default: "ubuntu-22.04"
         type: string
       ADDITIONAL_INFRASTRUCTURE_PATH:
         required: false
-        default: ''
+        default: ""
         type: string
       B2C_INFRASTRUCTURE_PATH:
         required: false
-        default: ''
+        default: ""
         type: string
     secrets:
       PAT_TOKEN:
         required: true
-        description: 'PAT token for system account with private repository scope to access modules in private repository'
+        description: "PAT token for system account with private repository scope to access modules in private repository"
 
 env:
   TERRAFORM_RELEASE_FOLDER_PATH: ${{ github.workspace }}/infrastructure
@@ -157,10 +157,7 @@ jobs:
           WORKING_DIRECTORY: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
 
   create_prerelease:
-    needs: [
-      validate_environments,
-      validate_main_environment
-    ]
+    needs: [validate_environments, validate_main_environment]
     if: ${{ always() && !contains(needs.*.result, 'failure') }}
     runs-on: ${{ inputs.OPERATING_SYSTEM }}
     env:
@@ -194,7 +191,7 @@ jobs:
       - name: Zip files for prerelease
         uses: thedoctor0/zip-release@0.6.2
         with:
-          type: 'zip'
+          type: "zip"
           filename: ${{ env.RELEASE_ZIP_FILENAME }}
           directory: ${{ env.RELEASE_FOLDER_PATH }}
 
