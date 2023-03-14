@@ -16,7 +16,7 @@ module "func_entrypoint_marketparticipant" {
   health_check_path                         = "/api/monitor/ready"
   health_check_alert_action_group_id        = data.azurerm_key_vault_secret.primary_action_group_id.value
   health_check_alert_enabled                = var.enable_health_check_alerts
-  dotnet_framework_version                  = "6"
+  dotnet_framework_version                  = "7"
   use_dotnet_isolated_runtime               = true
 
   app_settings                              = {
