@@ -81,26 +81,26 @@ public class ProcessApplicationService : IProcessApplicationService
 
     private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
-            var actors = await _actorRepository.GetEnergySuppliersAsync(
+            var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(
                 processCompletedEvent.BatchId,
                 new GridAreaCode(processCompletedEvent.GridAreaCode),
                 timeSeriesType).ConfigureAwait(false);
 
-            foreach (var actor in actors)
+            foreach (var energySupplier in energySuppliers)
             {
                 var processStepResultDto = await _processStepResultRepository
                     .GetAsync(
                         processCompletedEvent.BatchId,
                         new GridAreaCode(processCompletedEvent.GridAreaCode),
                         timeSeriesType,
-                        actor.Gln,
+                        energySupplier.Gln,
                         null)
                     .ConfigureAwait(false);
 
                 await _integrationEventPublisher.PublishCalculationResultForEnergySupplierAsync(
                     processStepResultDto,
                     processCompletedEvent,
-                    actor.Gln).ConfigureAwait(false);
+                    energySupplier.Gln).ConfigureAwait(false);
             }
     }
 }
