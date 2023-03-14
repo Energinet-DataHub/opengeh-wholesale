@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 2.1.5
+
+removed `AggregationEventName` in `CalculationResultCompleted.cs`
+
 ## Version 2.1.4
 
 Partial class for `CalculationResultCompleted` for `messagetype` names.
