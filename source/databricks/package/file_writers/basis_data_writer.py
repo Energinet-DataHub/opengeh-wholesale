@@ -72,7 +72,7 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
-        grouping_folder_name = f"grouping={Grouping.total_ga}"
+        grouping_folder_name = f"grouping={Grouping.total_ga.value}"
 
         partition_keys = [PartitionKeyName.GRID_AREA]
         timeseries_quarter_df = timeseries_quarter_df.drop(
@@ -99,7 +99,7 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
-        grouping_folder_name = f"grouping={Grouping.es_per_ga}"
+        grouping_folder_name = f"grouping={Grouping.es_per_ga.value}"
 
         partition_keys = [
             PartitionKeyName.GRID_AREA,

@@ -246,7 +246,7 @@ def test__result_is_generated_for_requested_grid_areas(
     energy_supplier_gln: str,
     balance_responsible_party_gln: str,
     time_series_type: TimeSeriesType,
-    grouping: str,
+    grouping: Grouping,
 ) -> None:
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -631,8 +631,8 @@ def test__creates_hour_for_total_ga__per_grid_area(
     basis_data_relative_path_805 = infra.get_basis_data_path(
         BasisDataType.TimeSeriesHour, executed_batch_id, "805"
     )
-    basis_data_relative_path_806 = (
-        infra.get_basis_data_path(BasisDataType.TimeSeriesHour, executed_batch_id, "806")
+    basis_data_relative_path_806 = infra.get_basis_data_path(
+        BasisDataType.TimeSeriesHour, executed_batch_id, "806"
     )
 
     # Act
