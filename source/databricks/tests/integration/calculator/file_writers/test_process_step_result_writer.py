@@ -19,7 +19,7 @@ from pathlib import Path
 import package.infrastructure as infra
 import pytest
 from package.codelists import (
-    Grouping,
+    AggregationLevel,
     MeteringPointResolution,
     TimeSeriesQuality,
     TimeSeriesType,
@@ -64,7 +64,7 @@ def _create_result_row(
     return row
 
 
-def test__write___when_grouping_is_es_per_ga__result_file_path_matches_contract(
+def test__write___when_aggregation_level_is_es_per_ga__result_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
     tmpdir: Path,
@@ -82,7 +82,7 @@ def test__write___when_grouping_is_es_per_ga__result_file_path_matches_contract(
         DEFAULT_ENERGY_SUPPLIER_ID,
         None,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        Grouping.es_per_ga,
+        AggregationLevel.es_per_ga,
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
@@ -90,7 +90,7 @@ def test__write___when_grouping_is_es_per_ga__result_file_path_matches_contract(
     sut.write(
         result_df,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        Grouping.es_per_ga,
+        AggregationLevel.es_per_ga,
     )
 
     # Assert
@@ -105,7 +105,7 @@ def test__write___when_grouping_is_es_per_ga__result_file_path_matches_contract(
     )
 
 
-def test__write___when_grouping_is_total_ga__result_file_path_matches_contract(
+def test__write___when_aggregation_level_is_total_ga__result_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
     tmpdir: Path,
@@ -119,7 +119,7 @@ def test__write___when_grouping_is_total_ga__result_file_path_matches_contract(
         None,
         None,
         TimeSeriesType.PRODUCTION,
-        Grouping.total_ga,
+        AggregationLevel.total_ga,
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
@@ -127,7 +127,7 @@ def test__write___when_grouping_is_total_ga__result_file_path_matches_contract(
     sut.write(
         result_df,
         TimeSeriesType.PRODUCTION,
-        Grouping.total_ga,
+        AggregationLevel.total_ga,
     )
 
     # Assert
@@ -142,7 +142,7 @@ def test__write___when_grouping_is_total_ga__result_file_path_matches_contract(
     )
 
 
-def test__write___when_grouping_is_ga_brp_es__result_file_path_matches_contract(
+def test__write___when_aggregation_level_is_ga_brp_es__result_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
     tmpdir: Path,
@@ -162,7 +162,7 @@ def test__write___when_grouping_is_ga_brp_es__result_file_path_matches_contract(
         DEFAULT_ENERGY_SUPPLIER_ID,
         DEFAULT_BALANCE_RESPONSIBLE_ID,
         TimeSeriesType.PRODUCTION,
-        Grouping.es_per_brp_per_ga,
+        AggregationLevel.es_per_brp_per_ga,
     )
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
@@ -170,7 +170,7 @@ def test__write___when_grouping_is_ga_brp_es__result_file_path_matches_contract(
     sut.write(
         result_df,
         TimeSeriesType.PRODUCTION,
-        Grouping.es_per_brp_per_ga,
+        AggregationLevel.es_per_brp_per_ga,
     )
 
     # Assert
@@ -186,11 +186,11 @@ def test__write___when_grouping_is_ga_brp_es__result_file_path_matches_contract(
 
 
 @pytest.mark.parametrize(
-    "grouping",
-    Grouping,
+    "aggregation_level",
+    AggregationLevel,
 )
-def test__write__writes_grouping_column(
-    spark: SparkSession, tmpdir: Path, grouping: Grouping
+def test__write__writes_aggregation_level_column(
+    spark: SparkSession, tmpdir: Path, aggregation_level: AggregationLevel
 ) -> None:
     # Arrange
     table_name = "result_table"
@@ -211,12 +211,12 @@ def test__write__writes_grouping_column(
     sut.write(
         result_df,
         TimeSeriesType.PRODUCTION,
-        grouping,
+        aggregation_level,
     )
 
     # Assert
     actual_df = spark.read.table(table_name)
-    assert actual_df.collect()[0]["AggregationLevel"] == grouping.value
+    assert actual_df.collect()[0]["AggregationLevel"] == AggregationLevel.value
 
 
 @pytest.mark.parametrize(
@@ -246,7 +246,7 @@ def test__write__writes_time_series_type_column(
     sut.write(
         result_df,
         time_series_type,
-        Grouping.total_ga,
+        AggregationLevel.total_ga,
     )
 
     # Assert
@@ -275,7 +275,7 @@ def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
     sut.write(
         result_df,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        Grouping.total_ga,
+        AggregationLevel.total_ga,
     )
 
     # Assert
@@ -302,8 +302,8 @@ def test__write_result_to_table__when_schema_differs_from_table__raise_exception
     result_df_1 = spark.createDataFrame(data=row)
     result_df_2 = result_df_1.withColumn("extra_column", lit("some_value"))
     sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
-    sut._write_result_to_table(result_df_1, Grouping.total_ga)
+    sut._write_result_to_table(result_df_1, AggregationLevel.total_ga)
 
     # Act and Assert
     with pytest.raises(Exception):
-        sut._write_result_to_table(result_df_2, Grouping.total_ga)
+        sut._write_result_to_table(result_df_2, AggregationLevel.total_ga)

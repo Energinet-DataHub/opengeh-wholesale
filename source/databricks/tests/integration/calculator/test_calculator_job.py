@@ -27,7 +27,12 @@ from package.calculator_job import (
     _map_cim_quality_to_wholesale_quality,
 )
 from package.calculator_args import CalculatorArgs
-from package.codelists import BasisDataType, TimeSeriesType, Grouping, TimeSeriesQuality
+from package.codelists import (
+    BasisDataType,
+    TimeSeriesType,
+    AggregationLevel,
+    TimeSeriesQuality,
+)
 import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from typing import Callable, Optional
@@ -175,65 +180,65 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 
 
 @pytest.mark.parametrize(
-    "grid_area,energy_supplier_gln,balance_responsible_party_gln,time_series_type,grouping",
+    "grid_area,energy_supplier_gln,balance_responsible_party_gln,time_series_type,aggregation_level",
     [
-        ("805", None, None, TimeSeriesType.PRODUCTION, Grouping.total_ga),
-        ("806", None, None, TimeSeriesType.PRODUCTION, Grouping.total_ga),
+        ("805", None, None, TimeSeriesType.PRODUCTION, AggregationLevel.total_ga),
+        ("806", None, None, TimeSeriesType.PRODUCTION, AggregationLevel.total_ga),
         (
             "805",
             energy_supplier_gln_a,
             None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            Grouping.es_per_ga,
+            AggregationLevel.es_per_ga,
         ),
         (
             "806",
             energy_supplier_gln_a,
             None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            Grouping.es_per_ga,
+            AggregationLevel.es_per_ga,
         ),
         (
             "805",
             energy_supplier_gln_b,
             None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            Grouping.es_per_ga,
+            AggregationLevel.es_per_ga,
         ),
         (
             "806",
             energy_supplier_gln_b,
             None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            Grouping.es_per_ga,
+            AggregationLevel.es_per_ga,
         ),
         (
             "805",
             energy_supplier_gln_a,
             balance_responsible_party_gln_a,
             TimeSeriesType.PRODUCTION,
-            Grouping.es_per_brp_per_ga,
+            AggregationLevel.es_per_brp_per_ga,
         ),
         (
             "806",
             energy_supplier_gln_a,
             balance_responsible_party_gln_a,
             TimeSeriesType.PRODUCTION,
-            Grouping.es_per_brp_per_ga,
+            AggregationLevel.es_per_brp_per_ga,
         ),
         (
             "805",
             None,
             None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            Grouping.total_ga,
+            AggregationLevel.total_ga,
         ),
         (
             "806",
             None,
             None,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            Grouping.total_ga,
+            AggregationLevel.total_ga,
         ),
     ],
 )
@@ -246,7 +251,7 @@ def test__result_is_generated_for_requested_grid_areas(
     energy_supplier_gln: str,
     balance_responsible_party_gln: str,
     time_series_type: TimeSeriesType,
-    grouping: Grouping,
+    aggregation_level: AggregationLevel,
 ) -> None:
     # Act
     # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
@@ -258,7 +263,7 @@ def test__result_is_generated_for_requested_grid_areas(
         energy_supplier_gln,
         balance_responsible_party_gln,
         time_series_type,
-        grouping,
+        aggregation_level,
     )
     print(result_path)
     result = spark.read.json(f"{data_lake_path}/{worker_id}/{result_path}")
@@ -305,7 +310,7 @@ def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
         None,
         None,
         TimeSeriesType.PRODUCTION,
-        Grouping.total_ga,
+        AggregationLevel.total_ga,
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
@@ -335,7 +340,7 @@ def test__calculator_result_es_per_ga_schema_must_match_contract_with_dotnet(
         energy_supplier_gln_a,
         None,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        Grouping.es_per_ga,
+        AggregationLevel.es_per_ga,
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
@@ -364,7 +369,7 @@ def test__quantity_is_with_precision_3(
         None,
         None,
         TimeSeriesType.PRODUCTION,
-        Grouping.total_ga,
+        AggregationLevel.total_ga,
     )
 
     result_relative_path_non_profiled_consumption = infra.get_result_file_relative_path(
@@ -373,7 +378,7 @@ def test__quantity_is_with_precision_3(
         energy_supplier_gln_a,
         None,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        Grouping.es_per_ga,
+        AggregationLevel.es_per_ga,
     )
 
     # Act
@@ -406,7 +411,7 @@ def test__result_file_has_correct_expected_number_of_rows_for_consumption(
         energy_supplier_gln_a,
         None,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        Grouping.es_per_ga,
+        AggregationLevel.es_per_ga,
     )
 
     # Act
@@ -432,7 +437,7 @@ def test__result_file_has_correct_expected_number_of_rows_for_production(
         None,
         None,
         TimeSeriesType.PRODUCTION,
-        Grouping.total_ga,
+        AggregationLevel.total_ga,
     )
 
     # Act
