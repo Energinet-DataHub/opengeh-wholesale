@@ -216,7 +216,7 @@ def test__write__writes_aggregation_level_column(
 
     # Assert
     actual_df = spark.read.table(table_name)
-    assert actual_df.collect()[0]["AggregationLevel"] == AggregationLevel.value
+    assert actual_df.collect()[0]["AggregationLevel"] == aggregation_level.value
 
 
 @pytest.mark.parametrize(
