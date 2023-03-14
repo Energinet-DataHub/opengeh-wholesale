@@ -20,7 +20,6 @@ from unittest.mock import patch
 
 from package.codelists import MeteringPointResolution, TimeSeriesQuality
 from package.constants import Colname
-from package.codelists.market_role import MarketRole
 from package.codelists.time_series_type import TimeSeriesType
 from package.file_writers.actors_writer import ActorsWriter
 import package.infrastructure as infra
