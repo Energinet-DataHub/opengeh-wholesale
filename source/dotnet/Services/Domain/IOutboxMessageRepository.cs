@@ -22,5 +22,5 @@ public interface IOutboxMessageRepository
 
     Task<IList<OutboxMessage>> GetByAsync(int numberOfElements, CancellationToken token);
 
-    void DeleteBy(Instant date);
+    void DeleteByCreationDate(Instant date);
 }

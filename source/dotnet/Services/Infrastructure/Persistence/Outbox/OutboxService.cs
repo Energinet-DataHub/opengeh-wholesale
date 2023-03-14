@@ -43,7 +43,7 @@ public class OutboxService : IOutboxService
     {
         var instant = _clock.GetCurrentInstant();
         instant = instant.Minus(Duration.FromDays(14));
-        _outboxMessageRepository.DeleteBy(instant);
+        _outboxMessageRepository.DeleteByCreationDate(instant);
 
         // TODO AJW
         await _unitOfWork.CommitAsync().ConfigureAwait(false);

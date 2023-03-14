@@ -34,7 +34,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
 
         public async Task<IList<OutboxMessage>> GetByAsync(int numberOfElements, CancellationToken token)
         {
-            // TODO AJW take undersøg tick duration er for lang, tick 2 min, logging time?
+            // TODO AJW take undersøg tick duration er for lang, tick 2 min
             return await _context.OutboxMessages
                 .Where(x => !x.ProcessedDate.HasValue)
                 .OrderBy(x => x.CreationDate)
@@ -43,9 +43,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
                 .ConfigureAwait(false);
         }
 
-        public void DeleteBy(Instant date)
+        public void DeleteByCreationDate(Instant date)
         {
-            var messagesToDelete = _context.OutboxMessages.Where(x => x.ProcessedDate.HasValue && x.ProcessedDate.Value < date);
+            var messagesToDelete = _context.OutboxMessages.Where(x => x.CreationDate < date);
             _context.OutboxMessages.RemoveRange(messagesToDelete);
         }
     }

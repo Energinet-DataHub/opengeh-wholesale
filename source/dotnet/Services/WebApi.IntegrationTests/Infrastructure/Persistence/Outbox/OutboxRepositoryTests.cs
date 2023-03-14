@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using FluentAssertions;
@@ -33,26 +32,73 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     }
 
     [Fact]
-    public async Task AddAsync_AddsOutboxMessage()
+    public async Task AddAsync_AddsAnOutboxMessage()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var outboxMessage = CreateOutboxMessage(ProcessType.Aggregation);
+        var expected = CreateOutOutboxMessage("type1");
         var sut = new OutboxMessageRepository(writeContext);
 
         // Act
-        await sut.AddAsync(outboxMessage);
+        await sut.AddAsync(expected);
         await writeContext.SaveChangesAsync();
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.OutboxMessages.SingleAsync(x => x.Id == outboxMessage.Id);
+        var actual = await readContext.OutboxMessages.SingleAsync(x => x.Id == expected.Id);
 
-        actual.Should().BeEquivalentTo(outboxMessage);
+        actual.Should().BeEquivalentTo(expected);
     }
 
-    private static OutboxMessage CreateOutboxMessage(ProcessType processType)
+    [Fact]
+    public async Task GetBy2Async_ReturnTwoOutboxMessages()
     {
-        return new OutboxMessage(processType.ToString(), new byte[10], SystemClock.Instance.GetCurrentInstant());
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var outboxMessage1 = CreateOutOutboxMessage("type1", 15);
+        var outboxMessage2 = CreateOutOutboxMessage("type2", 14);
+        var outboxMessage3 = CreateOutOutboxMessage("type3", 13);
+        var expected = new List<OutboxMessage> { outboxMessage1, outboxMessage2 };
+        var sut = new OutboxMessageRepository(writeContext);
+        await sut.AddAsync(outboxMessage1);
+        await sut.AddAsync(outboxMessage2);
+        await sut.AddAsync(outboxMessage3);
+        await writeContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.GetByAsync(2, default);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task DeleteByCreationDateAsync_ReturnsVoid()
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var outboxMessage1 = CreateOutOutboxMessage("type1", 15);
+        var outboxMessage2 = CreateOutOutboxMessage("type2", 14);
+        var outboxMessage3 = CreateOutOutboxMessage("type3", 13);
+        var expected = new List<OutboxMessage> { outboxMessage3 };
+        var sut = new OutboxMessageRepository(writeContext);
+        await sut.AddAsync(outboxMessage1);
+        await sut.AddAsync(outboxMessage2);
+        await sut.AddAsync(outboxMessage3);
+        await writeContext.SaveChangesAsync();
+
+        // Act
+        sut.DeleteByCreationDate(SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(14)));
+        await writeContext.SaveChangesAsync();
+
+        // Assert
+        await using var readContext = _databaseManager.CreateDbContext();
+        var actual = readContext.OutboxMessages;
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    private static OutboxMessage CreateOutOutboxMessage(string type, int numberOfDays = 0)
+    {
+        return new OutboxMessage(type, new byte[10], SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(numberOfDays)));
     }
 }
