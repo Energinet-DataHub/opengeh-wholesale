@@ -29,35 +29,48 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
     public class OutboxMessageFactory : IOutboxMessageFactory
     {
         private readonly IClock _systemDateTimeProvider;
-        private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
         private readonly ICalculationResultReadyIntegrationEventFactory _calculationResultReadyIntegrationEventFactory;
         private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
         private readonly IJsonSerializer _jsonSerializer;
 
         public OutboxMessageFactory(
             IClock systemDateTimeProvider,
-            IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper,
             ICalculationResultReadyIntegrationEventFactory calculationResultReadyIntegrationEventFactory,
             IServiceBusMessageFactory serviceBusMessageFactory,
             IJsonSerializer jsonSerializer)
         {
             _systemDateTimeProvider = systemDateTimeProvider;
-            _processCompletedIntegrationEventMapper = processCompletedIntegrationEventMapper;
             _calculationResultReadyIntegrationEventFactory = calculationResultReadyIntegrationEventFactory;
             _serviceBusMessageFactory = serviceBusMessageFactory;
             _jsonSerializer = jsonSerializer;
         }
 
-        public OutboxMessage CreateFrom(ProcessCompletedEventDto processCompletedEventDto)
-        {
-            var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEventDto);
-            var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
-            return new OutboxMessage(messageType, integrationEvent.ToByteArray(), _systemDateTimeProvider.GetCurrentInstant());
-        }
-
         public OutboxMessage CreateFrom(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto)
         {
             var integrationEvent = _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResult, processCompletedEventDto);
+            return CreateOutboxMessage(processCompletedEventDto, integrationEvent);
+        }
+
+        public OutboxMessage CreateMessageCalculationResultForEnergySupplier(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto, string energySupplierGln)
+        {
+            var integrationEvent = _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForEnergySupplier(processStepResult, processCompletedEventDto, energySupplierGln);
+            return CreateOutboxMessage(processCompletedEventDto, integrationEvent);
+        }
+
+        public OutboxMessage CreateMessageForCalculationResultForBalanceResponsibleParty(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto, string balanceResponsiblePartyGln)
+        {
+            var integrationEvent = _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
+            return CreateOutboxMessage(processCompletedEventDto, integrationEvent);
+        }
+
+        public OutboxMessage CreateMessageCalculationResultForTotalGridArea(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto)
+        {
+            var integrationEvent = _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResult, processCompletedEventDto);
+            return CreateOutboxMessage(processCompletedEventDto, integrationEvent);
+        }
+
+        private OutboxMessage CreateOutboxMessage(ProcessCompletedEventDto processCompletedEventDto, IMessage integrationEvent)
+        {
             var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
             var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
             var serialized = _jsonSerializer.Serialize(serviceBusMessage);

@@ -20,7 +20,9 @@ namespace Energinet.DataHub.Wholesale.Application;
 
 public interface IOutboxMessageFactory
 {
-    OutboxMessage CreateFrom(ProcessCompletedEventDto processCompletedEventDto);
+    OutboxMessage CreateMessageCalculationResultForEnergySupplier(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln);
 
-    OutboxMessage CreateFrom(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto);
+    OutboxMessage CreateMessageForCalculationResultForBalanceResponsibleParty(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent, string gln);
+
+    OutboxMessage CreateMessageCalculationResultForTotalGridArea(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent);
 }

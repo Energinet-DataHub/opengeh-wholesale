@@ -20,26 +20,35 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
-public class ProcessApplicationService : IProcessApplicationService
+public class ProcessApplicationServiceV2 : IProcessApplicationService
 {
     private readonly IIntegrationEventPublisher _integrationEventPublisher;
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
     private readonly IDomainEventPublisher _domainEventPublisher;
     private readonly IProcessStepResultRepository _processStepResultRepository;
     private readonly IActorRepository _actorRepository;
+    private readonly IOutboxService _outboxService;
+    private readonly IOutboxMessageFactory _outboxMessageFactory;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ProcessApplicationService(
+    public ProcessApplicationServiceV2(
         IIntegrationEventPublisher integrationEventPublisher,
         IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
         IDomainEventPublisher domainEventPublisher,
         IProcessStepResultRepository processStepResultRepository,
-        IActorRepository actorRepository)
+        IActorRepository actorRepository,
+        IOutboxService outboxService,
+        IOutboxMessageFactory outboxMessageFactory,
+        IUnitOfWork unitOfWork)
     {
         _integrationEventPublisher = integrationEventPublisher;
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
         _processStepResultRepository = processStepResultRepository;
         _actorRepository = actorRepository;
+        _outboxService = outboxService;
+        _outboxMessageFactory = outboxMessageFactory;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
@@ -56,17 +65,19 @@ public class ProcessApplicationService : IProcessApplicationService
     public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEventDto)
     {
         // Publish events for energy suppliers
-        await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+        await CreateOutboxMessageWithCalculationResultCompletedForEnergySuppliersAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
-        // Publish events for total grid area
-        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEventDto, TimeSeriesType.Production).ConfigureAwait(false);
-        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+        // Publish events for total grid area - production
+        await CreateOutboxMessageWithCalculationResultCompletedForTotalGridAreaAsync(processCompletedEventDto, TimeSeriesType.Production).ConfigureAwait(false);
+
+        // Publish events for total grid area - non profile
+        await CreateOutboxMessageWithCalculationResultCompletedForTotalGridAreaAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
         // Publish events for balance responsible party
-        await PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+        await CreateOutboxMessageWithCalculationResultCompletedForBalanceResponsiblePartiesAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
     }
 
-    private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task CreateOutboxMessageWithCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
             var productionForTotalGa = await _processStepResultRepository
                 .GetAsync(
@@ -80,9 +91,13 @@ public class ProcessApplicationService : IProcessApplicationService
             await _integrationEventPublisher
                 .PublishCalculationResultForTotalGridAreaAsync(productionForTotalGa, processCompletedEvent)
                 .ConfigureAwait(false);
+
+            var outboxMessage = _outboxMessageFactory.CreateMessageCalculationResultForTotalGridArea(productionForTotalGa, processCompletedEvent);
+            await _outboxService.AddAsync(outboxMessage).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task CreateOutboxMessageWithCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
             var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(
                 processCompletedEvent.BatchId,
@@ -100,14 +115,14 @@ public class ProcessApplicationService : IProcessApplicationService
                         null)
                     .ConfigureAwait(false);
 
-                await _integrationEventPublisher.PublishCalculationResultForEnergySupplierAsync(
-                    processStepResultDto,
-                    processCompletedEvent,
-                    energySupplier.Gln).ConfigureAwait(false);
+                var outboxMessage = _outboxMessageFactory.CreateMessageCalculationResultForEnergySupplier(processStepResultDto, processCompletedEvent, energySupplier.Gln);
+                await _outboxService.AddAsync(outboxMessage).ConfigureAwait(false);
             }
+
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    private async Task PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task CreateOutboxMessageWithCalculationResultCompletedForBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
         var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(
             processCompletedEvent.BatchId,
@@ -125,10 +140,10 @@ public class ProcessApplicationService : IProcessApplicationService
                     null)
                 .ConfigureAwait(false);
 
-            await _integrationEventPublisher.PublishCalculationResultForBalanceResponsiblePartyAsync(
-                processStepResultDto,
-                processCompletedEvent,
-                balanceResponsibleParty.Gln).ConfigureAwait(false);
+            var outboxMessage = _outboxMessageFactory.CreateMessageForCalculationResultForBalanceResponsibleParty(processStepResultDto, processCompletedEvent, balanceResponsibleParty.Gln);
+            await _outboxService.AddAsync(outboxMessage).ConfigureAwait(false);
         }
+
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }

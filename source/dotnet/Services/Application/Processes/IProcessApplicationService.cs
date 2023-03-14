@@ -29,5 +29,5 @@ public interface IProcessApplicationService
     /// <summary>
     /// Publish a calculation ready result event for each result in a grid area.
     /// </summary>
-    Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent);
+    Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEventDto);
 }
