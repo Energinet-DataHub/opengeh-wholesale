@@ -50,6 +50,22 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         return calculationResultCompleted;
     }
 
+    public CalculationResultCompleted CreateCalculationResultCompletedForBalanceResponsibleParty(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string balanceResponsiblePartyGln)
+    {
+        var calculationResultCompleted = Map(processStepResultDto, processCompletedEventDto);
+        calculationResultCompleted.AggregationPerBalanceresponsiblepartyPerGridarea =
+            new AggregationPerBalanceResponsiblePartyPerGridArea
+            {
+                GridAreaCode = processCompletedEventDto.GridAreaCode,
+                BalanceResponsiblePartyGlnOrEic = balanceResponsiblePartyGln,
+            };
+
+        return calculationResultCompleted;
+    }
+
     private static CalculationResultCompleted Map(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto)
