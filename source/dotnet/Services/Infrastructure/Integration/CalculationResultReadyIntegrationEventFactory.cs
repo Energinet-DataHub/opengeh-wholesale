@@ -26,7 +26,7 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto)
     {
-        var calculationResultCompleted = Map(processStepResultDto, processCompletedEventDto);
+        var calculationResultCompleted = Create(processStepResultDto, processCompletedEventDto);
         calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea
         {
             GridAreaCode = processCompletedEventDto.GridAreaCode,
@@ -40,7 +40,7 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         ProcessCompletedEventDto processCompletedEventDto,
         string energySupplierGln)
     {
-        var calculationResultCompleted = Map(processStepResultDto, processCompletedEventDto);
+        var calculationResultCompleted = Create(processStepResultDto, processCompletedEventDto);
         calculationResultCompleted.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
         {
             GridAreaCode = processCompletedEventDto.GridAreaCode,
@@ -50,7 +50,23 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         return calculationResultCompleted;
     }
 
-    private static CalculationResultCompleted Map(
+    public CalculationResultCompleted CreateCalculationResultCompletedForBalanceResponsibleParty(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string balanceResponsiblePartyGln)
+    {
+        var calculationResultCompleted = Create(processStepResultDto, processCompletedEventDto);
+        calculationResultCompleted.AggregationPerBalanceresponsiblepartyPerGridarea =
+            new AggregationPerBalanceResponsiblePartyPerGridArea
+            {
+                GridAreaCode = processCompletedEventDto.GridAreaCode,
+                BalanceResponsiblePartyGlnOrEic = balanceResponsiblePartyGln,
+            };
+
+        return calculationResultCompleted;
+    }
+
+    private static CalculationResultCompleted Create(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto)
     {

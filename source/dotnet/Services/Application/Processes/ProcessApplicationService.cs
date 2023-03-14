@@ -61,6 +61,9 @@ public class ProcessApplicationService : IProcessApplicationService
         // Publish events for total grid area
         await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
         await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+
+        // Publish events for balance responsible party
+        await PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
     }
 
     private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
@@ -102,5 +105,30 @@ public class ProcessApplicationService : IProcessApplicationService
                     processCompletedEvent,
                     energySupplier.Gln).ConfigureAwait(false);
             }
+    }
+
+    private async Task PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    {
+        var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(
+            processCompletedEvent.BatchId,
+            new GridAreaCode(processCompletedEvent.GridAreaCode),
+            timeSeriesType).ConfigureAwait(false);
+
+        foreach (var balanceResponsibleParty in balanceResponsibleParties)
+        {
+            var processStepResultDto = await _processStepResultRepository
+                .GetAsync(
+                    processCompletedEvent.BatchId,
+                    new GridAreaCode(processCompletedEvent.GridAreaCode),
+                    timeSeriesType,
+                    balanceResponsibleParty.Gln,
+                    null)
+                .ConfigureAwait(false);
+
+            await _integrationEventPublisher.PublishCalculationResultForBalanceResponsiblePartyAsync(
+                processStepResultDto,
+                processCompletedEvent,
+                balanceResponsibleParty.Gln).ConfigureAwait(false);
+        }
     }
 }

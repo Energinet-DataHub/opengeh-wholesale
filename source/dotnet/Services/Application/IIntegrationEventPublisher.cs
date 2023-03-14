@@ -24,4 +24,6 @@ public interface IIntegrationEventPublisher
     Task PublishCalculationResultForTotalGridAreaAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto);
 
     Task PublishCalculationResultForEnergySupplierAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto, string energySupplierGln);
+
+    Task PublishCalculationResultForBalanceResponsiblePartyAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto, string balanceResponsiblePartyGln);
 }
