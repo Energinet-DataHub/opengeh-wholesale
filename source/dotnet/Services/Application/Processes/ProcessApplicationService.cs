@@ -64,6 +64,45 @@ public class ProcessApplicationService : IProcessApplicationService
 
         // Publish events for balance responsible party
         await PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+
+        // Publish events for energy suppliers results for balance responsible parties
+        await PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+    }
+
+    private async Task PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    {
+        var brps = await _actorRepository
+            .GetBalanceResponsiblePartiesAsync(
+                processCompletedEvent.BatchId,
+                new GridAreaCode(processCompletedEvent.GridAreaCode),
+                timeSeriesType).ConfigureAwait(false);
+        foreach (var brp in brps)
+        {
+            var energySuppliersByBalanceResponsibleParty = await _actorRepository
+                .GetEnergySuppliersByBalanceResponsiblePartyAsync(
+                    processCompletedEvent.BatchId,
+                    new GridAreaCode(processCompletedEvent.GridAreaCode),
+                    timeSeriesType,
+                    brp.Gln).ConfigureAwait(false);
+
+            foreach (var energySupplier in energySuppliersByBalanceResponsibleParty)
+            {
+                var result = await _processStepResultRepository.GetAsync(
+                        processCompletedEvent.BatchId,
+                        new GridAreaCode(processCompletedEvent.GridAreaCode),
+                        timeSeriesType,
+                        energySupplier.Gln,
+                        brp.Gln)
+                    .ConfigureAwait(false);
+
+                await _integrationEventPublisher
+                    .PublishCalculationResultForEnergySupplierByBalanceResponsiblePartyAsync(
+                        result,
+                        processCompletedEvent,
+                        energySupplier.Gln,
+                        brp.Gln).ConfigureAwait(false);
+            }
+        }
     }
 
     private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)

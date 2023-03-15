@@ -66,6 +66,24 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         return calculationResultCompleted;
     }
 
+    public CalculationResultCompleted CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(
+        ProcessStepResult result,
+        ProcessCompletedEventDto processCompletedEvent,
+        string energySupplierGln,
+        string balanceResponsiblePartyGln)
+    {
+        var calculationResultCompleted = Create(result, processCompletedEvent);
+        calculationResultCompleted.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
+            new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
+            {
+                GridAreaCode = processCompletedEvent.GridAreaCode,
+                EnergySupplierGlnOrEic = energySupplierGln,
+                BalanceResponsiblePartyGlnOrEic = balanceResponsiblePartyGln,
+            };
+
+        return calculationResultCompleted;
+    }
+
     private static CalculationResultCompleted Create(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto)
