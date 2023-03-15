@@ -76,6 +76,9 @@ public class ActorRepository : IActorRepository
         var resultStream =
             await _dataLakeClient.GetReadableFileStreamAsync(filepath).ConfigureAwait(false);
 
-        return await _jsonNewlineSerializer.DeserializeAsync<ActorRelation>(resultStream).ConfigureAwait(false);
+        var actorRelations = await _jsonNewlineSerializer.DeserializeAsync<ActorRelation>(resultStream).ConfigureAwait(false);
+
+        // We have a json newline without data in it in the actor lists, this is a temporary workaround.
+        return actorRelations.Where(x => x.balance_responsible_party_gln != null && x.energy_supplier_gln != null).ToList();
     }
 }
