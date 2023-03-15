@@ -18,4 +18,4 @@ jobs:
   # Branch policy status check
   #
   infrastructure_ci:
-    uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/c4-model-status-check.yml@main
+    uses: ./.github/workflows/c4-model-status-check.yml

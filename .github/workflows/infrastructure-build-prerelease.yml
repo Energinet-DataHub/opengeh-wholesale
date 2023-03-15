@@ -6,164 +6,40 @@ name: Infrastructure build - prerelease
 #
 # This workflow will validate the infrastructure as code (terraform files)
 # and then create a prerelease package containing the files.
-# The prerelease name will be in the format '<RELEASE_NAME_PREFIX>_<PR-number>'.
+# The prerelease name will be in the format '<release_name_prefix>_<PR-number>'.
 
 on:
   workflow_call:
     inputs:
-      RELEASE_NAME_PREFIX:
+      release_name_prefix:
         required: false
         default: "infrastructure"
         type: string
-      INFRASTRUCTURE_PATH:
+      infrastructure_path:
         required: true
         type: string
-      OPERATING_SYSTEM:
+      operating_system:
         required: false
         default: "ubuntu-22.04"
         type: string
-      ADDITIONAL_INFRASTRUCTURE_PATH:
-        required: false
-        default: ""
-        type: string
-      B2C_INFRASTRUCTURE_PATH:
-        required: false
-        default: ""
-        type: string
-    secrets:
-      PAT_TOKEN:
-        required: true
-        description: "PAT token for system account with private repository scope to access modules in private repository"
 
 env:
-  TERRAFORM_RELEASE_FOLDER_PATH: ${{ github.workspace }}/infrastructure
-  RELEASE_VERSION: ${{ inputs.RELEASE_NAME_PREFIX }}_${{ github.event.pull_request.number }}
-  RELEASE_ZIP_FILENAME: ${{ inputs.RELEASE_NAME_PREFIX }}_${{ github.event.pull_request.number }}.zip
+  RELEASE_VERSION: ${{ inputs.release_name_prefix }}_${{ github.event.pull_request.number }}
+  RELEASE_ZIP_FILENAME: ${{ inputs.release_name_prefix }}_${{ github.event.pull_request.number }}.zip
 
 jobs:
-  find_environment_names:
-    name: Finding environments
-    runs-on: ${{ inputs.OPERATING_SYSTEM }}
-    outputs:
-      folders: ${{ steps.find_folder_names.outputs.folders }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # bash tree is used to make it easier to finder the subfolders.
-      # https://linuxhint.com/bash-tree-command/
-      - run: sudo apt install tree jq -y
-        shell: bash
-
-      - name: Finding folders
-        id: find_folder_names
-        shell: bash
-        run: |
-          if [ -d ${{ inputs.INFRASTRUCTURE_PATH }}/env ]; then
-            echo "Finding folders"
-            cd ${{ inputs.INFRASTRUCTURE_PATH }}/env
-            folders=$(tree -J -d -L 1 | jq -c '.[0].contents | map(.name)')
-            echo "folders=$folders" >> $GITHUB_OUTPUT
-          else
-            echo "No env folder"
-            declare -a folders=()
-            echo "folders=$folders" >> $GITHUB_OUTPUT
-          fi
-
-  # If no environments exists, we still need to validate main folder
-  validate_additional_environment:
-    if: ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH != '' }}
-    name: Validating additional configuration
-    runs-on: ${{ inputs.OPERATING_SYSTEM }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Copy infrastructure files
-        shell: bash
-        run: |
-          cp -fR ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
-
-      - name: Terraform validate
-        uses: ./.github/actions/terraform-validate
-        with:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-          WORKING_DIRECTORY: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
-
-  # If no environments exists, we still need to validate main folder
-  validate_b2c_environment:
-    if: ${{ inputs.B2C_INFRASTRUCTURE_PATH != '' }}
-    name: Validating B2C configuration
-    runs-on: ${{ inputs.OPERATING_SYSTEM }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Copy infrastructure files
-        shell: bash
-        run: |
-          cp -fR ${{ inputs.B2C_INFRASTRUCTURE_PATH }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
-
-      - name: Terraform validate
-        uses: ./.github/actions/terraform-validate
-        with:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-          WORKING_DIRECTORY: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
-
-  # If no environments exists, we still need to validate main folder
-  validate_main_environment:
-    if: ${{ needs.find_environment_names.outputs.folders == '' }}
-    needs: find_environment_names
-    name: Validating main configuration
-    runs-on: ${{ inputs.OPERATING_SYSTEM }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Copy infrastructure files
-        shell: bash
-        run: |
-          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
-
-      - name: Terraform validate
-        uses: ./.github/actions/terraform-validate
-        with:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-          WORKING_DIRECTORY: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
-
-  # If environments exists, we validate the environments
-  validate_environments:
-    if: ${{ needs.find_environment_names.outputs.folders != '' }}
-    needs: find_environment_names
-    name: Validating ${{ matrix.environment_folder_name }} configuration
-    runs-on: ${{ inputs.OPERATING_SYSTEM }}
-    strategy:
-      matrix:
-        environment_folder_name: ${{ fromJSON(needs.find_environment_names.outputs.folders) }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Copy infrastructure files
-        shell: bash
-        run: |
-          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
-          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/env/${{ matrix.environment_folder_name }}/* ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
-
-      - name: Terraform validate
-        uses: ./.github/actions/terraform-validate
-        with:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-          WORKING_DIRECTORY: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
+  validate_infrastructure_configuration:
+    uses: ./.github/workflows/infrastructure-validate.yml
+    with:
+      infrastructure_path: ${{ inputs.infrastructure_path }}
+    secrets: inherit
 
   create_prerelease:
-    needs: [validate_environments, validate_main_environment]
+    needs: [validate_infrastructure_configuration]
     if: ${{ always() && !contains(needs.*.result, 'failure') }}
-    runs-on: ${{ inputs.OPERATING_SYSTEM }}
+    runs-on: ${{ inputs.operating_system }}
     env:
       RELEASE_FOLDER_PATH: ${{ github.workspace }}/release
-      RELEASE_VERSION: ${{ inputs.RELEASE_NAME_PREFIX }}_${{ github.event.pull_request.number }}
-      RELEASE_ZIP_FILENAME: ${{ inputs.RELEASE_NAME_PREFIX }}_${{ github.event.pull_request.number }}.zip
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -173,20 +49,8 @@ jobs:
         run: |
           mkdir ${{ env.RELEASE_FOLDER_PATH }}
           mkdir ${{ env.RELEASE_FOLDER_PATH }}/infrastructure
-          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/main ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/main 2>/dev/null || :
-          cp -fR ${{ inputs.INFRASTRUCTURE_PATH }}/env ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/env 2>/dev/null || :
-
-      - name: Copy additional infrastructure files
-        if: ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH != '' }}
-        shell: bash
-        run: |
-          cp -fR ${{ inputs.ADDITIONAL_INFRASTRUCTURE_PATH }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
-
-      - name: Copy B2C infrastructure files
-        if: ${{ inputs.B2C_INFRASTRUCTURE_PATH != '' }}
-        shell: bash
-        run: |
-          cp -fR ${{ inputs.B2C_INFRASTRUCTURE_PATH }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
+          cp -fR ${{ inputs.infrastructure_path }}/main ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/main 2>/dev/null || :
+          cp -fR ${{ inputs.infrastructure_path }}/env ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/env 2>/dev/null || :
 
       - name: Zip files for prerelease
         uses: thedoctor0/zip-release@0.6.2

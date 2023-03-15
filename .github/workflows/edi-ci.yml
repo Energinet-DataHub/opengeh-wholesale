@@ -9,6 +9,7 @@ on:
       - .github/workflows/edi-ci.yml
       - .github/workflows/edi-cd.yml
       - .github/workflows/infrastructure-build-prerelease.yml
+      - .github/workflows/infrastructure-validate.yml
       - .github/actions/terraform-validate/*
 
 jobs:
@@ -17,9 +18,8 @@ jobs:
   # Branch policy status check
   #
   infrastructure_ci:
-    uses: Energinet-DataHub/dh3-infrastructure/.github/workflows/infrastructure-build-prerelease.yml@main
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
     with:
-      RELEASE_NAME_PREFIX: "edi_infrastructure"
-      INFRASTRUCTURE_PATH: "./edi/terraform"
-    secrets:
-      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+      release_name_prefix: "edi_infrastructure"
+      infrastructure_path: "./edi/terraform"
+    secrets: inherit

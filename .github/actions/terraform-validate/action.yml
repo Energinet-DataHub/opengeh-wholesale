@@ -1,10 +1,10 @@
 name: Terraform Validate
 inputs:
-  WORKING_DIRECTORY:
-    description: 'Working directory of the Terraform configuration'
+  working_directory:
+    description: "Working directory of the Terraform configuration"
     required: true
-  PAT_TOKEN:
-    description: 'Access Token'
+  pat_token:
+    description: "Access Token"
     required: true
 
 runs:
@@ -12,18 +12,18 @@ runs:
   steps:
     - name: Inject PAT_TOKEN into git configuration
       shell: bash
-      run: ls -ahl ${{ inputs.WORKING_DIRECTORY }}
+      run: ls -ahl ${{ inputs.working_directory }}
 
     - name: Inject PAT_TOKEN into git configuration
       shell: bash
-      run: git config --global url."https://oauth2:${{ inputs.PAT_TOKEN }}@github.com".insteadOf https://github.com
+      run: git config --global url."https://oauth2:${{ inputs.pat_token }}@github.com".insteadOf https://github.com
 
     - name: Get Terraform Version
       shell: bash
       id: get-terraform-version
       run: |
-        if [ -f "${{ inputs.WORKING_DIRECTORY }}/.terraform-version" ]; then
-          terraform_version=`cat ${{ inputs.WORKING_DIRECTORY }}/.terraform-version`
+        if [ -f "${{ inputs.working_directory }}/.terraform-version" ]; then
+          terraform_version=`cat ${{ inputs.working_directory }}/.terraform-version`
           echo "Version found $terraform_version"
           echo "TERRAFORM_VERSION=${terraform_version}" >>$GITHUB_OUTPUT
         else
@@ -39,10 +39,10 @@ runs:
 
     - name: Terraform init
       shell: bash
-      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+      working-directory: ${{ inputs.working_directory }}
       run: terraform init -backend=false
 
     - name: Terraform validate
       shell: bash
-      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+      working-directory: ${{ inputs.working_directory }}
       run: terraform validate

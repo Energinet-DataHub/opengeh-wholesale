@@ -1,0 +1,107 @@
+name: Shared resources infrastructure build - prerelease
+
+# DESCRIPTION:
+#
+# Should only be used for pull requests.
+#
+# This workflow is a specialized version of the infrastructure-build-prelease
+# workflow, made spefically for the Shared Resources domain, which is unique
+# due to the domain's IaC configuration which contains multiple sub-components:
+# - Landing zone
+# - B2C
+# - Infrastructure (resources that are shared by the DataHub system)
+#
+# Like to the basic infrastructure-build-prelease workflow, this workflow
+# will validate the infrastructure as code (terraform files) and then create
+# a prerelease package containing the files.
+# The prerelease name will be in the format 'shared_resources_infrastructure_<PR-number>'.
+
+on:
+  workflow_call:
+    inputs:
+      infrastructure_path:
+        required: true
+        type: string
+      landingzone_path:
+        required: true
+        type: string
+      b2c_path:
+        required: true
+        type: string
+      operating_system:
+        required: false
+        default: "ubuntu-22.04"
+        type: string
+
+env:
+  RELEASE_VERSION: shared_resources_infrastructure_${{ github.event.pull_request.number }}
+  RELEASE_ZIP_FILENAME: shared_resources_infrastructure_${{ github.event.pull_request.number }}.zip
+
+jobs:
+  validate_infrastructure_configuration:
+    uses: ./.github/workflows/infrastructure-validate.yml
+    with:
+      infrastructure_path: ${{ inputs.infrastructure_path }}
+    secrets: inherit
+
+  validate_landingzone_configuration:
+    uses: ./.github/workflows/infrastructure-validate.yml
+    with:
+      infrastructure_path: ${{ inputs.landingzone_path }}
+    secrets: inherit
+
+  validate_b2c_configuration:
+    uses: ./.github/workflows/infrastructure-validate.yml
+    with:
+      infrastructure_path: ${{ inputs.b2c_path }}
+    secrets: inherit
+
+  create_prerelease:
+    needs:
+      [
+        validate_infrastructure_configuration,
+        validate_landingzone_configuration,
+        validate_b2c_configuration,
+      ]
+    if: ${{ always() && !contains(needs.*.result, 'failure') }}
+    runs-on: ${{ inputs.operating_system }}
+    env:
+      RELEASE_FOLDER_PATH: ${{ github.workspace }}/release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Copy infrastructure files
+        shell: bash
+        run: |
+          mkdir ${{ env.RELEASE_FOLDER_PATH }}
+          mkdir ${{ env.RELEASE_FOLDER_PATH }}/infrastructure
+          cp -fR ${{ inputs.infrastructure_path }}/main ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/main 2>/dev/null || :
+          cp -fR ${{ inputs.infrastructure_path }}/env ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/env 2>/dev/null || :
+
+      - name: Copy Landingzone infrastructure files
+        shell: bash
+        run: |
+          cp -fR ${{ inputs.landingzone_path }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
+
+      - name: Copy B2C infrastructure files
+        shell: bash
+        run: |
+          cp -fR ${{ inputs.b2c_path }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
+
+      - name: Zip files for prerelease
+        uses: thedoctor0/zip-release@0.6.2
+        with:
+          type: "zip"
+          filename: ${{ env.RELEASE_ZIP_FILENAME }}
+          directory: ${{ env.RELEASE_FOLDER_PATH }}
+
+      - name: Create prelease
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ env.RELEASE_VERSION }}
+          prerelease: true
+          title: ${{ env.RELEASE_VERSION }}
+          files: |
+            ${{ env.RELEASE_FOLDER_PATH }}/${{ env.RELEASE_ZIP_FILENAME }}

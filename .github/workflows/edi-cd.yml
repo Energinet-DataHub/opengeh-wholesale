@@ -9,6 +9,7 @@ on:
       - .github/workflows/edi-ci.yml
       - .github/workflows/edi-cd.yml
       - .github/workflows/infrastructure-build-prerelease.yml
+      - .github/workflows/infrastructure-validate.yml
 
 jobs:
   #
@@ -18,7 +19,7 @@ jobs:
   infrastructure_promote_prerelease:
     uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v10
     with:
-      RELEASE_NAME_PREFIX: edi_infrastructure
+      release_name_prefix: edi_infrastructure
 
   #
   # Dispatch deployment request
@@ -51,6 +52,6 @@ jobs:
       contains(needs.*.result, 'failure')
     uses: Energinet-DataHub/.github/.github/workflows/notify-team.yml@v10
     with:
-      TEAM_NAME: "Batman"
-      SUBJECT: "Deployment dispatch failed: Infrastructure - EDI"
+      team_name: "Batman"
+      subject: "Deployment dispatch failed: Infrastructure - EDI"
     secrets: inherit

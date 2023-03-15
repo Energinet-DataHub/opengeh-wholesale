@@ -9,14 +9,14 @@ name: C4 Model Branch Policy Status Check
 on:
   workflow_call:
     inputs:
-      OPERATING_SYSTEM:
+      operating_system:
         required: false
         default: "ubuntu-22.04"
         type: string
 
 jobs:
   create_prerelease:
-    runs-on: ${{ inputs.OPERATING_SYSTEM }}
+    runs-on: ${{ inputs.operating_system }}
     steps:
       - name: Print message
         shell: bash
