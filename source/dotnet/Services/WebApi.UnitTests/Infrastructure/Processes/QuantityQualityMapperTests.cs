@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 public class QuantityQualityMapperTests
 {
     [Fact]
-    public void MapQuality_whenCalled_MapsCorrectly()
+    public void MapQuality_ReturnsMappedQuality()
     {
         // Arrange
         foreach (var type in Enum.GetValues(typeof(QuantityQuality)))
