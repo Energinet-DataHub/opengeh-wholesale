@@ -76,7 +76,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     {
         var integrationEvent =
             _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
-        await PublishCalculationResultCompletedAsync(processCompletedEventDto, integrationEvent).ConfigureAwait(false);
+        await PublishCalculationResultCompletedAsync(integrationEvent).ConfigureAwait(false);
     }
 
     private async Task PublishCalculationResultCompletedAsync(
