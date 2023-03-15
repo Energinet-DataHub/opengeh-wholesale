@@ -20,5 +20,23 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
 public interface ICalculationResultReadyIntegrationEventFactory
 {
-    CalculationResultCompleted CreateCalculationResultCompletedForGridArea(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto);
+    CalculationResultCompleted CreateCalculationResultCompletedForGridArea(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto);
+
+    CalculationResultCompleted CreateCalculationResultCompletedForEnergySupplier(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string energySupplierGln);
+
+    CalculationResultCompleted CreateCalculationResultCompletedForBalanceResponsibleParty(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string balanceResponsiblePartyGln);
+
+    CalculationResultCompleted CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(
+        ProcessStepResult result,
+        ProcessCompletedEventDto processCompletedEvent,
+        string energySupplierGln,
+        string balanceResponsiblePartyGln);
 }

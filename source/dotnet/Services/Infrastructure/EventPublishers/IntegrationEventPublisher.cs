@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
@@ -51,10 +50,50 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
-    public async Task PublishAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto)
+    public async Task PublishCalculationResultForTotalGridAreaAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto)
     {
         var integrationEvent =
             _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResultDto, processCompletedEventDto);
+        await PublishCalculationResultCompletedAsync(processCompletedEventDto, integrationEvent).ConfigureAwait(false);
+    }
+
+    public async Task PublishCalculationResultForEnergySupplierAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string energySupplierGln)
+    {
+        var integrationEvent =
+            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForEnergySupplier(processStepResultDto, processCompletedEventDto, energySupplierGln);
+        await PublishCalculationResultCompletedAsync(processCompletedEventDto, integrationEvent).ConfigureAwait(false);
+    }
+
+    public async Task PublishCalculationResultForBalanceResponsiblePartyAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string balanceResponsiblePartyGln)
+    {
+        var integrationEvent =
+            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
+        await PublishCalculationResultCompletedAsync(processCompletedEventDto, integrationEvent).ConfigureAwait(false);
+    }
+
+    public async Task PublishCalculationResultForEnergySupplierByBalanceResponsiblePartyAsync(
+        ProcessStepResult result,
+        ProcessCompletedEventDto processCompletedEvent,
+        string energySupplierGln,
+        string balanceResponsiblePartyGln)
+    {
+        var integrationEvent =
+            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(result, processCompletedEvent, energySupplierGln, balanceResponsiblePartyGln);
+        await PublishCalculationResultCompletedAsync(processCompletedEvent, integrationEvent).ConfigureAwait(false);
+    }
+
+    private async Task PublishCalculationResultCompletedAsync(
+        ProcessCompletedEventDto processCompletedEventDto,
+        CalculationResultCompleted integrationEvent)
+    {
         var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
         var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
