@@ -195,6 +195,8 @@ def _start(command_line_args: list[str]) -> None:
         batch_grid_areas=args.batch_grid_areas,
         batch_period_start_datetime=args.batch_period_start_datetime,
         batch_period_end_datetime=args.batch_period_end_datetime,
+        batch_execution_time_start=args.batch_execution_time_start,
+        batch_process_type=args.batch_process_type,
         time_zone=args.time_zone,
     )
 
