@@ -12,21 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import package.infrastructure as infra
-from package.codelists import MarketRole, TimeSeriesType, Grouping
-from package.constants import Colname, PartitionKeyName
+from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit
 
+import package.infrastructure as infra
+from package.codelists import MarketRole, TimeSeriesType, Grouping
+from package.constants import Colname, PartitionKeyName
+
 
 class ProcessStepResultWriter:
-    def __init__(self, container_path: str, batch_id: str):
+    def __init__(
+        self,
+        container_path: str,
+        batch_id: str,
+        batch_process_type: str,
+        batch_execution_time_start: datetime,
+    ):
         self.__table_name = "result_table"
         self.__delta_table_path = f"{container_path}/{infra.get_calculation_output_folder()}/{self.__table_name}"
         self.__batch_id = batch_id
         self.__output_path = (
             f"{container_path}/{infra.get_batch_relative_path(batch_id)}"
         )
+        self.__batch_process_type = batch_process_type
+        self.__batch_execution_time_start = batch_execution_time_start
 
     def write(
         self,
@@ -164,7 +174,15 @@ class ProcessStepResultWriter:
         df: DataFrame,
         grouping: Grouping,
     ) -> None:
-        df = df.withColumn(Colname.batch_id, lit(self.__batch_id))
+        df = (
+            df.withColumn(Colname.batch_id, lit(self.__batch_id))
+            .withColumn(Colname.batch_process_type, lit(self.__batch_process_type))
+            .withColumn(
+                Colname.batch_execution_time_start,
+                lit(self.__batch_execution_time_start),
+            )
+        )
+
         df = df.withColumnRenamed(
             PartitionKeyName.GROUPING, "AggregationLevel"
         )  # TODO: rename Grouping enum to AggragationLevel
