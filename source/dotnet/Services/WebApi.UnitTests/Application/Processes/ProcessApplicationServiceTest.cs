@@ -214,4 +214,53 @@ public class ProcessApplicationServiceTest
         // Assert
         publisherMock.Verify(publisher => publisher.PublishCalculationResultForBalanceResponsiblePartyAsync(processStepResult, eventDto, glnNumber), Times.Once);
     }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplierByBalanceResponsibleParty(
+        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
+        [Frozen] Mock<IActorRepository> actorRepositoryMock,
+        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        string brpGlnNumber,
+        string glnNumber,
+        ProcessApplicationService sut)
+    {
+        // Arrange
+        var eventDto = new ProcessCompletedEventDto(
+            "805",
+            Guid.NewGuid(),
+            ProcessType.BalanceFixing,
+            Instant.MinValue,
+            Instant.MinValue);
+
+        var processStepResult = new ProcessStepResult(
+            TimeSeriesType.NonProfiledConsumption,
+            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+
+        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+            eventDto.BatchId,
+            It.IsAny<GridAreaCode>(),
+            TimeSeriesType.NonProfiledConsumption,
+            glnNumber,
+            brpGlnNumber)).ReturnsAsync(processStepResult);
+
+        actorRepositoryMock
+            .Setup(a => a.GetBalanceResponsiblePartiesAsync(
+                eventDto.BatchId,
+                new GridAreaCode(eventDto.GridAreaCode),
+                It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(brpGlnNumber) });
+
+        actorRepositoryMock
+            .Setup(a => a.GetEnergySuppliersByBalanceResponsiblePartyAsync(
+                eventDto.BatchId,
+                new GridAreaCode(eventDto.GridAreaCode),
+                It.IsAny<TimeSeriesType>(),
+                brpGlnNumber)).ReturnsAsync(new[] { new Actor(glnNumber) });
+
+        //Act
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+
+        // Assert
+        publisherMock.Verify(publisher => publisher.PublishCalculationResultForEnergySupplierByBalanceResponsiblePartyAsync(processStepResult, eventDto, glnNumber, brpGlnNumber), Times.Once);
+    }
 }
