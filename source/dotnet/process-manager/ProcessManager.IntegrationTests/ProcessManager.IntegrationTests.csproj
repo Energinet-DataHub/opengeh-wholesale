@@ -40,19 +40,27 @@ limitations under the License.
 
     <ItemGroup>
       <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-        <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\6.0.13\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+        <HintPath>..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\6.0.13\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
       </Reference>
       <Reference Include="Microsoft.Extensions.Hosting.Abstractions">
-        <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\6.0.13\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
+        <HintPath>..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\6.0.13\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
       </Reference>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" />
+      <ProjectReference Include="..\..\wholesale-api\Application\Application.csproj" />
+      <ProjectReference Include="..\..\wholesale-api\Domain\Domain.csproj" />
+      <ProjectReference Include="..\..\wholesale-api\Infrastructure.Core\Infrastructure.Core.csproj" />
+      <ProjectReference Include="..\..\wholesale-api\Infrastructure\Infrastructure.csproj" />
+      <ProjectReference Include="..\..\wholesale-api\Test.Core\Test.Core.csproj" />
+      <ProjectReference Include="..\..\wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" />
       <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <None Update="integrationtest.local.settings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
       <None Update="integrationtest.local.settings.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
