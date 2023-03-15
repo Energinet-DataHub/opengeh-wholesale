@@ -73,6 +73,7 @@ public class ProcessApplicationServiceV2 : IProcessApplicationServiceV2
         // Publish events for total grid area - non profile
         await CreateOutboxMessageWithCalculationResultCompletedForTotalGridAreaAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
+        // TODO AJH
         // Publish events for balance responsible party
         await CreateOutboxMessageWithCalculationResultCompletedForBalanceResponsiblePartiesAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
     }

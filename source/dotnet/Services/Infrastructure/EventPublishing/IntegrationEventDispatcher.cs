@@ -62,7 +62,8 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
             {
                 try
                 {
-                    var serviceBusMessage = System.Text.Json.JsonSerializer.Deserialize<ServiceBusMessage>(outboxMessage.Data);
+                    // TODO AJH var serviceBusMessage = System.Text.Json.JsonSerializer.Deserialize<ServiceBusMessage>(outboxMessage.Data);
+                    var serviceBusMessage = _jsonSerializer.Deserialize<ServiceBusMessage>(Encoding.UTF8.GetString(outboxMessage.Data));
                     if (serviceBusMessage == null)
                     {
                         throw new NullReferenceException("serviceBusMessage");
