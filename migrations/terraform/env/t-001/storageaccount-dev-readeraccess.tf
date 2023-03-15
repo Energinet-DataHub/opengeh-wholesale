@@ -1,0 +1,12 @@
+#
+# Add developer read access to storage account
+#
+data "azuread_group" "datalake_readeraccess_group_name" {
+  display_name     = var.datalake_readeraccess_group_name
+}
+
+resource "azurerm_role_assignment" "datalake_readeraccess_group_name" {
+  scope                = module.st_migrations.id
+  role_definition_name = "Storage Blob Data Reader"
+  principal_id         = data.azuread_group.datalake_readeraccess_group_name.object_id
+}
