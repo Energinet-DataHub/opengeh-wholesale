@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
@@ -35,9 +36,11 @@ using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishing;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.V2;
@@ -113,6 +116,12 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<IJsonSerializer, JsonSerializer>();
         services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
+
+        services.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
+        services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
+        services.AddScoped<IOutboxService, OutboxService>();
+        services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
+        services.AddScoped<IProcessApplicationServiceV2, ProcessApplicationServiceV2>();
 
         RegisterDomainEventPublisher(services, configuration);
 

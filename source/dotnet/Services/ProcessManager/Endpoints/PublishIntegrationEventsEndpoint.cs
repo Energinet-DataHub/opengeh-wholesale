@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.Batches;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;

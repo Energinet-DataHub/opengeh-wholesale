@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
-public class ProcessApplicationServiceV2 : IProcessApplicationService
+public class ProcessApplicationServiceV2 : IProcessApplicationServiceV2
 {
     private readonly IIntegrationEventPublisher _integrationEventPublisher;
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;

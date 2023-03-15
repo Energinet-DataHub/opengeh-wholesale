@@ -73,8 +73,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
         {
             var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
             var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
-            var serialized = _jsonSerializer.Serialize(serviceBusMessage);
-            var bytes = Encoding.UTF8.GetBytes(serialized);
+            //var serialized = _jsonSerializer.Serialize(serviceBusMessage);
+            //var bytes = Encoding.UTF8.GetBytes(serialized);
+            var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(serviceBusMessage);
             return new OutboxMessage(messageType, bytes, _systemDateTimeProvider.GetCurrentInstant());
         }
 

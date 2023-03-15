@@ -39,10 +39,12 @@ using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishing;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
@@ -154,6 +156,12 @@ public static class Program
             provider => new SettlementReportRepository(
                 provider.GetRequiredService<IDataLakeClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
+
+        serviceCollection.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
+        serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
+        serviceCollection.AddScoped<IOutboxService, OutboxService>();
+        serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
+        serviceCollection.AddScoped<IProcessApplicationServiceV2, ProcessApplicationServiceV2>();
     }
 
     private static void RegisterEventPublishers(IServiceCollection serviceCollection)
