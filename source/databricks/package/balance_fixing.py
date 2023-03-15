@@ -97,7 +97,7 @@ def _calculate_non_profiled_consumption(
     result_writer.write(
         consumption_per_ga_and_brp_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        Grouping.es_per_brp_per_ga,
+        AggregationLevel.es_per_brp_per_ga,
     )
 
     # Non-profiled consumption per energy supplier
