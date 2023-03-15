@@ -79,12 +79,6 @@ def _calculate_production(
 
     result_writer.write(production_per_ga, TimeSeriesType.PRODUCTION, Grouping.total_ga)
 
-    result_writer.write(
-        production_per_per_ga_and_brp_and_es,
-        TimeSeriesType.PRODUCTION,
-        Grouping.es_per_brp_per_ga,
-    )
-
 
 def _calculate_non_profiled_consumption(
     actors_writer: ActorsWriter,
@@ -96,6 +90,12 @@ def _calculate_non_profiled_consumption(
         agg_steps.aggregate_non_profiled_consumption_ga_brp_es(
             enriched_time_series_point_df
         )
+    )
+
+    result_writer.write(
+        consumption_per_ga_and_brp_and_es,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        Grouping.es_per_brp_per_ga,
     )
 
     # Non-profiled consumption per energy supplier
