@@ -87,7 +87,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     {
         var integrationEvent =
             _calculationResultReadyIntegrationEventFactory.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(result, processCompletedEvent, energySupplierGln, balanceResponsiblePartyGln);
-        await PublishCalculationResultCompletedAsync(processCompletedEvent, integrationEvent).ConfigureAwait(false);
+        await PublishCalculationResultCompletedAsync(integrationEvent).ConfigureAwait(false);
     }
 
     private async Task PublishCalculationResultCompletedAsync(
