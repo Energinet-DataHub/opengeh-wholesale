@@ -216,14 +216,14 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
             "805",
             energy_supplier_gln_a,
             balance_responsible_party_gln_a,
-            TimeSeriesType.PRODUCTION,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
             AggregationLevel.es_per_brp_per_ga,
         ),
         (
             "806",
             energy_supplier_gln_a,
             balance_responsible_party_gln_a,
-            TimeSeriesType.PRODUCTION,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
             AggregationLevel.es_per_brp_per_ga,
         ),
         (
