@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using FluentAssertions;
 using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.QuantityQuality;
+using QuantityQualityMapper = Energinet.DataHub.Wholesale.Infrastructure.Integration.QuantityQualityMapper;
 using TimeSeriesTypeMapper = Energinet.DataHub.Wholesale.Infrastructure.Integration.TimeSeriesTypeMapper;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Integration;
@@ -33,12 +34,5 @@ public class TimeSeriesTypeMapperTests
     {
         // Act & Assert
         TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType).Should().Be(expected);
-    }
-
-    [Fact]
-    public void MapQuantityQuality_WhenCalledWithCalculated_ExceptionIsThrown()
-    {
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => QuantityQualityMapper.MapQuantityQuality(QuantityQuality.Calculated));
     }
 }
