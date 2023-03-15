@@ -92,7 +92,7 @@ public class ProcessApplicationService : IProcessApplicationService
                         new GridAreaCode(processCompletedEvent.GridAreaCode),
                         timeSeriesType,
                         energySupplier.Gln,
-                        null)
+                        brp.Gln)
                     .ConfigureAwait(false);
 
                 await _integrationEventPublisher
