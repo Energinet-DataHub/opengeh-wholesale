@@ -69,7 +69,13 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
             return CreateOutboxMessage(processCompletedEventDto, integrationEvent);
         }
 
-        private OutboxMessage CreateOutboxMessage(ProcessCompletedEventDto processCompletedEventDto, IMessage integrationEvent)
+        public OutboxMessage CreateMessageCalculationResultForEnergySupplierByBalanceResponsibleParty(ProcessStepResult result, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln, string brpGln)
+        {
+            var integrationEvent = _calculationResultReadyIntegrationEventFactory.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(result, processCompletedEvent, energySupplierGln, brpGln);
+            return CreateOutboxMessage(processCompletedEvent, integrationEvent);
+        }
+
+        private OutboxMessage CreateOutboxMessage(ProcessCompletedEventDto processCompletedEventDto, CalculationResultCompleted integrationEvent)
         {
             var messageType = GetMessageTypeForCalculationResultCompletedEvent(processCompletedEventDto.ProcessType);
             var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
@@ -83,7 +89,6 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
             processType switch
             {
                 Contracts.ProcessType.BalanceFixing => CalculationResultCompleted.BalanceFixingEventName,
-                Contracts.ProcessType.Aggregation => CalculationResultCompleted.AggregationEventName,
                 _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
             };
     }

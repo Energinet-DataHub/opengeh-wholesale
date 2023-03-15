@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
         private readonly IOutboxMessageRepository _outboxMessageRepository;
         private readonly IClock _clock;
         private readonly IDatabaseContext _context;
-        private readonly ILogger _logger;
+        private readonly ILogger<IntegrationEventDispatcher> _logger;
         private readonly IJsonSerializer _jsonSerializer;
 
         public IntegrationEventDispatcher(
@@ -40,7 +40,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
             IOutboxMessageRepository outboxMessageRepository,
             IClock clock,
             IDatabaseContext context,
-            ILogger logger,
+            ILogger<IntegrationEventDispatcher> logger,
             IJsonSerializer jsonSerializer)
         {
             _integrationEventTopicServiceBusSender = integrationEventTopicServiceBusSender;

@@ -25,4 +25,6 @@ public interface IOutboxMessageFactory
     OutboxMessage CreateMessageForCalculationResultForBalanceResponsibleParty(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent, string gln);
 
     OutboxMessage CreateMessageCalculationResultForTotalGridArea(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent);
+
+    OutboxMessage CreateMessageCalculationResultForEnergySupplierByBalanceResponsibleParty(ProcessStepResult result, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln, string brpGln);
 }

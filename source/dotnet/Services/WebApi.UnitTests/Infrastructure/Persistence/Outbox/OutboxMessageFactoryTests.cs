@@ -45,7 +45,8 @@ public class OutboxMessageFactoryTests
         ProcessStepResult processStepResult,
         ProcessCompletedEventDto processCompletedEventDto,
         CalculationResultCompleted calculationResultCompleted,
-        ServiceBusMessage serviceBusMessage)
+        ServiceBusMessage serviceBusMessage,
+        string energySupplierGln)
     {
         // Arrange
         var instance = SystemClock.Instance.GetCurrentInstant();
@@ -58,10 +59,10 @@ public class OutboxMessageFactoryTests
         clockMock.Setup(x => x.GetCurrentInstant()).Returns(instance);
 
         // Act
-        var actual = sut.CreateFrom(processStepResult, processCompletedEventDto);
+        var actual = sut.CreateMessageCalculationResultForEnergySupplier(processStepResult, processCompletedEventDto, energySupplierGln);
 
         // Assert
-        var expected = new OutboxMessage(CalculationResultCompleted.AggregationEventName, Encoding.UTF8.GetBytes(serialized), instance);
+        var expected = new OutboxMessage(CalculationResultCompleted.BalanceFixingEventName, Encoding.UTF8.GetBytes(serialized), instance);
         actual.Should().BeEquivalentTo(expected, x => x.Excluding(y => y.Id));
     }
 }

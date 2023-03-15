@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
@@ -35,18 +36,22 @@ using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishing;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.V2;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
+using ProcessTypeMapper = Energinet.DataHub.Wholesale.Application.Processes.Model.ProcessTypeMapper;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -122,6 +127,14 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IOutboxService, OutboxService>();
         services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
         services.AddScoped<IProcessApplicationServiceV2, ProcessApplicationServiceV2>();
+        services.AddScoped<ICalculationResultReadyIntegrationEventFactory, CalculationResultReadyIntegrationEventFactory>();
+
+        var integrationEventTopicName = configuration[ConfigurationSettingNames.IntegrationEventsTopicName];
+        var serviceBusConnectionString = configuration[ConfigurationSettingNames.ServiceBusManageConnectionString];
+        services.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName);
+        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+        services.AddScoped<IProcessCompletedIntegrationEventMapper, ProcessCompletedIntegrationEventMapper>();
+        services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
 
         RegisterDomainEventPublisher(services, configuration);
 

@@ -73,9 +73,45 @@ public class ProcessApplicationServiceV2 : IProcessApplicationServiceV2
         // Publish events for total grid area - non profile
         await CreateOutboxMessageWithCalculationResultCompletedForTotalGridAreaAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
-        // TODO AJH
         // Publish events for balance responsible party
         await CreateOutboxMessageWithCalculationResultCompletedForBalanceResponsiblePartiesAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+
+        // Publish events for energy suppliers results for balance responsible parties
+        await PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(processCompletedEventDto, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+    }
+
+    private async Task PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    {
+        var brps = await _actorRepository
+            .GetBalanceResponsiblePartiesAsync(
+                processCompletedEvent.BatchId,
+                new GridAreaCode(processCompletedEvent.GridAreaCode),
+                timeSeriesType).ConfigureAwait(false);
+        foreach (var brp in brps)
+        {
+            var energySuppliersByBalanceResponsibleParty = await _actorRepository
+                .GetEnergySuppliersByBalanceResponsiblePartyAsync(
+                    processCompletedEvent.BatchId,
+                    new GridAreaCode(processCompletedEvent.GridAreaCode),
+                    timeSeriesType,
+                    brp.Gln).ConfigureAwait(false);
+
+            foreach (var energySupplier in energySuppliersByBalanceResponsibleParty)
+            {
+                var result = await _processStepResultRepository.GetAsync(
+                        processCompletedEvent.BatchId,
+                        new GridAreaCode(processCompletedEvent.GridAreaCode),
+                        timeSeriesType,
+                        energySupplier.Gln,
+                        brp.Gln)
+                    .ConfigureAwait(false);
+
+                var outboxMessage = _outboxMessageFactory.CreateMessageCalculationResultForEnergySupplierByBalanceResponsibleParty(result, processCompletedEvent, energySupplier.Gln, brp.Gln);
+                await _outboxService.AddAsync(outboxMessage).ConfigureAwait(false);
+            }
+        }
+
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     private async Task CreateOutboxMessageWithCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
