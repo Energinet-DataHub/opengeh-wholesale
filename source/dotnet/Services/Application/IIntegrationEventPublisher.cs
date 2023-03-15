@@ -21,9 +21,23 @@ public interface IIntegrationEventPublisher
 {
     Task PublishAsync(ProcessCompletedEventDto processCompletedEvent);
 
-    Task PublishCalculationResultForTotalGridAreaAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto);
+    Task PublishCalculationResultForTotalGridAreaAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto);
 
-    Task PublishCalculationResultForEnergySupplierAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto, string energySupplierGln);
+    Task PublishCalculationResultForEnergySupplierAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string energySupplierGln);
 
-    Task PublishCalculationResultForBalanceResponsiblePartyAsync(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto, string balanceResponsiblePartyGln);
+    Task PublishCalculationResultForBalanceResponsiblePartyAsync(
+        ProcessStepResult processStepResultDto,
+        ProcessCompletedEventDto processCompletedEventDto,
+        string balanceResponsiblePartyGln);
+
+    Task PublishCalculationResultForEnergySupplierByBalanceResponsiblePartyAsync(
+        ProcessStepResult result,
+        ProcessCompletedEventDto processCompletedEvent,
+        string energySupplierGln,
+        string balanceResponsiblePartyGln);
 }
