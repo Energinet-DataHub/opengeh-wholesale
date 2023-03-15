@@ -49,7 +49,7 @@ limitations under the License.
 
   <ItemGroup>
     <ProjectReference Include="..\..\DatabaseMigration\DatabaseMigration.csproj" />
-    <ProjectReference Include="..\ProcessManager\ProcessManager.csproj" />
+    <ProjectReference Include="..\..\process-manager\ProcessManager\ProcessManager.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
     <ProjectReference Include="..\WebApi\WebApi.csproj" />
   </ItemGroup>
