@@ -83,21 +83,9 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
                 point => new TimeSeriesPoint(
                     DateTimeOffset.Parse(point.quarter_time),
                     decimal.Parse(point.quantity, CultureInfo.InvariantCulture),
-                    MapQuality(point.quality)))
+                    QuantityQualityMapper.MapQuality(point.quality)))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
-    }
-
-    private static QuantityQuality MapQuality(string pointQuality)
-    {
-        return pointQuality switch
-        {
-            "measured" => QuantityQuality.Measured,
-            "calculated" => QuantityQuality.Calculated,
-            "estimated" => QuantityQuality.Estimated,
-            "incomplete" => QuantityQuality.Incomplete,
-            _ =>throw new ArgumentException($"quality of unknown type:{pointQuality}"),
-        };
     }
 }
