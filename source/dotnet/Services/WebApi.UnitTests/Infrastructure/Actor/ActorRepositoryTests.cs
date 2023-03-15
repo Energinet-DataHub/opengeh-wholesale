@@ -221,6 +221,27 @@ public class ActorRepositoryTests
         directory.Should().MatchRegex(expected.DirectoryExpression);
     }
 
+    [Theory]
+    [AutoMoqData]
+    public async Task GetEnergySuppliersAsync_WhenActorRelationsPropsIsNull_ActorRelationIsRemoved(
+        [Frozen] Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock,
+        [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
+    {
+        // Arrange
+        MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, new List<ActorRelation>
+        {
+            new(null!, null!),
+        });
+
+        var sut = new ActorRepository(dataLakeClientMock.Object, jsonNewlineSerializerMock.Object);
+
+        // Act
+        var actual = await sut.GetEnergySuppliersAsync(Guid.NewGuid(), new GridAreaCode("123"), TimeSeriesType.Production);
+
+        // Assert
+        actual.Should().BeEmpty();
+    }
+
     private static void MockSetup(Mock<IJsonNewlineSerializer> jsonNewlineSerializerMock, Mock<IDataLakeClient> dataLakeClientMock, List<ActorRelation> actorRelationsDeserialized)
     {
         dataLakeClientMock.Setup(x => x.FindFileAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(Guid.NewGuid().ToString());
