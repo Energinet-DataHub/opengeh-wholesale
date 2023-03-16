@@ -1,21 +1,21 @@
 module "ag_primary" {
-  source                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=v10"
 
-  name                      = "primary"
-  project_name              = var.domain_name_short
-  environment_short         = var.environment_short
-  environment_instance      = var.environment_instance
-  resource_group_name       = azurerm_resource_group.this.name
+  name                 = "primary"
+  project_name         = var.domain_name_short
+  environment_short    = var.environment_short
+  environment_instance = var.environment_instance
+  resource_group_name  = azurerm_resource_group.this.name
 
-  short_name                = "Primary"
-  email_receiver_name       = "DevOps"
-  email_receiver_address    = var.ag_primary_email_address
+  short_name             = "Primary"
+  email_receiver_name    = "DevOps"
+  email_receiver_address = var.ag_primary_email_address
 }
 
 module "kvs_ag_primary_id" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "ag-primary-id"
-  value         = module.ag_primary.id
-  key_vault_id  = module.kv_shared.id
+  name         = "ag-primary-id"
+  value        = module.ag_primary.id
+  key_vault_id = module.kv_shared.id
 }

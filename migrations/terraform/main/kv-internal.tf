@@ -1,5 +1,5 @@
 module "kv_internal" {
-  source                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v10"
 
   name                            = "internal"
   project_name                    = var.domain_name_short
@@ -11,6 +11,6 @@ module "kv_internal" {
   sku_name                        = "premium"
   log_analytics_workspace_id      = data.azurerm_key_vault_secret.log_shared_id.value
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  allowed_subnet_ids              = [
+  allowed_subnet_ids = [
   ]
 }

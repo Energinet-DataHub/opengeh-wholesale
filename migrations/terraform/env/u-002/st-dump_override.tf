@@ -1,6 +1,6 @@
-data "azurerm_resource_group" "migrations" {  
+data "azurerm_resource_group" "migrations" {
   #Name in U-002 differs from all other environments
-  name      = "rg-DataHub-DataMigration-${upper(var.environment_short)}-${var.environment_instance}"  
+  name = "rg-DataHub-DataMigration-${upper(var.environment_short)}-${var.environment_instance}"
 }
 data "azurerm_storage_account" "drop" {
   #Name in U-002 differs from all other environments

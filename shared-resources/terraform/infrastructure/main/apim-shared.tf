@@ -1,35 +1,35 @@
 module "snet_apim" {
-  source                                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/subnet?ref=v10"
-  name                                            = "apim"
-  project_name                                    = var.domain_name_short
-  environment_short                               = var.environment_short
-  environment_instance                            = var.environment_instance
-  resource_group_name                             = var.virtual_network_resource_group_name
-  virtual_network_name                            = var.virtual_network_name
-  address_prefixes                                = [
+  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/subnet?ref=v10"
+  name                 = "apim"
+  project_name         = var.domain_name_short
+  environment_short    = var.environment_short
+  environment_instance = var.environment_instance
+  resource_group_name  = var.virtual_network_resource_group_name
+  virtual_network_name = var.virtual_network_name
+  address_prefixes = [
     var.apim_address_space
   ]
-  enforce_private_link_endpoint_network_policies  = true
-  enforce_private_link_service_network_policies   = true
+  enforce_private_link_endpoint_network_policies = true
+  enforce_private_link_service_network_policies  = true
 }
 
 module "apim_shared" {
-  source                      = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management?ref=v10"
 
-  name                        = "shared"
-  project_name                = var.domain_name_short
-  environment_short           = var.environment_short
-  environment_instance        = var.environment_instance
-  resource_group_name         = azurerm_resource_group.this.name
-  location                    = azurerm_resource_group.this.location
-  publisher_name              = var.project_name
-  publisher_email             = var.apim_publisher_email
-  sku_name                    = "Developer_1"
-  virtual_network_type        = "External"
-  subnet_id                   = module.snet_apim.id
-  log_analytics_workspace_id  = module.log_workspace_shared.id
+  name                       = "shared"
+  project_name               = var.domain_name_short
+  environment_short          = var.environment_short
+  environment_instance       = var.environment_instance
+  resource_group_name        = azurerm_resource_group.this.name
+  location                   = azurerm_resource_group.this.location
+  publisher_name             = var.project_name
+  publisher_email            = var.apim_publisher_email
+  sku_name                   = "Developer_1"
+  virtual_network_type       = "External"
+  subnet_id                  = module.snet_apim.id
+  log_analytics_workspace_id = module.log_workspace_shared.id
 
-  policies                    = [
+  policies = [
     {
       xml_content = <<XML
         <policies>
@@ -63,19 +63,19 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
   grant_types = [
     "clientCredentials",
   ]
-  authorization_endpoint       = "https://login.microsoftonline.com/${var.apim_b2c_tenant_id}/oauth2/v2.0/authorize"
-  authorization_methods        =  [
+  authorization_endpoint = "https://login.microsoftonline.com/${var.apim_b2c_tenant_id}/oauth2/v2.0/authorize"
+  authorization_methods = [
     "GET",
   ]
-  token_endpoint               = "https://login.microsoftonline.com/${var.apim_b2c_tenant_id}/oauth2/v2.0/token"
+  token_endpoint = "https://login.microsoftonline.com/${var.apim_b2c_tenant_id}/oauth2/v2.0/token"
   client_authentication_method = [
     "Body",
   ]
   bearer_token_sending_methods = [
     "authorizationHeader",
   ]
-  default_scope                = "api://${var.backend_service_app_id}/.default"
-  client_id                    = var.backend_service_app_id
+  default_scope = "api://${var.backend_service_app_id}/.default"
+  client_id     = var.backend_service_app_id
 }
 
 resource "azurerm_api_management_logger" "apim_logger" {
@@ -90,65 +90,65 @@ resource "azurerm_api_management_logger" "apim_logger" {
 }
 
 module "kvs_apim_gateway_url" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "apim-gateway-url"
-  value         = module.apim_shared.gateway_url
-  key_vault_id  = module.kv_shared.id
+  name         = "apim-gateway-url"
+  value        = module.apim_shared.gateway_url
+  key_vault_id = module.kv_shared.id
 }
 
 module "kvs_apim_logger_id" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "apim-logger-id"
-  value         = azurerm_api_management_logger.apim_logger.id
-  key_vault_id  = module.kv_shared.id
+  name         = "apim-logger-id"
+  value        = azurerm_api_management_logger.apim_logger.id
+  key_vault_id = module.kv_shared.id
 }
 
 module "kvs_apim_instance_name" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "apim-instance-name"
-  value         = module.apim_shared.name
-  key_vault_id  = module.kv_shared.id
+  name         = "apim-instance-name"
+  value        = module.apim_shared.name
+  key_vault_id = module.kv_shared.id
 }
 
 module "kvs_apim_instance_resource_group_name" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "apim-instance-resource-group-name"
-  value         = azurerm_resource_group.this.name
-  key_vault_id  = module.kv_shared.id
+  name         = "apim-instance-resource-group-name"
+  value        = azurerm_resource_group.this.name
+  key_vault_id = module.kv_shared.id
 }
 
 module "kvs_b2c_tenant_id" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "b2c-tenant-id"
-  value         = var.apim_b2c_tenant_id
-  key_vault_id  = module.kv_shared.id
+  name         = "b2c-tenant-id"
+  value        = var.apim_b2c_tenant_id
+  key_vault_id = module.kv_shared.id
 }
 
 module "kvs_backend_service_app_id" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "backend-service-app-id"
-  value         = var.backend_service_app_id
-  key_vault_id  = module.kv_shared.id
+  name         = "backend-service-app-id"
+  value        = var.backend_service_app_id
+  key_vault_id = module.kv_shared.id
 }
 
 module "kvs_frontend_open_id_url" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "frontend-open-id-url"
-  value         = var.frontend_open_id_url
-  key_vault_id  = module.kv_shared.id
+  name         = "frontend-open-id-url"
+  value        = var.frontend_open_id_url
+  key_vault_id = module.kv_shared.id
 }
 
 module "kvs_frontend_service_app_id" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "frontend-service-app-id"
-  value         = var.frontend_service_app_id
-  key_vault_id  = module.kv_shared.id
+  name         = "frontend-service-app-id"
+  value        = var.frontend_service_app_id
+  key_vault_id = module.kv_shared.id
 }

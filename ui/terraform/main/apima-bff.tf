@@ -1,24 +1,24 @@
 module "apima_bff" {
-  source                      = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v10"
 
-  name                        = "bff"
-  project_name                = var.domain_name_short
-  environment_short           = var.environment_short
-  environment_instance        = var.environment_instance
-  api_management_name         = data.azurerm_key_vault_secret.apim_instance_name.value
-  resource_group_name         = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
-  display_name                = "BFF Api"
-  authorization_server_name   = azurerm_api_management_authorization_server.oauth_server_bff.name
-  apim_logger_id              = data.azurerm_key_vault_secret.apim_logger_id.value
-  logger_sampling_percentage  = 100.0
-  logger_verbosity            = "verbose"
-  path                        = "bff"
-  backend_service_url         = "https://${module.bff.default_hostname}"
-  import                      =  {
-    content_format          = "openapi+json"
-    content_value           = data.local_file.swagger_file.content
+  name                       = "bff"
+  project_name               = var.domain_name_short
+  environment_short          = var.environment_short
+  environment_instance       = var.environment_instance
+  api_management_name        = data.azurerm_key_vault_secret.apim_instance_name.value
+  resource_group_name        = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
+  display_name               = "BFF Api"
+  authorization_server_name  = azurerm_api_management_authorization_server.oauth_server_bff.name
+  apim_logger_id             = data.azurerm_key_vault_secret.apim_logger_id.value
+  logger_sampling_percentage = 100.0
+  logger_verbosity           = "verbose"
+  path                       = "bff"
+  backend_service_url        = "https://${module.bff.default_hostname}"
+  import = {
+    content_format = "openapi+json"
+    content_value  = data.local_file.swagger_file.content
   }
-  policies                    = [
+  policies = [
     {
       xml_content = <<XML
         <policies>
@@ -96,7 +96,7 @@ module "apima_bff" {
 }
 
 data "local_file" "swagger_file" {
-    filename = "${path.module}/../../swagger.json"
+  filename = "${path.module}/../../swagger.json"
 }
 
 resource "azurerm_api_management_authorization_server" "oauth_server_bff" {
@@ -108,24 +108,24 @@ resource "azurerm_api_management_authorization_server" "oauth_server_bff" {
   grant_types = [
     "implicit",
   ]
-  authorization_endpoint       = "${var.apim_b2c_tenant_frontend_userflow}/oauth2/v2.0/authorize"
-  authorization_methods        =  [
+  authorization_endpoint = "${var.apim_b2c_tenant_frontend_userflow}/oauth2/v2.0/authorize"
+  authorization_methods = [
     "GET",
   ]
-  token_endpoint               = "${var.apim_b2c_tenant_frontend_userflow}/oauth2/v2.0/token"
+  token_endpoint = "${var.apim_b2c_tenant_frontend_userflow}/oauth2/v2.0/token"
   client_authentication_method = [
     "Body",
   ]
   bearer_token_sending_methods = [
     "authorizationHeader",
   ]
-  client_id                    = data.azurerm_key_vault_secret.frontend_service_app_id.value
+  client_id = data.azurerm_key_vault_secret.frontend_service_app_id.value
 }
 
 module "kvs_app_bff_base_url" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "app-bff-base-url"
-  value         = "${data.azurerm_key_vault_secret.apim_gateway_url.value}/${module.apima_bff.path}"
-  key_vault_id  = data.azurerm_key_vault.kv_shared_resources.id
+  name         = "app-bff-base-url"
+  value        = "${data.azurerm_key_vault_secret.apim_gateway_url.value}/${module.apima_bff.path}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

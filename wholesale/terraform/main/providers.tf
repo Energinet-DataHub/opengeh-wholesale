@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     databricks = {
-      source = "databricks/databricks"
+      source  = "databricks/databricks"
       version = "1.5.0"
     }
     # It is recommended to pin to a given version of the Azure provider

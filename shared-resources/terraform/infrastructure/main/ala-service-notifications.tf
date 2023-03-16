@@ -2,16 +2,16 @@ resource "azurerm_monitor_activity_log_alert" "main" {
   name                = "ala-shared-servicenotifications-${lower(var.environment_short)}-${var.environment_instance}"
   resource_group_name = azurerm_resource_group.this.name
 
-  scopes              = [
+  scopes = [
     data.azurerm_subscription.this.id
   ]
-  description         = "Alert will fire in case of a service issue or planned maintenance of any resources in the subscription."
+  description = "Alert will fire in case of a service issue or planned maintenance of any resources in the subscription."
 
   criteria {
-    category          = "ServiceHealth"
+    category = "ServiceHealth"
 
     service_health {
-      events          = [
+      events = [
         "Incident",
         "Maintenance"
       ]
@@ -19,11 +19,11 @@ resource "azurerm_monitor_activity_log_alert" "main" {
   }
 
   action {
-    action_group_id   = module.ag_primary.id
+    action_group_id = module.ag_primary.id
   }
 
   lifecycle {
-    ignore_changes    = [
+    ignore_changes = [
       # Ignore changes to tags, e.g. because a management agent
       # updates these based on some ruleset managed elsewhere.
       tags,

@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "this" {
-  name      = var.resource_group_name
-  location  = "West Europe"
+  name     = var.resource_group_name
+  location = "West Europe"
 }
 
 data "azurerm_resource_group" "shared_resources" {

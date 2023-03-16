@@ -3,17 +3,17 @@ locals {
 }
 
 module "snet_deployagent" {
-  source                = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/subnet?ref=v10"
-  name                  = "deployagents"
-  project_name          = var.domain_name_short
-  environment_short     = var.environment_short
-  environment_instance  = var.environment_instance
-  resource_group_name   = var.virtual_network_resource_group_name
-  virtual_network_name  = data.azurerm_virtual_network.this.name
-  address_prefixes      = [
+  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/subnet?ref=v10"
+  name                 = "deployagents"
+  project_name         = var.domain_name_short
+  environment_short    = var.environment_short
+  environment_instance = var.environment_instance
+  resource_group_name  = var.virtual_network_resource_group_name
+  virtual_network_name = data.azurerm_virtual_network.this.name
+  address_prefixes = [
     var.deployment_agent_address_space
   ]
-  service_endpoints                               = [
+  service_endpoints = [
     "Microsoft.KeyVault"
   ]
 }
@@ -122,13 +122,13 @@ resource "random_id" "storageid" {
 
 # Create storage account for boot diagnostics
 resource "azurerm_storage_account" "deployagent" {
-  count                       = local.deployagent_count
-  name                        = "stdiag${random_id.storageid.hex}${count.index}"
-  resource_group_name         = azurerm_resource_group.this.name
-  location                    = azurerm_resource_group.this.location
-  account_tier                = "Standard"
-  account_replication_type    = "LRS"
-  min_tls_version             = "TLS1_2"
+  count                    = local.deployagent_count
+  name                     = "stdiag${random_id.storageid.hex}${count.index}"
+  resource_group_name      = azurerm_resource_group.this.name
+  location                 = azurerm_resource_group.this.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  min_tls_version          = "TLS1_2"
 
   lifecycle {
     ignore_changes = [
@@ -141,9 +141,9 @@ resource "azurerm_storage_account" "deployagent" {
 
 # Create VM password
 resource "random_password" "vmpassword" {
-  length            = 20
-  special           = true
-  override_special  = "_%@"
+  length           = 20
+  special          = true
+  override_special = "_%@"
 }
 
 # Create virtual machine
@@ -157,12 +157,12 @@ resource "azurerm_linux_virtual_machine" "deployagent" {
   admin_username                  = var.vm_user_name
   admin_password                  = random_password.vmpassword.result
   disable_password_authentication = false
-  network_interface_ids           = [
+  network_interface_ids = [
     azurerm_network_interface.deployagent[count.index].id
   ]
 
   # Changes to the script file means the VM will be recreated
-  custom_data                     = filebase64sha256("${path.module}/scripts/setup-deploy-agent.sh")
+  custom_data = filebase64sha256("${path.module}/scripts/setup-deploy-agent.sh")
 
   lifecycle {
     ignore_changes = [
@@ -174,8 +174,8 @@ resource "azurerm_linux_virtual_machine" "deployagent" {
 
   # Enable managed identity
   identity {
-    identity_ids  = []
-    type          = "SystemAssigned"
+    identity_ids = []
+    type         = "SystemAssigned"
   }
 
   os_disk {
@@ -196,10 +196,10 @@ resource "azurerm_linux_virtual_machine" "deployagent" {
   }
 
   connection {
-    type        = "ssh"
-    user        = var.vm_user_name
-    password    = random_password.vmpassword.result
-    host        = azurerm_public_ip.deployagent[count.index].ip_address
+    type     = "ssh"
+    user     = var.vm_user_name
+    password = random_password.vmpassword.result
+    host     = azurerm_public_ip.deployagent[count.index].ip_address
   }
 
   provisioner "file" {

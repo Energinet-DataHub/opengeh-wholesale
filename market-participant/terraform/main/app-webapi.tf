@@ -1,23 +1,23 @@
 module "app_webapi" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v10"
 
-  name                                      = "webapi"
-  project_name                              = var.domain_name_short
-  environment_short                         = var.environment_short
-  environment_instance                      = var.environment_instance
-  resource_group_name                       = azurerm_resource_group.this.name
-  location                                  = azurerm_resource_group.this.location
-  vnet_integration_subnet_id                = data.azurerm_key_vault_secret.snet_vnet_integrations_id.value
-  private_endpoint_subnet_id                = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  app_service_plan_id                       = data.azurerm_key_vault_secret.plan_shared_id.value
-  application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
-  health_check_path                         = "/monitor/ready"
-  health_check_alert_action_group_id        = data.azurerm_key_vault_secret.primary_action_group_id.value
-  health_check_alert_enabled                = var.enable_health_check_alerts
-  dotnet_framework_version                  = "v7.0"
-  ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
+  name                                     = "webapi"
+  project_name                             = var.domain_name_short
+  environment_short                        = var.environment_short
+  environment_instance                     = var.environment_instance
+  resource_group_name                      = azurerm_resource_group.this.name
+  location                                 = azurerm_resource_group.this.location
+  vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integrations_id.value
+  private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
+  application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+  health_check_path                        = "/monitor/ready"
+  health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
+  health_check_alert_enabled               = var.enable_health_check_alerts
+  dotnet_framework_version                 = "v7.0"
+  ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
 
-  app_settings                              = {
+  app_settings = {
     EXTERNAL_OPEN_ID_URL                       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
     INTERNAL_OPEN_ID_URL                       = "https://app-webapi-${var.domain_name_short}-${var.environment_short}-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
     BACKEND_SERVICE_APP_ID                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)"
@@ -37,17 +37,17 @@ module "app_webapi" {
 }
 
 module "kvs_app_markpart_webapi_base_url" {
-  source                                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name                                            = "app-markpart-webapi-base-url"
-  value                                           = "https://${module.app_webapi.default_hostname}"
-  key_vault_id                                    = data.azurerm_key_vault.kv_shared_resources.id
+  name         = "app-markpart-webapi-base-url"
+  value        = "https://${module.app_webapi.default_hostname}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
 module "kvs_backend_open_id_url" {
-  source                                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name                                            = "backend-open-id-url"
-  value                                           = "https://${module.app_webapi.default_hostname}/.well-known/openid-configuration"
-  key_vault_id                                    = data.azurerm_key_vault.kv_shared_resources.id
+  name         = "backend-open-id-url"
+  value        = "https://${module.app_webapi.default_hostname}/.well-known/openid-configuration"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

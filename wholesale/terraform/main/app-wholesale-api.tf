@@ -1,41 +1,41 @@
 module "app_wholesale_api" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v10"
 
-  name                                      = "webapi"
-  project_name                              = var.domain_name_short
-  environment_short                         = var.environment_short
-  environment_instance                      = var.environment_instance
-  resource_group_name                       = azurerm_resource_group.this.name
-  location                                  = azurerm_resource_group.this.location
-  app_service_plan_id                       = data.azurerm_key_vault_secret.plan_shared_id.value
-  application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
-  vnet_integration_subnet_id                = data.azurerm_key_vault_secret.snet_vnet_integrations_id.value
-  private_endpoint_subnet_id                = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  health_check_path                         = "/monitor/ready"
-  health_check_alert_action_group_id        = data.azurerm_key_vault_secret.primary_action_group_id.value
-  health_check_alert_enabled                = var.enable_health_check_alerts
-  ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
+  name                                     = "webapi"
+  project_name                             = var.domain_name_short
+  environment_short                        = var.environment_short
+  environment_instance                     = var.environment_instance
+  resource_group_name                      = azurerm_resource_group.this.name
+  location                                 = azurerm_resource_group.this.location
+  app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
+  application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+  vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integrations_id.value
+  private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  health_check_path                        = "/monitor/ready"
+  health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
+  health_check_alert_enabled               = var.enable_health_check_alerts
+  ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
 
-  app_settings                              = {
-    TIME_ZONE                               = local.TIME_ZONE
-    EXTERNAL_OPEN_ID_URL                    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
-    INTERNAL_OPEN_ID_URL                    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
-    BACKEND_SERVICE_APP_ID                  = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)"
-    STORAGE_CONNECTION_STRING               = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)",
-    STORAGE_CONTAINER_NAME                  = local.STORAGE_CONTAINER_NAME
+  app_settings = {
+    TIME_ZONE                 = local.TIME_ZONE
+    EXTERNAL_OPEN_ID_URL      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
+    INTERNAL_OPEN_ID_URL      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
+    BACKEND_SERVICE_APP_ID    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-service-app-id)"
+    STORAGE_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)",
+    STORAGE_CONTAINER_NAME    = local.STORAGE_CONTAINER_NAME
 
     # Service Bus
-    SERVICE_BUS_SEND_CONNECTION_STRING      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
-    SERVICE_BUS_MANAGE_CONNECTION_STRING    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
-    DOMAIN_EVENTS_TOPIC_NAME                = module.sbt_domain_events.name
-    BATCH_CREATED_EVENT_NAME                = local.BATCH_CREATED_EVENT_NAME
+    SERVICE_BUS_SEND_CONNECTION_STRING   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
+    SERVICE_BUS_MANAGE_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
+    DOMAIN_EVENTS_TOPIC_NAME             = module.sbt_domain_events.name
+    BATCH_CREATED_EVENT_NAME             = local.BATCH_CREATED_EVENT_NAME
 
     # Databricks
-    DATABRICKS_WORKSPACE_TOKEN              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
-    DATABRICKS_WORKSPACE_URL                = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
+    DATABRICKS_WORKSPACE_TOKEN = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
+    DATABRICKS_WORKSPACE_URL   = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
   }
 
-  connection_strings                        = [
+  connection_strings = [
     {
       name  = "DB_CONNECTION_STRING"
       type  = "SQLAzure"
@@ -45,9 +45,9 @@ module "app_wholesale_api" {
 }
 
 module "kvs_app_wholesale_api_base_url" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "app-wholesale-api-base-url"
-  value         = "https://${module.app_wholesale_api.default_hostname}"
-  key_vault_id  = data.azurerm_key_vault.kv_shared_resources.id
+  name         = "app-wholesale-api-base-url"
+  value        = "https://${module.app_wholesale_api.default_hostname}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

@@ -1,5 +1,5 @@
 module "kv_shared" {
-  source                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v10"
 
   name                            = "main"
   project_name                    = var.domain_name_short
@@ -11,7 +11,7 @@ module "kv_shared" {
   sku_name                        = "premium"
   log_analytics_workspace_id      = module.log_workspace_shared.id
   private_endpoint_subnet_id      = module.snet_private_endpoints.id
-  allowed_subnet_ids              = [
+  allowed_subnet_ids = [
     module.snet_vnet_integrations.id,
     data.azurerm_subnet.deployment_agents_subnet.id
   ]
@@ -19,9 +19,9 @@ module "kv_shared" {
 }
 
 module "kvs_pir_hosted_deployment_agents" {
-  source        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
 
-  name          = "pir-hosted-deployment-agents"
-  value         = var.hosted_deployagent_public_ip_range
-  key_vault_id  = module.kv_shared.id
+  name         = "pir-hosted-deployment-agents"
+  value        = var.hosted_deployagent_public_ip_range
+  key_vault_id = module.kv_shared.id
 }

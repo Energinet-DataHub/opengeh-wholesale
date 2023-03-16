@@ -4,12 +4,12 @@ terraform {
     azurerm = "=3.9.0"
 
     databricks = {
-      source = "databricks/databricks"
+      source  = "databricks/databricks"
       version = "1.9.1"
     }
 
     azuread = {
-      source = "hashicorp/azuread"
+      source  = "hashicorp/azuread"
       version = "2.31.0"
     }
   }

@@ -1,18 +1,18 @@
 module "apima_b2b" {
-  source                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v10"
 
-  name                        = "b2b"
-  project_name                = var.domain_name_short
-  environment_short           = var.environment_short
-  environment_instance        = var.environment_instance
-  api_management_name         = module.apim_shared.name
-  resource_group_name         = azurerm_resource_group.this.name
-  display_name                = "B2B Api"
-  authorization_server_name   = azurerm_api_management_authorization_server.oauth_server.name
-  apim_logger_id              = azurerm_api_management_logger.apim_logger.id
-  logger_sampling_percentage  = 100.0
-  logger_verbosity            = "verbose"
-  policies                    = [
+  name                       = "b2b"
+  project_name               = var.domain_name_short
+  environment_short          = var.environment_short
+  environment_instance       = var.environment_instance
+  api_management_name        = module.apim_shared.name
+  resource_group_name        = azurerm_resource_group.this.name
+  display_name               = "B2B Api"
+  authorization_server_name  = azurerm_api_management_authorization_server.oauth_server.name
+  apim_logger_id             = azurerm_api_management_logger.apim_logger.id
+  logger_sampling_percentage = 100.0
+  logger_verbosity           = "verbose"
+  policies = [
     {
       xml_content = <<XML
         <policies>
