@@ -19,11 +19,11 @@ on:
 
 jobs:
   databricks_ci_build:
-    uses:  Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v10
     with:
-      PYHTON_VERSION: '3.9.7'
-      ARCHITECTURE: 'x64'
-      WHEEL_WORKING_DIRECTORY: './source/databricks'
+      PYHTON_VERSION: "3.9.7"
+      ARCHITECTURE: "x64"
+      WHEEL_WORKING_DIRECTORY: "./source/databricks"
 
   migration_scripts_verification:
     runs-on: ubuntu-latest
@@ -73,7 +73,7 @@ jobs:
 
           # Create a datetime from the prefix of the first item in the LATEST_SCRIPT_FILE_IN_MAIN array
           LATEST_SCRIPT_FILE_IN_MAIN_DATETIME=$(date -d "${LATEST_SCRIPT_FILE_IN_MAIN[0]:0:8} ${LATEST_SCRIPT_FILE_IN_MAIN[0]:8:2}:${LATEST_SCRIPT_FILE_IN_MAIN[0]:10:2}" +"%Y-%m-%d %H:%M:%S")
-          
+
           for item in "${SCRIPT_FILES_IN_PR_ARRAY[@]}"
           do
             # If a item from the SCRIPT_FILES_IN_PR_ARRAY does not exist in the SCRIPT_FILES_IN_MAIN_ARRAY then
@@ -101,46 +101,23 @@ jobs:
   databricks_ci_test:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
     with:
-      OPERATING_SYSTEM: 'dh3-ubuntu-20.04-4core'
-      PATH_STATIC_CHECKS: './source/databricks'
+      OPERATING_SYSTEM: "dh3-ubuntu-20.04-4core"
+      PATH_STATIC_CHECKS: "./source/databricks"
       # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
-      IGNORE_ERRORS_AND_WARNING_FLAKE8: 'E501,F401,E402,E203,W503'
+      IGNORE_ERRORS_AND_WARNING_FLAKE8: "E501,F401,E402,E203,W503"
       TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
 
   mypy_check:
     runs-on: ubuntu-latest
     name: Static type checker
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-      with:
-        python-version: 3.x
-    - name: Run pip intall and mypy check of files in package
-      shell: bash
-      run: |
-        pip install --upgrade pip
-        pip install mypy types-python-dateutil
-        mypy ./source/databricks/package --disallow-untyped-defs --ignore-missing-imports
-
-  #
-  # Branch policy status check
-  #
-
-  allow_merge:
-    runs-on: ubuntu-latest
-    needs: [
-      databricks_ci_build,
-      databricks_ci_test,
-      mypy_check
-    ]
-    if: |
-      always()
-    steps:
-      - name: Verify if merge is allowed
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - name: Run pip intall and mypy check of files in package
+        shell: bash
         run: |
-          echo "${{ toJSON(needs) }}"
-
-          if [[ ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }} = true ]]; then
-              echo "Failed"
-              exit 1
-          fi
+          pip install --upgrade pip
+          pip install mypy types-python-dateutil
+          mypy ./source/databricks/package --disallow-untyped-defs --ignore-missing-imports

@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 2.1.6
+
+No functional changes.
+
 ## Version 2.1.5
 
 removed `AggregationEventName` in `CalculationResultCompleted.cs`
