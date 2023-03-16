@@ -27,9 +27,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
             _context = context;
         }
 
-        public async Task AddAsync(OutboxMessage message)
+        public async Task AddAsync(OutboxMessage message, CancellationToken token)
         {
-            await _context.OutboxMessages.AddAsync(message).ConfigureAwait(false);
+            await _context.OutboxMessages.AddAsync(message, token).ConfigureAwait(false);
         }
 
         public async Task<IList<OutboxMessage>> GetByTakeAsync(int numberOfElements, CancellationToken token)

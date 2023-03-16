@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 
 public interface IOutboxMessageRepository
 {
-    Task AddAsync(OutboxMessage message);
+    Task AddAsync(OutboxMessage message, CancellationToken token);
 
     Task<IList<OutboxMessage>> GetByTakeAsync(int numberOfElements, CancellationToken token);
 

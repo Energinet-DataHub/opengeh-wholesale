@@ -40,7 +40,7 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var sut = new OutboxMessageRepository(writeContext);
 
         // Act
-        await sut.AddAsync(expected);
+        await sut.AddAsync(expected, default);
         await writeContext.SaveChangesAsync();
 
         // Assert
@@ -60,9 +60,9 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var outboxMessage3 = CreateOutOutboxMessage("type3", 13);
         var expected = new List<OutboxMessage> { outboxMessage1, outboxMessage2 };
         var sut = new OutboxMessageRepository(writeContext);
-        await sut.AddAsync(outboxMessage1);
-        await sut.AddAsync(outboxMessage2);
-        await sut.AddAsync(outboxMessage3);
+        await sut.AddAsync(outboxMessage1, default);
+        await sut.AddAsync(outboxMessage2, default);
+        await sut.AddAsync(outboxMessage3, default);
         await writeContext.SaveChangesAsync();
 
         // Act
@@ -82,9 +82,9 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var outboxMessage3 = CreateOutOutboxMessage("type3", 13);
         var expected = new List<OutboxMessage> { outboxMessage3 };
         var sut = new OutboxMessageRepository(writeContext);
-        await sut.AddAsync(outboxMessage1);
-        await sut.AddAsync(outboxMessage2);
-        await sut.AddAsync(outboxMessage3);
+        await sut.AddAsync(outboxMessage1, default);
+        await sut.AddAsync(outboxMessage2, default);
+        await sut.AddAsync(outboxMessage3, default);
         await writeContext.SaveChangesAsync();
 
         // Act

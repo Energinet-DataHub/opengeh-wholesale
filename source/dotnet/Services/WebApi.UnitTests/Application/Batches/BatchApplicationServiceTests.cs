@@ -43,7 +43,7 @@ public class BatchApplicationServiceTests
         await sut.StartCalculationAsync(batchId);
 
         // Assert
-        unitOfWorkMock.Verify(x => x.CommitAsync());
+        unitOfWorkMock.Verify(x => x.CommitAsync(default));
         calculationDomainServiceMock.Verify(x => x.StartAsync(batchId));
     }
 
@@ -58,7 +58,7 @@ public class BatchApplicationServiceTests
         await sut.UpdateExecutionStateAsync();
 
         // Assert
-        unitOfWorkMock.Verify(x => x.CommitAsync());
+        unitOfWorkMock.Verify(x => x.CommitAsync(default));
         calculationDomainServiceMock.Verify(x => x.UpdateExecutionStateAsync());
     }
 

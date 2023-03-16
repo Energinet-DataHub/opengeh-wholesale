@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using Energinet.DataHub.Wholesale.Domain;
 
 namespace Energinet.DataHub.Wholesale.Application;
 
 public interface IOutboxService
 {
-    Task AddAsync(OutboxMessage outboxMessage);
+    Task AddAsync(OutboxMessage outboxMessage, CancellationToken token);
 
-    Task DeleteOutboxMessagesOlderThan14DaysAsync();
+    Task DeleteOutboxMessagesOlderThan14DaysAsync(CancellationToken token);
 }

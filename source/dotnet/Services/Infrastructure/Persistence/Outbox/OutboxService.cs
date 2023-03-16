@@ -34,18 +34,17 @@ public class OutboxService : IOutboxService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task AddAsync(OutboxMessage outboxMessage)
+    public async Task AddAsync(OutboxMessage outboxMessage, CancellationToken token)
     {
-        await _outboxMessageRepository.AddAsync(outboxMessage).ConfigureAwait(false);
+        await _outboxMessageRepository.AddAsync(outboxMessage, token).ConfigureAwait(false);
     }
 
-    public async Task DeleteOutboxMessagesOlderThan14DaysAsync()
+    public async Task DeleteOutboxMessagesOlderThan14DaysAsync(CancellationToken token)
     {
         var instant = _clock.GetCurrentInstant();
         instant = instant.Minus(Duration.FromDays(14));
         _outboxMessageRepository.DeleteByCreationDate(instant);
 
-        // TODO AJW
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        await _unitOfWork.CommitAsync(token).ConfigureAwait(false);
     }
 }
