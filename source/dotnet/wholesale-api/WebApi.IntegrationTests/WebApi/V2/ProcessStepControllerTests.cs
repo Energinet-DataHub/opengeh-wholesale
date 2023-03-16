@@ -14,6 +14,8 @@
 
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Contracts;
@@ -28,12 +30,19 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V2;
 
 public class ProcessStepControllerTests : WebApiTestBase
 {
+    private readonly JsonSerializerOptions _serializerOptions;
+
     public ProcessStepControllerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
         : base(wholesaleWebApiFixture, factory, testOutputHelper)
     {
+        _serializerOptions = new JsonSerializerOptions
+        {
+            Converters = { new JsonStringEnumConverter() },
+            PropertyNameCaseInsensitive = true,
+        };
     }
 
     [Theory]
@@ -104,7 +113,7 @@ public class ProcessStepControllerTests : WebApiTestBase
         // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
         // Assert: Response body
-        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>(_serializerOptions);
         actualActors.Should().BeEquivalentTo(expectedProcessStepResult);
     }
 
@@ -128,7 +137,7 @@ public class ProcessStepControllerTests : WebApiTestBase
         // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
         // Assert: Response body
-        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>(_serializerOptions);
         actualActors.Should().BeEquivalentTo(expectedProcessStepResult);
     }
 
@@ -152,7 +161,7 @@ public class ProcessStepControllerTests : WebApiTestBase
         // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
         // Assert: Response body
-        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>(_serializerOptions);
         actualActors.Should().BeEquivalentTo(expectedProcessStepResult);
     }
 
@@ -176,7 +185,7 @@ public class ProcessStepControllerTests : WebApiTestBase
         // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
         // Assert: Response body
-        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>(_serializerOptions);
         actualActors.Should().BeEquivalentTo(expectedProcessStepResult);
     }
 
@@ -200,7 +209,7 @@ public class ProcessStepControllerTests : WebApiTestBase
         // Assert: Response HTTP status code
         actualContent.StatusCode.Should().Be(HttpStatusCode.OK);
         // Assert: Response body
-        var actualResult = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>();
+        var actualResult = await actualContent.Content.ReadFromJsonAsync<ProcessStepResultDto>(_serializerOptions);
         actualResult.Should().BeEquivalentTo(expectedProcessStepResult);
     }
 }

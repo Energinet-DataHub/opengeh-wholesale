@@ -22,11 +22,6 @@ public interface IProcessApplicationService
     Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent);
 
     /// <summary>
-    /// Publish a process completed integration event when a process has completed.
-    /// </summary>
-    Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent);
-
-    /// <summary>
     /// Publish a calculation ready result event for each result in a grid area.
     /// </summary>
     Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent);

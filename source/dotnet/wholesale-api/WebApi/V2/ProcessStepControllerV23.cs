@@ -31,7 +31,6 @@ public class ProcessStepV23Controller : ControllerBase
         _processStepApplicationService = processStepApplicationService;
     }
 
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [Obsolete("Use `/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/market-roles/{marketRole}` instead")]
     [HttpPost]
     [ApiVersion("2.3")]
