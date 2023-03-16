@@ -33,21 +33,21 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\Services\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj' \
+          '.\source\dotnet\wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
-          --output '.\source\dotnet\Services\WebApi.IntegrationTests\bin\Release\net6.0'
+          --output '.\source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net6.0'
   
     - name: Publish ProcessManager IntegrationTests
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\Services\ProcessManager.IntegrationTests\ProcessManager.IntegrationTests.csproj' \
+          '.\source\dotnet\process-manager\ProcessManager.IntegrationTests\ProcessManager.IntegrationTests.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
-          --output '.\source\dotnet\Services\ProcessManager.IntegrationTests\bin\Release\net6.0'
+          --output '.\source\dotnet\process-manager\ProcessManager.IntegrationTests\bin\Release\net6.0'
 
     # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
     # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
@@ -55,11 +55,11 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\Services\WebApi.UnitTests\WebApi.UnitTests.csproj' \
+          '.\source\dotnet\wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
-          --output '.\source\dotnet\Services\WebApi.UnitTests\bin\Release\net6.0'
+          --output '.\source\dotnet\wholesale-api\WebApi.UnitTests\bin\Release\net6.0'
 
     - name: Copy all directories and files in source/dotnet except the obj-directories
       shell: bash

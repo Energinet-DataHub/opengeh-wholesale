@@ -22,14 +22,14 @@ jobs:
   dotnet_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v10
     with:
-      SOLUTION_FILE_PATH: "source/dotnet/Services/Wholesale.sln"
+      SOLUTION_FILE_PATH: "source/dotnet/Wholesale.sln"
 
   dotnet_ci_test_integrationtests_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\WebApi.IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll'
+      TESTS_DLL_FILE_PATH: '\source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll'
       ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
-      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\source\dotnet\Services\WebApi'
+      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\source\dotnet\wholesale-api\WebApi'
       DOWNLOAD_ATTEMPT_LIMIT: 20
       USE_AZURE_FUNCTIONS_TOOLS: true
       ENVIRONMENT: AzureAuth
@@ -43,7 +43,7 @@ jobs:
   dotnet_ci_test_integrationtests_processmanager:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\ProcessManager.IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.dll'
+      TESTS_DLL_FILE_PATH: '\source\dotnet\process-manager\ProcessManager.IntegrationTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 20
       USE_AZURE_FUNCTIONS_TOOLS: true
       ENVIRONMENT: AzureAuth
@@ -57,5 +57,5 @@ jobs:
   dotnet_ci_test_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\Services\WebApi.UnitTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll'
+      TESTS_DLL_FILE_PATH: '\source\dotnet\wholesale-api\WebApi.UnitTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 20
