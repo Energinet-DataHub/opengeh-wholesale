@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Hosts;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
-using wapi = Energinet.DataHub.Wholesale.WebApi;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests;
 
@@ -29,7 +28,7 @@ public class CompositionRootTests
     {
         var constructorDependencies = ReflectionDelegates.FindAllConstructorDependenciesForType();
 
-        return typeof(wapi.Program).Assembly.GetTypes()
+        return typeof(Program).Assembly.GetTypes()
             .Where(t => t.IsSubclassOf(typeof(ControllerBase)))
             .Select(t => new object[] { new Requirement(t.Name, constructorDependencies(t)) });
     }
@@ -43,15 +42,5 @@ public class CompositionRootTests
         using var host = await WebApiIntegrationTestHost.CreateAsync();
         await using var scope = host.BeginScope();
         Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
-    }
-
-    private static IEnumerable<object[]> GetFunctionRequirements(Type targetType)
-    {
-        var allTypes = ReflectionDelegates.FindAllTypes();
-        var functionTypes = ReflectionDelegates.FindAllFunctionTypes();
-        var constructorDependencies = ReflectionDelegates.FindAllConstructorDependenciesForType();
-
-        return functionTypes(allTypes(targetType))
-            .Select(f => new object[] { new Requirement(f.Name, constructorDependencies(f)) });
     }
 }
