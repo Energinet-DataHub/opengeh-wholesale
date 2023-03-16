@@ -19,8 +19,6 @@ namespace Energinet.DataHub.Wholesale.Application;
 
 public interface IIntegrationEventPublisher
 {
-    Task PublishAsync(ProcessCompletedEventDto processCompletedEvent);
-
     Task PublishCalculationResultForTotalGridAreaAsync(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto);

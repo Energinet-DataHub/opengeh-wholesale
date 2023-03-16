@@ -44,17 +44,6 @@ public class ProcessApplicationServiceTest
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task PublishProcessCompletedIntegrationEventsAsync_Publishes(
-        ProcessCompletedEventDto eventDto,
-        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
-        ProcessApplicationService sut)
-    {
-        await sut.PublishProcessCompletedIntegrationEventsAsync(eventDto);
-        publisherMock.Verify(publisher => publisher.PublishAsync(eventDto), Times.Once);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
     public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaProductionOnce(
         [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
