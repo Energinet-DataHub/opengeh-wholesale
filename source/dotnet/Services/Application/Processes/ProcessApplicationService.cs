@@ -48,11 +48,6 @@ public class ProcessApplicationService : IProcessApplicationService
         await _domainEventPublisher.PublishAsync(processCompletedEvents).ConfigureAwait(false);
     }
 
-    public async Task PublishProcessCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
-    {
-        await _integrationEventPublisher.PublishAsync(processCompletedEvent).ConfigureAwait(false);
-    }
-
     public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
         // Publish events for energy suppliers
@@ -160,8 +155,8 @@ public class ProcessApplicationService : IProcessApplicationService
                     processCompletedEvent.BatchId,
                     new GridAreaCode(processCompletedEvent.GridAreaCode),
                     timeSeriesType,
-                    balanceResponsibleParty.Gln,
-                    null)
+                    null,
+                    balanceResponsibleParty.Gln)
                 .ConfigureAwait(false);
 
             await _integrationEventPublisher.PublishCalculationResultForBalanceResponsiblePartyAsync(

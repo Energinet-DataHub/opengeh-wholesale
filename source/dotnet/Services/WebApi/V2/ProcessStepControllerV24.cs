@@ -37,7 +37,6 @@ public class ProcessStepV24Controller : ControllerBase
     /// if both 'BalanceResponsiblePartyGln' and 'EnergySupplierGln' is provided, a result is returned for the balance responsible party's energy supplier for requested grid area, for the specified time series type.
     /// if no 'BalanceResponsiblePartyGln' and 'EnergySupplierGln' is provided, a result is returned for the requested grid area, for the specified time series type.
     /// </summary>
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
     [ApiVersion("2.4")]
     [Produces("application/json", Type = typeof(ProcessStepResultDto))]

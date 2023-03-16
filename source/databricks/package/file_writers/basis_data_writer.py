@@ -19,7 +19,7 @@ from pyspark.sql.functions import col
 import package.basis_data as basis_data
 import package.infrastructure as infra
 from package.constants import PartitionKeyName, BasisDataColname
-from package.codelists import Grouping, BasisDataType
+from package.codelists import AggregationLevel, BasisDataType
 
 
 class BasisDataWriter:
@@ -72,7 +72,7 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
-        grouping_folder_name = f"grouping={Grouping.total_ga.value}"
+        grouping_folder_name = f"grouping={AggregationLevel.total_ga.value}"
 
         partition_keys = [PartitionKeyName.GRID_AREA]
         timeseries_quarter_df = timeseries_quarter_df.drop(
@@ -99,7 +99,7 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
-        grouping_folder_name = f"grouping={Grouping.es_per_ga.value}"
+        grouping_folder_name = f"grouping={AggregationLevel.es_per_ga.value}"
 
         partition_keys = [
             PartitionKeyName.GRID_AREA,

@@ -35,8 +35,7 @@ public class ProcessStepBalanceResponsiblePartyController : V3ControllerBase
     /// <summary>
     /// Balance responsible parties.
     /// </summary>
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
-    [HttpGet]
+    [HttpGet(Name = "GetListOfBalanceResponsibleParties")]
     [Produces("application/json", Type = typeof(List<ActorDto>))]
     public async Task<List<ActorDto>> GetAllAsync(
         [FromRoute] Guid batchId,

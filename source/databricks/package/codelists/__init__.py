@@ -21,5 +21,5 @@ from .settlement_method import SettlementMethod
 from .metering_point_resolution import MeteringPointResolution
 from .charge_type import ChargeType
 from .time_series_type import TimeSeriesType
-from .grouping import Grouping
+from .aggregation_level import AggregationLevel
 from .market_role import MarketRole

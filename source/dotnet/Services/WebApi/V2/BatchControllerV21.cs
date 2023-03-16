@@ -47,7 +47,6 @@ public class BatchControllerV21 : ControllerBase
     /// <returns>Batches that matches the search criteria. Always 200 OK</returns>
     [HttpPost("Search")]
     [MapToApiVersion(Version)]
-    [AllowAnonymous]
     [Produces("application/json", Type = typeof(List<BatchDtoV2>))]
     public async Task<IActionResult> SearchAsync([FromBody] BatchSearchDtoV2 batchSearchDto)
     {

@@ -13,6 +13,9 @@
 # limitations under the License.
 
 from datetime import datetime
+import package.infrastructure as infra
+from package.codelists import MarketRole, TimeSeriesType, AggregationLevel
+from package.constants import Colname, PartitionKeyName
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit
 
@@ -42,27 +45,29 @@ class ProcessStepResultWriter:
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
-        grouping: Grouping,
+        aggregation_level: AggregationLevel,
     ) -> None:
         result_df = self._prepare_result_for_output(
-            result_df, time_series_type, grouping
+            result_df, time_series_type, aggregation_level
         )
         # start: write to delta table (before dropping columns)
-        self._write_result_to_table(result_df, grouping)
+        self._write_result_to_table(result_df, aggregation_level)
         # end: write to delta table
 
-        if grouping == Grouping.total_ga:
+        if aggregation_level == AggregationLevel.total_ga:
             self._write_per_ga(result_df)
-        elif grouping == Grouping.es_per_ga:
+        elif aggregation_level == AggregationLevel.es_per_ga:
             self._write_per_ga_per_actor(result_df, MarketRole.ENERGY_SUPPLIER)
-        elif grouping == Grouping.brp_per_ga:
+        elif aggregation_level == AggregationLevel.brp_per_ga:
             self._write_per_ga_per_actor(
                 result_df, MarketRole.BALANCE_RESPONSIBLE_PARTY
             )
-        elif grouping == Grouping.es_per_brp_per_ga:
+        elif aggregation_level == AggregationLevel.es_per_brp_per_ga:
             self._write_per_ga_per_brp_per_es(result_df)
         else:
-            raise ValueError(f"Unsupported grouping, {grouping.value}")
+            raise ValueError(
+                f"Unsupported aggregation_level, {aggregation_level.value}"
+            )
 
     def _write_per_ga(
         self,
@@ -115,7 +120,7 @@ class ProcessStepResultWriter:
         self,
         result_df: DataFrame,
         time_series_type: TimeSeriesType,
-        grouping: Grouping,
+        aggregation_level: AggregationLevel,
     ) -> DataFrame:
         result_df = result_df.select(
             col(Colname.grid_area).alias(PartitionKeyName.GRID_AREA),
@@ -127,7 +132,7 @@ class ProcessStepResultWriter:
         )
 
         result_df = result_df.withColumn(
-            PartitionKeyName.GROUPING, lit(grouping.value)
+            PartitionKeyName.GROUPING, lit(aggregation_level.value)
         ).withColumn(PartitionKeyName.TIME_SERIES_TYPE, lit(time_series_type.value))
 
         return result_df
@@ -172,7 +177,7 @@ class ProcessStepResultWriter:
     def _write_result_to_table(
         self,
         df: DataFrame,
-        grouping: Grouping,
+        aggregation_level: AggregationLevel,
     ) -> None:
         df = (
             df.withColumn(Colname.batch_id, lit(self.__batch_id))
@@ -191,16 +196,18 @@ class ProcessStepResultWriter:
         )  # TODO: use QuantityQuality everywhere
         df = df.withColumnRenamed("quarter_time", "time")  # TODO: time everywhere
 
-        if grouping == Grouping.total_ga:
+        if aggregation_level == AggregationLevel.total_ga:
             df = df.withColumn(
                 Colname.balance_responsible_id, lit(None).cast("string")
             ).withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
-        elif grouping == Grouping.es_per_ga:
+        elif aggregation_level == AggregationLevel.es_per_ga:
             df = df.withColumn(Colname.balance_responsible_id, lit(None).cast("string"))
-        elif grouping == Grouping.brp_per_ga:
+        elif aggregation_level == AggregationLevel.brp_per_ga:
             df = df.withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
-        elif grouping != Grouping.es_per_brp_per_ga:
-            raise ValueError(f"Unsupported grouping, {grouping.value}")
+        elif aggregation_level != AggregationLevel.es_per_brp_per_ga:
+            raise ValueError(
+                f"Unsupported aggregation_level, {aggregation_level.value}"
+            )
 
         (
             df.write.format("delta")
