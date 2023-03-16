@@ -431,6 +431,9 @@ resource "databricks_job" "migration_playground_workflow" {
       }
       spark_env_vars = {
         "APPI_INSTRUMENTATION_KEY" = azurerm_key_vault_secret.kvs-appi-instrumentation-key.value
+        "LANDING_STORAGE_ACCOUNT" = azurerm_storage_account.playground.name
+        "DATALAKE_STORAGE_ACCOUNT" = azurerm_storage_account.playground.name
+        "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.playground.name
       }
     }
   }

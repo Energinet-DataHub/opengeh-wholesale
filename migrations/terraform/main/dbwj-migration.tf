@@ -78,6 +78,9 @@ resource "databricks_job" "this" {
       }
       spark_env_vars = {
         "APPI_INSTRUMENTATION_KEY" = databricks_secret.appi_instrumentation_key.config_reference
+        "LANDING_STORAGE_ACCOUNT" = data.azurerm_storage_account.drop.name # Should we use this or another datalake for dump
+        "DATALAKE_STORAGE_ACCOUNT" = module.st_migrations.name
+        "DATALAKE_SHARED_STORAGE_ACCOUNT" = data.azurerm_key_vault_secret.st_data_lake_name.value
       }
     }
   }
@@ -110,6 +113,9 @@ resource "databricks_job" "this" {
       }
       spark_env_vars = {
         "APPI_INSTRUMENTATION_KEY" = databricks_secret.appi_instrumentation_key.config_reference
+        "LANDING_STORAGE_ACCOUNT" = data.azurerm_storage_account.drop.name # Should we use this or another datalake for dump
+        "DATALAKE_STORAGE_ACCOUNT" = module.st_migrations.name
+        "DATALAKE_SHARED_STORAGE_ACCOUNT" = data.azurerm_key_vault_secret.st_data_lake_name.value
       }
     }
   }
@@ -155,9 +161,6 @@ resource "databricks_job" "this" {
       notebook_path     = "source/DataMigration/config/workspace_setup"
       base_parameters   = {
         batch_execution = true
-        landing_storage_account = data.azurerm_storage_account.drop.name # Should we use this or another datalake for dump
-        datalake_storage_account = module.st_migrations.name
-        datalake_shared_storage_account = data.azurerm_key_vault_secret.st_data_lake_name.value
         time_series_container = "dh2-timeseries"
       }
     }
