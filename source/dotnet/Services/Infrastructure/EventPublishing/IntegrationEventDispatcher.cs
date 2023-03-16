@@ -53,7 +53,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
 
         public async Task PublishIntegrationEventsAsync(CancellationToken token)
         {
-            // Note: For future sake we log the publishing duration time.
+            // Note: For future reference we log the publishing duration time.
             var watch = new Stopwatch();
             watch.Start();
 
