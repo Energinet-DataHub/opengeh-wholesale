@@ -14,7 +14,7 @@
 
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
-from package.codelists import TimeSeriesType, Grouping
+from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import PartitionKeyName
 from typing import Union
 from package.codelists import BasisDataType
@@ -41,10 +41,10 @@ def get_result_file_relative_path(
     energy_supplier_gln: Union[str, None],
     balance_responsible_gln: Union[str, None],
     time_series_type: TimeSeriesType,
-    grouping: Grouping,
+    aggregation_level: AggregationLevel,
 ) -> str:
     batch_path = get_batch_relative_path(batch_id)
-    relative_path = f"{batch_path}/{RESULT_FOLDER}/grouping={grouping.value}/time_series_type={time_series_type.value}/grid_area={grid_area}"
+    relative_path = f"{batch_path}/{RESULT_FOLDER}/grouping={aggregation_level.value}/time_series_type={time_series_type.value}/grid_area={grid_area}"
 
     if (energy_supplier_gln is None) and (balance_responsible_gln is None):
         return relative_path
