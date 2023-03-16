@@ -39,6 +39,8 @@ DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
 DEFAULT_GRID_AREA = "105"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
+DEFAULT_PROCESS_TYPE = "Balance_Fixing"
+DEFAULT_BATCH_EXECUTION_START = "2022-06-10T13:15:00.000Z"
 
 
 def _create_result_row(
@@ -84,7 +86,12 @@ def test__write___when_aggregation_level_is_es_per_ga__result_file_path_matches_
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         AggregationLevel.es_per_ga,
     )
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -121,7 +128,12 @@ def test__write___when_aggregation_level_is_total_ga__result_file_path_matches_c
         TimeSeriesType.PRODUCTION,
         AggregationLevel.total_ga,
     )
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -164,7 +176,12 @@ def test__write___when_aggregation_level_is_ga_brp_es__result_file_path_matches_
         TimeSeriesType.PRODUCTION,
         AggregationLevel.es_per_brp_per_ga,
     )
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -205,7 +222,12 @@ def test__write__writes_aggregation_level_column(
         )
     ]
     result_df = spark.createDataFrame(data=row)
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -240,7 +262,12 @@ def test__write__writes_time_series_type_column(
         )
     ]
     result_df = spark.createDataFrame(data=row)
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -269,8 +296,12 @@ def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
         )
     ]
     result_df = spark.createDataFrame(data=row)
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
-
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
     # Act
     sut.write(
         result_df,
@@ -301,7 +332,12 @@ def test__write_result_to_table__when_schema_differs_from_table__raise_exception
     ]
     result_df_1 = spark.createDataFrame(data=row)
     result_df_2 = result_df_1.withColumn("extra_column", lit("some_value"))
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
     sut._write_result_to_table(result_df_1, AggregationLevel.total_ga)
 
     # Act and Assert
