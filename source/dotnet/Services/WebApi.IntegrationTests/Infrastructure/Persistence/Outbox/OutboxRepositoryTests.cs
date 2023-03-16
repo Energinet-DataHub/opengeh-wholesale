@@ -78,7 +78,7 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var outboxMessage1 = CreateOutOutboxMessage("type1", 16);
-        var outboxMessage2 = CreateOutOutboxMessage("type2", 14);
+        var outboxMessage2 = CreateOutOutboxMessage("type2", 15);
         var outboxMessage3 = CreateOutOutboxMessage("type3", 13);
         var expected = new List<OutboxMessage> { outboxMessage3 };
         var sut = new OutboxMessageRepository(writeContext);
