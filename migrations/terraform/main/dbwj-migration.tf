@@ -133,10 +133,6 @@ resource "databricks_job" "this" {
       whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
     }
 
-    depends_on {
-      task_key = local.task_ts_start_trigger
-    }
-
     notebook_task {  
       notebook_path     = "source/DataMigration/config/workspace_setup"
       base_parameters   = {
@@ -148,23 +144,6 @@ resource "databricks_job" "this" {
       }
     }
     job_cluster_key = "metering_point_job_cluster"
-  }
-
-  task {
-    # When semantic versioning is ready, remove this uuid as this is only added to trigger a wheel on each merge into main
-    task_key = local.task_ts_start_trigger
-    library {
-      whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
-    }
-
-    notebook_task {  
-      notebook_path     = "source/DataMigration/config/workspace_setup"
-      base_parameters   = {
-        batch_execution = true
-        time_series_container = "dh2-timeseries"
-      }
-    }
-    job_cluster_key = "time_series_job_cluster"
   }
 
   task {
