@@ -22,7 +22,7 @@ jobs:
   dotnet_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v10
     with:
-      SOLUTION_FILE_PATH: 'source/dotnet/Services/Wholesale.sln'
+      SOLUTION_FILE_PATH: "source/dotnet/Services/Wholesale.sln"
 
   dotnet_ci_test_integrationtests_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
@@ -59,27 +59,3 @@ jobs:
     with:
       TESTS_DLL_FILE_PATH: '\source\dotnet\Services\WebApi.UnitTests\bin\Release\net6.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 20
-
-  #
-  # Branch policy status check
-  #
-
-  allow_merge:
-    runs-on: ubuntu-latest
-    needs: [
-      dotnet_ci_build,
-      dotnet_ci_test_integrationtests_webapi,
-      dotnet_ci_test_integrationtests_processmanager,
-      dotnet_ci_test_webapi,
-    ]
-    if: |
-      always()
-    steps:
-      - name: Verify if merge is allowed
-        run: |
-          echo "${{ toJSON(needs) }}"
-
-          if [[ ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }} = true ]]; then
-              echo "Failed"
-              exit 1
-          fi
