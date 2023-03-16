@@ -52,7 +52,7 @@ public class ProcessStepResultController : V3ControllerBase
     /// <param name="timeSeriesType">The time series type the result has</param>
     /// <param name="energySupplierGln">The GLN for the energy supplier the requested result</param>
     /// <param name="balanceResponsiblePartyGln">The GLN for the balance responsible party the requested result</param>
-    [HttpGet]
+    [HttpGet(Name = "GetProcessStepResult")]
     [Produces("application/json", Type = typeof(ProcessStepResultDto))]
     public async Task<ProcessStepResultDto> GetResultAsync(
         [FromRoute] Guid batchId,
