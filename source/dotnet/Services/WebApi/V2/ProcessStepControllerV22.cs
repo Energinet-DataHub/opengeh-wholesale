@@ -31,7 +31,6 @@ public class ProcessStepV22Controller : ControllerBase
         _processStepApplicationService = processStepApplicationService;
     }
 
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
     [ApiVersion("2.2")]
     [Produces("application/json", Type = typeof(ProcessStepResultDto))]
