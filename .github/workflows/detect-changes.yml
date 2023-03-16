@@ -67,5 +67,6 @@ jobs:
             packages:
               - 'source/dotnet/Contracts/**'
               - 'source/dotnet/Packages/**'
+              - 'source/dotnet/wholesale-integration-events-package/**'
               - '.github/workflows/packages-publish.yml'
               - '.github/workflows/detect-changes.yml'
