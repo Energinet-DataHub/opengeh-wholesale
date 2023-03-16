@@ -33,7 +33,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/databricks-unit-test
   IS_PULL_REQUEST_TRIGGERED: ${{ github.event_name == 'pull_request' }}
-  CONTEXT_PATH: './.docker/'
+  CONTEXT_PATH: "./.docker/"
   CONTAINER_REGISTRY_USER: dh-system-account
 
 jobs:
