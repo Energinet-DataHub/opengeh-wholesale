@@ -61,9 +61,6 @@ limitations under the License.
     <Compile Include="..\..\Contracts\CalculationResultCompleted.cs">
       <Link>Integration\CalculationResultCompleted.cs</Link>
     </Compile>
-    <Compile Include="..\..\Contracts\ProcessCompleted.cs">
-      <Link>Integration\ProcessCompleted.cs</Link>
-    </Compile>
   </ItemGroup>
 
 </Project>

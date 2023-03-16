@@ -27,27 +27,16 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
 {
     private readonly IIntegrationEventTopicServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
-    private readonly IProcessCompletedIntegrationEventMapper _processCompletedIntegrationEventMapper;
     private readonly ICalculationResultReadyIntegrationEventFactory _calculationResultReadyIntegrationEventFactory;
 
     public IntegrationEventPublisher(
         IIntegrationEventTopicServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory,
-        IProcessCompletedIntegrationEventMapper processCompletedIntegrationEventMapper,
         ICalculationResultReadyIntegrationEventFactory calculationResultReadyIntegrationEventFactory)
     {
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
-        _processCompletedIntegrationEventMapper = processCompletedIntegrationEventMapper;
         _calculationResultReadyIntegrationEventFactory = calculationResultReadyIntegrationEventFactory;
-    }
-
-    public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
-    {
-        var integrationEvent = _processCompletedIntegrationEventMapper.MapFrom(processCompletedEvent);
-        var messageType = GetMessageTypeForProcessCompletedEvent(processCompletedEvent.ProcessType);
-        var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), messageType);
-        await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
 
     public async Task PublishCalculationResultForTotalGridAreaAsync(
@@ -96,12 +85,4 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
         var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), CalculationResultCompleted.BalanceFixingEventName);
         await _serviceBusSender.SendMessageAsync(message, CancellationToken.None).ConfigureAwait(false);
     }
-
-    private string GetMessageTypeForProcessCompletedEvent(ProcessType processType) =>
-        processType switch
-        {
-            ProcessType.BalanceFixing => ProcessCompleted.BalanceFixingProcessType,
-            ProcessType.Aggregation => ProcessCompleted.AggregationProcessType,
-            _ => throw new NotImplementedException($"Process type '{processType}' not implemented"),
-        };
 }
