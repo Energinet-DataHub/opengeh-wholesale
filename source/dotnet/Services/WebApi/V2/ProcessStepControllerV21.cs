@@ -34,7 +34,6 @@ public class ProcessStepV21Controller : ControllerBase
     /// <summary>
     /// Version 2.1: Quality added to points in result.
     /// </summary>
-    [AllowAnonymous] // TODO: Temporary hack to enable EDI integration while awaiting architects decision
     [HttpPost]
     [ApiVersion("2.0")]
     [ApiVersion("2.1")]

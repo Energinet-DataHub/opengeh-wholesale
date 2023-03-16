@@ -22,6 +22,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
 public class ProcessStepResultRepository : IProcessStepResultRepository
 {
+    private const string EnergySupplierBalanceResponsiblePartyGridArea = "es_brp_ga";
     private const string EnergySupplierGridArea = "es_ga";
     private const string BalanceResponsiblePartyGridArea = "brp_ga";
     private const string TotalGridArea = "total_ga";
@@ -65,7 +66,7 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
         => $"calculation-output/batch_id={batchId}/result/grouping={TotalGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/";
 
     public static string GetDirectoryForEsBrpGridArea(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln, string energySupplierGln)
-        => $"calculation-output/batch_id={batchId}/result/grouping={BalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/balance_responsible_party_gln={balanceResponsiblePartyGln}/energy_supplier_gln={energySupplierGln}/";
+        => $"calculation-output/batch_id={batchId}/result/grouping={EnergySupplierBalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode.Code}/balance_responsible_party_gln={balanceResponsiblePartyGln}/energy_supplier_gln={energySupplierGln}/";
 
     private async Task<ProcessStepResult> GetResultAsync(string directory, TimeSeriesType timeSeriesType)
     {

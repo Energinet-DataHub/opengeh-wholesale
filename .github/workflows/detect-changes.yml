@@ -40,32 +40,32 @@ jobs:
       dotnet: ${{ steps.filter.outputs.dotnet }}
       packages: ${{ steps.filter.outputs.packages }}
     steps:
-    # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
-    - name: Checkout repository
-      if: ${{ github.event_name != 'pull_request' }}
-      uses: actions/checkout@v3
+      # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
+      - name: Checkout repository
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/checkout@v3
 
-    - name: Detect file changes
-      uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        filters: |
-          databricks:
-            - '.github/workflows/cd.yml'
-            - '.github/workflows/ci-databricks.yml'
-            - '.github/workflows/detect-changes.yml'
-            - '.github/actions/python-*/**'
-            - 'source/databricks/**'
-            - 'source/contracts/**'
-          dotnet:
-            - '.github/workflows/cd.yml'
-            - '.github/workflows/ci-dotnet.yml'
-            - '.github/workflows/detect-changes.yml'
-            - '.github/actions/dotnet-*/**'
-            - 'source/contracts/**'
-            - 'source/dotnet/!(Packages/**)/**'
-          packages:
-            - 'source/dotnet/Contracts/**'
-            - 'source/dotnet/Packages/**'
-            - '.github/workflows/packages-publish.yml'
-            - '.github/workflows/detect-changes.yml'
+      - name: Detect file changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            databricks:
+              - '.github/workflows/cd.yml'
+              - '.github/workflows/ci-databricks.yml'
+              - '.github/workflows/detect-changes.yml'
+              - '.github/actions/python-*/**'
+              - 'source/databricks/**'
+              - 'source/contracts/**'
+            dotnet:
+              - '.github/workflows/cd.yml'
+              - '.github/workflows/ci-dotnet.yml'
+              - '.github/workflows/detect-changes.yml'
+              - '.github/actions/dotnet-*/**'
+              - 'source/contracts/**'
+              - 'source/dotnet/!(Packages/**)/**'
+            packages:
+              - 'source/dotnet/Contracts/**'
+              - 'source/dotnet/Packages/**'
+              - '.github/workflows/packages-publish.yml'
+              - '.github/workflows/detect-changes.yml'
