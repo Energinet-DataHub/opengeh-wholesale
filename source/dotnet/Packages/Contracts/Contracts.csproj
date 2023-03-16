@@ -36,7 +36,7 @@ limitations under the License.
 
   <PropertyGroup>
       <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-      <PackageVersion>2.1.6$(VersionSuffix)</PackageVersion>
+      <PackageVersion>2.2.0$(VersionSuffix)</PackageVersion>
       <Title>Wholesale Contracts</Title>
       <Company>Energinet-DataHub</Company>
       <Authors>Energinet-DataHub</Authors>
@@ -74,11 +74,6 @@ limitations under the License.
       <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
       <PublishRepositoryUrl>true</PublishRepositoryUrl>
     </PropertyGroup>
-    <ItemGroup>
-      <Compile Include="..\..\Contracts\ProcessCompleted.cs">
-        <Link>ProcessCompleted.cs</Link>
-      </Compile>
-    </ItemGroup>
 
   <ItemGroup>
     <Protobuf Include="../../Contracts/*.proto">
@@ -89,6 +84,12 @@ limitations under the License.
       <OutputDir>obj\contracts</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Contracts\CalculationResultCompleted.cs">
+      <Link>CalculationResultCompleted.cs</Link>
+    </Compile>
   </ItemGroup>
 
 </Project>
