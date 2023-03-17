@@ -212,11 +212,11 @@ class ProcessStepResultWriter:
         )
 
         df = df.withColumnRenamed(
-            PartitionKeyName.GROUPING, "aggregation_level"
+            PartitionKeyName.GROUPING, Colname.aggregation_level
         )  # TODO: rename Grouping enum to AggragationLevel
         df = df.withColumnRenamed(
             Colname.quality, "quantity_quality"
-        )  # TODO: use QuantityQuality everywhere
+        )  # TODO: use quantity_quality everywhere
         df = df.withColumnRenamed("quarter_time", "time")  # TODO: time everywhere
         df = df.withColumnRenamed(Colname.energy_supplier_id, "energy_supplier_id")
         df = df.withColumnRenamed(

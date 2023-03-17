@@ -17,6 +17,7 @@ class Colname:
     market_role = "market_role"
     added_grid_loss = "added_grid_loss"
     added_system_correction = "added_system_correction"
+    aggregation_level = "aggregation_level"
     aggregated_quality = "aggregated_quality"
     balance_responsible_id = "BalanceResponsibleId"
     batch_execution_time_start = "batch_execution_time_start"
