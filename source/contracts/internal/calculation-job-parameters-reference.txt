@@ -9,3 +9,5 @@
 --batch-grid-areas=[805, 806, 033]
 --batch-period-start-datetime=2022-05-31T22:00:00Z
 --batch-period-end-datetime=2022-06-01T22:00:00Z
+--batch-process-type=BalanceFixing
+--batch-execution-time-start=2022-06-04T22:00:00Z
