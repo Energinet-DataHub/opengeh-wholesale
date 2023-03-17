@@ -17,14 +17,12 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
@@ -50,8 +48,6 @@ public class IntegrationEventDispatcherTests
             .ReturnsAsync(new List<OutboxMessage> { outboxMessage1 });
 
         var mapper = new IntegrationEventTypeMapper();
-        mapper.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
-
         var sut = new IntegrationEventDispatcher(
             integrationEventTopicServiceBusSenderMock.Object,
             outboxMessageRepositoryMock.Object,
@@ -73,6 +69,6 @@ public class IntegrationEventDispatcherTests
 
     private static OutboxMessage CreateOutboxMessage(string messageType, string data)
     {
-        return new OutboxMessage(new IntegrationEventDto(messageType, data, NodaTime.SystemClock.Instance.GetCurrentInstant()));
+        return new OutboxMessage(new IntegrationEventDto(messageType, data, SystemClock.Instance.GetCurrentInstant()));
     }
 }

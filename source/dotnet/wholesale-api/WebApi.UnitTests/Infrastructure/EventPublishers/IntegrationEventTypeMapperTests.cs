@@ -13,15 +13,9 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using FluentAssertions;
-using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.EventPublishers;
@@ -33,9 +27,8 @@ public class IntegrationEventTypeMapperTests
     public void GetEventName_WhenEventType_ReturnsEventName(IntegrationEventTypeMapper sut)
     {
         // Arrange
-        const string expected = "event1";
-        var eventType = typeof(string);
-        sut.Add(expected, eventType);
+        const string expected = CalculationResultCompleted.BalanceFixingEventName;
+        var eventType = typeof(CalculationResultCompleted);
 
         // Act
         var actual = sut.GetEventName(eventType);
@@ -49,28 +42,13 @@ public class IntegrationEventTypeMapperTests
     public void GetEventType_WhenEventName_ReturnsEventType(IntegrationEventTypeMapper sut)
     {
         // Arrange
-        const string eventName = "event1";
-        var expected = typeof(string);
-        sut.Add(eventName, expected);
+        var expected = typeof(CalculationResultCompleted);
 
         // Act
-        var actual = sut.GetEventType(eventName);
+        var actual = sut.GetEventType(CalculationResultCompleted.BalanceFixingEventName);
 
         // Assert
         actual.Should().Be(expected);
-    }
-
-    [Theory]
-    [AutoData]
-    public void ThrowsException_WhenAddingSameEntryTwice(IntegrationEventTypeMapper sut)
-    {
-        // Arrange
-        const string eventName = "event1";
-        var expected = typeof(string);
-        sut.Add(eventName, expected);
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.Add(eventName, expected));
     }
 
     [Theory]
