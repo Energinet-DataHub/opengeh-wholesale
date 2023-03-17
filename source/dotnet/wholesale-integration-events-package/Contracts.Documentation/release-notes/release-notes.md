@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 2.2.4
+
+No functional changes.
+
 ## Version 2.2.3
 
 No functional changes.
