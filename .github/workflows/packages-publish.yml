@@ -23,7 +23,7 @@ on:
       - source/dotnet/Contracts/**
       - source/dotnet/Packages/Client/**
       - source/dotnet/Packages/Contracts/**
-      - source/dotnet/Services/WebApi/V*/**/*.cs
+      - source/dotnet/wholesale-api/WebApi/V*/**/*.cs
       - .github/workflows/packages-publish.yml
       - .github/workflows/detect-changes.yml
   # Build, test, pack
@@ -69,7 +69,7 @@ jobs:
       - name: Pack Contracts project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: "./source/dotnet/Packages/Contracts/Contracts.csproj"
+          PROJECT_PATH: "./source/dotnet/wholesale-integration-events-package/Contracts/Contracts.csproj"
 
       - name: Package content or build has changed
         id: changed-content
