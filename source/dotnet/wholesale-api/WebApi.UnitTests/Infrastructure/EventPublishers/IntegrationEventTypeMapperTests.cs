@@ -31,7 +31,7 @@ public class IntegrationEventTypeMapperTests
         var eventType = typeof(CalculationResultCompleted);
 
         // Act
-        var actual = sut.GetEventName(eventType);
+        var actual = sut.GetMessageType(eventType);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);

@@ -18,5 +18,5 @@ public interface IIntegrationEventTypeMapper
 {
     Type GetEventType(string eventName);
 
-    string GetEventName(Type eventType);
+    string GetMessageType(Type type);
 }

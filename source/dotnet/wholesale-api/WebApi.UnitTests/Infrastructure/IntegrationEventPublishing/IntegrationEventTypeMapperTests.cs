@@ -14,7 +14,6 @@
 
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Contracts.Events;
@@ -43,19 +42,16 @@ public class IntegrationEventDispatcherTests
         [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock)
     {
         // Arrange
-        var outboxMessage1 = CreateOutboxMessage(typeof(CalculationResultCompleted).ToString(), "{}", CalculationResultCompleted.BalanceFixingEventName); //TODO: should we create a custom type to use when testing?
+        var outboxMessage1 = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName); //TODO: should we create a custom type to use when testing?
         outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(50, default))
             .ReturnsAsync(new List<OutboxMessage> { outboxMessage1 });
 
-        var mapper = new IntegrationEventTypeMapper();
         var sut = new IntegrationEventDispatcher(
             integrationEventTopicServiceBusSenderMock.Object,
             outboxMessageRepositoryMock.Object,
             clockMock.Object,
             databaseContextMock.Object,
             loggerMock.Object,
-            new JsonSerializer(),
-            mapper,
             serviceBusMessageFactoryMock.Object);
 
         // Act
@@ -67,8 +63,8 @@ public class IntegrationEventDispatcherTests
         integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), default));
     }
 
-    private static OutboxMessage CreateOutboxMessage(string type, string jsonString, string messageType)
+    private static OutboxMessage CreateOutboxMessage(byte[] protobufEventData, string messageType)
     {
-        return new OutboxMessage(new IntegrationEventDto(type, jsonString, messageType, NodaTime.SystemClock.Instance.GetCurrentInstant()));
+        return new OutboxMessage(new IntegrationEventDto(protobufEventData, messageType, SystemClock.Instance.GetCurrentInstant()));
     }
 }

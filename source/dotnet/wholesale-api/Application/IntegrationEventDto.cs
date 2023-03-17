@@ -19,14 +19,9 @@ namespace Energinet.DataHub.Wholesale.Application;
 public class IntegrationEventDto
 {
     /// <summary>
-    /// Example could be CalculationResultCompleted.
+    /// Integration Event data as an protobuf data (byte array).
     /// </summary>
-    public string SerializedEventType { get; }
-
-    /// <summary>
-    /// The Type of the Event
-    /// </summary>
-    public string SerializedJsonEventData { get; }
+    public byte[] ProtobufEventData { get; }
 
     /// <summary>
     /// Example: CalculationResultCompleted.BalanceFixingEventName (BalanceFixingCalculationResultCompleted)
@@ -39,13 +34,11 @@ public class IntegrationEventDto
     public Instant CreationDate { get; }
 
     public IntegrationEventDto(
-        string serializedEventType,
-        string serializedJsonEventData,
+        byte[] protobufEventData,
         string eventMessageType,
         Instant creationDate)
     {
-        SerializedEventType = serializedEventType;
-        SerializedJsonEventData = serializedJsonEventData;
+        ProtobufEventData = protobufEventData;
         EventMessageType = eventMessageType;
         CreationDate = creationDate;
     }

@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
+using Google.Protobuf;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
@@ -65,11 +66,11 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
             return CreateIntegrationEvent(result);
         }
 
-        private IntegrationEventDto CreateIntegrationEvent<TIntegrationEvent>(TIntegrationEvent integrationEvent)
+        private IntegrationEventDto CreateIntegrationEvent(IMessage integrationEvent)
         {
-            var messageType = _integrationEventTypeMapper.GetEventName(integrationEvent!.GetType()); // TODO: Get rid of null supression
-            var serializedIntegrationEvent = _jsonSerializer.Serialize(integrationEvent);
-            return new IntegrationEventDto(messageType, serializedIntegrationEvent, CalculationResultCompleted.BalanceFixingEventName, _systemDateTimeProvider.GetCurrentInstant()); // TODO: Remove the hardcoded CalculationResultCompleted.BalanceFixingEventName
+            var messageType = _integrationEventTypeMapper.GetMessageType(integrationEvent!.GetType()); // TODO: Get rid of null supression
+            var protobufByteArray = integrationEvent.ToByteArray();
+            return new IntegrationEventDto(protobufByteArray, messageType, _systemDateTimeProvider.GetCurrentInstant());
         }
     }
 }

@@ -25,6 +25,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using FluentAssertions;
+using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime.Extensions;
 using Xunit;
@@ -73,15 +74,12 @@ public class PublishIntegrationEventsEndpointTests
                 PeriodEndUtc = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(1)),
                 TimeSeriesType = TimeSeriesType.Production,
             };
-            var sre = new JsonSerializer();
-            var serialize = sre.Serialize(calculationResultCompleted);
 
             dbc.OutboxMessages.Add(
                 new OutboxMessage(
                     new IntegrationEventDto(
-                typeof(CalculationResultCompleted).ToString(),
+                calculationResultCompleted.ToByteArray(),
                 CalculationResultCompleted.BalanceFixingEventName,
-                serialize,
                 DateTime.UtcNow.ToInstant())));
 
             await dbc.SaveChangesAsync().ConfigureAwait(false);

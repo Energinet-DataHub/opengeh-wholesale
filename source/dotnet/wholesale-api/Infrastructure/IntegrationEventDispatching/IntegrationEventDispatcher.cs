@@ -13,10 +13,8 @@
 // limitations under the License.
 
 using System.Diagnostics;
-using System.Text;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
@@ -33,8 +31,6 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
         private readonly IClock _clock;
         private readonly IDatabaseContext _context;
         private readonly ILogger<IntegrationEventDispatcher> _logger;
-        private readonly IJsonSerializer _jsonSerializer;
-        private readonly IIntegrationEventTypeMapper _integrationEventTypeMapper;
         private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
 
         public IntegrationEventDispatcher(
@@ -43,8 +39,6 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             IClock clock,
             IDatabaseContext context,
             ILogger<IntegrationEventDispatcher> logger,
-            IJsonSerializer jsonSerializer,
-            IIntegrationEventTypeMapper integrationEventTypeMapper,
             IServiceBusMessageFactory serviceBusMessageFactory)
         {
             _integrationEventTopicServiceBusSender = integrationEventTopicServiceBusSender;
@@ -52,8 +46,6 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             _clock = clock;
             _context = context;
             _logger = logger;
-            _jsonSerializer = jsonSerializer;
-            _integrationEventTypeMapper = integrationEventTypeMapper;
             _serviceBusMessageFactory = serviceBusMessageFactory;
         }
 
@@ -68,14 +60,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             {
                 try
                 {
-                    var eventType = _integrationEventTypeMapper.GetEventType(outboxMessage.Type);
-                    var integrationEvent = _jsonSerializer.Deserialize(outboxMessage.Data, eventType);
-                    if (integrationEvent == null)
-                    {
-                        throw new NullReferenceException("integrationEvent");
-                    }
-
-                    var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(Encoding.UTF8.GetBytes(_jsonSerializer.Serialize(integrationEvent)), outboxMessage.MessageType);
+                    var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(outboxMessage.Data, outboxMessage.MessageType);
                     await _integrationEventTopicServiceBusSender
                         .SendMessageAsync(serviceBusMessage, token)
                         .ConfigureAwait(false);

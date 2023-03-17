@@ -31,9 +31,9 @@ public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
         return _dic[eventName];
     }
 
-    public string GetEventName(Type eventType)
+    public string GetMessageType(Type type) // TODO consider example.
     {
-        return _dic.Single(x => x.Value == eventType).Key;
+        return _dic.Single(x => x.Value == type).Key;
     }
 
     private void Add(string eventName, Type eventType)

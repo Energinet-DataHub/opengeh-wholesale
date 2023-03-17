@@ -22,19 +22,16 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
         public OutboxMessage(IntegrationEventDto integrationEventDto)
         {
             Id = Guid.NewGuid();
-            Type = integrationEventDto.SerializedEventType;
-            Data = integrationEventDto.SerializedJsonEventData;
+            Data = integrationEventDto.ProtobufEventData;
             CreationDate = integrationEventDto.CreationDate;
             MessageType = integrationEventDto.EventMessageType;
         }
 
         public Guid Id { get; }
 
-        public string Type { get; }
-
         public string MessageType { get; }
 
-        public string Data { get; }
+        public byte[] Data { get; }
 
         public Instant CreationDate { get; }
 
@@ -51,14 +48,12 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
         // ReSharper disable once UnusedMember.Local
         private OutboxMessage(
             Guid id,
-            string type,
-            string data,
+            byte[] data,
             string messageType,
             Instant creationDate,
             Instant? processedDate)
         {
             Id = id;
-            Type = type;
             Data = data;
             MessageType = messageType;
             CreationDate = creationDate;

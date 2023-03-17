@@ -22,6 +22,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Infrastructure.Persistence.Outbox;
 
+[Collection(nameof(OutboxRepositoryTests))]
 public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 {
     private readonly WholesaleDatabaseManager _databaseManager;
@@ -36,7 +37,7 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var expected = CreateOutOutboxMessage("type1");
+        var expected = CreateOutOutboxMessage(20, "event4");
         var sut = new OutboxMessageRepository(writeContext);
 
         // Act
@@ -48,6 +49,7 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var actual = await readContext.OutboxMessages.SingleAsync(x => x.Id == expected.Id);
 
         actual.Should().BeEquivalentTo(expected);
+        writeContext.Remove(expected);
     }
 
     [Fact]
@@ -55,9 +57,9 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var outboxMessage1 = CreateOutOutboxMessage("type1", 15);
-        var outboxMessage2 = CreateOutOutboxMessage("type2", 14);
-        var outboxMessage3 = CreateOutOutboxMessage("type3", 13);
+        var outboxMessage1 = CreateOutOutboxMessage(15);
+        var outboxMessage2 = CreateOutOutboxMessage(14);
+        var outboxMessage3 = CreateOutOutboxMessage(13);
         var expected = new List<OutboxMessage> { outboxMessage1, outboxMessage2 };
         var sut = new OutboxMessageRepository(writeContext);
         await sut.AddAsync(outboxMessage1, default);
@@ -77,19 +79,19 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var outboxMessage1 = CreateOutOutboxMessage("type1", 16);
-        var outboxMessage2 = CreateOutOutboxMessage("type2", 15);
-        var outboxMessage3 = CreateOutOutboxMessage("type3", 13);
+        var outboxMessage1 = CreateOutOutboxMessage(16, "type1");
+        var outboxMessage2 = CreateOutOutboxMessage(15, "type2");
+        var outboxMessage3 = CreateOutOutboxMessage(13, "type3");
         var expected = new List<OutboxMessage> { outboxMessage3 };
         var sut = new OutboxMessageRepository(writeContext);
         await sut.AddAsync(outboxMessage1, default);
         await sut.AddAsync(outboxMessage2, default);
         await sut.AddAsync(outboxMessage3, default);
-        await writeContext.SaveChangesAsync();
+        await writeContext.SaveChangesAsync().ConfigureAwait(false);
 
         // Act
         sut.DeleteByCreationDate(SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(14)));
-        await writeContext.SaveChangesAsync();
+        await writeContext.SaveChangesAsync().ConfigureAwait(false);
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
@@ -97,8 +99,8 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         actual.Should().BeEquivalentTo(expected);
     }
 
-    private static OutboxMessage CreateOutOutboxMessage(string type, int numberOfDays = 0)
+    private static OutboxMessage CreateOutOutboxMessage(int numberOfDays = 0, string eventMessageType = "eventMessageType")
     {
-        return new OutboxMessage(new IntegrationEventDto(type, "{}", "messageType", SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(numberOfDays))));
+        return new OutboxMessage(new IntegrationEventDto(new byte[10], eventMessageType, SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(numberOfDays))));
     }
 }
