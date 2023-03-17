@@ -67,9 +67,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
 
         private IntegrationEventDto CreateIntegrationEvent<TIntegrationEvent>(TIntegrationEvent integrationEvent)
         {
-            var messageType = _integrationEventTypeMapper.GetEventName(typeof(CalculationResultCompleted));
+            var messageType = _integrationEventTypeMapper.GetEventName(integrationEvent!.GetType()); // TODO: Get rid of null supression
             var serializedIntegrationEvent = _jsonSerializer.Serialize(integrationEvent);
-            return new IntegrationEventDto(messageType, serializedIntegrationEvent, _systemDateTimeProvider.GetCurrentInstant());
+            return new IntegrationEventDto(messageType, serializedIntegrationEvent, CalculationResultCompleted.BalanceFixingEventName, _systemDateTimeProvider.GetCurrentInstant()); // TODO: Remove the hardcoded CalculationResultCompleted.BalanceFixingEventName
         }
     }
 }

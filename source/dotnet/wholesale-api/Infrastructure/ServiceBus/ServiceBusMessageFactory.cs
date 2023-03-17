@@ -74,7 +74,7 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         var serviceBusMessage = new ServiceBusMessage
         {
             Body = new BinaryData(body),
-            Subject = messageType,
+            Subject = messageType, // TODO: Is this needed?
         };
         serviceBusMessage.SetOperationCorrelationId(operationCorrelationId);
         serviceBusMessage.SetMessageType(messageType);

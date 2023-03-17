@@ -18,16 +18,35 @@ namespace Energinet.DataHub.Wholesale.Application;
 
 public class IntegrationEventDto
 {
-    public string MessageType { get; }
+    /// <summary>
+    /// Example could be CalculationResultCompleted.
+    /// </summary>
+    public string SerializedEventType { get; }
 
-    public string SerializedIntegrationEvent { get; }
+    /// <summary>
+    /// The Type of the Event
+    /// </summary>
+    public string SerializedJsonEventData { get; }
 
+    /// <summary>
+    /// Example: CalculationResultCompleted.BalanceFixingEventName (BalanceFixingCalculationResultCompleted)
+    /// </summary>
+    public string EventMessageType { get; }
+
+    /// <summary>
+    /// The time of which the IntegrationEventDto was created.
+    /// </summary>
     public Instant CreationDate { get; }
 
-    public IntegrationEventDto(string messageType, string serializedIntegrationEvent, Instant creationDate)
+    public IntegrationEventDto(
+        string serializedEventType,
+        string serializedJsonEventData,
+        string eventMessageType,
+        Instant creationDate)
     {
-        MessageType = messageType;
-        SerializedIntegrationEvent = serializedIntegrationEvent;
+        SerializedEventType = serializedEventType;
+        SerializedJsonEventData = serializedJsonEventData;
+        EventMessageType = eventMessageType;
         CreationDate = creationDate;
     }
 

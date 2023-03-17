@@ -22,14 +22,17 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
         public OutboxMessage(IntegrationEventDto integrationEventDto)
         {
             Id = Guid.NewGuid();
-            Type = integrationEventDto.MessageType;
-            Data = integrationEventDto.SerializedIntegrationEvent;
+            Type = integrationEventDto.SerializedEventType;
+            Data = integrationEventDto.SerializedJsonEventData;
             CreationDate = integrationEventDto.CreationDate;
+            MessageType = integrationEventDto.EventMessageType;
         }
 
         public Guid Id { get; }
 
         public string Type { get; }
+
+        public string MessageType { get; }
 
         public string Data { get; }
 
@@ -46,11 +49,18 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
         /// Required by Entity Framework
         /// </summary>
         // ReSharper disable once UnusedMember.Local
-        private OutboxMessage(Guid id, string type, string data, Instant creationDate, Instant? processedDate)
+        private OutboxMessage(
+            Guid id,
+            string type,
+            string data,
+            string messageType,
+            Instant creationDate,
+            Instant? processedDate)
         {
             Id = id;
             Type = type;
             Data = data;
+            MessageType = messageType;
             CreationDate = creationDate;
             ProcessedDate = processedDate;
         }

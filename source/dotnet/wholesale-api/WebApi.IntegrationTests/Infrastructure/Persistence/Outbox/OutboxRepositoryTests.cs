@@ -99,6 +99,6 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
     private static OutboxMessage CreateOutOutboxMessage(string type, int numberOfDays = 0)
     {
-        return new OutboxMessage(new IntegrationEventDto(type, "{}", SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(numberOfDays))));
+        return new OutboxMessage(new IntegrationEventDto(type, "{}", "messageType", SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(numberOfDays))));
     }
 }

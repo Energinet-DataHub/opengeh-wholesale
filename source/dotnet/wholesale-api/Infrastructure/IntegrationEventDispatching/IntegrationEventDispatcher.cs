@@ -75,7 +75,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
                         throw new NullReferenceException("integrationEvent");
                     }
 
-                    var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(Encoding.UTF8.GetBytes(_jsonSerializer.Serialize(integrationEvent)), outboxMessage.Type);
+                    var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(Encoding.UTF8.GetBytes(_jsonSerializer.Serialize(integrationEvent)), outboxMessage.MessageType);
                     await _integrationEventTopicServiceBusSender
                         .SendMessageAsync(serviceBusMessage, token)
                         .ConfigureAwait(false);

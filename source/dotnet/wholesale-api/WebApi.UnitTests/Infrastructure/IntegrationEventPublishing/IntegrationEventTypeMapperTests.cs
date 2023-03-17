@@ -45,7 +45,7 @@ public class IntegrationEventDispatcherTests
         [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock)
     {
         // Arrange
-        var outboxMessage1 = CreateOutboxMessage(CalculationResultCompleted.BalanceFixingEventName, "{}");
+        var outboxMessage1 = CreateOutboxMessage(typeof(CalculationResultCompleted).ToString(), "{}", CalculationResultCompleted.BalanceFixingEventName); //TODO: should we create a custom type to use when testing?
         outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(50, default))
             .ReturnsAsync(new List<OutboxMessage> { outboxMessage1 });
 
@@ -71,8 +71,8 @@ public class IntegrationEventDispatcherTests
         integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), default));
     }
 
-    private static OutboxMessage CreateOutboxMessage(string messageType, string data)
+    private static OutboxMessage CreateOutboxMessage(string type, string jsonString, string messageType)
     {
-        return new OutboxMessage(new IntegrationEventDto(messageType, data, NodaTime.SystemClock.Instance.GetCurrentInstant()));
+        return new OutboxMessage(new IntegrationEventDto(type, jsonString, messageType, NodaTime.SystemClock.Instance.GetCurrentInstant()));
     }
 }
