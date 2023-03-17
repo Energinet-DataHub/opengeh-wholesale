@@ -1,4 +1,3 @@
 locals {
-    task_start_trigger = "start_${uuid()}"
-    task_mp_start_trigger = "mp_${local.task_start_trigger}"
+    task_workflow_setup_trigger = "workflow_setup_${uuid()}"
 }
