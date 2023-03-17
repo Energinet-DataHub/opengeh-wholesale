@@ -6,7 +6,7 @@ No functional changes
 
 ## Version 6.0.0
 
-???
+Using strings instead of integers for enum types.
 
 ## Version 5.0.26
 
