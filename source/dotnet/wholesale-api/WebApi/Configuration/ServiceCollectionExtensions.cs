@@ -124,12 +124,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IIntegrationEventService, IntegrationEventService>();
         services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
         services.AddScoped<ICalculationResultReadyIntegrationEventFactory, CalculationResultReadyIntegrationEventFactory>();
-        services.AddSingleton<IIntegrationEventTypeMapper>(_ =>
-        {
-            var mapper = new IntegrationEventTypeMapper();
-            mapper.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
-            return mapper;
-        });
+        services.AddSingleton<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper());
 
         var integrationEventTopicName = configuration[ConfigurationSettingNames.IntegrationEventsTopicName];
         var serviceBusConnectionString = configuration[ConfigurationSettingNames.ServiceBusManageConnectionString];

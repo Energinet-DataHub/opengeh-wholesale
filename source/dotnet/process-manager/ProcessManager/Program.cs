@@ -161,12 +161,7 @@ public static class Program
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
         serviceCollection.AddScoped<IIntegrationEventService, IntegrationEventService>();
         serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
-        serviceCollection.AddSingleton<IIntegrationEventTypeMapper>(_ =>
-        {
-            var mapper = new IntegrationEventTypeMapper();
-            mapper.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
-            return mapper;
-        });
+        serviceCollection.AddSingleton<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper());
     }
 
     private static void RegisterEventPublishers(IServiceCollection serviceCollection)

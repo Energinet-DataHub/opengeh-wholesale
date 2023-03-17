@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Contracts.Events;
+
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
 public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
@@ -21,9 +23,20 @@ public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
     public IntegrationEventTypeMapper()
     {
         _dic = new Dictionary<string, Type>();
+        Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
     }
 
-    public void Add(string eventName, Type eventType)
+    public Type GetEventType(string eventName)
+    {
+        return _dic[eventName];
+    }
+
+    public string GetEventName(Type eventType)
+    {
+        return _dic.Single(x => x.Value == eventType).Key;
+    }
+
+    private void Add(string eventName, Type eventType)
     {
         if (_dic.ContainsKey(eventName))
         {
@@ -36,15 +49,5 @@ public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
         }
 
         _dic.Add(eventName, eventType);
-    }
-
-    public Type GetEventType(string eventName)
-    {
-        return _dic[eventName];
-    }
-
-    public string GetEventName(Type eventType)
-    {
-        return _dic.Single(x => x.Value == eventType).Key;
     }
 }
