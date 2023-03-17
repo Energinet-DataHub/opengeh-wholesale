@@ -65,11 +65,6 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
             return CreateIntegrationEvent(result);
         }
 
-        public IntegrationEventDto CreateProcessCompletedIntegrationEvent(ProcessCompletedEventDto processCompletedEvent)
-        {
-            return CreateIntegrationEvent(processCompletedEvent);
-        }
-
         private IntegrationEventDto CreateIntegrationEvent<TIntegrationEvent>(TIntegrationEvent integrationEvent)
         {
             var messageType = _integrationEventTypeMapper.GetEventName(typeof(CalculationResultCompleted));
