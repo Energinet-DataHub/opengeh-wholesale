@@ -91,4 +91,8 @@ limitations under the License.
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\Persistence\Outbox" />
+  </ItemGroup>
+
 </Project>

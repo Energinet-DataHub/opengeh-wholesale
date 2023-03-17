@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishing;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
@@ -36,7 +35,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.EventPubli
 
 public class IntegrationEventDispatcherTests
 {
-   /* [Theory]
+   /* TODO AJW [Theory]
     [InlineAutoMoqData]
     public async Task PublishIntegrationEventsAsync_ReturnVoid(
         [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock,

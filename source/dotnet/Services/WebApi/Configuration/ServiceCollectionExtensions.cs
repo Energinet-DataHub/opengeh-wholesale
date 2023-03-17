@@ -27,6 +27,7 @@ using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
@@ -38,9 +39,9 @@ using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishing;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
+using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
@@ -122,12 +123,17 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IJsonSerializer, JsonSerializer>();
         services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
 
-        services.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
+        services.AddScoped<IIntegrationEventFactory, IntegrationEventFactory>();
         services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
-        services.AddScoped<IOutboxService, OutboxService>();
+        services.AddScoped<IIntegrationEventService, IntegrationEventService>();
         services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
-        services.AddScoped<IProcessApplicationServiceV2, ProcessApplicationServiceV2>();
         services.AddScoped<ICalculationResultReadyIntegrationEventFactory, CalculationResultReadyIntegrationEventFactory>();
+        services.AddSingleton<IIntegrationEventTypeMapper>(_ =>
+        {
+            var mapper = new IntegrationEventTypeMapper();
+            mapper.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
+            return mapper;
+        });
 
         var integrationEventTopicName = configuration[ConfigurationSettingNames.IntegrationEventsTopicName];
         var serviceBusConnectionString = configuration[ConfigurationSettingNames.ServiceBusManageConnectionString];

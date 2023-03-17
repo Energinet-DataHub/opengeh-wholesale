@@ -12,21 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Microsoft.EntityFrameworkCore;
+namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public interface IDatabaseContext
+public interface IIntegrationEventTypeMapper
 {
-    DbSet<Batch> Batches { get; }
+    Type GetEventType(string eventName);
 
-    DbSet<OutboxMessage> OutboxMessages { get; }
-
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync(CancellationToken token = default);
+    string GetEventName(Type eventType);
 }

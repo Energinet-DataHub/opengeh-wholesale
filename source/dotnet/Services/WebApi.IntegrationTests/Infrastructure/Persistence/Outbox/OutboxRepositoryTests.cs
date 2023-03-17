@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using FluentAssertions;
@@ -99,6 +99,6 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
     private static OutboxMessage CreateOutOutboxMessage(string type, int numberOfDays = 0)
     {
-        return new OutboxMessage(type, new byte[10], SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(numberOfDays)));
+        return new OutboxMessage(new IntegrationEventDto(type, "{}", SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(numberOfDays))));
     }
 }

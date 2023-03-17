@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 public interface IIntegrationEventDispatcher
 {
     /// <summary>
-    /// Fetches outbox messages and publishes them as integration events.
+    /// Fetches integration events and publishes them.
     /// </summary>
     Task PublishIntegrationEventsAsync(CancellationToken token);
 }

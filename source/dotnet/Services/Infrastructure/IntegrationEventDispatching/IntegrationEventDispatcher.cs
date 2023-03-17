@@ -13,18 +13,16 @@
 // limitations under the License.
 
 using System.Diagnostics;
-using System.Text;
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
+namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
 {
     public class IntegrationEventDispatcher : IIntegrationEventDispatcher
     {
@@ -34,6 +32,8 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
         private readonly IDatabaseContext _context;
         private readonly ILogger<IntegrationEventDispatcher> _logger;
         private readonly IJsonSerializer _jsonSerializer;
+        private readonly IIntegrationEventTypeMapper _integrationEventTypeMapper;
+        private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
 
         public IntegrationEventDispatcher(
             IIntegrationEventTopicServiceBusSender integrationEventTopicServiceBusSender,
@@ -41,7 +41,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
             IClock clock,
             IDatabaseContext context,
             ILogger<IntegrationEventDispatcher> logger,
-            IJsonSerializer jsonSerializer)
+            IJsonSerializer jsonSerializer,
+            IIntegrationEventTypeMapper integrationEventTypeMapper,
+            IServiceBusMessageFactory serviceBusMessageFactory)
         {
             _integrationEventTopicServiceBusSender = integrationEventTopicServiceBusSender;
             _outboxMessageRepository = outboxMessageRepository;
@@ -49,6 +51,8 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
             _context = context;
             _logger = logger;
             _jsonSerializer = jsonSerializer;
+            _integrationEventTypeMapper = integrationEventTypeMapper;
+            _serviceBusMessageFactory = serviceBusMessageFactory;
         }
 
         public async Task PublishIntegrationEventsAsync(CancellationToken token)
@@ -62,13 +66,14 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishing
             {
                 try
                 {
-                    // TODO AJH var serviceBusMessage = System.Text.Json.JsonSerializer.Deserialize<ServiceBusMessage>(outboxMessage.Data);
-                    var serviceBusMessage = _jsonSerializer.Deserialize<ServiceBusMessage>(Encoding.UTF8.GetString(outboxMessage.Data));
-                    if (serviceBusMessage == null)
+                    var eventType = _integrationEventTypeMapper.GetEventType(outboxMessage.Type);
+                    dynamic integrationEvent = _jsonSerializer.Deserialize(outboxMessage.Data, eventType);
+                    if (integrationEvent == null)
                     {
-                        throw new NullReferenceException("serviceBusMessage");
+                        throw new NullReferenceException("integrationEvent");
                     }
 
+                    var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent, outboxMessage.Type);
                     await _integrationEventTopicServiceBusSender
                         .SendMessageAsync(serviceBusMessage, token)
                         .ConfigureAwait(false);

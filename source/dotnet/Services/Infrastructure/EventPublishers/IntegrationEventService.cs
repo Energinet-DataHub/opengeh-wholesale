@@ -13,18 +13,18 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
-public class OutboxService : IOutboxService
+public class IntegrationEventService : IIntegrationEventService
 {
     private readonly IOutboxMessageRepository _outboxMessageRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
 
-    public OutboxService(
+    public IntegrationEventService(
         IOutboxMessageRepository outboxMessageRepository,
         IClock clock,
         IUnitOfWork unitOfWork)
@@ -34,15 +34,16 @@ public class OutboxService : IOutboxService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task AddAsync(OutboxMessage outboxMessage, CancellationToken token)
+    public async Task AddAsync(IntegrationEventDto integrationEventDto, CancellationToken token)
     {
+        var outboxMessage = new OutboxMessage(integrationEventDto);
         await _outboxMessageRepository.AddAsync(outboxMessage, token).ConfigureAwait(false);
     }
 
-    public async Task DeleteOutboxMessagesOlderThan14DaysAsync(CancellationToken token)
+    public async Task DeleteIntegrationEventsByDaysAsync(int daysOld, CancellationToken token)
     {
         var instant = _clock.GetCurrentInstant();
-        instant = instant.Minus(Duration.FromDays(14));
+        instant = instant.Minus(Duration.FromDays(daysOld));
         _outboxMessageRepository.DeleteByCreationDate(instant);
 
         await _unitOfWork.CommitAsync(token).ConfigureAwait(false);

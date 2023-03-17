@@ -18,13 +18,13 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application;
 
-public interface IOutboxMessageFactory
+public interface IIntegrationEventFactory
 {
-    OutboxMessage CreateMessageCalculationResultForEnergySupplier(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln);
+    IntegrationEventDto CreateIntegrationEventForCalculationResultForEnergySupplier(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln);
 
-    OutboxMessage CreateMessageForCalculationResultForBalanceResponsibleParty(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent, string gln);
+    IntegrationEventDto CreateIntegrationEventForCalculationResultForBalanceResponsibleParty(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent, string gln);
 
-    OutboxMessage CreateMessageCalculationResultForTotalGridArea(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent);
+    IntegrationEventDto CreateIntegrationEventForCalculationResultForTotalGridArea(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent);
 
-    OutboxMessage CreateMessageCalculationResultForEnergySupplierByBalanceResponsibleParty(ProcessStepResult result, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln, string brpGln);
+    IntegrationEventDto CreateIntegrationEventForCalculationResultForEnergySupplierByBalanceResponsibleParty(ProcessStepResult result, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln, string brpGln);
 }

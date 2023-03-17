@@ -19,16 +19,16 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class DeleteOlderOutboxMessagesEndpoint
+public class DeleteOlderIntegrationEventsEndpoint
 {
-    private readonly IOutboxService _outboxService;
+    private readonly IIntegrationEventService _integrationEventService;
     private readonly ICorrelationContext _correlationContext;
 
-    public DeleteOlderOutboxMessagesEndpoint(
-        IOutboxService outboxService,
+    public DeleteOlderIntegrationEventsEndpoint(
+        IIntegrationEventService integrationEventService,
         ICorrelationContext correlationContext)
     {
-        _outboxService = outboxService;
+        _integrationEventService = integrationEventService;
         _correlationContext = correlationContext;
     }
 
@@ -40,6 +40,6 @@ public class DeleteOlderOutboxMessagesEndpoint
         // so we need to add a correlation ID ourselves
         _correlationContext.SetId(Guid.NewGuid().ToString());
 
-        await _outboxService.DeleteOutboxMessagesOlderThan14DaysAsync(token).ConfigureAwait(false);
+        await _integrationEventService.DeleteIntegrationEventsByDaysAsync(14, token).ConfigureAwait(false);
     }
 }

@@ -56,9 +56,10 @@ public class ProcessApplicationServiceTest
     [Theory]
     [InlineAutoMoqData]
     public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaProductionOnce(
-        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
         [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        [Frozen] Mock<IIntegrationEventService> integrationEventServiceMock,
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         ProcessApplicationService sut)
     {
         // Arrange
@@ -86,19 +87,21 @@ public class ProcessApplicationServiceTest
                 new GridAreaCode(eventDto.GridAreaCode),
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
 
-        //Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+        // Act
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto, default);
 
         // Assert
-        publisherMock.Verify(publisher => publisher.PublishCalculationResultForTotalGridAreaAsync(processStepResult, eventDto), Times.Once);
+        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>(), default));
+        unitOfWorkMock.Verify(x => x.CommitAsync(default));
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaNonProfiledConsumptionOnce(
-        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
         [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        [Frozen] Mock<IIntegrationEventService> integrationEventServiceMock,
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         ProcessApplicationService sut)
     {
         // Arrange
@@ -126,19 +129,21 @@ public class ProcessApplicationServiceTest
                 new GridAreaCode(eventDto.GridAreaCode),
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
 
-        //Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+        // Act
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto, default);
 
         // Assert
-        publisherMock.Verify(publisher => publisher.PublishCalculationResultForTotalGridAreaAsync(processStepResult, eventDto), Times.Once);
+        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>(), default));
+        unitOfWorkMock.Verify(x => x.CommitAsync(default));
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplier(
-        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
         [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        [Frozen] Mock<IIntegrationEventService> integrationEventServiceMock,
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         string glnNumber,
         ProcessApplicationService sut)
     {
@@ -168,18 +173,20 @@ public class ProcessApplicationServiceTest
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(glnNumber) });
 
         //Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto, default);
 
         // Assert
-        publisherMock.Verify(publisher => publisher.PublishCalculationResultForEnergySupplierAsync(processStepResult, eventDto, glnNumber), Times.Once);
+        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>(), default));
+        unitOfWorkMock.Verify(x => x.CommitAsync(default));
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForBalanceResponsibleParty(
-        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
         [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        [Frozen] Mock<IIntegrationEventService> integrationEventServiceMock,
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         string glnNumber,
         ProcessApplicationService sut)
     {
@@ -208,19 +215,21 @@ public class ProcessApplicationServiceTest
                 new GridAreaCode(eventDto.GridAreaCode),
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(glnNumber) });
 
-        //Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+        // Act
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto, default);
 
         // Assert
-        publisherMock.Verify(publisher => publisher.PublishCalculationResultForBalanceResponsiblePartyAsync(processStepResult, eventDto, glnNumber), Times.Once);
+        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>(), default));
+        unitOfWorkMock.Verify(x => x.CommitAsync(default));
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplierByBalanceResponsibleParty(
-        [Frozen] Mock<IIntegrationEventPublisher> publisherMock,
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
         [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        [Frozen] Mock<IIntegrationEventService> integrationEventServiceMock,
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         string brpGlnNumber,
         string glnNumber,
         ProcessApplicationService sut)
@@ -257,10 +266,11 @@ public class ProcessApplicationServiceTest
                 It.IsAny<TimeSeriesType>(),
                 brpGlnNumber)).ReturnsAsync(new[] { new Actor(glnNumber) });
 
-        //Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+        // Act
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto, default);
 
         // Assert
-        publisherMock.Verify(publisher => publisher.PublishCalculationResultForEnergySupplierByBalanceResponsiblePartyAsync(processStepResult, eventDto, glnNumber, brpGlnNumber), Times.Once);
+        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>(), default));
+        unitOfWorkMock.Verify(x => x.CommitAsync(default));
     }
 }
