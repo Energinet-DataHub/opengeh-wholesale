@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using NodaTime;
@@ -71,7 +72,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
 
         private IntegrationEventDto CreateIntegrationEvent<TIntegrationEvent>(TIntegrationEvent integrationEvent)
         {
-            var messageType = _integrationEventTypeMapper.GetEventName(typeof(TIntegrationEvent));
+            var messageType = _integrationEventTypeMapper.GetEventName(typeof(CalculationResultCompleted));
             var serializedIntegrationEvent = _jsonSerializer.Serialize(integrationEvent);
             return new IntegrationEventDto(messageType, serializedIntegrationEvent, _systemDateTimeProvider.GetCurrentInstant());
         }

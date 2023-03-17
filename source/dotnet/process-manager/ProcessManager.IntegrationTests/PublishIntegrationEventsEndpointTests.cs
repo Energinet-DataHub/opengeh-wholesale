@@ -56,10 +56,6 @@ public class PublishIntegrationEventsEndpointTests
         public async Task When_ProcessCompletedDomainEventPublished_Then_ProcessCompletedIntegrationEventPublished()
         {
             // Arrange
-            var processCompletedMessage = CreateProcessCompletedEventDtoMessage();
-            using var eventualProcessCompletedIntegrationEvent = await Fixture
-                .ProcessCompletedIntegrationEventListener.ListenForMessageAsync(processCompletedMessage.GetOperationCorrelationId());
-
             var dbc = Fixture.DatabaseManager.CreateDbContext();
             var calculationResultCompleted = new CalculationResultCompleted()
             {
@@ -77,11 +73,16 @@ public class PublishIntegrationEventsEndpointTests
                 PeriodEndUtc = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(1)),
                 TimeSeriesType = TimeSeriesType.Production,
             };
-            var body = new JsonSerializer().Serialize(calculationResultCompleted);
+            var sre = new JsonSerializer();
+            var body = sre.Serialize(calculationResultCompleted);
             var bytes = Encoding.UTF8.GetBytes(body);
 
-            dbc.OutboxMessages.Add(new OutboxMessage(new IntegrationEventDto("messageType", bytes.ToString()!, DateTime.UtcNow.ToInstant())));
+            dbc.OutboxMessages.Add(new OutboxMessage(new IntegrationEventDto(CalculationResultCompleted.BalanceFixingEventName, bytes.ToString()!, DateTime.UtcNow.ToInstant())));
             await dbc.SaveChangesAsync().ConfigureAwait(false);
+
+            var processCompletedMessage = CreateProcessCompletedEventDtoMessage();
+            using var eventualProcessCompletedIntegrationEvent = await Fixture
+                .ProcessCompletedIntegrationEventListener.ListenForMessageAsync(processCompletedMessage.GetOperationCorrelationId());
 
             // Act
             await Fixture.DomainEventsTopic.SenderClient.SendMessageAsync(processCompletedMessage);
