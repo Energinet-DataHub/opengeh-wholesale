@@ -189,6 +189,19 @@ class ProcessStepResultWriter:
         df: DataFrame,
         aggregation_level: AggregationLevel,
     ) -> None:
+        if aggregation_level == AggregationLevel.total_ga:
+            df = df.withColumn(
+                Colname.balance_responsible_id, lit(None).cast("string")
+            ).withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
+        elif aggregation_level == AggregationLevel.es_per_ga:
+            df = df.withColumn(Colname.balance_responsible_id, lit(None).cast("string"))
+        elif aggregation_level == AggregationLevel.brp_per_ga:
+            df = df.withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
+        elif aggregation_level != AggregationLevel.es_per_brp_per_ga:
+            raise ValueError(
+                f"Unsupported aggregation_level, {aggregation_level.value}"
+            )
+
         df = (
             df.withColumn(Colname.batch_id, lit(self.__batch_id))
             .withColumn(Colname.batch_process_type, lit(self.__batch_process_type))
@@ -210,20 +223,6 @@ class ProcessStepResultWriter:
             Colname.balance_responsible_id, "balance_responsible_id"
         )
 
-        if aggregation_level == AggregationLevel.total_ga:
-            df = df.withColumn(
-                Colname.balance_responsible_id, lit(None).cast("string")
-            ).withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
-        elif aggregation_level == AggregationLevel.es_per_ga:
-            df = df.withColumn(Colname.balance_responsible_id, lit(None).cast("string"))
-        elif aggregation_level == AggregationLevel.brp_per_ga:
-            df = df.withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
-        elif aggregation_level != AggregationLevel.es_per_brp_per_ga:
-            raise ValueError(
-                f"Unsupported aggregation_level, {aggregation_level.value}"
-            )
-
-        df.printSchema()
         df.write.format("delta").mode("append").option("mergeSchema", "false").option(
             "mergeSchema", "false"
         ).saveAsTable(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
