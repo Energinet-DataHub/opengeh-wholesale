@@ -74,10 +74,9 @@ public class PublishIntegrationEventsEndpointTests
                 TimeSeriesType = TimeSeriesType.Production,
             };
             var sre = new JsonSerializer();
-            var body = sre.Serialize(calculationResultCompleted);
-            var bytes = Encoding.UTF8.GetBytes(body);
+            var serialize = sre.Serialize(calculationResultCompleted);
 
-            dbc.OutboxMessages.Add(new OutboxMessage(new IntegrationEventDto(CalculationResultCompleted.BalanceFixingEventName, System.Text.Encoding.UTF8.GetString(bytes), DateTime.UtcNow.ToInstant())));
+            dbc.OutboxMessages.Add(new OutboxMessage(new IntegrationEventDto(CalculationResultCompleted.BalanceFixingEventName, serialize, DateTime.UtcNow.ToInstant())));
             await dbc.SaveChangesAsync().ConfigureAwait(false);
 
             using var eventualProcessCompletedIntegrationEvent = await Fixture
