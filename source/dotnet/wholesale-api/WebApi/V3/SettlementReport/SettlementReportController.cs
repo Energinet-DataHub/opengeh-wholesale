@@ -35,7 +35,7 @@ public class SettlementReportController : V3ControllerBase
     /// </summary>
     /// <param name="batchId">BatchId</param>
     /// <param name="gridAreaCode">GridAreaCode</param>
-    [HttpGet]
+    [HttpGet(Name = "GetSettlementReportAsStreamAsync")]
     [MapToApiVersion(Version)]
     public async Task GetAsync([Required]Guid batchId, [Required]string gridAreaCode)
     {
