@@ -20,12 +20,12 @@ limitations under the License.
     </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.21.12" />
-    <PackageReference Include="Grpc.Tools" Version="2.51.0" PrivateAssets="All" />
+    <PackageReference Include="Google.Protobuf" Version="3.22.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.52.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.5.22">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -33,7 +33,7 @@ limitations under the License.
 
   <PropertyGroup>
       <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-      <PackageVersion>2.2.3$(VersionSuffix)</PackageVersion>
+      <PackageVersion>2.2.4$(VersionSuffix)</PackageVersion>
       <Title>Wholesale Contracts</Title>
       <Company>Energinet-DataHub</Company>
       <Authors>Energinet-DataHub</Authors>
