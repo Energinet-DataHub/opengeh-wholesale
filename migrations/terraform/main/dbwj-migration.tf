@@ -151,11 +151,15 @@ resource "databricks_job" "this" {
     depends_on {
       task_key = local.task_mp_start_trigger
     }
+
+    library {
+      whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
+    }
     
     notebook_task {
       notebook_path = "source/DataMigration/config/schema_validation"
     }
-    job_cluster_key = "metering_point_job_cluster"
+    job_cluster_key = "time_series_job_cluster"
   }
 
   task {
