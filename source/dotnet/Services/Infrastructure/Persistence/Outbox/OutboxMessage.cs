@@ -41,5 +41,18 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
         {
             ProcessedDate = when;
         }
+
+        /// <summary>
+        /// Required by Entity Framework
+        /// </summary>
+        // ReSharper disable once UnusedMember.Local
+        private OutboxMessage(Guid id, string type, string data, Instant creationDate, Instant? processedDate)
+        {
+            Id = id;
+            Type = type;
+            Data = data;
+            CreationDate = creationDate;
+            ProcessedDate = processedDate;
+        }
     }
 }

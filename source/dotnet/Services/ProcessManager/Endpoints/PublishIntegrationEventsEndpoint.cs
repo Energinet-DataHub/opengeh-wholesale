@@ -33,7 +33,7 @@ public class PublishIntegrationEventsEndpoint
 
     // Executes every 120 seconds (see the [TimerTrigger] below)
     [Function(nameof(PublishIntegrationEventsEndpoint))]
-    public async Task RunAsync([TimerTrigger("*/120 * * * * *")] TimerInfo timerInfo, CancellationToken token)
+    public async Task RunAsync([TimerTrigger("*/20 * * * * *")] TimerInfo timerInfo, CancellationToken token)
     {
         // CorrelationIdMiddleware does not currently support timer triggered functions,
         // so we need to add a correlation ID ourselves

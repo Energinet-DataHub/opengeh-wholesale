@@ -161,6 +161,7 @@ public static class Program
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
         serviceCollection.AddScoped<IIntegrationEventService, IntegrationEventService>();
         serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
+        serviceCollection.AddScoped<IIntegrationEventTypeMapper, IntegrationEventTypeMapper>();
     }
 
     private static void RegisterEventPublishers(IServiceCollection serviceCollection)

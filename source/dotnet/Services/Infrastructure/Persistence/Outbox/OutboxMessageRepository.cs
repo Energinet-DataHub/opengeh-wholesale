@@ -46,6 +46,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
         {
             var messagesToDelete = _context.OutboxMessages.Where(x => x.CreationDate < date);
             _context.OutboxMessages.RemoveRange(messagesToDelete);
+            _context.SaveChanges();
         }
     }
 }
