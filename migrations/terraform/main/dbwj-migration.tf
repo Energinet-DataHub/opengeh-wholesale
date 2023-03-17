@@ -128,7 +128,7 @@ resource "databricks_job" "this" {
 
   task {
     # When semantic versioning is ready, remove this uuid as this is only added to trigger a wheel on each merge into main
-    task_key = local.task_mp_start_trigger
+    task_key = local.task_workflow_setup_trigger
     library {
       whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
     }
@@ -141,6 +141,7 @@ resource "databricks_job" "this" {
         datalake_storage_account = module.st_migrations.name
         datalake_shared_storage_account = data.azurerm_key_vault_secret.st_data_lake_name.value
         metering_point_container = "dh2-metering-point-history"
+        time_series_container = "dh2-timeseries"
       }
     }
     job_cluster_key = "metering_point_job_cluster"
@@ -149,7 +150,7 @@ resource "databricks_job" "this" {
   task {
     task_key = "check_schemas"
     depends_on {
-      task_key = local.task_mp_start_trigger
+      task_key = local.task_workflow_setup_trigger
     }
     
     notebook_task {
