@@ -12,29 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
-using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using FluentAssertions;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime.Extensions;
 using Xunit;
 using Xunit.Abstractions;
-using ProcessType = Energinet.DataHub.Wholesale.Contracts.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests;
 
-public class PublishIntegrationEventsEndpointTests
+public sealed class PublishIntegrationEventsEndpointTests
 {
     [Collection(nameof(ProcessManagerFunctionAppCollectionFixture))]
     public class RunAsync : FunctionAppTestBase<ProcessManagerFunctionAppFixture>, IAsyncLifetime
@@ -61,7 +52,7 @@ public class PublishIntegrationEventsEndpointTests
             {
                 Resolution = Resolution.Quarter,
                 BatchId = Guid.NewGuid().ToString(),
-                ProcessType = Contracts.Events.ProcessType.BalanceFixing,
+                ProcessType = ProcessType.BalanceFixing,
                 QuantityUnit = QuantityUnit.Kwh,
                 AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
                     new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
@@ -77,10 +68,9 @@ public class PublishIntegrationEventsEndpointTests
 
             dbc.OutboxMessages.Add(
                 new OutboxMessage(
-                    new IntegrationEventDto(
-                calculationResultCompleted.ToByteArray(),
-                CalculationResultCompleted.BalanceFixingEventName,
-                DateTime.UtcNow.ToInstant())));
+                    calculationResultCompleted.ToByteArray(),
+                    CalculationResultCompleted.BalanceFixingEventName,
+                    DateTime.UtcNow.ToInstant()));
 
             await dbc.SaveChangesAsync().ConfigureAwait(false);
 
@@ -93,30 +83,6 @@ public class PublishIntegrationEventsEndpointTests
                 .MessageAwaiter!
                 .Wait(TimeSpan.FromSeconds(40));
             isProcessCompletedIntegrationEventPublished.Should().BeTrue();
-        }
-
-        private static readonly Random _generator = new();
-
-        /// <summary>
-        /// Create a grid area code with valid format.
-        /// </summary>
-        private static string CreateGridAreaCode() => _generator.Next(100, 1000).ToString();
-
-        private static ServiceBusMessage CreateProcessCompletedEventDtoMessage()
-        {
-            var messageType =
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName);
-            var processCompleted = new ProcessCompletedEventDto(
-                CreateGridAreaCode(),
-                Guid.NewGuid(),
-                ProcessType.BalanceFixing,
-                Periods.January_EuropeCopenhagen_Instant.PeriodStart,
-                Periods.January_EuropeCopenhagen_Instant.PeriodEnd);
-            var someCorrelationContextId = Guid.NewGuid().ToString();
-
-            var body = new JsonSerializer().Serialize(processCompleted);
-            var bytes = Encoding.UTF8.GetBytes(body);
-            return ServiceBusMessageFactory.CreateServiceBusMessage(bytes, messageType, someCorrelationContextId);
         }
     }
 }

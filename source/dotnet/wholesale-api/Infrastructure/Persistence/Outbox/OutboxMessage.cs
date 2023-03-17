@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
 {
     public class OutboxMessage
     {
-        public OutboxMessage(IntegrationEventDto integrationEventDto)
+        public OutboxMessage(byte[] protobufEventData, string eventMessageType, Instant creationDate)
         {
             Id = Guid.NewGuid();
-            Data = integrationEventDto.ProtobufEventData;
-            CreationDate = integrationEventDto.CreationDate;
-            MessageType = integrationEventDto.EventMessageType;
+            Data = protobufEventData;
+            MessageType = eventMessageType;
+            CreationDate = creationDate;
         }
 
         public Guid Id { get; }

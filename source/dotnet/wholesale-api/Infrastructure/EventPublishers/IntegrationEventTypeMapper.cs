@@ -31,7 +31,10 @@ public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
         return _dic[eventName];
     }
 
-    public string GetMessageType(Type type) // TODO consider example.
+    /// <summary>
+    /// An example of type could be the contract type: cCalculationResultCompleted.
+    /// </summary>
+    public string GetMessageType(Type type)
     {
         return _dic.Single(x => x.Value == type).Key;
     }

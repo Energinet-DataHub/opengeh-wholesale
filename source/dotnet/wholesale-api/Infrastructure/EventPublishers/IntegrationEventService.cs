@@ -36,7 +36,7 @@ public class IntegrationEventService : IIntegrationEventService
 
     public async Task AddAsync(IntegrationEventDto integrationEventDto, CancellationToken token)
     {
-        var outboxMessage = new OutboxMessage(integrationEventDto);
+        var outboxMessage = new OutboxMessage(integrationEventDto.ProtobufEventData, integrationEventDto.EventMessageType, integrationEventDto.CreationDate);
         await _outboxMessageRepository.AddAsync(outboxMessage, token).ConfigureAwait(false);
     }
 

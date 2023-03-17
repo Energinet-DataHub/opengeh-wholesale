@@ -68,9 +68,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
 
         private IntegrationEventDto CreateIntegrationEvent(IMessage integrationEvent)
         {
-            var messageType = _integrationEventTypeMapper.GetMessageType(integrationEvent!.GetType()); // TODO: Get rid of null supression
+            var eventMessageType = _integrationEventTypeMapper.GetMessageType(integrationEvent.GetType());
             var protobufByteArray = integrationEvent.ToByteArray();
-            return new IntegrationEventDto(protobufByteArray, messageType, _systemDateTimeProvider.GetCurrentInstant());
+            return new IntegrationEventDto(protobufByteArray, eventMessageType, _systemDateTimeProvider.GetCurrentInstant());
         }
     }
 }
