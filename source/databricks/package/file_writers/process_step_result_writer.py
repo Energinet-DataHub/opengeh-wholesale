@@ -205,6 +205,10 @@ class ProcessStepResultWriter:
             Colname.quality, "quantity_quality"
         )  # TODO: use QuantityQuality everywhere
         df = df.withColumnRenamed("quarter_time", "time")  # TODO: time everywhere
+        df = df.withColumnRenamed(Colname.energy_supplier_id, "energy_supplier_id")
+        df = df.withColumnRenamed(
+            Colname.balance_responsible_id, "balance_responsible_id"
+        )
 
         if aggregation_level == AggregationLevel.total_ga:
             df = df.withColumn(
@@ -219,6 +223,7 @@ class ProcessStepResultWriter:
                 f"Unsupported aggregation_level, {aggregation_level.value}"
             )
 
+        df.printSchema()
         df.write.format("delta").mode("append").option("mergeSchema", "false").option(
             "mergeSchema", "false"
         ).saveAsTable(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
