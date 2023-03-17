@@ -23,6 +23,7 @@ on:
       - source/dotnet/Contracts/**
       - source/dotnet/Packages/Client/**
       - source/dotnet/Packages/Contracts/**
+      - source/dotnet/wholesale-integration-events-package/**
       - source/dotnet/wholesale-api/WebApi/V*/**/*.cs
       - .github/workflows/packages-publish.yml
       - .github/workflows/detect-changes.yml
