@@ -77,20 +77,16 @@ public class PublishIntegrationEventsEndpointTests
             var body = sre.Serialize(calculationResultCompleted);
             var bytes = Encoding.UTF8.GetBytes(body);
 
-            dbc.OutboxMessages.Add(new OutboxMessage(new IntegrationEventDto(CalculationResultCompleted.BalanceFixingEventName, bytes.ToString()!, DateTime.UtcNow.ToInstant())));
+            dbc.OutboxMessages.Add(new OutboxMessage(new IntegrationEventDto(CalculationResultCompleted.BalanceFixingEventName, System.Text.Encoding.UTF8.GetString(bytes), DateTime.UtcNow.ToInstant())));
             await dbc.SaveChangesAsync().ConfigureAwait(false);
 
-            var processCompletedMessage = CreateProcessCompletedEventDtoMessage();
             using var eventualProcessCompletedIntegrationEvent = await Fixture
-                .ProcessCompletedIntegrationEventListener.ListenForMessageAsync(processCompletedMessage.GetOperationCorrelationId());
+                .ProcessCompletedIntegrationEventListener.ListenForMessageAsync(CalculationResultCompleted.BalanceFixingEventName);
 
-            // Act
-            await Fixture.DomainEventsTopic.SenderClient.SendMessageAsync(processCompletedMessage);
-
-            // Assert
+            // Act & Assert
             var isProcessCompletedIntegrationEventPublished = eventualProcessCompletedIntegrationEvent
                 .MessageAwaiter!
-                .Wait(TimeSpan.FromSeconds(20));
+                .Wait(TimeSpan.FromSeconds(40));
             isProcessCompletedIntegrationEventPublished.Should().BeTrue();
         }
 

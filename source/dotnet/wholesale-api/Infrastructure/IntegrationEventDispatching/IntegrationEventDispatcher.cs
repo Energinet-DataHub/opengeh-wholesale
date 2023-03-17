@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics;
+using System.Text;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Contracts.Events;
@@ -68,13 +69,13 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
                 try
                 {
                     var eventType = _integrationEventTypeMapper.GetEventType(outboxMessage.Type);
-                    dynamic integrationEvent = _jsonSerializer.Deserialize<CalculationResultCompleted>(outboxMessage.Data);
+                    var integrationEvent = _jsonSerializer.Deserialize(outboxMessage.Data, eventType);
                     if (integrationEvent == null)
                     {
                         throw new NullReferenceException("integrationEvent");
                     }
 
-                    var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent, outboxMessage.Type);
+                    var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(Encoding.UTF8.GetBytes(_jsonSerializer.Serialize(integrationEvent)), outboxMessage.Type);
                     await _integrationEventTopicServiceBusSender
                         .SendMessageAsync(serviceBusMessage, token)
                         .ConfigureAwait(false);
