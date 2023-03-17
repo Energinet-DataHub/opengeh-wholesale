@@ -14,9 +14,6 @@
 
 namespace Energinet.DataHub.Wholesale.Application;
 
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-
 public interface IIntegrationEventDispatcher
 {
     /// <summary>
