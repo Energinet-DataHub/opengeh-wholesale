@@ -1,5 +1,17 @@
 # Wholesale Client Package Release notes
 
+## Version 6.0.1
+
+No functional changes
+
+## Version 6.0.0
+
+Using strings instead of integers for enum types.
+
+## Version 5.0.26
+
+No functional changes
+
 ## Version 5.0.25
 
 No functional changes

@@ -22,11 +22,11 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="1.1.2395.2" />
+    <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="1.1.2515.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.5.22">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
