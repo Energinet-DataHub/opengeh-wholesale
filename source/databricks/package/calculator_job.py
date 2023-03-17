@@ -99,6 +99,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
     process_step_result_writer = ProcessStepResultWriter(
+        spark,
         args.wholesale_container_path,
         args.batch_id,
         args.batch_process_type,

@@ -18,23 +18,28 @@ from package.codelists import MarketRole, TimeSeriesType, AggregationLevel
 from package.constants import Colname, PartitionKeyName
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit
+from pyspark.sql import SparkSession
+
+DATABASE_NAME = "wholesale_output"
+RESULT_TABLE_NAME = "result"
+
 
 class ProcessStepResultWriter:
     def __init__(
         self,
+        spark: SparkSession,
         container_path: str,
         batch_id: str,
         batch_process_type: str,
         batch_execution_time_start: datetime,
     ):
-        self.__table_name = "result_table"
-        self.__delta_table_path = f"{container_path}/{infra.get_calculation_output_folder()}/{self.__table_name}"
         self.__batch_id = batch_id
+        self.__batch_process_type = batch_process_type
+        self.__batch_execution_time_start = batch_execution_time_start
         self.__output_path = (
             f"{container_path}/{infra.get_batch_relative_path(batch_id)}"
         )
-        self.__batch_process_type = batch_process_type
-        self.__batch_execution_time_start = batch_execution_time_start
+        self._create_database_if_not_exists(spark, container_path)
 
     def write(
         self,
@@ -169,6 +174,16 @@ class ProcessStepResultWriter:
             .json(result_data_directory)
         )
 
+    def _create_database_if_not_exists(
+        self, spark: SparkSession, container_path: str
+    ) -> None:
+        location = f"{container_path}/{infra.get_calculation_output_folder()}"
+        spark.sql(
+            f"CREATE DATABASE IF NOT EXISTS {DATABASE_NAME} \
+            COMMENT 'Contains result data from wholesale domain.' \
+            LOCATION '{location}'"
+        )
+
     def _write_result_to_table(
         self,
         df: DataFrame,
@@ -184,10 +199,10 @@ class ProcessStepResultWriter:
         )
 
         df = df.withColumnRenamed(
-            PartitionKeyName.GROUPING, "AggregationLevel"
+            PartitionKeyName.GROUPING, "aggregation_level"
         )  # TODO: rename Grouping enum to AggragationLevel
         df = df.withColumnRenamed(
-            Colname.quality, "QuantityQuality"
+            Colname.quality, "quantity_quality"
         )  # TODO: use QuantityQuality everywhere
         df = df.withColumnRenamed("quarter_time", "time")  # TODO: time everywhere
 
@@ -204,11 +219,6 @@ class ProcessStepResultWriter:
                 f"Unsupported aggregation_level, {aggregation_level.value}"
             )
 
-        (
-            df.write.format("delta")
-            .mode("append")
-            .option("mergeSchema", "false")
-            .option("overwriteSchema", "false")
-            .option("path", self.__delta_table_path)
-            .saveAsTable(self.__table_name)
-        )
+        df.write.format("delta").mode("append").option("mergeSchema", "false").option(
+            "mergeSchema", "false"
+        ).saveAsTable(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
