@@ -22,7 +22,6 @@ namespace Energinet.DataHub.Wholesale.Application.Processes;
 
 public class ProcessApplicationService : IProcessApplicationService
 {
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
     private readonly IDomainEventPublisher _domainEventPublisher;
     private readonly IProcessStepResultRepository _processStepResultRepository;
@@ -32,7 +31,6 @@ public class ProcessApplicationService : IProcessApplicationService
     private readonly IUnitOfWork _unitOfWork;
 
     public ProcessApplicationService(
-        IIntegrationEventPublisher integrationEventPublisher,
         IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
         IDomainEventPublisher domainEventPublisher,
         IProcessStepResultRepository processStepResultRepository,
@@ -41,7 +39,6 @@ public class ProcessApplicationService : IProcessApplicationService
         IIntegrationEventFactory integrationEventFactory,
         IUnitOfWork unitOfWork)
     {
-        _integrationEventPublisher = integrationEventPublisher;
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
         _processStepResultRepository = processStepResultRepository;
@@ -58,7 +55,6 @@ public class ProcessApplicationService : IProcessApplicationService
     }
 
     public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent, CancellationToken token)
-    public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
         // Publish events for energy suppliers
         await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption, token).ConfigureAwait(false);
