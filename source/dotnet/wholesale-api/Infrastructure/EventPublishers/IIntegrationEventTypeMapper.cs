@@ -19,4 +19,6 @@ public interface IIntegrationEventTypeMapper
     Type GetEventType(string eventName);
 
     string GetEventName(Type eventType);
+
+    void Add(string eventName, Type eventType);
 }
