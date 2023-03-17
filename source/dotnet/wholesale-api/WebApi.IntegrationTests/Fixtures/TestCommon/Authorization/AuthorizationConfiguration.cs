@@ -36,9 +36,9 @@ public class AuthorizationConfiguration
     {
         Environment = environment;
         RootConfiguration = BuildKeyVaultConfigurationRoot(localSettingsJsonFilename);
-        SecretsConfiguration = BuildSecretsKeyVaultConfiguration(RootConfiguration.GetValue<string>(azureSecretsKeyVaultUrlKey));
-        FrontendAppId = SecretsConfiguration.GetValue<string>(BuildB2CFrontendAppId(Environment));
-        FrontendOpenIdUrl = SecretsConfiguration.GetValue<string>(BuildB2CFrontendOpenIdUrl(Environment));
+        SecretsConfiguration = BuildSecretsKeyVaultConfiguration(RootConfiguration.GetValue<string>(azureSecretsKeyVaultUrlKey)!);
+        FrontendAppId = SecretsConfiguration.GetValue<string>(BuildB2CFrontendAppId(Environment))!;
+        FrontendOpenIdUrl = SecretsConfiguration.GetValue<string>(BuildB2CFrontendOpenIdUrl(Environment))!;
     }
 
     private static string BuildB2CFrontendAppId(string environment)

@@ -110,9 +110,9 @@ public class Startup
     private void ConfigureHealthChecks(IServiceCollection services)
     {
         var serviceBusConnectionString =
-            Configuration[ConfigurationSettingNames.ServiceBusManageConnectionString];
+            Configuration[ConfigurationSettingNames.ServiceBusManageConnectionString]!;
         var domainEventsTopicName =
-            Configuration[ConfigurationSettingNames.DomainEventsTopicName];
+            Configuration[ConfigurationSettingNames.DomainEventsTopicName]!;
 
         services.AddHealthChecks()
             .AddLiveCheck()
@@ -121,8 +121,8 @@ public class Startup
             // It is, however, not easily tested so for now we stick with testing resource existence
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
-                Configuration[ConfigurationSettingNames.CalculationStorageConnectionString],
-                Configuration[ConfigurationSettingNames.CalculationStorageContainerName])
+                Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
+                Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,

@@ -44,11 +44,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
             TokenBaseAddress = tokenBaseAddress;
 
-            RopcUrl = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "ropc-auth-url"));
-            FrontendAppId = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "frontend-app-id"));
+            RopcUrl = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "ropc-auth-url"))!;
+            FrontendAppId = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "frontend-app-id"))!;
 
-            Username = secretsConfiguration.GetValue<string>(BuildB2CUserSecretName(environment, user, "username"));
-            Password = secretsConfiguration.GetValue<string>(BuildB2CUserSecretName(environment, user, "password"));
+            Username = secretsConfiguration.GetValue<string>(BuildB2CUserSecretName(environment, user, "username"))!;
+            Password = secretsConfiguration.GetValue<string>(BuildB2CUserSecretName(environment, user, "password"))!;
         }
 
         /// <summary>
@@ -83,14 +83,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         public static B2CUserTokenConfiguration CreateFromConfiguration(IConfigurationRoot root)
         {
-            var b2cKeyVaultUrl = root.GetValue<string>("AZURE_B2CSECRETS_KEYVAULT_URL");
+            var b2cKeyVaultUrl = root.GetValue<string>("AZURE_B2CSECRETS_KEYVAULT_URL")!;
             var environment =
-                root.GetValue<string>("ENVIRONMENT_SHORT") +
+                root.GetValue<string>("ENVIRONMENT_SHORT")! +
                 root.GetValue<string>("ENVIRONMENT_INSTANCE");
             var user =
-                root.GetValue<string>("USER");
+                root.GetValue<string>("USER")!;
             var tokenBaseAddress =
-                root.GetValue<string>("TOKEN_BASEADDRESS");
+                root.GetValue<string>("TOKEN_BASEADDRESS")!;
 
             return new B2CUserTokenConfiguration(b2cKeyVaultUrl, environment, user, tokenBaseAddress);
         }
