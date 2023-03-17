@@ -29,6 +29,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
                 .ValueGeneratedNever();
             builder.Property(x => x.Type);
             builder.Property(x => x.Data);
+            builder.Property(x => x.MessageType);
             builder.Property(x => x.CreationDate);
             builder.Property(x => x.ProcessedDate);
         }

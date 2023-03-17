@@ -26,7 +26,6 @@ using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
-using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
 using Xunit.Abstractions;
@@ -63,12 +62,13 @@ public class PublishIntegrationEventsEndpointTests
                 BatchId = Guid.NewGuid().ToString(),
                 ProcessType = Contracts.Events.ProcessType.BalanceFixing,
                 QuantityUnit = QuantityUnit.Kwh,
-                AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea = new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
-                {
-                    GridAreaCode = "543",
-                    EnergySupplierGlnOrEic = "1234567890123456",
-                    BalanceResponsiblePartyGlnOrEic = "1234567890123456",
-                },
+                AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
+                    new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
+                    {
+                        GridAreaCode = "543",
+                        EnergySupplierGlnOrEic = "1234567890123456",
+                        BalanceResponsiblePartyGlnOrEic = "1234567890123456",
+                    },
                 PeriodStartUtc = Timestamp.FromDateTime(DateTime.UtcNow),
                 PeriodEndUtc = Timestamp.FromDateTime(DateTime.UtcNow.AddDays(1)),
                 TimeSeriesType = TimeSeriesType.Production,
@@ -76,11 +76,19 @@ public class PublishIntegrationEventsEndpointTests
             var sre = new JsonSerializer();
             var serialize = sre.Serialize(calculationResultCompleted);
 
-            dbc.OutboxMessages.Add(new OutboxMessage(new IntegrationEventDto(CalculationResultCompleted.BalanceFixingEventName, serialize, DateTime.UtcNow.ToInstant())));
+            dbc.OutboxMessages.Add(
+                new OutboxMessage(
+                    new IntegrationEventDto(
+                typeof(CalculationResultCompleted).ToString(),
+                CalculationResultCompleted.BalanceFixingEventName,
+                serialize,
+                DateTime.UtcNow.ToInstant())));
+
             await dbc.SaveChangesAsync().ConfigureAwait(false);
 
             using var eventualProcessCompletedIntegrationEvent = await Fixture
-                .ProcessCompletedIntegrationEventListener.ListenForMessageAsync(CalculationResultCompleted.BalanceFixingEventName);
+                .ProcessCompletedIntegrationEventListener
+                .ListenForMessageAsync(CalculationResultCompleted.BalanceFixingEventName);
 
             // Act & Assert
             var isProcessCompletedIntegrationEventPublished = eventualProcessCompletedIntegrationEvent
@@ -98,7 +106,8 @@ public class PublishIntegrationEventsEndpointTests
 
         private static ServiceBusMessage CreateProcessCompletedEventDtoMessage()
         {
-            var messageType = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName);
+            var messageType =
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ProcessCompletedEventName);
             var processCompleted = new ProcessCompletedEventDto(
                 CreateGridAreaCode(),
                 Guid.NewGuid(),
