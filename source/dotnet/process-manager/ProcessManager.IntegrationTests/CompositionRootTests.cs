@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using Xunit;
-using pm = Energinet.DataHub.Wholesale.ProcessManager;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests;
 
@@ -24,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests;
 public class CompositionRootTests
 {
     public static IEnumerable<object[]> ProcessManagerFunctions()
-        => GetFunctionRequirements(typeof(pm.Program));
+        => GetFunctionRequirements(typeof(Program));
 
     [Theory]
     [MemberData(nameof(ProcessManagerFunctions))]

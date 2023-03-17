@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public WholesaleDomainConfiguration()
         {
             UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
-            WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS"));
+            WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS")!);
         }
 
         /// <summary>

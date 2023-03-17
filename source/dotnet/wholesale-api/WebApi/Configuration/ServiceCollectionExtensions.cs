@@ -54,9 +54,9 @@ internal static class ServiceCollectionExtensions
     /// </summary>
     public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        var externalOpenIdUrl = configuration[ConfigurationSettingNames.ExternalOpenIdUrl];
-        var internalOpenIdUrl = configuration[ConfigurationSettingNames.InternalOpenIdUrl];
-        var backendAppId = configuration[ConfigurationSettingNames.BackendAppId];
+        var externalOpenIdUrl = configuration[ConfigurationSettingNames.ExternalOpenIdUrl]!;
+        var internalOpenIdUrl = configuration[ConfigurationSettingNames.InternalOpenIdUrl]!;
+        var backendAppId = configuration[ConfigurationSettingNames.BackendAppId]!;
 
         serviceCollection.AddJwtBearerAuthentication(externalOpenIdUrl, internalOpenIdUrl, backendAppId);
         serviceCollection.AddPermissionAuthorization();
@@ -122,23 +122,23 @@ internal static class ServiceCollectionExtensions
     private static void RegisterDomainEventPublisher(IServiceCollection services, IConfiguration configuration)
     {
         var serviceBusConnectionString =
-            configuration[ConfigurationSettingNames.ServiceBusSendConnectionString];
+            configuration[ConfigurationSettingNames.ServiceBusSendConnectionString]!;
         var messageTypes = new Dictionary<Type, string>
         {
             {
                 typeof(BatchCreatedDomainEventDto),
-                configuration[ConfigurationSettingNames.BatchCreatedEventName]
+                configuration[ConfigurationSettingNames.BatchCreatedEventName]!
             },
         };
 
-        var domainEventTopicName = configuration[ConfigurationSettingNames.DomainEventsTopicName];
+        var domainEventTopicName = configuration[ConfigurationSettingNames.DomainEventsTopicName]!;
         services.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
     }
 
     private static void ConfigureDateTime(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
-        var dateTimeZoneId = configuration[ConfigurationSettingNames.DateTimeZoneId];
+        var dateTimeZoneId = configuration[ConfigurationSettingNames.DateTimeZoneId]!;
         var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId);
         if (dateTimeZone == null)
             throw new ArgumentNullException($"Cannot resolve date time zone object for zone id '{dateTimeZoneId}' from application setting '{ConfigurationSettingNames.DateTimeZoneId}'");
