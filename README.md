@@ -8,18 +8,15 @@
 
 ## Table of content
 
-- [Wholesale](#wholesale)
-  - [Table of content](#table-of-content)
-  - [Introduction](#introduction)
-  - [Getting started](#getting-started)
-  - [Understanding the Domain](#understanding-the-domain)
-  - [Databricks](#databricks)
-  - [Test](#test)
-  - [Where can I get more help?](#where-can-i-get-more-help)
-  - [Integrating](#integrating)
-    - [Integration Events](#integration-events)
-    - [Web API](#web-api)
-    - [Calculation Input Contracts](#calculation-input-contracts)
+* [Wholesale](#wholesale)
+    * [Table of content](#table-of-content)
+    * [Introduction](#introduction)
+    * [Getting started](#getting-started)
+    * [Understanding the Domain](#understanding-the-domain)
+    * [Databricks](#databricks)
+    * [Test](#test)
+    * [Where can I get more help?](#where-can-i-get-more-help)
+    * [Integrating](#integrating)
 
 ## Introduction
 
