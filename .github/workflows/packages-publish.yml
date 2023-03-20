@@ -20,8 +20,8 @@ on:
     branches:
       - main
     paths:
-      - source/dotnet/Contracts/**
       - source/dotnet/wholesale-integration-events-package/**
+      - source/dotnet/wholesale-api/Infrastructure/IntegrationEvents/**
       - .github/workflows/packages-publish.yml
       - .github/workflows/detect-changes.yml
   # Build, test, pack
@@ -69,8 +69,8 @@ jobs:
         uses: tj-actions/changed-files@v17.2
         with:
           files: |
-            source/dotnet/Contracts/**/*.*
             source/dotnet/wholesale-integration-events-package/**
+            source/dotnet/wholesale-api/Infrastructure/IntegrationEvents/**
             .github/workflows/packages-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
@@ -79,4 +79,4 @@ jobs:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
           NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-          NUPKG_RECURSE_PATH: "source/dotnet/Packages"
+          NUPKG_RECURSE_PATH: "source/dotnet/wholesale-integration-events-package"
