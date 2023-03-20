@@ -21,10 +21,7 @@ on:
       - main
     paths:
       - source/dotnet/Contracts/**
-      - source/dotnet/Packages/Client/**
-      - source/dotnet/Packages/Contracts/**
       - source/dotnet/wholesale-integration-events-package/**
-      - source/dotnet/wholesale-api/WebApi/V*/**/*.cs
       - .github/workflows/packages-publish.yml
       - .github/workflows/detect-changes.yml
   # Build, test, pack
@@ -59,13 +56,8 @@ jobs:
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
-          SOLUTION_FILE_PATH: "./source/dotnet/Packages/Packages.sln"
+          SOLUTION_FILE_PATH: "./source/dotnet/Wholesale.sln"
           CODE_COVERAGE_FLAGS: packages
-
-      - name: Pack Client project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
-        with:
-          PROJECT_PATH: "./source/dotnet/Packages/Client/Client.csproj"
 
       - name: Pack Contracts project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
@@ -78,8 +70,7 @@ jobs:
         with:
           files: |
             source/dotnet/Contracts/**/*.*
-            source/dotnet/Packages/Client/**/*.*
-            source/dotnet/Packages/Contracts/**/*.*
+            source/dotnet/wholesale-integration-events-package/**
             .github/workflows/packages-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org

@@ -16,14 +16,14 @@ import pytest
 
 
 @pytest.fixture(scope="session")
-def integration_tests_path(databricks_path: str) -> str:
+def integration_tests_path(calculation_engine_path: str) -> str:
     """
     Returns the integration tests folder path.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
     file located directly in the integration tests folder.
     """
-    return f"{databricks_path}/tests/integration"
+    return f"{calculation_engine_path}/tests/integration"
 
 
 @pytest.fixture(scope="session")
