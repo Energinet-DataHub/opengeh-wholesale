@@ -40,7 +40,7 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var sut = new OutboxMessageRepository(writeContext);
 
         // Act
-        await sut.AddAsync(expected, default);
+        await sut.AddAsync(expected);
         await writeContext.SaveChangesAsync();
 
         // Assert
@@ -61,13 +61,13 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var outboxMessage3 = CreateOutOutboxMessage(13);
         var expected = new List<OutboxMessage> { outboxMessage1, outboxMessage2 };
         var sut = new OutboxMessageRepository(writeContext);
-        await sut.AddAsync(outboxMessage1, default);
-        await sut.AddAsync(outboxMessage2, default);
-        await sut.AddAsync(outboxMessage3, default);
+        await sut.AddAsync(outboxMessage1);
+        await sut.AddAsync(outboxMessage2);
+        await sut.AddAsync(outboxMessage3);
         await writeContext.SaveChangesAsync();
 
         // Act
-        var actual = await sut.GetByTakeAsync(2, default);
+        var actual = await sut.GetByTakeAsync(2);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
@@ -83,9 +83,9 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         var outboxMessage3 = CreateOutOutboxMessage(13, "type3");
         var expected = new List<OutboxMessage> { outboxMessage3 };
         var sut = new OutboxMessageRepository(writeContext);
-        await sut.AddAsync(outboxMessage1, default);
-        await sut.AddAsync(outboxMessage2, default);
-        await sut.AddAsync(outboxMessage3, default);
+        await sut.AddAsync(outboxMessage1);
+        await sut.AddAsync(outboxMessage2);
+        await sut.AddAsync(outboxMessage3);
         await writeContext.SaveChangesAsync().ConfigureAwait(false);
         var fourteenDaysAgo = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(14));
 

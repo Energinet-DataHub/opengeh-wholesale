@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Wholesale.Application;
 
 public interface IUnitOfWork
 {
-    Task CommitAsync(CancellationToken token = default);
+    Task CommitAsync();
 }

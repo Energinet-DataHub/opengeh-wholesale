@@ -41,7 +41,7 @@ public class IntegrationEventDispatcherTests
     {
         // Arrange
         var outboxMessage1 = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName); //TODO: should we create a custom type to use when testing?
-        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(50, default))
+        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(50))
             .ReturnsAsync(new List<OutboxMessage> { outboxMessage1 });
 
         var sut = new IntegrationEventDispatcher(
@@ -53,12 +53,12 @@ public class IntegrationEventDispatcherTests
             serviceBusMessageFactoryMock.Object);
 
         // Act
-        await sut.PublishIntegrationEventsAsync(default);
+        await sut.DispatchIntegrationEventsAsync();
 
         // Assert
         serviceBusMessageFactoryMock.Verify(x => x.CreateProcessCompleted(It.IsAny<byte[]>(), CalculationResultCompleted.BalanceFixingEventName));
-        unitOfWorkMock.Verify(x => x.CommitAsync(default));
-        integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), default));
+        unitOfWorkMock.Verify(x => x.CommitAsync());
+        integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>()));
     }
 
     private static OutboxMessage CreateOutboxMessage(byte[] protobufEventData, string messageType)

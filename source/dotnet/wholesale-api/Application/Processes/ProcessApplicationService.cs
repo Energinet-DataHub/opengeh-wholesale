@@ -54,27 +54,27 @@ public class ProcessApplicationService : IProcessApplicationService
         await _domainEventPublisher.PublishAsync(processCompletedEvents).ConfigureAwait(false);
     }
 
-    public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent, CancellationToken token)
+    public async Task PublishCalculationResultReadyIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
     {
         // Publish events for energy suppliers
-        await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption, token).ConfigureAwait(false);
+        await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
         // Publish events for total grid area - production
-        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.Production, token).ConfigureAwait(false);
+        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
 
         // Publish events for total grid area - non profile
-        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption, token).ConfigureAwait(false);
+        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
         // Publish events for balance responsible party
-        await PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption, token).ConfigureAwait(false);
+        await PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
         // Publish events for energy suppliers results for balance responsible parties
-        await PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption, token).ConfigureAwait(false);
+        await PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
-        await _unitOfWork.CommitAsync(token).ConfigureAwait(false);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    private async Task PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType, CancellationToken token)
+    private async Task PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
         var brps = await _actorRepository
             .GetBalanceResponsiblePartiesAsync(
@@ -101,12 +101,12 @@ public class ProcessApplicationService : IProcessApplicationService
                     .ConfigureAwait(false);
 
                 var integrationEvent = _integrationEventFactory.CreateIntegrationEventForCalculationResultForEnergySupplierByBalanceResponsibleParty(result, processCompletedEvent, energySupplier.Gln, brp.Gln);
-                await _integrationEventService.AddAsync(integrationEvent, token).ConfigureAwait(false);
+                await _integrationEventService.AddAsync(integrationEvent).ConfigureAwait(false);
             }
         }
     }
 
-    private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType, CancellationToken token)
+    private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
             var productionForTotalGa = await _processStepResultRepository
                 .GetAsync(
@@ -118,11 +118,11 @@ public class ProcessApplicationService : IProcessApplicationService
                 .ConfigureAwait(false);
 
             var integrationEventDto = _integrationEventFactory.CreateIntegrationEventForCalculationResultForTotalGridArea(productionForTotalGa, processCompletedEvent);
-            await _integrationEventService.AddAsync(integrationEventDto, token).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync(token).ConfigureAwait(false);
+            await _integrationEventService.AddAsync(integrationEventDto).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType, CancellationToken token)
+    private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
             var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(
                 processCompletedEvent.BatchId,
@@ -141,13 +141,13 @@ public class ProcessApplicationService : IProcessApplicationService
                     .ConfigureAwait(false);
 
                 var integrationEvent = _integrationEventFactory.CreateIntegrationEventForCalculationResultForEnergySupplier(processStepResultDto, processCompletedEvent, energySupplier.Gln);
-                await _integrationEventService.AddAsync(integrationEvent, token).ConfigureAwait(false);
+                await _integrationEventService.AddAsync(integrationEvent).ConfigureAwait(false);
             }
 
-            await _unitOfWork.CommitAsync(token).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    private async Task PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType, CancellationToken token)
+    private async Task PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
         var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(
             processCompletedEvent.BatchId,
@@ -166,9 +166,9 @@ public class ProcessApplicationService : IProcessApplicationService
                 .ConfigureAwait(false);
 
             var integrationEventDto = _integrationEventFactory.CreateIntegrationEventForCalculationResultForBalanceResponsibleParty(processStepResultDto, processCompletedEvent, balanceResponsibleParty.Gln);
-            await _integrationEventService.AddAsync(integrationEventDto, token).ConfigureAwait(false);
+            await _integrationEventService.AddAsync(integrationEventDto).ConfigureAwait(false);
         }
 
-        await _unitOfWork.CommitAsync(token).ConfigureAwait(false);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }

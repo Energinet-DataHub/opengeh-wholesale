@@ -25,8 +25,8 @@ public class IntegrationEventTopicServiceBusSender : IIntegrationEventTopicServi
         _serviceBusSender = serviceBusSender;
     }
 
-    public async Task SendMessageAsync(ServiceBusMessage serviceBusMessage, CancellationToken cancellationToken)
+    public async Task SendMessageAsync(ServiceBusMessage serviceBusMessage)
     {
-        await _serviceBusSender.SendMessageAsync(serviceBusMessage, cancellationToken).ConfigureAwait(false);
+        await _serviceBusSender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
     }
 }

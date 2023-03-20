@@ -16,7 +16,9 @@ namespace Energinet.DataHub.Wholesale.Application;
 
 public interface IIntegrationEventService
 {
-    Task AddAsync(IntegrationEventDto integrationEventDto, CancellationToken token);
+    Task AddAsync(IntegrationEventDto integrationEventDto);
 
-    Task DeleteIntegrationEventsByDaysAsync(int daysOld, CancellationToken token);
+    Task DeleteProcessedOlderThanAsync(int daysOld);
+
+    Task DispatchIntegrationEventsAsync();
 }

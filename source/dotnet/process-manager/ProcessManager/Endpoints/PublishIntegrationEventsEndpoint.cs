@@ -20,25 +20,25 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
 public class PublishIntegrationEventsEndpoint
 {
-    private readonly IIntegrationEventDispatcher _integrationEventDispatcher;
+    private readonly IIntegrationEventService _integrationEventService;
     private readonly ICorrelationContext _correlationContext;
 
     public PublishIntegrationEventsEndpoint(
-        IIntegrationEventDispatcher integrationEventDispatcher,
+        IIntegrationEventService integrationEventService,
         ICorrelationContext correlationContext)
     {
-        _integrationEventDispatcher = integrationEventDispatcher;
+        _integrationEventService = integrationEventService;
         _correlationContext = correlationContext;
     }
 
-    // Executes every 120 seconds (see the [TimerTrigger] below)
+    // Executes every 20 seconds (see the [TimerTrigger] below)
     [Function(nameof(PublishIntegrationEventsEndpoint))]
-    public async Task RunAsync([TimerTrigger("*/20 * * * * *")] TimerInfo timerInfo, CancellationToken token)
+    public async Task RunAsync([TimerTrigger("*/20 * * * * *")] TimerInfo timerInfo)
     {
         // CorrelationIdMiddleware does not currently support timer triggered functions,
         // so we need to add a correlation ID ourselves
         _correlationContext.SetId(Guid.NewGuid().ToString());
 
-        await _integrationEventDispatcher.PublishIntegrationEventsAsync(token).ConfigureAwait(false);
+        await _integrationEventService.DispatchIntegrationEventsAsync().ConfigureAwait(false);
     }
 }

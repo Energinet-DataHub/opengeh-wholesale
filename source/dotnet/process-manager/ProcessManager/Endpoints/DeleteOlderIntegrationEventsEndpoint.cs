@@ -37,6 +37,6 @@ public class DeleteOlderIntegrationEventsEndpoint
         // CorrelationIdMiddleware does not currently support timer triggered functions,
         // so we need to add a correlation ID ourselves
         _correlationContext.SetId(Guid.NewGuid().ToString());
-        await _integrationEventService.DeleteIntegrationEventsByDaysAsync(14, token).ConfigureAwait(false);
+        await _integrationEventService.DeleteProcessedOlderThanAsync(14).ConfigureAwait(false);
     }
 }

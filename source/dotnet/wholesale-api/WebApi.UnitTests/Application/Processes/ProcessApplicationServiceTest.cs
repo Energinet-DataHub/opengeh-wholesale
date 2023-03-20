@@ -77,11 +77,11 @@ public class ProcessApplicationServiceTest
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
 
         // Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto, default);
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>(), default));
-        unitOfWorkMock.Verify(x => x.CommitAsync(default));
+        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>()));
+        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
@@ -119,11 +119,11 @@ public class ProcessApplicationServiceTest
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
 
         // Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto, default);
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>(), default));
-        unitOfWorkMock.Verify(x => x.CommitAsync(default));
+        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>()));
+        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
@@ -162,11 +162,11 @@ public class ProcessApplicationServiceTest
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(glnNumber) });
 
         //Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto, default);
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>(), default));
-        unitOfWorkMock.Verify(x => x.CommitAsync(default));
+        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>()));
+        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
@@ -205,11 +205,11 @@ public class ProcessApplicationServiceTest
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(brpGlnNumber) });
 
         // Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto, default);
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>(), default));
-        unitOfWorkMock.Verify(x => x.CommitAsync(default));
+        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>()));
+        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
@@ -256,10 +256,10 @@ public class ProcessApplicationServiceTest
                 brpGlnNumber)).ReturnsAsync(new[] { new Actor(glnNumber) });
 
         // Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto, default);
+        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>(), default));
-        unitOfWorkMock.Verify(x => x.CommitAsync(default));
+        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>()));
+        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 }

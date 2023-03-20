@@ -27,18 +27,18 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
             _context = context;
         }
 
-        public async Task AddAsync(OutboxMessage message, CancellationToken token)
+        public async Task AddAsync(OutboxMessage message)
         {
-            await _context.OutboxMessages.AddAsync(message, token).ConfigureAwait(false);
+            await _context.OutboxMessages.AddAsync(message).ConfigureAwait(false);
         }
 
-        public async Task<IList<OutboxMessage>> GetByTakeAsync(int numberOfElements, CancellationToken token)
+        public async Task<IList<OutboxMessage>> GetByTakeAsync(int numberOfElements)
         {
             return await _context.OutboxMessages
                 .Where(x => !x.ProcessedDate.HasValue)
                 .OrderBy(x => x.CreationDate)
                 .Take(numberOfElements)
-                .ToListAsync(token)
+                .ToListAsync()
                 .ConfigureAwait(false);
         }
 

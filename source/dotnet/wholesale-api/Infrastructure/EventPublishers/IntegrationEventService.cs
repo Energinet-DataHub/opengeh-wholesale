@@ -23,29 +23,38 @@ public class IntegrationEventService : IIntegrationEventService
     private readonly IOutboxMessageRepository _outboxMessageRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IIntegrationEventDispatcher _integrationEventDispatcher;
 
     public IntegrationEventService(
         IOutboxMessageRepository outboxMessageRepository,
         IClock clock,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IIntegrationEventDispatcher integrationEventDispatcher)
     {
         _outboxMessageRepository = outboxMessageRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
+        _integrationEventDispatcher = integrationEventDispatcher;
     }
 
-    public async Task AddAsync(IntegrationEventDto integrationEventDto, CancellationToken token)
+    public async Task AddAsync(IntegrationEventDto integrationEventDto)
     {
         var outboxMessage = new OutboxMessage(integrationEventDto.EventData, integrationEventDto.MessageType, integrationEventDto.CreationDate);
-        await _outboxMessageRepository.AddAsync(outboxMessage, token).ConfigureAwait(false);
+        await _outboxMessageRepository.AddAsync(outboxMessage).ConfigureAwait(false);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task DeleteIntegrationEventsByDaysAsync(int daysOld, CancellationToken token)
+    public async Task DeleteProcessedOlderThanAsync(int daysOld)
     {
         var instant = _clock.GetCurrentInstant();
         instant = instant.Minus(Duration.FromDays(daysOld));
         _outboxMessageRepository.DeleteProcessedOlderThan(instant);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+    }
 
-        await _unitOfWork.CommitAsync(token).ConfigureAwait(false);
+    public async Task DispatchIntegrationEventsAsync()
+    {
+        await _integrationEventDispatcher.DispatchIntegrationEventsAsync().ConfigureAwait(false);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }

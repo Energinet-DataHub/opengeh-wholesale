@@ -39,10 +39,9 @@ public class CalculationResultReadySavedEndpoint
             "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
             "%" + EnvironmentSettingNames.PublishProcessesCompletedIntegrationEventWhenProcessCompletedSubscriptionName + "%",
             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
-        byte[] message,
-        CancellationToken token)
+        byte[] message)
     {
         var processCompletedEvent = await _jsonSerializer.DeserializeAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
-        await _processApplicationService.PublishCalculationResultReadyIntegrationEventsAsync(processCompletedEvent, token).ConfigureAwait(false);
+        await _processApplicationService.PublishCalculationResultReadyIntegrationEventsAsync(processCompletedEvent).ConfigureAwait(false);
     }
 }
