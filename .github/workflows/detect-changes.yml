@@ -56,7 +56,6 @@ jobs:
               - '.github/workflows/detect-changes.yml'
               - '.github/actions/python-*/**'
               - 'source/databricks/!(exploratory-notebooks/**)/**'
-              - 'source/contracts/**'
             dotnet:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-dotnet.yml'
