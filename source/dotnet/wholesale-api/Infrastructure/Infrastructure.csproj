@@ -44,7 +44,7 @@ limitations under the License.
     </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="../../Contracts/*.proto">
+    <Protobuf Include="IntegrationEvents/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
@@ -55,12 +55,6 @@ limitations under the License.
     <Protobuf Update="..\..\Contracts\CalculationResultReady.proto">
       <Link>Integration\CalculationResultReady.proto</Link>
     </Protobuf>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\Contracts\CalculationResultCompleted.cs">
-      <Link>Integration\CalculationResultCompleted.cs</Link>
-    </Compile>
   </ItemGroup>
 
 </Project>
