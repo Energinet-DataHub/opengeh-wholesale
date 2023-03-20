@@ -66,13 +66,13 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\contracts\internal\calculation-job-parameters-reference.txt">
+    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculation-job-parameters-reference.txt">
       <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\contracts\internal\calculator-result.json">
+    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculator-result.json">
       <Link>Infrastructure\Integration\CalculationOutput\calculator-result.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\contracts\internal\time-series-point-quality.json">
+    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\time-series-point-quality.json">
       <Link>Infrastructure\Integration\CalculationOutput\time-series-point-quality.json</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
@@ -80,13 +80,13 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\contracts\calculation-file-paths.yml">
+    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculation-file-paths.yml">
       <Link>Infrastructure\BasisData\calculation-file-paths.yml</Link>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\contracts\internal\calculator-actor.json">
+    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculator-actor.json">
       <Link>Infrastructure\Actor\calculator-actor.json</Link>
     </EmbeddedResource>
   </ItemGroup>

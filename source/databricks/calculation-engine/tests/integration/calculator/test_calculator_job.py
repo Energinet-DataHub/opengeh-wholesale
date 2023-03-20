@@ -135,9 +135,9 @@ def _get_process_manager_parameters(filename: str) -> list[str]:
 
 
 @pytest.fixture(scope="session")
-def dummy_job_parameters(source_path: str) -> list[str]:
+def dummy_job_parameters(contracts_path: str) -> list[str]:
     process_manager_parameters = _get_process_manager_parameters(
-        f"{source_path}/contracts/internal/calculation-job-parameters-reference.txt"
+        f"{contracts_path}/calculation-job-parameters-reference.txt"
     )
 
     command_line_args = [
@@ -299,7 +299,7 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
     spark: SparkSession,
     data_lake_path: str,
-    source_path: str,
+    contracts_path: str,
     worker_id: str,
     executed_calculation_job: None,
 ) -> None:
@@ -321,7 +321,7 @@ def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
     result_805 = spark.read.json(result_path)
 
     assert_contract_matches_schema(
-        f"{source_path}/contracts/internal/calculator-result.json",
+        f"{contracts_path}/calculator-result.json",
         result_805.schema,
     )
 
@@ -329,7 +329,7 @@ def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
 def test__calculator_result_es_per_ga_schema_must_match_contract_with_dotnet(
     spark: SparkSession,
     data_lake_path: str,
-    source_path: str,
+    contracts_path: str,
     worker_id: str,
     executed_calculation_job: None,
 ) -> None:
@@ -351,7 +351,7 @@ def test__calculator_result_es_per_ga_schema_must_match_contract_with_dotnet(
     result_805 = spark.read.json(result_path)
 
     assert_contract_matches_schema(
-        f"{source_path}/contracts/internal/calculator-result.json",
+        f"{contracts_path}/calculator-result.json",
         result_805.schema,
     )
 
