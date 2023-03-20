@@ -91,7 +91,7 @@ Please note that we have provided a [Dictionary](https://github.com/Energinet-Da
 ### Integration Events
 
 The wholesale domain publishes an integration event when a process has completed. The events contains the data defined by the
-[`ProcessCompleted.proto`](source/dotnet/Contracts/calculation_result_completed.proto) Google Protocol Buffers contract.
+[`calculation_result_completed.proto`](source/dotnet/Contracts/calculation_result_completed.proto) Google Protocol Buffers contract.
 
 The process type is specified in the message type meta data of the transport messages according to `ADR-008`.
 
