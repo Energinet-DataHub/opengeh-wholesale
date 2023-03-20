@@ -17,5 +17,5 @@ from package.codelists import TimeSeriesQuality
 
 
 def test_quality_codelist_matches_contract(contracts_path):
-    contract_path = f"{contracts_path}/internal/time-series-point-quality.json"
+    contract_path = f"{contracts_path}/time-series-point-quality.json"
     assert_codelist_matches_contract(TimeSeriesQuality, contract_path)
