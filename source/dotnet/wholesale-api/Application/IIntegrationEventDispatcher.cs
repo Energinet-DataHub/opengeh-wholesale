@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Wholesale.Application;
 public interface IIntegrationEventDispatcher
 {
     /// <summary>
-    /// Fetches integration events and dispatches them.
+    /// Fetches number of integration events and dispatches them (bulk).
     /// </summary>
-    Task DispatchIntegrationEventsAsync();
+    Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch);
 }

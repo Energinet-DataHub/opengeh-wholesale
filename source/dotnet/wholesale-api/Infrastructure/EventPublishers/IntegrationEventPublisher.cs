@@ -81,7 +81,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
     private async Task PublishCalculationResultCompletedAsync(
         CalculationResultCompleted integrationEvent)
     {
-        var message = _serviceBusMessageFactory.CreateProcessCompleted(integrationEvent.ToByteArray(), CalculationResultCompleted.BalanceFixingEventName);
+        var message = _serviceBusMessageFactory.CreateServiceBusMessage(integrationEvent.ToByteArray(), CalculationResultCompleted.BalanceFixingEventName);
         await _serviceBusSender.SendMessageAsync(message).ConfigureAwait(false);
     }
 }

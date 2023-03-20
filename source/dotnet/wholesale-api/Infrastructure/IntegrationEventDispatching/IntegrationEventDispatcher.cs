@@ -33,7 +33,6 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             IIntegrationEventTopicServiceBusSender integrationEventTopicServiceBusSender,
             IOutboxMessageRepository outboxMessageRepository,
             IClock clock,
-            IUnitOfWork unitOfWork,
             ILogger<IntegrationEventDispatcher> logger,
             IServiceBusMessageFactory serviceBusMessageFactory)
         {
@@ -44,14 +43,13 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             _serviceBusMessageFactory = serviceBusMessageFactory;
         }
 
-        public async Task DispatchIntegrationEventsAsync()
+        public async Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch)
         {
             // Note: For future reference we log the publishing duration time.
             var watch = new Stopwatch();
             watch.Start();
 
-            // TODO AJW add loop until finished.
-            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(1000).ConfigureAwait(false);
+            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfIntegrationEventsToDispatch).ConfigureAwait(false);
             foreach (var outboxMessage in outboxMessages)
             {
                 await CreateAndPublishIntegrationEventAsync(outboxMessage).ConfigureAwait(false);
@@ -60,14 +58,15 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
 
             watch.Stop();
             _logger.LogInformation($"Publishing {outboxMessages.Count} integration events took {watch.Elapsed.Milliseconds} ms.");
+
+            return outboxMessages.Count < numberOfIntegrationEventsToDispatch;
         }
 
         private async Task CreateAndPublishIntegrationEventAsync(OutboxMessage outboxMessage)
         {
             try
             {
-                var serviceBusMessage =
-                    _serviceBusMessageFactory.CreateProcessCompleted(outboxMessage.Data, outboxMessage.MessageType);
+                var serviceBusMessage = _serviceBusMessageFactory.CreateServiceBusMessage(outboxMessage.Data, outboxMessage.MessageType);
                 await _integrationEventTopicServiceBusSender
                     .SendMessageAsync(serviceBusMessage)
                     .ConfigureAwait(false);

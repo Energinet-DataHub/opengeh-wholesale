@@ -46,7 +46,7 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         return CreateServiceBusMessage(body, messageType, _correlationContext.Id);
     }
 
-    public ServiceBusMessage CreateProcessCompleted(byte[] bytes, string messageType)
+    public ServiceBusMessage CreateServiceBusMessage(byte[] bytes, string messageType)
     {
         return CreateServiceBusMessage(bytes, messageType, _correlationContext.Id);
     }

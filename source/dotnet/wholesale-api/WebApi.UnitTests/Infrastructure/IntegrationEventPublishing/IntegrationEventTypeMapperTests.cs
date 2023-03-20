@@ -15,7 +15,6 @@
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
@@ -31,38 +30,35 @@ public class IntegrationEventDispatcherTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task PublishIntegrationEventsAsync_FromOutboxMessages_ReturnsVoid(
+    public async Task PublishIntegrationEventsAsync_FromOutboxMessages(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
         [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ILogger<IntegrationEventDispatcher>> loggerMock,
         [Frozen] Mock<IServiceBusMessageFactory> serviceBusMessageFactoryMock,
         [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock)
     {
         // Arrange
-        var outboxMessage1 = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName); //TODO: should we create a custom type to use when testing?
-        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(50))
+        var outboxMessage1 = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName);
+        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(10))
             .ReturnsAsync(new List<OutboxMessage> { outboxMessage1 });
 
         var sut = new IntegrationEventDispatcher(
             integrationEventTopicServiceBusSenderMock.Object,
             outboxMessageRepositoryMock.Object,
             clockMock.Object,
-            unitOfWorkMock.Object,
             loggerMock.Object,
             serviceBusMessageFactoryMock.Object);
 
         // Act
-        await sut.DispatchIntegrationEventsAsync();
+        await sut.DispatchIntegrationEventsAsync(10);
 
         // Assert
-        serviceBusMessageFactoryMock.Verify(x => x.CreateProcessCompleted(It.IsAny<byte[]>(), CalculationResultCompleted.BalanceFixingEventName));
-        unitOfWorkMock.Verify(x => x.CommitAsync());
+        serviceBusMessageFactoryMock.Verify(x => x.CreateServiceBusMessage(It.IsAny<byte[]>(), CalculationResultCompleted.BalanceFixingEventName));
         integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>()));
     }
 
-    private static OutboxMessage CreateOutboxMessage(byte[] protobufEventData, string messageType)
+    private static OutboxMessage CreateOutboxMessage(byte[] eventData, string messageType)
     {
-        return new OutboxMessage(protobufEventData, messageType, SystemClock.Instance.GetCurrentInstant());
+        return new OutboxMessage(eventData, messageType, SystemClock.Instance.GetCurrentInstant());
     }
 }
