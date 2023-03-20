@@ -19,11 +19,11 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
 public class DeleteOlderIntegrationEventsEndpoint
 {
-    private readonly IIntegrationEventService _integrationEventService;
+    private readonly IIntegrationEventInfrastructureService _integrationEventService;
     private readonly ICorrelationContext _correlationContext;
 
     public DeleteOlderIntegrationEventsEndpoint(
-        IIntegrationEventService integrationEventService,
+        IIntegrationEventInfrastructureService integrationEventService,
         ICorrelationContext correlationContext)
     {
         _integrationEventService = integrationEventService;

@@ -44,12 +44,13 @@ public class ProcessApplicationServiceTest
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaProductionOnce(
-        [Frozen] Mock<IActorRepository> actorRepositoryMock,
-        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
-        [Frozen] Mock<IIntegrationEventService> integrationEventServiceMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        ProcessApplicationService sut)
+    public async Task
+        PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaProductionOnce(
+            [Frozen] Mock<IActorRepository> actorRepositoryMock,
+            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<IIntegrationEventInfrastructureService> integrationEventServiceMock,
+            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+            ProcessApplicationService sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -86,12 +87,13 @@ public class ProcessApplicationServiceTest
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaNonProfiledConsumptionOnce(
-        [Frozen] Mock<IActorRepository> actorRepositoryMock,
-        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
-        [Frozen] Mock<IIntegrationEventService> integrationEventServiceMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        ProcessApplicationService sut)
+    public async Task
+        PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaNonProfiledConsumptionOnce(
+            [Frozen] Mock<IActorRepository> actorRepositoryMock,
+            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<IIntegrationEventInfrastructureService> integrationEventServiceMock,
+            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+            ProcessApplicationService sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -131,7 +133,7 @@ public class ProcessApplicationServiceTest
     public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplier(
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
         [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
-        [Frozen] Mock<IIntegrationEventService> integrationEventServiceMock,
+        [Frozen] Mock<IIntegrationEventInfrastructureService> integrationEventServiceMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         string glnNumber,
         ProcessApplicationService sut)
@@ -171,13 +173,14 @@ public class ProcessApplicationServiceTest
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForBalanceResponsibleParty(
-        [Frozen] Mock<IActorRepository> actorRepositoryMock,
-        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
-        [Frozen] Mock<IIntegrationEventService> integrationEventServiceMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        string brpGlnNumber,
-        ProcessApplicationService sut)
+    public async Task
+        PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForBalanceResponsibleParty(
+            [Frozen] Mock<IActorRepository> actorRepositoryMock,
+            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<IIntegrationEventInfrastructureService> integrationEventServiceMock,
+            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+            string brpGlnNumber,
+            ProcessApplicationService sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -214,14 +217,15 @@ public class ProcessApplicationServiceTest
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplierByBalanceResponsibleParty(
-        [Frozen] Mock<IActorRepository> actorRepositoryMock,
-        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
-        [Frozen] Mock<IIntegrationEventService> integrationEventServiceMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        string brpGlnNumber,
-        string glnNumber,
-        ProcessApplicationService sut)
+    public async Task
+        PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplierByBalanceResponsibleParty(
+            [Frozen] Mock<IActorRepository> actorRepositoryMock,
+            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<IIntegrationEventInfrastructureService> integrationEventServiceMock,
+            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+            string brpGlnNumber,
+            string glnNumber,
+            ProcessApplicationService sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(

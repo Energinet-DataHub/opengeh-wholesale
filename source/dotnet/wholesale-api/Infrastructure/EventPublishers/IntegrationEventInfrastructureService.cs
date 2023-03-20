@@ -18,14 +18,14 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
-public class IntegrationEventService : IIntegrationEventService
+public class IntegrationEventInfrastructureService : IIntegrationEventInfrastructureService
 {
     private readonly IOutboxMessageRepository _outboxMessageRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IIntegrationEventDispatcher _integrationEventDispatcher;
 
-    public IntegrationEventService(
+    public IntegrationEventInfrastructureService(
         IOutboxMessageRepository outboxMessageRepository,
         IClock clock,
         IUnitOfWork unitOfWork,
@@ -41,7 +41,6 @@ public class IntegrationEventService : IIntegrationEventService
     {
         var outboxMessage = new OutboxMessage(integrationEventDto.EventData, integrationEventDto.MessageType, integrationEventDto.CreationDate);
         await _outboxMessageRepository.AddAsync(outboxMessage).ConfigureAwait(false);
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     public async Task DeleteProcessedOlderThanAsync(int daysOld)
@@ -52,13 +51,12 @@ public class IntegrationEventService : IIntegrationEventService
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task DispatchIntegrationEventsAsync()
+    public async Task DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatchPerBulk)
     {
-        var numberOfIntegrationEventsToDispatch = 1000;
         var moreToDispatch = false;
         while (!moreToDispatch)
         {
-            moreToDispatch = await _integrationEventDispatcher.DispatchIntegrationEventsAsync(numberOfIntegrationEventsToDispatch).ConfigureAwait(false);
+            moreToDispatch = await _integrationEventDispatcher.DispatchIntegrationEventsAsync(numberOfIntegrationEventsToDispatchPerBulk).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }

@@ -159,7 +159,7 @@ public static class Program
 
         serviceCollection.AddScoped<IIntegrationEventFactory, IntegrationEventFactory>();
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
-        serviceCollection.AddScoped<IIntegrationEventService, IntegrationEventService>();
+        serviceCollection.AddScoped<IIntegrationEventInfrastructureService, IntegrationEventInfrastructureService>();
         serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
         serviceCollection.AddSingleton<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper());
     }

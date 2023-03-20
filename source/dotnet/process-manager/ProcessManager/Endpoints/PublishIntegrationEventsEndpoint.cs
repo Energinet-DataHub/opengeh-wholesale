@@ -20,11 +20,11 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
 public class PublishIntegrationEventsEndpoint
 {
-    private readonly IIntegrationEventService _integrationEventService;
+    private readonly IIntegrationEventInfrastructureService _integrationEventService;
     private readonly ICorrelationContext _correlationContext;
 
     public PublishIntegrationEventsEndpoint(
-        IIntegrationEventService integrationEventService,
+        IIntegrationEventInfrastructureService integrationEventService,
         ICorrelationContext correlationContext)
     {
         _integrationEventService = integrationEventService;
@@ -39,6 +39,6 @@ public class PublishIntegrationEventsEndpoint
         // so we need to add a correlation ID ourselves
         _correlationContext.SetId(Guid.NewGuid().ToString());
 
-        await _integrationEventService.DispatchIntegrationEventsAsync().ConfigureAwait(false);
+        await _integrationEventService.DispatchIntegrationEventsAsync(1000).ConfigureAwait(false);
     }
 }

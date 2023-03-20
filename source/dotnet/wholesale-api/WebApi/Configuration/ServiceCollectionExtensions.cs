@@ -121,7 +121,7 @@ internal static class ServiceCollectionExtensions
 
         services.AddScoped<IIntegrationEventFactory, IntegrationEventFactory>();
         services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
-        services.AddScoped<IIntegrationEventService, IntegrationEventService>();
+        services.AddScoped<IIntegrationEventInfrastructureService, IntegrationEventInfrastructureService>();
         services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
         services.AddScoped<ICalculationResultCompletedIntegrationEventFactory, CalculationResultCompletedIntegrationEventFactory>();
         services.AddScoped<IIntegrationEventTypeMapper>(_ =>

@@ -14,11 +14,11 @@
 
 namespace Energinet.DataHub.Wholesale.Application;
 
-public interface IIntegrationEventService
+public interface IIntegrationEventInfrastructureService
 {
     Task AddAsync(IntegrationEventDto integrationEventDto);
 
     Task DeleteProcessedOlderThanAsync(int daysOld);
 
-    Task DispatchIntegrationEventsAsync();
+    Task DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatchPerBulk);
 }
