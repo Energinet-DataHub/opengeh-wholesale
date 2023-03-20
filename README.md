@@ -8,15 +8,18 @@
 
 ## Table of content
 
-* [Wholesale](#wholesale)
-    * [Table of content](#table-of-content)
-    * [Introduction](#introduction)
-    * [Getting started](#getting-started)
-    * [Understanding the Domain](#understanding-the-domain)
-    * [Databricks](#databricks)
-    * [Test](#test)
-    * [Where can I get more help?](#where-can-i-get-more-help)
-    * [Integrating](#integrating)
+- [Wholesale](#wholesale)
+  - [Table of content](#table-of-content)
+  - [Introduction](#introduction)
+  - [Getting started](#getting-started)
+  - [Understanding the Domain](#understanding-the-domain)
+  - [Databricks](#databricks)
+  - [Test](#test)
+  - [Where can I get more help?](#where-can-i-get-more-help)
+  - [Integrating](#integrating)
+    - [Integration Events](#integration-events)
+    - [Web API](#web-api)
+    - [Calculation Input Contracts](#calculation-input-contracts)
 
 ## Introduction
 
@@ -72,6 +75,10 @@ Learn about the wholesale ubiquitous language [here](docs/ubiquitous-language.md
 [Databricks readme](source/databricks#readme)
 
 ## Test
+In team Mandolorian we have agreed on a test strategy which is located [here](docs/test-strategy.md)
+
+When writing Unit test we strive to write the test method names the following way: `MemberName_WhenSomething_IsOrDoes`
+an example can be found [here](source/dotnet/wholesale-api/WebApi.UnitTests/Domain/BatchAggregate/BatchTests.cs)
 
 Read about general QA that applies to the entire Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/quality-assurance-and-test.md).
 
