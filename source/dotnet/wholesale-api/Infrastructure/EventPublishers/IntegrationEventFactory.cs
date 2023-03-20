@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Google.Protobuf;
@@ -27,18 +25,15 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
     {
         private readonly IClock _systemDateTimeProvider;
         private readonly ICalculationResultCompletedIntegrationEventFactory _calculationResultCompletedIntegrationEventFactory;
-        private readonly IJsonSerializer _jsonSerializer;
         private readonly IIntegrationEventTypeMapper _integrationEventTypeMapper;
 
         public IntegrationEventFactory(
             IClock systemDateTimeProvider,
             ICalculationResultCompletedIntegrationEventFactory calculationResultCompletedIntegrationEventFactory,
-            IJsonSerializer jsonSerializer,
             IIntegrationEventTypeMapper integrationEventTypeMapper)
         {
             _systemDateTimeProvider = systemDateTimeProvider;
             _calculationResultCompletedIntegrationEventFactory = calculationResultCompletedIntegrationEventFactory;
-            _jsonSerializer = jsonSerializer;
             _integrationEventTypeMapper = integrationEventTypeMapper;
         }
 
@@ -68,9 +63,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
 
         private IntegrationEventDto CreateIntegrationEvent(IMessage integrationEvent)
         {
-            var eventMessageType = _integrationEventTypeMapper.GetMessageType(integrationEvent.GetType());
-            var protobufByteArray = integrationEvent.ToByteArray();
-            return new IntegrationEventDto(protobufByteArray, eventMessageType, _systemDateTimeProvider.GetCurrentInstant());
+            var messageType = _integrationEventTypeMapper.GetMessageType(integrationEvent.GetType());
+            var eventData = integrationEvent.ToByteArray();
+            return new IntegrationEventDto(eventData, messageType, _systemDateTimeProvider.GetCurrentInstant());
         }
     }
 }

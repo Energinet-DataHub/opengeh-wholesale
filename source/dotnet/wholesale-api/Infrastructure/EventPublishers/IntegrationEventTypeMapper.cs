@@ -12,45 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts.Events;
-
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
 public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
 {
-    private readonly Dictionary<string, Type> _dic;
+    private readonly Dictionary<Type, string> _dic;
 
     public IntegrationEventTypeMapper()
     {
-        _dic = new Dictionary<string, Type>();
-        Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
-    }
-
-    public Type GetEventType(string eventName)
-    {
-        return _dic[eventName];
+        _dic = new Dictionary<Type, string>();
     }
 
     /// <summary>
-    /// An example of type could be the contract type: cCalculationResultCompleted.
+    /// An example of type could be the contract type: CalculationResultCompleted.
     /// </summary>
-    public string GetMessageType(Type type)
+    public string GetMessageType(Type eventType)
     {
-        return _dic.Single(x => x.Value == type).Key;
+        return _dic[eventType];
     }
 
-    private void Add(string eventName, Type eventType)
+    public void Add(string eventName, Type eventType)
     {
-        if (_dic.ContainsKey(eventName))
+        if (_dic.ContainsKey(eventType))
         {
-            throw new ArgumentException("Event name already exists.");
+            throw new ArgumentException("Event type  already exists.");
         }
 
-        if (_dic.ContainsValue(eventType))
+        if (_dic.ContainsValue(eventName))
         {
-            throw new ArgumentException("Event type already exists.");
+            throw new ArgumentException("Event name  already exists.");
         }
 
-        _dic.Add(eventName, eventType);
+        _dic.Add(eventType, eventName);
+    }
+
+    public int Count()
+    {
+        return _dic.Count;
     }
 }

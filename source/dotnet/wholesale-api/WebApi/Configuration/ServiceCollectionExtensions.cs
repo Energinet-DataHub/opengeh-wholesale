@@ -124,12 +124,16 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IIntegrationEventService, IntegrationEventService>();
         services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
         services.AddScoped<ICalculationResultCompletedIntegrationEventFactory, CalculationResultCompletedIntegrationEventFactory>();
-        services.AddScoped<IIntegrationEventTypeMapper, IntegrationEventTypeMapper>();
+        services.AddScoped<IIntegrationEventTypeMapper>(_ =>
+        {
+            var mapper = new IntegrationEventTypeMapper();
+            mapper.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
+            return mapper;
+        });
 
         var integrationEventTopicName = configuration[ConfigurationSettingNames.IntegrationEventsTopicName];
         var serviceBusConnectionString = configuration[ConfigurationSettingNames.ServiceBusManageConnectionString];
         services.AddIntegrationEventPublisher(serviceBusConnectionString!, integrationEventTopicName!); // TODO FIX NULLABLE SUPPRESSION
-        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
 
         RegisterDomainEventPublisher(services, configuration);

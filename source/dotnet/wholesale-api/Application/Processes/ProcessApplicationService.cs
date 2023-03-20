@@ -119,7 +119,6 @@ public class ProcessApplicationService : IProcessApplicationService
 
             var integrationEventDto = _integrationEventFactory.CreateIntegrationEventForCalculationResultForTotalGridArea(productionForTotalGa, processCompletedEvent);
             await _integrationEventService.AddAsync(integrationEventDto).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
@@ -143,8 +142,6 @@ public class ProcessApplicationService : IProcessApplicationService
                 var integrationEvent = _integrationEventFactory.CreateIntegrationEventForCalculationResultForEnergySupplier(processStepResultDto, processCompletedEvent, energySupplier.Gln);
                 await _integrationEventService.AddAsync(integrationEvent).ConfigureAwait(false);
             }
-
-            await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     private async Task PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
@@ -168,7 +165,5 @@ public class ProcessApplicationService : IProcessApplicationService
             var integrationEventDto = _integrationEventFactory.CreateIntegrationEventForCalculationResultForBalanceResponsibleParty(processStepResultDto, processCompletedEvent, balanceResponsibleParty.Gln);
             await _integrationEventService.AddAsync(integrationEventDto).ConfigureAwait(false);
         }
-
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }

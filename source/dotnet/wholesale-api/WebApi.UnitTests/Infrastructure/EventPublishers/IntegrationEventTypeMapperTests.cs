@@ -27,6 +27,7 @@ public class IntegrationEventTypeMapperTests
     public void GetEventName_WhenEventType_ReturnsEventName(IntegrationEventTypeMapper sut)
     {
         // Arrange
+        sut.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
         const string expected = CalculationResultCompleted.BalanceFixingEventName;
         var eventType = typeof(CalculationResultCompleted);
 
@@ -42,13 +43,13 @@ public class IntegrationEventTypeMapperTests
     public void GetEventType_WhenEventName_ReturnsEventType(IntegrationEventTypeMapper sut)
     {
         // Arrange
-        var expected = typeof(CalculationResultCompleted);
+        var type = typeof(string);
 
         // Act
-        var actual = sut.GetEventType(CalculationResultCompleted.BalanceFixingEventName);
+        sut.Add("string", type);
 
         // Assert
-        actual.Should().Be(expected);
+        Assert.Equal(1, sut.Count());
     }
 
     [Theory]
@@ -56,9 +57,9 @@ public class IntegrationEventTypeMapperTests
     public void ThrowsException_WhenGettingNotExisting(IntegrationEventTypeMapper sut)
     {
         // Arrange
-        const string eventName = "event1";
+        var eventType = typeof(CalculationResultCompleted);
 
         // Act & Assert
-        Assert.Throws<KeyNotFoundException>(() => sut.GetEventType(eventName));
+        Assert.Throws<KeyNotFoundException>(() => sut.GetMessageType(eventType));
     }
 }
