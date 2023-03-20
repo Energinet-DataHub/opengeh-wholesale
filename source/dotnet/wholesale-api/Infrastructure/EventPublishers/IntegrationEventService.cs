@@ -36,7 +36,7 @@ public class IntegrationEventService : IIntegrationEventService
 
     public async Task AddAsync(IntegrationEventDto integrationEventDto, CancellationToken token)
     {
-        var outboxMessage = new OutboxMessage(integrationEventDto.ProtobufEventData, integrationEventDto.EventMessageType, integrationEventDto.CreationDate);
+        var outboxMessage = new OutboxMessage(integrationEventDto.EventData, integrationEventDto.MessageType, integrationEventDto.CreationDate);
         await _outboxMessageRepository.AddAsync(outboxMessage, token).ConfigureAwait(false);
     }
 
@@ -44,7 +44,7 @@ public class IntegrationEventService : IIntegrationEventService
     {
         var instant = _clock.GetCurrentInstant();
         instant = instant.Minus(Duration.FromDays(daysOld));
-        _outboxMessageRepository.DeleteByCreationDate(instant);
+        _outboxMessageRepository.DeleteProcessedOlderThan(instant);
 
         await _unitOfWork.CommitAsync(token).ConfigureAwait(false);
     }

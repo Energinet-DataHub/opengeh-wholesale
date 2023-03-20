@@ -20,7 +20,7 @@ using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesP
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
-public class CalculationResultReadyIntegrationEventFactory : ICalculationResultReadyIntegrationEventFactory
+public class CalculationResultCompletedIntegrationEventFactory : ICalculationResultCompletedIntegrationEventFactory
 {
     public CalculationResultCompleted CreateCalculationResultCompletedForGridArea(
         ProcessStepResult processStepResultDto,

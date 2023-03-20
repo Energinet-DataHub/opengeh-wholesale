@@ -123,7 +123,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
         services.AddScoped<IIntegrationEventService, IntegrationEventService>();
         services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
-        services.AddScoped<ICalculationResultReadyIntegrationEventFactory, CalculationResultReadyIntegrationEventFactory>();
+        services.AddScoped<ICalculationResultCompletedIntegrationEventFactory, CalculationResultCompletedIntegrationEventFactory>();
         services.AddScoped<IIntegrationEventTypeMapper, IntegrationEventTypeMapper>();
 
         var integrationEventTopicName = configuration[ConfigurationSettingNames.IntegrationEventsTopicName];

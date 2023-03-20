@@ -15,9 +15,9 @@
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.Logging;
@@ -34,7 +34,7 @@ public class IntegrationEventDispatcherTests
     public async Task PublishIntegrationEventsAsync_FromOutboxMessages_ReturnsVoid(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
         [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<IDatabaseContext> databaseContextMock,
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ILogger<IntegrationEventDispatcher>> loggerMock,
         [Frozen] Mock<IServiceBusMessageFactory> serviceBusMessageFactoryMock,
         [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock)
@@ -48,7 +48,7 @@ public class IntegrationEventDispatcherTests
             integrationEventTopicServiceBusSenderMock.Object,
             outboxMessageRepositoryMock.Object,
             clockMock.Object,
-            databaseContextMock.Object,
+            unitOfWorkMock.Object,
             loggerMock.Object,
             serviceBusMessageFactoryMock.Object);
 
@@ -57,7 +57,7 @@ public class IntegrationEventDispatcherTests
 
         // Assert
         serviceBusMessageFactoryMock.Verify(x => x.CreateProcessCompleted(It.IsAny<byte[]>(), CalculationResultCompleted.BalanceFixingEventName));
-        databaseContextMock.Verify(x => x.SaveChangesAsync(default));
+        unitOfWorkMock.Verify(x => x.CommitAsync(default));
         integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>(), default));
     }
 

@@ -70,6 +70,8 @@ public class ProcessApplicationService : IProcessApplicationService
 
         // Publish events for energy suppliers results for balance responsible parties
         await PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption, token).ConfigureAwait(false);
+
+        await _unitOfWork.CommitAsync(token).ConfigureAwait(false);
     }
 
     private async Task PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType, CancellationToken token)
@@ -102,8 +104,6 @@ public class ProcessApplicationService : IProcessApplicationService
                 await _integrationEventService.AddAsync(integrationEvent, token).ConfigureAwait(false);
             }
         }
-
-        await _unitOfWork.CommitAsync(token).ConfigureAwait(false);
     }
 
     private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType, CancellationToken token)

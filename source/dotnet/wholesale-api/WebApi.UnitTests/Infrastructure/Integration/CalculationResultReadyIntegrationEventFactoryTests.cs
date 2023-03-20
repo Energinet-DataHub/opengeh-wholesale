@@ -34,7 +34,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForGridArea_WhenQuantityQualityCalculated_ExceptionIsThrown()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
@@ -55,7 +55,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForGridArea_WhenCreating_ResultIsForTotalGridArea()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
@@ -82,7 +82,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForGridArea_WhenCreating_PropertiesAreMappedCorrectly()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
@@ -118,7 +118,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplier_WhenCreating_ResultIsForTotalEnergySupplier()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
@@ -146,7 +146,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplier_WhenCreating_PropertiesAreMappedCorrectly()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
@@ -185,7 +185,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplier_WhenQuantityQualityCalculated_ExceptionIsThrown()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
@@ -207,7 +207,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForBalanceResponsibleParty_ReturnsResultForBalanceResponsibleParty()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
@@ -235,7 +235,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForBalanceResponsibleParty_WhenCreating_PropertiesAreMappedCorrectly()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
@@ -274,7 +274,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForBalanceResponsibleParty_WhenQuantityQualityCalculated_ExceptionIsThrown()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
@@ -296,7 +296,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_ReturnsResultForEnergySupplierByBalanceResponsibleParty()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.NonProfiledConsumption,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
@@ -325,7 +325,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_WhenCreating_PropertiesAreMappedCorrectly()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.NonProfiledConsumption,
@@ -367,7 +367,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_WhenQuantityQualityCalculated_ExceptionIsThrown()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.NonProfiledConsumption,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });

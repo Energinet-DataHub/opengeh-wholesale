@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
-public interface ICalculationResultReadyIntegrationEventFactory
+public interface ICalculationResultCompletedIntegrationEventFactory
 {
     CalculationResultCompleted CreateCalculationResultCompletedForGridArea(
         ProcessStepResult processStepResultDto,

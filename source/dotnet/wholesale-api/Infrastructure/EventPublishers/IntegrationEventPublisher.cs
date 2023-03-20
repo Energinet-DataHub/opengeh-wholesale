@@ -27,16 +27,16 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
 {
     private readonly IIntegrationEventTopicServiceBusSender _serviceBusSender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
-    private readonly ICalculationResultReadyIntegrationEventFactory _calculationResultReadyIntegrationEventFactory;
+    private readonly ICalculationResultCompletedIntegrationEventFactory _calculationResultCompletedIntegrationEventFactory;
 
     public IntegrationEventPublisher(
         IIntegrationEventTopicServiceBusSender serviceBusSender,
         IServiceBusMessageFactory serviceBusMessageFactory,
-        ICalculationResultReadyIntegrationEventFactory calculationResultReadyIntegrationEventFactory)
+        ICalculationResultCompletedIntegrationEventFactory calculationResultCompletedIntegrationEventFactory)
     {
         _serviceBusSender = serviceBusSender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
-        _calculationResultReadyIntegrationEventFactory = calculationResultReadyIntegrationEventFactory;
+        _calculationResultCompletedIntegrationEventFactory = calculationResultCompletedIntegrationEventFactory;
     }
 
     public async Task PublishCalculationResultForTotalGridAreaAsync(
@@ -44,7 +44,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
         ProcessCompletedEventDto processCompletedEventDto)
     {
         var integrationEvent =
-            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResultDto, processCompletedEventDto);
+            _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResultDto, processCompletedEventDto);
         await PublishCalculationResultCompletedAsync(integrationEvent).ConfigureAwait(false);
     }
 
@@ -54,7 +54,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
         string energySupplierGln)
     {
         var integrationEvent =
-            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForEnergySupplier(processStepResultDto, processCompletedEventDto, energySupplierGln);
+            _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultCompletedForEnergySupplier(processStepResultDto, processCompletedEventDto, energySupplierGln);
         await PublishCalculationResultCompletedAsync(integrationEvent).ConfigureAwait(false);
     }
 
@@ -64,7 +64,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
         string balanceResponsiblePartyGln)
     {
         var integrationEvent =
-            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
+            _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultCompletedForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
         await PublishCalculationResultCompletedAsync(integrationEvent).ConfigureAwait(false);
     }
 
@@ -75,7 +75,7 @@ public class IntegrationEventPublisher : IIntegrationEventPublisher
         string balanceResponsiblePartyGln)
     {
         var integrationEvent =
-            _calculationResultReadyIntegrationEventFactory.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(result, processCompletedEvent, energySupplierGln, balanceResponsiblePartyGln);
+            _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(result, processCompletedEvent, energySupplierGln, balanceResponsiblePartyGln);
         await PublishCalculationResultCompletedAsync(integrationEvent).ConfigureAwait(false);
     }
 

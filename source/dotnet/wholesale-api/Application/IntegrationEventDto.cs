@@ -21,12 +21,13 @@ public class IntegrationEventDto
     /// <summary>
     /// Integration Event data as an protobuf data (byte array).
     /// </summary>
-    public byte[] ProtobufEventData { get; }
+    public byte[] EventData { get; }
 
     /// <summary>
+    /// Public message type used by consumers to identify the type of the message being published. See also ADR-008.
     /// Example: CalculationResultCompleted.BalanceFixingEventName (BalanceFixingCalculationResultCompleted)
     /// </summary>
-    public string EventMessageType { get; }
+    public string MessageType { get; }
 
     /// <summary>
     /// The time of which the IntegrationEventDto was created.
@@ -34,12 +35,12 @@ public class IntegrationEventDto
     public Instant CreationDate { get; }
 
     public IntegrationEventDto(
-        byte[] protobufEventData,
-        string eventMessageType,
+        byte[] eventData,
+        string messageType,
         Instant creationDate)
     {
-        ProtobufEventData = protobufEventData;
-        EventMessageType = eventMessageType;
+        EventData = eventData;
+        MessageType = messageType;
         CreationDate = creationDate;
     }
 

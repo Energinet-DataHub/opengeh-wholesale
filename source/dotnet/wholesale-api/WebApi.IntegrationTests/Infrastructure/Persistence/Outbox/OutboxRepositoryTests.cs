@@ -74,7 +74,7 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     }
 
     [Fact]
-    public async Task DeleteByCreationDateAsync_ReturnsVoid()
+    public async Task DeleteProcessedOlderThanAsync_GivenHowManyDaysAgo()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
@@ -87,9 +87,10 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         await sut.AddAsync(outboxMessage2, default);
         await sut.AddAsync(outboxMessage3, default);
         await writeContext.SaveChangesAsync().ConfigureAwait(false);
+        var fourteenDaysAgo = SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(14));
 
         // Act
-        sut.DeleteByCreationDate(SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(14)));
+        sut.DeleteProcessedOlderThan(fourteenDaysAgo);
         await writeContext.SaveChangesAsync().ConfigureAwait(false);
 
         // Assert
@@ -98,8 +99,8 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         actual.Should().BeEquivalentTo(expected);
     }
 
-    private static OutboxMessage CreateOutOutboxMessage(int numberOfDays = 0, string eventMessageType = "eventMessageType")
+    private static OutboxMessage CreateOutOutboxMessage(int numberOfDaysAgo = 0, string eventMessageType = "eventMessageType")
     {
-        return new OutboxMessage(new byte[10], eventMessageType, SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(numberOfDays)));
+        return new OutboxMessage(new byte[10], eventMessageType, SystemClock.Instance.GetCurrentInstant().Minus(Duration.FromDays(numberOfDaysAgo)));
     }
 }

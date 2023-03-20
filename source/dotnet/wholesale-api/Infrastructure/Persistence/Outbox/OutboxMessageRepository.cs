@@ -42,7 +42,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
                 .ConfigureAwait(false);
         }
 
-        public void DeleteByCreationDate(Instant date)
+        public void DeleteProcessedOlderThan(Instant date)
         {
             var messagesToDelete = _context.OutboxMessages.Where(x => x.CreationDate < date);
             _context.OutboxMessages.RemoveRange(messagesToDelete);

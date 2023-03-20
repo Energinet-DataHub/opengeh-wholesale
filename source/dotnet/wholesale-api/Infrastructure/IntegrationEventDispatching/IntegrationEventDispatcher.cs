@@ -13,10 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.Logging;
@@ -29,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
         private readonly IIntegrationEventTopicServiceBusSender _integrationEventTopicServiceBusSender;
         private readonly IOutboxMessageRepository _outboxMessageRepository;
         private readonly IClock _clock;
-        private readonly IDatabaseContext _context;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<IntegrationEventDispatcher> _logger;
         private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
 
@@ -37,14 +34,14 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             IIntegrationEventTopicServiceBusSender integrationEventTopicServiceBusSender,
             IOutboxMessageRepository outboxMessageRepository,
             IClock clock,
-            IDatabaseContext context,
+            IUnitOfWork unitOfWork,
             ILogger<IntegrationEventDispatcher> logger,
             IServiceBusMessageFactory serviceBusMessageFactory)
         {
             _integrationEventTopicServiceBusSender = integrationEventTopicServiceBusSender;
             _outboxMessageRepository = outboxMessageRepository;
             _clock = clock;
-            _context = context;
+            _unitOfWork = unitOfWork;
             _logger = logger;
             _serviceBusMessageFactory = serviceBusMessageFactory;
         }
@@ -55,27 +52,39 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             var watch = new Stopwatch();
             watch.Start();
 
-            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(50, token).ConfigureAwait(false);
+            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(1000, token).ConfigureAwait(false);
             foreach (var outboxMessage in outboxMessages)
             {
-                try
+                if (token.IsCancellationRequested)
                 {
-                    var serviceBusMessage = _serviceBusMessageFactory.CreateProcessCompleted(outboxMessage.Data, outboxMessage.MessageType);
-                    await _integrationEventTopicServiceBusSender
-                        .SendMessageAsync(serviceBusMessage, token)
-                        .ConfigureAwait(false);
+                    // Something wants to stop the process
+                    return;
+                }
 
-                    outboxMessage.SetProcessed(_clock.GetCurrentInstant());
-                    await _context.SaveChangesAsync(token).ConfigureAwait(false);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Exception caught while trying to publish integration event with ID {outboxMessageId}", outboxMessage.Id);
-                }
+                await CreateAndPublishIntegrationEventAsync(outboxMessage, token).ConfigureAwait(false);
             }
 
             watch.Stop();
             _logger.LogInformation($"Publishing {outboxMessages.Count} integration events took {watch.Elapsed.Milliseconds} ms.");
+        }
+
+        private async Task CreateAndPublishIntegrationEventAsync(OutboxMessage outboxMessage, CancellationToken token)
+        {
+            try
+            {
+                var serviceBusMessage =
+                    _serviceBusMessageFactory.CreateProcessCompleted(outboxMessage.Data, outboxMessage.MessageType);
+                await _integrationEventTopicServiceBusSender
+                    .SendMessageAsync(serviceBusMessage, token)
+                    .ConfigureAwait(false);
+
+                outboxMessage.SetProcessed(_clock.GetCurrentInstant());
+                await _unitOfWork.CommitAsync(token).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Exception caught while trying to create or publish integration event with ID {outboxMessage.Id} and type {outboxMessage.MessageType}.");
+            }
         }
     }
 }

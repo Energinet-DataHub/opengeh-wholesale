@@ -26,43 +26,43 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
     public class IntegrationEventFactory : IIntegrationEventFactory
     {
         private readonly IClock _systemDateTimeProvider;
-        private readonly ICalculationResultReadyIntegrationEventFactory _calculationResultReadyIntegrationEventFactory;
+        private readonly ICalculationResultCompletedIntegrationEventFactory _calculationResultCompletedIntegrationEventFactory;
         private readonly IJsonSerializer _jsonSerializer;
         private readonly IIntegrationEventTypeMapper _integrationEventTypeMapper;
 
         public IntegrationEventFactory(
             IClock systemDateTimeProvider,
-            ICalculationResultReadyIntegrationEventFactory calculationResultReadyIntegrationEventFactory,
+            ICalculationResultCompletedIntegrationEventFactory calculationResultCompletedIntegrationEventFactory,
             IJsonSerializer jsonSerializer,
             IIntegrationEventTypeMapper integrationEventTypeMapper)
         {
             _systemDateTimeProvider = systemDateTimeProvider;
-            _calculationResultReadyIntegrationEventFactory = calculationResultReadyIntegrationEventFactory;
+            _calculationResultCompletedIntegrationEventFactory = calculationResultCompletedIntegrationEventFactory;
             _jsonSerializer = jsonSerializer;
             _integrationEventTypeMapper = integrationEventTypeMapper;
         }
 
         public IntegrationEventDto CreateIntegrationEventForCalculationResultForEnergySupplier(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto, string energySupplierGln)
         {
-            var result = _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForEnergySupplier(processStepResult, processCompletedEventDto, energySupplierGln);
+            var result = _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultCompletedForEnergySupplier(processStepResult, processCompletedEventDto, energySupplierGln);
             return CreateIntegrationEvent(result);
         }
 
         public IntegrationEventDto CreateIntegrationEventForCalculationResultForBalanceResponsibleParty(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto, string balanceResponsiblePartyGln)
         {
-            var result = _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
+            var result = _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultCompletedForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
             return CreateIntegrationEvent(result);
         }
 
         public IntegrationEventDto CreateIntegrationEventForCalculationResultForTotalGridArea(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto)
         {
-            var result = _calculationResultReadyIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResult, processCompletedEventDto);
+            var result = _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResult, processCompletedEventDto);
             return CreateIntegrationEvent(result);
         }
 
         public IntegrationEventDto CreateIntegrationEventForCalculationResultForEnergySupplierByBalanceResponsibleParty(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln, string brpGln)
         {
-            var result = _calculationResultReadyIntegrationEventFactory.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(processStepResultDto, processCompletedEvent, energySupplierGln, brpGln);
+            var result = _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(processStepResultDto, processCompletedEvent, energySupplierGln, brpGln);
             return CreateIntegrationEvent(result);
         }
 
