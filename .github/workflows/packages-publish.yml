@@ -56,7 +56,7 @@ jobs:
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
-          SOLUTION_FILE_PATH: "./source/dotnet/Wholesale.sln"
+          SOLUTION_FILE_PATH: "./source/wholesale-integration-events-package/Contracts.sln"
           CODE_COVERAGE_FLAGS: packages
 
       - name: Pack Contracts project
