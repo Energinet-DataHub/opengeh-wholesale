@@ -143,11 +143,13 @@ def virtual_environment() -> Generator:
 
 
 @pytest.fixture(scope="session")
-def installed_package(virtual_environment: Generator, databricks_path: str) -> None:
+def installed_package(
+    virtual_environment: Generator, calculation_engine_path: str
+) -> None:
     "Ensures that the wholesale package is installed (after building it)."
 
     # Build the package wheel
-    os.chdir(databricks_path)
+    os.chdir(calculation_engine_path)
     subprocess.call("python -m build --wheel", shell=True, executable="/bin/bash")
 
     # Uninstall the package in case it was left by a cancelled test suite
@@ -160,7 +162,7 @@ def installed_package(virtual_environment: Generator, databricks_path: str) -> N
     # Intall wheel, which will also create console scripts for invoking
     # the entry points of the package
     subprocess.call(
-        f"pip install {databricks_path}/dist/package-1.0-py3-none-any.whl",
+        f"pip install {calculation_engine_path}/dist/package-1.0-py3-none-any.whl",
         shell=True,
         executable="/bin/bash",
     )
