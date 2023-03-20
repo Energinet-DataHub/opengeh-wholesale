@@ -34,11 +34,15 @@ from tests.helpers.assert_calculation_file_path import (
 )
 from tests.helpers.file_utils import find_file
 
-ACTORS_FOLDER = "actors"
+DATABASE_NAME = "wholesale_output"
+RESULT_TABLE_NAME = "result"
 DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
 DEFAULT_GRID_AREA = "105"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
+DEFAULT_PROCESS_TYPE = "Balance_Fixing"
+DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
+TABLE_NAME = f"{DATABASE_NAME}.{RESULT_TABLE_NAME}"
 
 
 def _create_result_row(
@@ -84,7 +88,13 @@ def test__write___when_aggregation_level_is_es_per_ga__result_file_path_matches_
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         AggregationLevel.es_per_ga,
     )
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        spark,
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -121,7 +131,13 @@ def test__write___when_aggregation_level_is_total_ga__result_file_path_matches_c
         TimeSeriesType.PRODUCTION,
         AggregationLevel.total_ga,
     )
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        spark,
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -164,7 +180,13 @@ def test__write___when_aggregation_level_is_ga_brp_es__result_file_path_matches_
         TimeSeriesType.PRODUCTION,
         AggregationLevel.es_per_brp_per_ga,
     )
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        spark,
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -193,9 +215,8 @@ def test__write__writes_aggregation_level_column(
     spark: SparkSession, tmpdir: Path, aggregation_level: AggregationLevel
 ) -> None:
     # Arrange
-    table_name = "result_table"
     spark.sql(
-        f"DROP TABLE IF EXISTS {table_name}"
+        f"DROP TABLE IF EXISTS {TABLE_NAME}"
     )  # needed to avoid conflict between parametrized tests
     row = [
         _create_result_row(
@@ -205,7 +226,13 @@ def test__write__writes_aggregation_level_column(
         )
     ]
     result_df = spark.createDataFrame(data=row)
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        spark,
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -215,8 +242,8 @@ def test__write__writes_aggregation_level_column(
     )
 
     # Assert
-    actual_df = spark.read.table(table_name)
-    assert actual_df.collect()[0]["AggregationLevel"] == aggregation_level.value
+    actual_df = spark.read.table(TABLE_NAME)
+    assert actual_df.collect()[0]["aggregation_level"] == aggregation_level.value
 
 
 @pytest.mark.parametrize(
@@ -227,9 +254,8 @@ def test__write__writes_time_series_type_column(
     spark: SparkSession, tmpdir: Path, time_series_type: TimeSeriesType
 ) -> None:
     # Arrange
-    table_name = "result_table"
     spark.sql(
-        f"DROP TABLE IF EXISTS {table_name}"
+        f"DROP TABLE IF EXISTS {TABLE_NAME}"
     )  # needed to avoid conflict between parametrized tests
 
     row = [
@@ -240,7 +266,13 @@ def test__write__writes_time_series_type_column(
         )
     ]
     result_df = spark.createDataFrame(data=row)
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        spark,
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -250,15 +282,14 @@ def test__write__writes_time_series_type_column(
     )
 
     # Assert
-    actual_df = spark.read.table(table_name)
+    actual_df = spark.read.table(TABLE_NAME)
     assert actual_df.collect()[0]["time_series_type"] == time_series_type.value
 
 
 def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
     # Arrange
-    table_name = "result_table"
     spark.sql(
-        f"DROP TABLE IF EXISTS {table_name}"
+        f"DROP TABLE IF EXISTS {TABLE_NAME}"
     )  # needed to avoid conflict between parametrized tests
 
     row = [
@@ -269,7 +300,13 @@ def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
         )
     ]
     result_df = spark.createDataFrame(data=row)
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        spark,
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(
@@ -279,7 +316,7 @@ def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
     )
 
     # Assert
-    actual_df = spark.read.table(table_name)
+    actual_df = spark.read.table(TABLE_NAME)
     assert actual_df.collect()[0]["batch_id"] == DEFAULT_BATCH_ID
 
 
@@ -287,11 +324,9 @@ def test__write_result_to_table__when_schema_differs_from_table__raise_exception
     spark: SparkSession, tmpdir: Path
 ) -> None:
     # Arrange
-    table_name = "result_table"
     spark.sql(
-        f"DROP TABLE IF EXISTS {table_name}"
+        f"DROP TABLE IF EXISTS {TABLE_NAME}"
     )  # needed to avoid conflict between parametrized tests
-
     row = [
         _create_result_row(
             grid_area=DEFAULT_GRID_AREA,
@@ -301,7 +336,13 @@ def test__write_result_to_table__when_schema_differs_from_table__raise_exception
     ]
     result_df_1 = spark.createDataFrame(data=row)
     result_df_2 = result_df_1.withColumn("extra_column", lit("some_value"))
-    sut = ProcessStepResultWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = ProcessStepResultWriter(
+        spark,
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
     sut._write_result_to_table(result_df_1, AggregationLevel.total_ga)
 
     # Act and Assert
