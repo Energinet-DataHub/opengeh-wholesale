@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A65AE4F0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "wholesale-api\WebApi\WebApi.csproj", "{9746F437-9232-4F33-B11C-DBE78AF88A79}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseMigration", "DatabaseMigration\DatabaseMigration.csproj", "{ABA195E8-C392-42BA-958E-F03447A2B301}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseMigration", "database-migration\DatabaseMigration.csproj", "{ABA195E8-C392-42BA-958E-F03447A2B301}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "wholesale-api\Application\Application.csproj", "{F163CC59-E435-4274-9316-7EF7463BA8E6}"
 EndProject
