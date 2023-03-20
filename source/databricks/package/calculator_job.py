@@ -54,8 +54,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     p.add("--batch-grid-areas", type=valid_list, required=True)
     p.add("--batch-period-start-datetime", type=valid_date, required=True)
     p.add("--batch-period-end-datetime", type=valid_date, required=True)
-    p.add("--batch-process-type", type=str, required=True)
-    p.add("--batch-execution-time-start", type=valid_date, required=True)
     p.add("--log-level", type=valid_log_level, help="debug|information", required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
@@ -99,11 +97,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
     process_step_result_writer = ProcessStepResultWriter(
-        spark,
-        args.wholesale_container_path,
-        args.batch_id,
-        args.batch_process_type,
-        args.batch_execution_time_start,
+        args.wholesale_container_path, args.batch_id
     )
     basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
     actors_writer = ActorsWriter(args.wholesale_container_path, args.batch_id)
@@ -196,8 +190,6 @@ def _start(command_line_args: list[str]) -> None:
         batch_grid_areas=args.batch_grid_areas,
         batch_period_start_datetime=args.batch_period_start_datetime,
         batch_period_end_datetime=args.batch_period_end_datetime,
-        batch_execution_time_start=args.batch_execution_time_start,
-        batch_process_type=args.batch_process_type,
         time_zone=args.time_zone,
     )
 
