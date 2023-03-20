@@ -31,7 +31,7 @@ public class IntegrationEventDispatcherTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task PublishIntegrationEventsAsync_ReturnsVoid(
+    public async Task PublishIntegrationEventsAsync_FromOutboxMessages_ReturnsVoid(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IDatabaseContext> databaseContextMock,
