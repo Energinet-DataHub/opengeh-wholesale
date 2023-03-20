@@ -73,7 +73,7 @@ limitations under the License.
     </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="../../Contracts/*.proto">
+    <Protobuf Include="../../wholesale-api/Infrastructure/IntegrationEvents/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
@@ -84,8 +84,8 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Contracts\CalculationResultCompleted.cs">
-      <Link>CalculationResultCompleted.cs</Link>
+    <Compile Include="..\..\wholesale-api\Infrastructure\IntegrationEvents\CalculationResultCompleted.cs">
+      <Link>IntegrationEvents\CalculationResultCompleted.cs</Link>
     </Compile>
   </ItemGroup>
 

@@ -61,11 +61,9 @@ jobs:
               - '.github/workflows/ci-dotnet.yml'
               - '.github/workflows/detect-changes.yml'
               - '.github/actions/dotnet-*/**'
-              - 'source/contracts/**'
               - 'source/dotnet/!(Packages/**)/**'
             packages:
-              - 'source/dotnet/Contracts/**'
-              - 'source/dotnet/Packages/**'
               - 'source/dotnet/wholesale-integration-events-package/**'
+              - 'source/dotnet/wholesale-api/Infrastructure/IntegrationEvents/**'
               - '.github/workflows/packages-publish.yml'
               - '.github/workflows/detect-changes.yml'
