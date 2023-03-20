@@ -72,6 +72,7 @@ Learn about the wholesale ubiquitous language [here](docs/ubiquitous-language.md
 [Databricks readme](source/databricks#readme)
 
 ## Test
+
 In team Mandolorian we have agreed on a test strategy which is located [here](docs/test-strategy.md)
 
 When writing Unit test we strive to write the test method names the following way: `MemberName_WhenSomething_IsOrDoes`
