@@ -8,15 +8,18 @@
 
 ## Table of content
 
-* [Wholesale](#wholesale)
-    * [Table of content](#table-of-content)
-    * [Introduction](#introduction)
-    * [Getting started](#getting-started)
-    * [Understanding the Domain](#understanding-the-domain)
-    * [Databricks](#databricks)
-    * [Test](#test)
-    * [Where can I get more help?](#where-can-i-get-more-help)
-    * [Integrating](#integrating)
+- [Wholesale](#wholesale)
+  - [Table of content](#table-of-content)
+  - [Introduction](#introduction)
+  - [Getting started](#getting-started)
+  - [Understanding the Domain](#understanding-the-domain)
+  - [Databricks](#databricks)
+  - [Test](#test)
+  - [Where can I get more help?](#where-can-i-get-more-help)
+  - [Integrating](#integrating)
+    - [Integration Events](#integration-events)
+    - [Web API](#web-api)
+    - [Calculation Input Contracts](#calculation-input-contracts)
 
 ## Introduction
 
@@ -91,15 +94,15 @@ Please note that we have provided a [Dictionary](https://github.com/Energinet-Da
 ### Integration Events
 
 The wholesale domain publishes an integration event when a process has completed. The events contains the data defined by the
-[`ProcessCompleted.proto`](source/dotnet/Contracts/ProcessCompleted.proto) Google Protocol Buffers contract.
+[`ProcessCompleted.proto`](source/dotnet/Contracts/calculation_result_completed.proto) Google Protocol Buffers contract.
 
 The process type is specified in the message type meta data of the transport messages according to `ADR-008`.
 
-The set of supported process types can be found in [`ProcessCompleted.cs`](source/dotnet/Contracts/ProcessCompleted.cs).
+The set of supported process types can be found in [`calculation_result_completed.proto`](source/dotnet/Contracts/CalculationResultCompleted.cs).
 
 ### Web API
 
-Process results can be fetched using [the wholesale web API](source/dotnet/Services/WebApi/).
+Process results can be fetched using [the wholesale web API](source/dotnet/wholesale-api/).
 
 ### Calculation Input Contracts
 
