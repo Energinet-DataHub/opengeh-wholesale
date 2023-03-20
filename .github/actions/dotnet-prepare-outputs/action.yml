@@ -56,7 +56,7 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\DatabaseMigration\DatabaseMigration.csproj' \
+          '.\source\dotnet\database-migration\DatabaseMigration.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
