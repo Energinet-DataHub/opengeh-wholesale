@@ -157,7 +157,7 @@ public static class Program
                 provider.GetRequiredService<IDataLakeClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
 
-        serviceCollection.AddScoped<IIntegrationEventFactory, IntegrationEventFactory>();
+        serviceCollection.AddScoped<IProcessCompletedIntegrationEventFactory, ProcessCompletedIntegrationEventFactory>();
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
         serviceCollection.AddScoped<IIntegrationEventInfrastructureService, IntegrationEventInfrastructureService>();
         serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();

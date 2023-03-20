@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
@@ -21,13 +22,13 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
 {
-    public class IntegrationEventFactory : IIntegrationEventFactory
+    public class ProcessCompletedIntegrationEventFactory : IProcessCompletedIntegrationEventFactory
     {
         private readonly IClock _systemDateTimeProvider;
         private readonly ICalculationResultCompletedIntegrationEventFactory _calculationResultCompletedIntegrationEventFactory;
         private readonly IIntegrationEventTypeMapper _integrationEventTypeMapper;
 
-        public IntegrationEventFactory(
+        public ProcessCompletedIntegrationEventFactory(
             IClock systemDateTimeProvider,
             ICalculationResultCompletedIntegrationEventFactory calculationResultCompletedIntegrationEventFactory,
             IIntegrationEventTypeMapper integrationEventTypeMapper)

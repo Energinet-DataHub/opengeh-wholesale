@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
@@ -119,7 +120,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IJsonSerializer, JsonSerializer>();
         services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
 
-        services.AddScoped<IIntegrationEventFactory, IntegrationEventFactory>();
+        services.AddScoped<IProcessCompletedIntegrationEventFactory, ProcessCompletedIntegrationEventFactory>();
         services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
         services.AddScoped<IIntegrationEventInfrastructureService, IntegrationEventInfrastructureService>();
         services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
