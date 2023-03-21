@@ -28,6 +28,7 @@ using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
@@ -163,7 +164,12 @@ public static class Program
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
         serviceCollection.AddScoped<IIntegrationEventInfrastructureService, IntegrationEventInfrastructureService>();
         serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
-        serviceCollection.AddSingleton<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper());
+        serviceCollection.AddScoped<IIntegrationEventTypeMapper>(_ =>
+        {
+            var mapper = new IntegrationEventTypeMapper();
+            mapper.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
+            return mapper;
+        });
     }
 
     private static void RegisterEventPublishers(IServiceCollection serviceCollection)

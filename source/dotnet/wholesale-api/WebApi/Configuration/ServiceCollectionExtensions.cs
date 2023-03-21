@@ -133,9 +133,6 @@ internal static class ServiceCollectionExtensions
             return mapper;
         });
 
-        var integrationEventTopicName = configuration[ConfigurationSettingNames.IntegrationEventsTopicName];
-        var serviceBusConnectionString = configuration[ConfigurationSettingNames.ServiceBusManageConnectionString];
-        services.AddIntegrationEventPublisher(serviceBusConnectionString!, integrationEventTopicName!); // TODO FIX NULLABLE SUPPRESSION
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
 
         RegisterDomainEventPublisher(services, configuration);
