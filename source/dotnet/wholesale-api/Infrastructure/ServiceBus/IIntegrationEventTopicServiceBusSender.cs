@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 public interface IIntegrationEventTopicServiceBusSender
 {
-    Task SendMessageAsync(ServiceBusMessage message, CancellationToken cancellationToken);
+    Task SendMessageAsync(ServiceBusMessage serviceBusMessage);
 }

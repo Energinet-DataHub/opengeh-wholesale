@@ -20,11 +20,13 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
@@ -35,15 +37,19 @@ using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
+using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.V2;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
+using ProcessTypeMapper = Energinet.DataHub.Wholesale.Application.Processes.Model.ProcessTypeMapper;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -113,6 +119,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<IJsonSerializer, JsonSerializer>();
         services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
+        services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
 
         RegisterDomainEventPublisher(services, configuration);
 

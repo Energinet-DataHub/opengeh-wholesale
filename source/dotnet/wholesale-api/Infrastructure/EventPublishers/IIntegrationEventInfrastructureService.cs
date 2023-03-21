@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
-
-public interface IProcessApplicationService
+public interface IIntegrationEventInfrastructureService
 {
-    Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent);
+    Task DeleteOlderDispatchedIntegrationEventsAsync(int daysOld);
 
-    /// <summary>
-    /// Publish a calculation ready result event for each result in a grid area.
-    /// </summary>
-    Task PublishCalculationResultCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEventDto);
+    Task DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatchPerBulk);
 }

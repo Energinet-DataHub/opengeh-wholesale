@@ -20,9 +20,9 @@ using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesP
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
-public class CalculationResultReadyIntegrationEventFactory : ICalculationResultReadyIntegrationEventFactory
+public class CalculationResultCompletedIntegrationEventFactory : ICalculationResultCompletedIntegrationEventFactory
 {
-    public CalculationResultCompleted CreateCalculationResultCompletedForGridArea(
+    public CalculationResultCompleted CreateForGridArea(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto)
     {
@@ -35,7 +35,7 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         return calculationResultCompleted;
     }
 
-    public CalculationResultCompleted CreateCalculationResultCompletedForEnergySupplier(
+    public CalculationResultCompleted CreateForEnergySupplier(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto,
         string energySupplierGln)
@@ -50,7 +50,7 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         return calculationResultCompleted;
     }
 
-    public CalculationResultCompleted CreateCalculationResultCompletedForBalanceResponsibleParty(
+    public CalculationResultCompleted CreateForBalanceResponsibleParty(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto,
         string balanceResponsiblePartyGln)
@@ -66,7 +66,7 @@ public class CalculationResultReadyIntegrationEventFactory : ICalculationResultR
         return calculationResultCompleted;
     }
 
-    public CalculationResultCompleted CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(
+    public CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
         ProcessStepResult result,
         ProcessCompletedEventDto processCompletedEvent,
         string energySupplierGln,

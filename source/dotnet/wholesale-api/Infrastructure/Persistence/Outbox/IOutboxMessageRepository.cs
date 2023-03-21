@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 
-public interface IProcessApplicationService
+public interface IOutboxMessageRepository
 {
-    Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent);
+    Task AddAsync(OutboxMessage message);
 
-    /// <summary>
-    /// Publish a calculation ready result event for each result in a grid area.
-    /// </summary>
-    Task PublishCalculationResultCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEventDto);
+    Task<IList<OutboxMessage>> GetByTakeAsync(int numberOfElements);
+
+    void DeleteProcessedOlderThan(Instant date);
 }

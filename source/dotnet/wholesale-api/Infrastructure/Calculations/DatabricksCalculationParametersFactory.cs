@@ -28,6 +28,8 @@ public class DatabricksCalculationParametersFactory : ICalculationParametersFact
             $"--batch-grid-areas=[{gridAreas}]",
             $"--batch-period-start-datetime={batch.PeriodStart}",
             $"--batch-period-end-datetime={batch.PeriodEnd}",
+            $"--batch-process-type={batch.ProcessType}",
+            $"--batch-execution-time-start={batch.ExecutionTimeStart}",
         };
     }
 }
