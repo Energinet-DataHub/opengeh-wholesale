@@ -38,7 +38,7 @@ public class BatchControllerTests : WebApiTestBase
     public async Task HTTP_POST_V3_ReturnsHttpStatusCodeOkAtExpectedUrl()
     {
         // Arrange
-        var expectedUrl = $"/v3/batch";
+        var expectedUrl = "/v3/batch";
         var expectedHttpStatusCode = HttpStatusCode.OK;
         var batchRequestDto = CreateBatchRequestDto();
 
@@ -57,7 +57,7 @@ public class BatchControllerTests : WebApiTestBase
     public async Task HTTP_POST_V3_ReturnsHttpStatusCodeBadRequestWhenCalledWithInvalidPeriodEnd(string periodEndString)
     {
         // Arrange
-        var expectedUrl = $"/v3/batch";
+        var expectedUrl = "/v3/batch";
         var expectedHttpStatusCode = HttpStatusCode.BadRequest;
         var periodStart = DateTimeOffset.Parse("2022-12-31T23:00:00Z");
         var periodEnd = DateTimeOffset.Parse(periodEndString);
