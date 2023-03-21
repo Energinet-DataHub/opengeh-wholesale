@@ -62,7 +62,7 @@ public class ProcessApplicationService : IProcessApplicationService
         // Publish events for total grid area - production
         await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
 
-        // Publish events for total grid area - non profile
+        // Publish events for total grid area - non profiled
         await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
 
         // Publish events for balance responsible party
