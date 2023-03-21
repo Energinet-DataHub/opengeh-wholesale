@@ -40,7 +40,7 @@ public class BatchController : V3ControllerBase
     /// Period end must be exactly 1 ms before midnight.
     /// </summary>
     /// <returns>200 Ok with The batch id, or a 400 with an errormessage</returns>
-    [HttpPost]
+    [HttpPost(Name = "CreateBatch")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(Guid))]
     public async Task<Guid> CreateAsync([FromBody] BatchRequestDto batchRequestDto)
