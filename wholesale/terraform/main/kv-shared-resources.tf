@@ -38,12 +38,17 @@ data "azurerm_key_vault_secret" "st_shared_data_lake_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "st_shared_data_lake_id" {
+  name         = "st-data-lake-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "kvs_st_data_lake_primary_access_key" {
   name         = "st-data-lake-primary-access-key"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-# ID of the shared servicebus namespace 
+# ID of the shared servicebus namespace
 data "azurerm_key_vault_secret" "sb_integration_events_id" {
   name         = "sb-domain-relay-namespace-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -56,5 +61,11 @@ data "azurerm_key_vault_secret" "mssql_data_admin_name" {
 
 data "azurerm_key_vault_secret" "mssql_data_admin_password" {
   name         = "mssql-data-admin-user-password"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+# Public IP ranges of the large GitHub hosted runners
+data "azurerm_key_vault_secret" "pir_hosted_deployment_agents" {
+  name         = "pir-hosted-deployment-agents"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
