@@ -26,8 +26,8 @@ public class ProcessApplicationService : IProcessApplicationService
     private readonly IDomainEventPublisher _domainEventPublisher;
     private readonly IProcessStepResultRepository _processStepResultRepository;
     private readonly IActorRepository _actorRepository;
-    private readonly IIntegrationEventInfrastructureService _integrationEventService;
     private readonly ICalculationResultCompletedToIntegrationEventFactory _integrationEventFactory;
+    private readonly IIntegrationEventPublisher _integrationEventPublisher;
     private readonly IUnitOfWork _unitOfWork;
 
     public ProcessApplicationService(
@@ -35,16 +35,16 @@ public class ProcessApplicationService : IProcessApplicationService
         IDomainEventPublisher domainEventPublisher,
         IProcessStepResultRepository processStepResultRepository,
         IActorRepository actorRepository,
-        IIntegrationEventInfrastructureService integrationEventService,
         ICalculationResultCompletedToIntegrationEventFactory integrationEventFactory,
+        IIntegrationEventPublisher integrationEventPublisher,
         IUnitOfWork unitOfWork)
     {
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
         _processStepResultRepository = processStepResultRepository;
         _actorRepository = actorRepository;
-        _integrationEventService = integrationEventService;
         _integrationEventFactory = integrationEventFactory;
+        _integrationEventPublisher = integrationEventPublisher;
         _unitOfWork = unitOfWork;
     }
 
@@ -101,7 +101,7 @@ public class ProcessApplicationService : IProcessApplicationService
                     .ConfigureAwait(false);
 
                 var integrationEvent = _integrationEventFactory.CreateIntegrationEventForCalculationResultForEnergySupplierByBalanceResponsibleParty(result, processCompletedEvent, energySupplier.Gln, brp.Gln);
-                await _integrationEventService.AddAsync(integrationEvent).ConfigureAwait(false);
+                await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
             }
         }
     }
@@ -117,8 +117,8 @@ public class ProcessApplicationService : IProcessApplicationService
                     null)
                 .ConfigureAwait(false);
 
-            var integrationEventDto = _integrationEventFactory.CreateIntegrationEventForCalculationResultForTotalGridArea(productionForTotalGa, processCompletedEvent);
-            await _integrationEventService.AddAsync(integrationEventDto).ConfigureAwait(false);
+            var integrationEvent = _integrationEventFactory.CreateIntegrationEventForCalculationResultForTotalGridArea(productionForTotalGa, processCompletedEvent);
+            await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
     }
 
     private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
@@ -140,7 +140,7 @@ public class ProcessApplicationService : IProcessApplicationService
                     .ConfigureAwait(false);
 
                 var integrationEvent = _integrationEventFactory.CreateIntegrationEventForCalculationResultForEnergySupplier(processStepResultDto, processCompletedEvent, energySupplier.Gln);
-                await _integrationEventService.AddAsync(integrationEvent).ConfigureAwait(false);
+                await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
             }
     }
 
@@ -162,8 +162,8 @@ public class ProcessApplicationService : IProcessApplicationService
                     null)
                 .ConfigureAwait(false);
 
-            var integrationEventDto = _integrationEventFactory.CreateIntegrationEventForCalculationResultForBalanceResponsibleParty(processStepResultDto, processCompletedEvent, balanceResponsibleParty.Gln);
-            await _integrationEventService.AddAsync(integrationEventDto).ConfigureAwait(false);
+            var integrationEvent = _integrationEventFactory.CreateIntegrationEventForCalculationResultForBalanceResponsibleParty(processStepResultDto, processCompletedEvent, balanceResponsibleParty.Gln);
+            await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
         }
     }
 }

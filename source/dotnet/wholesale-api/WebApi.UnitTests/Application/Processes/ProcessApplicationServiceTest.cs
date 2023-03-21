@@ -48,7 +48,7 @@ public class ProcessApplicationServiceTest
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaProductionOnce(
             [Frozen] Mock<IActorRepository> actorRepositoryMock,
             [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
-            [Frozen] Mock<IIntegrationEventInfrastructureService> integrationEventServiceMock,
+            [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             ProcessApplicationService sut)
     {
@@ -81,7 +81,7 @@ public class ProcessApplicationServiceTest
         await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>()));
+        integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
         unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
@@ -91,7 +91,7 @@ public class ProcessApplicationServiceTest
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaNonProfiledConsumptionOnce(
             [Frozen] Mock<IActorRepository> actorRepositoryMock,
             [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
-            [Frozen] Mock<IIntegrationEventInfrastructureService> integrationEventServiceMock,
+            [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             ProcessApplicationService sut)
     {
@@ -124,7 +124,7 @@ public class ProcessApplicationServiceTest
         await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>()));
+        integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
         unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
@@ -133,7 +133,7 @@ public class ProcessApplicationServiceTest
     public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplier(
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
         [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
-        [Frozen] Mock<IIntegrationEventInfrastructureService> integrationEventServiceMock,
+        [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         string glnNumber,
         ProcessApplicationService sut)
@@ -167,7 +167,7 @@ public class ProcessApplicationServiceTest
         await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>()));
+        integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
         unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
@@ -177,7 +177,7 @@ public class ProcessApplicationServiceTest
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForBalanceResponsibleParty(
             [Frozen] Mock<IActorRepository> actorRepositoryMock,
             [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
-            [Frozen] Mock<IIntegrationEventInfrastructureService> integrationEventServiceMock,
+            [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             string brpGlnNumber,
             ProcessApplicationService sut)
@@ -211,7 +211,7 @@ public class ProcessApplicationServiceTest
         await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>()));
+        integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
         unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
@@ -221,7 +221,7 @@ public class ProcessApplicationServiceTest
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplierByBalanceResponsibleParty(
             [Frozen] Mock<IActorRepository> actorRepositoryMock,
             [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
-            [Frozen] Mock<IIntegrationEventInfrastructureService> integrationEventServiceMock,
+            [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             string brpGlnNumber,
             string glnNumber,
@@ -263,7 +263,7 @@ public class ProcessApplicationServiceTest
         await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventServiceMock.Verify(x => x.AddAsync(It.IsAny<IntegrationEventDto>()));
+        integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
         unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 }

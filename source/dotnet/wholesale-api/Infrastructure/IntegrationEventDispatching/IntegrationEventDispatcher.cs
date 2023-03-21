@@ -53,7 +53,6 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             foreach (var outboxMessage in outboxMessages)
             {
                 await CreateAndPublishIntegrationEventAsync(outboxMessage).ConfigureAwait(false);
-                outboxMessage.SetProcessed(_clock.GetCurrentInstant());
             }
 
             watch.Stop();
@@ -70,6 +69,8 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
                 await _integrationEventTopicServiceBusSender
                     .SendMessageAsync(serviceBusMessage)
                     .ConfigureAwait(false);
+
+                outboxMessage.SetProcessed(_clock.GetCurrentInstant());
             }
             catch (Exception e)
             {

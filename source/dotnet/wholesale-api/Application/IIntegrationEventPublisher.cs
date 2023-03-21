@@ -14,9 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Application;
 
-public interface IIntegrationEventInfrastructureService
+public interface IIntegrationEventPublisher
 {
-    Task DeleteOlderDispatchedIntegrationEventsAsync(int daysOld);
-
-    Task DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatchPerBulk);
+    Task PublishAsync(IntegrationEventDto integrationEventDto);
 }

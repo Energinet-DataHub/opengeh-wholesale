@@ -37,13 +37,7 @@ public class IntegrationEventInfrastructureService : IIntegrationEventInfrastruc
         _integrationEventDispatcher = integrationEventDispatcher;
     }
 
-    public async Task AddAsync(IntegrationEventDto integrationEventDto)
-    {
-        var outboxMessage = new OutboxMessage(integrationEventDto.EventData, integrationEventDto.MessageType, integrationEventDto.CreationDate);
-        await _outboxMessageRepository.AddAsync(outboxMessage).ConfigureAwait(false);
-    }
-
-    public async Task DeleteProcessedOlderThanAsync(int daysOld)
+    public async Task DeleteOlderDispatchedIntegrationEventsAsync(int daysOld)
     {
         var instant = _clock.GetCurrentInstant();
         instant = instant.Minus(Duration.FromDays(daysOld));
@@ -53,7 +47,7 @@ public class IntegrationEventInfrastructureService : IIntegrationEventInfrastruc
 
     public async Task DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatchPerBulk)
     {
-        var stopDispatching = false;
+        var stopDispatching = false; // TODO AJW
         while (!stopDispatching)
         {
             stopDispatching = await _integrationEventDispatcher.DispatchIntegrationEventsAsync(numberOfIntegrationEventsToDispatchPerBulk).ConfigureAwait(false);

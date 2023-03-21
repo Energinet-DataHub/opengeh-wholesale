@@ -27,22 +27,6 @@ public class IntegrationEventInfrastructureServiceTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task AddAsync_WhenCreatingOutboxMessage(
-        [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
-        IntegrationEventDto integrationEventDto,
-        IntegrationEventInfrastructureService sut)
-    {
-        // Arrange & Act
-        await sut.AddAsync(integrationEventDto);
-
-        // Assert
-        outboxMessageRepositoryMock.Verify(x => x.AddAsync(It.Is<OutboxMessage>(message => message.MessageType == integrationEventDto.MessageType
-            && message.Data == integrationEventDto.EventData
-            && message.CreationDate == integrationEventDto.CreationDate)));
-    }
-
-    [Theory]
-    [AutoMoqData]
     public async Task DeleteProcessedOlderThanAsync(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
         [Frozen] Mock<IClock> clockMock,
@@ -55,7 +39,7 @@ public class IntegrationEventInfrastructureServiceTests
         clockMock.Setup(x => x.GetCurrentInstant()).Returns(instant);
 
         // Act
-        await sut.DeleteProcessedOlderThanAsync(daysOld);
+        await sut.DeleteOlderDispatchedIntegrationEventsAsync(daysOld);
 
         // Assert
         outboxMessageRepositoryMock.Verify(x => x.DeleteProcessedOlderThan(instant.Minus(Duration.FromDays(daysOld))));
