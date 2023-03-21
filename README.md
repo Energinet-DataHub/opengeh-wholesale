@@ -6,17 +6,16 @@
 
 [![SonarCloud Status](https://sonarcloud.io/api/project_badges/measure?project=opengeh-wholesale-dotnet&metric=alert_status)](https://sonarcloud.io/dashboard?id=opengeh-wholesale-dotnet)
 
-## Table of content
-
-* [Wholesale](#wholesale)
-    * [Table of content](#table-of-content)
-    * [Introduction](#introduction)
-    * [Getting started](#getting-started)
-    * [Understanding the Domain](#understanding-the-domain)
-    * [Databricks](#databricks)
-    * [Test](#test)
-    * [Where can I get more help?](#where-can-i-get-more-help)
-    * [Integrating](#integrating)
+* [Introduction](#introduction)
+* [Understanding the Domain](#understanding-the-domain)
+* [Getting Started for Developers](#getting-started-for-developers)
+    * [Running Databricks locally](#running-databricks-locally)
+    * [Writing Test](#writing-tests)
+    * [Committing to Source Control](#committing-to-source-control)
+    * [Consuming Integration Events](#consuming-integration-events)
+    * [Web API](#web-api)
+    * [Calculation Input Data Format](#calculation-input-data-format)
+* [Where can I get more help?](#where-can-i-get-more-help)
 
 ## Introduction
 
@@ -47,10 +46,6 @@ These are the business processes maintained by this domain:
 | [Request for aggregated tariffs](docs/business-processes/request-for-aggregated-tariffs.md) |
 | [Request for settlement basis](docs/business-processes/request-for-settlement-basis.md) |
 
-## Getting started
-
-This section will be updated as we go when adding code and functionality to the domain.
-
 ## Understanding the Domain
 
 This is the context map.
@@ -67,11 +62,17 @@ Event flows in the domain.
 
 Learn about the wholesale ubiquitous language [here](docs/ubiquitous-language.md).
 
-## Databricks
+## Getting Started for Developers
+
+The source code of the repository is provided as-is. We currently do not accept contributions or forks from outside the project driving the current development.
+
+For people on the project please read on for details on how to contribute or integrate with the domain.
+
+### Running Databricks locally
 
 [Databricks readme](source/databricks#readme)
 
-## Test
+### Writing Tests
 
 In team Mandolorian we have agreed on a test strategy which is located [here](docs/test-strategy.md)
 
@@ -80,15 +81,11 @@ an example can be found [here](source/dotnet/wholesale-api/WebApi.UnitTests/Doma
 
 Read about general QA that applies to the entire Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/quality-assurance-and-test.md).
 
-## Where can I get more help?
+### Committing to Source Control
 
-Read about community for Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/COMMUNITY.md) and learn about how to get involved and get help.
+Contributions are provided by the means of GitHub pull-requests. Pull-requests titles and commit messages should adhere to [this guide](https://github.com/Mech0z/GitHubGuidelines).
 
-Please note that we have provided a [Dictionary](https://github.com/Energinet-DataHub/green-energy-hub/tree/main/docs/dictionary-and-concepts) to help understand many of the terms used throughout the repository.
-
-## Integrating
-
-### Integration Events
+### Consuming Integration Events
 
 When a process has been completed the wholesale domain publishes an integration event for each calculation result.
 The number of calculation results per completed process may be massive. In the danish electricity market, the number may be thousands of results.
@@ -103,6 +100,12 @@ The set of supported process types can be found in [`calculation_result_complete
 
 Process results can be fetched using [the wholesale web API](source/dotnet/wholesale-api/).
 
-### Calculation Input Contracts
+### Calculation Input Data Format
 
 Read about the contracts [here](docs/inter-domain-integration/README.md).
+
+## Where can I get more help?
+
+Read about community for Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/COMMUNITY.md) and learn about how to get involved and get help.
+
+Please note that we have provided a [Dictionary](https://github.com/Energinet-DataHub/green-energy-hub/tree/main/docs/dictionary-and-concepts) to help understand many of the terms used throughout the repository.
