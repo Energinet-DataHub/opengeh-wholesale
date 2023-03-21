@@ -35,12 +35,12 @@ public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
     {
         if (_dic.ContainsKey(eventType))
         {
-            throw new ArgumentException("Event type  already exists.");
+            throw new ArgumentException("Event type already exists.");
         }
 
         if (_dic.ContainsValue(eventName))
         {
-            throw new ArgumentException("Event name  already exists.");
+            throw new ArgumentException("Event name already exists.");
         }
 
         _dic.Add(eventType, eventName);

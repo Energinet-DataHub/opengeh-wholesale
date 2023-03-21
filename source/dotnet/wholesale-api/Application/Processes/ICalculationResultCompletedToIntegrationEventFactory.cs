@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
-public interface IProcessCompletedIntegrationEventFactory
+public interface ICalculationResultCompletedToIntegrationEventFactory
 {
     IntegrationEventDto CreateIntegrationEventForCalculationResultForEnergySupplier(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln);
 

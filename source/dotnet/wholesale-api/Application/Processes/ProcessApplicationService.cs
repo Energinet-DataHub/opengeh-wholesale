@@ -27,7 +27,7 @@ public class ProcessApplicationService : IProcessApplicationService
     private readonly IProcessStepResultRepository _processStepResultRepository;
     private readonly IActorRepository _actorRepository;
     private readonly IIntegrationEventInfrastructureService _integrationEventService;
-    private readonly IProcessCompletedIntegrationEventFactory _integrationEventFactory;
+    private readonly ICalculationResultCompletedToIntegrationEventFactory _integrationEventFactory;
     private readonly IUnitOfWork _unitOfWork;
 
     public ProcessApplicationService(
@@ -36,7 +36,7 @@ public class ProcessApplicationService : IProcessApplicationService
         IProcessStepResultRepository processStepResultRepository,
         IActorRepository actorRepository,
         IIntegrationEventInfrastructureService integrationEventService,
-        IProcessCompletedIntegrationEventFactory integrationEventFactory,
+        ICalculationResultCompletedToIntegrationEventFactory integrationEventFactory,
         IUnitOfWork unitOfWork)
     {
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;

@@ -46,7 +46,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateCalculationResultCompletedForGridArea(
+        Assert.Throws<ArgumentException>(() => sut.CreateForGridArea(
             processStepResultDto,
             processCompletedEventDto));
     }
@@ -67,7 +67,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForGridArea(
+        var actual = sut.CreateForGridArea(
             processStepResultDto,
             processCompletedEventDto);
 
@@ -95,7 +95,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForGridArea(
+        var actual = sut.CreateForGridArea(
             processStepResultDto,
             processCompletedEventDto);
 
@@ -130,7 +130,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForEnergySupplier(
+        var actual = sut.CreateForEnergySupplier(
             processStepResultDto,
             processCompletedEventDto,
             "AGlnNumber");
@@ -160,7 +160,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         var expectedGln = "TheGln";
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForEnergySupplier(
+        var actual = sut.CreateForEnergySupplier(
             processStepResultDto,
             processCompletedEventDto,
             expectedGln);
@@ -197,7 +197,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateCalculationResultCompletedForEnergySupplier(
+        Assert.Throws<ArgumentException>(() => sut.CreateForEnergySupplier(
             processStepResultDto,
             processCompletedEventDto,
             "AGlnNumber"));
@@ -219,7 +219,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForBalanceResponsibleParty(
+        var actual = sut.CreateForBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             "ABrpGlnNumber");
@@ -249,7 +249,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         var expectedGln = "TheBrpGln";
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForBalanceResponsibleParty(
+        var actual = sut.CreateForBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             expectedGln);
@@ -286,7 +286,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateCalculationResultCompletedForBalanceResponsibleParty(
+        Assert.Throws<ArgumentException>(() => sut.CreateForBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             "ABrpGlnNumber"));
@@ -308,7 +308,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act
-        var actual = sut.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(
+        var actual = sut.CreateForEnergySupplierByBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             "AEsGlnNumber",
@@ -340,7 +340,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         var expectedEsGln = "TheEsGln";
 
         // Act
-        var actual = sut.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(
+        var actual = sut.CreateForEnergySupplierByBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             expectedEsGln,
@@ -379,7 +379,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(
+        Assert.Throws<ArgumentException>(() => sut.CreateForEnergySupplierByBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             "AEsGlnNumer",

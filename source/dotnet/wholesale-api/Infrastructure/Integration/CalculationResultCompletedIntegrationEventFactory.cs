@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
 public class CalculationResultCompletedIntegrationEventFactory : ICalculationResultCompletedIntegrationEventFactory
 {
-    public CalculationResultCompleted CreateCalculationResultCompletedForGridArea(
+    public CalculationResultCompleted CreateForGridArea(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto)
     {
@@ -35,7 +35,7 @@ public class CalculationResultCompletedIntegrationEventFactory : ICalculationRes
         return calculationResultCompleted;
     }
 
-    public CalculationResultCompleted CreateCalculationResultCompletedForEnergySupplier(
+    public CalculationResultCompleted CreateForEnergySupplier(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto,
         string energySupplierGln)
@@ -50,7 +50,7 @@ public class CalculationResultCompletedIntegrationEventFactory : ICalculationRes
         return calculationResultCompleted;
     }
 
-    public CalculationResultCompleted CreateCalculationResultCompletedForBalanceResponsibleParty(
+    public CalculationResultCompleted CreateForBalanceResponsibleParty(
         ProcessStepResult processStepResultDto,
         ProcessCompletedEventDto processCompletedEventDto,
         string balanceResponsiblePartyGln)
@@ -66,7 +66,7 @@ public class CalculationResultCompletedIntegrationEventFactory : ICalculationRes
         return calculationResultCompleted;
     }
 
-    public CalculationResultCompleted CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(
+    public CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
         ProcessStepResult result,
         ProcessCompletedEventDto processCompletedEvent,
         string energySupplierGln,

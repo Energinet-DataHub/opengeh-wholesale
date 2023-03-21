@@ -22,13 +22,13 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
 {
-    public class ProcessCompletedIntegrationEventFactory : IProcessCompletedIntegrationEventFactory
+    public class CalculationResultCompletedToIntegrationEventFactory : ICalculationResultCompletedToIntegrationEventFactory
     {
         private readonly IClock _systemDateTimeProvider;
         private readonly ICalculationResultCompletedIntegrationEventFactory _calculationResultCompletedIntegrationEventFactory;
         private readonly IIntegrationEventTypeMapper _integrationEventTypeMapper;
 
-        public ProcessCompletedIntegrationEventFactory(
+        public CalculationResultCompletedToIntegrationEventFactory(
             IClock systemDateTimeProvider,
             ICalculationResultCompletedIntegrationEventFactory calculationResultCompletedIntegrationEventFactory,
             IIntegrationEventTypeMapper integrationEventTypeMapper)
@@ -40,25 +40,25 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
 
         public IntegrationEventDto CreateIntegrationEventForCalculationResultForEnergySupplier(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto, string energySupplierGln)
         {
-            var result = _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultCompletedForEnergySupplier(processStepResult, processCompletedEventDto, energySupplierGln);
+            var result = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplier(processStepResult, processCompletedEventDto, energySupplierGln);
             return CreateIntegrationEvent(result);
         }
 
         public IntegrationEventDto CreateIntegrationEventForCalculationResultForBalanceResponsibleParty(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto, string balanceResponsiblePartyGln)
         {
-            var result = _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultCompletedForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
+            var result = _calculationResultCompletedIntegrationEventFactory.CreateForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
             return CreateIntegrationEvent(result);
         }
 
         public IntegrationEventDto CreateIntegrationEventForCalculationResultForTotalGridArea(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto)
         {
-            var result = _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultCompletedForGridArea(processStepResult, processCompletedEventDto);
+            var result = _calculationResultCompletedIntegrationEventFactory.CreateForGridArea(processStepResult, processCompletedEventDto);
             return CreateIntegrationEvent(result);
         }
 
         public IntegrationEventDto CreateIntegrationEventForCalculationResultForEnergySupplierByBalanceResponsibleParty(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln, string brpGln)
         {
-            var result = _calculationResultCompletedIntegrationEventFactory.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(processStepResultDto, processCompletedEvent, energySupplierGln, brpGln);
+            var result = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplierByBalanceResponsibleParty(processStepResultDto, processCompletedEvent, energySupplierGln, brpGln);
             return CreateIntegrationEvent(result);
         }
 
