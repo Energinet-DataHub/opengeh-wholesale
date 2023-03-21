@@ -178,8 +178,10 @@ public class ProcessApplicationServiceTest
             [Frozen] Mock<IActorRepository> actorRepositoryMock,
             [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
+            [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             string brpGlnNumber,
+            IntegrationEventDto integrationEventDto,
             ProcessApplicationService sut)
     {
         // Arrange
@@ -204,14 +206,18 @@ public class ProcessApplicationServiceTest
         actorRepositoryMock
             .Setup(a => a.GetBalanceResponsiblePartiesAsync(
                 eventDto.BatchId,
-                new GridAreaCode(eventDto.GridAreaCode),
+                It.IsAny<GridAreaCode>(),
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(brpGlnNumber) });
+
+        calculationResultCompletedFactoryMock
+            .Setup(c => c.CreateForBalanceResponsibleParty(processStepResult, eventDto, brpGlnNumber))
+            .Returns(integrationEventDto);
 
         // Act
         await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
 
         // Assert
-        integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
+        integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto));
         unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
