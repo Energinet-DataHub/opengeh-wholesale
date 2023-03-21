@@ -35,10 +35,14 @@ public class IntegrationEventDispatcherTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ILogger<IntegrationEventDispatcher>> loggerMock,
         [Frozen] Mock<IServiceBusMessageFactory> serviceBusMessageFactoryMock,
-        [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock)
+        [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock,
+        ServiceBusMessage serviceBusMessage)
     {
         // Arrange
-        var outboxMessage1 = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName);
+        var data = new byte[10];
+        var outboxMessage1 = CreateOutboxMessage(data, CalculationResultCompleted.BalanceFixingEventName);
+        serviceBusMessageFactoryMock.Setup(x =>
+            x.CreateServiceBusMessage(data, CalculationResultCompleted.BalanceFixingEventName)).Returns(serviceBusMessage);
         outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(10))
             .ReturnsAsync(new List<OutboxMessage> { outboxMessage1 });
 
@@ -50,11 +54,11 @@ public class IntegrationEventDispatcherTests
             serviceBusMessageFactoryMock.Object);
 
         // Act
-        await sut.DispatchIntegrationEventsAsync(10);
+        await sut.BulkDispatchIntegrationEventsAsync(10);
 
         // Assert
         serviceBusMessageFactoryMock.Verify(x => x.CreateServiceBusMessage(It.IsAny<byte[]>(), CalculationResultCompleted.BalanceFixingEventName));
-        integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>()));
+        integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessagesAsync(new List<ServiceBusMessage> { serviceBusMessage }));
     }
 
     private static OutboxMessage CreateOutboxMessage(byte[] eventData, string messageType)

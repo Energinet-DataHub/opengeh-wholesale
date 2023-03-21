@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics;
-using Energinet.DataHub.Wholesale.Application;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
@@ -44,38 +44,46 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             _serviceBusMessageFactory = serviceBusMessageFactory;
         }
 
-        public async Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch)
+        public async Task<bool> BulkDispatchIntegrationEventsAsync(int numberOfMessagesToDispatch)
         {
             // Note: For future reference we log the publishing duration time.
             var watch = new Stopwatch();
             watch.Start();
 
-            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfIntegrationEventsToDispatch).ConfigureAwait(false);
-            foreach (var outboxMessage in outboxMessages)
-            {
-                await CreateAndPublishIntegrationEventAsync(outboxMessage).ConfigureAwait(false);
-            }
+            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfMessagesToDispatch).ConfigureAwait(false);
+            var serviceBusMessages = CreateAndMarkServiceBusMessages(outboxMessages);
+            await PublishServiceBusMessagesAsync(serviceBusMessages).ConfigureAwait(false);
 
             watch.Stop();
-            _logger.LogInformation($"Publishing {outboxMessages.Count} integration events took {watch.Elapsed.Milliseconds} ms.");
+            _logger.LogInformation($"Publishing {outboxMessages.Count} service bus messages took {watch.Elapsed.Milliseconds} ms.");
 
-            return outboxMessages.Count < numberOfIntegrationEventsToDispatch;
+            return outboxMessages.Count < numberOfMessagesToDispatch;
         }
 
-        private async Task CreateAndPublishIntegrationEventAsync(OutboxMessage outboxMessage)
+        private IEnumerable<ServiceBusMessage> CreateAndMarkServiceBusMessages(IEnumerable<OutboxMessage> outboxMessages)
+        {
+            var serviceBusMessages = new List<ServiceBusMessage>();
+            foreach (var outboxMessage in outboxMessages)
+            {
+                var serviceBusMessage = _serviceBusMessageFactory.CreateServiceBusMessage(outboxMessage.Data, outboxMessage.MessageType);
+                serviceBusMessages.Add(serviceBusMessage);
+                outboxMessage.SetProcessed(_clock.GetCurrentInstant());
+            }
+
+            return serviceBusMessages;
+        }
+
+        private async Task PublishServiceBusMessagesAsync(IEnumerable<ServiceBusMessage> serviceBusMessages)
         {
             try
             {
-                var serviceBusMessage = _serviceBusMessageFactory.CreateServiceBusMessage(outboxMessage.Data, outboxMessage.MessageType);
                 await _integrationEventTopicServiceBusSender
-                    .SendMessageAsync(serviceBusMessage)
+                    .SendMessagesAsync(serviceBusMessages)
                     .ConfigureAwait(false);
-
-                outboxMessage.SetProcessed(_clock.GetCurrentInstant());
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Exception caught while trying to create or publish integration event with ID {outboxMessage.Id} and type {outboxMessage.MessageType}.");
+                _logger.LogError(e, $"Exception caught while trying to send service bus messages.");
                 throw;
             }
         }

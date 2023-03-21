@@ -19,5 +19,5 @@ public interface IIntegrationEventDispatcher
     /// <summary>
     /// Fetches number of integration events and dispatches them (bulk).
     /// </summary>
-    Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch);
+    Task<bool> BulkDispatchIntegrationEventsAsync(int numberOfMessagesToDispatch);
 }
