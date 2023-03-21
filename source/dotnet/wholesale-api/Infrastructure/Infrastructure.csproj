@@ -27,24 +27,24 @@ limitations under the License.
   </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.10.0" />
-      <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.11.0" />
-      <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.2.9" />
+      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.13.1" />
+      <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.13.0" />
+      <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
       <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
-      <PackageReference Include="Google.Protobuf" Version="3.21.12" />
-      <PackageReference Include="Grpc.Tools" Version="2.51.0" PrivateAssets="All" />
+      <PackageReference Include="Google.Protobuf" Version="3.22.1" />
+      <PackageReference Include="Grpc.Tools" Version="2.52.0" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
+      <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.5.22">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
     </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="../../Contracts/*.proto">
+    <Protobuf Include="IntegrationEvents/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
@@ -55,12 +55,6 @@ limitations under the License.
     <Protobuf Update="..\..\Contracts\CalculationResultReady.proto">
       <Link>Integration\CalculationResultReady.proto</Link>
     </Protobuf>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\Contracts\CalculationResultCompleted.cs">
-      <Link>Integration\CalculationResultCompleted.cs</Link>
-    </Compile>
   </ItemGroup>
 
 </Project>

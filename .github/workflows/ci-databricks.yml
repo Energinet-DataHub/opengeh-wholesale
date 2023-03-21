@@ -23,7 +23,7 @@ jobs:
     with:
       PYHTON_VERSION: "3.9.7"
       ARCHITECTURE: "x64"
-      WHEEL_WORKING_DIRECTORY: "./source/databricks"
+      WHEEL_WORKING_DIRECTORY: "./source/databricks/calculation-engine"
 
   migration_scripts_verification:
     runs-on: ubuntu-latest
@@ -35,7 +35,7 @@ jobs:
         id: get_script_files_in_pr
         run: |
           # Gets all files in migration_scripts folder on the branch being merged excluding the __init__ file and put them into at comma seperated string
-          SCRIPT_FILES_IN_PR=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
+          SCRIPT_FILES_IN_PR=$(find ./source/databricks/calculation-engine/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
           echo "::set-output name=script_files_in_pr::$SCRIPT_FILES_IN_PR"
 
       - name: Checkout main branch
@@ -47,7 +47,7 @@ jobs:
         id: get_script_files_in_main
         run: |
           # Gets all files in migration_scripts folder on the main branch excluding the __init__ file and put them into at comma seperated string
-          SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
+          SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/calculation-engine/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
           echo "::set-output name=script_files_in_main::$SCRIPT_FILES_IN_MAIN"
 
       - name: Verify migration script names
@@ -102,10 +102,10 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
     with:
       OPERATING_SYSTEM: "dh3-ubuntu-20.04-4core"
-      PATH_STATIC_CHECKS: "./source/databricks"
+      PATH_STATIC_CHECKS: "./source/databricks/calculation-engine"
       # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       IGNORE_ERRORS_AND_WARNING_FLAKE8: "E501,F401,E402,E203,W503"
-      TEST_REPORT_PATH: ./source/databricks/tests/htmlcov/
+      TEST_REPORT_PATH: ./source/databricks/calculation-engine/tests/htmlcov/
 
   mypy_check:
     runs-on: ubuntu-latest
@@ -120,4 +120,4 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install mypy types-python-dateutil
-          mypy ./source/databricks/package --disallow-untyped-defs --ignore-missing-imports
+          mypy ./source/databricks/calculation-engine/package --disallow-untyped-defs --ignore-missing-imports
