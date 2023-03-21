@@ -22,7 +22,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
 {
-    public class CalculationResultCompletedToIntegrationEventFactory : ICalculationResultCompletedToIntegrationEventMapper
+    public class CalculationResultCompletedToIntegrationEventFactory : ICalculationResultCompletedFactory
     {
         private readonly IClock _systemDateTimeProvider;
         private readonly ICalculationResultCompletedIntegrationEventFactory _calculationResultCompletedIntegrationEventFactory;
@@ -38,25 +38,25 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
             _integrationEventTypeMapper = integrationEventTypeMapper;
         }
 
-        public IntegrationEventDto CreateIntegrationEventForCalculationResultForEnergySupplier(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto, string energySupplierGln)
+        public IntegrationEventDto CreateForEnergySupplier(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto, string energySupplierGln)
         {
             var result = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplier(processStepResult, processCompletedEventDto, energySupplierGln);
             return CreateIntegrationEvent(result);
         }
 
-        public IntegrationEventDto CreateIntegrationEventForCalculationResultForBalanceResponsibleParty(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto, string balanceResponsiblePartyGln)
+        public IntegrationEventDto CreateForBalanceResponsibleParty(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEventDto, string balanceResponsiblePartyGln)
         {
             var result = _calculationResultCompletedIntegrationEventFactory.CreateForBalanceResponsibleParty(processStepResultDto, processCompletedEventDto, balanceResponsiblePartyGln);
             return CreateIntegrationEvent(result);
         }
 
-        public IntegrationEventDto CreateIntegrationEventForCalculationResultForTotalGridArea(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto)
+        public IntegrationEventDto CreateForTotalGridArea(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEventDto)
         {
             var result = _calculationResultCompletedIntegrationEventFactory.CreateForGridArea(processStepResult, processCompletedEventDto);
             return CreateIntegrationEvent(result);
         }
 
-        public IntegrationEventDto CreateIntegrationEventForCalculationResultForEnergySupplierByBalanceResponsibleParty(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln, string brpGln)
+        public IntegrationEventDto CreateForEnergySupplierByBalanceResponsibleParty(ProcessStepResult processStepResultDto, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln, string brpGln)
         {
             var result = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplierByBalanceResponsibleParty(processStepResultDto, processCompletedEvent, energySupplierGln, brpGln);
             return CreateIntegrationEvent(result);
