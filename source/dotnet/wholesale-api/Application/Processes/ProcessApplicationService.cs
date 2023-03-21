@@ -158,8 +158,8 @@ public class ProcessApplicationService : IProcessApplicationService
                     processCompletedEvent.BatchId,
                     new GridAreaCode(processCompletedEvent.GridAreaCode),
                     timeSeriesType,
-                    balanceResponsibleParty.Gln,
-                    null)
+                    null,
+                    balanceResponsibleParty.Gln)
                 .ConfigureAwait(false);
 
             var integrationEvent = _calculationResultCompletedFactory.CreateForBalanceResponsibleParty(processStepResultDto, processCompletedEvent, balanceResponsibleParty.Gln);
