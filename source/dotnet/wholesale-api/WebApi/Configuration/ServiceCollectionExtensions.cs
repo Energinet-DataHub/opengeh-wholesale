@@ -119,23 +119,6 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<IJsonSerializer, JsonSerializer>();
         services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
-
-        services.AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedToIntegrationEventFactory>();
-        services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
-        services.AddScoped<IIntegrationEventInfrastructureService, IntegrationEventInfrastructureService>();
-        services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
-        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-        services.AddScoped<ICalculationResultCompletedIntegrationEventFactory, CalculationResultCompletedIntegrationEventFactory>();
-        services.AddScoped<IIntegrationEventTypeMapper>(_ =>
-        {
-            var mapper = new IntegrationEventTypeMapper();
-            mapper.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
-            return mapper;
-        });
-
-        var integrationEventTopicName = configuration[ConfigurationSettingNames.IntegrationEventsTopicName];
-        var serviceBusConnectionString = configuration[ConfigurationSettingNames.ServiceBusManageConnectionString];
-        services.AddIntegrationEventPublisher(serviceBusConnectionString!, integrationEventTopicName!); // TODO FIX NULLABLE SUPPRESSION
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
 
         RegisterDomainEventPublisher(services, configuration);
