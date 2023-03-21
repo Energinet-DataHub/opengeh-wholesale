@@ -53,10 +53,10 @@ public class IntegrationEventInfrastructureService : IIntegrationEventInfrastruc
 
     public async Task DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatchPerBulk)
     {
-        var moreToDispatch = false;
-        while (!moreToDispatch)
+        var stopDispatching = false;
+        while (!stopDispatching)
         {
-            moreToDispatch = await _integrationEventDispatcher.DispatchIntegrationEventsAsync(numberOfIntegrationEventsToDispatchPerBulk).ConfigureAwait(false);
+            stopDispatching = await _integrationEventDispatcher.DispatchIntegrationEventsAsync(numberOfIntegrationEventsToDispatchPerBulk).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }

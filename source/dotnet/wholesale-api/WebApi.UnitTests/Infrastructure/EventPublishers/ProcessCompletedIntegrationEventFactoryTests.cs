@@ -17,7 +17,6 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -71,12 +70,13 @@ public class IntegrationEventInfrastructureServiceTests
         IntegrationEventInfrastructureService sut)
     {
         // Arrange
-        integrationEventDispatcherMock.Setup(x => x.DispatchIntegrationEventsAsync(10)).ReturnsAsync(false);
+        var numberOfEventsToDispatch = 10;
+        integrationEventDispatcherMock.Setup(x => x.DispatchIntegrationEventsAsync(numberOfEventsToDispatch)).ReturnsAsync(true);
 
         // Act
-        await sut.DeleteProcessedOlderThanAsync(10);
+        await sut.DispatchIntegrationEventsAsync(numberOfEventsToDispatch);
 
         // Assert
-        unitOfWorkMock.Setup(x => x.CommitAsync());
+        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 }
