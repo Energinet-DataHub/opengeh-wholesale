@@ -518,7 +518,7 @@ dotnet_diagnostic.SX1309.severity = error
 # C# Test Conventions                                        #
 ##############################################################
 
-[**Tests**.cs]
+[**{Tests,tests}**.cs]
 
 dotnet_diagnostic.VSTHRD200.severity = none
 dotnet_diagnostic.CA1707.severity = none

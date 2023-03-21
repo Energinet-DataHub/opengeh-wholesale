@@ -27,28 +27,28 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="3.5.1" />
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="3.5.1" />
+    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.0.1" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.0.1" />
     <PackageReference Include="Energinet.DataHub.MessageHub.IntegrationTesting" Version="3.2.0" />
     <PackageReference Include="Energinet.DataHub.MeteringPoints.IntegrationEvents" Version="1.0.4" />
-    <PackageReference Include="Energinet.DataHub.MessageHub.Core" Version="3.3.0" />
-    <PackageReference Include="FluentAssertions" Version="6.7.0" />
+    <PackageReference Include="Energinet.DataHub.MessageHub.Core" Version="3.4.0" />
+    <PackageReference Include="FluentAssertions" Version="6.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.4" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
-    <PackageReference Include="Microsoft.OpenApi.Readers" Version="1.6.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+    <PackageReference Include="Microsoft.OpenApi.Readers" Version="1.6.3" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="3.1.2">
+    <PackageReference Include="coverlet.collector" Version="3.2.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DatabaseMigration\DatabaseMigration.csproj" />
+    <ProjectReference Include="..\..\database-migration\DatabaseMigration.csproj" />
     <ProjectReference Include="..\..\process-manager\ProcessManager\ProcessManager.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
     <ProjectReference Include="..\WebApi\WebApi.csproj" />
@@ -64,7 +64,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.5.22">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
