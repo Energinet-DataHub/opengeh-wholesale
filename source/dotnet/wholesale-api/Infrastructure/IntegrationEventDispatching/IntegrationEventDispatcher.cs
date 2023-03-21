@@ -76,6 +76,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             catch (Exception e)
             {
                 _logger.LogError(e, $"Exception caught while trying to create or publish integration event with ID {outboxMessage.Id} and type {outboxMessage.MessageType}.");
+                throw;
             }
         }
     }
