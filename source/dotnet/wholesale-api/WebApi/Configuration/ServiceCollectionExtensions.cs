@@ -120,7 +120,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IJsonSerializer, JsonSerializer>();
         services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
 
-        services.AddScoped<ICalculationResultCompletedToIntegrationEventMapper, CalculationResultCompletedToIntegrationEventFactory>();
+        services.AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedToIntegrationEventFactory>();
         services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
         services.AddScoped<IIntegrationEventInfrastructureService, IntegrationEventInfrastructureService>();
         services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
