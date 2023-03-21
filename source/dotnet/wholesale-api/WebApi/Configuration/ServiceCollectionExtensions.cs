@@ -119,14 +119,6 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICorrelationContext, CorrelationContext>();
         services.AddScoped<IJsonSerializer, JsonSerializer>();
         services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
-
-        services.AddScoped<ICalculationResultCompletedToIntegrationEventMapper, CalculationResultCompletedToIntegrationEventFactory>();
-        services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
-        services.AddScoped<IIntegrationEventInfrastructureService, IntegrationEventInfrastructureService>();
-        services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
-        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-        services.AddScoped<ICalculationResultCompletedIntegrationEventFactory, CalculationResultCompletedIntegrationEventFactory>();
-
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
 
         RegisterDomainEventPublisher(services, configuration);
