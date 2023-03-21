@@ -25,4 +25,6 @@ class CalculatorArgs:
     batch_grid_areas: list[str]
     batch_period_start_datetime: datetime
     batch_period_end_datetime: datetime
+    batch_process_type: str
+    batch_execution_time_start: datetime
     time_zone: str
