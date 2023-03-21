@@ -20,10 +20,8 @@ on:
     branches:
       - main
     paths:
-      - source/dotnet/Contracts/**
-      - source/dotnet/Packages/Client/**
-      - source/dotnet/Packages/Contracts/**
-      - source/dotnet/Services/WebApi/V*/**/*.cs
+      - source/dotnet/wholesale-integration-events-package/**
+      - source/dotnet/wholesale-api/Infrastructure/IntegrationEvents/**
       - .github/workflows/packages-publish.yml
       - .github/workflows/detect-changes.yml
   # Build, test, pack
@@ -42,9 +40,7 @@ permissions:
   contents: read
 
 jobs:
-
   build_and_publish:
-
     runs-on: windows-2022
     name: Publish bundle to NuGet.org
 
@@ -60,27 +56,21 @@ jobs:
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v10
         with:
-          SOLUTION_FILE_PATH: './source/dotnet/Packages/Packages.sln'
+          SOLUTION_FILE_PATH: "./source/dotnet/wholesale-integration-events-package/Contracts.sln"
           CODE_COVERAGE_FLAGS: packages
-
-      - name: Pack Client project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
-        with:
-          PROJECT_PATH: './source/dotnet/Packages/Client/Client.csproj'
 
       - name: Pack Contracts project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v10
         with:
-          PROJECT_PATH: './source/dotnet/Packages/Contracts/Contracts.csproj'
+          PROJECT_PATH: "./source/dotnet/wholesale-integration-events-package/Contracts/Contracts.csproj"
 
       - name: Package content or build has changed
         id: changed-content
         uses: tj-actions/changed-files@v17.2
         with:
           files: |
-            source/dotnet/Contracts/**/*.*
-            source/dotnet/Packages/Client/**/*.*
-            source/dotnet/Packages/Contracts/**/*.*
+            source/dotnet/wholesale-integration-events-package/**
+            source/dotnet/wholesale-api/Infrastructure/IntegrationEvents/**
             .github/workflows/packages-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
@@ -89,25 +79,4 @@ jobs:
           PUSH_PACKAGES: ${{ env.PUSH_PACKAGES }}
           CONTENT_CHANGED: ${{ steps.changed-content.outputs.any_changed }}
           NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
-          NUPKG_RECURSE_PATH: 'source/dotnet/Packages'
-
-  #
-  # Branch policy status check
-  #
-
-  allow_merge:
-    runs-on: ubuntu-latest
-    needs: [
-      build_and_publish,
-    ]
-    if: |
-      always()
-    steps:
-      - name: Verify if merge is allowed
-        run: |
-          echo "${{ toJSON(needs) }}"
-
-          if [[ ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }} = true ]]; then
-              echo "Failed"
-              exit 1
-          fi
+          NUPKG_RECURSE_PATH: "source/dotnet/wholesale-integration-events-package"

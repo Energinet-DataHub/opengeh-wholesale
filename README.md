@@ -16,6 +16,7 @@
     * [Databricks](#databricks)
     * [Test](#test)
     * [Where can I get more help?](#where-can-i-get-more-help)
+    * [Integrating](#integrating)
 
 ## Introduction
 
@@ -72,6 +73,11 @@ Learn about the wholesale ubiquitous language [here](docs/ubiquitous-language.md
 
 ## Test
 
+In team Mandolorian we have agreed on a test strategy which is located [here](docs/test-strategy.md)
+
+When writing unit tests we strive to write the test method names the following way: `MemberName_WhenSomething_IsOrDoes`. Where member name is usually a method name but can also be a property name. The "WhenSomething" part can be left out in cases where it doesn't add any meaningful value. "IsOrDoes" represents the expected behavior like "returning", "throwing" or a side-effect.
+an example can be found [here](source/dotnet/wholesale-api/WebApi.UnitTests/Domain/BatchAggregate/BatchTests.cs)
+
 Read about general QA that applies to the entire Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/quality-assurance-and-test.md).
 
 ## Where can I get more help?
@@ -84,16 +90,18 @@ Please note that we have provided a [Dictionary](https://github.com/Energinet-Da
 
 ### Integration Events
 
-The wholesale domain publishes an integration event when a process has completed. The events contains the data defined by the
-[`ProcessCompleted.proto`](source/dotnet/Contracts/ProcessCompleted.proto) Google Protocol Buffers contract.
+When a process has been completed the wholesale domain publishes an integration event for each calculation result.
+The number of calculation results per completed process may be massive. In the danish electricity market, the number may be thousands of results.
+The events contain the data defined by the
+[`calculation_result_completed.proto`](source/dotnet/Contracts/calculation_result_completed.proto) Google Protocol Buffers contract.
 
 The process type is specified in the message type meta data of the transport messages according to `ADR-008`.
 
-The set of supported process types can be found in [`ProcessCompleted.cs`](source/dotnet/Contracts/ProcessCompleted.cs).
+The set of supported process types can be found in [`calculation_result_completed.proto`](source/dotnet/Contracts/CalculationResultCompleted.cs).
 
 ### Web API
 
-Process results can be fetched using [the wholesale web API](source/dotnet/Services/WebApi/).
+Process results can be fetched using [the wholesale web API](source/dotnet/wholesale-api/).
 
 ### Calculation Input Contracts
 

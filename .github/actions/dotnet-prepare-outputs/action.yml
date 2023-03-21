@@ -36,7 +36,7 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\Services\ProcessManager\ProcessManager.csproj' \
+          '.\source\dotnet\process-manager\ProcessManager\ProcessManager.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
@@ -46,7 +46,7 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\Services\WebApi\WebApi.csproj' \
+          '.\source\dotnet\wholesale-api\WebApi\WebApi.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
@@ -56,7 +56,7 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\Services\DatabaseMigration\DatabaseMigration.csproj' \
+          '.\source\dotnet\database-migration\DatabaseMigration.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
@@ -66,7 +66,7 @@ runs:
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\Services\DomainTests\DomainTests.csproj' \
+          '.\source\dotnet\domain-tests\DomainTests.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
