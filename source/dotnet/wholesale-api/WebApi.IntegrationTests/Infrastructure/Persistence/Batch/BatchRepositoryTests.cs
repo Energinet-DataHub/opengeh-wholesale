@@ -23,7 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Infrastructure;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Infrastructure.Persistence.Batch;
 
 public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 {
@@ -198,7 +198,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         await using var writeContext = _databaseManager.CreateDbContext();
 
         var period = Periods.January_EuropeCopenhagen_Instant;
-        var batch = new Batch(
+        var batch = new Domain.BatchAggregate.Batch(
            ProcessType.BalanceFixing,
            new List<GridAreaCode> { new("004") },
            period.PeriodStart,
@@ -226,15 +226,15 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
             actual.Should().NotContain(batch);
     }
 
-    private static Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
+    private static Domain.BatchAggregate.Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
         return CreateBatch(ProcessType.BalanceFixing, someGridAreasIds);
     }
 
-    private static Batch CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
+    private static Domain.BatchAggregate.Batch CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
-        return new Batch(
+        return new Domain.BatchAggregate.Batch(
             processType,
             someGridAreasIds,
             period.PeriodStart,
