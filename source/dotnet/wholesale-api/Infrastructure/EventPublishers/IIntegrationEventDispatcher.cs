@@ -20,5 +20,6 @@ public interface IIntegrationEventDispatcher
     /// Fetches a number of integration events and bulk dispatches them.
     /// </summary>
     /// <param name="numberOfIntegrationEventsToDispatch">The number of integration events in a bulk (to send together).</param>
+    /// <returns>The boolean result tells the calls whether or not there are more integration events to dispatch.</returns>
     Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch);
 }
