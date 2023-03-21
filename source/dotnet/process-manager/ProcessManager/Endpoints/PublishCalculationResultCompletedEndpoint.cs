@@ -19,13 +19,13 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
-public class CalculationResultReadySavedEndpoint
+public class PublishCalculationResultCompletedEndpoint
 {
-    private const string FunctionName = nameof(CalculationResultReadySavedEndpoint);
+    private const string FunctionName = nameof(PublishCalculationResultCompletedEndpoint);
     private readonly IJsonSerializer _jsonSerializer;
     private readonly IProcessApplicationService _processApplicationService;
 
-    public CalculationResultReadySavedEndpoint(
+    public PublishCalculationResultCompletedEndpoint(
         IJsonSerializer jsonSerializer,
         IProcessApplicationService processApplicationService)
     {
@@ -42,6 +42,6 @@ public class CalculationResultReadySavedEndpoint
         byte[] message)
     {
         var processCompletedEvent = await _jsonSerializer.DeserializeAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
-        await _processApplicationService.PublishCalculationResultReadyIntegrationEventsAsync(processCompletedEvent).ConfigureAwait(false);
+        await _processApplicationService.PublishCalculationResultCompletedIntegrationEventsAsync(processCompletedEvent).ConfigureAwait(false);
     }
 }

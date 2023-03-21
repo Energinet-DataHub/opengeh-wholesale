@@ -78,7 +78,7 @@ public class ProcessApplicationServiceTest
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
 
         // Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
@@ -121,7 +121,7 @@ public class ProcessApplicationServiceTest
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
 
         // Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
@@ -164,7 +164,7 @@ public class ProcessApplicationServiceTest
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(glnNumber) });
 
         //Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
@@ -208,7 +208,7 @@ public class ProcessApplicationServiceTest
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(brpGlnNumber) });
 
         // Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
@@ -260,7 +260,7 @@ public class ProcessApplicationServiceTest
                 brpGlnNumber)).ReturnsAsync(new[] { new Actor(glnNumber) });
 
         // Act
-        await sut.PublishCalculationResultReadyIntegrationEventsAsync(eventDto);
+        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(It.IsAny<IntegrationEventDto>()));
