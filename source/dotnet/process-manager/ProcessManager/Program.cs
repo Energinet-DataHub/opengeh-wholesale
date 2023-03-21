@@ -28,7 +28,6 @@ using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
@@ -102,7 +101,10 @@ public static class Program
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
-        services.AddScoped<ICalculationResultCompletedIntegrationEventFactory, CalculationResultCompletedIntegrationEventFactory>();
+        services
+            .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
+                CalculationResultCompletedIntegrationEventFactory>();
+        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
     }
 
     private static void Domains(IServiceCollection services)
@@ -157,7 +159,7 @@ public static class Program
                 provider.GetRequiredService<IDataLakeClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
 
-        serviceCollection.AddScoped<ICalculationResultCompletedToIntegrationEventFactory, CalculationResultCompletedToIntegrationEventFactory>();
+        serviceCollection.AddScoped<ICalculationResultCompletedToIntegrationEventMapper, CalculationResultCompletedToIntegrationEventFactory>();
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
         serviceCollection.AddScoped<IIntegrationEventInfrastructureService, IntegrationEventInfrastructureService>();
         serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();

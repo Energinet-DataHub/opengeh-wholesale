@@ -14,6 +14,7 @@
 
 using System.Diagnostics;
 using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.Logging;

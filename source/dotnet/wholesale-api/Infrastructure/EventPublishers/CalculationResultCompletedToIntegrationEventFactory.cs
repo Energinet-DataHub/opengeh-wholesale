@@ -22,7 +22,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers
 {
-    public class CalculationResultCompletedToIntegrationEventFactory : ICalculationResultCompletedToIntegrationEventFactory
+    public class CalculationResultCompletedToIntegrationEventFactory : ICalculationResultCompletedToIntegrationEventMapper
     {
         private readonly IClock _systemDateTimeProvider;
         private readonly ICalculationResultCompletedIntegrationEventFactory _calculationResultCompletedIntegrationEventFactory;
