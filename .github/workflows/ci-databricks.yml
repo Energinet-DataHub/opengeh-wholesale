@@ -24,6 +24,7 @@ jobs:
       PYHTON_VERSION: '3.9.7'
       ARCHITECTURE: 'x64'
       WHEEL_WORKING_DIRECTORY: './source/databricks'
+      SHOULD_INCLUDE_ASSETS: false
 
   migration_scripts_verification:
     runs-on: ubuntu-latest
