@@ -17,7 +17,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 public interface IIntegrationEventDispatcher
 {
     /// <summary>
-    /// Fetches number of integration events and dispatches them (bulk).
+    /// Fetches a number of integration events and dispatches them.
     /// </summary>
+    /// <param name="numberOfIntegrationEventsToDispatch">The number of integration events to dispatch.</param>
+    /// <returns>True if there are more integration events to dispatch otherwise false.</returns>
     Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch);
 }
