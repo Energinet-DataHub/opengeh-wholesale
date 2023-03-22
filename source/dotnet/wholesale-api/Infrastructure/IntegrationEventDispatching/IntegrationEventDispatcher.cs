@@ -50,7 +50,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             var watch = new Stopwatch();
             watch.Start();
 
-            // Add 1 to ensure that TODO AJW
+            // Add 1 to number of messages ensure that the logic returns correctly.
             numberOfMessagesToDispatchInABulk += 1;
 
             var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfMessagesToDispatchInABulk).ConfigureAwait(false);
