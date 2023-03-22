@@ -39,6 +39,6 @@ public class PublishIntegrationEventsEndpoint
         // so we need to add a correlation ID ourselves
         _correlationContext.SetId(Guid.NewGuid().ToString());
 
-        await _integrationEventInfrastructureService.DispatchIntegrationEventsAsync(1000).ConfigureAwait(false);
+        await _integrationEventInfrastructureService.DispatchIntegrationEventsAsync().ConfigureAwait(false);
     }
 }
