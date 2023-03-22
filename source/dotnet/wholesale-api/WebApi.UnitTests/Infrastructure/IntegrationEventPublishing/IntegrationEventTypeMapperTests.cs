@@ -30,7 +30,7 @@ public class IntegrationEventDispatcherTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task PublishIntegrationEventsAsync_FromOutboxMessages(
+    public async Task DispatchIntegrationEventsAsync_AndThenVerifyTheCreationMethodAndSendMethodOfMessages(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ILogger<IntegrationEventDispatcher>> loggerMock,
