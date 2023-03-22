@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
@@ -34,7 +35,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForGridArea_WhenQuantityQualityCalculated_ExceptionIsThrown()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
@@ -46,7 +47,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateCalculationResultCompletedForGridArea(
+        Assert.Throws<ArgumentException>(() => sut.CreateForGridArea(
             processStepResultDto,
             processCompletedEventDto));
     }
@@ -55,7 +56,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForGridArea_WhenCreating_ResultIsForTotalGridArea()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
@@ -67,7 +68,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForGridArea(
+        var actual = sut.CreateForGridArea(
             processStepResultDto,
             processCompletedEventDto);
 
@@ -82,7 +83,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForGridArea_WhenCreating_PropertiesAreMappedCorrectly()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
@@ -95,7 +96,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForGridArea(
+        var actual = sut.CreateForGridArea(
             processStepResultDto,
             processCompletedEventDto);
 
@@ -118,7 +119,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplier_WhenCreating_ResultIsForTotalEnergySupplier()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
@@ -130,7 +131,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForEnergySupplier(
+        var actual = sut.CreateForEnergySupplier(
             processStepResultDto,
             processCompletedEventDto,
             "AGlnNumber");
@@ -146,7 +147,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplier_WhenCreating_PropertiesAreMappedCorrectly()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
@@ -160,7 +161,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         var expectedGln = "TheGln";
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForEnergySupplier(
+        var actual = sut.CreateForEnergySupplier(
             processStepResultDto,
             processCompletedEventDto,
             expectedGln);
@@ -185,7 +186,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplier_WhenQuantityQualityCalculated_ExceptionIsThrown()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
@@ -197,7 +198,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateCalculationResultCompletedForEnergySupplier(
+        Assert.Throws<ArgumentException>(() => sut.CreateForEnergySupplier(
             processStepResultDto,
             processCompletedEventDto,
             "AGlnNumber"));
@@ -207,7 +208,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForBalanceResponsibleParty_ReturnsResultForBalanceResponsibleParty()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
@@ -219,7 +220,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForBalanceResponsibleParty(
+        var actual = sut.CreateForBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             "ABrpGlnNumber");
@@ -235,7 +236,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForBalanceResponsibleParty_WhenCreating_PropertiesAreMappedCorrectly()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
@@ -249,7 +250,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         var expectedGln = "TheBrpGln";
 
         // Act
-        var actual = sut.CreateCalculationResultCompletedForBalanceResponsibleParty(
+        var actual = sut.CreateForBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             expectedGln);
@@ -274,7 +275,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForBalanceResponsibleParty_WhenQuantityQualityCalculated_ExceptionIsThrown()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
@@ -286,7 +287,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateCalculationResultCompletedForBalanceResponsibleParty(
+        Assert.Throws<ArgumentException>(() => sut.CreateForBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             "ABrpGlnNumber"));
@@ -296,7 +297,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_ReturnsResultForEnergySupplierByBalanceResponsibleParty()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.NonProfiledConsumption,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
@@ -308,7 +309,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act
-        var actual = sut.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(
+        var actual = sut.CreateForEnergySupplierByBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             "AEsGlnNumber",
@@ -325,7 +326,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_WhenCreating_PropertiesAreMappedCorrectly()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.NonProfiledConsumption,
@@ -340,7 +341,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         var expectedEsGln = "TheEsGln";
 
         // Act
-        var actual = sut.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(
+        var actual = sut.CreateForEnergySupplierByBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             expectedEsGln,
@@ -367,7 +368,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     public void CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_WhenQuantityQualityCalculated_ExceptionIsThrown()
     {
         // Arrange
-        var sut = new CalculationResultReadyIntegrationEventFactory();
+        var sut = new CalculationResultCompletedIntegrationEventFactory();
         var processStepResultDto = new ProcessStepResult(
             TimeSeriesType.NonProfiledConsumption,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
@@ -379,7 +380,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
             Instant.FromUtc(2022, 5, 2, 0, 0));
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateCalculationResultForEnergySupplierByBalanceResponsibleParty(
+        Assert.Throws<ArgumentException>(() => sut.CreateForEnergySupplierByBalanceResponsibleParty(
             processStepResultDto,
             processCompletedEventDto,
             "AEsGlnNumer",

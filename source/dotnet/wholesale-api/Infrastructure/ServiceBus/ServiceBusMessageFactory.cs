@@ -46,7 +46,7 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         return CreateServiceBusMessage(body, messageType, _correlationContext.Id);
     }
 
-    public ServiceBusMessage CreateProcessCompleted(byte[] bytes, string messageType)
+    public ServiceBusMessage CreateServiceBusMessage(byte[] bytes, string messageType)
     {
         return CreateServiceBusMessage(bytes, messageType, _correlationContext.Id);
     }
@@ -74,7 +74,7 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         var serviceBusMessage = new ServiceBusMessage
         {
             Body = new BinaryData(body),
-            Subject = messageType,
+            Subject = messageType, // TODO: Is this needed?
         };
         serviceBusMessage.SetOperationCorrelationId(operationCorrelationId);
         serviceBusMessage.SetMessageType(messageType);
