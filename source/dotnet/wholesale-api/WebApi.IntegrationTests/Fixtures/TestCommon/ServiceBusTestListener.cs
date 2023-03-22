@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon
 {
@@ -45,11 +46,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
             return result;
         }
 
-        public async Task<EventualServiceBusMessage> ListenForMessageAsync(string subject)
+        public async Task<EventualServiceBusMessage> ListenForMessageAsync(string messageType)
         {
             var result = new EventualServiceBusMessage();
             result.MessageAwaiter = await _serviceBusListenerMock
-                .WhenSubject(subject)
+                .When(s => s.ApplicationProperties[MessageMetaDataConstants.MessageType].ToString() == messageType)
                 .VerifyOnceAsync(receivedMessage =>
                 {
                     result.Body = receivedMessage.Body;
