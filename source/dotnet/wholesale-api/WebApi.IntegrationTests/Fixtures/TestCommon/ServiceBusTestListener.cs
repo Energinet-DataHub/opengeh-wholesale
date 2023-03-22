@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
@@ -50,7 +51,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
         {
             var result = new EventualServiceBusMessage();
             result.MessageAwaiter = await _serviceBusListenerMock
-                .When(s => s.ApplicationProperties[MessageMetaDataConstants.MessageType].ToString() == messageType)
+                .When(MessageTypeMatches(messageType))
                 .VerifyOnceAsync(receivedMessage =>
                 {
                     result.Body = receivedMessage.Body;
@@ -72,6 +73,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
         public async ValueTask DisposeAsync()
         {
             await _serviceBusListenerMock.DisposeAsync();
+        }
+
+        private static Func<ServiceBusReceivedMessage, bool> MessageTypeMatches(string messageType)
+        {
+            return s => s.ApplicationProperties[MessageMetaDataConstants.MessageType].ToString() == messageType;
         }
     }
 }
