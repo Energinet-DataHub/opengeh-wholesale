@@ -7,7 +7,7 @@
 workspace "DataHub 3.0" {
 
     model {
-        dh3User = person "DH3 User" "Person that uses the DataHub 3 Web App"
+        dh3User = person "DH3 User" "Person that uses the DataHub 3 Web App."
 
         dh2 = softwareSystem "DataHub 2" "Developed and maintained by CGI"
 

@@ -1,0 +1,11 @@
+{
+    "powershell.codeFormatting.avoidSemicolonsAsLineTerminators": true,
+    "powershell.codeFormatting.useCorrectCasing": true,
+    "powershell.codeFormatting.whitespaceBetweenParameters": true,
+    "markdownlint.config": {
+        "MD007": {
+            "indent": 4
+        }
+    },
+    "redhat.telemetry.enabled": false
+}

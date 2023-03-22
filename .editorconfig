@@ -1,0 +1,33 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+##############################################################
+# Core EditorConfig Options                                  #
+##############################################################
+
+# All files
+[*]
+indent_style = space
+charset = utf-8
+trim_trailing_whitespace = true
+# Unix-style newlines with a newline ending every file
+end_of_line = lf
+insert_final_newline = true
+
+# PowerShell files
+[*.{ps1, psm1, psd1}]
+indent_size = 4
+
+# JSON files
+[*.json]
+indent_size = 4
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2
+
+# Terraform
+[*.{tf}]
+indent_size = 2
