@@ -54,7 +54,7 @@ public class IntegrationEventDispatcherTests
             serviceBusMessageFactoryMock.Object);
 
         // Act
-        await sut.BulkDispatchIntegrationEventsAsync(10);
+        await sut.DispatchIntegrationEventsAsync(10);
 
         // Assert
         serviceBusMessageFactoryMock.Verify(x => x.CreateServiceBusMessage(It.IsAny<byte[]>(), CalculationResultCompleted.BalanceFixingEventName));

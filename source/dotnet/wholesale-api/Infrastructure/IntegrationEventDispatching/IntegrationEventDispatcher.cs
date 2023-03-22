@@ -44,7 +44,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             _serviceBusMessageFactory = serviceBusMessageFactory;
         }
 
-        public async Task<bool> BulkDispatchIntegrationEventsAsync(int numberOfMessagesToDispatch)
+        public async Task<bool> DispatchIntegrationEventsAsync(int numberOfMessagesToDispatch)
         {
             // Note: For future reference we log the publishing duration time.
             var watch = new Stopwatch();
