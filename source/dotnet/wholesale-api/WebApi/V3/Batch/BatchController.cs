@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain;
@@ -43,7 +44,7 @@ public class BatchController : V3ControllerBase
     [HttpPost(Name = "CreateBatch")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(Guid))]
-    public async Task<Guid> CreateAsync([FromBody] BatchRequestDto batchRequestDto)
+    public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
         batchRequestDto = batchRequestDto with { EndDate = batchRequestDto.EndDate.AddMilliseconds(1) };
         var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
