@@ -45,8 +45,9 @@ public class IntegrationEventInfrastructureService : IIntegrationEventInfrastruc
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task DispatchIntegrationEventsAsync(int numberOfIntegrationEvents)
+    public async Task DispatchIntegrationEventsAsync()
     {
+        const int numberOfIntegrationEvents = 1000;
         var moreToDispatch = true;
         while (moreToDispatch)
         {

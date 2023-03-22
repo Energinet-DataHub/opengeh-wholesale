@@ -50,6 +50,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             var watch = new Stopwatch();
             watch.Start();
 
+            // Add 1 to ensure that TODO AJW
+            numberOfMessagesToDispatchInABulk += 1;
+
             var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfMessagesToDispatchInABulk).ConfigureAwait(false);
             var serviceBusMessages = CreateServiceBusMessages(outboxMessages);
             await PublishServiceBusMessagesAsync(serviceBusMessages).ConfigureAwait(false);
@@ -57,7 +60,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             watch.Stop();
             _logger.LogInformation($"Publishing {outboxMessages.Count} service bus messages took {watch.Elapsed.Milliseconds} ms.");
 
-            return !(outboxMessages.Count < numberOfMessagesToDispatchInABulk);
+            return outboxMessages.Count > numberOfMessagesToDispatchInABulk;
         }
 
         private IEnumerable<ServiceBusMessage> CreateServiceBusMessages(IEnumerable<OutboxMessage> outboxMessages)
