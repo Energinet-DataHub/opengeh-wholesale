@@ -44,23 +44,23 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             _serviceBusMessageFactory = serviceBusMessageFactory;
         }
 
-        public async Task<bool> DispatchIntegrationEventsAsync(int numberOfMessagesToDispatchInABulk)
+        public async Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch)
         {
             // Note: For future reference we log the publishing duration time.
             var watch = new Stopwatch();
             watch.Start();
 
             // Add 1 to number of messages ensure that the logic returns correctly.
-            numberOfMessagesToDispatchInABulk += 1;
+            numberOfIntegrationEventsToDispatch += 1;
 
-            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfMessagesToDispatchInABulk).ConfigureAwait(false);
+            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfIntegrationEventsToDispatch).ConfigureAwait(false);
             var serviceBusMessages = CreateServiceBusMessages(outboxMessages);
             await PublishServiceBusMessagesAsync(serviceBusMessages).ConfigureAwait(false);
 
             watch.Stop();
             _logger.LogInformation($"Publishing {outboxMessages.Count} service bus messages took {watch.Elapsed.Milliseconds} ms.");
 
-            return outboxMessages.Count > numberOfMessagesToDispatchInABulk;
+            return outboxMessages.Count > numberOfIntegrationEventsToDispatch;
         }
 
         private IEnumerable<ServiceBusMessage> CreateServiceBusMessages(IEnumerable<OutboxMessage> outboxMessages)
