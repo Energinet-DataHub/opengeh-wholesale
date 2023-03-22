@@ -54,11 +54,10 @@ public class IntegrationEventInfrastructureServiceTests
         IntegrationEventInfrastructureService sut)
     {
         // Arrange
-        const int numberOfIntegrationEventsToSendInABulk = 10;
-        integrationEventDispatcherMock.Setup(x => x.DispatchIntegrationEventsAsync(numberOfIntegrationEventsToSendInABulk)).ReturnsAsync(false);
+        integrationEventDispatcherMock.Setup(x => x.DispatchIntegrationEventsAsync(1000)).ReturnsAsync(false);
 
         // Act
-        await sut.DispatchIntegrationEventsAsync(numberOfIntegrationEventsToSendInABulk);
+        await sut.DispatchIntegrationEventsAsync();
 
         // Assert
         unitOfWorkMock.Verify(x => x.CommitAsync());
