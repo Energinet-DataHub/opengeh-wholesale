@@ -43,7 +43,7 @@ public class IntegrationEventDispatcherTests
         var outboxMessage1 = CreateOutboxMessage(data, CalculationResultCompleted.BalanceFixingEventName);
         serviceBusMessageFactoryMock.Setup(x =>
             x.CreateServiceBusMessage(data, CalculationResultCompleted.BalanceFixingEventName)).Returns(serviceBusMessage);
-        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(10))
+        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(11))
             .ReturnsAsync(new List<OutboxMessage> { outboxMessage1 });
 
         var sut = new IntegrationEventDispatcher(
