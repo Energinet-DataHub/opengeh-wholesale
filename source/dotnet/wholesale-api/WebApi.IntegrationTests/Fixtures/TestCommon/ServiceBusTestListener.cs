@@ -45,11 +45,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
             return result;
         }
 
-        public async Task<EventualServiceBusMessage> ListenForMessageAsync(string operationCorrelationId)
+        public async Task<EventualServiceBusMessage> ListenForMessageAsync(string subject)
         {
             var result = new EventualServiceBusMessage();
             result.MessageAwaiter = await _serviceBusListenerMock
-                .WhenOperationCorrelationId(operationCorrelationId)
+                .WhenSubject(subject)
                 .VerifyOnceAsync(receivedMessage =>
                 {
                     result.Body = receivedMessage.Body;

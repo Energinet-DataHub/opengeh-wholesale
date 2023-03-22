@@ -12,30 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-
 namespace Energinet.DataHub.Wholesale.Application;
 
 public interface IIntegrationEventPublisher
 {
-    Task PublishCalculationResultForTotalGridAreaAsync(
-        ProcessStepResult processStepResultDto,
-        ProcessCompletedEventDto processCompletedEventDto);
-
-    Task PublishCalculationResultForEnergySupplierAsync(
-        ProcessStepResult processStepResultDto,
-        ProcessCompletedEventDto processCompletedEventDto,
-        string energySupplierGln);
-
-    Task PublishCalculationResultForBalanceResponsiblePartyAsync(
-        ProcessStepResult processStepResultDto,
-        ProcessCompletedEventDto processCompletedEventDto,
-        string balanceResponsiblePartyGln);
-
-    Task PublishCalculationResultForEnergySupplierByBalanceResponsiblePartyAsync(
-        ProcessStepResult result,
-        ProcessCompletedEventDto processCompletedEvent,
-        string energySupplierGln,
-        string balanceResponsiblePartyGln);
+    Task PublishAsync(IntegrationEventDto integrationEventDto);
 }

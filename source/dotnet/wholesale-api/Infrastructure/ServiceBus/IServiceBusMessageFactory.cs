@@ -25,7 +25,7 @@ public interface IServiceBusMessageFactory
     ServiceBusMessage Create<TDomainEventDto>(TDomainEventDto domainEvent)
         where TDomainEventDto : DomainEventDto;
 
-    ServiceBusMessage CreateProcessCompleted(
+    ServiceBusMessage CreateServiceBusMessage(
         byte[] bytes,
         string messageType);
 }
