@@ -61,6 +61,51 @@ public class IntegrationEventDispatcherTests
         integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessagesAsync(new List<ServiceBusMessage> { serviceBusMessage }));
     }
 
+    [Theory]
+    [InlineAutoMoqData(0, 0, false)]
+    [InlineAutoMoqData(0, 1, false)]
+    [InlineAutoMoqData(1, 0, false)]
+    [InlineAutoMoqData(1, 1, false)]
+    [InlineAutoMoqData(2, 1, false)]
+    [InlineAutoMoqData(3, 1, true)]
+    public async Task DispatchIntegrationEventsAsync_ReturnsFalseWhenTheNumberOfMessagesLeftAreLesserThanBulkSize(
+        int messagesLeft,
+        int bulkSize,
+        bool expected,
+        [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
+        [Frozen] Mock<IClock> clockMock,
+        [Frozen] Mock<ILogger<IntegrationEventDispatcher>> loggerMock,
+        [Frozen] Mock<IServiceBusMessageFactory> serviceBusMessageFactoryMock,
+        [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock,
+        ServiceBusMessage serviceBusMessage)
+    {
+        // Arrange
+        var data = new byte[10];
+        serviceBusMessageFactoryMock.Setup(x => x.CreateServiceBusMessage(data, CalculationResultCompleted.BalanceFixingEventName)).Returns(serviceBusMessage);
+
+        var outboxMessages = new List<OutboxMessage>();
+        for (var i = 0; i < messagesLeft; i++)
+        {
+            var message = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName);
+            outboxMessages.Add(message);
+        }
+
+        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(bulkSize + 1)).ReturnsAsync(outboxMessages);
+
+        var sut = new IntegrationEventDispatcher(
+            integrationEventTopicServiceBusSenderMock.Object,
+            outboxMessageRepositoryMock.Object,
+            clockMock.Object,
+            loggerMock.Object,
+            serviceBusMessageFactoryMock.Object);
+
+        // Act
+        var actual = await sut.DispatchIntegrationEventsAsync(bulkSize);
+
+        // Assert
+        Assert.Equal(expected, actual);
+    }
+
     private static OutboxMessage CreateOutboxMessage(byte[] eventData, string messageType)
     {
         return new OutboxMessage(eventData, messageType, SystemClock.Instance.GetCurrentInstant());
