@@ -21,7 +21,6 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Infrastructure.Persistence.Outbox;
 
-[Collection(nameof(OutboxRepositoryTests))]
 public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 {
     private readonly WholesaleDatabaseManager _databaseManager;
