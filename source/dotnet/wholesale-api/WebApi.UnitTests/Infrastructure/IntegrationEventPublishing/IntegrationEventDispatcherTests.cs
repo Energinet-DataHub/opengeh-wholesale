@@ -30,16 +30,20 @@ public class IntegrationEventDispatcherTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task PublishIntegrationEventsAsync_FromOutboxMessages(
+    public async Task DispatchIntegrationEventsAsync_CallsCreateServiceBusMessageAndSendMessagesAsyncWithCorrectParameters(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ILogger<IntegrationEventDispatcher>> loggerMock,
         [Frozen] Mock<IServiceBusMessageFactory> serviceBusMessageFactoryMock,
-        [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock)
+        [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock,
+        ServiceBusMessage serviceBusMessage)
     {
         // Arrange
-        var outboxMessage1 = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName);
-        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(10))
+        var data = new byte[10];
+        var outboxMessage1 = CreateOutboxMessage(data, CalculationResultCompleted.BalanceFixingEventName);
+        serviceBusMessageFactoryMock.Setup(x =>
+            x.CreateServiceBusMessage(data, CalculationResultCompleted.BalanceFixingEventName)).Returns(serviceBusMessage);
+        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(11))
             .ReturnsAsync(new List<OutboxMessage> { outboxMessage1 });
 
         var sut = new IntegrationEventDispatcher(
@@ -54,7 +58,7 @@ public class IntegrationEventDispatcherTests
 
         // Assert
         serviceBusMessageFactoryMock.Verify(x => x.CreateServiceBusMessage(It.IsAny<byte[]>(), CalculationResultCompleted.BalanceFixingEventName));
-        integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessageAsync(It.IsAny<ServiceBusMessage>()));
+        integrationEventTopicServiceBusSenderMock.Verify(x => x.SendMessagesAsync(new List<ServiceBusMessage> { serviceBusMessage }));
     }
 
     private static OutboxMessage CreateOutboxMessage(byte[] eventData, string messageType)
