@@ -45,13 +45,12 @@ public class IntegrationEventInfrastructureService : IIntegrationEventInfrastruc
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    public async Task DispatchIntegrationEventsAsync()
+    public async Task DispatchIntegrationEventsAsync(int numberOfIntegrationEvents)
     {
-        const int numberOfIntegrationEventsInABulk = 1000;
         var moreToDispatch = true;
         while (moreToDispatch)
         {
-            moreToDispatch = await _integrationEventDispatcher.DispatchIntegrationEventsAsync(numberOfIntegrationEventsInABulk).ConfigureAwait(false);
+            moreToDispatch = await _integrationEventDispatcher.DispatchIntegrationEventsAsync(numberOfIntegrationEvents).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
