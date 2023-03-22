@@ -13,18 +13,20 @@
 // limitations under the License.
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
 public class DeleteOlderIntegrationEventsEndpoint
 {
-    private readonly IIntegrationEventInfrastructureService _integrationEventService;
+    private readonly IIntegrationEventService _integrationEventService;
     private readonly ICorrelationContext _correlationContext;
 
     public DeleteOlderIntegrationEventsEndpoint(
-        IIntegrationEventInfrastructureService integrationEventService,
+        IIntegrationEventService integrationEventService,
         ICorrelationContext correlationContext)
     {
         _integrationEventService = integrationEventService;

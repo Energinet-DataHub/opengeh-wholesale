@@ -14,8 +14,6 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Moq;
 using NodaTime;
@@ -23,15 +21,14 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.EventPublishers;
 
-public class IntegrationEventInfrastructureServiceTests
+public class IntegrationEventCleanUpServiceTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task DeleteProcessedOlderThanAsync(
+    public void DeleteOlderDispatchedIntegrationEvents_CallsDeleteProcessedOlderThan(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
         [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        IntegrationEventInfrastructureService sut)
+        IntegrationEventCleanUpService sut)
     {
         // Arrange
         const int daysOld = 10;
@@ -39,27 +36,9 @@ public class IntegrationEventInfrastructureServiceTests
         clockMock.Setup(x => x.GetCurrentInstant()).Returns(instant);
 
         // Act
-        await sut.DeleteOlderDispatchedIntegrationEventsAsync(daysOld);
+        sut.DeleteOlderDispatchedIntegrationEvents(daysOld);
 
         // Assert
         outboxMessageRepositoryMock.Verify(x => x.DeleteProcessedOlderThan(instant.Minus(Duration.FromDays(daysOld))));
-        unitOfWorkMock.Verify(x => x.CommitAsync());
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public async Task DispatchIntegrationEventsAsync(
-        [Frozen] Mock<IIntegrationEventDispatcher> integrationEventDispatcherMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        IntegrationEventInfrastructureService sut)
-    {
-        // Arrange
-        integrationEventDispatcherMock.Setup(x => x.DispatchIntegrationEventsAsync(1000)).ReturnsAsync(false);
-
-        // Act
-        await sut.DispatchIntegrationEventsAsync();
-
-        // Assert
-        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 }

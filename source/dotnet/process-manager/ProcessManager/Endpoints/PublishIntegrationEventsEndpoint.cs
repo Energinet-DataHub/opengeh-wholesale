@@ -13,21 +13,21 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
 public class PublishIntegrationEventsEndpoint
 {
-    private readonly IIntegrationEventInfrastructureService _integrationEventInfrastructureService;
+    private readonly IIntegrationEventService _integrationEventService;
     private readonly ICorrelationContext _correlationContext;
 
     public PublishIntegrationEventsEndpoint(
-        IIntegrationEventInfrastructureService integrationEventInfrastructureService,
+        IIntegrationEventService integrationEventService,
         ICorrelationContext correlationContext)
     {
-        _integrationEventInfrastructureService = integrationEventInfrastructureService;
+        _integrationEventService = integrationEventService;
         _correlationContext = correlationContext;
     }
 
@@ -39,6 +39,6 @@ public class PublishIntegrationEventsEndpoint
         // so we need to add a correlation ID ourselves
         _correlationContext.SetId(Guid.NewGuid().ToString());
 
-        await _integrationEventInfrastructureService.DispatchIntegrationEventsAsync().ConfigureAwait(false);
+        await _integrationEventService.DispatchIntegrationEventsAsync().ConfigureAwait(false);
     }
 }
