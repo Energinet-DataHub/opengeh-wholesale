@@ -21,5 +21,5 @@ public interface IIntegrationEventDispatcher
     /// </summary>
     /// <param name="numberOfIntegrationEventsToDispatch">The number of integration events to dispatch.</param>
     /// <returns>True if there are more integration events to dispatch otherwise false.</returns>
-    Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch);
+    Task<bool> DispatchIntegrationEventsAsync(int numberOfMessagesToDispatchInABulk);
 }
