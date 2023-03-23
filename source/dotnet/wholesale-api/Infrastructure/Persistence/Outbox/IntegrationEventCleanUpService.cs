@@ -12,24 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 
-public class IntegrationEventPublisher : IIntegrationEventPublisher
+public class IntegrationEventCleanUpService : IIntegrationEventCleanUpService
 {
     private readonly IOutboxMessageRepository _outboxMessageRepository;
+    private readonly IClock _clock;
 
-    public IntegrationEventPublisher(IOutboxMessageRepository outboxMessageRepository)
+    public IntegrationEventCleanUpService(
+        IOutboxMessageRepository outboxMessageRepository,
+        IClock clock)
     {
         _outboxMessageRepository = outboxMessageRepository;
+        _clock = clock;
     }
 
-    public async Task PublishAsync(IntegrationEventDto integrationEventDto)
+    public void DeleteOlderDispatchedIntegrationEvents(int daysOld)
     {
-        var outboxMessage = new OutboxMessage(integrationEventDto.EventData, integrationEventDto.MessageType, integrationEventDto.CreationDate);
-        await _outboxMessageRepository.AddAsync(outboxMessage).ConfigureAwait(false);
+        var instant = _clock.GetCurrentInstant();
+        instant = instant.Minus(Duration.FromDays(daysOld));
+        _outboxMessageRepository.DeleteProcessedOlderThan(instant);
     }
 }
