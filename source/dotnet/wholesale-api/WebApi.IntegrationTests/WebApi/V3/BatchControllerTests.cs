@@ -71,26 +71,10 @@ public class BatchControllerTests : WebApiTestBase
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task HTTP_GET_V3_SearchReturnsHttpStatusCodeOkAtExpectedUrl(
-        Mock<IBatchApplicationService> mock,
-        IEnumerable<BatchDto> batchDtos)
+    [Fact]
+    public async Task HTTP_GET_V3_SearchReturnsHttpStatusCodeOkAtExpectedUrl()
     {
-        // Arrange
-        var minExecutionTime = new DateTimeOffset(2022, 01, 02, 1, 2, 3, 50, TimeSpan.Zero);
-        var maxExecutionTime = minExecutionTime + TimeSpan.FromMinutes(33);
-        mock.Setup(service => service.SearchAsync(
-                Enumerable.Empty<string>(),
-                null,
-                minExecutionTime,
-                maxExecutionTime,
-                null,
-                null))
-            .ReturnsAsync(batchDtos);
-        Factory.BatchApplicationServiceMock = mock;
-
-        // Act
+        // Arrange + Act
         var response = await Client.GetAsync("/v3/batches", CancellationToken.None);
 
         // Assert
