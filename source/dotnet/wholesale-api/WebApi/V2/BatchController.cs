@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NodaTime;
 
@@ -36,17 +37,20 @@ public class BatchController : ControllerBase
     private readonly IBatchDtoV2Mapper _batchDtoV2Mapper;
     private readonly ISettlementReportApplicationService _settlementReportApplicationService;
     private readonly DateTimeZone _dateTimeZone;
+    private readonly IMediator _mediator;
 
     public BatchController(
         IBatchApplicationService batchApplicationService,
         IBatchDtoV2Mapper batchDtoV2Mapper,
         ISettlementReportApplicationService settlementReportApplicationService,
-        DateTimeZone dateTimeZone)
+        DateTimeZone dateTimeZone,
+        IMediator mediator)
     {
         _batchApplicationService = batchApplicationService;
         _batchDtoV2Mapper = batchDtoV2Mapper;
         _settlementReportApplicationService = settlementReportApplicationService;
         _dateTimeZone = dateTimeZone;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -64,8 +68,11 @@ public class BatchController : ControllerBase
         if (new ZonedDateTime(periodEnd, _dateTimeZone).TimeOfDay != LocalTime.Midnight)
             throw new BusinessValidationException($"The period end '{periodEnd.ToString()}' must be 1 ms before midnight.");
 
-        var batchId = await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
-        return batchId;
+        return await _mediator.Send(new CreateBatchCommand(
+            batchRequestDto.ProcessType,
+            batchRequestDto.GridAreaCodes,
+            batchRequestDto.StartDate,
+            batchRequestDto.EndDate)).ConfigureAwait(false);
     }
 
     /// <summary>

@@ -12,11 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Contracts;
 using MediatR;
 
-namespace Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 /// <summary>
-/// An immutable request to create a batch.
+/// An immutable command to create a batch.
 /// </summary>
-public sealed record BatchRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate) : IRequest;
+public sealed record CreateBatchCommand(
+    ProcessType ProcessType,
+    IEnumerable<string> GridAreaCodes,
+    DateTimeOffset StartDate,
+    DateTimeOffset EndDate) : IRequest<Guid>;
