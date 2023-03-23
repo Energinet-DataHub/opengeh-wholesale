@@ -14,11 +14,15 @@
 
 using System.Net;
 using System.Net.Http.Json;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -72,6 +76,51 @@ public class BatchControllerTests : WebApiTestBase
 
         // Assert
         actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
+        Mock<IBatchApplicationService> mock,
+        BatchDto batchDto)
+    {
+        // Arrange
+        mock.Setup(service => service.GetAsync(batchDto.BatchId))
+            .ReturnsAsync(batchDto);
+        Factory.BatchApplicationServiceMock = mock;
+
+        // Act
+        var response = await Client.GetAsync($"/v3/batches/{batchDto.BatchId.ToString()}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_POST_V3_SearchReturnsHttpStatusCodeOkAtExpectedUrl(
+        Mock<IBatchApplicationService> mock,
+        IEnumerable<BatchDto> batchDtos,
+        BatchSearchDtoV2 batchSearchDto)
+    {
+        // Arrange
+        var minExecutionTime = new DateTimeOffset(2022, 01, 02, 1, 2, 3, 50, TimeSpan.Zero);
+        var maxExecutionTime = minExecutionTime + TimeSpan.FromMinutes(33);
+        mock.Setup(service => service.SearchAsync(
+                Enumerable.Empty<string>(),
+                null,
+                minExecutionTime,
+                maxExecutionTime,
+                null,
+                null))
+            .ReturnsAsync(batchDtos);
+        Factory.BatchApplicationServiceMock = mock;
+
+        // Act
+        var response = await Client.PostAsJsonAsync("/v3/batches/search", batchSearchDto, CancellationToken.None);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     private static BatchRequestDto CreateBatchRequestDto()
