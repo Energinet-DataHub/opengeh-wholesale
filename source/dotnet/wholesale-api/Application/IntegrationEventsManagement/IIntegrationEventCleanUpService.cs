@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 
-public interface IIntegrationEventInfrastructureService
+public interface IIntegrationEventCleanUpService
 {
-    Task DeleteOlderDispatchedIntegrationEventsAsync(int daysOld);
-
-    Task DispatchIntegrationEventsAsync();
+    void DeleteOlderDispatchedIntegrationEvents(int daysOld);
 }

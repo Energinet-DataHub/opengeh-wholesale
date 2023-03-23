@@ -14,31 +14,31 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Moq;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.EventPublishers;
 
-public class IntegrationEventPublisherTests
+public class IntegrationEventCleanUpServiceTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task AddAsync_WhenCreatingOutboxMessage(
+    public void DeleteOlderDispatchedIntegrationEvents_CallsDeleteProcessedOlderThan(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
-        IntegrationEventDto integrationEventDto,
-        IntegrationEventPublisher sut)
+        [Frozen] Mock<IClock> clockMock,
+        IntegrationEventCleanUpService sut)
     {
-        // Arrange & Act
-        await sut.PublishAsync(integrationEventDto);
+        // Arrange
+        const int daysOld = 10;
+        var instant = SystemClock.Instance.GetCurrentInstant();
+        clockMock.Setup(x => x.GetCurrentInstant()).Returns(instant);
+
+        // Act
+        sut.DeleteOlderDispatchedIntegrationEvents(daysOld);
 
         // Assert
-        outboxMessageRepositoryMock.Verify(x => x.AddAsync(It.Is<OutboxMessage>(message =>
-            message.MessageType == integrationEventDto.MessageType
-            && message.Data == integrationEventDto.EventData
-            && message.CreationDate == integrationEventDto.CreationDate)));
+        outboxMessageRepositoryMock.Verify(x => x.DeleteProcessedOlderThan(instant.Minus(Duration.FromDays(daysOld))));
     }
 }
