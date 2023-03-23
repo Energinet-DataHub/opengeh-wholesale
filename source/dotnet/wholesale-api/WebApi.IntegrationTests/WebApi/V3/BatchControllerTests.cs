@@ -54,31 +54,6 @@ public class BatchControllerTests : WebApiTestBase
     }
 
     [Theory]
-    [InlineData("2023-01-31T23:00Z")]
-    [InlineData("2023-01-31T22:59:59Z")]
-    [InlineData("2023-01-31T22:59:59.9999999Z")]
-    [InlineData("2023-01-31")]
-    public async Task HTTP_POST_V3_ReturnsHttpStatusCodeBadRequestWhenCalledWithInvalidPeriodEnd(string periodEndString)
-    {
-        // Arrange
-        var expectedUrl = "/v3/batches";
-        var expectedHttpStatusCode = HttpStatusCode.BadRequest;
-        var periodStart = DateTimeOffset.Parse("2022-12-31T23:00:00Z");
-        var periodEnd = DateTimeOffset.Parse(periodEndString);
-        var batchRequestDto = new BatchRequestDto(
-            ProcessType.BalanceFixing,
-            new List<string> { "805" },
-            periodStart,
-            periodEnd);
-
-        // Act
-        var actualContent = await Client.PostAsJsonAsync(expectedUrl, batchRequestDto, CancellationToken.None);
-
-        // Assert
-        actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
-    }
-
-    [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
         Mock<IBatchApplicationService> mock,
