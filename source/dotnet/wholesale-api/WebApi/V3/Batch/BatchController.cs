@@ -60,8 +60,8 @@ public class BatchController : V3ControllerBase
     /// <summary>
     /// Get batches that matches the criteria specified
     /// </summary>
-    /// <param name="filterByGridAreaCodes"></param>
-    /// <param name="filterByExecutionState"></param>
+    /// <param name="gridAreaCodes"></param>
+    /// <param name="executionState"></param>
     /// <param name="minExecutionTime"></param>
     /// <param name="maxExecutionTime"></param>
     /// <param name="periodStart"></param>
@@ -71,16 +71,16 @@ public class BatchController : V3ControllerBase
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(List<BatchDto>))]
     public async Task<IActionResult> SearchAsync(
-        [FromQuery] string[] filterByGridAreaCodes,
-        [FromQuery] BatchState filterByExecutionState,
+        [FromQuery] string[] gridAreaCodes,
+        [FromQuery] BatchState executionState,
         [FromQuery] DateTimeOffset minExecutionTime,
         [FromQuery] DateTimeOffset maxExecutionTime,
         [FromQuery] DateTimeOffset periodStart,
         [FromQuery] DateTimeOffset periodEnd)
     {
         var batches = await _batchApplicationService.SearchAsync(
-            filterByGridAreaCodes,
-            filterByExecutionState,
+            gridAreaCodes,
+            executionState,
             minExecutionTime,
             maxExecutionTime,
             periodStart,
