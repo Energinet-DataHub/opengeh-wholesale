@@ -72,11 +72,11 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(List<BatchDto>))]
     public async Task<IActionResult> SearchAsync(
         [FromQuery] string[] gridAreaCodes,
-        [FromQuery] BatchState executionState,
-        [FromQuery] DateTimeOffset minExecutionTime,
-        [FromQuery] DateTimeOffset maxExecutionTime,
-        [FromQuery] DateTimeOffset periodStart,
-        [FromQuery] DateTimeOffset periodEnd)
+        [FromQuery] BatchState? executionState,
+        [FromQuery] DateTimeOffset? minExecutionTime,
+        [FromQuery] DateTimeOffset? maxExecutionTime,
+        [FromQuery] DateTimeOffset? periodStart,
+        [FromQuery] DateTimeOffset? periodEnd)
     {
         var batches = await _batchApplicationService.SearchAsync(
             gridAreaCodes,
