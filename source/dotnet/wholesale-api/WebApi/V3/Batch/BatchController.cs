@@ -16,6 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain;
+using Energinet.DataHub.Wholesale.WebApi.V2;
 using Microsoft.AspNetCore.Mvc;
 using NodaTime;
 
@@ -24,16 +25,18 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 /// <summary>
 /// Energy suppliers for which batch results have been calculated.
 /// </summary>
-[Route("/v3/batch")]
+[Route("/v3/batches")]
 public class BatchController : V3ControllerBase
 {
     private readonly DateTimeZone _dateTimeZone;
     private readonly IBatchApplicationService _batchApplicationService;
+    private readonly IBatchDtoV2Mapper _batchDtoV2Mapper;
 
-    public BatchController(DateTimeZone dateTimeZone, IBatchApplicationService batchApplicationService)
+    public BatchController(DateTimeZone dateTimeZone, IBatchApplicationService batchApplicationService, IBatchDtoV2Mapper batchDtoV2Mapper)
     {
         _dateTimeZone = dateTimeZone;
         _batchApplicationService = batchApplicationService;
+        _batchDtoV2Mapper = batchDtoV2Mapper;
     }
 
     /// <summary>
@@ -53,5 +56,55 @@ public class BatchController : V3ControllerBase
 
         var batchId = await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
         return batchId;
+    }
+
+    /// <summary>
+    /// Returns a batch matching <paramref name="batchId"/>.
+    /// Period ends are 1 ms before midnight of the last day of the period.
+    /// </summary>
+    /// <param name="batchId">BatchId</param>
+    [HttpGet("{batchId}", Name = "GetBatch")]
+    [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(BatchDtoV2))]
+    public async Task<IActionResult> GetAsync([FromRoute]Guid batchId)
+    {
+        var batchDto = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
+        var batch = _batchDtoV2Mapper.Map(batchDto);
+
+        // Subtract 1 ms from period end as it is currently the expectation of the API
+        batch = batch with { PeriodEnd = batch.PeriodEnd.AddMilliseconds(-1) };
+
+        return Ok(batch);
+    }
+
+    /// <summary>
+    /// Get batches that matches the criteria specified in <paramref name="batchSearchDto"/>
+    /// Period ends are 1 ms before midnight of the last day of the period.
+    /// </summary>
+    /// <param name="batchSearchDto">Search criteria</param>
+    /// <returns>Batches that matches the search criteria. Always 200 OK</returns>
+    [HttpPost("search", Name = "SearchBatches")]
+    [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(List<BatchDtoV2>))]
+    public async Task<IActionResult> SearchAsync([FromBody][Required] BatchSearchDtoV2 batchSearchDto)
+    {
+        var batchesDto = await _batchApplicationService.SearchAsync(
+            batchSearchDto.FilterByGridAreaCodes,
+            batchSearchDto.FilterByExecutionState,
+            batchSearchDto.MinExecutionTime,
+            batchSearchDto.MaxExecutionTime,
+            batchSearchDto.PeriodStart,
+            batchSearchDto.PeriodEnd).ConfigureAwait(false);
+
+        var batches = batchesDto.Select(_batchDtoV2Mapper.Map).ToList();
+
+        // Subtract 1 ms from period end as it is currently the expectation of the API
+        for (var i = 0; i < batches.Count(); i++)
+        {
+            var batch = batches[i];
+            batches[i] = batch with { PeriodEnd = batch.PeriodEnd.AddMilliseconds(-1) };
+        }
+
+        return Ok(batches);
     }
 }
