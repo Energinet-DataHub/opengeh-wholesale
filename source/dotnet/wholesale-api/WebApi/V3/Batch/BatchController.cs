@@ -14,11 +14,9 @@
 
 using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.WebApi.V2;
 using Microsoft.AspNetCore.Mvc;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
@@ -28,20 +26,15 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 [Route("/v3/batches")]
 public class BatchController : V3ControllerBase
 {
-    private readonly DateTimeZone _dateTimeZone;
     private readonly IBatchApplicationService _batchApplicationService;
-    private readonly IBatchDtoV2Mapper _batchDtoV2Mapper;
 
-    public BatchController(DateTimeZone dateTimeZone, IBatchApplicationService batchApplicationService, IBatchDtoV2Mapper batchDtoV2Mapper)
+    public BatchController(IBatchApplicationService batchApplicationService)
     {
-        _dateTimeZone = dateTimeZone;
         _batchApplicationService = batchApplicationService;
-        _batchDtoV2Mapper = batchDtoV2Mapper;
     }
 
     /// <summary>
     /// Create a batch.
-    /// Period end must be exactly 1 ms before midnight.
     /// </summary>
     /// <returns>200 Ok with The batch id, or a 400 with an errormessage</returns>
     [HttpPost(Name = "CreateBatch")]
@@ -49,61 +42,49 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(Guid))]
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
-        batchRequestDto = batchRequestDto with { EndDate = batchRequestDto.EndDate.AddMilliseconds(1) };
-        var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
-        if (new ZonedDateTime(periodEnd, _dateTimeZone).TimeOfDay != LocalTime.Midnight)
-            throw new BusinessValidationException($"The period end '{periodEnd.ToString()}' must be 1 ms before midnight.");
-
-        var batchId = await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
-        return batchId;
+        return await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Returns a batch matching <paramref name="batchId"/>.
-    /// Period ends are 1 ms before midnight of the last day of the period.
     /// </summary>
     /// <param name="batchId">BatchId</param>
     [HttpGet("{batchId}", Name = "GetBatch")]
     [MapToApiVersion(Version)]
-    [Produces("application/json", Type = typeof(BatchDtoV2))]
+    [Produces("application/json", Type = typeof(BatchDto))]
     public async Task<IActionResult> GetAsync([FromRoute]Guid batchId)
     {
-        var batchDto = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
-        var batch = _batchDtoV2Mapper.Map(batchDto);
-
-        // Subtract 1 ms from period end as it is currently the expectation of the API
-        batch = batch with { PeriodEnd = batch.PeriodEnd.AddMilliseconds(-1) };
-
-        return Ok(batch);
+        return Ok(await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false));
     }
 
     /// <summary>
-    /// Get batches that matches the criteria specified in <paramref name="batchSearchDto"/>
-    /// Period ends are 1 ms before midnight of the last day of the period.
+    /// Get batches that matches the criteria specified
     /// </summary>
-    /// <param name="batchSearchDto">Search criteria</param>
+    /// <param name="filterByGridAreaCodes"></param>
+    /// <param name="filterByExecutionState"></param>
+    /// <param name="minExecutionTime"></param>
+    /// <param name="maxExecutionTime"></param>
+    /// <param name="periodStart"></param>
+    /// <param name="periodEnd"></param>
     /// <returns>Batches that matches the search criteria. Always 200 OK</returns>
-    [HttpPost("search", Name = "SearchBatches")]
+    [HttpGet(Name = "SearchBatches")]
     [MapToApiVersion(Version)]
-    [Produces("application/json", Type = typeof(List<BatchDtoV2>))]
-    public async Task<IActionResult> SearchAsync([FromBody][Required] BatchSearchDtoV2 batchSearchDto)
+    [Produces("application/json", Type = typeof(List<BatchDto>))]
+    public async Task<IActionResult> SearchAsync(
+        [FromQuery] string[] filterByGridAreaCodes,
+        [FromQuery] BatchState filterByExecutionState,
+        [FromQuery] DateTimeOffset minExecutionTime,
+        [FromQuery] DateTimeOffset maxExecutionTime,
+        [FromQuery] DateTimeOffset periodStart,
+        [FromQuery] DateTimeOffset periodEnd)
     {
-        var batchesDto = await _batchApplicationService.SearchAsync(
-            batchSearchDto.FilterByGridAreaCodes,
-            batchSearchDto.FilterByExecutionState,
-            batchSearchDto.MinExecutionTime,
-            batchSearchDto.MaxExecutionTime,
-            batchSearchDto.PeriodStart,
-            batchSearchDto.PeriodEnd).ConfigureAwait(false);
-
-        var batches = batchesDto.Select(_batchDtoV2Mapper.Map).ToList();
-
-        // Subtract 1 ms from period end as it is currently the expectation of the API
-        for (var i = 0; i < batches.Count(); i++)
-        {
-            var batch = batches[i];
-            batches[i] = batch with { PeriodEnd = batch.PeriodEnd.AddMilliseconds(-1) };
-        }
+        var batches = await _batchApplicationService.SearchAsync(
+            filterByGridAreaCodes,
+            filterByExecutionState,
+            minExecutionTime,
+            maxExecutionTime,
+            periodStart,
+            periodEnd).ConfigureAwait(false);
 
         return Ok(batches);
     }
