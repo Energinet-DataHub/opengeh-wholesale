@@ -184,7 +184,7 @@ def _start(command_line_args: list[str]) -> None:
     client_secret = dbutils.secrets.get(scope="wholesale-spn-secret-scope", key="spn_app_secret")
     credentials = ClientSecretCredential(tenant_id, client_id, client_secret)
  
-    if islocked(args.data_storage_account_name, args.data_storage_account_key):
+    if islocked(args.data_storage_account_name, credentials):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
