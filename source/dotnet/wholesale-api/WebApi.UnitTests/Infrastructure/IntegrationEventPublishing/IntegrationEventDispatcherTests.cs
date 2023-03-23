@@ -32,26 +32,20 @@ public class IntegrationEventDispatcherTests
     [AutoMoqData]
     public async Task DispatchIntegrationEventsAsync_CallsCreateServiceBusMessageAndSendMessagesAsyncWithCorrectParameters(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
-        [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<ILogger<IntegrationEventDispatcher>> loggerMock,
         [Frozen] Mock<IServiceBusMessageFactory> serviceBusMessageFactoryMock,
         [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock,
-        ServiceBusMessage serviceBusMessage)
+        ServiceBusMessage serviceBusMessage,
+        IntegrationEventDispatcher sut)
     {
         // Arrange
-        var data = new byte[10];
-        var outboxMessage1 = CreateOutboxMessage(data, CalculationResultCompleted.BalanceFixingEventName);
-        serviceBusMessageFactoryMock.Setup(x =>
-            x.CreateServiceBusMessage(data, CalculationResultCompleted.BalanceFixingEventName)).Returns(serviceBusMessage);
-        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(11))
-            .ReturnsAsync(new List<OutboxMessage> { outboxMessage1 });
+        serviceBusMessageFactoryMock
+            .Setup(x => x.CreateServiceBusMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName))
+            .Returns(serviceBusMessage);
 
-        var sut = new IntegrationEventDispatcher(
-            integrationEventTopicServiceBusSenderMock.Object,
-            outboxMessageRepositoryMock.Object,
-            clockMock.Object,
-            loggerMock.Object,
-            serviceBusMessageFactoryMock.Object);
+        var outboxMessage = CreateOutboxMessage(CalculationResultCompleted.BalanceFixingEventName);
+        outboxMessageRepositoryMock
+            .Setup(x => x.GetByTakeAsync(11))
+            .ReturnsAsync(new List<OutboxMessage> { outboxMessage });
 
         // Act
         await sut.DispatchIntegrationEventsAsync(10);
@@ -69,7 +63,7 @@ public class IntegrationEventDispatcherTests
     [InlineAutoMoqData(2, 1, true)]
     [InlineAutoMoqData(3, 1, true)]
     public async Task DispatchIntegrationEventsAsync_ReturnsFalseWhenTheNumberOfMessagesLeftAreLesserThanBulkSize(
-        int messagesReturned,
+        int numberOfMessages,
         int bulkSize,
         bool expected,
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
@@ -78,16 +72,14 @@ public class IntegrationEventDispatcherTests
         IntegrationEventDispatcher sut)
     {
         // Arrange
-        var data = new byte[10];
-        serviceBusMessageFactoryMock.Setup(x => x.CreateServiceBusMessage(data, CalculationResultCompleted.BalanceFixingEventName)).Returns(serviceBusMessage);
-        var outboxMessages = new List<OutboxMessage>();
-        for (var i = 0; i < messagesReturned; i++)
-        {
-            var message = CreateOutboxMessage(data, CalculationResultCompleted.BalanceFixingEventName);
-            outboxMessages.Add(message);
-        }
+        serviceBusMessageFactoryMock
+            .Setup(x => x.CreateServiceBusMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName))
+            .Returns(serviceBusMessage);
 
-        outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(bulkSize + 1)).ReturnsAsync(outboxMessages);
+        var outboxMessages = GenerateOutboxMessages(numberOfMessages);
+        outboxMessageRepositoryMock
+            .Setup(x => x.GetByTakeAsync(bulkSize + 1))
+            .ReturnsAsync(outboxMessages);
 
         // Act
         var actual = await sut.DispatchIntegrationEventsAsync(bulkSize);
@@ -96,8 +88,20 @@ public class IntegrationEventDispatcherTests
         Assert.Equal(expected, actual);
     }
 
-    private static OutboxMessage CreateOutboxMessage(byte[] eventData, string messageType)
+    private static List<OutboxMessage> GenerateOutboxMessages(int numberOfMessages)
     {
-        return new OutboxMessage(eventData, messageType, SystemClock.Instance.GetCurrentInstant());
+        var outboxMessages = new List<OutboxMessage>();
+        for (var i = 0; i < numberOfMessages; i++)
+        {
+            var message = CreateOutboxMessage(CalculationResultCompleted.BalanceFixingEventName);
+            outboxMessages.Add(message);
+        }
+
+        return outboxMessages;
+    }
+
+    private static OutboxMessage CreateOutboxMessage(string messageType)
+    {
+        return new OutboxMessage(new byte[10], messageType, SystemClock.Instance.GetCurrentInstant());
     }
 }
