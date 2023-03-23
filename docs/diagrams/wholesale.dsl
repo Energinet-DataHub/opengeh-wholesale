@@ -17,7 +17,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
                 wholesaleProcessManager = container "Process Manager" "" "Azure Function App" "Microsoft Azure - Function Apps"
 
-                wholesaleStorage = container "Data Lake" "Stores batch results" "Azure Data Lake Gen 2" "Data Storage"
+                wholesaleStorage = container "Data Lake" "Stores batch results" "Azure Data Lake Gen 2" "Microsoft Azure - Data Lake Store Gen1"
                 wholesaleCalculator = container "Calculation Engine" "" "Databricks" "Microsoft Azure - Azure Databricks"
 
                 wholesaleApi -> wholesaleDb "uses"
