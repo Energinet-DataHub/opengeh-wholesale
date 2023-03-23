@@ -16,7 +16,6 @@ using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,15 +28,12 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 public class BatchController : V3ControllerBase
 {
     private readonly IBatchApplicationService _batchApplicationService;
-    private readonly DateTimeZone _dateTimeZone;
     private readonly IMediator _mediator;
 
     public BatchController(
         IBatchApplicationService batchApplicationService,
-        DateTimeZone dateTimeZone,
         IMediator mediator)
     {
-        _dateTimeZone = dateTimeZone;
         _mediator = mediator;
         _batchApplicationService = batchApplicationService;
     }
