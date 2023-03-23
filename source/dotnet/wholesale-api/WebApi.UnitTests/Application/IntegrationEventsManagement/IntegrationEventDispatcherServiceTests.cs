@@ -25,7 +25,7 @@ public class IntegrationEventDispatcherServiceTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task DispatchIntegrationEventsAsync(
+    public async Task DispatchIntegrationEventsAsync_CallsCommit(
         [Frozen] Mock<IIntegrationEventDispatcher> integrationEventDispatcherMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         IntegrationEventService sut)
@@ -38,5 +38,21 @@ public class IntegrationEventDispatcherServiceTests
 
         // Assert
         unitOfWorkMock.Verify(x => x.CommitAsync());
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task DispatchIntegrationEventsAsync_UsesPositiveBulkSize(
+        [Frozen] Mock<IIntegrationEventDispatcher> integrationEventDispatcherMock,
+        IntegrationEventService sut)
+    {
+        // Arrange
+        integrationEventDispatcherMock.Setup(x => x.DispatchIntegrationEventsAsync(1000)).ReturnsAsync(false);
+
+        // Act
+        await sut.DispatchIntegrationEventsAsync();
+
+        // Assert
+        integrationEventDispatcherMock.Verify(x => x.DispatchIntegrationEventsAsync(It.Is<int>(i => i > 0)));
     }
 }

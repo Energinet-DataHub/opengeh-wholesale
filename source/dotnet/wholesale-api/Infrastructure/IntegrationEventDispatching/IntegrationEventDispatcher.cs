@@ -50,10 +50,8 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             var watch = new Stopwatch();
             watch.Start();
 
-            // Add 1 to number of messages ensure that the logic returns correctly.
-            numberOfMessagesToDispatchInABulk += 1;
-
-            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfMessagesToDispatchInABulk).ConfigureAwait(false);
+            // Fetch one more than bulk size to be able to test if there are more remaining
+            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfMessagesToDispatchInABulk + 1).ConfigureAwait(false);
             var serviceBusMessages = CreateServiceBusMessages(outboxMessages);
             await PublishServiceBusMessagesAsync(serviceBusMessages).ConfigureAwait(false);
 

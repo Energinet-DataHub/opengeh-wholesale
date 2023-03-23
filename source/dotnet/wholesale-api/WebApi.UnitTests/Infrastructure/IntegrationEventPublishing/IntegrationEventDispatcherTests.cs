@@ -64,12 +64,12 @@ public class IntegrationEventDispatcherTests
     [Theory]
     [InlineAutoMoqData(0, 0, false)]
     [InlineAutoMoqData(0, 1, false)]
-    [InlineAutoMoqData(1, 0, false)]
+    [InlineAutoMoqData(1, 0, true)]
     [InlineAutoMoqData(1, 1, false)]
-    [InlineAutoMoqData(2, 1, false)]
+    [InlineAutoMoqData(2, 1, true)]
     [InlineAutoMoqData(3, 1, true)]
     public async Task DispatchIntegrationEventsAsync_ReturnsFalseWhenTheNumberOfMessagesLeftAreLesserThanBulkSize(
-        int messagesLeft,
+        int messagesReturned,
         int bulkSize,
         bool expected,
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
@@ -84,7 +84,7 @@ public class IntegrationEventDispatcherTests
         serviceBusMessageFactoryMock.Setup(x => x.CreateServiceBusMessage(data, CalculationResultCompleted.BalanceFixingEventName)).Returns(serviceBusMessage);
 
         var outboxMessages = new List<OutboxMessage>();
-        for (var i = 0; i < messagesLeft; i++)
+        for (var i = 0; i < messagesReturned; i++)
         {
             var message = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName);
             outboxMessages.Add(message);
