@@ -13,14 +13,14 @@ on:
     inputs:
       release_name_prefix:
         required: false
-        default: "infrastructure"
+        default: infrastructure
         type: string
       infrastructure_path:
         required: true
         type: string
       operating_system:
         required: false
-        default: "ubuntu-22.04"
+        default: ubuntu-22.04
         type: string
 
 env:
@@ -55,7 +55,7 @@ jobs:
       - name: Zip files for prerelease
         uses: thedoctor0/zip-release@0.6.2
         with:
-          type: "zip"
+          type: zip
           filename: ${{ env.RELEASE_ZIP_FILENAME }}
           directory: ${{ env.RELEASE_FOLDER_PATH }}
 

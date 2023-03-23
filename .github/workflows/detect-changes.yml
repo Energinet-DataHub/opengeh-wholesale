@@ -1,0 +1,86 @@
+name: Detect changes
+
+# DESCRIPTION:
+# This workflow will determine which categories of jobs should be executed,
+# based on detected changes.
+# It should be used by the 'ci-orchestrator.yml' to detect changes.
+
+on:
+  workflow_call:
+    outputs:
+      c4_model:
+        value: ${{ jobs.changes.outputs.c4_model }}
+      edi_ci:
+        value: ${{ jobs.changes.outputs.edi_ci }}
+      market_participant_ci:
+        value: ${{ jobs.changes.outputs.market_participant_ci }}
+      migrations_ci:
+        value: ${{ jobs.changes.outputs.migrations_ci }}
+      shared_resources_ci:
+        value: ${{ jobs.changes.outputs.shared_resources_ci }}
+      ui_ci:
+        value: ${{ jobs.changes.outputs.ui_ci }}
+      wholesale_ci:
+        value: ${{ jobs.changes.outputs.wholesale_ci }}
+
+jobs:
+  changes:
+    name: Determine relevant jobs
+    runs-on: ubuntu-latest
+    outputs:
+      c4_model: ${{ steps.filter.outputs.c4_model }}
+      edi_ci: ${{ steps.filter.outputs.edi_ci }}
+      market_participant_ci: ${{ steps.filter.outputs.market_participant_ci }}
+      migrations_ci: ${{ steps.filter.outputs.migrations_ci }}
+      shared_resources_ci: ${{ steps.filter.outputs.shared_resources_ci }}
+      ui_ci: ${{ steps.filter.outputs.ui_ci }}
+      wholesale_ci: ${{ steps.filter.outputs.wholesale_ci }}
+    steps:
+      - name: Checkout repository
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: actions/checkout@v3
+
+      - name: Detect file changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            c4_model:
+              - c4-model/**
+              - .github/workflows/c4-model-*.yml
+            edi_ci:
+              - edi/**
+              - .github/workflows/edi-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            market_participant_ci:
+              - market-participant/**
+              - .github/workflows/market-participant-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            migrations_ci:
+              - migrations/**
+              - .github/workflows/migrations-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            shared_resources_ci:
+              - shared-resources/**
+              - .github/workflows/shared-resources-*.yml
+              - .github/workflows/shared-resources-infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            ui_ci:
+              - ui/**
+              - .github/workflows/ui-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            wholesale_ci:
+              - wholesale/**
+              - .github/workflows/wholesale-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*

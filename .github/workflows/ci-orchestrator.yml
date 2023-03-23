@@ -1,0 +1,111 @@
+name: CI orchestrator
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  #
+  # License and Markdown Check
+  #
+  ci_base:
+    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v10
+    with:
+      skip_license_check: true
+      skip_yaml_lint: false
+      skip_input_name_validation: false
+
+  #
+  # Detect changes to start relevant workflows
+  #
+  changes:
+    uses: ./.github/workflows/detect-changes.yml
+
+  c4_model_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.c4_model == 'true' }}
+    uses: ./.github/workflows/c4-model-status-check.yml
+
+  edi_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.edi_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: edi_infrastructure
+      infrastructure_path: ./edi/terraform
+    secrets: inherit
+
+  market_participant_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.market_participant_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: market_participant_infrastructure
+      infrastructure_path: ./market-participant/terraform
+    secrets: inherit
+
+  migrations_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.migrations_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: migrations_infrastructure
+      infrastructure_path: ./migrations/terraform
+    secrets: inherit
+
+  shared_resources_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.shared_resources_ci == 'true' }}
+    uses: ./.github/workflows/shared-resources-infrastructure-build-prerelease.yml
+    with:
+      infrastructure_path: ./shared-resources/terraform/infrastructure
+      landingzone_path: ./shared-resources/terraform/landingzone
+      b2c_path: ./shared-resources/terraform/b2c
+    secrets: inherit
+
+  ui_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.ui_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: ui_infrastructure
+      infrastructure_path: ./ui/terraform
+    secrets: inherit
+
+  wholesale_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.wholesale_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: wholesale_infrastructure
+      infrastructure_path: ./wholesale/terraform
+    secrets: inherit
+
+  #
+  # Branch policy status check
+  #
+
+  allow_merge_ci_orchestrator:
+    runs-on: ubuntu-latest
+    needs:
+      [
+        ci_base,
+        c4_model_ci,
+        edi_ci,
+        market_participant_ci,
+        migrations_ci,
+        shared_resources_ci,
+        ui_ci,
+        wholesale_ci,
+      ]
+    if: |
+      always()
+    steps:
+      - name: Verify if merge is allowed
+        run: |
+          echo "${{ toJSON(needs) }}"
+          if [[ ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }} = true ]]; then
+              echo "Failed"
+              exit 1
+          fi

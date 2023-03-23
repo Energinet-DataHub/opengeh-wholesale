@@ -1,10 +1,10 @@
 name: Terraform Validate
 inputs:
   working_directory:
-    description: "Working directory of the Terraform configuration"
+    description: Working directory of the Terraform configuration
     required: true
   pat_token:
-    description: "Access Token"
+    description: Access Token
     required: true
 
 runs:

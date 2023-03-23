@@ -16,7 +16,7 @@ on:
         type: string
       operating_system:
         required: false
-        default: "ubuntu-22.04"
+        default: ubuntu-22.04
         type: string
 
 env:
