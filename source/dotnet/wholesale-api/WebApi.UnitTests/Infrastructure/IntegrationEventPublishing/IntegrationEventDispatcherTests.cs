@@ -73,31 +73,21 @@ public class IntegrationEventDispatcherTests
         int bulkSize,
         bool expected,
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
-        [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<ILogger<IntegrationEventDispatcher>> loggerMock,
         [Frozen] Mock<IServiceBusMessageFactory> serviceBusMessageFactoryMock,
-        [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock,
-        ServiceBusMessage serviceBusMessage)
+        ServiceBusMessage serviceBusMessage,
+        IntegrationEventDispatcher sut)
     {
         // Arrange
         var data = new byte[10];
         serviceBusMessageFactoryMock.Setup(x => x.CreateServiceBusMessage(data, CalculationResultCompleted.BalanceFixingEventName)).Returns(serviceBusMessage);
-
         var outboxMessages = new List<OutboxMessage>();
         for (var i = 0; i < messagesReturned; i++)
         {
-            var message = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName);
+            var message = CreateOutboxMessage(data, CalculationResultCompleted.BalanceFixingEventName);
             outboxMessages.Add(message);
         }
 
         outboxMessageRepositoryMock.Setup(x => x.GetByTakeAsync(bulkSize + 1)).ReturnsAsync(outboxMessages);
-
-        var sut = new IntegrationEventDispatcher(
-            integrationEventTopicServiceBusSenderMock.Object,
-            outboxMessageRepositoryMock.Object,
-            clockMock.Object,
-            loggerMock.Object,
-            serviceBusMessageFactoryMock.Object);
 
         // Act
         var actual = await sut.DispatchIntegrationEventsAsync(bulkSize);
