@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import sys
-
+import dbutils
 import configargparse
 import package.calculation_input as calculation_input
 from configargparse import argparse
@@ -26,6 +26,7 @@ from package import (
     initialize_spark,
     log,
 )
+from azure.identity import ClientSecretCredential
 from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from package.file_writers.actors_writer import ActorsWriter
@@ -178,12 +179,17 @@ def _start(command_line_args: list[str]) -> None:
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
+    tenant_id = dbutils.secrets.get(scope="tenant-id-scope", key="tenant_id")
+    client_id = dbutils.secrets.get(scope="wholesale-spn-id-scope", key="spn_app_id")
+    client_secret = dbutils.secrets.get(scope="wholesale-spn-secret-scope", key="spn_app_secret")
+    credentials = ClientSecretCredential(tenant_id, client_id, client_secret)
+ 
     if islocked(args.data_storage_account_name, args.data_storage_account_key):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
     spark = initialize_spark()
-
+    
     calculator_args = CalculatorArgs(
         data_storage_account_name=args.data_storage_account_name,
         data_storage_account_key=args.data_storage_account_key,
