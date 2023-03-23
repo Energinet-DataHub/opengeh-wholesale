@@ -16,6 +16,7 @@ from .data_lake_file_manager import DataLakeFileManager
 import configargparse
 from package import log
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
+from package.databricks_secrets import get_client_secret_credential
 from configargparse import argparse
 from azure.identity import ClientSecretCredential
 
@@ -39,11 +40,10 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     return args
 
 
-def _lock(storage_account_name: str, credentials: ClientSecretCredential) -> None:
-
+def _lock(storage_account_name: str, credential: ClientSecretCredential) -> None:
     file_manager = DataLakeFileManager(
         storage_account_name,
-        credentials,
+        credential,
         WHOLESALE_CONTAINER_NAME,
     )
 
@@ -51,20 +51,20 @@ def _lock(storage_account_name: str, credentials: ClientSecretCredential) -> Non
     log(f"created lock file: {_LOCK_FILE_NAME}")
 
 
-def _unlock(storage_account_name: str, credentials: ClientSecretCredential) -> None:
+def _unlock(storage_account_name: str, credential: ClientSecretCredential) -> None:
     file_manager = DataLakeFileManager(
         storage_account_name,
-        credentials,
+        credential,
         WHOLESALE_CONTAINER_NAME,
     )
     file_manager.delete_file(_LOCK_FILE_NAME)
     log(f"deleted lock file: {_LOCK_FILE_NAME}")
 
 
-def islocked(storage_account_name: str, credentials: ClientSecretCredential) -> bool:
+def islocked(storage_account_name: str, credential: ClientSecretCredential) -> bool:
     file_manager = DataLakeFileManager(
         storage_account_name,
-        credentials,
+        credential,
         WHOLESALE_CONTAINER_NAME,
     )
     return file_manager.exists_file(_LOCK_FILE_NAME)
@@ -73,10 +73,12 @@ def islocked(storage_account_name: str, credentials: ClientSecretCredential) -> 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def lock() -> None:
     args = _get_valid_args_or_throw(sys.argv[1:])
-    _lock(args)
+    credential = get_client_secret_credential()
+    _lock(args.data_storage_account_name, credential)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def unlock() -> None:
     args = _get_valid_args_or_throw(sys.argv[1:])
-    _unlock(args.data_storage_account_name, )
+    credential = get_client_secret_credential()
+    _unlock(args.data_storage_account_name, credential)

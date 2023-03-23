@@ -18,7 +18,7 @@ import sys
 import configargparse
 from package import infrastructure, initialize_spark, log
 from package.args_helper import valid_log_level
-
+from package.databricks_secrets import get_client_secret_credential
 from .committed_migrations import upload_committed_migration
 from .data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
@@ -58,11 +58,12 @@ def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -
     )
 
 
-def _migrate_data_lake(storage_account_name: str, credentials: ClientSecretCredential) -> None:
+def _migrate_data_lake(storage_account_name: str) -> None:
     spark = initialize_spark()
+    credential = get_client_secret_credential()
     file_manager = DataLakeFileManager(
         storage_account_name,
-        credentials,
+        credential,
         infrastructure.WHOLESALE_CONTAINER_NAME,
     )
 
@@ -76,7 +77,7 @@ def _migrate_data_lake(storage_account_name: str, credentials: ClientSecretCrede
     migration_args = MigrationScriptArgs(
         data_storage_account_url=storage_account_url,
         data_storage_account_name=storage_account_name,
-        data_storage_account_key=storage_account_key,
+        data_storage_account_key="storage_account_key",
         spark=spark,
     )
 
@@ -88,4 +89,4 @@ def _migrate_data_lake(storage_account_name: str, credentials: ClientSecretCrede
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake() -> None:
     args = _get_valid_args_or_throw(sys.argv[1:])
-    _migrate_data_lake(args.data_storage_account_name, args.data_storage_account_key)
+    _migrate_data_lake(args.data_storage_account_name)

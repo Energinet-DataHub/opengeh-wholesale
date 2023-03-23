@@ -795,10 +795,11 @@ def test__creates_master_basis_data_per_grid_area(
     ), "Calculator job failed to write master basis data files for grid area 806"
 
 
+@patch("package.calculator_job.get_client_secret_credential")
 @patch("package.calculator_job._get_valid_args_or_throw")
 @patch("package.calculator_job.islocked")
 def test__when_data_lake_is_locked__return_exit_code_3(
-    mock_islocked: Mock, mock_args_parser: Mock
+    mock_islocked: Mock, mock_args_parser: Mock, mock_get_credential: Mock
 ) -> None:
     # Arrange
     mock_islocked.return_value = True
@@ -816,13 +817,14 @@ def test__start__start_calculator_called_without_exceptions(
     mock_start_calculator: Mock,
     mock_is_locked: Mock,
     mock_init_spark: Mock,
+    mock_get_credential: Mock,
     dummy_job_parameters: list[str],
 ) -> None:
     # Arrange
     mock_is_locked.return_value = False
 
     # Act
-    _start(dummy_job_parameters)
+    _start(dummy_job_parameters, None)
 
     # Assert
     mock_start_calculator.assert_called_once()

@@ -12,9 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .spark_initializor import initialize_spark
-from .balance_fixing import calculate_balance_fixing
-from .db_logging import log, debug, loglevel
-from .args_helper import valid_date, valid_list, valid_log_level
-from .calculator_job import _map_cim_quality_to_wholesale_quality
-from .databricks_secrets import get_client_secret_credential
+import dbutils
+from azure.identity import ClientSecretCredential
+
+
+def get_client_secret_credential() -> ClientSecretCredential:
+    tenant_id = dbutils.secrets.get(scope="tenant-id-scope", key="tenant_id")
+    client_id = dbutils.secrets.get(scope="wholesale-spn-id-scope", key="spn_app_id")
+    client_secret = dbutils.secrets.get(
+        scope="wholesale-spn-secret-scope", key="spn_app_secret"
+    )
+    return ClientSecretCredential(tenant_id, client_id, client_secret)
