@@ -14,34 +14,36 @@
 
 using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 /// <summary>
 /// Energy suppliers for which batch results have been calculated.
 /// </summary>
-[Route("/v3/batch")]
+[Route("/v3/batches")]
 public class BatchController : V3ControllerBase
 {
+    private readonly IBatchApplicationService _batchApplicationService;
     private readonly DateTimeZone _dateTimeZone;
     private readonly IMediator _mediator;
 
     public BatchController(
+        IBatchApplicationService batchApplicationService,
         DateTimeZone dateTimeZone,
         IMediator mediator)
     {
         _dateTimeZone = dateTimeZone;
         _mediator = mediator;
+        _batchApplicationService = batchApplicationService;
     }
 
     /// <summary>
     /// Create a batch.
-    /// Period end must be exactly 1 ms before midnight.
     /// </summary>
     /// <returns>200 Ok with The batch id, or a 400 with an errormessage</returns>
     [HttpPost(Name = "CreateBatch")]
@@ -49,15 +51,54 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(Guid))]
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
-        batchRequestDto = batchRequestDto with { EndDate = batchRequestDto.EndDate.AddMilliseconds(1) };
-        var periodEnd = Instant.FromDateTimeOffset(batchRequestDto.EndDate);
-        if (new ZonedDateTime(periodEnd, _dateTimeZone).TimeOfDay != LocalTime.Midnight)
-            throw new BusinessValidationException($"The period end '{periodEnd.ToString()}' must be 1 ms before midnight.");
-
         return await _mediator.Send(new CreateBatchCommand(
             batchRequestDto.ProcessType,
             batchRequestDto.GridAreaCodes,
             batchRequestDto.StartDate,
             batchRequestDto.EndDate)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Returns a batch matching <paramref name="batchId"/>.
+    /// </summary>
+    /// <param name="batchId">BatchId</param>
+    [HttpGet("{batchId}", Name = "GetBatch")]
+    [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(BatchDto))]
+    public async Task<IActionResult> GetAsync([FromRoute]Guid batchId)
+    {
+        return Ok(await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false));
+    }
+
+    /// <summary>
+    /// Get batches that matches the criteria specified
+    /// </summary>
+    /// <param name="gridAreaCodes"></param>
+    /// <param name="executionState"></param>
+    /// <param name="minExecutionTime"></param>
+    /// <param name="maxExecutionTime"></param>
+    /// <param name="periodStart"></param>
+    /// <param name="periodEnd"></param>
+    /// <returns>Batches that matches the search criteria. Always 200 OK</returns>
+    [HttpGet(Name = "SearchBatches")]
+    [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(List<BatchDto>))]
+    public async Task<IActionResult> SearchAsync(
+        [FromQuery] string[]? gridAreaCodes,
+        [FromQuery] BatchState? executionState,
+        [FromQuery] DateTimeOffset? minExecutionTime,
+        [FromQuery] DateTimeOffset? maxExecutionTime,
+        [FromQuery] DateTimeOffset? periodStart,
+        [FromQuery] DateTimeOffset? periodEnd)
+    {
+        var batches = await _batchApplicationService.SearchAsync(
+            gridAreaCodes ?? Array.Empty<string>(),
+            executionState,
+            minExecutionTime,
+            maxExecutionTime,
+            periodStart,
+            periodEnd).ConfigureAwait(false);
+
+        return Ok(batches);
     }
 }

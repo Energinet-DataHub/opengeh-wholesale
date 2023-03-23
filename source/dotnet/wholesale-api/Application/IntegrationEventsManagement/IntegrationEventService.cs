@@ -12,37 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
-
-public class IntegrationEventInfrastructureService : IIntegrationEventInfrastructureService
+public class IntegrationEventService : IIntegrationEventService
 {
-    private readonly IOutboxMessageRepository _outboxMessageRepository;
-    private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IIntegrationEventDispatcher _integrationEventDispatcher;
+    private readonly IIntegrationEventCleanUpService _integrationEventCleanUpService;
 
-    public IntegrationEventInfrastructureService(
-        IOutboxMessageRepository outboxMessageRepository,
-        IClock clock,
+    public IntegrationEventService(
         IUnitOfWork unitOfWork,
-        IIntegrationEventDispatcher integrationEventDispatcher)
+        IIntegrationEventDispatcher integrationEventDispatcher,
+        IIntegrationEventCleanUpService integrationEventCleanUpService)
     {
-        _outboxMessageRepository = outboxMessageRepository;
-        _clock = clock;
         _unitOfWork = unitOfWork;
         _integrationEventDispatcher = integrationEventDispatcher;
-    }
-
-    public async Task DeleteOlderDispatchedIntegrationEventsAsync(int daysOld)
-    {
-        var instant = _clock.GetCurrentInstant();
-        instant = instant.Minus(Duration.FromDays(daysOld));
-        _outboxMessageRepository.DeleteProcessedOlderThan(instant);
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        _integrationEventCleanUpService = integrationEventCleanUpService;
     }
 
     public async Task DispatchIntegrationEventsAsync()
@@ -54,5 +39,11 @@ public class IntegrationEventInfrastructureService : IIntegrationEventInfrastruc
             moreToDispatch = await _integrationEventDispatcher.DispatchIntegrationEventsAsync(numberOfIntegrationEvents).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
+    }
+
+    public async Task DeleteOlderDispatchedIntegrationEventsAsync(int daysOld)
+    {
+        _integrationEventCleanUpService.DeleteOlderDispatchedIntegrationEvents(daysOld);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }
