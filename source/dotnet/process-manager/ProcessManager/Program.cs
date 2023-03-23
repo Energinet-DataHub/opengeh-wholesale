@@ -24,6 +24,7 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
@@ -162,7 +163,7 @@ public static class Program
 
         serviceCollection.AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedToIntegrationEventFactory>();
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
-        serviceCollection.AddScoped<IIntegrationEventInfrastructureService, IntegrationEventInfrastructureService>();
+        serviceCollection.AddScoped<IIntegrationEventCleanUpService, IntegrationEventCleanUpService>();
         serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
         serviceCollection.AddScoped<IIntegrationEventTypeMapper>(_ =>
         {
@@ -170,6 +171,7 @@ public static class Program
             mapper.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
             return mapper;
         });
+        serviceCollection.AddScoped<IIntegrationEventService, IntegrationEventService>();
     }
 
     private static void RegisterEventPublishers(IServiceCollection serviceCollection)
