@@ -817,14 +817,14 @@ def test__start__start_calculator_called_without_exceptions(
     mock_start_calculator: Mock,
     mock_is_locked: Mock,
     mock_init_spark: Mock,
-    mock_get_credential: Mock,
     dummy_job_parameters: list[str],
 ) -> None:
     # Arrange
     mock_is_locked.return_value = False
+    mock_credential = Mock()
 
     # Act
-    _start(dummy_job_parameters, None)
+    _start(dummy_job_parameters, mock_credential)
 
     # Assert
     mock_start_calculator.assert_called_once()
