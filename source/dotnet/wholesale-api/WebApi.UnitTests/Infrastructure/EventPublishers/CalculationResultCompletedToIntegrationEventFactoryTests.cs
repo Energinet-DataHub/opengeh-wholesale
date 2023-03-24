@@ -86,7 +86,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
 
     [Theory]
     [AutoMoqData]
-    public void CreateForEnergySupplier_CallsCreateForGridArea(
+    public void CreateForTotalGridArea_CallsCreateForGridArea(
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         ProcessStepResult processStepResult,
