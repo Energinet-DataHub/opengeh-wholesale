@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import sys
-from typing import Dict
 import configargparse
 import package.calculation_input as calculation_input
 from configargparse import argparse
@@ -70,12 +69,12 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     return args
 
 
-def _get_required_env_variables_or_throw() -> Dict:
+def _get_required_env_variables_or_throw() -> dict:
     required_variable_names = [
         EnvironmentVariable.TIME_ZONE,
         EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME,
     ]
-    env_variables = Dict()
+    env_variables = dict()
     for env_var in required_variable_names:
         variable = get_env_variable(env_var)
         if variable is None:
