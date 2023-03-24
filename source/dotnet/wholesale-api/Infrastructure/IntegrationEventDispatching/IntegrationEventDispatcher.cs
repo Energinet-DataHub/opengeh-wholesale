@@ -14,7 +14,7 @@
 
 using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.Logging;
@@ -44,23 +44,21 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             _serviceBusMessageFactory = serviceBusMessageFactory;
         }
 
-        public async Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch)
+        public async Task<bool> DispatchIntegrationEventsAsync(int numberOfMessagesToDispatchInABulk)
         {
             // Note: For future reference we log the publishing duration time.
             var watch = new Stopwatch();
             watch.Start();
 
-            // Add 1 to number of messages ensure that the logic returns correctly.
-            numberOfIntegrationEventsToDispatch += 1;
-
-            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfIntegrationEventsToDispatch).ConfigureAwait(false);
+            // Fetch one more than bulk size to be able to test if there are more remaining
+            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfMessagesToDispatchInABulk + 1).ConfigureAwait(false);
             var serviceBusMessages = CreateServiceBusMessages(outboxMessages);
             await PublishServiceBusMessagesAsync(serviceBusMessages).ConfigureAwait(false);
 
             watch.Stop();
             _logger.LogInformation($"Publishing {outboxMessages.Count} service bus messages took {watch.Elapsed.Milliseconds} ms.");
 
-            return outboxMessages.Count > numberOfIntegrationEventsToDispatch;
+            return outboxMessages.Count > numberOfMessagesToDispatchInABulk;
         }
 
         private IEnumerable<ServiceBusMessage> CreateServiceBusMessages(IEnumerable<OutboxMessage> outboxMessages)

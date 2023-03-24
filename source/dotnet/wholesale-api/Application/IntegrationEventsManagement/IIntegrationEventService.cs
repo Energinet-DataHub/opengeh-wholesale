@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application;
+namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 
-public interface IIntegrationEventPublisher
+public interface IIntegrationEventService
 {
-    Task PublishAsync(IntegrationEventDto integrationEventDto);
+    Task DispatchIntegrationEventsAsync();
+
+    Task DeleteOlderDispatchedIntegrationEventsAsync(int daysOld);
 }

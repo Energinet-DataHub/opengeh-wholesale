@@ -12,14 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 
-public interface IIntegrationEventDispatcher
+public interface IIntegrationEventPublisher
 {
-    /// <summary>
-    /// Fetches a number of integration events and dispatches them.
-    /// </summary>
-    /// <param name="numberOfIntegrationEventsToDispatch">The number of integration events to dispatch.</param>
-    /// <returns>True if there are more integration events to dispatch otherwise false.</returns>
-    Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch);
+    Task PublishAsync(IntegrationEventDto integrationEventDto);
 }
