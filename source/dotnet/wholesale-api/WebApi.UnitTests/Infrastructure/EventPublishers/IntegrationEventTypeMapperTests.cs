@@ -22,12 +22,15 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.EventPubli
 
 public class IntegrationEventTypeMapperTests
 {
-    [Theory]
-    [AutoData]
-    public void GetEventName_WhenEventType_ReturnsEventName(IntegrationEventTypeMapper sut)
+    [Fact]
+    public void GetEventName_WhenEventType_ReturnsEventName()
     {
         // Arrange
-        sut.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
+        var sut = new IntegrationEventTypeMapper(new Dictionary<Type, string>
+        {
+            { typeof(CalculationResultCompleted), CalculationResultCompleted.BalanceFixingEventName },
+        });
+
         const string expected = CalculationResultCompleted.BalanceFixingEventName;
         var eventType = typeof(CalculationResultCompleted);
 
@@ -36,20 +39,6 @@ public class IntegrationEventTypeMapperTests
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
-    }
-
-    [Theory]
-    [AutoData]
-    public void GetEventType_WhenEventName_ReturnsEventType(
-        string eventName,
-        Type eventType,
-        IntegrationEventTypeMapper sut)
-    {
-        // Arrange & Act
-        sut.Add(eventName, eventType);
-
-        // Assert
-        Assert.Equal(1, sut.Count());
     }
 
     [Theory]
@@ -65,29 +54,31 @@ public class IntegrationEventTypeMapperTests
 
     [Theory]
     [AutoData]
-    public void Add_WhenAddingExistingEventType_ThrowsException(
+    public void OnInitialization_WhenAddingExistingEventType_ThrowsException(
         string eventName,
-        Type eventType,
-        IntegrationEventTypeMapper sut)
+        string otherEventName,
+        Type type)
     {
-        // Arrange
-        sut.Add(eventName, eventType);
-
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.Add(eventName, eventType));
+        Assert.Throws<ArgumentException>(() => new IntegrationEventTypeMapper(new Dictionary<Type, string>
+        {
+            { type, eventName },
+            { type, otherEventName },
+        }));
     }
 
     [Theory]
     [AutoData]
-    public void Add_WhenAddingExistingEventName_ThrowsException(
+    public void OnInitialization_WhenAddingExistingEventName_ThrowsException(
         string eventName,
-        Type eventType,
-        IntegrationEventTypeMapper sut)
+        Type type,
+        Type otherType)
     {
-        // Arrange
-        sut.Add(eventName, eventType);
-
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.Add(eventName, typeof(string)));
+        Assert.Throws<ArgumentException>(() => new IntegrationEventTypeMapper(new Dictionary<Type, string>
+        {
+            { type, eventName },
+            { otherType, eventName },
+        }));
     }
 }

@@ -165,12 +165,10 @@ public static class Program
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
         serviceCollection.AddScoped<IIntegrationEventCleanUpService, IntegrationEventCleanUpService>();
         serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
-        serviceCollection.AddScoped<IIntegrationEventTypeMapper>(_ =>
+        serviceCollection.AddScoped<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper(new Dictionary<Type, string>
         {
-            var mapper = new IntegrationEventTypeMapper();
-            mapper.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
-            return mapper;
-        });
+            { typeof(CalculationResultCompleted), CalculationResultCompleted.BalanceFixingEventName },
+        }));
         serviceCollection.AddScoped<IIntegrationEventService, IntegrationEventService>();
     }
 
