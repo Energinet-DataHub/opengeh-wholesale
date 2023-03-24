@@ -20,7 +20,7 @@ import package.calculation_input as calculation_input
 from configargparse import argparse
 from package.constants import Colname
 from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
-import package.environment_variables as env_variables
+from package.environment_variables import EnvironmentVariables, EnvironmentVariableName
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -180,26 +180,23 @@ def _start(command_line_args: list[str]) -> None:
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    print(
-        f"DATA_STORAGE_ACCOUNT_NAME: {os.getenv(env_variables.DATA_STORAGE_ACCOUNT_NAME)}"
+    env_variables = EnvironmentVariables()
+    time_zone = env_variables.get(EnvironmentVariableName.TIME_ZONE)
+    storage_account_name = env_variables.get(
+        EnvironmentVariableName.DATA_STORAGE_ACCOUNT_NAME
     )
-    print(f"SPN_APP_ID: {os.getenv(env_variables.SPN_APP_ID)}")
-    print(f"SPN_APP_SECRET: {os.getenv(env_variables.SPN_APP_SECRET)}")
-    print(f"TENANT_ID: {os.getenv(env_variables.TENANT_ID)}")
 
-    if islocked(args.data_storage_account_name, args.data_storage_account_key):
+    if islocked(storage_account_name, args.data_storage_account_key):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
-    spark = initialize_spark(
-        args.data_storage_account_name, args.data_storage_account_key
-    )
+    spark = initialize_spark(storage_account_name, args.data_storage_account_key)
 
     calculator_args = CalculatorArgs(
-        data_storage_account_name=args.data_storage_account_name,
+        data_storage_account_name=storage_account_name,
         data_storage_account_key=args.data_storage_account_key,
         wholesale_container_path=infrastructure.get_container_root_path(
-            args.data_storage_account_name
+            storage_account_name
         ),
         batch_id=args.batch_id,
         batch_grid_areas=args.batch_grid_areas,
@@ -207,7 +204,7 @@ def _start(command_line_args: list[str]) -> None:
         batch_period_end_datetime=args.batch_period_end_datetime,
         batch_execution_time_start=args.batch_execution_time_start,
         batch_process_type=args.batch_process_type,
-        time_zone=args.time_zone,
+        time_zone=time_zone,
     )
 
     _start_calculator(spark, calculator_args)
