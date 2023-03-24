@@ -18,7 +18,7 @@ import configargparse
 import package.calculation_input as calculation_input
 from configargparse import argparse
 from package.constants import Colname
-from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
+from package.codelists import TimeSeriesQuality
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -77,8 +77,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
             f"{args.wholesale_container_path}/calculation-input-v2/time-series-points"
         )
     )
-    timeseries_points_df = _map_cim_quality_to_wholesale_quality(timeseries_points_df)
-
     metering_points_periods_df = (
         spark.read.option("mode", "FAILFAST")
         .format("delta")
@@ -117,30 +115,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.time_zone,
-    )
-
-
-def _map_cim_quality_to_wholesale_quality(timeseries_point_df: DataFrame) -> DataFrame:
-    "Map input CIM quality names to wholesale quality names"
-    return timeseries_point_df.withColumn(
-        Colname.quality,
-        F.when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.missing.value,
-            TimeSeriesQuality.missing.value,
-        )
-        .when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.estimated.value,
-            TimeSeriesQuality.estimated.value,
-        )
-        .when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.measured.value,
-            TimeSeriesQuality.measured.value,
-        )
-        .when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.calculated.value,
-            TimeSeriesQuality.calculated.value,
-        )
-        .otherwise("UNKNOWN"),
     )
 
 
