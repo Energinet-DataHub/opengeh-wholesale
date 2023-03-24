@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import sys
-
 import configargparse
 import package.calculation_input as calculation_input
 from configargparse import argparse
@@ -26,6 +25,7 @@ from package import (
     initialize_spark,
     log,
 )
+from package.databricks_secrets import get_client_secret_credential
 from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from package.file_writers.actors_writer import ActorsWriter
@@ -36,6 +36,7 @@ import pyspark.sql.functions as F
 from .args_helper import valid_date, valid_list, valid_log_level
 from .calculator_args import CalculatorArgs
 from .datamigration import islocked
+from azure.identity import ClientSecretCredential
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -173,18 +174,16 @@ def _check_all_grid_areas_have_metering_points(
         )
 
 
-def _start(command_line_args: list[str]) -> None:
+def _start(command_line_args: list[str], credential: ClientSecretCredential) -> None:
     args = _get_valid_args_or_throw(command_line_args)
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    if islocked(args.data_storage_account_name, args.data_storage_account_key):
+    if islocked(args.data_storage_account_name, credential):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
-    spark = initialize_spark(
-        args.data_storage_account_name, args.data_storage_account_key
-    )
+    spark = initialize_spark()
 
     calculator_args = CalculatorArgs(
         data_storage_account_name=args.data_storage_account_name,
@@ -207,4 +206,5 @@ def _start(command_line_args: list[str]) -> None:
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start() -> None:
-    _start(sys.argv[1:])
+    credential = get_client_secret_credential()
+    _start(sys.argv[1:], credential)
