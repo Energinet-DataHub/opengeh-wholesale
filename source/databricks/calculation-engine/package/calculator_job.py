@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import sys
+import os
 import configargparse
 import package.calculation_input as calculation_input
 from configargparse import argparse
@@ -190,6 +191,7 @@ def _start(command_line_args: list[str]) -> None:
     time_zone = env_variables[EnvironmentVariable.TIME_ZONE]
     storage_account_name = env_variables[EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
     print(f"storage_account_name={storage_account_name}")
+    print(os.getenv("DATA_STORAGE_ACCOUNT_NAME"))
 
     if islocked(storage_account_name, args.data_storage_account_key):
         log("Exiting because storage is locked due to data migrations running.")
