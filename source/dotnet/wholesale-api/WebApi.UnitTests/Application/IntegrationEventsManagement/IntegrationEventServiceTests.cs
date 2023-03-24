@@ -74,7 +74,7 @@ public class IntegrationEventServiceTests
 
     [Theory]
     [AutoMoqData]
-    public async Task DeleteOlderDispatchedIntegrationEventsAsync_CallsCommitOnUnitOfWork(
+    public async Task DeleteOlderDispatchedIntegrationEventsAsync_CommitsUnitOfWork(
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         int days,
         IntegrationEventService sut)
