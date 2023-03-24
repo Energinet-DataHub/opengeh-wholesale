@@ -58,7 +58,7 @@ public class IntegrationEventServiceTests
 
     [Theory]
     [AutoMoqData]
-    public async Task DispatchIntegrationEventsAsync_CallsDeleteOlderDispatchedIntegrationEventsOnIntegrationEventCleanUpService(
+    public async Task DeleteOlderDispatchedIntegrationEventsAsync_CallsDeleteOlderDispatchedIntegrationEventsOnIntegrationEventCleanUpService(
         [Frozen] Mock<IIntegrationEventCleanUpService> integrationEventCleanUpServiceMock,
         IntegrationEventService sut)
     {
