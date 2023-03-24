@@ -16,7 +16,6 @@ using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
@@ -28,13 +27,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 public class BatchController : V3ControllerBase
 {
     private readonly IBatchApplicationService _batchApplicationService;
-    private readonly IMediator _mediator;
 
-    public BatchController(
-        IBatchApplicationService batchApplicationService,
-        IMediator mediator)
+    public BatchController(IBatchApplicationService batchApplicationService)
     {
-        _mediator = mediator;
         _batchApplicationService = batchApplicationService;
     }
 
@@ -47,11 +42,7 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(Guid))]
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
-        return await _mediator.Send(new CreateBatchCommand(
-            batchRequestDto.ProcessType,
-            batchRequestDto.GridAreaCodes,
-            batchRequestDto.StartDate,
-            batchRequestDto.EndDate)).ConfigureAwait(false);
+        return await _batchApplicationService.CreateAsync(batchRequestDto).ConfigureAwait(false);
     }
 
     /// <summary>
