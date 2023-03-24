@@ -42,4 +42,8 @@ def get_env_variable_or_throw(variable: EnvironmentVariable) -> Any:
 
 
 def get_env_variable(variable: EnvironmentVariable) -> Any:
+    print("debug start")
+    print(variable.value)
+    print(os.getenv(variable.value))
+    print("debug end")
     return os.getenv(variable.value)
