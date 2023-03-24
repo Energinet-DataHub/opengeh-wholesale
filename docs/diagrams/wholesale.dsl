@@ -31,7 +31,6 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             }
         }
         # Relationships to/from containers
-        dh3User -> frontend "View and start jobs using"
         extUser -> frontend "View and start jobs using"
         bff -> wholesaleApi "uses" "JSON/HTTPS"
     }
