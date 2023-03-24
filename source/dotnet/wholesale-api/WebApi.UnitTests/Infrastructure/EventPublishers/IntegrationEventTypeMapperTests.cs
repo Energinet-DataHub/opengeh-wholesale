@@ -40,13 +40,13 @@ public class IntegrationEventTypeMapperTests
 
     [Theory]
     [AutoData]
-    public void GetEventType_WhenEventName_ReturnsEventType(IntegrationEventTypeMapper sut)
+    public void GetEventType_WhenEventName_ReturnsEventType(
+        string eventName,
+        Type eventType,
+        IntegrationEventTypeMapper sut)
     {
-        // Arrange
-        var type = typeof(string);
-
-        // Act
-        sut.Add("string", type);
+        // Arrange & Act
+        sut.Add(eventName, eventType);
 
         // Assert
         Assert.Equal(1, sut.Count());
@@ -65,11 +65,12 @@ public class IntegrationEventTypeMapperTests
 
     [Theory]
     [AutoData]
-    public void Add_WhenAddingExistingEventType_ThrowsException(IntegrationEventTypeMapper sut)
+    public void Add_WhenAddingExistingEventType_ThrowsException(
+        string eventName,
+        Type eventType,
+        IntegrationEventTypeMapper sut)
     {
         // Arrange
-        const string eventName = "eventName";
-        var eventType = typeof(CalculationResultCompleted);
         sut.Add(eventName, eventType);
 
         // Act & Assert
@@ -78,11 +79,12 @@ public class IntegrationEventTypeMapperTests
 
     [Theory]
     [AutoData]
-    public void ThrowsException_WhenAddingExistingEventName(IntegrationEventTypeMapper sut)
+    public void ThrowsException_WhenAddingExistingEventName(
+        string eventName,
+        Type eventType,
+        IntegrationEventTypeMapper sut)
     {
         // Arrange
-        const string eventName = "eventName";
-        var eventType = typeof(CalculationResultCompleted);
         sut.Add(eventName, eventType);
 
         // Act & Assert
