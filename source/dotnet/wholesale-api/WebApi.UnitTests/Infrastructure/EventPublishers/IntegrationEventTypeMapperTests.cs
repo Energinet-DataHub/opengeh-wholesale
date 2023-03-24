@@ -79,7 +79,7 @@ public class IntegrationEventTypeMapperTests
 
     [Theory]
     [AutoData]
-    public void ThrowsException_WhenAddingExistingEventName(
+    public void Add_WhenAddingExistingEventName_ThrowsException(
         string eventName,
         Type eventType,
         IntegrationEventTypeMapper sut)
