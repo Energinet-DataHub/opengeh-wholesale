@@ -74,9 +74,10 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         var serviceBusMessage = new ServiceBusMessage
         {
             Body = new BinaryData(body),
+            Subject = messageType,
         };
         serviceBusMessage.SetOperationCorrelationId(operationCorrelationId);
-        serviceBusMessage.SetMessageType(messageType);
+        serviceBusMessage.SetMessageType(messageType); // TODO: This does not work with the subscription filters in terraform
         return serviceBusMessage;
     }
 
