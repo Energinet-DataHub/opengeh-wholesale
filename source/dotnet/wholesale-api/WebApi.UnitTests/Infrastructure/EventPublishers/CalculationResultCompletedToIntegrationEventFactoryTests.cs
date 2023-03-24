@@ -38,7 +38,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         ProcessStepResult processStepResult,
         ProcessCompletedEventDto processCompletedEventDto,
         string energySupplierGln,
-        CalculationResultCompletedToIntegrationEventFactory sut)
+        IntegrationEventFactory sut)
     {
         // Arrange
         calculationResultCompletedIntegrationEventFactoryMock
