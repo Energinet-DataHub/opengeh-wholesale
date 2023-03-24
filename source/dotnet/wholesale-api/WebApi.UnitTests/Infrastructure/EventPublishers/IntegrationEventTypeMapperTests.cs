@@ -62,4 +62,30 @@ public class IntegrationEventTypeMapperTests
         // Act & Assert
         Assert.Throws<KeyNotFoundException>(() => sut.GetMessageType(eventType));
     }
+
+    [Theory]
+    [AutoData]
+    public void ThrowsException_WhenAddingExistingEventType(IntegrationEventTypeMapper sut)
+    {
+        // Arrange
+        const string eventName = "eventName";
+        var eventType = typeof(CalculationResultCompleted);
+        sut.Add(eventName, eventType);
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => sut.Add(eventName, eventType));
+    }
+
+    [Theory]
+    [AutoData]
+    public void ThrowsException_WhenAddingExistingEventName(IntegrationEventTypeMapper sut)
+    {
+        // Arrange
+        const string eventName = "eventName";
+        var eventType = typeof(CalculationResultCompleted);
+        sut.Add(eventName, eventType);
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => sut.Add(eventName, typeof(string)));
+    }
 }
