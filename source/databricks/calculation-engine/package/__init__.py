@@ -17,4 +17,3 @@ from .balance_fixing import calculate_balance_fixing
 from .db_logging import log, debug, loglevel
 from .args_helper import valid_date, valid_list, valid_log_level
 from .calculator_job import _map_cim_quality_to_wholesale_quality
-from .databricks_secrets import get_client_secret_credential
