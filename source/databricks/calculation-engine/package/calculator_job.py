@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
+import sys, os
 
 import configargparse
 import package.calculation_input as calculation_input
@@ -36,7 +36,7 @@ import pyspark.sql.functions as F
 from .args_helper import valid_date, valid_list, valid_log_level
 from .calculator_args import CalculatorArgs
 from .datamigration import islocked
-
+import .environment_variables
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
@@ -177,6 +177,11 @@ def _start(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
+    
+    print(f"DATA_STORAGE_ACCOUNT_NAME: {os.getenv(environment_variables.DATA_STORAGE_ACCOUNT_NAME)}")
+    print(f"SPN_APP_ID: {os.getenv(environment_variables.SPN_APP_ID)}")
+    print(f"SPN_APP_SECRET: {os.getenv(environment_variables.SPN_APP_SECRET)}")
+    print(f"TENANT_ID: {os.getenv(environment_variables.TENANT_ID)}")
 
     if islocked(args.data_storage_account_name, args.data_storage_account_key):
         log("Exiting because storage is locked due to data migrations running.")
