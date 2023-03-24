@@ -47,10 +47,10 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
 
 @patch("package.datamigration.lock_storage.DataLakeFileManager")
 @patch("package.datamigration.lock_storage._get_valid_args_or_throw")
+@patch("package.datamigration.lock_storage.get_client_secret_credential")
 def test__lock__create_file_called_with_correct_name(
-    mock_arg_parser, mock_file_manager
+    mock_get_credential, mock_arg_parser, mock_file_manager
 ):
-
     # Arrange
     mock_create_file = Mock()
     mock_file_manager.return_value.create_file = mock_create_file
@@ -64,10 +64,10 @@ def test__lock__create_file_called_with_correct_name(
 
 @patch("package.datamigration.lock_storage.DataLakeFileManager")
 @patch("package.datamigration.lock_storage._get_valid_args_or_throw")
+@patch("package.datamigration.lock_storage.get_client_secret_credential")
 def test__lock__delete_file_called_with_correct_name(
-    mock_arg_parser, mock_file_manager
+    mock_get_credential, mock_arg_parser, mock_file_manager
 ):
-
     # Arrange
     mock_delete_file = Mock()
     mock_file_manager.return_value.delete_file = mock_delete_file
