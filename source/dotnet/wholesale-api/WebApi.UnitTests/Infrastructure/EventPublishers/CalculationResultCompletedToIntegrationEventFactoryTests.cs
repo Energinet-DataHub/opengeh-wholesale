@@ -64,7 +64,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
 
     [Theory]
     [AutoMoqData]
-    public void CreateForEnergySupplier_CallsCreateForBalanceResponsibleParty(
+    public void CreateForBalanceResponsibleParty_CallsCreateForBalanceResponsibleParty(
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         ProcessStepResult processStepResult,
