@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.IntegrationEventsManagement;
 
-public class IntegrationEventDispatcherServiceTests
+public class IntegrationEventServiceTests
 {
     [Theory]
     [AutoMoqData]

@@ -30,7 +30,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
 {
     [Theory]
     [AutoMoqData]
-    public void CreateForEnergySupplier_ReturnAnIntegrationEventDtoWithTheCorrectValues(
+    public void CalculationResultCompletedToIntegrationEventFactory_ReturnAnIntegrationEventDtoWithTheCorrectValues(
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IIntegrationEventTypeMapper> integrationEventTypeMapperMock,
@@ -64,7 +64,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
 
     [Theory]
     [AutoMoqData]
-    public void CreateForEnergySupplier_CallsCreateForBalanceResponsibleParty(
+    public void CalculationResultCompletedToIntegrationEventFactory_CallsCreateForBalanceResponsibleParty(
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         ProcessStepResult processStepResult,
@@ -86,7 +86,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
 
     [Theory]
     [AutoMoqData]
-    public void CreateForEnergySupplier_CallsCreateForGridArea(
+    public void CalculationResultCompletedToIntegrationEventFactory_CallsCreateForGridArea(
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         ProcessStepResult processStepResult,
@@ -107,7 +107,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
 
     [Theory]
     [AutoMoqData]
-    public void CreateForEnergySupplier_CallsCreateForEnergySupplierByBalanceResponsibleParty(
+    public void CalculationResultCompletedToIntegrationEventFactory_CallsCreateForEnergySupplierByBalanceResponsibleParty(
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         ProcessStepResult processStepResult,
