@@ -18,7 +18,10 @@ import package.calculation_input as calculation_input
 from configargparse import argparse
 from package.constants import Colname
 from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
-from package.environment_variables import get_env_variable_or_throw, EnvironmentVariable
+from package.environment_variables import (
+    get_env_variables_or_throw,
+    EnvironmentVariable,
+)
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -67,18 +70,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         raise Exception("Grid areas must be a list")
 
     return args
-
-
-def _get_required_env_variables_or_throw() -> dict:
-    required_variable_names = [
-        EnvironmentVariable.TIME_ZONE,
-        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME,
-    ]
-    env_variables = dict()
-    for env_var in required_variable_names:
-        env_variables[env_var] = get_env_variable_or_throw(env_var)
-
-    return env_variables
 
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
@@ -190,9 +181,15 @@ def _start(command_line_args: list[str]) -> None:
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    env_variables = _get_required_env_variables_or_throw()
+    required_env_variables = [
+        EnvironmentVariable.TIME_ZONE,
+        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME,
+    ]
+    env_variables = get_env_variables_or_throw(required_env_variables)
+
     time_zone = env_variables[EnvironmentVariable.TIME_ZONE]
     storage_account_name = env_variables[EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
+    print(f"storage_account_name={storage_account_name}")
 
     if islocked(storage_account_name, args.data_storage_account_key):
         log("Exiting because storage is locked due to data migrations running.")

@@ -27,6 +27,14 @@ class EnvironmentVariable(Enum):
     SPN_APP_SECRET = "SPN_APP_SECRET"
 
 
+def get_env_variables_or_throw(environment_variable: list[EnvironmentVariable]) -> dict:
+    env_variables = dict()
+    for env_var in environment_variable:
+        env_variables[env_var] = get_env_variable_or_throw(env_var)
+
+    return env_variables
+
+
 def get_env_variable_or_throw(variable: EnvironmentVariable) -> Any:
     env_variable = get_env_variable(variable)
     if env_variable is None:
