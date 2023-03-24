@@ -218,6 +218,22 @@ resource "azurerm_key_vault_secret" "kvs-sbns-connection-string" {
   ]
 }
 
+resource "azurerm_key_vault_secret" "kvs-sbns-namespace" {
+  name         = "AZURE-SERVICEBUS-NAMESPACE"
+  value        = azurerm_servicebus_namespace.integration-test-sbns.name
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
+  ]
+}
+
 resource "azurerm_key_vault_secret" "kvs-resource-group-name" {
   name         = "AZURE-SHARED-RESOURCEGROUP"
   value        = azurerm_resource_group.integration-test-rg.name
