@@ -15,43 +15,20 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Moq;
-using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.EventPublishers;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.IntegrationEventsManagement;
 
-public class IntegrationEventInfrastructureServiceTests
+public class IntegrationEventDispatcherServiceTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task DeleteProcessedOlderThanAsync(
-        [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
-        [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        IntegrationEventInfrastructureService sut)
-    {
-        // Arrange
-        const int daysOld = 10;
-        var instant = SystemClock.Instance.GetCurrentInstant();
-        clockMock.Setup(x => x.GetCurrentInstant()).Returns(instant);
-
-        // Act
-        await sut.DeleteOlderDispatchedIntegrationEventsAsync(daysOld);
-
-        // Assert
-        outboxMessageRepositoryMock.Verify(x => x.DeleteProcessedOlderThan(instant.Minus(Duration.FromDays(daysOld))));
-        unitOfWorkMock.Verify(x => x.CommitAsync());
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public async Task DispatchIntegrationEventsAsync(
+    public async Task DispatchIntegrationEventsAsync_CallsCommit(
         [Frozen] Mock<IIntegrationEventDispatcher> integrationEventDispatcherMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        IntegrationEventInfrastructureService sut)
+        IntegrationEventService sut)
     {
         // Arrange
         integrationEventDispatcherMock.Setup(x => x.DispatchIntegrationEventsAsync(1000)).ReturnsAsync(false);
@@ -61,5 +38,21 @@ public class IntegrationEventInfrastructureServiceTests
 
         // Assert
         unitOfWorkMock.Verify(x => x.CommitAsync());
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task DispatchIntegrationEventsAsync_UsesPositiveBulkSize(
+        [Frozen] Mock<IIntegrationEventDispatcher> integrationEventDispatcherMock,
+        IntegrationEventService sut)
+    {
+        // Arrange
+        integrationEventDispatcherMock.Setup(x => x.DispatchIntegrationEventsAsync(1000)).ReturnsAsync(false);
+
+        // Act
+        await sut.DispatchIntegrationEventsAsync();
+
+        // Assert
+        integrationEventDispatcherMock.Verify(x => x.DispatchIntegrationEventsAsync(It.Is<int>(i => i > 0)));
     }
 }

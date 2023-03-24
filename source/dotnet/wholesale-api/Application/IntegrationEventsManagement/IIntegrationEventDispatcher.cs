@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
+namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 
-namespace Energinet.DataHub.Wholesale.Contracts;
-
-/// <summary>
-/// An immutable request to create a batch.
-/// </summary>
-public sealed record BatchRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate) : IRequest;
+public interface IIntegrationEventDispatcher
+{
+    /// <summary>
+    /// Fetches a number of integration events and dispatches them.
+    /// </summary>
+    /// <param name="numberOfIntegrationEventsToDispatch">The number of integration events to dispatch.</param>
+    /// <returns>True if there are more integration events to dispatch otherwise false.</returns>
+    Task<bool> DispatchIntegrationEventsAsync(int numberOfIntegrationEventsToDispatch);
+}
