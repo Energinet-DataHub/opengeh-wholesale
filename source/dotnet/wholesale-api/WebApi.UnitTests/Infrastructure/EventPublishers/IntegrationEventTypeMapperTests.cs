@@ -78,7 +78,7 @@ public class IntegrationEventTypeMapperTests
 
     [Theory]
     [AutoData]
-    public void ThrowsException_WhenAddingExistingEventName(IntegrationEventTypeMapper sut)
+    public void Add_WhenAddingExistingEventName_ThrowsException(IntegrationEventTypeMapper sut)
     {
         // Arrange
         const string eventName = "eventName";
