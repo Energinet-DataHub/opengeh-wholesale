@@ -28,5 +28,4 @@ class EnvironmentVariable(Enum):
 
 
 def get_env_variable(variable: EnvironmentVariable) -> Any:
-    return os.getenv(variable)
-
+    return os.getenv(variable.value)
