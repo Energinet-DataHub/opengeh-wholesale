@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
@@ -30,6 +31,8 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly ICalculationDomainService _calculationDomainService;
     private readonly IBatchExecutionStateDomainService _batchExecutionStateDomainService;
     private readonly IBatchDtoMapper _batchDtoMapper;
+    private readonly IProcessTypeMapper _processTypeMapper;
+    private readonly IDomainEventPublisher _domainEventPublisher;
 
     public BatchApplicationService(
         IBatchFactory batchFactory,
@@ -37,7 +40,9 @@ public class BatchApplicationService : IBatchApplicationService
         IUnitOfWork unitOfWork,
         ICalculationDomainService calculationDomainService,
         IBatchExecutionStateDomainService batchExecutionStateDomainService,
-        IBatchDtoMapper batchDtoMapper)
+        IBatchDtoMapper batchDtoMapper,
+        IProcessTypeMapper processTypeMapper,
+        IDomainEventPublisher domainEventPublisher)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
@@ -45,6 +50,20 @@ public class BatchApplicationService : IBatchApplicationService
         _calculationDomainService = calculationDomainService;
         _batchExecutionStateDomainService = batchExecutionStateDomainService;
         _batchDtoMapper = batchDtoMapper;
+        _processTypeMapper = processTypeMapper;
+        _domainEventPublisher = domainEventPublisher;
+    }
+
+    public async Task<Guid> CreateAsync(BatchRequestDto batchRequestDto)
+    {
+        var processType = _processTypeMapper.MapFrom(batchRequestDto.ProcessType);
+        // Domain service
+        var batch = _batchFactory.Create(processType, batchRequestDto.GridAreaCodes, batchRequestDto.StartDate, batchRequestDto.EndDate);
+        await _batchRepository.AddAsync(batch).ConfigureAwait(false);
+        await _domainEventPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
+        // ------------
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        return batch.Id;
     }
 
     public async Task StartCalculationAsync(Guid batchId)

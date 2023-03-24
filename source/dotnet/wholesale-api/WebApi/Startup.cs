@@ -67,10 +67,6 @@ public class Startup
         services.AddApplicationInsightsTelemetry();
         RegisterCorrelationContext(services);
         ConfigureHealthChecks(services);
-        services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-        });
     }
 
     public void Configure(IApplicationBuilder app)
