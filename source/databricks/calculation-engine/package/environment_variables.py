@@ -15,12 +15,11 @@
 # Variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
 import os
-
 from enum import Enum
-from typing import Dict, Any
+from typing import Any
 
 
-class EnvironmentVariableName(Enum):
+class EnvironmentVariable(Enum):
     TIME_ZONE = "TIME_ZONE"
     DATA_STORAGE_ACCOUNT_NAME = "DATA_STORAGE_ACCOUNT_NAME"
     TENANT_ID = "TENANT_ID"
@@ -28,17 +27,6 @@ class EnvironmentVariableName(Enum):
     SPN_APP_SECRET = "SPN_APP_SECRET"
 
 
-class EnvironmentVariables:
-    def __init__(self) -> None:
-        self.variables = Dict()
-        for var_name in EnvironmentVariableName:
-            self.variables[var_name] = _get_or_throw(var_name.value)
+def get_env_variable(variable: EnvironmentVariable) -> Any:
+    return os.getenv(variable)
 
-    def get(self, name: EnvironmentVariableName) -> Any:
-        return self.variables[name]
-
-
-def _get_or_throw(variable_name: str) -> Any:
-    variable_value = os.getenv(variable_name)
-    if variable_value is None:
-        raise ValueError(f"Environment variable not found: {variable_name}")

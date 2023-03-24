@@ -14,13 +14,13 @@
 
 import sys
 import os
-
+from typing import Dict
 import configargparse
 import package.calculation_input as calculation_input
 from configargparse import argparse
 from package.constants import Colname
 from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
-from package.environment_variables import EnvironmentVariables, EnvironmentVariableName
+from package.environment_variables import get_env_variable, EnvironmentVariable
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -69,6 +69,22 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         raise Exception("Grid areas must be a list")
 
     return args
+
+
+def _get_required_env_variables_or_throw() -> Dict:
+    required_variable_names = [
+        EnvironmentVariable.TIME_ZONE,
+        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME,
+    ]
+    env_variables = Dict()
+    for env_var in required_variable_names:
+        variable = get_env_variable(env_var)
+        if variable is None:
+            raise ValueError(f"Environment variable not found: {variable}")
+
+        env_variables[env_var] = variable
+
+    return env_variables
 
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
@@ -180,11 +196,9 @@ def _start(command_line_args: list[str]) -> None:
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    env_variables = EnvironmentVariables()
-    time_zone = env_variables.get(EnvironmentVariableName.TIME_ZONE)
-    storage_account_name = env_variables.get(
-        EnvironmentVariableName.DATA_STORAGE_ACCOUNT_NAME
-    )
+    env_variables = _get_required_env_variables_or_throw()
+    time_zone = env_variables[EnvironmentVariable.TIME_ZONE]
+    storage_account_name = env_variables[EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
 
     if islocked(storage_account_name, args.data_storage_account_key):
         log("Exiting because storage is locked due to data migrations running.")
