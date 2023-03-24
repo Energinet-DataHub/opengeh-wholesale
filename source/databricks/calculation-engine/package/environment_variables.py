@@ -27,5 +27,11 @@ class EnvironmentVariable(Enum):
     SPN_APP_SECRET = "SPN_APP_SECRET"
 
 
+def get_env_variable_or_throw(variable: EnvironmentVariable) -> Any:
+    env_variable = get_env_variable(variable)
+    if env_variable is None:
+        raise ValueError(f"Environment variable not found: {variable.value}")
+
+
 def get_env_variable(variable: EnvironmentVariable) -> Any:
     return os.getenv(variable.value)

@@ -18,7 +18,7 @@ import package.calculation_input as calculation_input
 from configargparse import argparse
 from package.constants import Colname
 from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
-from package.environment_variables import get_env_variable, EnvironmentVariable
+from package.environment_variables import get_env_variable_or_throw, EnvironmentVariable
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -76,11 +76,7 @@ def _get_required_env_variables_or_throw() -> dict:
     ]
     env_variables = dict()
     for env_var in required_variable_names:
-        variable = get_env_variable(env_var)
-        if variable is None:
-            raise ValueError(f"Environment variable not found: {variable}")
-
-        env_variables[env_var] = variable
+        env_variables[env_var] = get_env_variable_or_throw(env_var)
 
     return env_variables
 
