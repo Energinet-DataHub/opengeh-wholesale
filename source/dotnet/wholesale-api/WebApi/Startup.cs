@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
@@ -69,7 +70,10 @@ public class Startup
         ConfigureHealthChecks(services);
         services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(Root).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(Application.Root).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(Domain.Root).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(Infrastructure.Root).Assembly);
         });
     }
 
