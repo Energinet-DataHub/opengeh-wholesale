@@ -21,7 +21,7 @@ from package.constants import Colname
 from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
 from package.environment_variables import (
     get_env_variables_or_throw,
-    get_env_variable_or_throw,
+    get_env_variable,
     EnvironmentVariable,
 )
 from package import (
@@ -190,11 +190,9 @@ def _start(command_line_args: list[str]) -> None:
 
     env_variables = get_env_variables_or_throw(required_env_variables)
 
-    print(f"SPN_APP_ID: {get_env_variable_or_throw(EnvironmentVariable.SPN_APP_ID)}")
-    print(
-        f"SPN_APP_SECRET: {get_env_variable_or_throw(EnvironmentVariable.SPN_APP_SECRET)}"
-    )
-    print(f"TENANT_ID: {get_env_variable_or_throw(EnvironmentVariable.TENANT_ID)}")
+    print(f"SPN_APP_ID: {get_env_variable(EnvironmentVariable.SPN_APP_ID)}")
+    print(f"SPN_APP_SECRET: {get_env_variable(EnvironmentVariable.SPN_APP_SECRET)}")
+    print(f"TENANT_ID: {get_env_variable(EnvironmentVariable.TENANT_ID)}")
 
     time_zone = env_variables[EnvironmentVariable.TIME_ZONE]
     storage_account_name = env_variables[EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
