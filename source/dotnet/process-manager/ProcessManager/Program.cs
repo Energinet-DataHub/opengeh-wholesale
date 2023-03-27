@@ -51,6 +51,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -93,6 +94,7 @@ public static class Program
             cfg.RegisterServicesFromAssembly(typeof(Domain.Root).Assembly);
             cfg.RegisterServicesFromAssembly(typeof(Infrastructure.Root).Assembly);
         });
+        serviceCollection.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
     }
 
     private static void Middlewares(IServiceCollection serviceCollection)

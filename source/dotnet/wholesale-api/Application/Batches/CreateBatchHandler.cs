@@ -22,20 +22,17 @@ public class CreateBatchHandler : IRequestHandler<CreateBatchCommand, Guid>
 {
     private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IProcessTypeMapper _processTypeMapper;
     private readonly IMediator _mediator;
 
     public CreateBatchHandler(
         IBatchFactory batchFactory,
         IBatchRepository batchRepository,
-        IUnitOfWork unitOfWork,
         IProcessTypeMapper processTypeMapper,
         IMediator mediator)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
-        _unitOfWork = unitOfWork;
         _processTypeMapper = processTypeMapper;
         _mediator = mediator;
     }
@@ -46,7 +43,6 @@ public class CreateBatchHandler : IRequestHandler<CreateBatchCommand, Guid>
         var batch = _batchFactory.Create(processType, command.GridAreaCodes, command.StartDate, command.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _mediator.Publish(new BatchCreatedDomainEventDto(batch.Id), cancellationToken).ConfigureAwait(false);
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
         return batch.Id;
     }
 }

@@ -13,21 +13,23 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using MediatR;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public class StartCalculationJob : INotificationHandler<BatchCreatedDomainEventDto>
+public class StartCalculationJobHandler : INotificationHandler<BatchCreatedDomainEventDto>
 {
-    private readonly IBatchApplicationService _batchApplicationService;
+    private readonly ICalculationDomainService _calculationDomainService;
 
-    public StartCalculationJob(IBatchApplicationService batchApplicationService)
+    public StartCalculationJobHandler(
+        ICalculationDomainService calculationDomainService)
     {
-        _batchApplicationService = batchApplicationService;
+        _calculationDomainService = calculationDomainService;
     }
 
     public async Task Handle(BatchCreatedDomainEventDto notification, CancellationToken cancellationToken)
     {
-        await _batchApplicationService.StartCalculationAsync(notification.BatchId).ConfigureAwait(false);
+        await _calculationDomainService.StartAsync(notification.BatchId).ConfigureAwait(false);
     }
 }
