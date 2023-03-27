@@ -48,6 +48,11 @@ data "azurerm_key_vault_secret" "dbw_databricks_workspace_token" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "snet_vnet_integrations_id" {
+  name         = "snet-vnet-integration-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "pir_hosted_deployment_agents" {
   name         = "pir-hosted-deployment-agents"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id

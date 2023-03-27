@@ -12,5 +12,6 @@ module "kv_internal" {
   log_analytics_workspace_id      = data.azurerm_key_vault_secret.log_shared_id.value
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   allowed_subnet_ids = [
+    data.azurerm_key_vault_secret.snet_vnet_integrations_id.value,
   ]
 }
