@@ -3,7 +3,7 @@ resource "databricks_cluster" "shared_all_purpose" {
   spark_version           = data.databricks_spark_version.latest_lts.id
   node_type_id            = "Standard_DS5_v2"
   autotermination_minutes = 15
-  num_workers             = 0
+  num_workers             = 1
   spark_conf = {
     "fs.azure.account.oauth2.client.endpoint.${data.azurerm_storage_account.drop.name}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
     "fs.azure.account.oauth2.client.endpoint.${module.st_migrations.name}.dfs.core.windows.net": "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
