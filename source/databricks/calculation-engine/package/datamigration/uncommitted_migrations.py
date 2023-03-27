@@ -62,6 +62,9 @@ def _get_all_migrations() -> list[str]:
 def _print_count(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
 
+    print(f"account name: {args.data_storage_account_name}")
+    print(f"test: {args.data_storage_account_key}")
+
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,
         args.data_storage_account_key,
