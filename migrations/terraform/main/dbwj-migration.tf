@@ -72,7 +72,7 @@ resource "databricks_job" "this" {
       }
       spark_env_vars = {
         "APPI_INSTRUMENTATION_KEY"        = databricks_secret.appi_instrumentation_key.config_reference
-        "LANDING_STORAGE_ACCOUNT"         = data.azurerm_storage_account.drop.name # Should we use this or another datalake for dump
+        "LANDING_STORAGE_ACCOUNT"         = data.azurerm_storage_account.drop.name
         "DATALAKE_STORAGE_ACCOUNT"        = module.st_migrations.name
         "DATALAKE_SHARED_STORAGE_ACCOUNT" = data.azurerm_key_vault_secret.st_data_lake_name.value
       }
@@ -107,7 +107,7 @@ resource "databricks_job" "this" {
       }
       spark_env_vars = {
         "APPI_INSTRUMENTATION_KEY"        = databricks_secret.appi_instrumentation_key.config_reference
-        "LANDING_STORAGE_ACCOUNT"         = data.azurerm_storage_account.drop.name # Should we use this or another datalake for dump
+        "LANDING_STORAGE_ACCOUNT"         = data.azurerm_storage_account.drop.name
         "DATALAKE_STORAGE_ACCOUNT"        = module.st_migrations.name
         "DATALAKE_SHARED_STORAGE_ACCOUNT" = data.azurerm_key_vault_secret.st_data_lake_name.value
       }
