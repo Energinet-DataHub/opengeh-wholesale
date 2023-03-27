@@ -23,8 +23,8 @@ class EnvironmentVariable(Enum):
     TIME_ZONE = "TIME_ZONE"
     DATA_STORAGE_ACCOUNT_NAME = "DATA_STORAGE_ACCOUNT_NAME"
     TENANT_ID = "TENANT_ID"
-    SPN_APP_ID = "CLIENT_ID"
-    SPN_APP_SECRET = "CLIENT_SECRET"
+    SPN_APP_ID = "SPN_APP_ID"
+    SPN_APP_SECRET = "SPN_APP_SECRET"
 
 
 def get_env_variables_or_throw(environment_variable: list[EnvironmentVariable]) -> dict:
