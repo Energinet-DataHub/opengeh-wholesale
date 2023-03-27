@@ -19,7 +19,7 @@ from os import path, listdir
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
 from .data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
-
+from package.environment_variables import get_env_variable, EnvironmentVariable
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 MIGRATION_SCRIPTS_FOLDER_NAME = "migration_scripts"
@@ -61,6 +61,10 @@ def _get_all_migrations() -> list[str]:
 
 def _print_count(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
+
+    print(f"SPN_APP_ID: {get_env_variable(EnvironmentVariable.SPN_APP_ID)}")
+    print(f"SPN_APP_SECRET: {get_env_variable(EnvironmentVariable.SPN_APP_SECRET)}")
+    print(f"TENANT_ID: {get_env_variable(EnvironmentVariable.TENANT_ID)}")
 
     file_manager = DataLakeFileManager(
         args.data_storage_account_name,

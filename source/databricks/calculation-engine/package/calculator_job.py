@@ -13,12 +13,17 @@
 # limitations under the License.
 
 import sys
-
+import os
 import configargparse
 import package.calculation_input as calculation_input
 from configargparse import argparse
 from package.constants import Colname
 from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
+from package.environment_variables import (
+    get_env_variables_or_throw,
+    get_env_variable,
+    EnvironmentVariable,
+)
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -178,19 +183,31 @@ def _start(command_line_args: list[str]) -> None:
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    if islocked(args.data_storage_account_name, args.data_storage_account_key):
+    required_env_variables = [
+        EnvironmentVariable.TIME_ZONE,
+        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME,
+    ]
+
+    env_variables = get_env_variables_or_throw(required_env_variables)
+
+    print(f"SPN_APP_ID: {get_env_variable(EnvironmentVariable.SPN_APP_ID)}")
+    print(f"SPN_APP_SECRET: {get_env_variable(EnvironmentVariable.SPN_APP_SECRET)}")
+    print(f"TENANT_ID: {get_env_variable(EnvironmentVariable.TENANT_ID)}")
+
+    time_zone = env_variables[EnvironmentVariable.TIME_ZONE]
+    storage_account_name = env_variables[EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
+
+    if islocked(storage_account_name, args.data_storage_account_key):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
-    spark = initialize_spark(
-        args.data_storage_account_name, args.data_storage_account_key
-    )
+    spark = initialize_spark(storage_account_name, args.data_storage_account_key)
 
     calculator_args = CalculatorArgs(
-        data_storage_account_name=args.data_storage_account_name,
+        data_storage_account_name=storage_account_name,
         data_storage_account_key=args.data_storage_account_key,
         wholesale_container_path=infrastructure.get_container_root_path(
-            args.data_storage_account_name
+            storage_account_name
         ),
         batch_id=args.batch_id,
         batch_grid_areas=args.batch_grid_areas,
@@ -198,7 +215,7 @@ def _start(command_line_args: list[str]) -> None:
         batch_period_end_datetime=args.batch_period_end_datetime,
         batch_execution_time_start=args.batch_execution_time_start,
         batch_process_type=args.batch_process_type,
-        time_zone=args.time_zone,
+        time_zone=time_zone,
     )
 
     _start_calculator(spark, calculator_args)
