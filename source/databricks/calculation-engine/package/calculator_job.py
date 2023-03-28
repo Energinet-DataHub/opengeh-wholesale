@@ -22,7 +22,6 @@ from package.environment_variables import (
     get_env_variable_or_throw,
     EnvironmentVariable,
 )
-from package.storage_account_credential import get_service_principal_credential
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -33,15 +32,13 @@ from package import (
 from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from package.file_writers.actors_writer import ActorsWriter
-from package.storage_account_credential import get_service_principal_credential
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import Row
 import pyspark.sql.functions as F
 
 from .args_helper import valid_date, valid_list, valid_log_level
 from .calculator_args import CalculatorArgs
-from .datamigration import islocked
-from azure.identity import ClientSecretCredential
+from package.storage_account_access import islocked
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -188,9 +185,8 @@ def _start(command_line_args: list[str]) -> None:
     storage_account_name = get_env_variable_or_throw(
         EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME
     )
-    credential = get_service_principal_credential()
 
-    if islocked(storage_account_name, credential):
+    if islocked():
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
