@@ -158,14 +158,6 @@ def dummy_job_parameters(contracts_path: str) -> list[str]:
     return command_line_args
 
 
-def _get_env_variables() -> dict:
-    env_vars = {
-        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME: "dummy_account",
-        EnvironmentVariable.TIME_ZONE: "dummy_time_zone",
-    }
-    return env_vars
-
-
 def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails() -> (
     None
 ):
@@ -804,7 +796,7 @@ def test__creates_master_basis_data_per_grid_area(
     ), "Calculator job failed to write master basis data files for grid area 806"
 
 
-@patch("package.calculator_job.get_env_variables_or_throw")
+@patch("package.calculator_job.get_env_variable_or_throw")
 @patch("package.calculator_job._get_valid_args_or_throw")
 @patch("package.calculator_job.islocked")
 def test__when_data_lake_is_locked__return_exit_code_3(
@@ -814,7 +806,6 @@ def test__when_data_lake_is_locked__return_exit_code_3(
 ) -> None:
     # Arrange
     mock_islocked.return_value = True
-    mock_get_env_variables.return_value = _get_env_variables()
 
     # Act
     with pytest.raises(SystemExit) as excinfo:
@@ -823,7 +814,7 @@ def test__when_data_lake_is_locked__return_exit_code_3(
     assert excinfo.value.code == 3
 
 
-@patch("package.calculator_job.get_env_variables_or_throw")
+@patch("package.calculator_job.get_env_variable_or_throw")
 @patch("package.calculator_job.initialize_spark")
 @patch("package.calculator_job.islocked")
 @patch("package.calculator_job._start_calculator")
@@ -836,7 +827,6 @@ def test__start__start_calculator_called_without_exceptions(
 ) -> None:
     # Arrange
     mock_is_locked.return_value = False
-    mock_get_env_variables.return_value = _get_env_variables()
 
     # Act
     _start(dummy_job_parameters)
