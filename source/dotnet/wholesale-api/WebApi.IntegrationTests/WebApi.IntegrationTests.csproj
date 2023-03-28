@@ -69,11 +69,4 @@ limitations under the License.
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="JetBrains.ReSharper.TestRunner.Merged">
-      <HintPath>..\..\..\..\..\..\Program Files\JetBrains\Rider\r2r\2022.3.1R\D3EEEB763060233CB846499783D1FA9\TestRunner\netcoreapp3.0\JetBrains.ReSharper.TestRunner.Merged.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
