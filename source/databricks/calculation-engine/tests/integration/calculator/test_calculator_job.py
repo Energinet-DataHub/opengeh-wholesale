@@ -34,6 +34,7 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 import package.infrastructure as infra
+from package.environment_variables import EnvironmentVariable
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from typing import Callable, Optional
 from datetime import datetime
@@ -155,6 +156,14 @@ def dummy_job_parameters(contracts_path: str) -> list[str]:
     command_line_args.extend(process_manager_parameters)
 
     return command_line_args
+
+
+def _get_env_variables() -> dict:
+    env_vars = {
+        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME: "dummy_account",
+        EnvironmentVariable.TIME_ZONE: "dummy_time_zone",
+    }
+    return env_vars
 
 
 def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails() -> (
@@ -795,14 +804,18 @@ def test__creates_master_basis_data_per_grid_area(
     ), "Calculator job failed to write master basis data files for grid area 806"
 
 
-@patch("package.calculator_job.get_client_secret_credential")
+@patch("package.calculator_job.get_env_variables_or_throw")
 @patch("package.calculator_job._get_valid_args_or_throw")
 @patch("package.calculator_job.islocked")
 def test__when_data_lake_is_locked__return_exit_code_3(
-    mock_islocked: Mock, mock_args_parser: Mock, mock_get_credential: Mock
+    mock_islocked: Mock,
+    mock_args_parser: Mock,
+    mock_get_env_variables: Mock,
 ) -> None:
     # Arrange
     mock_islocked.return_value = True
+    mock_get_env_variables.return_value = _get_env_variables()
+
     # Act
     with pytest.raises(SystemExit) as excinfo:
         start()
@@ -810,6 +823,7 @@ def test__when_data_lake_is_locked__return_exit_code_3(
     assert excinfo.value.code == 3
 
 
+@patch("package.calculator_job.get_env_variables_or_throw")
 @patch("package.calculator_job.initialize_spark")
 @patch("package.calculator_job.islocked")
 @patch("package.calculator_job._start_calculator")
@@ -817,14 +831,15 @@ def test__start__start_calculator_called_without_exceptions(
     mock_start_calculator: Mock,
     mock_is_locked: Mock,
     mock_init_spark: Mock,
+    mock_get_env_variables: Mock,
     dummy_job_parameters: list[str],
 ) -> None:
     # Arrange
     mock_is_locked.return_value = False
-    mock_credential = Mock()
+    mock_get_env_variables.return_value = _get_env_variables()
 
     # Act
-    _start(dummy_job_parameters, mock_credential)
+    _start(dummy_job_parameters)
 
     # Assert
     mock_start_calculator.assert_called_once()

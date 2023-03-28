@@ -18,7 +18,11 @@ import sys
 import configargparse
 from package import infrastructure, initialize_spark, log
 from package.args_helper import valid_log_level
-from package.databricks_secrets import get_client_secret_credential
+from package.environment_variables import (
+    get_env_variables_or_throw,
+    EnvironmentVariable,
+)
+
 from .committed_migrations import upload_committed_migration
 from .data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
@@ -89,4 +93,9 @@ def _migrate_data_lake(storage_account_name: str) -> None:
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake() -> None:
     args = _get_valid_args_or_throw(sys.argv[1:])
-    _migrate_data_lake(args.data_storage_account_name)
+
+    required_env_variables = [EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
+    env_variables = get_env_variables_or_throw(required_env_variables)
+    storage_account_name = env_variables[EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
+
+    _migrate_data_lake(storage_account_name, args.data_storage_account_key)
