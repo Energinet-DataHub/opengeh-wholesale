@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.InProcessMessaging;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using MediatR;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public class CreateBatchHandler : ICommandHandler<CreateBatchCommand, Guid>
+public class CreateBatchHandler : IRequestHandler<CreateBatchCommand, Guid>
 {
     private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;

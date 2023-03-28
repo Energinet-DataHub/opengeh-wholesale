@@ -13,13 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.InProcessMessaging;
 using MediatR;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 
 public class UnitOfWorkPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : ICommand<TResponse>
+    where TRequest : IRequest<TResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
 
