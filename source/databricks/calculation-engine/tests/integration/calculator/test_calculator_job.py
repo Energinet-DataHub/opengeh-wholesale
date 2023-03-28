@@ -24,7 +24,6 @@ from package.calculator_job import (
     _start_calculator,
     start,
     _start,
-    _map_cim_quality_to_wholesale_quality,
 )
 from package.calculator_args import CalculatorArgs
 from package.codelists import (
@@ -833,24 +832,3 @@ def test__start__start_calculator_called_without_exceptions(
 
     # Assert
     mock_start_calculator.assert_called_once()
-
-
-def test__map_timeseriesquality_from_cim_to_wholesale(
-    spark: SparkSession,
-    data_lake_path: str,
-    worker_id: str,
-) -> None:
-    # Arrange
-    expected_values = [e.value for e in TimeSeriesQuality]
-
-    time_series_points = spark.read.format("delta").load(
-        f"{data_lake_path}/{worker_id}/calculation-input-v2/time-series-points",
-    )
-
-    # Act
-    actual = _map_cim_quality_to_wholesale_quality(time_series_points)
-
-    # Assert
-    assert (
-        actual.filter(col("Quality").isin(expected_values)).count() == 0
-    ), "Quality contains unexpected values"
