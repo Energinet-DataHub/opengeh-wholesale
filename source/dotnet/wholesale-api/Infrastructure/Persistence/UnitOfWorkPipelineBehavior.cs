@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application;
+using Energinet.DataHub.Wholesale.Application.InProcessMessaging;
 using MediatR;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 
 public class UnitOfWorkPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+    where TRequest : ICommand<TResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -29,11 +30,8 @@ public class UnitOfWorkPipelineBehavior<TRequest, TResponse> : IPipelineBehavior
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (next == null) throw new ArgumentNullException(nameof(next));
         var result = await next().ConfigureAwait(false);
-
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
-
         return result;
     }
 }

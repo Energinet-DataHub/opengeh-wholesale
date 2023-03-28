@@ -18,7 +18,7 @@ using MediatR;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public class StartCalculationJobHandler : INotificationHandler<BatchCreatedDomainEventDto>
+public class StartCalculationJobHandler : INotificationHandler<BatchCreatedDomainEvent>
 {
     private readonly ICalculationDomainService _calculationDomainService;
 
@@ -28,7 +28,7 @@ public class StartCalculationJobHandler : INotificationHandler<BatchCreatedDomai
         _calculationDomainService = calculationDomainService;
     }
 
-    public async Task Handle(BatchCreatedDomainEventDto notification, CancellationToken cancellationToken)
+    public async Task Handle(BatchCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
         await _calculationDomainService.StartAsync(notification.BatchId).ConfigureAwait(false);
     }

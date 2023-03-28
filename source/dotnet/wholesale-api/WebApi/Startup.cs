@@ -20,9 +20,11 @@ using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
+using Energinet.DataHub.Wholesale.Infrastructure.InProcessMessaging;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using MediatR;
+using MediatR.Pipeline;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
@@ -81,7 +83,8 @@ public class Startup
         });
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
         services.AddScoped<IRequestHandler<CreateBatchCommand, Guid>, CreateBatchHandler>();
-        services.AddScoped<INotificationHandler<BatchCreatedDomainEventDto>, StartCalculationJobHandler>();
+        services.AddScoped<INotificationHandler<BatchCreatedDomainEvent>, StartCalculationJobHandler>();
+        services.AddTransient(typeof(IRequestExceptionHandler<,,>), typeof(ExceptionLoggingHandler<,,>));
     }
 
     public void Configure(IApplicationBuilder app)

@@ -14,9 +14,13 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+using FluentAssertions;
+using MediatR;
 using Moq;
+using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
@@ -27,17 +31,58 @@ public class CreateBatchHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task Handle_CallsCommit(
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        CreateBatchCommand createBatchCommand,
+    public async Task Handle_CallsPublish(
+        [Frozen] Mock<IMediator> mediatrMock,
+        [Frozen] Mock<IBatchFactory> batchFactoryMock,
         CreateBatchHandler sut)
     {
         // Arrange
+        var batchCommand = CreateBatchCommand();
+        var batch = CreateBatch(batchCommand);
+        batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate))
+            .Returns(batch);
 
         // Act
-        await sut.Handle(createBatchCommand, default);
+        await sut.Handle(batchCommand, default);
 
         // Assert
-        unitOfWorkMock.Verify(x => x.CommitAsync());
+        mediatrMock.Verify(x => x.Publish(It.Is<BatchCreatedDomainEvent>(e => e.BatchId == batch.Id), default));
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task Handle_CallsAddAsync(
+        [Frozen] Mock<IBatchFactory> batchFactoryMock,
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        CreateBatchHandler sut)
+    {
+        // Arrange
+        var batchCommand = CreateBatchCommand();
+        var batch = CreateBatch(batchCommand);
+        batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate))
+            .Returns(batch);
+
+        // Act
+        var actual = await sut.Handle(batchCommand, default);
+
+        // Assert
+        batch.Id.Should().Be(actual);
+        batchRepositoryMock.Verify(x => x.AddAsync(batch));
+    }
+
+    private static CreateBatchCommand CreateBatchCommand()
+    {
+        var period = Periods.January_EuropeCopenhagen_Instant;
+        return new CreateBatchCommand(
+            Contracts.ProcessType.BalanceFixing,
+            new List<string> { "805" },
+            period.PeriodStart.ToDateTimeOffset(),
+            period.PeriodEnd.ToDateTimeOffset());
+    }
+
+    private static Batch CreateBatch(CreateBatchCommand command)
+    {
+        return new BatchFactory(SystemClock.Instance, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .Create(ProcessType.BalanceFixing, command.GridAreaCodes, command.StartDate, command.EndDate);
     }
 }

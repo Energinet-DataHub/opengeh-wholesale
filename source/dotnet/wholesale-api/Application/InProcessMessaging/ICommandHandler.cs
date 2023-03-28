@@ -14,6 +14,14 @@
 
 using MediatR;
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Application.InProcessMessaging;
 
-public record BatchCreatedDomainEvent(Guid BatchId) : INotification;
+public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand>
+    where TCommand : ICommand
+{
+}
+
+public interface ICommandHandler<in TCommand, TResponse> : IRequestHandler<TCommand, TResponse>
+    where TCommand : ICommand<TResponse>
+{
+}
