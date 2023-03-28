@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
+import configargparse
+from configargparse import argparse
 from os import path, listdir
 from package.storage_account_access.data_lake_file_manager import (
     DataLakeFileManagerFactory,
@@ -27,6 +30,20 @@ def _get_migration_scripts_path() -> str:
     return path.join(dirname, MIGRATION_SCRIPTS_FOLDER_NAME)
 
 
+def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
+    p = configargparse.ArgParser(
+        description="Returns number of uncommitted data migrations",
+        formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    known_args, unknown_args = p.parse_known_args(args=command_line_args)
+    if len(unknown_args):
+        unknown_args_text = ", ".join(unknown_args)
+        raise Exception(f"Unknown args: {unknown_args_text}")
+
+    return known_args
+
+
 def _get_all_migrations() -> list[str]:
     all_migration_scripts_paths = listdir(_get_migration_scripts_path())
     file_names = [path.basename(p) for p in all_migration_scripts_paths]
@@ -39,8 +56,7 @@ def _get_all_migrations() -> list[str]:
     return script_names
 
 
-# This method must remain parameterless because it will be called from the entry point when deployed.
-def print_count() -> None:
+def _print_count() -> None:
     uncommitted_migrations = get_uncommitted_migrations()
     uncommitted_migrations_count = len(uncommitted_migrations)
 
@@ -62,3 +78,9 @@ def get_uncommitted_migrations() -> list[str]:
     ]
 
     return uncommitted_migrations
+
+
+# This method must remain parameterless because it will be called from the entry point when deployed.
+def print_count() -> None:
+    _get_valid_args_or_throw(sys.argv[1:])
+    _print_count()
