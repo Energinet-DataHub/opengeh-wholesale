@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
 
-public class RequestsRegistrationTests
+public class RequestMatchingHandlerTests
 {
     /// <summary>
     /// Code borrowed from https://matthiaslischka.at/2019/02/25/Testing-MediatR-Registrations/.
@@ -40,13 +40,12 @@ public class RequestsRegistrationTests
             .Where(IsIRequestHandler)
             .ToList();
 
-        // Act & Assert
-        foreach (var requestType in requestTypes) ShouldContainHandlerForRequest(handlerTypes, requestType);
-    }
-
-    private static void ShouldContainHandlerForRequest(IEnumerable<Type> handlerTypes, Type requestType)
-    {
-        handlerTypes.Should().ContainSingle(handlerType => IsHandlerForRequest(handlerType, requestType), $"Handler for type {requestType} expected");
+        // Act
+        foreach (var requestType in requestTypes)
+        {
+            // Assert
+            handlerTypes.Should().ContainSingle(handlerType => IsHandlerForRequest(handlerType, requestType), $"Handler for type {requestType} expected");
+        }
     }
 
     private static bool IsRequest(Type type)
