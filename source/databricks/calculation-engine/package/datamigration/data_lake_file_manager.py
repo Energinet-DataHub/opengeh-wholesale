@@ -19,7 +19,10 @@ from azure.storage.filedatalake import DataLakeServiceClient
 from azure.identity import ClientSecretCredential
 from package import infrastructure
 from typing import Any
-
+from package.environment_variables import (
+    get_env_variables_or_throw,
+    EnvironmentVariable,
+)
 
 class DataLakeFileManager:
     def __init__(
@@ -68,3 +71,13 @@ class DataLakeFileManager:
     def delete_file(self, file_name: str) -> None:
         file_client = self.file_system_client.get_file_client(file_name)
         file_client.delete_file()
+
+
+
+def create() -> DataLakeFileManager:
+    required_env_variables = list[EnvirontEnvironmentVariable.TENANT_ID, EnvironmentVariable.SPN_APP_ID, EnvironmentVariable.SPN_APP_SECRET]
+    evn_vars = get_env_variables_or_throw(required_env_variables)
+    De
+    
+    
+    

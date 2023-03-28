@@ -11,73 +11,44 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
 from .data_lake_file_manager import DataLakeFileManager
-import configargparse
 from package import log
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
-from configargparse import argparse
-from azure.identity import ClientSecretCredential
+from package.storage_account_credential import get_service_principal_credential
+from package.environment_variables import get_env_variable, EnvironmentVariable
 
 _LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
-    p = configargparse.ArgParser(
-        description="Locks/unlocks the storage of the specified container",
-        formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
-    )
-
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
-
-    args, unknown_args = p.parse_known_args(command_line_args)
-    if len(unknown_args):
-        unknown_args_text = ", ".join(unknown_args)
-        raise Exception(f"Unknown args: {unknown_args_text}")
-
-    return args
-
-
-def _lock(storage_account_name: str, credential: ClientSecretCredential) -> None:
-    file_manager = DataLakeFileManager(
-        storage_account_name,
-        credential,
-        WHOLESALE_CONTAINER_NAME,
-    )
-
+# This method must remain parameterless because it will be called from the entry point when deployed.
+def lock() -> None:
+    file_manager = _get_file_manager()
     file_manager.create_file(_LOCK_FILE_NAME)
     log(f"created lock file: {_LOCK_FILE_NAME}")
 
 
-def _unlock(storage_account_name: str, credential: ClientSecretCredential) -> None:
-    file_manager = DataLakeFileManager(
-        storage_account_name,
-        credential,
-        WHOLESALE_CONTAINER_NAME,
-    )
+# This method must remain parameterless because it will be called from the entry point when deployed.
+def unlock() -> None:
+    file_manager = _get_file_manager()
     file_manager.delete_file(_LOCK_FILE_NAME)
     log(f"deleted lock file: {_LOCK_FILE_NAME}")
 
 
-def islocked(storage_account_name: str, credential: ClientSecretCredential) -> bool:
+def islocked() -> bool:
+    file_manager = _get_file_manager()
+    return file_manager.exists_file(_LOCK_FILE_NAME)
+
+
+def _get_file_manager() -> DataLakeFileManager:
+    credential = get_service_principal_credential()
+    storage_account_name = get_env_variable(
+        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME
+    )
+
     file_manager = DataLakeFileManager(
         storage_account_name,
         credential,
         WHOLESALE_CONTAINER_NAME,
     )
-    return file_manager.exists_file(_LOCK_FILE_NAME)
 
-
-# This method must remain parameterless because it will be called from the entry point when deployed.
-def lock() -> None:
-    args = _get_valid_args_or_throw(sys.argv[1:])
-    credential = get_client_secret_credential()
-    _lock(args.data_storage_account_name, credential)
-
-
-# This method must remain parameterless because it will be called from the entry point when deployed.
-def unlock() -> None:
-    args = _get_valid_args_or_throw(sys.argv[1:])
-    credential = get_client_secret_credential()
-    _unlock(args.data_storage_account_name, credential)
+    return file_manager

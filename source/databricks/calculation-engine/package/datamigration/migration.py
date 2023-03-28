@@ -15,9 +15,7 @@
 import importlib
 import sys
 
-import configargparse
 from package import infrastructure, initialize_spark, log
-from package.args_helper import valid_log_level
 from package.environment_variables import (
     get_env_variables_or_throw,
     EnvironmentVariable,
@@ -28,29 +26,6 @@ from .data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
 from typing import Any
-from configargparse import argparse
-
-
-def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
-    p = configargparse.ArgParser(
-        description="Apply uncommitted migations",
-        formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
-    )
-
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
-    p.add(
-        "--log-level",
-        type=valid_log_level,
-        help="debug|information",
-    )
-
-    args, unknown_args = p.parse_known_args(command_line_args)
-    if len(unknown_args):
-        unknown_args_text = ", ".join(unknown_args)
-        raise Exception(f"Unknown args: {unknown_args_text}")
-
-    return args
 
 
 def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:

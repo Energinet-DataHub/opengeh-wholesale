@@ -19,9 +19,10 @@ from configargparse import argparse
 from package.constants import Colname
 from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
 from package.environment_variables import (
-    get_env_variables_or_throw,
+    get_env_variable_or_throw,
     EnvironmentVariable,
 )
+from package.storage_account_credential import get_service_principal_credential
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -32,6 +33,7 @@ from package import (
 from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from package.file_writers.actors_writer import ActorsWriter
+from package.storage_account_credential import get_service_principal_credential
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import Row
 import pyspark.sql.functions as F
@@ -182,17 +184,13 @@ def _start(command_line_args: list[str]) -> None:
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    if islocked(args.data_storage_account_name, credential):
-    required_env_variables = [
-        EnvironmentVariable.TIME_ZONE,
-        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME,
-    ]
-    env_variables = get_env_variables_or_throw(required_env_variables)
+    time_zone = get_env_variable_or_throw(EnvironmentVariable.TIME_ZONE)
+    storage_account_name = get_env_variable_or_throw(
+        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME
+    )
+    credential = get_service_principal_credential()
 
-    time_zone = env_variables[EnvironmentVariable.TIME_ZONE]
-    storage_account_name = env_variables[EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
-
-    if islocked(storage_account_name, args.data_storage_account_key):
+    if islocked(storage_account_name, credential):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
@@ -219,5 +217,4 @@ def _start(command_line_args: list[str]) -> None:
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start() -> None:
-    credential = get_client_secret_credential()
-    _start(sys.argv[1:], credential)
+    _start(sys.argv[1:])
