@@ -15,7 +15,6 @@
 from .basis_data_type import BasisDataType
 from .charge_resolution import ChargeResolution
 from .time_series_quality import TimeSeriesQuality
-from .migrated_time_series_quality import MigratedTimeSeriesQuality
 from .metering_point_type import MeteringPointType
 from .settlement_method import SettlementMethod
 from .metering_point_resolution import MeteringPointResolution
