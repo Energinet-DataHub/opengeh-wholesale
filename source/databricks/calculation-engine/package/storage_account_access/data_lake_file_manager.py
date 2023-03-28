@@ -20,16 +20,20 @@ from azure.identity import ClientSecretCredential
 from package import infrastructure
 from typing import Any
 from package.environment_variables import (
-    get_env_variables_or_throw,
+    get_env_variable_or_throw,
     EnvironmentVariable,
 )
+from package.storage_account_access.storage_account_credential import (
+    get_service_principal_credential,
+)
+
 
 class DataLakeFileManager:
     def __init__(
         self,
         data_storage_account_name: str,
         credential: ClientSecretCredential,
-        container_name: str
+        container_name: str,
     ):
         data_storage_account_url = infrastructure.get_storage_account_url(
             data_storage_account_name
@@ -73,11 +77,14 @@ class DataLakeFileManager:
         file_client.delete_file()
 
 
+class DataLakeFileManagerFactory:
+    @staticmethod
+    def create_instance() -> DataLakeFileManager:
+        credential = get_service_principal_credential()
+        storage_account_name = get_env_variable_or_throw(
+            EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME
+        )
 
-def create() -> DataLakeFileManager:
-    required_env_variables = list[EnvirontEnvironmentVariable.TENANT_ID, EnvironmentVariable.SPN_APP_ID, EnvironmentVariable.SPN_APP_SECRET]
-    evn_vars = get_env_variables_or_throw(required_env_variables)
-    De
-    
-    
-    
+        return DataLakeFileManager(
+            storage_account_name, credential, infrastructure.WHOLESALE_CONTAINER_NAME
+        )

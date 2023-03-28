@@ -17,12 +17,14 @@ import sys
 
 from package import infrastructure, initialize_spark, log
 from package.environment_variables import (
-    get_env_variables_or_throw,
+    get_env_variable_or_throw,
     EnvironmentVariable,
 )
 
 from .committed_migrations import upload_committed_migration
-from .data_lake_file_manager import DataLakeFileManager
+from package.storage_account_access.data_lake_file_manager import (
+    DataLakeFileManagerFactory,
+)
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
 from typing import Any
@@ -37,14 +39,13 @@ def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -
     )
 
 
-def _migrate_data_lake(storage_account_name: str) -> None:
-    spark = initialize_spark()
-    credential = get_client_secret_credential()
-    file_manager = DataLakeFileManager(
-        storage_account_name,
-        credential,
-        infrastructure.WHOLESALE_CONTAINER_NAME,
+# This method must remain parameterless because it will be called from the entry point when deployed.
+def migrate_data_lake() -> None:
+    storage_account_name = get_env_variable_or_throw(
+        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME
     )
+    file_manager = DataLakeFileManagerFactory.create_instance()
+    spark = initialize_spark()
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
     uncommitted_migrations.sort()
@@ -63,14 +64,3 @@ def _migrate_data_lake(storage_account_name: str) -> None:
     for name in uncommitted_migrations:
         _apply_migration(name, migration_args)
         upload_committed_migration(file_manager, name)
-
-
-# This method must remain parameterless because it will be called from the entry point when deployed.
-def migrate_data_lake() -> None:
-    args = _get_valid_args_or_throw(sys.argv[1:])
-
-    required_env_variables = [EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
-    env_variables = get_env_variables_or_throw(required_env_variables)
-    storage_account_name = env_variables[EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
-
-    _migrate_data_lake(storage_account_name, args.data_storage_account_key)

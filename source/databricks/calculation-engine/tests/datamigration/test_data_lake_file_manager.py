@@ -14,7 +14,7 @@
 
 from unittest.mock import patch
 
-from package.datamigration.data_lake_file_manager import DataLakeFileManager
+from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 
 DUMMY_STORAGE_ACCOUNT_NAME = "my_storage"
 DUMMY_STORAGE_KEY = "my_storage"
@@ -25,7 +25,6 @@ DUMMY_CONTAINER_NAME = "my_container"
 def test__get_file_system_client__calls_service_client_with_container_name(
     mock_data_lake_service_client,
 ):
-
     # Act
     DataLakeFileManager(
         DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
@@ -42,7 +41,6 @@ def test__get_file_system_client__calls_service_client_with_container_name(
 def test__download_csv__returned_reader_has_all_items(
     mock_data_lake_service_client, mock_download_file
 ):
-
     # Arrange
     row0 = ["c_00", "c_01", "c_02"]
     row1 = ["c_10", "c_11", "c_12"]
@@ -66,7 +64,6 @@ def test__download_csv__returned_reader_has_all_items(
 def test__download_csv__when_empty_file__return_empty_content_in_reader(
     mock_data_lake_service_client, mock_download_file
 ):
-
     # Arrange
     mock_download_file.return_value = b""
     file_manager = DataLakeFileManager(

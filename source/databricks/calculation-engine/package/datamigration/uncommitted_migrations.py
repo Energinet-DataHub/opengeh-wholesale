@@ -12,14 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-import configargparse
-from configargparse import argparse
 from os import path, listdir
-from package.infrastructure import WHOLESALE_CONTAINER_NAME
-from .data_lake_file_manager import DataLakeFileManager
+from package.storage_account_access.data_lake_file_manager import (
+    DataLakeFileManagerFactory,
+)
 from .committed_migrations import download_committed_migrations
-from package.databricks_secrets import get_client_secret_credential
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 MIGRATION_SCRIPTS_FOLDER_NAME = "migration_scripts"
@@ -28,23 +25,6 @@ MIGRATION_SCRIPTS_FOLDER_NAME = "migration_scripts"
 def _get_migration_scripts_path() -> str:
     dirname = path.dirname(__file__)
     return path.join(dirname, MIGRATION_SCRIPTS_FOLDER_NAME)
-
-
-def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
-    p = configargparse.ArgParser(
-        description="Returns number of uncommitted data migrations",
-        formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
-    )
-
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
-
-    known_args, unknown_args = p.parse_known_args(args=command_line_args)
-    if len(unknown_args):
-        unknown_args_text = ", ".join(unknown_args)
-        raise Exception(f"Unknown args: {unknown_args_text}")
-
-    return known_args
 
 
 def _get_all_migrations() -> list[str]:
@@ -59,25 +39,19 @@ def _get_all_migrations() -> list[str]:
     return script_names
 
 
-def _print_count(command_line_args: list[str]) -> None:
-    args = _get_valid_args_or_throw(command_line_args)
-    credential = get_client_secret_credential()
-    file_manager = DataLakeFileManager(
-        args.data_storage_account_name,
-        credential,
-        WHOLESALE_CONTAINER_NAME,
-    )
-
-    uncommitted_migrations = get_uncommitted_migrations(file_manager)
-
+# This method must remain parameterless because it will be called from the entry point when deployed.
+def print_count() -> None:
+    uncommitted_migrations = get_uncommitted_migrations()
     uncommitted_migrations_count = len(uncommitted_migrations)
 
     # This format is fixed as it is being used by external tools
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
 
 
-def get_uncommitted_migrations(file_manager: DataLakeFileManager) -> list[str]:
+def get_uncommitted_migrations() -> list[str]:
     """Get list of migrations that have not yet been committed"""
+
+    file_manager = DataLakeFileManagerFactory.create_instance()
 
     committed_migrations = download_committed_migrations(file_manager)
 
@@ -88,8 +62,3 @@ def get_uncommitted_migrations(file_manager: DataLakeFileManager) -> list[str]:
     ]
 
     return uncommitted_migrations
-
-
-# This method must remain parameterless because it will be called from the entry point when deployed.
-def print_count() -> None:
-    _print_count(sys.argv[1:])

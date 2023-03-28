@@ -14,7 +14,7 @@
 
 import pytest
 from unittest.mock import patch
-from package.datamigration.data_lake_file_manager import DataLakeFileManager
+from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 
 from package.datamigration.uncommitted_migrations import (
     _get_valid_args_or_throw,
