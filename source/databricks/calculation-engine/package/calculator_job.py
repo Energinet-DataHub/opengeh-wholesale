@@ -18,7 +18,7 @@ import configargparse
 import package.calculation_input as calculation_input
 from configargparse import argparse
 from package.constants import Colname
-from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
+from package.codelists import TimeSeriesQuality
 from package.environment_variables import (
     get_env_variables_or_throw,
     EnvironmentVariable,
