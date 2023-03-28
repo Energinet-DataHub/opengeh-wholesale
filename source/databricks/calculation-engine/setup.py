@@ -33,8 +33,8 @@ setup(
     entry_points={
         "console_scripts": [
             "start_calculator = package.calculator_job:start",
-            "lock_storage = package.datamigration.lock_storage:lock",
-            "unlock_storage = package.datamigration.lock_storage:unlock",
+            "lock_storage = package.storage_account_access.lock_storage:lock",
+            "unlock_storage = package.storage_account_access.lock_storage:unlock",
             "migrate_data_lake = package.datamigration.migration:migrate_data_lake",
             "uncommitted_migrations_count = package.datamigration.uncommitted_migrations:print_count",
         ]
