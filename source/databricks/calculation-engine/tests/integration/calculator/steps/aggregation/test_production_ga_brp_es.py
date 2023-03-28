@@ -25,7 +25,7 @@ from package.codelists import (
 )
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, sum, lit, window
+import pyspark.sql.functions as F
 from pyspark.sql.types import DecimalType
 import pytest
 from typing import Callable, Optional
@@ -74,7 +74,7 @@ def enriched_time_series_factory(
             }
         ]
         return spark.createDataFrame(df).withColumn(
-            Colname.time_window, window(col(Colname.time_window), "15 minutes")
+            Colname.time_window, F.window(F.col(Colname.time_window), "15 minutes")
         )
 
     return factory
@@ -478,7 +478,7 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
 def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
-    df = enriched_time_series_factory().withColumn("quality", lit(None))
+    df = enriched_time_series_factory().withColumn("quality", F.lit(None))
 
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().Quality == TimeSeriesQuality.missing.value
@@ -488,7 +488,7 @@ def test__when_time_series_point_is_missing__quantity_is_0(
     enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
     df = enriched_time_series_factory().withColumn(
-        "quarter_quantity", lit(None).cast(DecimalType())
+        "quarter_quantity", F.lit(None).cast(DecimalType())
     )
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().sum_quantity == Decimal("0.000")
