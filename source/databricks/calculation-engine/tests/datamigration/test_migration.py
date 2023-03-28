@@ -45,10 +45,12 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
 
 
 @patch("package.datamigration.migration.initialize_spark")
-@patch("package.datamigration.migration.DataLakeFileManager")
+@patch("package.datamigration.migration.DataLakeFileManagerFactory")
 @patch("package.datamigration.migration.get_uncommitted_migrations")
 @patch("package.datamigration.migration.upload_committed_migration")
+@patch("package.datamigration.migration.get_env_variable_or_throw")
 def test__migrate_datalake__when_script_not_found__raise_exception(
+    mock_get_env_variable_or_throw,
     mock_upload_committed_migration,
     mock_uncommitted_migrations,
     mock_file_manager,
@@ -59,7 +61,7 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
 
     # Act and Assert
     with pytest.raises(Exception):
-        _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
+        _migrate_data_lake("dummy_storage_key")
 
 
 def test__all_migrations_script_has_correct_signature():
@@ -80,11 +82,13 @@ def test__all_migrations_script_has_correct_signature():
 
 
 @patch("package.datamigration.migration.initialize_spark")
-@patch("package.datamigration.migration.DataLakeFileManager")
+@patch("package.datamigration.migration.DataLakeFileManagerFactory")
 @patch("package.datamigration.migration.get_uncommitted_migrations")
 @patch("package.datamigration.migration.upload_committed_migration")
 @patch("package.datamigration.migration._apply_migration")
+@patch("package.datamigration.migration.get_env_variable_or_throw")
 def test__migrate_datalake__upload_called_with_correct_name(
+    mock_get_env_variable_or_throw,
     mock_apply_migration,
     mock_upload_committed_migration,
     mock_uncommitted_migrations,
@@ -100,7 +104,7 @@ def test__migrate_datalake__upload_called_with_correct_name(
         calls.append(call(ANY, name))
 
     # Act
-    _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
+    _migrate_data_lake("dummy_storage_key")
 
     # Assert
     mock_upload_committed_migration.assert_has_calls(calls)
