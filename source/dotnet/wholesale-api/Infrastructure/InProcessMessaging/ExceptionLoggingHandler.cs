@@ -33,7 +33,6 @@ public class ExceptionLoggingHandler<TRequest, TResponse, TException> : IRequest
     {
         _logger.LogError(exception, "Something went wrong while handling request of type {@requestType}", typeof(TRequest));
         state.SetHandled(default!);
-        throw exception;
-        //return Task.CompletedTask;
+        return Task.CompletedTask;
     }
 }
