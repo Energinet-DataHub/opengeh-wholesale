@@ -31,14 +31,14 @@ public class CreateBatchHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task Handle_CallsPublish(
+    public async Task Handle_CallsPublishEvent(
         [Frozen] Mock<IMediator> mediatrMock,
         [Frozen] Mock<IBatchFactory> batchFactoryMock,
         CreateBatchHandler sut)
     {
         // Arrange
         var batchCommand = CreateBatchCommand();
-        var batch = CreateBatch(batchCommand);
+        var batch = CreateBatchFromCommand(batchCommand);
         batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate))
             .Returns(batch);
 
@@ -58,7 +58,7 @@ public class CreateBatchHandlerTests
     {
         // Arrange
         var batchCommand = CreateBatchCommand();
-        var batch = CreateBatch(batchCommand);
+        var batch = CreateBatchFromCommand(batchCommand);
         batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate))
             .Returns(batch);
 
@@ -80,7 +80,7 @@ public class CreateBatchHandlerTests
             period.PeriodEnd.ToDateTimeOffset());
     }
 
-    private static Batch CreateBatch(CreateBatchCommand command)
+    private static Batch CreateBatchFromCommand(CreateBatchCommand command)
     {
         return new BatchFactory(SystemClock.Instance, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .Create(ProcessType.BalanceFixing, command.GridAreaCodes, command.StartDate, command.EndDate);

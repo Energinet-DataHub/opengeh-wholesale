@@ -28,6 +28,9 @@ public class StartCalculationJobHandler : INotificationHandler<BatchCreatedDomai
         _calculationDomainService = calculationDomainService;
     }
 
+    /// <summary>
+    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Submitted"/>.
+    /// </summary>
     public async Task Handle(BatchCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
         await _calculationDomainService.StartAsync(notification.BatchId).ConfigureAwait(false);

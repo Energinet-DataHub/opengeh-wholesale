@@ -14,18 +14,11 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public interface IBatchApplicationService
 {
-    /// <summary>
-    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Submitted"/>.
-    /// </summary>
-    /// <param name="batchId"></param>
-    Task StartCalculationAsync(Guid batchId);
-
     Task UpdateExecutionStateAsync();
 
     Task<IEnumerable<BatchDto>> SearchAsync(
