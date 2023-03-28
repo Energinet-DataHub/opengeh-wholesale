@@ -16,7 +16,6 @@ from .data_lake_file_manager import DataLakeFileManager
 import configargparse
 from package import log
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
-from package.databricks_secrets import get_client_secret_credential
 from configargparse import argparse
 from azure.identity import ClientSecretCredential
 
