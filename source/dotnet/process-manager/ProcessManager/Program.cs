@@ -80,7 +80,19 @@ public static class Program
             .ConfigureServices(Domains)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(DateTime)
-            .ConfigureServices(HealthCheck);
+            .ConfigureServices(HealthCheck)
+            .ConfigureServices(MediatR);
+    }
+
+    private static void MediatR(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssembly(typeof(Root).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(Application.Root).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(Domain.Root).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(Infrastructure.Root).Assembly);
+        });
     }
 
     private static void Middlewares(IServiceCollection serviceCollection)

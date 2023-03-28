@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
+namespace Energinet.DataHub.Wholesale.Infrastructure;
 
-namespace Energinet.DataHub.Wholesale.Contracts;
-
-/// <summary>
-/// An immutable request to create a batch.
-/// </summary>
-public sealed record BatchRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate) : IRequest;
+public static class Root
+{
+    /// <summary>
+    /// The "root namespace" of the assembly.
+    /// </summary>
+    public static string Namespace => typeof(Root).Namespace!;
+}

@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fi
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
+using MediatR;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -38,17 +39,11 @@ public class BatchControllerTests : WebApiTestBase
     {
     }
 
-    [Theory]
-    [AutoMoqData]
-    public async Task CreateAsync_WhenCalled_AlwaysReturnsOk(
-        Mock<IBatchApplicationService> mock,
-        Guid batchId)
+    [Fact]
+    public async Task CreateAsync_WhenCalled_AlwaysReturnsOk()
     {
         // Arrange
         var batchRequest = CreateBatchRequestDto();
-        mock.Setup(service => service.CreateAsync(batchRequest))
-            .ReturnsAsync(batchId);
-        Factory.BatchApplicationServiceMock = mock;
 
         // Act
         var actual = await Client.PostAsJsonAsync("/v2/batch", batchRequest, CancellationToken.None);
