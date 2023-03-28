@@ -1,23 +1,3 @@
-resource "databricks_secret_scope" "wholesale_spn_app_id" {
-  name = "wholesale-spn-id-scope"
-}
-
-resource "databricks_secret" "spn_app_id" {
-  key          = "spn_app_id"
-  string_value = azuread_application.app_databricks.application_id
-  scope        = databricks_secret_scope.wholesale_spn_app_id.id
-}
-
-resource "databricks_secret_scope" "wholesale_spn_app_secret" {
-  name = "wholesale-spn-secret-scope"
-}
-
-resource "databricks_secret" "spn_app_secret" {
-  key          = "spn_app_secret"
-  string_value = azuread_application_password.secret.value
-  scope        = databricks_secret_scope.wholesale_spn_app_secret.id
-}
-
 resource "databricks_job" "calculator_job" {
   name                = "CalculatorJob"
   max_concurrent_runs = 100
@@ -41,6 +21,13 @@ resource "databricks_job" "calculator_job" {
         "fs.azure.account.oauth2.client.id.${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net": databricks_secret.spn_app_id.config_reference
         "fs.azure.account.oauth2.client.secret.${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net": databricks_secret.spn_app_secret.config_reference
         "spark.databricks.delta.preview.enabled": true
+      }
+      spark_env_vars = {
+        "TENANT_ID" = var.tenant_id,
+        "SPN_APP_ID" = databricks_secret.spn_app_id.config_reference
+        "SPN_APP_SECRET" = databricks_secret.spn_app_secret.config_reference
+        "DATA_STORAGE_ACCOUNT_NAME" = data.azurerm_key_vault_secret.st_shared_data_lake_name.value
+        "TIME_ZONE" = local.TIME_ZONE
       }
     }
 
