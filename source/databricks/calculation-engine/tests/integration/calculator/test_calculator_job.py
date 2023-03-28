@@ -24,8 +24,8 @@ from package.calculator_job import (
     _start_calculator,
     start,
     _start,
-    _map_cim_quality_to_wholesale_quality,
 )
+from package.calculation_input import map_cim_quality_to_wholesale_quality
 from package.calculator_args import CalculatorArgs
 from package.codelists import (
     BasisDataType,
@@ -841,7 +841,7 @@ def test__map_timeseriesquality_from_cim_to_wholesale(
     )
 
     # Act
-    actual = _map_cim_quality_to_wholesale_quality(time_series_points)
+    actual = map_cim_quality_to_wholesale_quality(time_series_points)
 
     # Assert
     assert (

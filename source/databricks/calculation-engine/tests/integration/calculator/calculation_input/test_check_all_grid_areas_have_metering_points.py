@@ -14,9 +14,7 @@
 
 
 import pytest
-from package.calculator_job import (
-    _check_all_grid_areas_have_metering_points,
-)
+from package.calculation_input import check_all_grid_areas_have_metering_points
 from package.codelists import (
     MeteringPointResolution,
 )
