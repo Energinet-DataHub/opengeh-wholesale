@@ -72,7 +72,7 @@ def _migrate_data_lake(storage_account_key: str) -> None:
     file_manager = DataLakeFileManagerFactory.create_instance()
     spark = initialize_spark()
 
-    uncommitted_migrations = get_uncommitted_migrations(file_manager)
+    uncommitted_migrations = get_uncommitted_migrations()
     uncommitted_migrations.sort()
 
     storage_account_url = infrastructure.get_storage_account_url(
