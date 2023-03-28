@@ -17,13 +17,4 @@ from pyspark.sql.session import SparkSession
 
 
 def initialize_spark() -> SparkSession:
-    # spark_conf = (
-    #     SparkConf(loadDefaults=True)
-    #     .set("spark.sql.session.timeZone", "UTC")
-    #     .set("spark.databricks.io.cache.enabled", "True")
-    # )
-    # return SparkSession.builder.config(conf=spark_conf).getOrCreate()
-    # .set("spark.sql.decimalOperations.allowPrecisionLoss", "False")
-    # .set("spark.databricks.delta.optimizeWrite.enabled", "True")
-    # .set("spark.databricks.delta.autoCompact.enabled", "True")
     return SparkSession.builder.config().getOrCreate()
