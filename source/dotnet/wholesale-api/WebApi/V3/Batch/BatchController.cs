@@ -46,7 +46,6 @@ public class BatchController : V3ControllerBase
     [HttpPost(Name = "CreateBatch")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(Guid))]
-    [AllowAnonymous]
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
         return await _mediator.Send(new CreateBatchCommand(
