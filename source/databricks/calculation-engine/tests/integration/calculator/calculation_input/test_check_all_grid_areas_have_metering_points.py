@@ -63,7 +63,7 @@ def test__when_all_grid_areas_have_metering_points_does_not_throw_exception(
     metering_points_df = metering_point_period_df_factory(grid_area_code="805")
 
     # Assert
-    _check_all_grid_areas_have_metering_points(
+    check_all_grid_areas_have_metering_points(
         grid_area_df,
         metering_points_df,
     )
@@ -82,7 +82,7 @@ def test__when_no_metering_point_exist_in_grid_area_exception_is_thrown(
     metering_points_df = metering_point_period_df_factory(grid_area_code="806")
 
     with pytest.raises(Exception) as e_info:
-        _check_all_grid_areas_have_metering_points(
+        check_all_grid_areas_have_metering_points(
             grid_area_df,
             metering_points_df,
         )
