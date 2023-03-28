@@ -15,6 +15,8 @@
 import sys
 import configargparse
 from configargparse import argparse
+from pyspark.sql import SparkSession
+
 from package.environment_variables import (
     get_env_variables_or_throw,
     EnvironmentVariable,

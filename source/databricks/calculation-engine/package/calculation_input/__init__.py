@@ -17,4 +17,3 @@ from .batch_grid_areas import (
     get_batch_grid_areas_df,
     check_all_grid_areas_have_metering_points,
 )
-from .time_series import map_cim_quality_to_wholesale_quality
