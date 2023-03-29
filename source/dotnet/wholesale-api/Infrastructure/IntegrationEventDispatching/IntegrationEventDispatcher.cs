@@ -71,9 +71,14 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             foreach (var outboxMessage in outboxMessages)
             {
                 var serviceBusMessage = _serviceBusMessageFactory.CreateServiceBusMessage(outboxMessage.Data, outboxMessage.MessageType);
-                if (!batch.TryAddMessage(serviceBusMessage)) continue;
-                outboxMessage.SetProcessed(_clock.GetCurrentInstant());
-                break;
+                if (batch.TryAddMessage(serviceBusMessage))
+                {
+                    outboxMessage.SetProcessed(_clock.GetCurrentInstant());
+                }
+                else
+                {
+                    break;
+                }
             }
 
             return batch;

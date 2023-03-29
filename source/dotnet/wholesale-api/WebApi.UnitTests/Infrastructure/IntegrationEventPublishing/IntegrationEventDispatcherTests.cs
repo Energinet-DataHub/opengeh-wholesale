@@ -29,7 +29,7 @@ public class IntegrationEventDispatcherTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task SendAsync_CallsSendWithAServiceBusMessageBatch(
+    public async Task DispatchIntegrationEventsAsync_WhenDispatchingEvents_CallsSendWithTheCorrectServiceBusMessageBatch(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
         [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock,
         IntegrationEventDispatcher sut)
@@ -54,7 +54,7 @@ public class IntegrationEventDispatcherTests
 
     [Theory]
     [AutoMoqData]
-    public async Task SendAsync_CallsCreateServiceBusMessageWithTheCorrectParameters(
+    public async Task DispatchIntegrationEventsAsync_CallsCreateServiceBusMessageWithTheCorrectParameters(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
         [Frozen] Mock<IServiceBusMessageFactory> serviceBusMessageFactoryMock,
         [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock,
@@ -85,16 +85,18 @@ public class IntegrationEventDispatcherTests
 
     [Theory]
     [AutoMoqData]
-    public async Task SendAsync_MustMarkTheOutboxMessageAsProcessed(
+    public async Task DispatchIntegrationEventsAsync_MustMarkOutboxMessagesAsProcessed(
         [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
         [Frozen] Mock<IIntegrationEventTopicServiceBusSender> integrationEventTopicServiceBusSenderMock,
         IntegrationEventDispatcher sut)
     {
         // Arrange
-        var outboxMessage = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName);
+        var outboxMessage1 = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName);
+        var outboxMessage2 = CreateOutboxMessage(new byte[10], CalculationResultCompleted.BalanceFixingEventName);
+        var outboxMessages = new List<OutboxMessage> { outboxMessage1, outboxMessage2 };
         outboxMessageRepositoryMock
             .Setup(x => x.GetByTakeAsync(11))
-            .ReturnsAsync(new List<OutboxMessage> { outboxMessage });
+            .ReturnsAsync(outboxMessages);
 
         // It is not possible to mock a ServiceBusMessageBatch - it doesn't have a public constructor or interface
         var serviceBusMessageBatch = ServiceBusModelFactory.ServiceBusMessageBatch(1000, new List<ServiceBusMessage>(), new CreateMessageBatchOptions());
@@ -105,7 +107,7 @@ public class IntegrationEventDispatcherTests
         await sut.DispatchIntegrationEventsAsync(10);
 
         // Assert
-        Assert.True(outboxMessage.ProcessedDate.HasValue);
+        Assert.True(outboxMessages.TrueForAll(x => x.ProcessedDate.HasValue));
     }
 
     [Theory]
