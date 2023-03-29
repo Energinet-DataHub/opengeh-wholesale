@@ -53,7 +53,7 @@ public class RequestMatchingHandlerTests
         return typeof(IBaseRequest).IsAssignableFrom(type);
     }
 
-    private static bool IsIRequestHandler(Type type)
+    private static bool IsICommandHandler(Type type)
     {
         return type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IRequestHandler<,>));
     }
