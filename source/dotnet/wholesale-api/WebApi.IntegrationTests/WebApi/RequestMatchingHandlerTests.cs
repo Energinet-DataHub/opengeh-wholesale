@@ -32,7 +32,7 @@ public class RequestMatchingHandlerTests
     public void EachCommand_HasMatchingHandler(Type type)
     {
         // Arrange
-        var requestTypes = type.Assembly.GetTypes()
+        var commandTypes = type.Assembly.GetTypes()
             .Where(IsRequest)
             .ToList();
 
