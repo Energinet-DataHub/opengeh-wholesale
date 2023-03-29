@@ -16,7 +16,7 @@ from datetime import datetime
 from package.constants import Colname
 from package.steps.aggregation.aggregators import (
     aggregate_production_ga_brp_es,
-    _aggregate,
+    _aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
     MeteringPointType,
@@ -245,7 +245,9 @@ def test_production_test_filter_by_domain_is_pressent(
     enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
     df = enriched_time_series_factory()
-    aggregated_df = _aggregate(df, MeteringPointType.production, None)
+    aggregated_df = _aggregate_per_ga_and_brp_and_es(
+        df, MeteringPointType.production, None
+    )
     assert aggregated_df.count() == 1
 
 
@@ -257,7 +259,7 @@ def test__quarterly_sums_correctly(
     df = enriched_time_series_quarterly_same_time_factory(
         first_quantity=Decimal("1"), second_quantity=Decimal("2")
     )
-    result_df = _aggregate(df, MeteringPointType.production, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().sum_quantity == 3
 
 
@@ -349,7 +351,9 @@ def test__position_is_based_on_time_correctly(
         first_grid_area_code=grid_area_code_805,
         second_grid_area_code=grid_area_code_805,
     )
-    result_df = _aggregate(df, MeteringPointType.production, None).collect()
+    result_df = _aggregate_per_ga_and_brp_and_es(
+        df, MeteringPointType.production, None
+    ).collect()
 
     assert result_df[0]["position"] == 1
     assert result_df[0][Colname.sum_quantity] == Decimal("1")
@@ -382,7 +386,7 @@ def test__that_grid_area_code_in_input_is_in_output(
 ) -> None:
     "Test that the grid area codes in input are in result"
     df = enriched_time_series_quarterly_same_time_factory()
-    result_df = _aggregate(df, MeteringPointType.production, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().GridAreaCode == str(grid_area_code_805)
 
 
@@ -391,7 +395,7 @@ def test__each_grid_area_has_a_sum(
 ) -> None:
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
-    result_df = _aggregate(df, MeteringPointType.production, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.where("GridAreaCode == 805").count() == 1
     assert result_df.where("GridAreaCode == 806").count() == 1
 
@@ -467,7 +471,7 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
         .union(enriched_time_series_factory(quality=quality_2))
         .union(enriched_time_series_factory(quality=quality_3))
     )
-    result_df = _aggregate(df, MeteringPointType.production, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().Quality == expected_quality
 
 
@@ -476,7 +480,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
 ) -> None:
     df = enriched_time_series_factory().withColumn("quality", F.lit(None))
 
-    result_df = _aggregate(df, MeteringPointType.production, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().Quality == TimeSeriesQuality.missing.value
 
 
@@ -486,5 +490,5 @@ def test__when_time_series_point_is_missing__quantity_is_0(
     df = enriched_time_series_factory().withColumn(
         "quarter_quantity", F.lit(None).cast(DecimalType())
     )
-    result_df = _aggregate(df, MeteringPointType.production, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
     assert result_df.first().sum_quantity == Decimal("0.000")

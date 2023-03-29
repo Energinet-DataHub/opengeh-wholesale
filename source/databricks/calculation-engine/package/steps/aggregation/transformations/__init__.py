@@ -17,6 +17,7 @@ from .aggregation_result_formatter import (
 )
 from .adjust_flex_consumption import adjust_flex_consumption
 from .aggregate_quality import aggregate_total_consumption_quality, aggregate_quality
+from .aggregate_sum_and_set_quality import aggregate_sum_and_set_quality
 from .adjust_production import adjust_production
 from .combine_master_data import (
     combine_added_system_correction_with_master_data,

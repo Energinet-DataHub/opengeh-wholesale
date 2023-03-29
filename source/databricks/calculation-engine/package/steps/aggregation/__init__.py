@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .aggregators import (
+from .exchange_aggregators import (
     aggregate_net_exchange_per_ga,
     aggregate_net_exchange_per_neighbour_ga,
+)
+from .aggregators import (
     aggregate_production_ga_brp_es,
     aggregate_non_profiled_consumption_ga_brp_es,
     aggregate_flex_consumption_ga_brp_es,

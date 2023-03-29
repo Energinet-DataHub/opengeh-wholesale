@@ -16,7 +16,7 @@ from datetime import datetime
 from package.constants import Colname
 from package.steps.aggregation.aggregators import (
     aggregate_non_profiled_consumption_ga_brp_es,
-    _aggregate,
+    _aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
     MeteringPointType,
@@ -219,7 +219,7 @@ def test_consumption_test_filter_by_domain_is_pressent(
     time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     df = time_series_row_factory()
-    aggregated_df = _aggregate(
+    aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.consumption,
         SettlementMethod.non_profiled,
@@ -231,7 +231,7 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
     time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     df = time_series_row_factory()
-    aggregated_df = _aggregate(
+    aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.consumption,
         SettlementMethod.flex,
