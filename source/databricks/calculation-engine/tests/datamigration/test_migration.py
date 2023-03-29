@@ -62,6 +62,7 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
 
 
 def test__all_migrations_script_has_correct_signature():
+
     # Arrange
     all_migrations = _get_all_migrations()
 

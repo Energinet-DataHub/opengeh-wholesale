@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 
 DUMMY_STORAGE_ACCOUNT_NAME = "my_storage"
-DUMMY_STORAGE_KEY = "my_storage"
 DUMMY_CONTAINER_NAME = "my_container"
 
 
@@ -25,9 +24,12 @@ DUMMY_CONTAINER_NAME = "my_container"
 def test__get_file_system_client__calls_service_client_with_container_name(
     mock_data_lake_service_client,
 ):
+    # Arrange
+    mock_credential = Mock()
+
     # Act
     DataLakeFileManager(
-        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
+        DUMMY_STORAGE_ACCOUNT_NAME, mock_credential, DUMMY_CONTAINER_NAME
     )
 
     # Assert
@@ -44,13 +46,14 @@ def test__download_csv__returned_reader_has_all_items(
     mock_data_lake_service_client, mock_download_file
 ):
     # Arrange
+    mock_credential = Mock()
     row0 = ["c_00", "c_01", "c_02"]
     row1 = ["c_10", "c_11", "c_12"]
     csv_string = f"{row0[0]},{row0[1]},{row0[2]}\r\n{row1[0]},{row1[1]},{row1[2]}\r\n"
     mock_download_file.return_value = str.encode(csv_string)
 
     file_manager = DataLakeFileManager(
-        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
+        DUMMY_STORAGE_ACCOUNT_NAME, mock_credential, DUMMY_CONTAINER_NAME
     )
 
     # Act
@@ -69,9 +72,10 @@ def test__download_csv__when_empty_file__return_empty_content_in_reader(
     mock_data_lake_service_client, mock_download_file
 ):
     # Arrange
+    mock_credential = Mock()
     mock_download_file.return_value = b""
     file_manager = DataLakeFileManager(
-        DUMMY_STORAGE_ACCOUNT_NAME, DUMMY_STORAGE_KEY, DUMMY_CONTAINER_NAME
+        DUMMY_STORAGE_ACCOUNT_NAME, mock_credential, DUMMY_CONTAINER_NAME
     )
 
     # Act
