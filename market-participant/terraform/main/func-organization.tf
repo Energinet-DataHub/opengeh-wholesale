@@ -1,5 +1,5 @@
 module "func_entrypoint_marketparticipant" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v11"
 
   name                                     = "organization"
   project_name                             = var.domain_name_short
@@ -14,10 +14,12 @@ module "func_entrypoint_marketparticipant" {
   log_analytics_workspace_id               = data.azurerm_key_vault_secret.log_shared_id.value
   always_on                                = true
   health_check_path                        = "/api/monitor/ready"
-  health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
-  health_check_alert_enabled               = var.enable_health_check_alerts
-  dotnet_framework_version                 = "7"
-  use_dotnet_isolated_runtime              = true
+  health_check_alert = {
+    action_group_id = data.azurerm_key_vault_secret.primary_action_group_id.value
+    enabled         = var.enable_health_check_alerts
+  }
+  dotnet_framework_version    = "7"
+  use_dotnet_isolated_runtime = true
 
   app_settings = {
 
