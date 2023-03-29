@@ -48,7 +48,7 @@ public class RequestMatchingHandlerTests
         }
     }
 
-    private static bool IsRequest(Type type)
+    private static bool IsCommand(Type type)
     {
         return typeof(IBaseRequest).IsAssignableFrom(type);
     }
