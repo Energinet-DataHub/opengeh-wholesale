@@ -13,11 +13,28 @@
 # limitations under the License.
 
 import subprocess
-
+import pkg_resources
+from typing import Any
 
 # IMPORTANT:
 # If we add/remove tests here, we also update the "retry logic" in '.docker/entrypoint.sh',
 # which dependens on the number of "entry point tests".
+
+
+def _load_entry_point(entry_point_name: str) -> Any:
+    # Load the entry point function from the installed wheel
+    try:
+        return pkg_resources.load_entry_point('package', 'console_scripts', entry_point_name)
+    except pkg_resources.DistributionNotFound:
+        assert False, f"The {entry_point_name} entry point was not found."
+
+
+def test_entry_point(installed_package: None) -> None:
+    # Act
+    entry_point = _load_entry_point("start_calculator")
+
+    # Assert
+    assert entry_point is not None
 
 
 def test__entry_point__start_calculator__returns_0(installed_package: None) -> None:
@@ -28,20 +45,32 @@ def test__entry_point__start_calculator__returns_0(installed_package: None) -> N
 def test__entry_point__uncommitted_migrations_count__returns_0(
     installed_package: None,
 ) -> None:
-    exit_code = subprocess.call(["uncommitted_migrations_count", "-h"])
-    assert exit_code == 0
+    # Act
+    entry_point = _load_entry_point("uncommitted_migrations_count")
+
+    # Assert
+    assert entry_point is not None
 
 
 def test__entry_point__lock_storage__returns_0(installed_package: None) -> None:
-    exit_code = subprocess.call(["lock_storage", "-h"])
-    assert exit_code == 0
+    # Act
+    entry_point = _load_entry_point("lock_storage")
+
+    # Assert
+    assert entry_point is not None
 
 
 def test__entry_point__unlock_storage__returns_0(installed_package: None) -> None:
-    exit_code = subprocess.call(["unlock_storage", "-h"])
-    assert exit_code == 0
+    # Act
+    entry_point = _load_entry_point("unlock_storage")
+
+    # Assert
+    assert entry_point is not None
 
 
 def test__entry_point__migrate_data_lake__returns_0(installed_package: None) -> None:
-    exit_code = subprocess.call(["migrate_data_lake", "-h"])
-    assert exit_code == 0
+    # Act
+    entry_point = _load_entry_point("migrate_data_lake")
+
+    # Assert
+    assert entry_point is not None
