@@ -42,9 +42,10 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     )
 
     # Infrastructure settings
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--time-zone", type=str, required=True)
+    p.add("--data-storage-account-name", type=str, required=False)
+    p.add("--data-storage-account-key", type=str, required=False)
+    p.add("--time-zone", type=str, required=False)
+    p.add("--log-level", type=valid_log_level, help="debug|information", required=False)
 
     # Run parameters
     p.add("--batch-id", type=str, required=True)
@@ -53,8 +54,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     p.add("--batch-period-end-datetime", type=valid_date, required=True)
     p.add("--batch-process-type", type=str, required=True)
     p.add("--batch-execution-time-start", type=valid_date, required=True)
-    p.add("--log-level", type=valid_log_level, help="debug|information", required=True)
-
+   
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
         unknown_args_text = ", ".join(unknown_args)
@@ -126,7 +126,6 @@ def _start(storage_account_name: str, storage_account_credetial: ClientSecretCre
 
     calculator_args = CalculatorArgs(
         data_storage_account_name=storage_account_name,
-        data_storage_account_key=job_args.data_storage_account_key,
         wholesale_container_path=infrastructure.get_container_root_path(
             storage_account_name
         ),

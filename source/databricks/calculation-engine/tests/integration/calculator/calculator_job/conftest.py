@@ -36,7 +36,6 @@ def test_data_job_parameters(
     return C.DictObj(
         {
             "data_storage_account_name": "foo",
-            "data_storage_account_key": "foo",
             "wholesale_container_path": f"{data_lake_path}/{worker_id}",
             "batch_id": C.executed_batch_id,
             "batch_process_type": "BalanceFixing",

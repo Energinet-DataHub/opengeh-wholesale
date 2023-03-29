@@ -182,7 +182,6 @@ def test__start__start_calculator_called_without_exceptions(
     mock_start_calculator: Mock,
     mock_is_locked: Mock,
     mock_init_spark: Mock,
-    dummy_job_parameters: list[str],
 ) -> None:
     # Arrange
     mock_is_locked.return_value = False
