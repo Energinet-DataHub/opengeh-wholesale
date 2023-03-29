@@ -17,4 +17,4 @@ from pyspark.sql.session import SparkSession
 
 
 def initialize_spark() -> SparkSession:
-    return SparkSession.builder.config().getOrCreate()
+    return SparkSession.builder.getOrCreate()
