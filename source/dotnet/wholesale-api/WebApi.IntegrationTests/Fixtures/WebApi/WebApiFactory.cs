@@ -61,7 +61,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
             services.AddScoped(_ =>
                 ProcessStepApplicationServiceMock?.Object ?? new Mock<IProcessStepApplicationService>().Object);
             services.AddScoped(_ => BatchApplicationServiceMock?.Object ?? new Mock<IBatchApplicationService>().Object);
-            // TODO AJW. It this needed? services.AddScoped(_ => MediatorMock?.Object ?? new Mock<IMediator>().Object);
+            services.AddScoped(_ => MediatorMock?.Object ?? new Mock<IMediator>().Object);
         });
     }
 
