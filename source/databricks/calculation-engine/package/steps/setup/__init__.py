@@ -12,11 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
-
-
-class TimeSeriesType(Enum):
-    PRODUCTION = "production"
-    NON_PROFILED_CONSUMPTION = "non_profiled_consumption"
-    # TODO: Unit test that this value doesn't change without developer knowing that it affects the result table
-    EXCHANGE_PER_NEIGHBORING_GA = "exchange_per_neighboring_ga"
+from .enriched_time_series import get_enriched_time_series_points_df
+from .hour_to_quarter import transform_hour_to_quarter

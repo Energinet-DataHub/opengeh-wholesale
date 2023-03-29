@@ -15,7 +15,6 @@
 from os import path
 from shutil import rmtree
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
 import pytest
 from unittest.mock import patch, Mock
 from tests.contract_utils import assert_contract_matches_schema
@@ -30,7 +29,6 @@ from package.codelists import (
     BasisDataType,
     TimeSeriesType,
     AggregationLevel,
-    TimeSeriesQuality,
 )
 import package.infrastructure as infra
 from package.environment_variables import EnvironmentVariable
