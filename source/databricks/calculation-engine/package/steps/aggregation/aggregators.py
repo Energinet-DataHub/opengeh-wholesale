@@ -14,7 +14,6 @@
 from decimal import Decimal
 
 from package.codelists import (
-    MeteringPointResolution,
     MeteringPointType,
     SettlementMethod,
     TimeSeriesQuality,
@@ -25,12 +24,9 @@ from package.steps.aggregation.aggregation_result_formatter import (
 )
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
-    array,
     array_contains,
     col,
     collect_set,
-    explode,
-    expr,
     lit,
     row_number,
     sum,
@@ -40,6 +36,7 @@ from pyspark.sql.functions import (
 from pyspark.sql.window import Window
 from typing import Union
 
+
 in_sum = "in_sum"
 out_sum = "out_sum"
 exchange_in_in_grid_area = "ExIn_InMeteringGridArea_Domain_mRID"
@@ -48,21 +45,22 @@ exchange_out_in_grid_area = "ExOut_InMeteringGridArea_Domain_mRID"
 exchange_out_out_grid_area = "ExOut_OutMeteringGridArea_Domain_mRID"
 
 
-# Function to aggregate hourly net exchange per neighbouring grid areas (step 1)
-def aggregate_net_exchange_per_neighbour_ga(results: dict) -> DataFrame:
-    df = results[ResultKeyName.aggregation_base_dataframe].filter(
+# Function to aggregate net exchange per neighbouring grid areas (step 1)
+def aggregate_net_exchange_per_neighbour_ga(
+    enriched_time_series: DataFrame,
+) -> DataFrame:
+    df = enriched_time_series.where(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
     exchange_in = (
         df.groupBy(
             Colname.in_grid_area,
             Colname.out_grid_area,
-            window(col(Colname.observation_time), "1 hour"),
+            Colname.time_window,
             Colname.aggregated_quality,
         )
         .sum(Colname.quantity)
         .withColumnRenamed(f"sum({Colname.quantity})", in_sum)
-        .withColumnRenamed("window", Colname.time_window)
         .withColumnRenamed(Colname.in_grid_area, exchange_in_in_grid_area)
         .withColumnRenamed(Colname.out_grid_area, exchange_in_out_grid_area)
     )
@@ -70,11 +68,10 @@ def aggregate_net_exchange_per_neighbour_ga(results: dict) -> DataFrame:
         df.groupBy(
             Colname.in_grid_area,
             Colname.out_grid_area,
-            window(col(Colname.observation_time), "1 hour"),
+            Colname.time_window,
         )
         .sum(Colname.quantity)
         .withColumnRenamed(f"sum({Colname.quantity})", out_sum)
-        .withColumnRenamed("window", Colname.time_window)
         .withColumnRenamed(Colname.in_grid_area, exchange_out_in_grid_area)
         .withColumnRenamed(Colname.out_grid_area, exchange_out_out_grid_area)
     )
@@ -107,9 +104,8 @@ def aggregate_net_exchange_per_neighbour_ga(results: dict) -> DataFrame:
     return create_dataframe_from_aggregation_result_schema(exchange)
 
 
-# Function to aggregate hourly net exchange per grid area (step 2)
-def aggregate_net_exchange_per_ga(results: dict) -> DataFrame:
-    df = results[ResultKeyName.aggregation_base_dataframe]
+# Function to aggregate net exchange per grid area (step 2)
+def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
     exchangeIn = df.filter(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
@@ -204,37 +200,7 @@ def _aggregate_per_ga_and_brp_and_es(
         result = result.filter(
             col(Colname.settlement_method) == settlement_method.value
         )
-    result = result.withColumn(
-        "quarter_times",
-        when(
-            col(Colname.resolution) == MeteringPointResolution.hour.value,
-            array(
-                col(Colname.observation_time),
-                col(Colname.observation_time) + expr("INTERVAL 15 minutes"),
-                col(Colname.observation_time) + expr("INTERVAL 30 minutes"),
-                col(Colname.observation_time) + expr("INTERVAL 45 minutes"),
-            ),
-        ).when(
-            col(Colname.resolution) == MeteringPointResolution.quarter.value,
-            array(col(Colname.observation_time)),
-        ),
-    ).select(
-        result["*"],
-        explode("quarter_times").alias("quarter_time"),
-    )
-    result = result.withColumn(
-        Colname.time_window, window(col("quarter_time"), "15 minutes")
-    )
-    result = result.withColumn(
-        "quarter_quantity",
-        when(
-            col(Colname.resolution) == MeteringPointResolution.hour.value,
-            col(Colname.quantity) / 4,
-        ).when(
-            col(Colname.resolution) == MeteringPointResolution.quarter.value,
-            col(Colname.quantity),
-        ),
-    )
+
     sum_group_by = [
         Colname.grid_area,
         Colname.balance_responsible_id,
