@@ -31,7 +31,7 @@ public class UnitOfWorkPipelineBehaviorTests
 
     [Theory]
     [AutoMoqData]
-    public async Task Handle_CallsCommit(
+    public async Task Handle_WhenCalled_CallsCommit(
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         CreateBatchCommand createBatchCommand,
         UnitOfWorkPipelineBehavior<CreateBatchCommand, Guid> sut)
@@ -45,7 +45,7 @@ public class UnitOfWorkPipelineBehaviorTests
 
     [Theory]
     [AutoMoqData]
-    public async Task Handle_ReturnsGuid(
+    public async Task Handle_WhenCalled_ReturnsGuid(
         CreateBatchCommand createBatchCommand,
         UnitOfWorkPipelineBehavior<CreateBatchCommand, Guid> sut)
     {
