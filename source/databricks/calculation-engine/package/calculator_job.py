@@ -54,7 +54,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     p.add("--batch-period-end-datetime", type=valid_date, required=True)
     p.add("--batch-process-type", type=str, required=True)
     p.add("--batch-execution-time-start", type=valid_date, required=True)
-   
+
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
         unknown_args_text = ", ".join(unknown_args)
