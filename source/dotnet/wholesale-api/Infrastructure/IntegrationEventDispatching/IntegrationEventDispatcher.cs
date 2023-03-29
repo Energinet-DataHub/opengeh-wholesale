@@ -46,47 +46,36 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
 
         public async Task<bool> DispatchIntegrationEventsAsync(int numberOfMessagesToDispatchInABulk)
         {
+            // Fetch one more than bulk size to be able to test if there are more remaining
+            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfMessagesToDispatchInABulk + 1).ConfigureAwait(false);
+            if (!outboxMessages.Any()) return false;
+
             // Note: For future reference we log the publishing duration time.
             var watch = new Stopwatch();
             watch.Start();
 
-            // Fetch one more than bulk size to be able to test if there are more remaining
-            var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfMessagesToDispatchInABulk + 1).ConfigureAwait(false);
-            var serviceBusMessages = CreateServiceBusMessages(outboxMessages);
-            await PublishServiceBusMessagesAsync(serviceBusMessages).ConfigureAwait(false);
+            var batch = await CreateBatchWithMaximumMessagesAsync(outboxMessages).ConfigureAwait(false);
+            await _integrationEventTopicServiceBusSender.SendAsync(batch).ConfigureAwait(false);
 
             watch.Stop();
-            _logger.LogInformation($"Publishing {outboxMessages.Count} service bus messages took {watch.Elapsed.Milliseconds} ms.");
+            _logger.LogInformation($"Publishing {batch.Count} service bus messages took {watch.Elapsed.Milliseconds} ms. Batch size in bytes {batch.SizeInBytes}.");
 
             return outboxMessages.Count > numberOfMessagesToDispatchInABulk;
         }
 
-        private IEnumerable<ServiceBusMessage> CreateServiceBusMessages(IEnumerable<OutboxMessage> outboxMessages)
+        private async Task<ServiceBusMessageBatch> CreateBatchWithMaximumMessagesAsync(IEnumerable<OutboxMessage> outboxMessages)
         {
-            var serviceBusMessages = new List<ServiceBusMessage>();
+            var batch = await _integrationEventTopicServiceBusSender.CreateBusMessageBatchAsync().ConfigureAwait(false);
+
             foreach (var outboxMessage in outboxMessages)
             {
                 var serviceBusMessage = _serviceBusMessageFactory.CreateServiceBusMessage(outboxMessage.Data, outboxMessage.MessageType);
-                serviceBusMessages.Add(serviceBusMessage);
+                if (!batch.TryAddMessage(serviceBusMessage)) continue;
                 outboxMessage.SetProcessed(_clock.GetCurrentInstant());
+                break;
             }
 
-            return serviceBusMessages;
-        }
-
-        private async Task PublishServiceBusMessagesAsync(IEnumerable<ServiceBusMessage> serviceBusMessages)
-        {
-            try
-            {
-                await _integrationEventTopicServiceBusSender
-                    .SendMessagesAsync(serviceBusMessages)
-                    .ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, $"Exception caught while trying to send service bus messages.");
-                throw;
-            }
+            return batch;
         }
     }
 }
