@@ -28,7 +28,7 @@ public class StartCalculationJobHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task Handle_ActivatesDomainService(
+    public async Task Handle_StartsCalculation(
         [Frozen] Mock<ICalculationDomainService> calculationDomainServiceMock,
         Guid batchId,
         StartCalculationJobHandler sut)
