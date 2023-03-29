@@ -31,7 +31,7 @@ public class CreateBatchHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task Handle_CallsPublishEvent(
+    public async Task Handle_PublishesBatchCreatedEvent(
         [Frozen] Mock<IMediator> mediatrMock,
         [Frozen] Mock<IBatchFactory> batchFactoryMock,
         CreateBatchHandler sut)
