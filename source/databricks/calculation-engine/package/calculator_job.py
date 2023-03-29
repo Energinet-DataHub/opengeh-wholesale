@@ -13,12 +13,14 @@
 # limitations under the License.
 
 import sys
-
 import configargparse
-import package.calculation_input as calculation_input
 from configargparse import argparse
-from package.constants import Colname
-from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
+from pyspark.sql import SparkSession
+
+from package.environment_variables import (
+    get_env_variables_or_throw,
+    EnvironmentVariable,
+)
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -29,9 +31,7 @@ from package import (
 from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from package.file_writers.actors_writer import ActorsWriter
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import Row
-import pyspark.sql.functions as F
+import package.calculation_input as input
 
 from .args_helper import valid_date, valid_list, valid_log_level
 from .calculator_args import CalculatorArgs
@@ -77,8 +77,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
             f"{args.wholesale_container_path}/calculation-input-v2/time-series-points"
         )
     )
-    timeseries_points_df = _map_cim_quality_to_wholesale_quality(timeseries_points_df)
-
     metering_points_periods_df = (
         spark.read.option("mode", "FAILFAST")
         .format("delta")
@@ -86,12 +84,12 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
             f"{args.wholesale_container_path}/calculation-input-v2/metering-point-periods"
         )
     )
-    batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
-    _check_all_grid_areas_have_metering_points(
+    batch_grid_areas_df = input.get_batch_grid_areas_df(args.batch_grid_areas, spark)
+    input.check_all_grid_areas_have_metering_points(
         batch_grid_areas_df, metering_points_periods_df
     )
 
-    metering_point_periods_df = calculation_input.get_metering_point_periods_df(
+    metering_point_periods_df = input.get_metering_point_periods_df(
         metering_points_periods_df,
         batch_grid_areas_df,
         args.batch_period_start_datetime,
@@ -120,77 +118,31 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
 
-def _map_cim_quality_to_wholesale_quality(timeseries_point_df: DataFrame) -> DataFrame:
-    "Map input CIM quality names to wholesale quality names"
-    return timeseries_point_df.withColumn(
-        Colname.quality,
-        F.when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.missing.value,
-            TimeSeriesQuality.missing.value,
-        )
-        .when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.estimated.value,
-            TimeSeriesQuality.estimated.value,
-        )
-        .when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.measured.value,
-            TimeSeriesQuality.measured.value,
-        )
-        .when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.calculated.value,
-            TimeSeriesQuality.calculated.value,
-        )
-        .otherwise("UNKNOWN"),
-    )
-
-
-def get_batch_grid_areas_df(
-    batch_grid_areas: list[str], spark: SparkSession
-) -> DataFrame:
-    return spark.createDataFrame(
-        map(lambda x: Row(str(x)), batch_grid_areas), ["GridAreaCode"]
-    )
-
-
-def _check_all_grid_areas_have_metering_points(
-    batch_grid_areas_df: DataFrame, master_basis_data_df: DataFrame
-) -> None:
-    distinct_grid_areas_rows_df = master_basis_data_df.select("GridAreaCode").distinct()
-    grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
-        distinct_grid_areas_rows_df, "GridAreaCode", "leftanti"
-    )
-
-    if grid_area_with_no_metering_point_df.count() > 0:
-        grid_areas_to_inform_about = grid_area_with_no_metering_point_df.select(
-            "GridAreaCode"
-        ).collect()
-
-        grid_area_codes_to_inform_about = map(
-            lambda x: x.__getitem__("GridAreaCode"), grid_areas_to_inform_about
-        )
-        raise Exception(
-            f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"
-        )
-
-
 def _start(command_line_args: list[str]) -> None:
     args = _get_valid_args_or_throw(command_line_args)
     log(f"Job arguments: {str(args)}")
     db_logging.loglevel = args.log_level
 
-    if islocked(args.data_storage_account_name, args.data_storage_account_key):
+    required_env_variables = [
+        EnvironmentVariable.TIME_ZONE,
+        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME,
+    ]
+    env_variables = get_env_variables_or_throw(required_env_variables)
+
+    time_zone = env_variables[EnvironmentVariable.TIME_ZONE]
+    storage_account_name = env_variables[EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
+
+    if islocked(storage_account_name, args.data_storage_account_key):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
-    spark = initialize_spark(
-        args.data_storage_account_name, args.data_storage_account_key
-    )
+    spark = initialize_spark(storage_account_name, args.data_storage_account_key)
 
     calculator_args = CalculatorArgs(
-        data_storage_account_name=args.data_storage_account_name,
+        data_storage_account_name=storage_account_name,
         data_storage_account_key=args.data_storage_account_key,
         wholesale_container_path=infrastructure.get_container_root_path(
-            args.data_storage_account_name
+            storage_account_name
         ),
         batch_id=args.batch_id,
         batch_grid_areas=args.batch_grid_areas,
@@ -198,7 +150,7 @@ def _start(command_line_args: list[str]) -> None:
         batch_period_end_datetime=args.batch_period_end_datetime,
         batch_execution_time_start=args.batch_execution_time_start,
         batch_process_type=args.batch_process_type,
-        time_zone=args.time_zone,
+        time_zone=time_zone,
     )
 
     _start_calculator(spark, calculator_args)

@@ -25,7 +25,7 @@ from package.codelists import (
 )
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.functions import col, window
 from typing import Callable
 import pytest
 import pandas as pd
@@ -51,28 +51,7 @@ default_obs_time = datetime.strptime(
 
 
 @pytest.fixture(scope="module")
-def time_series_schema() -> StructType:
-    """
-    Input time series data point schema
-    """
-    return (
-        StructType()
-        .add(Colname.metering_point_type, StringType(), False)
-        .add(Colname.settlement_method, StringType())
-        .add(Colname.grid_area, StringType(), False)
-        .add(Colname.balance_responsible_id, StringType())
-        .add(Colname.energy_supplier_id, StringType())
-        .add(Colname.quantity, DecimalType())
-        .add(Colname.observation_time, TimestampType())
-        .add(Colname.quality, StringType())
-        .add(Colname.resolution, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def time_series_row_factory(
-    spark: SparkSession, time_series_schema: StructType
-) -> Callable[..., DataFrame]:
+def time_series_row_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
@@ -94,13 +73,16 @@ def time_series_row_factory(
                 Colname.grid_area: [domain],
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
-                Colname.quantity: [quantity],
-                Colname.observation_time: [obs_time],
+                "quarter_quantity": [quantity],
+                Colname.quality: TimeSeriesQuality.measured.value,
+                Colname.time_window: [obs_time],
                 Colname.aggregated_quality: [TimeSeriesQuality.estimated.value],
                 Colname.resolution: [resolution],
             },
         )
-        return spark.createDataFrame(pandas_df, schema=time_series_schema)
+        return spark.createDataFrame(pandas_df).withColumn(
+            Colname.time_window, window(col(Colname.time_window), "15 minutes")
+        )
 
     return factory
 
