@@ -1,5 +1,5 @@
 module "kv_internal" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v11"
 
   name                            = "internal"
   project_name                    = var.domain_name_short
