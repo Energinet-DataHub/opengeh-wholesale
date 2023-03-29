@@ -50,11 +50,12 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             var outboxMessages = await _outboxMessageRepository.GetByTakeAsync(numberOfMessagesToDispatchInABulk + 1).ConfigureAwait(false);
             if (!outboxMessages.Any()) return false;
 
+            var batch = await CreateBatchWithinSizeLimitAsync(outboxMessages).ConfigureAwait(false);
+
             // Note: For future reference we log the publishing duration time.
             var watch = new Stopwatch();
             watch.Start();
 
-            var batch = await CreateBatchWithMaximumMessagesAsync(outboxMessages).ConfigureAwait(false);
             await _integrationEventTopicServiceBusSender.SendAsync(batch).ConfigureAwait(false);
 
             watch.Stop();
@@ -63,7 +64,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching
             return outboxMessages.Count > numberOfMessagesToDispatchInABulk;
         }
 
-        private async Task<ServiceBusMessageBatch> CreateBatchWithMaximumMessagesAsync(IEnumerable<OutboxMessage> outboxMessages)
+        private async Task<ServiceBusMessageBatch> CreateBatchWithinSizeLimitAsync(IEnumerable<OutboxMessage> outboxMessages)
         {
             var batch = await _integrationEventTopicServiceBusSender.CreateBusMessageBatchAsync().ConfigureAwait(false);
 
