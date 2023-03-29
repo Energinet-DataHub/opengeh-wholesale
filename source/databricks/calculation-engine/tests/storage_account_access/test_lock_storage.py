@@ -29,16 +29,14 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails
         _get_valid_args_or_throw("--unexpected-arg")
 
 
-@patch("package.storage_account_access.lock_storage.DataLakeFileManagerFactory")
 @patch("package.storage_account_access.lock_storage._get_valid_args_or_throw")
 def test__lock__create_file_called_with_correct_name(
-    mock_arg_parser, mock_file_manager_factory
+    mock_arg_parser
 ):
     # Arrange
     mock_create_file = MagicMock()
     mock_file_manager = MagicMock()
     mock_file_manager.create_file = mock_create_file
-    mock_file_manager_factory.create_instance.return_value = mock_file_manager
 
     # Act
     lock()
@@ -47,16 +45,14 @@ def test__lock__create_file_called_with_correct_name(
     mock_create_file.assert_called_once_with(_LOCK_FILE_NAME)
 
 
-@patch("package.storage_account_access.lock_storage.DataLakeFileManagerFactory")
 @patch("package.storage_account_access.lock_storage._get_valid_args_or_throw")
 def test__lock__delete_file_called_with_correct_name(
-    mock_arg_parser, mock_file_manager_factory
+    mock_arg_parser
 ):
     # Arrange
     mock_delete_file = MagicMock()
     mock_file_manager = MagicMock()
     mock_file_manager.delete_file = mock_delete_file
-    mock_file_manager_factory.create_instance.return_value = mock_file_manager
 
     # Act
     unlock()

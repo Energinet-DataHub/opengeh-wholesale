@@ -29,9 +29,7 @@ DUMMY_CONTAINER_NAME = "my_container"
 
 @patch("package.datamigration.uncommitted_migrations._get_all_migrations")
 @patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
-@patch("package.datamigration.uncommitted_migrations.DataLakeFileManagerFactory")
 def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
-    mock_data_lake_file_manager_factory,
     mock_download_committed_migrations,
     mock_get_all_migrations,
 ):
@@ -53,7 +51,6 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
 
 @patch("package.datamigration.uncommitted_migrations._get_all_migrations")
 @patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
-@patch("package.datamigration.uncommitted_migrations.DataLakeFileManagerFactory")
 def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
     mock_data_lake_file_manager_factory,
     mock_download_committed_migrations,

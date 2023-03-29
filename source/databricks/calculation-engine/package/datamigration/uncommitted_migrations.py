@@ -16,9 +16,6 @@ import sys
 import configargparse
 from configargparse import argparse
 from os import path, listdir
-from package.storage_account_access.data_lake_file_manager import (
-    DataLakeFileManagerFactory,
-)
 from .committed_migrations import download_committed_migrations
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
