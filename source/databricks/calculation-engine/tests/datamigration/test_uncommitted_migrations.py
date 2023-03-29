@@ -41,7 +41,7 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     ]
     mock_get_all_migrations.return_value = [migration_name_1, migration_name_2]
     mock_file_manager = Mock()
-    
+
     # Act
     migrations = get_uncommitted_migrations(mock_file_manager)
 
