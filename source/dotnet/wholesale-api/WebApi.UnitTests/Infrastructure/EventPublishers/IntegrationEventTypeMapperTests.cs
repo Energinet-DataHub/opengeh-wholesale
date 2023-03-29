@@ -43,7 +43,7 @@ public class IntegrationEventTypeMapperTests
 
     [Theory]
     [AutoData]
-    public void ThrowsException_WhenGettingNotExisting(IntegrationEventTypeMapper sut)
+    public void GetMessageType_WhenGettingNotExisting_ThrowsException(IntegrationEventTypeMapper sut)
     {
         // Arrange
         var eventType = typeof(CalculationResultCompleted);
