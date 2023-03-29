@@ -19,9 +19,7 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.constants import Colname, ResultKeyName
-from package.steps.aggregation.aggregation_result_formatter import (
-    create_dataframe_from_aggregation_result_schema,
-)
+from . import transformations as T
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     array_contains,
@@ -101,16 +99,16 @@ def aggregate_net_exchange_per_neighbour_ga(
             lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
         )
     )
-    return create_dataframe_from_aggregation_result_schema(exchange)
+    return T.create_dataframe_from_aggregation_result_schema(exchange)
 
 
 # Function to aggregate net exchange per grid area (step 2)
 def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
-    exchangeIn = df.filter(
+    exchange_in = df.filter(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
-    exchangeIn = (
-        exchangeIn.groupBy(
+    exchange_in = (
+        exchange_in.groupBy(
             Colname.in_grid_area,
             window(col(Colname.observation_time), "1 hour"),
             Colname.aggregated_quality,
@@ -120,11 +118,11 @@ def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
         .withColumnRenamed("window", Colname.time_window)
         .withColumnRenamed(Colname.in_grid_area, Colname.grid_area)
     )
-    exchangeOut = df.filter(
+    exchange_out = df.filter(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
-    exchangeOut = (
-        exchangeOut.groupBy(
+    exchange_out = (
+        exchange_out.groupBy(
             Colname.out_grid_area, window(col(Colname.observation_time), "1 hour")
         )
         .sum(Colname.quantity)
@@ -132,13 +130,13 @@ def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
         .withColumnRenamed("window", Colname.time_window)
         .withColumnRenamed(Colname.out_grid_area, Colname.grid_area)
     )
-    joined = exchangeIn.join(
-        exchangeOut,
-        (exchangeIn[Colname.grid_area] == exchangeOut[Colname.grid_area])
-        & (exchangeIn[Colname.time_window] == exchangeOut[Colname.time_window]),
+    joined = exchange_in.join(
+        exchange_out,
+        (exchange_in[Colname.grid_area] == exchange_out[Colname.grid_area])
+        & (exchange_in[Colname.time_window] == exchange_out[Colname.time_window]),
         how="outer",
-    ).select(exchangeIn["*"], exchangeOut[out_sum])
-    resultDf = (
+    ).select(exchange_in["*"], exchange_out[out_sum])
+    result_df = (
         joined.withColumn(Colname.sum_quantity, joined[in_sum] - joined[out_sum])
         .withColumnRenamed(Colname.aggregated_quality, Colname.quality)
         .select(
@@ -149,13 +147,13 @@ def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
             lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
         )
     )
-    return create_dataframe_from_aggregation_result_schema(resultDf)
+    return T.create_dataframe_from_aggregation_result_schema(result_df)
 
 
 def aggregate_non_profiled_consumption_ga_brp_es(
     enriched_time_series: DataFrame,
 ) -> DataFrame:
-    return _aggregate_per_ga_and_brp_and_es(
+    return _aggregate(
         enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.non_profiled,
@@ -163,7 +161,7 @@ def aggregate_non_profiled_consumption_ga_brp_es(
 
 
 def aggregate_flex_consumption_ga_brp_es(enriched_time_series: DataFrame) -> DataFrame:
-    return _aggregate_per_ga_and_brp_and_es(
+    return _aggregate(
         enriched_time_series,
         MeteringPointType.consumption,
         SettlementMethod.flex,
@@ -171,13 +169,11 @@ def aggregate_flex_consumption_ga_brp_es(enriched_time_series: DataFrame) -> Dat
 
 
 def aggregate_production_ga_brp_es(enriched_time_series: DataFrame) -> DataFrame:
-    return _aggregate_per_ga_and_brp_and_es(
-        enriched_time_series, MeteringPointType.production, None
-    )
+    return _aggregate(enriched_time_series, MeteringPointType.production, None)
 
 
 # Function to aggregate sum per grid area and energy supplier (step 12, 13 and 14)
-def _aggregate_per_ga_and_brp_and_es(
+def _aggregate(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
     settlement_method: Union[SettlementMethod, None],
@@ -240,7 +236,7 @@ def _aggregate_per_ga_and_brp_and_es(
         )
     )
 
-    return create_dataframe_from_aggregation_result_schema(result)
+    return T.create_dataframe_from_aggregation_result_schema(result)
 
 
 def aggregate_production_ga_es(results: dict) -> DataFrame:
@@ -281,7 +277,7 @@ def _aggregate_per_ga_and_es(
         Colname.sum_quantity,
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
-    return create_dataframe_from_aggregation_result_schema(result)
+    return T.create_dataframe_from_aggregation_result_schema(result)
 
 
 def aggregate_production_ga_brp(results: dict) -> DataFrame:
@@ -321,7 +317,7 @@ def _aggregate_per_ga_and_brp(
         Colname.sum_quantity,
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
-    return create_dataframe_from_aggregation_result_schema(result)
+    return T.create_dataframe_from_aggregation_result_schema(result)
 
 
 def aggregate_production_ga(production: DataFrame) -> DataFrame:
@@ -363,40 +359,41 @@ def _aggregate_per_ga(
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
 
-    return create_dataframe_from_aggregation_result_schema(result)
+    return T.create_dataframe_from_aggregation_result_schema(result)
 
 
 def _aggregate_sum_and_set_quality(
     result: DataFrame, quantity_col_name: str, group_by: list[str]
 ) -> DataFrame:
     result = result.na.fill(value=0, subset=[quantity_col_name])
+    qualities_col_name = "qualities"
     result = (
         result.groupBy(group_by).agg(
             sum(quantity_col_name).alias(Colname.sum_quantity),
-            collect_set("Quality"),
+            collect_set("Quality").alias(qualities_col_name),
         )
         # TODO: What about calculated (A06)?
         .withColumn(
             "Quality",
             when(
                 array_contains(
-                    col("collect_set(Quality)"), lit(TimeSeriesQuality.missing.value)
+                    col(qualities_col_name), lit(TimeSeriesQuality.missing.value)
                 )
                 | array_contains(
-                    col("collect_set(Quality)"), lit(TimeSeriesQuality.incomplete.value)
+                    col(qualities_col_name), lit(TimeSeriesQuality.incomplete.value)
                 ),
                 lit(TimeSeriesQuality.incomplete.value),
             )
             .when(
                 array_contains(
-                    col("collect_set(Quality)"),
+                    col(qualities_col_name),
                     lit(TimeSeriesQuality.estimated.value),
                 ),
                 lit(TimeSeriesQuality.estimated.value),
             )
             .when(
                 array_contains(
-                    col("collect_set(Quality)"),
+                    col(qualities_col_name),
                     lit(TimeSeriesQuality.measured.value),
                 ),
                 lit(TimeSeriesQuality.measured.value),

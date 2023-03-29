@@ -18,7 +18,7 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.steps.aggregation.aggregation_result_formatter import (
+from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )
 from package.schemas.output import aggregation_result_schema
