@@ -79,7 +79,7 @@ public class IntegrationEventServiceTests
         int days,
         IntegrationEventService sut)
     {
-        // Arrange & Act
+        // Act
         await sut.DeleteOlderDispatchedIntegrationEventsAsync(days);
 
         // Assert
