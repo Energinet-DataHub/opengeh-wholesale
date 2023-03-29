@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import subprocess
-import sys
+
 
 # IMPORTANT:
 # If we add/remove tests here, we also update the "retry logic" in '.docker/entrypoint.sh',

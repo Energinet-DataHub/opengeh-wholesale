@@ -12,15 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import ClientSecretCredential
 import sys
 import configargparse
 from configargparse import argparse
 from pyspark.sql import SparkSession
-
-from package.environment_variables import (
-    get_env_variable_or_throw,
-    EnvironmentVariable,
-)
+import package.environment_variables as env_vars
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -118,17 +115,12 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
 
-def _start(command_line_args: list[str]) -> None:
-    args = _get_valid_args_or_throw(command_line_args)
-    log(f"Job arguments: {str(args)}")
-    db_logging.loglevel = args.log_level
+def _start(storage_account_name: str, storage_account_credetial: ClientSecretCredential, time_zone: str, command_line_args: list[str]) -> None:
+    job_args = _get_valid_args_or_throw(command_line_args)
+    log(f"Job arguments: {str(job_args)}")
+    db_logging.loglevel = job_args.log_level
 
-    time_zone = get_env_variable_or_throw(EnvironmentVariable.TIME_ZONE)
-    storage_account_name = get_env_variable_or_throw(
-        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME
-    )
-
-    if islocked():
+    if islocked(storage_account_name, storage_account_credetial):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
@@ -136,16 +128,16 @@ def _start(command_line_args: list[str]) -> None:
 
     calculator_args = CalculatorArgs(
         data_storage_account_name=storage_account_name,
-        data_storage_account_key=args.data_storage_account_key,
+        data_storage_account_key=job_args.data_storage_account_key,
         wholesale_container_path=infrastructure.get_container_root_path(
             storage_account_name
         ),
-        batch_id=args.batch_id,
-        batch_grid_areas=args.batch_grid_areas,
-        batch_period_start_datetime=args.batch_period_start_datetime,
-        batch_period_end_datetime=args.batch_period_end_datetime,
-        batch_execution_time_start=args.batch_execution_time_start,
-        batch_process_type=args.batch_process_type,
+        batch_id=job_args.batch_id,
+        batch_grid_areas=job_args.batch_grid_areas,
+        batch_period_start_datetime=job_args.batch_period_start_datetime,
+        batch_period_end_datetime=job_args.batch_period_end_datetime,
+        batch_execution_time_start=job_args.batch_execution_time_start,
+        batch_process_type=job_args.batch_process_type,
         time_zone=time_zone,
     )
 
@@ -155,4 +147,7 @@ def _start(command_line_args: list[str]) -> None:
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start() -> None:
-    _start(sys.argv[1:])
+    time_zone = env_vars.get_time_zone()
+    storage_account_name = env_vars.get_storage_account_name()
+    credential = env_vars.get_storage_account_credential()
+    _start(storage_account_name, credential, time_zone, sys.argv[1:])

@@ -19,13 +19,6 @@ from azure.storage.filedatalake import DataLakeServiceClient
 from azure.identity import ClientSecretCredential
 from package import infrastructure
 from typing import Any
-from package.environment_variables import (
-    get_env_variable_or_throw,
-    EnvironmentVariable,
-)
-from package.storage_account_access.storage_account_credential import (
-    get_service_principal_credential,
-)
 
 
 class DataLakeFileManager:
@@ -75,16 +68,3 @@ class DataLakeFileManager:
     def delete_file(self, file_name: str) -> None:
         file_client = self.file_system_client.get_file_client(file_name)
         file_client.delete_file()
-
-
-class DataLakeFileManagerFactory:
-    @staticmethod
-    def create_instance() -> DataLakeFileManager:
-        credential = get_service_principal_credential()
-        storage_account_name = get_env_variable_or_throw(
-            EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME
-        )
-
-        return DataLakeFileManager(
-            storage_account_name, credential, infrastructure.WHOLESALE_CONTAINER_NAME
-        )
