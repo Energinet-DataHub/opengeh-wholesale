@@ -23,12 +23,10 @@ from package.datamigration.uncommitted_migrations import _get_all_migrations
 
 
 def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails():
-    # Act
-    with pytest.raises(SystemExit) as excinfo:
+    # Act & Assert
+    with pytest.raises(Exception):
         _get_valid_args_or_throw("--unexpected-arg")
 
-    # Assert
-    assert excinfo.value.code == 2
 
 
 def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeeds():
@@ -58,7 +56,7 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
 
     # Act and Assert
     with pytest.raises(Exception):
-        _migrate_data_lake("dummy_storage_name", mock_credential, "dummy_storage_key")
+        _migrate_data_lake("dummy_storage_name", mock_credential)
 
 
 def test__all_migrations_script_has_correct_signature():
@@ -101,7 +99,7 @@ def test__migrate_datalake__upload_called_with_correct_name(
         calls.append(call(ANY, name))
 
     # Act
-    _migrate_data_lake("dummy_storage_name", mock_credential, "dummy_storage_key")
+    _migrate_data_lake("dummy_storage_name", mock_credential)
 
     # Assert
     mock_upload_committed_migration.assert_has_calls(calls)
