@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 
 from package.datamigration.uncommitted_migrations import (
@@ -41,9 +40,10 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
         migration_name_2,
     ]
     mock_get_all_migrations.return_value = [migration_name_1, migration_name_2]
-
+    mock_file_manager = Mock()
+    
     # Act
-    migrations = get_uncommitted_migrations()
+    migrations = get_uncommitted_migrations(mock_file_manager)
 
     # Assert
     assert len(migrations) == 0
@@ -64,9 +64,10 @@ def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1
         migration_name_1,
         migration_name_2,
     ]
+    mock_file_manager = Mock()
 
     # Act
-    migrations = get_uncommitted_migrations()
+    migrations = get_uncommitted_migrations(mock_file_manager)
 
     # Assert
     assert len(migrations) == 1

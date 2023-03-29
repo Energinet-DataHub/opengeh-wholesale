@@ -12,11 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import ClientSecretCredential
 import sys
 import configargparse
 from configargparse import argparse
 from os import path, listdir
+import package.environment_variables as env_vars
+from package.infrastructure import WHOLESALE_CONTAINER_NAME
+from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
+
 
 MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 MIGRATION_SCRIPTS_FOLDER_NAME = "migration_scripts"
@@ -56,18 +61,24 @@ def _get_all_migrations() -> list[str]:
     return script_names
 
 
-def _print_count() -> None:
-    uncommitted_migrations = get_uncommitted_migrations()
+def _print_count(storage_account_name: str, storage_account_credential: ClientSecretCredential) -> None:
+
+    file_manager = DataLakeFileManager(
+        storage_account_name,
+        storage_account_credential,
+        WHOLESALE_CONTAINER_NAME,
+    )
+
+    uncommitted_migrations = get_uncommitted_migrations(file_manager)
+
     uncommitted_migrations_count = len(uncommitted_migrations)
 
     # This format is fixed as it is being used by external tools
     print(f"uncommitted_migrations_count={uncommitted_migrations_count}")
 
 
-def get_uncommitted_migrations() -> list[str]:
+def get_uncommitted_migrations(file_manager: DataLakeFileManager) -> list[str]:
     """Get list of migrations that have not yet been committed"""
-
-    file_manager = DataLakeFileManagerFactory.create_instance()
 
     committed_migrations = download_committed_migrations(file_manager)
 
@@ -83,4 +94,6 @@ def get_uncommitted_migrations() -> list[str]:
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def print_count() -> None:
     _get_valid_args_or_throw(sys.argv[1:])
-    _print_count()
+    storage_account_name = env_vars.get_storage_account_name()
+    credential = env_vars.get_storage_account_credential()
+    _print_count(storage_account_name, credential)
