@@ -38,7 +38,7 @@ runs:
           --no-restore \
           --configuration Release \
           --output '.\source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net7.0'
-  
+
     - name: Publish ProcessManager IntegrationTests
       shell: bash
       run: |
