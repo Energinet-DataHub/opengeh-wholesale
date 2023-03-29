@@ -28,7 +28,6 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails
         _get_valid_args_or_throw("--unexpected-arg")
 
 
-
 def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeeds():
     # Arrange
     command_line_args = [
