@@ -141,3 +141,14 @@ variable "hosted_deployagent_public_ip_range" {
   description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources such as Keyvaults"
   default     = null
 }
+
+variable "github_username" {
+  type        = string
+  description = "Username used to access Github from Databricks jobs."
+}
+
+variable "github_personal_access_token" {
+  type        = string
+  description = "Personal access token for Github access"
+}
+

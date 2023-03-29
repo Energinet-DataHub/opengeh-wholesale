@@ -347,12 +347,6 @@ resource "azurerm_storage_container" "playground_meteringpoints_testdata" {
   container_access_type = "private"
 }
 
-resource "databricks_git_credential" "ado" {
-  git_username          = var.github_username
-  git_provider          = "gitHub"
-  personal_access_token = var.github_personal_access_token
-}
-
 resource "azurerm_databricks_workspace" "playground" {
   name                = "databricks-playground"
   resource_group_name = azurerm_resource_group.integration-test-rg.name

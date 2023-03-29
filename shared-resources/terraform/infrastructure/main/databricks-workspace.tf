@@ -67,3 +67,9 @@ module "kvs_databricks_dbw_shared_workspace_token" {
   value        = data.external.databricks_token.result.pat_token
   key_vault_id = module.kv_shared.id
 }
+
+resource "databricks_git_credential" "ado" {
+  git_username          = var.github_username
+  git_provider          = "gitHub"
+  personal_access_token = var.github_personal_access_token
+}

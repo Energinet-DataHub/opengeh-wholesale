@@ -37,13 +37,3 @@ variable "shared_resources_resource_group_name" {
   type        = string
   description = "Name of the Resource Group, that contains the shared resources."
 }
-
-variable "github_username" {
-  type        = string
-  description = "Username used to access Github from Databricks jobs."
-}
-
-variable "github_personal_access_token" {
-  type        = string
-  description = "Personal access token for Github access"
-}
