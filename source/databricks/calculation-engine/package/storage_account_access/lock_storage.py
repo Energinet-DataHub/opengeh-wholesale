@@ -28,6 +28,9 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
+    p.add("--data-storage-account-name", type=str, required=False)
+    p.add("--data-storage-account-key", type=str, required=False)
+
     args, unknown_args = p.parse_known_args(command_line_args)
     if len(unknown_args):
         unknown_args_text = ", ".join(unknown_args)

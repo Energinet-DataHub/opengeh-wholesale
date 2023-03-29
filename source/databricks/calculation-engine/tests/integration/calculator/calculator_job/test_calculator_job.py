@@ -166,7 +166,7 @@ def test__quantity_is_with_precision_3(
     assert re.search(r"^\d+\.\d{3}$", result_non_profiled_consumption.first().quantity)
 
 
-@patch("package.calculator_job.get_env_variables_or_throw")
+@patch("package.calculator_job.get_env_variable_or_throw")
 @patch("package.calculator_job._get_valid_args_or_throw")
 @patch("package.calculator_job.islocked")
 def test__when_data_lake_is_locked__return_exit_code_3(
@@ -185,7 +185,7 @@ def test__when_data_lake_is_locked__return_exit_code_3(
     assert excinfo.value.code == 3
 
 
-@patch("package.calculator_job.get_env_variables_or_throw")
+@patch("package.calculator_job.get_env_variable_or_throw")
 @patch("package.calculator_job.initialize_spark")
 @patch("package.calculator_job.islocked")
 @patch("package.calculator_job._start_calculator")
