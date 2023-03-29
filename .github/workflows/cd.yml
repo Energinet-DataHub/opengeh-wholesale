@@ -122,6 +122,6 @@ jobs:
       contains(needs.*.result, 'failure')
     uses: Energinet-DataHub/.github/.github/workflows/notify-team.yml@v10
     with:
-      TEAM_NAME: Mandalorian
-      SUBJECT: "Deployment dispatch failed: Wholesale"
+      team_name: Mandalorian
+      subject: "Deployment dispatch failed: Wholesale"
     secrets: inherit
