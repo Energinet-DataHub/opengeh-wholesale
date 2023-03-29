@@ -186,9 +186,10 @@ def test__start__start_calculator_called_without_exceptions(
 ) -> None:
     # Arrange
     mock_is_locked.return_value = False
+    dummy_job_args = Mock()
 
     # Act
-    _start("dummy_account", ClientSecretCredential("1", "1", "1"), "dummy_time_zone", dummy_job_parameters)
+    _start("dummy_account", ClientSecretCredential("1", "1", "1"), "dummy_time_zone", dummy_job_args)
 
     # Assert
     mock_start_calculator.assert_called_once()

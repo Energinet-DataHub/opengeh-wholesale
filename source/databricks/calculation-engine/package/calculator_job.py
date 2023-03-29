@@ -115,9 +115,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
 
-def _start(storage_account_name: str, storage_account_credetial: ClientSecretCredential, time_zone: str, command_line_args: list[str]) -> None:
-    job_args = _get_valid_args_or_throw(command_line_args)
-    log(f"Job arguments: {str(job_args)}")
+def _start(storage_account_name: str, storage_account_credetial: ClientSecretCredential, time_zone: str, job_args: argparse.Namespace) -> None:
     db_logging.loglevel = job_args.log_level
 
     if islocked(storage_account_name, storage_account_credetial):
@@ -147,7 +145,10 @@ def _start(storage_account_name: str, storage_account_credetial: ClientSecretCre
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start() -> None:
+    job_args = _get_valid_args_or_throw(sys.argv[1:])
+    log(f"Job arguments: {str(job_args)}")
+
     time_zone = env_vars.get_time_zone()
     storage_account_name = env_vars.get_storage_account_name()
     credential = env_vars.get_storage_account_credential()
-    _start(storage_account_name, credential, time_zone, sys.argv[1:])
+    _start(storage_account_name, credential, time_zone, job_args)
