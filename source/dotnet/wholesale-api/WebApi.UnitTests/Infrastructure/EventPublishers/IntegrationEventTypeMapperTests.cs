@@ -54,7 +54,7 @@ public class IntegrationEventTypeMapperTests
 
     [Theory]
     [AutoData]
-    public void OnInitialization_WhenAddingExistingEventType_ThrowsException(
+    public void Ctor_WhenAddingExistingEventType_ThrowsException(
         string eventName,
         string otherEventName,
         Type type)
