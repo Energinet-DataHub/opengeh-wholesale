@@ -14,7 +14,7 @@
 
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, Mock
 from package.storage_account_access.lock_storage import (
     _LOCK_FILE_NAME,
     _get_valid_args_or_throw,
@@ -29,14 +29,17 @@ def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails
         _get_valid_args_or_throw("--unexpected-arg")
 
 
+@patch("package.storage_account_access.lock_storage.DataLakeFileManager")
 @patch("package.storage_account_access.lock_storage._get_valid_args_or_throw")
+@patch("package.storage_account_access.lock_storage.env_vars")
 def test__lock__create_file_called_with_correct_name(
-    mock_arg_parser
+    mock_env_vars,
+    mock_arg_parser,
+    mock_file_manager
 ):
     # Arrange
-    mock_create_file = MagicMock()
-    mock_file_manager = MagicMock()
-    mock_file_manager.create_file = mock_create_file
+    mock_create_file = Mock()
+    mock_file_manager.return_value.create_file = mock_create_file
 
     # Act
     lock()
@@ -45,14 +48,17 @@ def test__lock__create_file_called_with_correct_name(
     mock_create_file.assert_called_once_with(_LOCK_FILE_NAME)
 
 
+@patch("package.storage_account_access.lock_storage.DataLakeFileManager")
 @patch("package.storage_account_access.lock_storage._get_valid_args_or_throw")
-def test__lock__delete_file_called_with_correct_name(
-    mock_arg_parser
+@patch("package.storage_account_access.lock_storage.env_vars")
+def test__unlock__delete_file_called_with_correct_name(
+    mock_env_vars,
+    mock_arg_parser,
+    mock_file_manager
 ):
     # Arrange
-    mock_delete_file = MagicMock()
-    mock_file_manager = MagicMock()
-    mock_file_manager.delete_file = mock_delete_file
+    mock_delete_file = Mock()
+    mock_file_manager.return_value.delete_file = mock_delete_file
 
     # Act
     unlock()
