@@ -24,7 +24,7 @@ from package.steps.aggregation import (
     aggregate_production_ga_brp,
     aggregate_production_ga,
 )
-from package.steps.aggregation.aggregation_result_formatter import (
+from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
