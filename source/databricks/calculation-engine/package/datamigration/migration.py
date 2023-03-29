@@ -19,7 +19,7 @@ from azure.identity import ClientSecretCredential
 import configargparse
 from package import infrastructure, initialize_spark, log
 from package.args_helper import valid_log_level
-
+import package.environment_variables as env_vars
 from .committed_migrations import upload_committed_migration
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
 from package.storage_account_access.data_lake_file_manager import (
@@ -90,6 +90,6 @@ def _migrate_data_lake(storage_account_name: str, storage_account_credential: Cl
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake() -> None:
     args = _get_valid_args_or_throw(sys.argv[1:])
-    storage_account_name = get_storage_account_name_from_env_vars()
-    credential = get_credential_from_env_vars()
+    storage_account_name = env_vars.get_storage_account_name()
+    credential = env_vars.get_storage_account_credential()
     _migrate_data_lake(storage_account_name, credential, args.data_storage_account_key)
