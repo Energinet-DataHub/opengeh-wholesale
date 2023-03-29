@@ -29,10 +29,10 @@ public class RequestMatchingHandlerTests
     [InlineAutoData(typeof(Application.Root))]
     [InlineAutoData(typeof(Domain.Root))]
     [InlineAutoData(typeof(Wholesale.Infrastructure.Root))]
-    public void AllRequests_ShouldHaveMatchingHandler(Type type)
+    public void EachCommand_HasMatchingHandler(Type type)
     {
         // Arrange
-        var requestTypes = type.Assembly.GetTypes()
+        var commandTypes = type.Assembly.GetTypes()
             .Where(IsRequest)
             .ToList();
 
@@ -48,12 +48,12 @@ public class RequestMatchingHandlerTests
         }
     }
 
-    private static bool IsRequest(Type type)
+    private static bool IsCommand(Type type)
     {
         return typeof(IBaseRequest).IsAssignableFrom(type);
     }
 
-    private static bool IsIRequestHandler(Type type)
+    private static bool IsICommandHandler(Type type)
     {
         return type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IRequestHandler<,>));
     }
