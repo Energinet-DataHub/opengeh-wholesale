@@ -1,5 +1,5 @@
 module "ag_primary" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=v11"
 
   name                 = "primary"
   project_name         = var.domain_name_short
@@ -13,7 +13,7 @@ module "ag_primary" {
 }
 
 module "kvs_ag_primary_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "ag-primary-id"
   value        = module.ag_primary.id

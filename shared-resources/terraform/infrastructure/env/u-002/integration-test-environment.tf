@@ -396,7 +396,7 @@ data "databricks_spark_version" "latest_lts" {
 }
 
 module "kvs_databricks_dbw_playground_workspace_token" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "dbw-playground-workspace-token"
   value        = data.external.databricks_token_playground.result.pat_token
@@ -404,7 +404,7 @@ module "kvs_databricks_dbw_playground_workspace_token" {
 }
 
 module "kvs_databricks_dbw_playground_workspace_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "dbw-playground-workspace-url"
   value        = azurerm_databricks_workspace.playground.workspace_url
@@ -412,7 +412,7 @@ module "kvs_databricks_dbw_playground_workspace_url" {
 }
 
 module "kvs_databricks_dbw_playground_workspace_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "dbw-playground-workspace-id"
   value        = azurerm_databricks_workspace.playground.id

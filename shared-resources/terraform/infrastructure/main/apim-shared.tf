@@ -1,5 +1,5 @@
 module "snet_apim" {
-  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/subnet?ref=v10"
+  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/subnet?ref=v11"
   name                 = "apim"
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
@@ -14,7 +14,7 @@ module "snet_apim" {
 }
 
 module "apim_shared" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management?ref=v11"
 
   name                       = "shared"
   project_name               = var.domain_name_short
@@ -90,7 +90,7 @@ resource "azurerm_api_management_logger" "apim_logger" {
 }
 
 module "kvs_apim_gateway_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "apim-gateway-url"
   value        = module.apim_shared.gateway_url
@@ -98,7 +98,7 @@ module "kvs_apim_gateway_url" {
 }
 
 module "kvs_apim_logger_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "apim-logger-id"
   value        = azurerm_api_management_logger.apim_logger.id
@@ -106,7 +106,7 @@ module "kvs_apim_logger_id" {
 }
 
 module "kvs_apim_instance_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "apim-instance-name"
   value        = module.apim_shared.name
@@ -114,7 +114,7 @@ module "kvs_apim_instance_name" {
 }
 
 module "kvs_apim_instance_resource_group_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "apim-instance-resource-group-name"
   value        = azurerm_resource_group.this.name
@@ -122,7 +122,7 @@ module "kvs_apim_instance_resource_group_name" {
 }
 
 module "kvs_b2c_tenant_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "b2c-tenant-id"
   value        = var.apim_b2c_tenant_id
@@ -130,7 +130,7 @@ module "kvs_b2c_tenant_id" {
 }
 
 module "kvs_backend_service_app_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "backend-service-app-id"
   value        = var.backend_service_app_id
@@ -138,7 +138,7 @@ module "kvs_backend_service_app_id" {
 }
 
 module "kvs_frontend_open_id_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "frontend-open-id-url"
   value        = var.frontend_open_id_url
@@ -146,7 +146,7 @@ module "kvs_frontend_open_id_url" {
 }
 
 module "kvs_frontend_service_app_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "frontend-service-app-id"
   value        = var.frontend_service_app_id

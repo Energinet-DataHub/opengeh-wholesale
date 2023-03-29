@@ -1,5 +1,5 @@
 module "kvs_sas_token_datamig_charges" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "datamig-charges"
   value        = var.sas_token_datamig_charges
@@ -7,7 +7,7 @@ module "kvs_sas_token_datamig_charges" {
 }
 
 module "kvs_sas_token_datamig_market_roles" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "datamig-market-roles"
   value        = var.sas_token_datamig_market_roles
@@ -15,7 +15,7 @@ module "kvs_sas_token_datamig_market_roles" {
 }
 
 module "kvs_sas_token_datamig_metering_point" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "datamig-metering-point"
   value        = var.sas_token_datamig_metering_point
@@ -23,7 +23,7 @@ module "kvs_sas_token_datamig_metering_point" {
 }
 
 module "kvs_sas_token_datamig_time_series" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "datamig-time-series"
   value        = var.sas_token_datamig_time_series
@@ -31,7 +31,7 @@ module "kvs_sas_token_datamig_time_series" {
 }
 
 module "kvs_sas_token_datamig_wholesale" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "datamig-wholesale"
   value        = var.sas_token_datamig_wholesale

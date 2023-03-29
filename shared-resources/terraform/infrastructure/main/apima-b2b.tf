@@ -1,5 +1,5 @@
 module "apima_b2b" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v11"
 
   name                       = "b2b"
   project_name               = var.domain_name_short
