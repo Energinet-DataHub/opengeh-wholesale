@@ -21,7 +21,7 @@ name: Prepare dotnet tests outputs
 #
 
 inputs:
-  OUTPUT_PATH:
+  output_path:
     required: true
 
 runs:
@@ -65,8 +65,8 @@ runs:
       shell: bash
       run: |
         # Create base directory
-        mkdir -p '${{ inputs.OUTPUT_PATH }}/source/dotnet' ';'
+        mkdir -p '${{ inputs.output_path }}/source/dotnet' ';'
         # Copy everything from source/dotnet to the new directory
-        cp -a source/dotnet/. '${{ inputs.OUTPUT_PATH }}/source/dotnet'
+        cp -a source/dotnet/. '${{ inputs.output_path }}/source/dotnet'
         # Remove obj-directories from artifact
-        find ${{ inputs.OUTPUT_PATH }}/ -type d -name 'obj' -exec rm -rf {} +
+        find ${{ inputs.output_path }}/ -type d -name 'obj' -exec rm -rf {} +
