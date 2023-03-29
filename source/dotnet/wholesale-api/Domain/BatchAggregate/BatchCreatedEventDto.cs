@@ -16,4 +16,4 @@ using MediatR;
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-public record BatchCreatedDomainEvent(Guid BatchId) : INotification;
+public record BatchCreatedEvent(Guid BatchId) : INotification;

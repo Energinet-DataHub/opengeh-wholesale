@@ -42,7 +42,7 @@ public class CreateBatchHandler : IRequestHandler<CreateBatchCommand, Guid>
         var processType = _processTypeMapper.MapFrom(command.ProcessType);
         var batch = _batchFactory.Create(processType, command.GridAreaCodes, command.StartDate, command.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
-        await _mediator.Publish(new BatchCreatedDomainEvent(batch.Id), cancellationToken).ConfigureAwait(false);
+        await _mediator.Publish(new BatchCreatedEvent(batch.Id), cancellationToken).ConfigureAwait(false);
         return batch.Id;
     }
 }

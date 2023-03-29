@@ -46,7 +46,7 @@ public class CreateBatchHandlerTests
         await sut.Handle(batchCommand, default);
 
         // Assert
-        mediatrMock.Verify(x => x.Publish(It.Is<BatchCreatedDomainEvent>(e => e.BatchId == batch.Id), default));
+        mediatrMock.Verify(x => x.Publish(It.Is<BatchCreatedEvent>(e => e.BatchId == batch.Id), default));
     }
 
     [Theory]

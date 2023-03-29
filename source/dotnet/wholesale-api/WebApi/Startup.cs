@@ -102,7 +102,7 @@ public class Startup
         });
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
         services.AddScoped<IRequestHandler<CreateBatchCommand, Guid>, CreateBatchHandler>();
-        services.AddScoped<INotificationHandler<BatchCreatedDomainEvent>, StartCalculationJobHandler>();
+        services.AddScoped<INotificationHandler<BatchCreatedEvent>, StartCalculationJobHandler>();
     }
 
     public void Configure(IApplicationBuilder app)

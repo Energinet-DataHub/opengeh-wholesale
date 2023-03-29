@@ -34,7 +34,7 @@ public class StartCalculationJobHandlerTests
         StartCalculationJobHandler sut)
     {
         // Arrange
-        var batchCreatedDomainEvent = new BatchCreatedDomainEvent(batchId);
+        var batchCreatedDomainEvent = new BatchCreatedEvent(batchId);
 
         // Act
         await sut.Handle(batchCreatedDomainEvent, default);
