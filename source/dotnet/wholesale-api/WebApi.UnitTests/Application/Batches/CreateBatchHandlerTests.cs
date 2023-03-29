@@ -51,7 +51,7 @@ public class CreateBatchHandlerTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task Handle_CallsAddAsync(
+    public async Task Handle_AddsBatchToRepository(
         [Frozen] Mock<IBatchFactory> batchFactoryMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         CreateBatchHandler sut)
