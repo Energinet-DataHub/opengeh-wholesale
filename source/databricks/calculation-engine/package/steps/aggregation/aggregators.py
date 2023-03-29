@@ -172,7 +172,6 @@ def aggregate_production_ga_brp_es(enriched_time_series: DataFrame) -> DataFrame
     return _aggregate(enriched_time_series, MeteringPointType.production, None)
 
 
-# Function to aggregate sum per grid area and energy supplier (step 12, 13 and 14)
 def _aggregate(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
