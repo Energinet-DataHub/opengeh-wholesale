@@ -32,7 +32,7 @@ public class RequestMatchingHandlerTests
     public void EachCommand_HasMatchingHandler(Type type)
     {
         // Arrange
-        var commandTypes = type.Assembly.GetTypes()
+        var requestTypes = type.Assembly.GetTypes()
             .Where(IsRequest)
             .ToList();
 
@@ -44,16 +44,16 @@ public class RequestMatchingHandlerTests
         foreach (var requestType in requestTypes)
         {
             // Assert
-            handlerTypes.Should().ContainSingle(handlerType => IsHandlerForRequest(handlerType, requestType), $"Handler for type {requestType} expected");
+            handlerTypes.Should().ContainSingle(handlerType => IsHandlerForRequest(handlerType, requestType), $"Handler for type {requestTypes} expected");
         }
     }
 
-    private static bool IsCommand(Type type)
+    private static bool IsRequest(Type type)
     {
         return typeof(IBaseRequest).IsAssignableFrom(type);
     }
 
-    private static bool IsICommandHandler(Type type)
+    private static bool IsIRequestHandler(Type type)
     {
         return type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IRequestHandler<,>));
     }
