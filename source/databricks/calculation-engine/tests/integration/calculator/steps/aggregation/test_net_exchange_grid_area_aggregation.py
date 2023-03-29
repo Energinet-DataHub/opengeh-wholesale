@@ -16,13 +16,12 @@ import pytest
 from decimal import Decimal
 import pandas as pd
 from datetime import datetime, timedelta
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 from package.steps.aggregation import aggregate_net_exchange_per_ga
 from package.codelists import MeteringPointType, TimeSeriesQuality
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import window, col
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 
 
 e_20 = MeteringPointType.exchange.value
@@ -46,7 +45,7 @@ def enriched_time_series_data_frame(spark: SparkSession):
             Colname.out_grid_area: [],
             "quarter_quantity": [],
             Colname.observation_time: [],
-            Colname.aggregated_quality: [],
+            Colname.quality: [],
         }
     )
 
@@ -151,7 +150,7 @@ def add_row_of_data(
         Colname.out_grid_area: out_domain,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
-        Colname.aggregated_quality: TimeSeriesQuality.estimated.value,
+        Colname.quality: TimeSeriesQuality.estimated.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 
