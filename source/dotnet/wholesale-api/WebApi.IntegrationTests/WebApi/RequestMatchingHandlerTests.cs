@@ -29,7 +29,7 @@ public class RequestMatchingHandlerTests
     [InlineAutoData(typeof(Application.Root))]
     [InlineAutoData(typeof(Domain.Root))]
     [InlineAutoData(typeof(Wholesale.Infrastructure.Root))]
-    public void AllRequests_ShouldHaveMatchingHandler(Type type)
+    public void EachCommand_HasMatchingHandler(Type type)
     {
         // Arrange
         var requestTypes = type.Assembly.GetTypes()
