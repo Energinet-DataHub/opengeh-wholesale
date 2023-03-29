@@ -48,13 +48,6 @@ public class Startup
         // Register the Swagger generator, defining 1 or more Swagger documents.
         services.AddSwaggerGen(config =>
         {
-            config.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "DataHub BFF",
-                Version = "1.0.0",
-                Description = "Backend-for-frontend for DataHub",
-            });
-
             config.SupportNonNullableReferenceTypes();
 
             // Set the comments path for the Swagger JSON and UI.
