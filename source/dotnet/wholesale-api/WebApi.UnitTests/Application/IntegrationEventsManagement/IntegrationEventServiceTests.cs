@@ -21,11 +21,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.IntegrationEventsManagement;
 
-public class IntegrationEventDispatcherServiceTests
+public class IntegrationEventServiceTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task DispatchIntegrationEventsAsync_CallsCommit(
+    public async Task DispatchIntegrationEventsAsync_CallsCommitOnUnitOfWork(
         [Frozen] Mock<IIntegrationEventDispatcher> integrationEventDispatcherMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         IntegrationEventService sut)
@@ -54,5 +54,35 @@ public class IntegrationEventDispatcherServiceTests
 
         // Assert
         integrationEventDispatcherMock.Verify(x => x.DispatchIntegrationEventsAsync(It.Is<int>(i => i > 0)));
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task DeleteOlderDispatchedIntegrationEventsAsync_CallsDeleteOlderDispatchedIntegrationEventsOnIntegrationEventCleanUpService(
+        [Frozen] Mock<IIntegrationEventCleanUpService> integrationEventCleanUpServiceMock,
+        IntegrationEventService sut)
+    {
+        // Arrange
+        const int days = 10;
+
+        // Act
+        await sut.DeleteOlderDispatchedIntegrationEventsAsync(days);
+
+        // Assert
+        integrationEventCleanUpServiceMock.Verify(x => x.DeleteOlderDispatchedIntegrationEvents(days));
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task DeleteOlderDispatchedIntegrationEventsAsync_CommitsUnitOfWork(
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+        int days,
+        IntegrationEventService sut)
+    {
+        // Act
+        await sut.DeleteOlderDispatchedIntegrationEventsAsync(days);
+
+        // Assert
+        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 }
