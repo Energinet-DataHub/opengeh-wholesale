@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import ClientSecretCredential
 import sys
-
 import configargparse
-import package.calculation_input as calculation_input
 from configargparse import argparse
-from package.constants import Colname
-from package.codelists import MigratedTimeSeriesQuality, TimeSeriesQuality
+from pyspark.sql import SparkSession
+import package.environment_variables as env_vars
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -29,13 +28,11 @@ from package import (
 from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from package.file_writers.actors_writer import ActorsWriter
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import Row
-import pyspark.sql.functions as F
+import package.calculation_input as input
 
 from .args_helper import valid_date, valid_list, valid_log_level
 from .calculator_args import CalculatorArgs
-from .datamigration import islocked
+from package.storage_account_access import islocked
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -45,9 +42,10 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     )
 
     # Infrastructure settings
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--time-zone", type=str, required=True)
+    p.add("--data-storage-account-name", type=str, required=False)
+    p.add("--data-storage-account-key", type=str, required=False)
+    p.add("--time-zone", type=str, required=False)
+    p.add("--log-level", type=valid_log_level, help="debug|information", required=False)
 
     # Run parameters
     p.add("--batch-id", type=str, required=True)
@@ -56,7 +54,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     p.add("--batch-period-end-datetime", type=valid_date, required=True)
     p.add("--batch-process-type", type=str, required=True)
     p.add("--batch-execution-time-start", type=valid_date, required=True)
-    p.add("--log-level", type=valid_log_level, help="debug|information", required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
@@ -77,8 +74,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
             f"{args.wholesale_container_path}/calculation-input-v2/time-series-points"
         )
     )
-    timeseries_points_df = _map_cim_quality_to_wholesale_quality(timeseries_points_df)
-
     metering_points_periods_df = (
         spark.read.option("mode", "FAILFAST")
         .format("delta")
@@ -86,12 +81,12 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
             f"{args.wholesale_container_path}/calculation-input-v2/metering-point-periods"
         )
     )
-    batch_grid_areas_df = get_batch_grid_areas_df(args.batch_grid_areas, spark)
-    _check_all_grid_areas_have_metering_points(
+    batch_grid_areas_df = input.get_batch_grid_areas_df(args.batch_grid_areas, spark)
+    input.check_all_grid_areas_have_metering_points(
         batch_grid_areas_df, metering_points_periods_df
     )
 
-    metering_point_periods_df = calculation_input.get_metering_point_periods_df(
+    metering_point_periods_df = input.get_metering_point_periods_df(
         metering_points_periods_df,
         batch_grid_areas_df,
         args.batch_period_start_datetime,
@@ -120,85 +115,27 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
 
-def _map_cim_quality_to_wholesale_quality(timeseries_point_df: DataFrame) -> DataFrame:
-    "Map input CIM quality names to wholesale quality names"
-    return timeseries_point_df.withColumn(
-        Colname.quality,
-        F.when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.missing.value,
-            TimeSeriesQuality.missing.value,
-        )
-        .when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.estimated.value,
-            TimeSeriesQuality.estimated.value,
-        )
-        .when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.measured.value,
-            TimeSeriesQuality.measured.value,
-        )
-        .when(
-            F.col(Colname.quality) == MigratedTimeSeriesQuality.calculated.value,
-            TimeSeriesQuality.calculated.value,
-        )
-        .otherwise("UNKNOWN"),
-    )
+def _start(storage_account_name: str, storage_account_credetial: ClientSecretCredential, time_zone: str, job_args: argparse.Namespace) -> None:
+    db_logging.loglevel = job_args.log_level
 
-
-def get_batch_grid_areas_df(
-    batch_grid_areas: list[str], spark: SparkSession
-) -> DataFrame:
-    return spark.createDataFrame(
-        map(lambda x: Row(str(x)), batch_grid_areas), ["GridAreaCode"]
-    )
-
-
-def _check_all_grid_areas_have_metering_points(
-    batch_grid_areas_df: DataFrame, master_basis_data_df: DataFrame
-) -> None:
-    distinct_grid_areas_rows_df = master_basis_data_df.select("GridAreaCode").distinct()
-    grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
-        distinct_grid_areas_rows_df, "GridAreaCode", "leftanti"
-    )
-
-    if grid_area_with_no_metering_point_df.count() > 0:
-        grid_areas_to_inform_about = grid_area_with_no_metering_point_df.select(
-            "GridAreaCode"
-        ).collect()
-
-        grid_area_codes_to_inform_about = map(
-            lambda x: x.__getitem__("GridAreaCode"), grid_areas_to_inform_about
-        )
-        raise Exception(
-            f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"
-        )
-
-
-def _start(command_line_args: list[str]) -> None:
-    args = _get_valid_args_or_throw(command_line_args)
-    log(f"Job arguments: {str(args)}")
-    db_logging.loglevel = args.log_level
-
-    if islocked(args.data_storage_account_name, args.data_storage_account_key):
+    if islocked(storage_account_name, storage_account_credetial):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
-    spark = initialize_spark(
-        args.data_storage_account_name, args.data_storage_account_key
-    )
+    spark = initialize_spark()
 
     calculator_args = CalculatorArgs(
-        data_storage_account_name=args.data_storage_account_name,
-        data_storage_account_key=args.data_storage_account_key,
+        data_storage_account_name=storage_account_name,
         wholesale_container_path=infrastructure.get_container_root_path(
-            args.data_storage_account_name
+            storage_account_name
         ),
-        batch_id=args.batch_id,
-        batch_grid_areas=args.batch_grid_areas,
-        batch_period_start_datetime=args.batch_period_start_datetime,
-        batch_period_end_datetime=args.batch_period_end_datetime,
-        batch_execution_time_start=args.batch_execution_time_start,
-        batch_process_type=args.batch_process_type,
-        time_zone=args.time_zone,
+        batch_id=job_args.batch_id,
+        batch_grid_areas=job_args.batch_grid_areas,
+        batch_period_start_datetime=job_args.batch_period_start_datetime,
+        batch_period_end_datetime=job_args.batch_period_end_datetime,
+        batch_execution_time_start=job_args.batch_execution_time_start,
+        batch_process_type=job_args.batch_process_type,
+        time_zone=time_zone,
     )
 
     _start_calculator(spark, calculator_args)
@@ -207,4 +144,10 @@ def _start(command_line_args: list[str]) -> None:
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start() -> None:
-    _start(sys.argv[1:])
+    job_args = _get_valid_args_or_throw(sys.argv[1:])
+    log(f"Job arguments: {str(job_args)}")
+
+    time_zone = env_vars.get_time_zone()
+    storage_account_name = env_vars.get_storage_account_name()
+    credential = env_vars.get_storage_account_credential()
+    _start(storage_account_name, credential, time_zone, job_args)

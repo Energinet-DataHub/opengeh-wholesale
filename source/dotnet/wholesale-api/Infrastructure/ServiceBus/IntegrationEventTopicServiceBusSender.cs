@@ -25,8 +25,13 @@ public class IntegrationEventTopicServiceBusSender : IIntegrationEventTopicServi
         _serviceBusSender = serviceBusSender;
     }
 
-    public async Task SendMessagesAsync(IEnumerable<ServiceBusMessage> serviceBusMessages)
+    public async Task<ServiceBusMessageBatch> CreateBusMessageBatchAsync()
     {
-        await _serviceBusSender.SendMessagesAsync(serviceBusMessages).ConfigureAwait(false);
+        return await _serviceBusSender.CreateMessageBatchAsync().ConfigureAwait(false);
+    }
+
+    public async Task SendAsync(ServiceBusMessageBatch serviceBusMessageBatch)
+    {
+        await _serviceBusSender.SendMessagesAsync(serviceBusMessageBatch).ConfigureAwait(false);
     }
 }

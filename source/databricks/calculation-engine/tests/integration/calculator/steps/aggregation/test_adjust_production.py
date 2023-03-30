@@ -18,8 +18,8 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.steps.aggregation import adjust_production
-from package.steps.aggregation.aggregation_result_formatter import (
+from package.steps.aggregation.transformations import adjust_production
+from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )
 from pyspark.sql.functions import col

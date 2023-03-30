@@ -16,13 +16,14 @@ import pytest
 from decimal import Decimal
 import pandas as pd
 from datetime import datetime, timedelta
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 from package.steps.aggregation import (
     aggregate_net_exchange_per_neighbour_ga,
 )
 from package.codelists import MeteringPointType, TimeSeriesQuality
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.functions import col, window
 
 
 e_20 = MeteringPointType.exchange.value
@@ -30,7 +31,7 @@ date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
-numberOfTestHours = 24
+numberOfTestQuarters = 96
 estimated_quality = TimeSeriesQuality.estimated.value
 
 df_template = {
@@ -59,7 +60,7 @@ def time_series_schema():
 
 
 @pytest.fixture(scope="module")
-def single_hour_test_data(spark, time_series_schema):
+def single_quarter_test_data(spark, time_series_schema):
     pandas_df = pd.DataFrame(df_template)
     pandas_df = add_row_of_data(
         pandas_df, "A", "A", "B", default_obs_time, Decimal("10")
@@ -82,19 +83,21 @@ def single_hour_test_data(spark, time_series_schema):
     pandas_df = add_row_of_data(
         pandas_df, "C", "C", "A", default_obs_time, Decimal("5")
     )
-    return spark.createDataFrame(pandas_df, schema=time_series_schema)
+    return spark.createDataFrame(pandas_df, time_series_schema).withColumn(
+        Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+    )
 
 
 @pytest.fixture(scope="module")
-def multi_hour_test_data(spark, time_series_schema):
+def multi_quarter_test_data(spark, time_series_schema):
     pandas_df = pd.DataFrame(df_template)
-    for i in range(numberOfTestHours):
+    for i in range(numberOfTestQuarters):
         pandas_df = add_row_of_data(
             pandas_df,
             "A",
             "A",
             "B",
-            default_obs_time + timedelta(hours=i),
+            default_obs_time + timedelta(minutes=i * 15),
             Decimal("10"),
         )
         pandas_df = add_row_of_data(
@@ -102,7 +105,7 @@ def multi_hour_test_data(spark, time_series_schema):
             "A",
             "A",
             "B",
-            default_obs_time + timedelta(hours=i),
+            default_obs_time + timedelta(minutes=i * 15),
             Decimal("15"),
         )
         pandas_df = add_row_of_data(
@@ -110,7 +113,7 @@ def multi_hour_test_data(spark, time_series_schema):
             "A",
             "B",
             "A",
-            default_obs_time + timedelta(hours=i),
+            default_obs_time + timedelta(minutes=i * 15),
             Decimal("5"),
         )
         pandas_df = add_row_of_data(
@@ -118,7 +121,7 @@ def multi_hour_test_data(spark, time_series_schema):
             "B",
             "B",
             "A",
-            default_obs_time + timedelta(hours=i),
+            default_obs_time + timedelta(minutes=i * 15),
             Decimal("10"),
         )
         pandas_df = add_row_of_data(
@@ -126,7 +129,7 @@ def multi_hour_test_data(spark, time_series_schema):
             "A",
             "A",
             "C",
-            default_obs_time + timedelta(hours=i),
+            default_obs_time + timedelta(minutes=i * 15),
             Decimal("20"),
         )
         pandas_df = add_row_of_data(
@@ -134,7 +137,7 @@ def multi_hour_test_data(spark, time_series_schema):
             "C",
             "C",
             "A",
-            default_obs_time + timedelta(hours=i),
+            default_obs_time + timedelta(minutes=i * 15),
             Decimal("10"),
         )
         pandas_df = add_row_of_data(
@@ -142,10 +145,12 @@ def multi_hour_test_data(spark, time_series_schema):
             "C",
             "C",
             "A",
-            default_obs_time + timedelta(hours=i),
+            default_obs_time + timedelta(minutes=i * 15),
             Decimal("5"),
         )
-    return spark.createDataFrame(pandas_df, schema=time_series_schema)
+    return spark.createDataFrame(pandas_df, schema=time_series_schema).withColumn(
+        Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+    )
 
 
 def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantity):
@@ -161,10 +166,8 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
     return pandas_df.append(new_row, ignore_index=True)
 
 
-def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_hour_test_data):
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = single_hour_test_data
-    df = aggregate_net_exchange_per_neighbour_ga(results).orderBy(
+def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test_data):
+    df = aggregate_net_exchange_per_neighbour_ga(single_quarter_test_data).orderBy(
         Colname.in_grid_area, Colname.out_grid_area, Colname.time_window
     )
     values = df.collect()
@@ -178,14 +181,12 @@ def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_hour_test_da
     assert values[3][Colname.sum_quantity] == Decimal("-5")
 
 
-def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_hour_test_data):
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = multi_hour_test_data
-    df = aggregate_net_exchange_per_neighbour_ga(results).orderBy(
+def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_data):
+    df = aggregate_net_exchange_per_neighbour_ga(multi_quarter_test_data).orderBy(
         Colname.in_grid_area, Colname.out_grid_area, Colname.time_window
     )
     values = df.collect()
-    assert df.count() == 96
+    assert df.count() == 384
     assert values[0][Colname.in_grid_area] == "A"
     assert values[0][Colname.out_grid_area] == "B"
     assert (
@@ -198,7 +199,7 @@ def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_hour_test_data
         values[0][Colname.time_window][Colname.end].strftime(
             date_time_formatting_string
         )
-        == "2020-01-01T01:00:00"
+        == "2020-01-01T00:15:00"
     )
     assert values[0][Colname.sum_quantity] == Decimal("10")
     assert values[19][Colname.in_grid_area] == "A"
@@ -207,21 +208,19 @@ def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_hour_test_data
         values[19][Colname.time_window][Colname.start].strftime(
             date_time_formatting_string
         )
-        == "2020-01-01T19:00:00"
+        == "2020-01-01T04:45:00"
     )
     assert (
         values[19][Colname.time_window][Colname.end].strftime(
             date_time_formatting_string
         )
-        == "2020-01-01T20:00:00"
+        == "2020-01-01T05:00:00"
     )
     assert values[19][Colname.sum_quantity] == Decimal("10")
 
 
-def test_expected_schema(single_hour_test_data):
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = single_hour_test_data
-    df = aggregate_net_exchange_per_neighbour_ga(results).orderBy(
+def test_expected_schema(single_quarter_test_data):
+    df = aggregate_net_exchange_per_neighbour_ga(single_quarter_test_data).orderBy(
         Colname.in_grid_area, Colname.out_grid_area, Colname.time_window
     )
     assert df.schema == aggregation_result_schema

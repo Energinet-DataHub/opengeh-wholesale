@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .data_lake_file_manager import DataLakeFileManager
+from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 
 COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
 

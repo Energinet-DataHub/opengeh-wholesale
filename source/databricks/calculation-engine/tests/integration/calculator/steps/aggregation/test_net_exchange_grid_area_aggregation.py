@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import pytest
 from decimal import Decimal
 import pandas as pd
@@ -19,8 +20,8 @@ from package.constants import Colname, ResultKeyName
 from package.steps.aggregation import aggregate_net_exchange_per_ga
 from package.codelists import MeteringPointType, TimeSeriesQuality
 from package.schemas.output import aggregation_result_schema
-from pyspark.sql import DataFrame
-import pyspark.sql.functions as F
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import window, col
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 
 
@@ -31,43 +32,9 @@ default_obs_time = datetime.strptime(
 )
 numberOfTestHours = 24
 
-# Time series schema
-
 
 @pytest.fixture(scope="module")
-def time_series_schema():
-    return (
-        StructType()
-        .add(Colname.metering_point_type, StringType(), False)
-        .add(Colname.in_grid_area, StringType())
-        .add(Colname.out_grid_area, StringType(), False)
-        .add(Colname.quantity, DecimalType(38, 10))
-        .add(Colname.observation_time, TimestampType())
-        .add(Colname.aggregated_quality, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def expected_schema():
-    """
-    Expected exchange aggregation output schema
-    """
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType())
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-        )
-        .add(Colname.sum_quantity, DecimalType(38, 9))
-        .add(Colname.aggregated_quality, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def time_series_data_frame(spark, time_series_schema):
+def enriched_time_series_data_frame(spark: SparkSession):
     """
     Sample Time Series DataFrame
     """
@@ -77,7 +44,7 @@ def time_series_data_frame(spark, time_series_schema):
             Colname.metering_point_type: [],
             Colname.in_grid_area: [],
             Colname.out_grid_area: [],
-            Colname.quantity: [],
+            "quarter_quantity": [],
             Colname.observation_time: [],
             Colname.aggregated_quality: [],
         }
@@ -162,7 +129,9 @@ def time_series_data_frame(spark, time_series_schema):
             default_obs_time + timedelta(hours=x),
         )
 
-    return spark.createDataFrame(pandas_df, schema=time_series_schema)
+    return spark.createDataFrame(pandas_df).withColumn(
+        Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+    )
 
 
 def add_row_of_data(
@@ -188,17 +157,14 @@ def add_row_of_data(
 
 
 @pytest.fixture(scope="module")
-def aggregated_data_frame(time_series_data_frame):
+def aggregated_data_frame(enriched_time_series_data_frame):
     """Perform aggregation"""
-    results = {}
-    results[ResultKeyName.aggregation_base_dataframe] = time_series_data_frame
-    result = aggregate_net_exchange_per_ga(results)
-    return result
+    return aggregate_net_exchange_per_ga(enriched_time_series_data_frame)
 
 
-def test_test_data_has_correct_row_count(time_series_data_frame):
+def test_test_data_has_correct_row_count(enriched_time_series_data_frame):
     """Check sample data row count"""
-    assert time_series_data_frame.count() == (9 * numberOfTestHours)
+    assert enriched_time_series_data_frame.count() == (9 * numberOfTestHours)
 
 
 def test_exchange_aggregator_returns_correct_schema(aggregated_data_frame):
@@ -237,10 +203,10 @@ def check_aggregation_row(
     gridfiltered = df.filter(
         df[Colname.grid_area] == MeteringGridArea_Domain_mRID
     ).select(
-        F.col(Colname.grid_area),
-        F.col(Colname.sum_quantity),
-        F.col(f"{Colname.time_window_start}").alias("start"),
-        F.col(f"{Colname.time_window_end}").alias("end"),
+        col(Colname.grid_area),
+        col(Colname.sum_quantity),
+        col(f"{Colname.time_window_start}").alias("start"),
+        col(f"{Colname.time_window_end}").alias("end"),
     )
     res = gridfiltered.filter(gridfiltered["start"] == time).toPandas()
     assert res[Colname.sum_quantity][0] == sum
