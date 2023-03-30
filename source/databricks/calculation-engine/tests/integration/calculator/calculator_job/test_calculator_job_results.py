@@ -44,5 +44,4 @@ def test__net_exchange_per_neighboring_ga__is_created(
     # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert: The result is created if there are rows
-    result.show(n=200, truncate=False)
     assert result.count() > 0
