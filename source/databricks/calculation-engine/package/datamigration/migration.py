@@ -62,7 +62,6 @@ def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -
     )
 
 
-# This method must remain parameterless because it will be called from the entry point when deployed.
 def _migrate_data_lake(storage_account_name: str, storage_account_credential: ClientSecretCredential) -> None:
     file_manager = DataLakeFileManager(storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME)
 
