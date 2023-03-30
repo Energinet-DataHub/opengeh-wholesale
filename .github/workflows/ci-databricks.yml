@@ -21,9 +21,9 @@ jobs:
   databricks_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v10
     with:
-      pyhton_version: 3.9.7
-      architecture: x64
-      wheel_working_directory: ./source/databricks/calculation-engine
+      python_version: "3.9.7"
+      architecture: "x64"
+      wheel_working_directory: "./source/databricks/calculation-engine"
 
   migration_scripts_verification:
     runs-on: ubuntu-latest

@@ -12,15 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import ClientSecretCredential
 import sys
 import configargparse
 from configargparse import argparse
 from pyspark.sql import SparkSession
-
-from package.environment_variables import (
-    get_env_variables_or_throw,
-    EnvironmentVariable,
-)
+import package.environment_variables as env_vars
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -35,7 +32,7 @@ import package.calculation_input as input
 
 from .args_helper import valid_date, valid_list, valid_log_level
 from .calculator_args import CalculatorArgs
-from .datamigration import islocked
+from package.storage_account_access import islocked
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
@@ -45,9 +42,10 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     )
 
     # Infrastructure settings
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
-    p.add("--time-zone", type=str, required=True)
+    p.add("--data-storage-account-name", type=str, required=False)
+    p.add("--data-storage-account-key", type=str, required=False)
+    p.add("--time-zone", type=str, required=False)
+    p.add("--log-level", type=valid_log_level, help="debug|information", required=False)
 
     # Run parameters
     p.add("--batch-id", type=str, required=True)
@@ -56,7 +54,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     p.add("--batch-period-end-datetime", type=valid_date, required=True)
     p.add("--batch-process-type", type=str, required=True)
     p.add("--batch-execution-time-start", type=valid_date, required=True)
-    p.add("--log-level", type=valid_log_level, help="debug|information", required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
@@ -118,38 +115,26 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
 
-def _start(command_line_args: list[str]) -> None:
-    args = _get_valid_args_or_throw(command_line_args)
-    log(f"Job arguments: {str(args)}")
-    db_logging.loglevel = args.log_level
+def _start(storage_account_name: str, storage_account_credetial: ClientSecretCredential, time_zone: str, job_args: argparse.Namespace) -> None:
+    db_logging.loglevel = job_args.log_level
 
-    required_env_variables = [
-        EnvironmentVariable.TIME_ZONE,
-        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME,
-    ]
-    env_variables = get_env_variables_or_throw(required_env_variables)
-
-    time_zone = env_variables[EnvironmentVariable.TIME_ZONE]
-    storage_account_name = env_variables[EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME]
-
-    if islocked(storage_account_name, args.data_storage_account_key):
+    if islocked(storage_account_name, storage_account_credetial):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
-    spark = initialize_spark(storage_account_name, args.data_storage_account_key)
+    spark = initialize_spark()
 
     calculator_args = CalculatorArgs(
         data_storage_account_name=storage_account_name,
-        data_storage_account_key=args.data_storage_account_key,
         wholesale_container_path=infrastructure.get_container_root_path(
             storage_account_name
         ),
-        batch_id=args.batch_id,
-        batch_grid_areas=args.batch_grid_areas,
-        batch_period_start_datetime=args.batch_period_start_datetime,
-        batch_period_end_datetime=args.batch_period_end_datetime,
-        batch_execution_time_start=args.batch_execution_time_start,
-        batch_process_type=args.batch_process_type,
+        batch_id=job_args.batch_id,
+        batch_grid_areas=job_args.batch_grid_areas,
+        batch_period_start_datetime=job_args.batch_period_start_datetime,
+        batch_period_end_datetime=job_args.batch_period_end_datetime,
+        batch_execution_time_start=job_args.batch_execution_time_start,
+        batch_process_type=job_args.batch_process_type,
         time_zone=time_zone,
     )
 
@@ -159,4 +144,10 @@ def _start(command_line_args: list[str]) -> None:
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start() -> None:
-    _start(sys.argv[1:])
+    job_args = _get_valid_args_or_throw(sys.argv[1:])
+    log(f"Job arguments: {str(job_args)}")
+
+    time_zone = env_vars.get_time_zone()
+    storage_account_name = env_vars.get_storage_account_name()
+    credential = env_vars.get_storage_account_credential()
+    _start(storage_account_name, credential, time_zone, job_args)

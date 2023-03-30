@@ -27,7 +27,8 @@ def test__apply__directory_client_contructed_with_correct_arguments(
 ) -> None:
     # Arrange
     sut = get_migration_script()
-    migration_args = MigrationScriptArgs("", "", "", ANY)
+    mock_credential = Mock()
+    migration_args = MigrationScriptArgs("", "", mock_credential, ANY)
     source_container = "integration-events"
     events_source_directory = "events"
     events_checkpoint_source_directory = "events-checkpoint"
