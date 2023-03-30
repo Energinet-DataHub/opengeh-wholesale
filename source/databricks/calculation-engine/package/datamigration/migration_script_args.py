@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import ClientSecretCredential
 from pyspark.sql import SparkSession
 
 
@@ -27,10 +28,10 @@ class MigrationScriptArgs:
         self,
         data_storage_account_url: str,
         data_storage_account_name: str,
-        data_storage_account_key: str,
+        data_storage_credential: ClientSecretCredential,
         spark: SparkSession,
     ) -> None:
         self.storage_account_url = data_storage_account_url
         self.storage_account_name = data_storage_account_name
-        self.storage_account_key = data_storage_account_key
+        self.storage_credential = data_storage_credential
         self.spark = spark
