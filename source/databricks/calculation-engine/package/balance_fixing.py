@@ -59,10 +59,22 @@ def _calculate(
     result_writer: ProcessStepResultWriter,
     enriched_time_series_point_df: DataFrame,
 ) -> None:
+    _calculate_exchange_per_neighboring_ga(result_writer, enriched_time_series_point_df)
+
     _calculate_production(result_writer, enriched_time_series_point_df)
 
     _calculate_non_profiled_consumption(
         actors_writer, result_writer, enriched_time_series_point_df
+    )
+
+
+def _calculate_exchange_per_neighboring_ga(
+    result_writer: ProcessStepResultWriter, enriched_time_series: DataFrame
+) -> None:
+    exchange = agg_steps.aggregate_net_exchange_per_neighbour_ga(enriched_time_series)
+
+    result_writer.write(
+        exchange, TimeSeriesType.EXCHANGE_PER_NEIGHBORING_GA, AggregationLevel.total_ga
     )
 
 

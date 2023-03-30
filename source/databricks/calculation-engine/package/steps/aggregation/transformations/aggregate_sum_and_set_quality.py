@@ -26,11 +26,11 @@ def aggregate_sum_and_set_quality(
     result = (
         result.groupBy(group_by).agg(
             F.sum(quantity_col_name).alias(Colname.sum_quantity),
-            F.collect_set("Quality").alias(qualities_col_name),
+            F.collect_set(Colname.quality).alias(qualities_col_name),
         )
         # TODO: What about calculated (A06)?
         .withColumn(
-            "Quality",
+            Colname.quality,
             F.when(
                 F.array_contains(
                     F.col(qualities_col_name), F.lit(TimeSeriesQuality.missing.value)
