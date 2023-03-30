@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import ClientSecretCredential
 import sys
 import configargparse
 from configargparse import argparse
 from os import path, listdir
+import package.environment_variables as env_vars
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
-from .data_lake_file_manager import DataLakeFileManager
+from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
 
 
@@ -36,8 +38,8 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
+    p.add("--data-storage-account-name", type=str, required=False)
+    p.add("--data-storage-account-key", type=str, required=False)
 
     known_args, unknown_args = p.parse_known_args(args=command_line_args)
     if len(unknown_args):
@@ -59,12 +61,11 @@ def _get_all_migrations() -> list[str]:
     return script_names
 
 
-def _print_count(command_line_args: list[str]) -> None:
-    args = _get_valid_args_or_throw(command_line_args)
+def _print_count(storage_account_name: str, storage_account_credential: ClientSecretCredential) -> None:
 
     file_manager = DataLakeFileManager(
-        args.data_storage_account_name,
-        args.data_storage_account_key,
+        storage_account_name,
+        storage_account_credential,
         WHOLESALE_CONTAINER_NAME,
     )
 
@@ -92,4 +93,7 @@ def get_uncommitted_migrations(file_manager: DataLakeFileManager) -> list[str]:
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def print_count() -> None:
-    _print_count(sys.argv[1:])
+    _get_valid_args_or_throw(sys.argv[1:])
+    storage_account_name = env_vars.get_storage_account_name()
+    credential = env_vars.get_storage_account_credential()
+    _print_count(storage_account_name, credential)
