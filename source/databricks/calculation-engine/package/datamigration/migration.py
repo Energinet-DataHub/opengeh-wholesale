@@ -37,8 +37,8 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
-    p.add("--data-storage-account-name", type=str, required=True)
-    p.add("--data-storage-account-key", type=str, required=True)
+    p.add("--data-storage-account-name", type=str, required=False)
+    p.add("--data-storage-account-key", type=str, required=False)
     p.add(
         "--log-level",
         type=valid_log_level,
@@ -62,8 +62,7 @@ def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -
     )
 
 
-# This method must remain parameterless because it will be called from the entry point when deployed.
-def _migrate_data_lake(storage_account_name: str, storage_account_credential: ClientSecretCredential, storage_account_key: str) -> None:
+def _migrate_data_lake(storage_account_name: str, storage_account_credential: ClientSecretCredential) -> None:
     file_manager = DataLakeFileManager(storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME)
 
     spark = initialize_spark()
@@ -78,7 +77,7 @@ def _migrate_data_lake(storage_account_name: str, storage_account_credential: Cl
     migration_args = MigrationScriptArgs(
         data_storage_account_url=storage_account_url,
         data_storage_account_name=storage_account_name,
-        data_storage_account_key=storage_account_key,
+        data_storage_credential=storage_account_credential,
         spark=spark,
     )
 
@@ -89,7 +88,7 @@ def _migrate_data_lake(storage_account_name: str, storage_account_credential: Cl
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake() -> None:
-    args = _get_valid_args_or_throw(sys.argv[1:])
+    _get_valid_args_or_throw(sys.argv[1:])
     storage_account_name = env_vars.get_storage_account_name()
     credential = env_vars.get_storage_account_credential()
-    _migrate_data_lake(storage_account_name, credential, args.data_storage_account_key)
+    _migrate_data_lake(storage_account_name, credential)

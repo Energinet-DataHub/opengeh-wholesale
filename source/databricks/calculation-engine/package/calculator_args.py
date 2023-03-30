@@ -19,7 +19,6 @@ from datetime import datetime
 @dataclass
 class CalculatorArgs:
     data_storage_account_name: str
-    data_storage_account_key: str
     wholesale_container_path: str
     batch_id: str
     batch_grid_areas: list[str]

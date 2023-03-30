@@ -26,7 +26,7 @@ def apply(args: MigrationScriptArgs) -> None:
         args.storage_account_url,
         container,
         directory_name,
-        args.storage_account_key,
+        args.storage_credential,
     )
 
     basis_data_dir = directory_client.get_sub_directory_client("basis-data")
