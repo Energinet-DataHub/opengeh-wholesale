@@ -39,7 +39,7 @@ class ProcessStepResultWriter:
         self.__output_path = (
             f"{container_path}/{infra.get_batch_relative_path(batch_id)}"
         )
-        self._create_database_if_not_exists(spark, container_path)
+        self._create_delta_table_if_not_exists(spark, container_path)
 
     def write(
         self,
@@ -174,13 +174,21 @@ class ProcessStepResultWriter:
             .json(result_data_directory)
         )
 
-    def _create_database_if_not_exists(
+    def _create_delta_table_if_not_exists(
         self, spark: SparkSession, container_path: str
     ) -> None:
         location = f"{container_path}/{infra.get_calculation_output_folder()}"
+
+        # First create database if not already existing
         spark.sql(
             f"CREATE DATABASE IF NOT EXISTS {DATABASE_NAME} \
             COMMENT 'Contains result data from wholesale domain.' \
+            LOCATION '{location}'"
+        )
+
+        # Now create table if not already existing
+        spark.sql(
+            f"CREATE TABLE IF NOT EXISTS {DATABASE_NAME}.{RESULT_TABLE_NAME} USING DELTA \
             LOCATION '{location}'"
         )
 
