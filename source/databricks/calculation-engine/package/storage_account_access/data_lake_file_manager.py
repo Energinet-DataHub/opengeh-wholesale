@@ -16,6 +16,7 @@ import csv
 from io import StringIO
 
 from azure.storage.filedatalake import DataLakeServiceClient
+from azure.identity import ClientSecretCredential
 from package import infrastructure
 from typing import Any
 
@@ -24,14 +25,14 @@ class DataLakeFileManager:
     def __init__(
         self,
         data_storage_account_name: str,
-        data_storage_account_key: str,
+        credential: ClientSecretCredential,
         container_name: str,
     ):
         data_storage_account_url = infrastructure.get_storage_account_url(
             data_storage_account_name
         )
         self.file_system_client = DataLakeServiceClient(
-            data_storage_account_url, data_storage_account_key
+            data_storage_account_url, credential=credential
         ).get_file_system_client(container_name)
 
     def download_file(self, file_name: str) -> bytes:

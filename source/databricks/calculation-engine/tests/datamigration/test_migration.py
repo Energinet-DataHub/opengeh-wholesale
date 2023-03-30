@@ -14,7 +14,7 @@
 
 import importlib
 import inspect
-from unittest.mock import ANY, patch, call
+from unittest.mock import ANY, patch, call, Mock
 
 import pytest
 from package.datamigration.migration import _get_valid_args_or_throw, _migrate_data_lake
@@ -45,21 +45,20 @@ def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeed
 
 
 @patch("package.datamigration.migration.initialize_spark")
-@patch("package.datamigration.migration.DataLakeFileManager")
 @patch("package.datamigration.migration.get_uncommitted_migrations")
 @patch("package.datamigration.migration.upload_committed_migration")
 def test__migrate_datalake__when_script_not_found__raise_exception(
     mock_upload_committed_migration,
     mock_uncommitted_migrations,
-    mock_file_manager,
     mock_spark,
 ):
     # Arrange
     mock_uncommitted_migrations.return_value = ["not_a_module"]
+    mock_credential = Mock()
 
     # Act and Assert
     with pytest.raises(Exception):
-        _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
+        _migrate_data_lake("dummy_storage_name", mock_credential, "dummy_storage_key")
 
 
 def test__all_migrations_script_has_correct_signature():
@@ -93,6 +92,7 @@ def test__migrate_datalake__upload_called_with_correct_name(
     mock_spark,
 ):
     # Arrange
+    mock_credential = Mock()
     all_migrations = _get_all_migrations()
     mock_uncommitted_migrations.return_value = all_migrations
 
@@ -101,7 +101,7 @@ def test__migrate_datalake__upload_called_with_correct_name(
         calls.append(call(ANY, name))
 
     # Act
-    _migrate_data_lake("dummy_storage_name", "dummy_storage_key")
+    _migrate_data_lake("dummy_storage_name", mock_credential, "dummy_storage_key")
 
     # Assert
     mock_upload_committed_migration.assert_has_calls(calls)
