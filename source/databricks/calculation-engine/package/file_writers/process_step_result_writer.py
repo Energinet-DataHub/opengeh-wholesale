@@ -23,6 +23,31 @@ from pyspark.sql import SparkSession
 DATABASE_NAME = "wholesale_output"
 RESULT_TABLE_NAME = "result"
 
+from pyspark.sql.types import (
+    DecimalType,
+    IntegerType,
+    StructField,
+    StringType,
+    TimestampType,
+    StructType,
+)
+
+result_schema = StructType(
+    [
+        StructField("grid_area", StringType(), False),
+        StructField("quantity", StringType(), False),
+        StructField("quantity_quality", StringType(), False),
+        StructField("time", TimestampType(), False),
+        StructField("time_series_type", StringType(), False),
+        StructField("batch_id", StringType(), False),
+        StructField("batch_process_type", StringType(), False),
+        StructField("batch_execution_time_start", TimestampType(), False),
+        StructField("energy_supplier_id", StringType(), True),
+        StructField("balance_responsible_id", StringType(), True),
+        StructField("aggregation_level", StringType(), True),
+    ]
+)
+
 
 class ProcessStepResultWriter:
     def __init__(
@@ -231,6 +256,6 @@ class ProcessStepResultWriter:
             Colname.balance_responsible_id, "balance_responsible_id"
         )
 
-        df.write.format("delta").mode("append").option("mergeSchema", "false").option(
-            "mergeSchema", "false"
+        df.write.format("delta").mode("append").option("mergeSchema", "true").option(
+            "overwriteSchema", "false"
         ).saveAsTable(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
