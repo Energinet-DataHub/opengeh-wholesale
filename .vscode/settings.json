@@ -3,5 +3,17 @@
         "source"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "powershell.codeFormatting.avoidSemicolonsAsLineTerminators": true,
+    "powershell.codeFormatting.useCorrectCasing": true,
+    "powershell.codeFormatting.whitespaceBetweenParameters": true,
+    "markdownlint.config": {
+        "MD007": {
+            "indent": 4
+        },
+        "MD024": {
+            "siblings_only": true
+        },
+    },
+    "redhat.telemetry.enabled": false
 }
