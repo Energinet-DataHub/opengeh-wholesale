@@ -14,16 +14,14 @@
 
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
-import pytest
 
-from tests.contract_utils import assert_contract_matches_schema
 from . import configuration as C
 from package.codelists import (
     TimeSeriesType,
-    AggregationLevel,
 )
 from package.constants import Colname
-import package.infrastructure as infra
+
+CONTAINER_PATH = "calculation-output/result"
 
 
 def test__net_exchange_per_neighboring_ga__is_created(
@@ -33,7 +31,7 @@ def test__net_exchange_per_neighboring_ga__is_created(
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    result_table_path = f"{data_lake_path}/{worker_id}/calculation-output/result"
+    result_table_path = f"{data_lake_path}/{worker_id}/{CONTAINER_PATH}"
     result = (
         spark.read.load(result_table_path)
         .where(F.col(Colname.batch_id) == C.executed_batch_id)

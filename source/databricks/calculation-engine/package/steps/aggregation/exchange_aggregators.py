@@ -39,26 +39,22 @@ def aggregate_net_exchange_per_neighbour_ga(
     df = enriched_time_series.where(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
+
+    group_by = [
+        Colname.in_grid_area,
+        Colname.out_grid_area,
+        Colname.time_window,
+    ]
+
     exchange_in = (
-        df.groupBy(
-            Colname.in_grid_area,
-            Colname.out_grid_area,
-            Colname.time_window,
-            Colname.quality,
-        )
-        .sum(Colname.quantity)
-        .withColumnRenamed(f"sum({Colname.quantity})", in_sum)
+        T.aggregate_sum_and_set_quality(df, Colname.quantity, group_by)
+        .withColumnRenamed(Colname.sum_quantity, in_sum)
         .withColumnRenamed(Colname.in_grid_area, exchange_in_in_grid_area)
         .withColumnRenamed(Colname.out_grid_area, exchange_in_out_grid_area)
     )
     exchange_out = (
-        df.groupBy(
-            Colname.in_grid_area,
-            Colname.out_grid_area,
-            Colname.time_window,
-        )
-        .sum(Colname.quantity)
-        .withColumnRenamed(f"sum({Colname.quantity})", out_sum)
+        T.aggregate_sum_and_set_quality(df, Colname.quantity, group_by)
+        .withColumnRenamed(Colname.sum_quantity, out_sum)
         .withColumnRenamed(Colname.in_grid_area, exchange_out_in_grid_area)
         .withColumnRenamed(Colname.out_grid_area, exchange_out_out_grid_area)
     )
