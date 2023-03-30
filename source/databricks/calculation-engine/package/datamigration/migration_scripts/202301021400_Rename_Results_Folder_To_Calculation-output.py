@@ -25,7 +25,7 @@ def apply(args: MigrationScriptArgs) -> None:
         args.storage_account_url,
         container,
         current_directory_name,
-        args.storage_account_key,
+        args.storage_credential,
     )
     if not directory_client.exists():
         source_path = container + "/" + current_directory_name
