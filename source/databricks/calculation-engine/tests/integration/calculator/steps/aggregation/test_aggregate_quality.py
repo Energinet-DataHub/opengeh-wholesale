@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from package.constants import Colname
 from pyspark.sql.types import StructType, StringType, TimestampType
 from package.codelists import MeteringPointType, TimeSeriesQuality
-from package.steps.aggregation import aggregate_quality
+from package.steps.aggregation.transformations import aggregate_quality
 import pytest
 import pandas as pd
 

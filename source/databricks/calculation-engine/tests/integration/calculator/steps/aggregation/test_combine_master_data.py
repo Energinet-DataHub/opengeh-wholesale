@@ -13,8 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from package.codelists import MeteringPointResolution
-from package.steps.aggregation import (
+from package.steps.aggregation.transformations import (
     combine_added_system_correction_with_master_data,
     combine_added_grid_loss_with_master_data,
 )
@@ -25,7 +24,6 @@ from pyspark.sql.types import (
     TimestampType,
     BooleanType,
 )
-from unittest.mock import Mock
 import pytest
 import pandas as pd
 from package.schemas.output import aggregation_result_schema

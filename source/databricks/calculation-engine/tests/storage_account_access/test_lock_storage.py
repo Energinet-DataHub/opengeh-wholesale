@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import pytest
-import unittest
 from unittest.mock import patch, Mock
-from package.datamigration.lock_storage import (
+from package.storage_account_access.lock_storage import (
     _LOCK_FILE_NAME,
     _get_valid_args_or_throw,
     lock,
@@ -24,33 +24,19 @@ from package.datamigration.lock_storage import (
 
 
 def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails():
-    # Act
-    with pytest.raises(SystemExit) as excinfo:
+    # Act and Assert
+    with pytest.raises(Exception):
         _get_valid_args_or_throw("--unexpected-arg")
 
-    # Assert
-    assert excinfo.value.code == 2
 
-
-def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeeds():
-    # Arrange
-    command_line_args = [
-        "--data-storage-account-name",
-        "foo",
-        "--data-storage-account-key",
-        "foo",
-    ]
-
-    # Act and Assert
-    _get_valid_args_or_throw(command_line_args)
-
-
-@patch("package.datamigration.lock_storage.DataLakeFileManager")
-@patch("package.datamigration.lock_storage._get_valid_args_or_throw")
+@patch("package.storage_account_access.lock_storage.DataLakeFileManager")
+@patch("package.storage_account_access.lock_storage._get_valid_args_or_throw")
+@patch("package.storage_account_access.lock_storage.env_vars")
 def test__lock__create_file_called_with_correct_name(
-    mock_arg_parser, mock_file_manager
+    mock_env_vars,
+    mock_arg_parser,
+    mock_file_manager
 ):
-
     # Arrange
     mock_create_file = Mock()
     mock_file_manager.return_value.create_file = mock_create_file
@@ -62,12 +48,14 @@ def test__lock__create_file_called_with_correct_name(
     mock_create_file.assert_called_once_with(_LOCK_FILE_NAME)
 
 
-@patch("package.datamigration.lock_storage.DataLakeFileManager")
-@patch("package.datamigration.lock_storage._get_valid_args_or_throw")
-def test__lock__delete_file_called_with_correct_name(
-    mock_arg_parser, mock_file_manager
+@patch("package.storage_account_access.lock_storage.DataLakeFileManager")
+@patch("package.storage_account_access.lock_storage._get_valid_args_or_throw")
+@patch("package.storage_account_access.lock_storage.env_vars")
+def test__unlock__delete_file_called_with_correct_name(
+    mock_env_vars,
+    mock_arg_parser,
+    mock_file_manager
 ):
-
     # Arrange
     mock_delete_file = Mock()
     mock_file_manager.return_value.delete_file = mock_delete_file

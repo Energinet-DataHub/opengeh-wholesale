@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import ClientSecretCredential
 from azure.storage.filedatalake import DataLakeDirectoryClient
 from package.datamigration.migration_script_args import MigrationScriptArgs
 
@@ -25,7 +26,7 @@ def apply(args: MigrationScriptArgs) -> None:
     events_destination_directory = events_source_directory
     move_directory(
         args.storage_account_url,
-        args.storage_account_key,
+        args.storage_credential,
         source_container,
         events_source_directory,
         destination_container,
@@ -37,7 +38,7 @@ def apply(args: MigrationScriptArgs) -> None:
     events_checkpoint_destination_directory = events_checkpoint_source_directory
     move_directory(
         args.storage_account_url,
-        args.storage_account_key,
+        args.storage_credential,
         source_container,
         events_checkpoint_source_directory,
         destination_container,
@@ -47,7 +48,7 @@ def apply(args: MigrationScriptArgs) -> None:
 
 def move_directory(
     storage_account_url: str,
-    storage_account_key: str,
+    storage_credential: ClientSecretCredential,
     source_container: str,
     source_directory: str,
     destination_container: str,
@@ -57,7 +58,7 @@ def move_directory(
         storage_account_url,
         source_container,
         source_directory,
-        storage_account_key,
+        storage_credential,
     )
 
     if not directory_client.exists():

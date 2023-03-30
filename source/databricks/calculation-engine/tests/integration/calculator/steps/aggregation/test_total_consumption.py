@@ -14,7 +14,6 @@
 from decimal import Decimal
 from datetime import datetime
 
-from numpy import append
 from package.codelists import (
     TimeSeriesQuality,
     MeteringPointType,
@@ -22,7 +21,7 @@ from package.codelists import (
 )
 
 from package.steps.aggregation import calculate_total_consumption
-from package.steps.aggregation.aggregation_result_formatter import (
+from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
