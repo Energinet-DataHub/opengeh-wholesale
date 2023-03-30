@@ -41,7 +41,7 @@ module "apima_b2b" {
                 <openid-config url="https://login.microsoftonline.com/${var.apim_b2c_tenant_id}/v2.0/.well-known/openid-configuration" />
                 <required-claims>
                     <claim name="aud" match="any">
-                        <value>${var.backend_service_app_id}</value>
+                        <value>${var.backend_b2b_app_id}</value>
                     </claim>
                 </required-claims>
             </validate-jwt>

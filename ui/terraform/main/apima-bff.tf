@@ -48,7 +48,7 @@ module "apima_bff" {
                 <openid-config url="${data.azurerm_key_vault_secret.backend_open_id_url.value}" />
                 <required-claims>
                     <claim name="aud" match="any">
-                        <value>${data.azurerm_key_vault_secret.frontend_service_app_id.value}</value>
+                        <value>${data.azurerm_key_vault_secret.backend_bff_app_id.value}</value>
                     </claim>
                 </required-claims>
             </validate-jwt>
@@ -108,18 +108,18 @@ resource "azurerm_api_management_authorization_server" "oauth_server_bff" {
   grant_types = [
     "implicit",
   ]
-  authorization_endpoint = "${var.apim_b2c_tenant_frontend_userflow}/oauth2/v2.0/authorize"
+  authorization_endpoint = local.b2c_authorization_sign_in_endpoint
   authorization_methods = [
     "GET",
   ]
-  token_endpoint = "${var.apim_b2c_tenant_frontend_userflow}/oauth2/v2.0/token"
+  token_endpoint = local.b2c_authorization_token_endpoint
   client_authentication_method = [
     "Body",
   ]
   bearer_token_sending_methods = [
     "authorizationHeader",
   ]
-  client_id = data.azurerm_key_vault_secret.frontend_service_app_id.value
+  client_id = data.azurerm_key_vault_secret.backend_bff_app_id.value
 }
 
 module "kvs_app_bff_base_url" {

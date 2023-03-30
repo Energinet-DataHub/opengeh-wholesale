@@ -13,13 +13,33 @@ data "azurerm_key_vault_secret" "frontend_open_id_url" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "frontend_service_app_id" {
-  name         = "frontend-service-app-id"
+data "azurerm_key_vault_secret" "backend_open_id_url" {
+  name         = "backend-open-id-url"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "backend_open_id_url" {
-  name         = "backend-open-id-url"
+data "azurerm_key_vault_secret" "backend_bff_app_id" {
+  name         = "backend-bff-app-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "backend_bff_app_sp_id" {
+  name         = "backend-bff-app-sp-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "backend_bff_app_scope_id" {
+  name         = "backend-bff-app-scope-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "authentication_sign_in_user_flow_id" {
+  name         = "authentication-sign-in-user-flow-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "authentication_invitation_user_flow_id" {
+  name         = "authentication-invitation-user-flow-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 

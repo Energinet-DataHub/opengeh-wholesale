@@ -48,19 +48,54 @@ variable "apim_b2c_tenant_id" {
   description = "ID of the B2C tenant hosting the backend app registrations authorizing against."
 }
 
-variable "backend_service_app_id" {
-  type        = string
-  description = "The app/client ID of the backend app registration."
-}
-
 variable "frontend_open_id_url" {
   type        = string
-  description = "Open ID configuration URL used for authtication of the frontend."
+  description = "Open ID configuration URL used for authentication of the frontend."
 }
 
-variable "frontend_service_app_id" {
+variable "backend_b2b_app_id" {
   type        = string
-  description = "The app/client ID of the frontend app registration."
+  description = "The Application ID of the backend B2B app registration."
+}
+
+variable "backend_b2b_app_obj_id" {
+  type        = string
+  description = "The Object ID of the backend B2B app registration."
+}
+
+variable "backend_b2b_app_sp_id" {
+  type        = string
+  description = "The Object ID of the service principal for backend B2B app registration."
+}
+
+variable "backend_bff_app_id" {
+  type        = string
+  description = "The Application ID of the backend BFF app registration."
+}
+
+variable "backend_bff_app_sp_id" {
+  type        = string
+  description = "The Object ID of the service principal for backend BFF app registration."
+}
+
+variable "backend_bff_app_scope_id" {
+  type        = string
+  description = "The ID of the scope needed by the frontend app to access backend BFF app."
+}
+
+variable "backend_bff_app_scope" {
+  type        = string
+  description = "The qualified value of the scope needed by the frontend app to access backend BFF app."
+}
+
+variable "authentication_sign_in_user_flow_id" {
+  type        = string
+  description = "The id of the user flow used for signing users in."
+}
+
+variable "authentication_invitation_user_flow_id" {
+  type        = string
+  description = "The id of the user flow used for inviting users."
 }
 
 variable "virtual_network_resource_group_name" {

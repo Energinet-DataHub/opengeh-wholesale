@@ -44,7 +44,7 @@ module "apima_bff_graphql_temp" {
                 <openid-config url="${data.azurerm_key_vault_secret.backend_open_id_url.value}" />
                 <required-claims>
                     <claim name="aud" match="any">
-                        <value>${data.azurerm_key_vault_secret.frontend_service_app_id.value}</value>
+                        <value>${data.azurerm_key_vault_secret.backend_bff_app_id.value}</value>
                     </claim>
                 </required-claims>
             </validate-jwt>

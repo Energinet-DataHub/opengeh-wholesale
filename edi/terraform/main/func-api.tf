@@ -21,7 +21,7 @@ module "func_receiver" {
     REQUEST_RESPONSE_LOGGING_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketoplogs-primary-connection-string)",
     REQUEST_RESPONSE_LOGGING_CONTAINER_NAME    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketoplogs-container-name)",
     B2C_TENANT_ID                              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=b2c-tenant-id)",
-    BACKEND_SERVICE_APP_ID                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-service-app-id)",
+    BACKEND_SERVICE_APP_ID                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-b2b-app-id)",
     # Endregion: Default Values
     DB_CONNECTION_STRING                                    = local.CONNECTION_STRING
     INCOMING_CHANGE_OF_SUPPLIER_MESSAGE_QUEUE_NAME          = module.sbq_incoming_change_supplier_messagequeue.name

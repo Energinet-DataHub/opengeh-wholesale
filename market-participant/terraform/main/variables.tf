@@ -48,21 +48,6 @@ variable "b2c_spn_secret" {
   description = "The secret of the Service Principal of the Active Directory Tenant."
 }
 
-variable "b2c_backend_spn_object_id" {
-  type        = string
-  description = "The Object Id for the backend application Service Principal of the Active Directory Tenant."
-}
-
-variable "b2c_backend_id" {
-  type        = string
-  description = "The App Id for the backend application of the Active Directory Tenant."
-}
-
-variable "b2c_backend_object_id" {
-  type        = string
-  description = "The Object Id for the backend application of the Active Directory Tenant."
-}
-
 variable "enable_health_check_alerts" {
   type        = bool
   description = "Specify if health check alerts for Azure Functions and App Services should be enabled."

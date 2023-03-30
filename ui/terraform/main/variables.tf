@@ -33,9 +33,19 @@ variable "shared_resources_resource_group_name" {
   description = "Name of the Resource Group, that contains the shared resources."
 }
 
-variable "apim_b2c_tenant_frontend_userflow" {
+variable "b2c_tenant_id" {
   type        = string
-  description = "The URL of the B2C tenant where the signin user flow that is used by the frontend exists. On the format: https://<tenant-name>.b2clogin.com/<tenant-name>.onmicrosoft.com/<user-flow-name>"
+  description = "Tenant ID of the B2C tenant instance."
+}
+
+variable "b2c_client_id" {
+  type        = string
+  description = "Client ID of the service principal managing resources in the B2C tenant."
+}
+
+variable "b2c_tenant_name" {
+  type        = string
+  description = "The name of the B2C tenant, e.g. dev002DataHubB2C."
 }
 
 variable "azure_ad_security_group_id" {
