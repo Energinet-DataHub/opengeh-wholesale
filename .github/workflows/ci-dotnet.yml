@@ -22,40 +22,40 @@ jobs:
   dotnet_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v10
     with:
-      SOLUTION_FILE_PATH: "source/dotnet/Wholesale.sln"
+      solution_file_path: source/dotnet/Wholesale.sln
 
   dotnet_ci_test_integrationtests_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll'
-      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_NAME: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
-      ASPNETCORE_TEST_CONTENTROOT_VARIABLE_VALUE: '\source\dotnet\wholesale-api\WebApi'
-      DOWNLOAD_ATTEMPT_LIMIT: 20
-      USE_AZURE_FUNCTIONS_TOOLS: true
-      ENVIRONMENT: AzureAuth
+      tests_dll_file_path: \source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll
+      aspnetcore_test_contentroot_variable_name: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
+      aspnetcore_test_contentroot_variable_value: \source\dotnet\wholesale-api\WebApi
+      download_attempt_limit: 20
+      use_azure_functions_tools: true
+      environment: AzureAuth
     secrets:
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
-      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
-      AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
+      azure_tenant_id: ${{ secrets.azure_tenant_id }}
+      azure_subscription_id: ${{ secrets.azure_subscription_id }}
+      azure_spn_id: ${{ secrets.azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ secrets.azure_keyvault_url }}
+      azure_b2csecrets_keyvault_url: ${{ secrets.azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_integrationtests_processmanager:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\process-manager\ProcessManager.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.dll'
-      DOWNLOAD_ATTEMPT_LIMIT: 20
-      USE_AZURE_FUNCTIONS_TOOLS: true
-      ENVIRONMENT: AzureAuth
+      tests_dll_file_path: \source\dotnet\process-manager\ProcessManager.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.dll
+      download_attempt_limit: 20
+      use_azure_functions_tools: true
+      environment: AzureAuth
     secrets:
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
-      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
-      AZURE_B2CSECRETS_KEYVAULT_URL: ${{ secrets.AZURE_B2CSECRETS_KEYVAULT_URL }}
+      azure_tenant_id: ${{ secrets.azure_tenant_id }}
+      azure_subscription_id: ${{ secrets.azure_subscription_id }}
+      azure_spn_id: ${{ secrets.azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ secrets.azure_keyvault_url }}
+      azure_b2csecrets_keyvault_url: ${{ secrets.azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
-      TESTS_DLL_FILE_PATH: '\source\dotnet\wholesale-api\WebApi.UnitTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll'
-      DOWNLOAD_ATTEMPT_LIMIT: 20
+      tests_dll_file_path: \source\dotnet\wholesale-api\WebApi.UnitTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll
+      download_attempt_limit: 20
