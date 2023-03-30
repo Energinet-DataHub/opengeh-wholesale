@@ -22,12 +22,15 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.EventPubli
 
 public class IntegrationEventTypeMapperTests
 {
-    [Theory]
-    [AutoData]
-    public void GetEventName_WhenEventType_ReturnsEventName(IntegrationEventTypeMapper sut)
+    [Fact]
+    public void GetEventName_WhenEventType_ReturnsEventName()
     {
         // Arrange
-        sut.Add(CalculationResultCompleted.BalanceFixingEventName, typeof(CalculationResultCompleted));
+        var sut = new IntegrationEventTypeMapper(new Dictionary<Type, string>
+        {
+            { typeof(CalculationResultCompleted), CalculationResultCompleted.BalanceFixingEventName },
+        });
+
         const string expected = CalculationResultCompleted.BalanceFixingEventName;
         var eventType = typeof(CalculationResultCompleted);
 
@@ -40,26 +43,42 @@ public class IntegrationEventTypeMapperTests
 
     [Theory]
     [AutoData]
-    public void GetEventType_WhenEventName_ReturnsEventType(IntegrationEventTypeMapper sut)
-    {
-        // Arrange
-        var type = typeof(string);
-
-        // Act
-        sut.Add("string", type);
-
-        // Assert
-        Assert.Equal(1, sut.Count());
-    }
-
-    [Theory]
-    [AutoData]
-    public void ThrowsException_WhenGettingNotExisting(IntegrationEventTypeMapper sut)
+    public void GetMessageType_WhenGettingNotExisting_ThrowsException(IntegrationEventTypeMapper sut)
     {
         // Arrange
         var eventType = typeof(CalculationResultCompleted);
 
         // Act & Assert
         Assert.Throws<KeyNotFoundException>(() => sut.GetMessageType(eventType));
+    }
+
+    [Theory]
+    [AutoData]
+    public void Ctor_WhenAddingExistingEventType_ThrowsException(
+        string eventName,
+        string otherEventName,
+        Type type)
+    {
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => new IntegrationEventTypeMapper(new Dictionary<Type, string>
+        {
+            { type, eventName },
+            { type, otherEventName },
+        }));
+    }
+
+    [Theory]
+    [AutoData]
+    public void Ctor_WhenAddingExistingEventName_ThrowsException(
+        string eventName,
+        Type type,
+        Type otherType)
+    {
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => new IntegrationEventTypeMapper(new Dictionary<Type, string>
+        {
+            { type, eventName },
+            { otherType, eventName },
+        }));
     }
 }

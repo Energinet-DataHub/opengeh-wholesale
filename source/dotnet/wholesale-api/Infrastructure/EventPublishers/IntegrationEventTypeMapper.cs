@@ -18,9 +18,13 @@ public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
 {
     private readonly Dictionary<Type, string> _dic;
 
-    public IntegrationEventTypeMapper()
+    public IntegrationEventTypeMapper(Dictionary<Type, string> dic)
     {
         _dic = new Dictionary<Type, string>();
+        foreach (var key in dic)
+        {
+            Add(key.Value, key.Key);
+        }
     }
 
     /// <summary>
@@ -31,7 +35,12 @@ public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
         return _dic[eventType];
     }
 
-    public void Add(string eventName, Type eventType)
+    public int Count()
+    {
+        return _dic.Count;
+    }
+
+    private void Add(string eventName, Type eventType)
     {
         if (_dic.ContainsKey(eventType))
         {
@@ -44,10 +53,5 @@ public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
         }
 
         _dic.Add(eventType, eventName);
-    }
-
-    public int Count()
-    {
-        return _dic.Count;
     }
 }
