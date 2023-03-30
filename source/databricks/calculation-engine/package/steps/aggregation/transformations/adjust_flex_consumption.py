@@ -13,9 +13,7 @@
 # # limitations under the License.
 from package.codelists import MeteringPointResolution
 from package.codelists import MeteringPointType
-from package.steps.aggregation.aggregation_result_formatter import (
-    create_dataframe_from_aggregation_result_schema,
-)
+from . import create_dataframe_from_aggregation_result_schema
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
 from package.constants import ResultKeyName

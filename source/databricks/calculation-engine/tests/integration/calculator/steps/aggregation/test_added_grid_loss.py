@@ -20,7 +20,7 @@ from package.codelists import (
 )
 from package.steps.aggregation import calculate_added_grid_loss
 from package.schemas.output import aggregation_result_schema
-from package.steps.aggregation.aggregation_result_formatter import (
+from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )
 from pyspark.sql.dataframe import DataFrame

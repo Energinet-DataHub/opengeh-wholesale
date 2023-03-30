@@ -11,9 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.codelists import MeteringPointResolution
 from package.codelists import MeteringPointType
-from package.steps.aggregation.aggregation_result_formatter import (
+from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )
 from pyspark.sql import DataFrame

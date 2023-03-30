@@ -14,15 +14,11 @@
 
 from package.codelists import (
     MeteringPointType,
-    MeteringPointResolution,
     TimeSeriesQuality,
 )
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
-from .aggregate_quality import aggregate_total_consumption_quality
-from package.steps.aggregation.aggregation_result_formatter import (
-    create_dataframe_from_aggregation_result_schema,
-)
+from . import transformations as T
 from package.constants import Colname, ResultKeyName
 
 production_sum_quantity = "production_sum_quantity"
@@ -133,7 +129,7 @@ def __calculate_grid_loss_or_residual_ga(
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         lit(TimeSeriesQuality.calculated.value).alias(Colname.quality),
     )
-    return create_dataframe_from_aggregation_result_schema(result)
+    return T.create_dataframe_from_aggregation_result_schema(result)
 
 
 # Function to calculate system correction to be added (step 8)
@@ -153,7 +149,7 @@ def calculate_added_system_correction(results: dict) -> DataFrame:
         lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
-    return create_dataframe_from_aggregation_result_schema(result)
+    return T.create_dataframe_from_aggregation_result_schema(result)
 
 
 # Function to calculate grid loss to be added (step 9)
@@ -171,7 +167,7 @@ def calculate_added_grid_loss(results: dict) -> DataFrame:
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
-    return create_dataframe_from_aggregation_result_schema(result)
+    return T.create_dataframe_from_aggregation_result_schema(result)
 
 
 # Function to calculate total consumption (step 21)
@@ -211,7 +207,7 @@ def calculate_total_consumption(results: dict) -> DataFrame:
     )
 
     result = (
-        aggregate_total_consumption_quality(result)
+        T.aggregate_total_consumption_quality(result)
         .orderBy(Colname.grid_area, Colname.time_window)
         .select(
             Colname.grid_area,
@@ -222,4 +218,4 @@ def calculate_total_consumption(results: dict) -> DataFrame:
         )
     )
 
-    return create_dataframe_from_aggregation_result_schema(result)
+    return T.create_dataframe_from_aggregation_result_schema(result)
