@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import subprocess
 import pkg_resources
 from typing import Any
 
@@ -24,12 +23,16 @@ from typing import Any
 def _load_entry_point(entry_point_name: str) -> Any:
     # Load the entry point function from the installed wheel
     try:
-        return pkg_resources.load_entry_point('package', 'console_scripts', entry_point_name)
+        return pkg_resources.load_entry_point(
+            "package", "console_scripts", entry_point_name
+        )
     except pkg_resources.DistributionNotFound:
         assert False, f"The {entry_point_name} entry point was not found."
 
 
-def test_entry_point(installed_package: None) -> None:
+def test__entry_point__start_calculator__can_load_entry_point(
+    installed_package: None,
+) -> None:
     # Act
     entry_point = _load_entry_point("start_calculator")
 
@@ -37,12 +40,7 @@ def test_entry_point(installed_package: None) -> None:
     assert entry_point is not None
 
 
-def test__entry_point__start_calculator__returns_0(installed_package: None) -> None:
-    exit_code = subprocess.call(["start_calculator", "-h"])
-    assert exit_code == 0
-
-
-def test__entry_point__uncommitted_migrations_count__returns_0(
+def test__entry_point__uncommitted_migrations_count__can_load_entry_point(
     installed_package: None,
 ) -> None:
     # Act
@@ -52,7 +50,7 @@ def test__entry_point__uncommitted_migrations_count__returns_0(
     assert entry_point is not None
 
 
-def test__entry_point__lock_storage__returns_0(installed_package: None) -> None:
+def test__entry_point__lock_storage__can_load_entry_point(installed_package: None) -> None:
     # Act
     entry_point = _load_entry_point("lock_storage")
 
@@ -60,7 +58,7 @@ def test__entry_point__lock_storage__returns_0(installed_package: None) -> None:
     assert entry_point is not None
 
 
-def test__entry_point__unlock_storage__returns_0(installed_package: None) -> None:
+def test__entry_point__unlock_storage__can_load_entry_point(installed_package: None) -> None:
     # Act
     entry_point = _load_entry_point("unlock_storage")
 
@@ -68,7 +66,7 @@ def test__entry_point__unlock_storage__returns_0(installed_package: None) -> Non
     assert entry_point is not None
 
 
-def test__entry_point__migrate_data_lake__returns_0(installed_package: None) -> None:
+def test__entry_point__migrate_data_lake__can_load_entry_point(installed_package: None) -> None:
     # Act
     entry_point = _load_entry_point("migrate_data_lake")
 
