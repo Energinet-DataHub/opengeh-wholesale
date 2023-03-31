@@ -41,12 +41,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
-    # Infrastructure settings
-    p.add("--data-storage-account-name", type=str, required=False)
-    p.add("--data-storage-account-key", type=str, required=False)
-    p.add("--time-zone", type=str, required=False)
-    p.add("--log-level", type=valid_log_level, help="debug|information", required=False)
-
     # Run parameters
     p.add("--batch-id", type=str, required=True)
     p.add("--batch-grid-areas", type=valid_list, required=True)
