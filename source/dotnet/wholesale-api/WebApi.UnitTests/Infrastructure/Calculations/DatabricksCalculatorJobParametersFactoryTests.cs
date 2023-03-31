@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 using FluentAssertions;
+using Microsoft.Azure.Databricks.Client;
 using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
@@ -44,17 +45,18 @@ public class DatabricksCalculatorJobParametersFactoryTests
         using var stream = EmbeddedResources.GetStream("Infrastructure.JobRunner.calculation-job-parameters-reference.txt");
         using var reader = new StreamReader(stream);
 
-        var expected = reader
+        var pythonParams = reader
             .ReadToEnd()
             .Replace("{batch-id}", batch.Id.ToString())
             .Replace("\r", string.Empty)
             .Split("\n") // Split lines
             .Where(l => !l.StartsWith("#") && l.Length > 0); // Remove empty and comment lines
+        var expected = RunParameters.CreatePythonParams(pythonParams);
 
         // Act
         var actual = sut.CreateParameters(batch);
 
         // Assert
-        actual.Should().Equal(expected);
+        actual.Should().BeEquivalentTo(expected);
     }
 }
