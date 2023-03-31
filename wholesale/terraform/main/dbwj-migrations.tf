@@ -39,11 +39,6 @@ resource "databricks_job" "migrations_job" {
       package_name = "package"
       # The entry point is defined in setup.py
       entry_point = "migrate_data_lake"
-      parameters = [
-        "--data-storage-account-name=${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}",
-        "--data-storage-account-key=${data.azurerm_key_vault_secret.kvs_st_data_lake_primary_access_key.value}",
-        "--log-level=information"
-      ]
     }
   }
 
