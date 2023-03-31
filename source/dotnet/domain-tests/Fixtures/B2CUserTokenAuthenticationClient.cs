@@ -64,7 +64,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 { new StringContent(Configuration.Username), "username" },
                 { new StringContent(Configuration.Password), "password" },
                 { new StringContent("password"), "grant_type" },
-                { new StringContent($"openid {Configuration.FrontendAppId} offline_access"), "scope" },
+                { new StringContent($"openid {Configuration.BackendBffScope} offline_access"), "scope" },
                 { new StringContent(Configuration.FrontendAppId), "client_id" },
                 { new StringContent("token id_token"), "response_type" },
             };
