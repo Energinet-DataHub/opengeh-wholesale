@@ -27,7 +27,7 @@ setup(
         "azure-identity==1.11.0",
         "azure-storage-file-datalake==12.9.1",
         "azure-storage-blob==12.14.1",
-        "databricks-cli==0.17.3",
+        "databricks-cli==0.17.6",
         "python-dateutil==2.8.2",
     ],
     entry_points={

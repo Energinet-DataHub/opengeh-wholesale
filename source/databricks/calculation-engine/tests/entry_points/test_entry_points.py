@@ -50,7 +50,9 @@ def test__entry_point__uncommitted_migrations_count__can_load_entry_point(
     assert entry_point is not None
 
 
-def test__entry_point__lock_storage__can_load_entry_point(installed_package: None) -> None:
+def test__entry_point__lock_storage__can_load_entry_point(
+    installed_package: None,
+) -> None:
     # Act
     entry_point = _load_entry_point("lock_storage")
 
@@ -58,7 +60,9 @@ def test__entry_point__lock_storage__can_load_entry_point(installed_package: Non
     assert entry_point is not None
 
 
-def test__entry_point__unlock_storage__can_load_entry_point(installed_package: None) -> None:
+def test__entry_point__unlock_storage__can_load_entry_point(
+    installed_package: None,
+) -> None:
     # Act
     entry_point = _load_entry_point("unlock_storage")
 
@@ -66,7 +70,9 @@ def test__entry_point__unlock_storage__can_load_entry_point(installed_package: N
     assert entry_point is not None
 
 
-def test__entry_point__migrate_data_lake__can_load_entry_point(installed_package: None) -> None:
+def test__entry_point__migrate_data_lake__can_load_entry_point(
+    installed_package: None,
+) -> None:
     # Act
     entry_point = _load_entry_point("migrate_data_lake")
 
