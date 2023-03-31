@@ -24,10 +24,10 @@ setup(
     install_requires=[
         "ConfigArgParse==1.5.3",
         "pyspark==3.3.0",
-        "azure-identity==1.11.0",
+        "azure-identity==1.12.0",
         "azure-storage-file-datalake==12.9.1",
         "azure-storage-blob==12.14.1",
-        "databricks-cli==0.17.6",
+        "databricks-cli==0.17.4",
         "python-dateutil==2.8.2",
     ],
     entry_points={
