@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os import path
-from shutil import rmtree
+from azure.identity import ClientSecretCredential
 from pyspark.sql import SparkSession
 import pytest
 from unittest.mock import patch, Mock
@@ -66,14 +65,6 @@ def dummy_job_parameters(contracts_path: str) -> list[str]:
     return command_line_args
 
 
-def _get_env_variables() -> dict:
-    env_vars = {
-        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME: "dummy_account",
-        EnvironmentVariable.TIME_ZONE: "dummy_time_zone",
-    }
-    return env_vars
-
-
 def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails() -> (
     None
 ):
@@ -101,8 +92,7 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
     spark: SparkSession, test_files_folder_path: str, executed_calculation_job: None
 ) -> None:
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     input_time_series_points = (
@@ -149,8 +139,7 @@ def test__quantity_is_with_precision_3(
         AggregationLevel.es_per_ga,
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
     result_production = spark.read.json(
@@ -166,17 +155,16 @@ def test__quantity_is_with_precision_3(
     assert re.search(r"^\d+\.\d{3}$", result_non_profiled_consumption.first().quantity)
 
 
-@patch("package.calculator_job.get_env_variables_or_throw")
 @patch("package.calculator_job._get_valid_args_or_throw")
+@patch("package.calculator_job.env_vars")
 @patch("package.calculator_job.islocked")
 def test__when_data_lake_is_locked__return_exit_code_3(
     mock_islocked: Mock,
+    mock_env_vars: Mock,
     mock_args_parser: Mock,
-    mock_get_env_variables: Mock,
 ) -> None:
     # Arrange
     mock_islocked.return_value = True
-    mock_get_env_variables.return_value = _get_env_variables()
 
     # Act
     with pytest.raises(SystemExit) as excinfo:
@@ -185,7 +173,6 @@ def test__when_data_lake_is_locked__return_exit_code_3(
     assert excinfo.value.code == 3
 
 
-@patch("package.calculator_job.get_env_variables_or_throw")
 @patch("package.calculator_job.initialize_spark")
 @patch("package.calculator_job.islocked")
 @patch("package.calculator_job._start_calculator")
@@ -193,15 +180,13 @@ def test__start__start_calculator_called_without_exceptions(
     mock_start_calculator: Mock,
     mock_is_locked: Mock,
     mock_init_spark: Mock,
-    mock_get_env_variables: Mock,
-    dummy_job_parameters: list[str],
 ) -> None:
     # Arrange
     mock_is_locked.return_value = False
-    mock_get_env_variables.return_value = _get_env_variables()
+    dummy_job_args = Mock()
 
     # Act
-    _start(dummy_job_parameters)
+    _start("dummy_account", ClientSecretCredential("1", "1", "1"), "dummy_time_zone", dummy_job_args)
 
     # Assert
     mock_start_calculator.assert_called_once()

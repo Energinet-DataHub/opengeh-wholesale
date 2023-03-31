@@ -25,7 +25,7 @@ def apply(args: MigrationScriptArgs) -> None:
     file_system_client = FileSystemClient(
         account_url=args.storage_account_url,
         file_system_name=container,
-        credential=args.storage_account_key,
+        credential=args.storage_credential,
     )
     if file_system_client.exists():
         # Get a list of paths inside the 'calculation-output' folder

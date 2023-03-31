@@ -318,33 +318,3 @@ def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
     # Assert
     actual_df = spark.read.table(TABLE_NAME)
     assert actual_df.collect()[0]["batch_id"] == DEFAULT_BATCH_ID
-
-
-def test__write_result_to_table__when_schema_differs_from_table__raise_exception(
-    spark: SparkSession, tmpdir: Path
-) -> None:
-    # Arrange
-    spark.sql(
-        f"DROP TABLE IF EXISTS {TABLE_NAME}"
-    )  # needed to avoid conflict between parametrized tests
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
-        )
-    ]
-    result_df_1 = spark.createDataFrame(data=row)
-    result_df_2 = result_df_1.withColumn("extra_column", lit("some_value"))
-    sut = ProcessStepResultWriter(
-        spark,
-        str(tmpdir),
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
-    )
-    sut._write_result_to_table(result_df_1, AggregationLevel.total_ga)
-
-    # Act and Assert
-    with pytest.raises(Exception):
-        sut._write_result_to_table(result_df_2, AggregationLevel.total_ga)

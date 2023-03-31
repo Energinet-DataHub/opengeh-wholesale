@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from os import truncate
+
 import pytest
 from decimal import Decimal
 import pandas as pd
@@ -41,7 +41,7 @@ df_template = {
     Colname.out_grid_area: [],
     Colname.quantity: [],
     Colname.observation_time: [],
-    Colname.aggregated_quality: [],
+    Colname.quality: [],
 }
 
 
@@ -55,7 +55,7 @@ def time_series_schema():
         .add(Colname.out_grid_area, StringType())
         .add(Colname.quantity, DecimalType(38))
         .add(Colname.observation_time, TimestampType())
-        .add(Colname.aggregated_quality, StringType())
+        .add(Colname.quality, StringType())
     )
 
 
@@ -161,7 +161,7 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
         Colname.out_grid_area: out_domain,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
-        Colname.aggregated_quality: estimated_quality,
+        Colname.quality: estimated_quality,
     }
     return pandas_df.append(new_row, ignore_index=True)
 
