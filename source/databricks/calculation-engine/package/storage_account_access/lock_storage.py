@@ -14,9 +14,7 @@
 
 from azure.identity import ClientSecretCredential
 import sys
-from package.storage_account_access.data_lake_file_manager import (
-    DataLakeFileManager
-)
+from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 import package.environment_variables as env_vars
 from package import log
 import configargparse
@@ -26,43 +24,37 @@ from package.infrastructure import WHOLESALE_CONTAINER_NAME
 _LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
-    p = configargparse.ArgParser(
-        description="Locks/unlocks the storage of the specified container",
-        formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
+def _lock(
+    storage_account_name: str, storage_account_credential: ClientSecretCredential
+) -> None:
+    file_manager = DataLakeFileManager(
+        storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME
     )
-
-    p.add("--data-storage-account-name", type=str, required=False)
-    p.add("--data-storage-account-key", type=str, required=False)
-
-    args, unknown_args = p.parse_known_args(command_line_args)
-    if len(unknown_args):
-        unknown_args_text = ", ".join(unknown_args)
-        raise Exception(f"Unknown args: {unknown_args_text}")
-
-    return args
-
-
-def _lock(storage_account_name: str, storage_account_credential: ClientSecretCredential) -> None:
-    file_manager = DataLakeFileManager(storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME)
     file_manager.create_file(_LOCK_FILE_NAME)
     log(f"created lock file: {_LOCK_FILE_NAME}")
 
 
-def _unlock(storage_account_name: str, storage_account_credential: ClientSecretCredential) -> None:
-    file_manager = DataLakeFileManager(storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME)
+def _unlock(
+    storage_account_name: str, storage_account_credential: ClientSecretCredential
+) -> None:
+    file_manager = DataLakeFileManager(
+        storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME
+    )
     file_manager.delete_file(_LOCK_FILE_NAME)
     log(f"deleted lock file: {_LOCK_FILE_NAME}")
 
 
-def islocked(storage_account_name: str, storage_account_credential: ClientSecretCredential) -> bool:
-    file_manager = DataLakeFileManager(storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME)
+def islocked(
+    storage_account_name: str, storage_account_credential: ClientSecretCredential
+) -> bool:
+    file_manager = DataLakeFileManager(
+        storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME
+    )
     return file_manager.exists_file(_LOCK_FILE_NAME)
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def lock() -> None:
-    _get_valid_args_or_throw(sys.argv[1:])
     storage_account_name = env_vars.get_storage_account_name()
     credential = env_vars.get_storage_account_credential()
     _lock(storage_account_name, credential)
@@ -70,7 +62,6 @@ def lock() -> None:
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def unlock() -> None:
-    _get_valid_args_or_throw(sys.argv[1:])
     storage_account_name = env_vars.get_storage_account_name()
     credential = env_vars.get_storage_account_credential()
     _unlock(storage_account_name, credential)
