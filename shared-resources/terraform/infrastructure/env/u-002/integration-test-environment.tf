@@ -1,8 +1,26 @@
+locals {
+  integrationMsSqlServerAdminName = "inttestdbadmin"
+}
+
 data "azurerm_client_config" "this" {}
 
 resource "azurerm_resource_group" "integration-test-rg" {
   name     = "rg-DataHub-IntegrationTestResources-U-002"
   location = "West Europe"
+}
+
+#
+# Service principal running integration tests in CI pipelines
+#
+variable "spn_ci_object_id" {
+  type        = string
+  description = "(Required) The Object ID of the Service principal running integration tests in CI pipelines."
+}
+
+resource "azurerm_role_assignment" "ci-spn-contributor-resource-group" {
+  scope                = azurerm_resource_group.integration-test-rg.id
+  role_definition_name = "Contributor"
+  principal_id         = var.spn_ci_object_id
 }
 
 #
@@ -31,6 +49,49 @@ resource "azurerm_application_insights" "integration-test-appi" {
 
   lifecycle {
     ignore_changes = [
+      tags,
+    ]
+  }
+}
+
+#
+# SQL Server
+#
+resource "azurerm_mssql_server" "integration-sql-server" {
+  name                         = "mssql-integrationtest-u-002"
+  location                     = azurerm_resource_group.integration-test-rg.location
+  resource_group_name          = azurerm_resource_group.integration-test-rg.name
+  version                      = "12.0"
+  administrator_login          = local.integrationMsSqlServerAdminName
+  administrator_login_password = random_password.integration_mssql_administrator_login_password.result
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+}
+
+resource "random_password" "integration_mssql_administrator_login_password" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
+#
+# App service plan
+#
+resource "azurerm_service_plan" "integration-app-service-plan" {
+  name                = "plan-integrationtest-u-002"
+  location            = azurerm_resource_group.integration-test-rg.location
+  resource_group_name = azurerm_resource_group.integration-test-rg.name
+  os_type             = "Windows"
+  sku_name            = "B1"
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to tags, e.g. because a management agent
+      # updates these based on some ruleset managed elsewhere.
       tags,
     ]
   }
@@ -120,11 +181,6 @@ resource "azurerm_key_vault_access_policy" "integration-test-kv-developer-ad-gro
   ]
 }
 
-variable "spn_ci_object_id" {
-  type        = string
-  description = "(Required) The Object ID of the Service principal running integration tests in CI pipelines."
-}
-
 resource "azurerm_key_vault_access_policy" "integration-test-kv-ci-test-spn" {
   key_vault_id = azurerm_key_vault.integration-test-kv.id
   tenant_id    = data.azurerm_client_config.this.tenant_id
@@ -143,12 +199,6 @@ resource "azurerm_key_vault_access_policy" "integration-test-kv-ci-test-spn" {
     "Delete",
     "Sign",
   ]
-}
-
-resource "azurerm_role_assignment" "ci-spn-contributor-resource-group" {
-  scope                = azurerm_resource_group.integration-test-rg.id
-  role_definition_name = "Contributor"
-  principal_id         = var.spn_ci_object_id
 }
 
 #
@@ -298,6 +348,57 @@ resource "azurerm_key_vault_secret" "kvs-shared-tenant-id" {
   ]
 }
 
+resource "azurerm_key_vault_secret" "kvs-mssql-admin-name" {
+  name         = "mssql-admin-user-name"
+  value        = local.integrationMsSqlServerAdminName
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
+  ]
+}
+
+resource "azurerm_key_vault_secret" "kvs-mssql-admin-password" {
+  name         = "mssql-admin-password"
+  value        = random_password.integration_mssql_administrator_login_password.result
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
+  ]
+}
+
+resource "azurerm_key_vault_secret" "kvs-mssql-server-id" {
+  name         = "mssql-server-id"
+  value        = azurerm_mssql_server.integration-sql-server.id
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
+  ]
+}
+
+#
+# Databricks related resources
+#
 resource "azurerm_storage_account" "playground" {
   name                     = "samigrationplayground"
   resource_group_name      = azurerm_resource_group.integration-test-rg.name
@@ -430,7 +531,7 @@ resource "databricks_job" "migration_playground_workflow" {
       instance_pool_id = databricks_instance_pool.my_pool.id
       spark_version    = data.databricks_spark_version.latest_lts.id
       spark_conf = {
-        "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${var.tenant_id}/oauth2/token"
+        "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
         "fs.azure.account.auth.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "OAuth"
         "fs.azure.account.oauth.provider.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
         "fs.azure.account.oauth2.client.id.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : databricks_secret.spn_app_id.config_reference
