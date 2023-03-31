@@ -14,7 +14,7 @@
 
 from os import path
 from shutil import rmtree
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 import pytest
 from . import configuration as C
 from package.calculator_job import (
@@ -91,3 +91,10 @@ def executed_calculation_job(
     )
 
     _start_calculator(spark, test_data_job_parameters)
+
+
+@pytest.fixture(scope="session")
+def results_df(spark: SparkSession, data_lake_path: str, worker_id: str) -> DataFrame:
+    CONTAINER_PATH = "calculation-output/result"
+    results_table_path = f"{data_lake_path}/{worker_id}/{CONTAINER_PATH}"
+    return spark.read.load(results_table_path)
