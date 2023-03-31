@@ -28,7 +28,7 @@ public sealed class DatabricksCalculatorJobSelector : IDatabricksCalculatorJobSe
     public async Task<WheelJob> GetAsync()
     {
         var jobs = await _wheelClient.Jobs.List().ConfigureAwait(false);
-        var calculatorJob = jobs.Single(j => j.Settings.Name == "CalculatorJob");
+        var calculatorJob = jobs.Jobs.Single(j => j.Settings.Name == "CalculatorJob");
         return await _wheelClient.Jobs.GetWheel(calculatorJob.JobId).ConfigureAwait(false);
     }
 }

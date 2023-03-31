@@ -25,13 +25,13 @@ limitations under the License.
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="6.1.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="7.4.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="7.4.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="7.4.1" />
+    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="7.4.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>

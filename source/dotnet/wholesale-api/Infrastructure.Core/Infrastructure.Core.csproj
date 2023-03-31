@@ -22,8 +22,8 @@ limitations under the License.
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.EventHubs" Version="5.8.1" />
-    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.13.0" />
-    <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.2" />
+    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.13.1" />
+    <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.4" />
   </ItemGroup>
