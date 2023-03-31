@@ -91,23 +91,30 @@ def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
     exchange_in = df.filter(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
+    exchange_in_group_by = [
+        Colname.in_grid_area,
+        Colname.time_window,
+    ]
     exchange_in = (
-        exchange_in.groupBy(
-            Colname.in_grid_area,
-            Colname.time_window,
-            Colname.quality,
+        T.aggregate_sum_and_set_quality(
+            exchange_in, Colname.quantity, exchange_in_group_by
         )
-        .sum(Colname.quantity)
-        .withColumnRenamed(f"sum({Colname.quantity})", in_sum)
+        .withColumnRenamed(Colname.sum_quantity, in_sum)
         .withColumnRenamed(Colname.in_grid_area, Colname.grid_area)
     )
+
     exchange_out = df.filter(
         col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
+    exchange_out_group_by = [
+        Colname.out_grid_area,
+        Colname.time_window,
+    ]
     exchange_out = (
-        exchange_out.groupBy(Colname.out_grid_area, Colname.time_window)
-        .sum(Colname.quantity)
-        .withColumnRenamed(f"sum({Colname.quantity})", out_sum)
+        T.aggregate_sum_and_set_quality(
+            exchange_out, Colname.quantity, exchange_out_group_by
+        )
+        .withColumnRenamed(Colname.sum_quantity, out_sum)
         .withColumnRenamed(Colname.out_grid_area, Colname.grid_area)
     )
     joined = exchange_in.join(

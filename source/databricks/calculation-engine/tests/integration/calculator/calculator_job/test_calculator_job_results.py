@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import SparkSession
+from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
 from . import configuration as C
@@ -21,27 +21,33 @@ from package.codelists import (
 )
 from package.constants import Colname
 
-CONTAINER_PATH = "calculation-output/result"
-
 
 def test__net_exchange_per_neighboring_ga__is_created(
-    spark: SparkSession,
-    data_lake_path: str,
-    worker_id: str,
+    results_df: DataFrame,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
-    result_table_path = f"{data_lake_path}/{worker_id}/{CONTAINER_PATH}"
-    result = (
-        spark.read.load(result_table_path)
-        .where(F.col(Colname.batch_id) == C.executed_batch_id)
-        .where(
-            F.col(Colname.time_series_type)
-            == TimeSeriesType.EXCHANGE_PER_NEIGHBORING_GA.value
-        )
+    result_df = results_df.where(F.col(Colname.batch_id) == C.executed_batch_id).where(
+        F.col(Colname.time_series_type)
+        == TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert: The result is created if there are rows
-    assert result.count() > 0
+    assert result_df.count() > 0
+
+
+def test__net_exchange_per_ga__is_created(
+    results_df: DataFrame,
+    executed_calculation_job: None,
+) -> None:
+    # Arrange
+    result_df = results_df.where(F.col(Colname.batch_id) == C.executed_batch_id).where(
+        F.col(Colname.time_series_type) == TimeSeriesType.NET_EXCHANGE_PER_GA.value
+    )
+
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+
+    # Assert: The result is created if there are rows
+    assert result_df.count() > 0
