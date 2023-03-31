@@ -31,8 +31,7 @@ def test__creates_hour_for_total_ga__with_expected_columns_names(
         BasisDataType.TimeSeriesHour, C.executed_batch_id, "805"
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -60,8 +59,7 @@ def test__creates_hour_for_es_per_ga__with_expected_columns_names(
         C.energy_supplier_gln_a,
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -86,8 +84,7 @@ def test__creates_quarter_for_total_ga__with_expected_columns_names(
         BasisDataType.TimeSeriesQuarter, C.executed_batch_id, "805"
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -116,8 +113,7 @@ def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
         C.energy_supplier_gln_a,
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -146,8 +142,7 @@ def test__creates_quarter_for_total_ga__per_grid_area(
         BasisDataType.TimeSeriesQuarter, C.executed_batch_id, "806"
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
@@ -187,8 +182,7 @@ def test__creates_quarter_for_es_per_ga__per_energy_supplier(
         C.energy_supplier_gln_b,
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     basis_data_a = spark.read.option("header", "true").csv(
@@ -222,8 +216,7 @@ def test__creates_hour_for_total_ga__per_grid_area(
         BasisDataType.TimeSeriesHour, C.executed_batch_id, "806"
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
@@ -263,8 +256,7 @@ def test__creates_hour_for_es_per_ga__per_energy_supplier(
         C.energy_supplier_gln_b,
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     basis_data_a = spark.read.option("header", "true").csv(
@@ -295,8 +287,7 @@ def test__master_basis_data_for_total_ga_has_expected_columns_names(
         BasisDataType.MasterBasisData, C.executed_batch_id, "805"
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -330,8 +321,7 @@ def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
         C.energy_supplier_gln_a,
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
