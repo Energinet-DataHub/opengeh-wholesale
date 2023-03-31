@@ -29,7 +29,7 @@ module "func_entrypoint_marketparticipant" {
     SEND_GRID_APIKEY                           = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_api_key.name})",
     USER_INVITE_FROM_EMAIL                     = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_from_email.name})",
     USER_INVITE_BCC_EMAIL                      = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_bcc_email.name})",
-    USER_INVITE_FLOW                           = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=b2c-invitation-flow-uri)",
+    USER_INVITE_FLOW                           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=b2c-invitation-flow-uri)",
     AZURE_B2C_TENANT                           = var.b2c_tenant
     AZURE_B2C_SPN_ID                           = var.b2c_spn_id
     AZURE_B2C_SPN_SECRET                       = var.b2c_spn_secret
