@@ -177,19 +177,20 @@ class ProcessStepResultWriter:
     def _create_delta_table_if_not_exists(
         self, spark: SparkSession, container_path: str
     ) -> None:
-        location = f"{container_path}/{infra.get_calculation_output_folder()}"
+        db_location = f"{container_path}/{infra.get_calculation_output_folder()}"
+        table_location = f"{container_path}/{infra.get_calculation_output_folder()}/result"
 
         # First create database if not already existing
         spark.sql(
             f"CREATE DATABASE IF NOT EXISTS {DATABASE_NAME} \
             COMMENT 'Contains result data from wholesale domain.' \
-            LOCATION '{location}'"
+            LOCATION '{db_location}'"
         )
 
         # Now create table if not already existing
         spark.sql(
             f"CREATE TABLE IF NOT EXISTS {DATABASE_NAME}.{RESULT_TABLE_NAME} USING DELTA \
-            LOCATION '{location}'"
+            LOCATION '{table_location}'"
         )
 
     def _write_result_to_table(
