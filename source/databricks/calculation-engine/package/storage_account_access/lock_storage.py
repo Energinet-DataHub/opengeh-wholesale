@@ -13,12 +13,9 @@
 # limitations under the License.
 
 from azure.identity import ClientSecretCredential
-import sys
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 import package.environment_variables as env_vars
 from package import log
-import configargparse
-from configargparse import argparse
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
 
 _LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"

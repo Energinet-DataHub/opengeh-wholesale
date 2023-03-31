@@ -13,20 +13,16 @@
 # limitations under the License.
 
 import importlib
-import sys
 from azure.identity import ClientSecretCredential
+from typing import Any
 
-import configargparse
 from package import infrastructure, initialize_spark, log
-from package.args_helper import valid_log_level
 import package.environment_variables as env_vars
 from .committed_migrations import upload_committed_migration
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
-from typing import Any
-from configargparse import argparse
 
 
 def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:

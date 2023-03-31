@@ -13,9 +13,6 @@
 # limitations under the License.
 
 from azure.identity import ClientSecretCredential
-import sys
-import configargparse
-from configargparse import argparse
 from os import path, listdir
 import package.environment_variables as env_vars
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
