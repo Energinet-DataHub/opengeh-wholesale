@@ -13,13 +13,18 @@
 # limitations under the License.
 
 from package.datamigration.migration_script_args import MigrationScriptArgs
+from delta import DeltaTable
 
 
 def apply(args: MigrationScriptArgs) -> None:
     result_table_path = f"abfss://wholesale@{args.storage_account_name}.dfs.core.windows.net/calculation-output/result_table"
-    if args.spark.catalog.tableExists(f"delta.`{result_table_path}`"):
+    if DeltaTable.isDeltaTable(args.spark, result_table_path):
         # drop the Delta table
-        args.spark.sql(f"DROP TABLE delta.`{result_table_path}`")
-        print(f"Delta table '{result_table_path}' dropped successfully.")
+        delta_table = DeltaTable.forPath(args.spark, result_table_path)
+
+        # Delete the Delta table
+        delta_table.delete()
+
+        print(f"Delta table '{result_table_path}' deleted successfully.")
     else:
         print(f"Delta table '{result_table_path}' does not exist.")
