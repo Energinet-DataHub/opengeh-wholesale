@@ -92,8 +92,7 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
     spark: SparkSession, test_files_folder_path: str, executed_calculation_job: None
 ) -> None:
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     input_time_series_points = (
@@ -140,8 +139,7 @@ def test__quantity_is_with_precision_3(
         AggregationLevel.es_per_ga,
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
     result_production = spark.read.json(
