@@ -4,7 +4,7 @@
 
 version: 2
 updates:
-  - package-ecosystem: "nuget"
-    directory: "/source/dotnet"
+  - package-ecosystem: nuget
+    directory: /source/dotnet
     schedule:
-      interval: "monthly"
+      interval: monthly

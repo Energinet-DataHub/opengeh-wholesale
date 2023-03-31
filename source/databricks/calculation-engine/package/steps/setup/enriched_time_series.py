@@ -35,38 +35,49 @@ def get_enriched_time_series_points_df(
     ).where(F.col(Colname.observation_time) < period_end_datetime)
 
     quarterly_mp_df = master_basis_data_df.where(
-        F.col("Resolution") == MeteringPointResolution.quarter.value
-    ).withColumn("ToDate", (F.col("ToDate") - F.expr("INTERVAL 1 seconds")))
+        F.col(Colname.resolution) == MeteringPointResolution.quarter.value
+    ).withColumn(
+        Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
+    )
 
     hourly_mp_df = master_basis_data_df.where(
-        F.col("Resolution") == MeteringPointResolution.hour.value
-    ).withColumn("ToDate", (F.col("ToDate") - F.expr("INTERVAL 1 seconds")))
+        F.col(Colname.resolution) == MeteringPointResolution.hour.value
+    ).withColumn(
+        Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
+    )
 
     quarterly_times_df = (
-        quarterly_mp_df.select("MeteringPointId", "FromDate", "ToDate")
+        quarterly_mp_df.select(
+            Colname.metering_point_id, Colname.from_date, Colname.to_date
+        )
         .distinct()
         .select(
-            "MeteringPointId",
+            Colname.metering_point_id,
             F.expr(
-                "sequence(to_timestamp(FromDate), to_timestamp(ToDate), interval 15 minutes)"
+                f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval 15 minutes)"
             ).alias("quarter_times"),
         )
         .select(
-            "MeteringPointId",
+            Colname.metering_point_id,
             F.explode("quarter_times").alias(Colname.observation_time),
         )
     )
 
     hourly_times_df = (
-        hourly_mp_df.select("MeteringPointId", "FromDate", "ToDate")
+        hourly_mp_df.select(
+            Colname.metering_point_id, Colname.from_date, Colname.to_date
+        )
         .distinct()
         .select(
-            "MeteringPointId",
+            Colname.metering_point_id,
             F.expr(
-                "sequence(to_timestamp(FromDate), to_timestamp(ToDate), interval 1 hour)"
+                f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval 1 hour)"
             ).alias("times"),
         )
-        .select("MeteringPointId", F.explode("times").alias(Colname.observation_time))
+        .select(
+            Colname.metering_point_id,
+            F.explode("times").alias(Colname.observation_time),
+        )
     )
 
     empty_points_for_each_metering_point_df = quarterly_times_df.union(hourly_times_df)
@@ -99,13 +110,13 @@ def get_enriched_time_series_points_df(
 
     new_points_for_each_metering_point_df = (
         new_points_for_each_metering_point_df.withColumnRenamed(
-            "MeteringPointId", "pfemp_MeteringPointId"
-        ).withColumnRenamed("Resolution", "pfemp_Resolution")
+            Colname.metering_point_id, "pfemp_MeteringPointId"
+        ).withColumnRenamed(Colname.resolution, "pfemp_Resolution")
     )
 
     master_basis_data_renamed_df = master_basis_data_df.withColumnRenamed(
-        "MeteringPointId", "master_MeteringPointId"
-    ).withColumnRenamed("Resolution", "master_Resolution")
+        Colname.metering_point_id, "master_MeteringPointId"
+    ).withColumnRenamed(Colname.resolution, "master_Resolution")
 
     return (
         new_points_for_each_metering_point_df.withColumn(
@@ -119,25 +130,27 @@ def get_enriched_time_series_points_df(
             )
             & (
                 new_points_for_each_metering_point_df[Colname.observation_time]
-                >= F.col("FromDate")
+                >= F.col(Colname.from_date)
             )
             & (
                 new_points_for_each_metering_point_df[Colname.observation_time]
-                < F.col("ToDate")
+                < F.col(Colname.to_date)
             ),
             "left",
         )
         .select(
-            "GridAreaCode",
+            Colname.grid_area,
+            Colname.in_grid_area,
+            Colname.out_grid_area,
             master_basis_data_renamed_df["master_MeteringPointId"].alias(
-                "MeteringPointId"
+                Colname.metering_point_id
             ),
-            "Type",
-            master_basis_data_renamed_df["master_Resolution"].alias("Resolution"),
+            Colname.metering_point_type,
+            master_basis_data_renamed_df["master_Resolution"].alias(Colname.resolution),
             Colname.observation_time,
-            "Quantity",
-            "Quality",
-            "EnergySupplierId",
-            "BalanceResponsibleId",
+            Colname.quantity,
+            Colname.quality,
+            Colname.energy_supplier_id,
+            Colname.balance_responsible_id,
         )
     )

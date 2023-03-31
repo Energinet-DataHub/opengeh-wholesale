@@ -17,7 +17,6 @@ from package.datamigration.migration_script_args import MigrationScriptArgs
 
 
 def apply(args: MigrationScriptArgs) -> None:
-
     source_container = "processes"
     source_directory = "results"
     destination_container = "wholesale"
@@ -27,7 +26,7 @@ def apply(args: MigrationScriptArgs) -> None:
         args.storage_account_url,
         source_container,
         source_directory,
-        args.storage_account_key,
+        args.storage_credential,
     )
 
     if not directory_client.exists():

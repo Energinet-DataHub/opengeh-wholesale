@@ -46,6 +46,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
             RopcUrl = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "ropc-auth-url"))!;
             FrontendAppId = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "frontend-app-id"))!;
+            BackendBffScope = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "backend-bff-app-scope"))!;
 
             Username = secretsConfiguration.GetValue<string>(BuildB2CUserSecretName(environment, user, "username"))!;
             Password = secretsConfiguration.GetValue<string>(BuildB2CUserSecretName(environment, user, "password"))!;
@@ -67,6 +68,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// This is the app for which we want to retrieve the user token.
         /// </summary>
         public string FrontendAppId { get; }
+
+        /// <summary>
+        /// The scope that needs to be granted access to gain access to backend.
+        /// </summary>
+        public string BackendBffScope { get; }
 
         /// <summary>
         /// The username of the user for whom we want to retrieve an access token.
