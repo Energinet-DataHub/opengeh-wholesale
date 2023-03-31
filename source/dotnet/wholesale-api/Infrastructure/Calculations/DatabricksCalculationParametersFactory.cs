@@ -13,16 +13,17 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 
 public class DatabricksCalculationParametersFactory : ICalculationParametersFactory
 {
-    public IEnumerable<string> CreateParameters(Batch batch)
+    public RunParameters CreateParameters(Batch batch)
     {
         var gridAreas = string.Join(", ", batch.GridAreaCodes.Select(c => c.Code));
 
-        return new List<string>
+        var jobParameters = new List<string>
         {
             $"--batch-id={batch.Id}",
             $"--batch-grid-areas=[{gridAreas}]",
@@ -31,5 +32,7 @@ public class DatabricksCalculationParametersFactory : ICalculationParametersFact
             $"--batch-process-type={batch.ProcessType}",
             $"--batch-execution-time-start={batch.ExecutionTimeStart}",
         };
+
+        return RunParameters.CreatePythonParams(jobParameters);
     }
 }
