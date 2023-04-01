@@ -15,6 +15,7 @@
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
+from typing import List
 
 import package.infrastructure as infra
 import pytest
@@ -26,7 +27,7 @@ from package.codelists import (
 )
 from package.constants import Colname
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
@@ -71,9 +72,9 @@ def _create_result_row(
     return row
 
 
-def _create_result_df(spark, row):
+def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
     return spark.createDataFrame(data=row).withColumn(
-        col(Colname.quantity).cast("decimal(18, 3)")
+        Colname.sum_quantity, col(Colname.sum_quantity).cast("decimal(18, 3)")
     )
 
 
