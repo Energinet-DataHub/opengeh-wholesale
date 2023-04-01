@@ -27,7 +27,7 @@ from package.codelists import (
 from package.constants import Colname
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import lit
+from pyspark.sql.functions import col
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
@@ -71,6 +71,12 @@ def _create_result_row(
     return row
 
 
+def _create_result_df(spark, row):
+    return spark.createDataFrame(data=row).withColumn(
+        col(Colname.quantity).cast("decimal(18, 3)")
+    )
+
+
 def test__write___when_aggregation_level_is_es_per_ga__result_file_path_matches_contract(
     spark: SparkSession,
     contracts_path: str,
@@ -84,7 +90,7 @@ def test__write___when_aggregation_level_is_es_per_ga__result_file_path_matches_
             energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
         )
     ]
-    result_df = spark.createDataFrame(data=row)
+    result_df = _create_result_df(spark, row)
     relative_output_path = infra.get_result_file_relative_path(
         DEFAULT_BATCH_ID,
         DEFAULT_GRID_AREA,
@@ -133,7 +139,7 @@ def test__write___when_aggregation_level_is_total_ga__result_file_path_matches_c
             energy_supplier_id="None",
         )
     ]
-    result_df = spark.createDataFrame(data=row)
+    result_df = _create_result_df(spark, row)
     relative_output_path = infra.get_result_file_relative_path(
         DEFAULT_BATCH_ID,
         DEFAULT_GRID_AREA,
@@ -183,7 +189,7 @@ def test__write___when_aggregation_level_is_ga_brp_es__result_file_path_matches_
             balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
         )
     ]
-    result_df = spark.createDataFrame(data=row)
+    result_df = _create_result_df(spark, row)
     relative_output_path = infra.get_result_file_relative_path(
         DEFAULT_BATCH_ID,
         DEFAULT_GRID_AREA,
@@ -238,7 +244,7 @@ def test__write__writes_aggregation_level_column(
             balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
         )
     ]
-    result_df = spark.createDataFrame(data=row)
+    result_df = _create_result_df(spark, row)
     sut = ProcessStepResultWriter(
         spark,
         str(tmpdir),
@@ -279,7 +285,7 @@ def test__write__writes_time_series_type_column(
             balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
         )
     ]
-    result_df = spark.createDataFrame(data=row)
+    result_df = _create_result_df(spark, row)
     sut = ProcessStepResultWriter(
         spark,
         str(tmpdir),
@@ -314,7 +320,7 @@ def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
             balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
         )
     ]
-    result_df = spark.createDataFrame(data=row)
+    result_df = _create_result_df(spark, row)
     sut = ProcessStepResultWriter(
         spark,
         str(tmpdir),
