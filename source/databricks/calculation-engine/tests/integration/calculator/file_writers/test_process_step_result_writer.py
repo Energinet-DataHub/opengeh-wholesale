@@ -38,6 +38,7 @@ DATABASE_NAME = "wholesale_output"
 RESULT_TABLE_NAME = "result"
 DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
 DEFAULT_GRID_AREA = "105"
+DEFAULT_TO_GRID_AREA = "106"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
 DEFAULT_PROCESS_TYPE = "Balance_Fixing"
@@ -47,6 +48,7 @@ TABLE_NAME = f"{DATABASE_NAME}.{RESULT_TABLE_NAME}"
 
 def _create_result_row(
     grid_area: str,
+    to_grid_area: str,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
     quantity: str = "1.1",
@@ -54,6 +56,7 @@ def _create_result_row(
 ) -> dict:
     row = {
         Colname.grid_area: grid_area,
+        Colname.out_grid_area: to_grid_area,
         Colname.sum_quantity: Decimal(quantity),
         Colname.quality: quality.value,
         Colname.resolution: MeteringPointResolution.quarter.value,
@@ -76,7 +79,9 @@ def test__write___when_aggregation_level_is_es_per_ga__result_file_path_matches_
     # Arrange
     row = [
         _create_result_row(
-            grid_area=DEFAULT_GRID_AREA, energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID
+            grid_area=DEFAULT_GRID_AREA,
+            to_grid_area=DEFAULT_TO_GRID_AREA,
+            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
         )
     ]
     result_df = spark.createDataFrame(data=row)
@@ -121,7 +126,13 @@ def test__write___when_aggregation_level_is_total_ga__result_file_path_matches_c
     tmpdir: Path,
 ) -> None:
     # Arrange
-    row = [_create_result_row(grid_area=DEFAULT_GRID_AREA, energy_supplier_id="None")]
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA,
+            to_grid_area=DEFAULT_TO_GRID_AREA,
+            energy_supplier_id="None",
+        )
+    ]
     result_df = spark.createDataFrame(data=row)
     relative_output_path = infra.get_result_file_relative_path(
         DEFAULT_BATCH_ID,
@@ -167,6 +178,7 @@ def test__write___when_aggregation_level_is_ga_brp_es__result_file_path_matches_
     row = [
         _create_result_row(
             grid_area=DEFAULT_GRID_AREA,
+            to_grid_area=DEFAULT_TO_GRID_AREA,
             energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
             balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
         )
@@ -221,6 +233,7 @@ def test__write__writes_aggregation_level_column(
     row = [
         _create_result_row(
             grid_area=DEFAULT_GRID_AREA,
+            to_grid_area=DEFAULT_TO_GRID_AREA,
             energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
             balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
         )
@@ -261,6 +274,7 @@ def test__write__writes_time_series_type_column(
     row = [
         _create_result_row(
             grid_area=DEFAULT_GRID_AREA,
+            to_grid_area=DEFAULT_TO_GRID_AREA,
             energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
             balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
         )
@@ -295,6 +309,7 @@ def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
     row = [
         _create_result_row(
             grid_area=DEFAULT_GRID_AREA,
+            to_grid_area=DEFAULT_TO_GRID_AREA,
             energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
             balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
         )

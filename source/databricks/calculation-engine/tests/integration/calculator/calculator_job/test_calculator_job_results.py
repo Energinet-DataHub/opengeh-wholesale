@@ -23,8 +23,8 @@ from package.constants import Colname
 
 
 def test__net_exchange_per_neighboring_ga__is_created(
-    results_df: DataFrame,
     executed_calculation_job: None,
+    results_df: DataFrame,
 ) -> None:
     # Arrange
     result_df = results_df.where(F.col(Colname.batch_id) == C.executed_batch_id).where(
@@ -39,8 +39,8 @@ def test__net_exchange_per_neighboring_ga__is_created(
 
 
 def test__net_exchange_per_ga__is_created(
-    results_df: DataFrame,
     executed_calculation_job: None,
+    results_df: DataFrame,
 ) -> None:
     # Arrange
     result_df = results_df.where(F.col(Colname.batch_id) == C.executed_batch_id).where(
