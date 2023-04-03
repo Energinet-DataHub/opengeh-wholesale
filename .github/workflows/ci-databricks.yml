@@ -99,7 +99,7 @@ jobs:
           done
 
   databricks_ci_test:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@kerbou/1050-add-pytest-reports
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
     with:
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation-engine
