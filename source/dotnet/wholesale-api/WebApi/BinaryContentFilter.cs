@@ -32,16 +32,15 @@ public class BinaryContentFilter : IOperationFilter
             return;
         }
 
-        operation.Responses = new OpenApiResponses();
-        operation.Responses.Add("200", new OpenApiResponse()
+        operation.Responses.Add("200", new OpenApiResponse
         {
-            Content = new Dictionary<string, OpenApiMediaType>()
+            Content = new Dictionary<string, OpenApiMediaType>
             {
                 {
                     "application/octet-stream",
-                    new OpenApiMediaType()
+                    new OpenApiMediaType
                     {
-                        Schema = new OpenApiSchema()
+                        Schema = new OpenApiSchema
                         {
                             Type = "string",
                             Format = "binary",
