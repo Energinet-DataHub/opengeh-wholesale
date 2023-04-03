@@ -21,7 +21,7 @@ loglevel = "information"
 
 def _log(level: str, message: str, df: Optional[DataFrame]) -> None:
     print(f"============ {level} ============")
-    # Frame 2 because: 1 is the calling function in this module, 2 is the caller of the functions in the module
+    # Frame 2 because: 1 is the calling function in this module, 2 is the caller of the functions in the module.
     frame = stack()[2]
     print(f"{frame.filename}:{frame.lineno} - {frame.function}(): {message}")
     if df is not None:
