@@ -29,6 +29,13 @@ from package.constants import Colname
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
+from pyspark.sql.types import (
+    DecimalType,
+    StringType,
+    StructField,
+    StructType,
+    TimestampType,
+)
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
@@ -340,3 +347,58 @@ def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
     # Assert
     actual_df = spark.read.table(TABLE_NAME)
     assert actual_df.collect()[0]["batch_id"] == DEFAULT_BATCH_ID
+
+
+def test__write__uses_expected_delta_schema(spark: SparkSession, tmpdir: Path) -> None:
+    """IMPORTANT: Any semantic change to the expected schema most likely requires a corresponding
+    data migration of the results Delta table."""
+
+    # Arrange
+    expected_schema = StructType(
+        [
+            StructField("batch_id", StringType(), False),
+            StructField("batch_execution_time_start", TimestampType(), False),
+            StructField("batch_process_type", StringType(), False),
+            StructField("time_series_type", StringType(), False),
+            StructField("grid_area", StringType(), False),
+            StructField("out_grid_area", StringType(), True),
+            StructField("balance_responsible_id", StringType(), True),
+            StructField("energy_supplier_id", StringType(), True),
+            StructField("time", TimestampType(), False),
+            StructField("quantity", DecimalType(18, 3), True),
+            StructField("quantity_quality", StringType(), False),
+            StructField("aggregation_level", StringType(), False),
+        ]
+    )
+
+    spark.sql(
+        f"DROP TABLE IF EXISTS {TABLE_NAME}"
+    )  # needed to avoid conflict between parametrized tests
+
+    row = [
+        _create_result_row(
+            grid_area=DEFAULT_GRID_AREA,
+            to_grid_area=DEFAULT_TO_GRID_AREA,
+            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
+            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
+        )
+    ]
+    result_df = _create_result_df(spark, row)
+    sut = ProcessStepResultWriter(
+        spark,
+        str(tmpdir),
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act
+    sut.write(
+        result_df,
+        TimeSeriesType.NON_PROFILED_CONSUMPTION,
+        AggregationLevel.total_ga,
+    )
+
+    # Assert
+    actual_df = spark.read.table(TABLE_NAME)
+    assert actual_df.schema == expected_schema
