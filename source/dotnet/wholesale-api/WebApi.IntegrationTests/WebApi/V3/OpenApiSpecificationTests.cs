@@ -68,7 +68,7 @@ public class OpenApiSpecificationTests : WebApiTestBase
                         var key = $"{operation.Key} {path.Key}";
 
                         content.Key.Should()
-                            .Be(key is "Post /v3/SettlementReport/ZippedBasisDataStream" or "Get /v3/SettlementReport"
+                            .Be(key is "Get /v3/SettlementReport/ZippedBasisDataStream" or "Get /v3/SettlementReport"
                                 ? "application/octet-stream"
                                 : "application/json");
                     }

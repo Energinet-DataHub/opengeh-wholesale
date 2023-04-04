@@ -53,10 +53,10 @@ public class SettlementReportController : V3ControllerBase
     /// Returns a stream containing the settlement report for a batch matching <paramref name="batchId"/>
     /// </summary>
     /// <param name="batchId">BatchId</param>
-    [HttpPost("ZippedBasisDataStream")]
+    [HttpGet("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
     [BinaryContent]
-    public async Task<IActionResult> GetSettlementReportAsync([FromBody] Guid batchId)
+    public async Task<IActionResult> GetSettlementReportAsync([Required] Guid batchId)
     {
         var report = await _settlementReportApplicationService.GetSettlementReportAsync(batchId).ConfigureAwait(false);
         return Ok(report.Stream);
