@@ -29,7 +29,8 @@ public class ProcessStepResultFactory : IProcessStepResultFactory
             batch.Resolution,
             batch.Unit,
             stepResult.TimeSeriesPoints.Select(MapTimeSeriesPoint()).ToArray(),
-            batch.ProcessType);
+            batch.ProcessType,
+            stepResult.TimeSeriesType);
     }
 
     private static Func<Contracts.TimeSeriesPointDto, TimeSeriesPointDto> MapTimeSeriesPoint()
