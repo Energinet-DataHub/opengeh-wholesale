@@ -21,11 +21,11 @@ from pyspark.sql import SparkSession
 from package.datamigration.migration_script_args import MigrationScriptArgs
 
 
-TABLE_NAME = "test_202304041100_Add_column_out_grid_area"
+TABLE_NAME = "test_202304041030_Add_column_out_grid_area"
 
 
 @patch(
-    "package.datamigration.migration_scripts.202304041100_Add_column_out_grid_area._get_container_path"
+    "package.datamigration.migration_scripts.202304041030_Add_column_out_grid_area._get_container_path"
 )
 def test__apply__updates_quantity_type(
     get_container_path_mock: Mock, tests_temp_path: str, spark: SparkSession
@@ -51,7 +51,7 @@ def test__apply__updates_quantity_type(
 
 def _get_migration_script() -> ModuleType:
     return importlib.import_module(
-        "package.datamigration.migration_scripts.202304041100_Add_column_out_grid_area"
+        "package.datamigration.migration_scripts.202304041030_Add_column_out_grid_area"
     )
 
 
