@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 
 [ApiController]
-[Produces("application/zip",  Type = typeof(Stream))]
 [Route("v3/[controller]")]
 public class SettlementReportController : V3ControllerBase
 {
@@ -37,6 +36,7 @@ public class SettlementReportController : V3ControllerBase
     /// <param name="gridAreaCode">GridAreaCode</param>
     [HttpGet(Name = "GetSettlementReportAsStreamAsync")]
     [MapToApiVersion(Version)]
+    [BinaryContent]
     public async Task GetAsync([Required]Guid batchId, [Required]string gridAreaCode)
     {
         var outputStream = Response.BodyWriter.AsStream();
@@ -47,5 +47,18 @@ public class SettlementReportController : V3ControllerBase
                 .GetSettlementReportAsync(batchId, gridAreaCode, outputStream)
                 .ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Returns a stream containing the settlement report for a batch matching <paramref name="batchId"/>
+    /// </summary>
+    /// <param name="batchId">BatchId</param>
+    [HttpGet("ZippedBasisDataStream")]
+    [MapToApiVersion(Version)]
+    [BinaryContent]
+    public async Task<IActionResult> GetSettlementReportAsync([Required] Guid batchId)
+    {
+        var report = await _settlementReportApplicationService.GetSettlementReportAsync(batchId).ConfigureAwait(false);
+        return Ok(report.Stream);
     }
 }

@@ -28,6 +28,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 /// <param name="Unit">kWh</param>
 /// <param name="TimeSeriesPoints"></param>
 /// <param name="ProcessType"></param>
+/// <param name="TimeSeriesType"></param>
 public sealed record ProcessStepResultDto(
     decimal Sum,
     decimal Min,
@@ -37,4 +38,5 @@ public sealed record ProcessStepResultDto(
     string Resolution,
     string Unit,
     TimeSeriesPointDto[] TimeSeriesPoints,
-    ProcessType ProcessType);
+    ProcessType ProcessType,
+    TimeSeriesType TimeSeriesType);

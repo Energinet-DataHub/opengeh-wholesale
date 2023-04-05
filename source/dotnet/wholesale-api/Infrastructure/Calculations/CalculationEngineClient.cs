@@ -37,13 +37,11 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
 
     public async Task<CalculationId> StartAsync(Batch batch)
     {
-        var jobParameters = _calculationParametersFactory.CreateParameters(batch);
+        var runParameters = _calculationParametersFactory.CreateParameters(batch);
 
         var calculatorJob = await _databricksCalculatorJobSelector
             .GetAsync()
             .ConfigureAwait(false);
-
-        var runParameters = MergeRunParameters(calculatorJob, jobParameters);
 
         var runId = await _wheelClient
             .Jobs
@@ -77,18 +75,5 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
             },
             _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
         };
-    }
-
-    private static RunParameters MergeRunParameters(WheelJob job, IEnumerable<string> jobParameters)
-    {
-        var pythonWheelTask = job.Settings.Tasks.FirstOrDefault(x => x.PythonWheelTask != null);
-
-        var sourceParams =
-            pythonWheelTask?.PythonWheelTask?.Parameters ??
-            throw new InvalidOperationException($"Parameters for job {job.JobId} could not be found.");
-
-        sourceParams.AddRange(jobParameters);
-
-        return RunParameters.CreatePythonParams(sourceParams);
     }
 }
