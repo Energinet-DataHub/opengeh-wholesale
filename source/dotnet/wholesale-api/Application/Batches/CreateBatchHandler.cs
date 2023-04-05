@@ -22,22 +22,19 @@ public class CreateBatchHandler : IRequestHandler<CreateBatchCommand, Guid>
 {
     private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IProcessTypeMapper _processTypeMapper;
-    private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly IMediator _mediator;
 
     public CreateBatchHandler(
         IBatchFactory batchFactory,
         IBatchRepository batchRepository,
-        IUnitOfWork unitOfWork,
         IProcessTypeMapper processTypeMapper,
-        IDomainEventPublisher domainEventPublisher)
+        IMediator mediator)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
-        _unitOfWork = unitOfWork;
         _processTypeMapper = processTypeMapper;
-        _domainEventPublisher = domainEventPublisher;
+        _mediator = mediator;
     }
 
     public async Task<Guid> Handle(CreateBatchCommand command, CancellationToken cancellationToken)
@@ -45,8 +42,7 @@ public class CreateBatchHandler : IRequestHandler<CreateBatchCommand, Guid>
         var processType = _processTypeMapper.MapFrom(command.ProcessType);
         var batch = _batchFactory.Create(processType, command.GridAreaCodes, command.StartDate, command.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
-        await _domainEventPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        await _mediator.Publish(new BatchCreatedEvent(batch.Id), cancellationToken).ConfigureAwait(false);
         return batch.Id;
     }
 }
