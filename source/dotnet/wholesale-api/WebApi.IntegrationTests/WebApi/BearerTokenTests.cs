@@ -27,7 +27,7 @@ public class BearerTokenTests :
     IClassFixture<WholesaleWebApiFixture>,
     IClassFixture<WebApiFactory>
 {
-    private const string BaseUrl = "/v2/batch";
+    private const string BaseUrl = "/v3/batches";
     private const string JwtBearerHttpHeader = "Authorization";
     private const string JwtBearerToken = "Bearer xxx";
 
