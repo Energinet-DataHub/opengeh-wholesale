@@ -94,7 +94,7 @@ def executed_calculation_job(
 
 
 @pytest.fixture(scope="session")
-def results_df(spark: SparkSession, data_lake_path: str, worker_id: str) -> DataFrame:
+def results_df(spark: SparkSession, data_lake_path: str, worker_id: str, executed_calculation_job: None) -> DataFrame:
     CONTAINER_PATH = "calculation-output/result"
     results_table_path = f"{data_lake_path}/{worker_id}/{CONTAINER_PATH}"
     return spark.read.load(results_table_path)
