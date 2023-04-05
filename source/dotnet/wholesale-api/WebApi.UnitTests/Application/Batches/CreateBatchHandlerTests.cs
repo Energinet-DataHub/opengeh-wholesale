@@ -16,11 +16,13 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
 using MediatR;
 using Moq;
 using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 using Xunit.Categories;
 
@@ -82,7 +84,13 @@ public class CreateBatchHandlerTests
 
     private static Batch CreateBatchFromCommand(CreateBatchCommand command)
     {
-        return new BatchFactory(SystemClock.Instance, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
-            .Create(ProcessType.BalanceFixing, command.GridAreaCodes, command.StartDate, command.EndDate);
+        var period = Periods.January_EuropeCopenhagen_Instant;
+        return new Batch(
+            ProcessType.BalanceFixing,
+            command.GridAreaCodes.Select(x => new GridAreaCode(x)).ToList(),
+            command.StartDate.ToInstant(),
+            command.EndDate.ToInstant(),
+            SystemClock.Instance.GetCurrentInstant(),
+            period.DateTimeZone);
     }
 }

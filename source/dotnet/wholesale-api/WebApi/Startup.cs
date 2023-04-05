@@ -102,8 +102,6 @@ public class Startup
             cfg.RegisterServicesFromAssembly(typeof(Infrastructure.Root).Assembly);
         });
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
-        services.AddScoped<IRequestHandler<CreateBatchCommand, Guid>, CreateBatchHandler>();
-        services.AddScoped<INotificationHandler<BatchCreatedEvent>, StartCalculationJobHandler>();
     }
 
     public void Configure(IApplicationBuilder app)

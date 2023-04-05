@@ -17,6 +17,7 @@ using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Batches;
 
+// TODO AJW - duplicated code.
 public static class Periods
 {
     public static (DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeZone DateTimeZone)
