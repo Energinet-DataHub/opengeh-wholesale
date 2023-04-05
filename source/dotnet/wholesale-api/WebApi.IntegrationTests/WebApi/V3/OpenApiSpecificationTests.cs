@@ -53,8 +53,6 @@ public class OpenApiSpecificationTests : WebApiTestBase
     public async Task All_Endpoints_Have_Correct_MediaType()
     {
         // Act
-        var operationToContentTypeLookup =
-            new Dictionary<string, string> { { "Get /v3/SettlementReport", "application/zip" } };
         var stream = await Client.GetStreamAsync(OpenApiSpecUrl);
 
         // Assert
@@ -69,9 +67,9 @@ public class OpenApiSpecificationTests : WebApiTestBase
                     {
                         var key = $"{operation.Key} {path.Key}";
 
-                        content.Key.Should().Be(
-                            operationToContentTypeLookup.TryGetValue(key, out var contentType)
-                                ? contentType
+                        content.Key.Should()
+                            .Be(key is "Get /v3/SettlementReport/ZippedBasisDataStream" or "Get /v3/SettlementReport"
+                                ? "application/octet-stream"
                                 : "application/json");
                     }
                 }

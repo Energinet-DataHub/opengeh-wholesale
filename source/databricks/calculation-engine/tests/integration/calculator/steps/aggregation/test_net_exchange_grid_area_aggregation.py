@@ -16,13 +16,12 @@ import pytest
 from decimal import Decimal
 import pandas as pd
 from datetime import datetime, timedelta
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 from package.steps.aggregation import aggregate_net_exchange_per_ga
 from package.codelists import MeteringPointType, TimeSeriesQuality
 from package.schemas.output import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import window, col
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 
 
 e_20 = MeteringPointType.exchange.value
@@ -30,36 +29,35 @@ date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
-numberOfTestHours = 24
+numberOfQuarters = 5  # Not too many as it has a massive impact on test performance
 
 
 @pytest.fixture(scope="module")
-def enriched_time_series_data_frame(spark: SparkSession):
-    """
-    Sample Time Series DataFrame
-    """
+def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
+    "Sample Time Series DataFrame"
+
     # Create empty pandas df
     pandas_df = pd.DataFrame(
         {
             Colname.metering_point_type: [],
             Colname.in_grid_area: [],
             Colname.out_grid_area: [],
-            "quarter_quantity": [],
+            Colname.quantity: [],
             Colname.observation_time: [],
-            Colname.aggregated_quality: [],
+            Colname.quality: [],
         }
     )
 
     # add 24 hours of exchange with different examples of exchange between grid areas. See readme.md for more info
 
-    for x in range(numberOfTestHours):
+    for quarter_number in range(numberOfQuarters):
         pandas_df = add_row_of_data(
             pandas_df,
             e_20,
             "B",
             "A",
-            Decimal(2) * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal(2) * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
 
         pandas_df = add_row_of_data(
@@ -67,16 +65,16 @@ def enriched_time_series_data_frame(spark: SparkSession):
             e_20,
             "B",
             "A",
-            Decimal("0.5") * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal("0.5") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
         pandas_df = add_row_of_data(
             pandas_df,
             e_20,
             "B",
             "A",
-            Decimal("0.7") * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal("0.7") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
 
         pandas_df = add_row_of_data(
@@ -84,24 +82,24 @@ def enriched_time_series_data_frame(spark: SparkSession):
             e_20,
             "A",
             "B",
-            Decimal(3) * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal(3) * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
         pandas_df = add_row_of_data(
             pandas_df,
             e_20,
             "A",
             "B",
-            Decimal("0.9") * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal("0.9") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
         pandas_df = add_row_of_data(
             pandas_df,
             e_20,
             "A",
             "B",
-            Decimal("1.2") * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal("1.2") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
 
         pandas_df = add_row_of_data(
@@ -109,24 +107,33 @@ def enriched_time_series_data_frame(spark: SparkSession):
             e_20,
             "C",
             "A",
-            Decimal("0.7") * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal("0.7") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
         pandas_df = add_row_of_data(
             pandas_df,
             e_20,
             "A",
             "C",
-            Decimal("1.1") * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal("1.1") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
         pandas_df = add_row_of_data(
             pandas_df,
             e_20,
             "A",
             "C",
-            Decimal("1.5") * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal("1.5") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
+        )
+        # "D" _only_ appears as a out-grid-area (case used to prove bug in implementation)
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "A",
+            "D",
+            Decimal("1.5") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
 
     return spark.createDataFrame(pandas_df).withColumn(
@@ -137,8 +144,8 @@ def enriched_time_series_data_frame(spark: SparkSession):
 def add_row_of_data(
     pandas_df: pd.DataFrame,
     point_type,
-    in_domain,
-    out_domain,
+    in_grid_area,
+    out_grid_area,
     quantity: Decimal,
     timestamp,
 ):
@@ -147,11 +154,11 @@ def add_row_of_data(
     """
     new_row = {
         Colname.metering_point_type: point_type,
-        Colname.in_grid_area: in_domain,
-        Colname.out_grid_area: out_domain,
+        Colname.in_grid_area: in_grid_area,
+        Colname.out_grid_area: out_grid_area,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
-        Colname.aggregated_quality: TimeSeriesQuality.estimated.value,
+        Colname.quality: TimeSeriesQuality.estimated.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 
@@ -164,7 +171,7 @@ def aggregated_data_frame(enriched_time_series_data_frame):
 
 def test_test_data_has_correct_row_count(enriched_time_series_data_frame):
     """Check sample data row count"""
-    assert enriched_time_series_data_frame.count() == (9 * numberOfTestHours)
+    assert enriched_time_series_data_frame.count() == (10 * numberOfQuarters)
 
 
 def test_exchange_aggregator_returns_correct_schema(aggregated_data_frame):
@@ -175,34 +182,32 @@ def test_exchange_aggregator_returns_correct_schema(aggregated_data_frame):
 def test_exchange_aggregator_returns_correct_aggregations(aggregated_data_frame):
     """Check accuracy of aggregations"""
 
-    for x in range(numberOfTestHours):
+    for quarter_number in range(numberOfQuarters):
         check_aggregation_row(
             aggregated_data_frame,
             "A",
-            Decimal("3.8") * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal("5.3") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
         check_aggregation_row(
             aggregated_data_frame,
             "B",
-            Decimal("-1.9") * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal("-1.9") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
         check_aggregation_row(
             aggregated_data_frame,
             "C",
-            Decimal("-1.9") * x,
-            default_obs_time + timedelta(hours=x),
+            Decimal("-1.9") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
         )
 
 
 def check_aggregation_row(
-    df: DataFrame, MeteringGridArea_Domain_mRID: str, sum: Decimal, time: datetime
-):
+    df: DataFrame, grid_area: str, sum: Decimal, time: datetime
+) -> None:
     """Helper function that checks column values for the given row"""
-    gridfiltered = df.filter(
-        df[Colname.grid_area] == MeteringGridArea_Domain_mRID
-    ).select(
+    gridfiltered = df.filter(df[Colname.grid_area] == grid_area).select(
         col(Colname.grid_area),
         col(Colname.sum_quantity),
         col(f"{Colname.time_window_start}").alias("start"),
