@@ -16,11 +16,11 @@
 
 * #### [Docker](https://www.docker.com/get-started)
 
-    * use WSL 2, you will get a prompt with a guide after installing docker
+    * Use WSL 2, you will get a prompt with a guide after installing docker
 
 * #### [Visual Studio Code](https://code.visualstudio.com/#alt-downloads) (system installer)
 
-    * install the extension called [***Dev Containers***](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+    * Install the extension called [***Dev Containers***](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
 ### Get workspace ready for development
 
