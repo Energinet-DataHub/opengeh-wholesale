@@ -51,6 +51,7 @@ public class Startup
         services.AddSwaggerGen(config =>
         {
             config.SupportNonNullableReferenceTypes();
+            config.OperationFilter<BinaryContentFilter>();
 
             // Set the comments path for the Swagger JSON and UI.
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

@@ -13,12 +13,15 @@
 # limitations under the License.
 
 from datetime import datetime
-import package.infrastructure as infra
-from package.codelists import MarketRole, TimeSeriesType, AggregationLevel
-from package.constants import Colname, PartitionKeyName
+from delta.tables import DeltaTable
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit
 from pyspark.sql import SparkSession
+
+import package.infrastructure as infra
+from package.codelists import MarketRole, TimeSeriesType, AggregationLevel
+from package.constants import Colname, PartitionKeyName
+from package.schemas import results_schema, ResultSchemaField
 
 DATABASE_NAME = "wholesale_output"
 RESULT_TABLE_NAME = "result"
@@ -39,7 +42,7 @@ class ProcessStepResultWriter:
         self.__output_path = (
             f"{container_path}/{infra.get_batch_relative_path(batch_id)}"
         )
-        self._create_database_if_not_exists(spark, container_path)
+        self._create_delta_table_if_not_exists(spark, container_path)
 
     def write(
         self,
@@ -47,12 +50,13 @@ class ProcessStepResultWriter:
         time_series_type: TimeSeriesType,
         aggregation_level: AggregationLevel,
     ) -> None:
+        # start: write to delta table (before dropping columns)
+        self._write_result_to_table(result_df, aggregation_level, time_series_type)
+        # end: write to delta table
+
         result_df = self._prepare_result_for_output(
             result_df, time_series_type, aggregation_level
         )
-        # start: write to delta table (before dropping columns)
-        self._write_result_to_table(result_df, aggregation_level)
-        # end: write to delta table
 
         if aggregation_level == AggregationLevel.total_ga:
             self._write_per_ga(result_df)
@@ -174,34 +178,37 @@ class ProcessStepResultWriter:
             .json(result_data_directory)
         )
 
-    def _create_database_if_not_exists(
+    def _create_delta_table_if_not_exists(
         self, spark: SparkSession, container_path: str
     ) -> None:
-        location = f"{container_path}/{infra.get_calculation_output_folder()}"
+        db_location = f"{container_path}/{infra.get_calculation_output_folder()}"
+        table_location = (
+            f"{container_path}/{infra.get_calculation_output_folder()}/result"
+        )
+
+        # First create database if not already existing
         spark.sql(
             f"CREATE DATABASE IF NOT EXISTS {DATABASE_NAME} \
             COMMENT 'Contains result data from wholesale domain.' \
-            LOCATION '{location}'"
+            LOCATION '{db_location}'"
+        )
+
+        # Now create table if not already existing
+        (
+            DeltaTable.createIfNotExists(spark)
+            .tableName(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
+            .location(table_location)
+            .addColumns(results_schema)
+            .execute()
         )
 
     def _write_result_to_table(
         self,
         df: DataFrame,
         aggregation_level: AggregationLevel,
+        time_series_type: TimeSeriesType,
     ) -> None:
-        if aggregation_level == AggregationLevel.total_ga:
-            df = df.withColumn(
-                Colname.balance_responsible_id, lit(None).cast("string")
-            ).withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
-        elif aggregation_level == AggregationLevel.es_per_ga:
-            df = df.withColumn(Colname.balance_responsible_id, lit(None).cast("string"))
-        elif aggregation_level == AggregationLevel.brp_per_ga:
-            df = df.withColumn(Colname.energy_supplier_id, lit(None).cast("string"))
-        elif aggregation_level != AggregationLevel.es_per_brp_per_ga:
-            raise ValueError(
-                f"Unsupported aggregation_level, {aggregation_level.value}"
-            )
-
+        # Add columns that are the same for all calculation results in batch
         df = (
             df.withColumn(Colname.batch_id, lit(self.__batch_id))
             .withColumn(Colname.batch_process_type, lit(self.__batch_process_type))
@@ -211,16 +218,24 @@ class ProcessStepResultWriter:
             )
         )
 
-        df = df.withColumnRenamed(
-            PartitionKeyName.GROUPING, Colname.aggregation_level
-        )  # TODO: rename Grouping enum to AggragationLevel
-        df = df.withColumnRenamed(
-            Colname.quality, "quantity_quality"
-        )  # TODO: use quantity_quality everywhere
-        df = df.withColumnRenamed("quarter_time", "time")  # TODO: time everywhere
-        df = df.withColumnRenamed(Colname.energy_supplier_id, "energy_supplier_id")
-        df = df.withColumnRenamed(
-            Colname.balance_responsible_id, "balance_responsible_id"
+        # Map column names to the Delta table field names
+        df = df.select(
+            col(Colname.batch_id).alias(ResultSchemaField.batch_id),
+            col(Colname.batch_execution_time_start).alias(
+                ResultSchemaField.batch_execution_time_start
+            ),
+            col(Colname.batch_process_type).alias(ResultSchemaField.batch_process_type),
+            lit(time_series_type.value).alias(ResultSchemaField.time_series_type),
+            col(Colname.grid_area).alias(ResultSchemaField.grid_area),
+            col(Colname.out_grid_area).alias(ResultSchemaField.out_grid_area),
+            col(Colname.balance_responsible_id).alias(
+                ResultSchemaField.balance_responsible_id
+            ),
+            col(Colname.energy_supplier_id).alias(ResultSchemaField.energy_supplier_id),
+            col(Colname.time_window_start).alias(ResultSchemaField.time),
+            col(Colname.sum_quantity).alias(ResultSchemaField.quantity),
+            col(Colname.quality).alias(ResultSchemaField.quantity_quality),
+            lit(aggregation_level.value).alias(ResultSchemaField.aggregation_level),
         )
 
         df.write.format("delta").mode("append").option("mergeSchema", "false").option(

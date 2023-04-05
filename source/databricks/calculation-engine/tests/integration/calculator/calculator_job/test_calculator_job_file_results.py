@@ -12,26 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os import path
-from shutil import rmtree
 from pyspark.sql import SparkSession
 import pytest
-from unittest.mock import patch, Mock
 from tests.contract_utils import assert_contract_matches_schema
 from . import configuration as C
-from package.calculator_job import (
-    _get_valid_args_or_throw,
-    _start_calculator,
-    start,
-    _start,
-)
 from package.codelists import (
     TimeSeriesType,
     AggregationLevel,
 )
 import package.infrastructure as infra
-from package.environment_variables import EnvironmentVariable
-from package.schemas import time_series_point_schema
 
 
 @pytest.mark.parametrize(
@@ -108,8 +97,7 @@ def test__result_is_generated_for_requested_grid_areas(
     time_series_type: TimeSeriesType,
     aggregation_level: AggregationLevel,
 ) -> None:
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     result_path = infra.get_result_file_relative_path(
@@ -125,7 +113,7 @@ def test__result_is_generated_for_requested_grid_areas(
     assert result.count() >= 1, "Calculator job failed to write files"
 
 
-def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
+def test__production_total_ga__schema_must_match_contract_with_dotnet(
     spark: SparkSession,
     data_lake_path: str,
     contracts_path: str,
@@ -143,8 +131,7 @@ def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     result_805 = spark.read.json(result_path)
@@ -155,7 +142,7 @@ def test__calculator_result_total_ga_schema_must_match_contract_with_dotnet(
     )
 
 
-def test__calculator_result_es_per_ga_schema_must_match_contract_with_dotnet(
+def test__non_profiled_consumption_per_es__schema_must_match_contract_with_dotnet(
     spark: SparkSession,
     data_lake_path: str,
     contracts_path: str,
@@ -173,8 +160,7 @@ def test__calculator_result_es_per_ga_schema_must_match_contract_with_dotnet(
     )
     result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     result_805 = spark.read.json(result_path)
@@ -185,7 +171,7 @@ def test__calculator_result_es_per_ga_schema_must_match_contract_with_dotnet(
     )
 
 
-def test__result_file_has_correct_expected_number_of_rows_for_consumption(
+def test__non_profiled_consumption_per_es__has_expected_number_of_rows(
     spark: SparkSession,
     data_lake_path: str,
     worker_id: str,
@@ -201,8 +187,7 @@ def test__result_file_has_correct_expected_number_of_rows_for_consumption(
         AggregationLevel.es_per_ga,
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     consumption_806 = spark.read.json(
@@ -211,7 +196,7 @@ def test__result_file_has_correct_expected_number_of_rows_for_consumption(
     assert consumption_806.count() == 192  # period is from 01-01 -> 01-03
 
 
-def test__result_file_has_correct_expected_number_of_rows_for_production(
+def test__production_total_ga__has_expected_number_of_rows(
     spark: SparkSession,
     data_lake_path: str,
     worker_id: str,
@@ -227,8 +212,7 @@ def test__result_file_has_correct_expected_number_of_rows_for_production(
         AggregationLevel.total_ga,
     )
 
-    # Act
-    # we run the calculator once per session. See the fixture executed_calculation_job in top of this file
+    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
     production_806 = spark.read.json(
