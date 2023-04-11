@@ -56,6 +56,7 @@ public static class EnvironmentSettingNames
     public const string CalculationStorageConnectionString = "STORAGE_CONNECTION_STRING";
     public const string CalculationStorageContainerName = "STORAGE_CONTAINER_NAME";
     public const string CalculationStorageContainerUri = "STORAGE_CONTAINER_URI";
+    public const string StorageAccountName = "STORAGE_ACCOUNT_NAME";
 
     #endregion
 }

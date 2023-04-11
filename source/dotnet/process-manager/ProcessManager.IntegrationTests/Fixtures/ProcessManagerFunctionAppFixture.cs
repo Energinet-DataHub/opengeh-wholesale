@@ -95,6 +95,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerUri, "https://thisurlgoesnowhere.net/");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.StorageAccountName, "anyName");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
         }
