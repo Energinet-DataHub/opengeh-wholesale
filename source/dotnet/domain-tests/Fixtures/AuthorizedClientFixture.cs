@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Client;
+using Energinet.DataHub.WebApi.Clients.Wholesale.v3;
 using Moq;
 using Xunit;
 
@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             UserAuthenticationClient = new B2CUserTokenAuthenticationClient(Configuration.UserTokenConfiguration);
 
             // Initially mock client, and set it later when 'InitializeAsync' is called.
-            WholesaleClient = Mock.Of<IWholesaleClient>();
+            // WholesaleClient = Mock.Of<IWholesaleClient>();
         }
 
         public WholesaleDomainConfiguration Configuration { get; }
@@ -37,7 +37,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// <summary>
         /// The actual client is not created until <see cref="IAsyncLifetime.InitializeAsync"/> has been called by xUnit.
         /// </summary>
-        public IWholesaleClient WholesaleClient { get; private set; }
+        public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
         private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
 
@@ -59,7 +59,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// be retrieved synchronously.
         /// However, in current tests we need to retrieve it asynchronously.
         /// </summary>
-        private async Task<IWholesaleClient> CreateWholesaleClientAsync()
+        private async Task<WholesaleClient_V3> CreateWholesaleClientAsync()
         {
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             httpClientFactoryMock
@@ -68,11 +68,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
             var accessToken = await UserAuthenticationClient.AcquireAccessTokenAsync();
 
-            return new WholesaleClient(
+            return new WholesaleClient_V3(
+                Configuration.WebApiBaseAddress.ToString(),
                 new AuthorizedHttpClientFactory(
                     httpClientFactoryMock.Object,
-                    () => $"Bearer {accessToken}"),
-                Configuration.WebApiBaseAddress);
+                    () => $"Bearer {accessToken}").CreateClient(Configuration.WebApiBaseAddress));
         }
     }
 }

@@ -14,7 +14,7 @@
 
 using System.Net;
 using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.WebApi.Clients.Wholesale.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
 using Xunit;
@@ -71,7 +71,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             public async Task When_RequestBatchId_Then_ResponseIsUnauthorized()
             {
                 // Arrange
-                var request = new HttpRequestMessage(HttpMethod.Get, "v2/batch?batchId=1");
+                var request = new HttpRequestMessage(HttpMethod.Get, "v3/batches?batchId=1");
 
                 // Act
                 using var actualResponse = await UnauthorizedHttpClient.SendAsync(request);
@@ -86,10 +86,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// </summary>
         public class Given_Authorized : IClassFixture<AuthorizedClientFixture>
         {
-            private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(15);
-            private static readonly TimeSpan DefaultDelay = TimeSpan.FromSeconds(30);
+            private static readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(15);
+            private static readonly TimeSpan _defaultDelay = TimeSpan.FromSeconds(30);
 
-            private static readonly Guid ExistingBatchId = new Guid("a68d4452-943b-4f45-b32f-5f84607c6b6b");
+            private static readonly Guid _existingBatchId = new("a68d4452-943b-4f45-b32f-5f84607c6b6b");
             private static readonly string ExistingGridAreaCode = "543";
 
             public Given_Authorized(AuthorizedClientFixture fixture)
@@ -105,11 +105,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 // Arrange
 
                 // Act
-                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(ExistingBatchId);
+                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(_existingBatchId);
 
                 // Assert
                 batchResult.Should().NotBeNull();
-                batchResult!.BatchNumber.Should().Be(ExistingBatchId);
+                batchResult!.BatchId.Should().Be(_existingBatchId);
             }
 
             [DomainFact]
@@ -117,12 +117,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             {
                 // Arrange
                 var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
-                var endDate = new DateTimeOffset(2020, 1, 29, 23, 0, 0, TimeSpan.Zero).AddMilliseconds(-1);
-                var batchRequestDto = new BatchRequestDto(
-                    ProcessType.BalanceFixing,
-                    new List<string> { ExistingGridAreaCode },
-                    startDate,
-                    endDate);
+                var endDate = new DateTimeOffset(2020, 1, 29, 23, 0, 0, TimeSpan.Zero);
+                var batchRequestDto = new BatchRequestDto
+                {
+                    ProcessType = ProcessType.BalanceFixing,
+                    GridAreaCodes = new List<string> { ExistingGridAreaCode },
+                    StartDate = startDate,
+                    EndDate = endDate,
+                };
 
                 // Act
                 var batchId = await Fixture.WholesaleClient.CreateBatchAsync(batchRequestDto).ConfigureAwait(false);
@@ -134,8 +136,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                         var batchResult = await Fixture.WholesaleClient.GetBatchAsync(batchId);
                         return batchResult?.ExecutionState == BatchState.Completed;
                     },
-                    DefaultTimeout,
-                    DefaultDelay);
+                    _defaultTimeout,
+                    _defaultDelay);
 
                 isCompleted.Should().BeTrue();
             }
