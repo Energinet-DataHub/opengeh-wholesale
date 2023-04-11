@@ -138,9 +138,12 @@ public static class Program
 
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
+        var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
+        var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         var calculationStorageContainerUri = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerUri);
         var credential = new ManagedIdentityCredential();
-        var dataLakeFileSystemClient = new DataLakeFileSystemClient(new Uri(calculationStorageContainerUri), credential);
+        var dataLakeFileSystemClientIAM = new DataLakeFileSystemClient(new Uri(calculationStorageContainerUri), credential);
+        var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
 
