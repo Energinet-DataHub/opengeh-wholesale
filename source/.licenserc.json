@@ -1,6 +1,6 @@
 {
   "ignore": [
-    "dotnet/domain-tests/Clients/"
+    "source/dotnet/domain-tests/Clients/"
   ],
   "**/*.cs": [
     "// Copyright 2020 Energinet DataHub A/S",
