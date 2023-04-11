@@ -30,7 +30,7 @@ from package.file_writers.process_step_result_writer import ProcessStepResultWri
 from package.file_writers.actors_writer import ActorsWriter
 import package.calculation_input as input
 
-from .args_helper import valid_date, valid_list, valid_log_level
+from .args_helper import valid_date, valid_list
 from .calculator_args import CalculatorArgs
 from package.storage_account_access import islocked
 
@@ -115,8 +115,6 @@ def _start(
     time_zone: str,
     job_args: argparse.Namespace,
 ) -> None:
-    db_logging.loglevel = job_args.log_level
-
     if islocked(storage_account_name, storage_account_credetial):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
@@ -149,4 +147,7 @@ def start() -> None:
     time_zone = env_vars.get_time_zone()
     storage_account_name = env_vars.get_storage_account_name()
     credential = env_vars.get_storage_account_credential()
+
+    db_logging.loglevel = "information"
+
     _start(storage_account_name, credential, time_zone, job_args)

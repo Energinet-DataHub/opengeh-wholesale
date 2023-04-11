@@ -13,10 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 
 public interface ICalculationParametersFactory
 {
-    IEnumerable<string> CreateParameters(Batch batch);
+    RunParameters CreateParameters(Batch batch);
 }
