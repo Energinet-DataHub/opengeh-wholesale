@@ -14,7 +14,7 @@
 
 using System.Net;
 using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.WebApi.Clients.Wholesale.v3;
+using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
 using Xunit;

@@ -10,7 +10,7 @@
   },
   "codeGenerators": {
     "openApiToCSharpClient": {
-      "namespace": "Energinet.DataHub.WebApi.Clients.Wholesale.v3",
+      "namespace": "Energinet.DataHub.Wholesale.DomainTests.Clients.v3",
       "className": "{controller}WholesaleClient_V3",
       "output": "WholesaleClient.cs",
       "generateOptionalParameters": true,
