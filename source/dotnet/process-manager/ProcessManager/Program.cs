@@ -139,7 +139,7 @@ public static class Program
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
         var calculationStorageContainerUri = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerUri);
-        var credential = new DefaultAzureCredential();
+        var credential = new ManagedIdentityCredential();
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(new Uri(calculationStorageContainerUri), credential);
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
