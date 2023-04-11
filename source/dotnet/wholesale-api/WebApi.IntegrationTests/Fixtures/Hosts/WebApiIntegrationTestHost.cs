@@ -59,7 +59,7 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         const string anyServiceBusConnectionString = "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=someKeyName;SharedAccessKey=someKeyValue";
 
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.AppInsightsInstrumentationKey, anyValue);
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendAppId, anyValue);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendBffAppId, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.ExternalOpenIdUrl, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.InternalOpenIdUrl, anyValue);
         Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{ConfigurationSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
