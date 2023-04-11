@@ -17,28 +17,9 @@ import inspect
 from unittest.mock import ANY, patch, call, Mock
 
 import pytest
-from package.datamigration.migration import _get_valid_args_or_throw, _migrate_data_lake
+from package.datamigration.migration import _migrate_data_lake
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from package.datamigration.uncommitted_migrations import _get_all_migrations
-
-
-def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails():
-    # Act & Assert
-    with pytest.raises(Exception):
-        _get_valid_args_or_throw("--unexpected-arg")
-
-
-def test__get_valid_args_or_throw__when_invoked_with_correct_parameters__succeeds():
-    # Arrange
-    command_line_args = [
-        "--data-storage-account-name",
-        "foo",
-        "--data-storage-account-key",
-        "foo",
-    ]
-
-    # Act and Assert
-    _get_valid_args_or_throw(command_line_args)
 
 
 @patch("package.datamigration.migration.initialize_spark")

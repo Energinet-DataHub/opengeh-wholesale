@@ -17,20 +17,12 @@ import pytest
 from unittest.mock import patch, Mock
 from package.storage_account_access.lock_storage import (
     _LOCK_FILE_NAME,
-    _get_valid_args_or_throw,
     lock,
     unlock,
 )
 
 
-def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters__fails():
-    # Act and Assert
-    with pytest.raises(Exception):
-        _get_valid_args_or_throw("--unexpected-arg")
-
-
 @patch("package.storage_account_access.lock_storage.DataLakeFileManager")
-@patch("package.storage_account_access.lock_storage._get_valid_args_or_throw")
 @patch("package.storage_account_access.lock_storage.env_vars")
 def test__lock__create_file_called_with_correct_name(
     mock_env_vars,
@@ -49,7 +41,6 @@ def test__lock__create_file_called_with_correct_name(
 
 
 @patch("package.storage_account_access.lock_storage.DataLakeFileManager")
-@patch("package.storage_account_access.lock_storage._get_valid_args_or_throw")
 @patch("package.storage_account_access.lock_storage.env_vars")
 def test__unlock__delete_file_called_with_correct_name(
     mock_env_vars,
