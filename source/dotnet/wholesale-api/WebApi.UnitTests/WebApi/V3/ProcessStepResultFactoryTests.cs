@@ -44,7 +44,8 @@ public class ProcessStepResultFactoryTests
             {
                 new(point.Time, point.Quantity, point.Quality),
             },
-            batchDto.ProcessType);
+            batchDto.ProcessType,
+            resultDto.TimeSeriesType);
 
         // Act
         var actual = sut.Create(resultDto, batchDto);
