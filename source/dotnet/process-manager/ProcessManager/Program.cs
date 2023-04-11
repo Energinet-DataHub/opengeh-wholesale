@@ -140,10 +140,11 @@ public static class Program
 
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
-        var calculationStorageContainerUri = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerUri);
+        // var calculationStorageContainerUri = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerUri);
+        var storageAccountName = EnvironmentVariableHelper.GetEnvVariable("STORAGE_ACCOUNT_NAME");
         var credential = new ManagedIdentityCredential();
-        var containerUri = new Uri(calculationStorageContainerUri);
-        // var dataLakeFileSystemClientIAM = new DataLakeFileSystemClient(containerUri, credential);
+        var containerUri = new Uri($"https://{storageAccountName}.dfs.core.windows.net");
+        var dataLakeFileSystemClientIAM = new DataLakeFileSystemClient(containerUri, credential);
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
