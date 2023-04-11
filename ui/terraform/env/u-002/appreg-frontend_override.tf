@@ -7,7 +7,6 @@ resource "azuread_application" "frontend_app" {
   fallback_public_client_enabled = true
 
   web {
-    redirect_uris = ["https://${azurerm_static_site.ui.default_host_name}/", "https://localhost/"]
     implicit_grant {
       access_token_issuance_enabled = true
       id_token_issuance_enabled     = true
