@@ -143,7 +143,7 @@ public static class Program
         // var calculationStorageContainerUri = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerUri);
         // var storageAccountName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageAccountName);
         var credential = new ManagedIdentityCredential();
-        var containerUri = new Uri("abfss://wholesale@stdatalakesharedresu001.dfs.core.windows.net/");
+        var containerUri = new Uri("https://wholesale@stdatalakesharedresu001.dfs.core.windows.net/");
         var dataLakeFileSystemClientIAM = new DataLakeFileSystemClient(containerUri, credential);
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
