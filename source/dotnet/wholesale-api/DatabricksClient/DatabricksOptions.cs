@@ -14,17 +14,20 @@
 
 namespace Energinet.DataHub.Wholesale.Components.DatabricksClient;
 
-public class DatabricksWheelClientOptions
+public class DatabricksOptions
 {
-    public const string DatabricksWheelClient = "DatabricksWheelClient";
-
     /// <summary>
     /// Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net.
     /// </summary>
-    public string WorkspaceUrl { get; set; } = string.Empty;
+    public string DATABRICKS_WORKSPACE_URL { get; set; } = string.Empty;
 
     /// <summary>
     /// The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token.
     /// </summary>
-    public string WorkspaceToken { get; set; } = string.Empty;
+    public string DATABRICKS_WORKSPACE_TOKEN { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The databricks warehouse id.
+    /// </summary>
+    public string DATABRICKS_WAREHOUSE_ID { get; set; } = string.Empty;
 }

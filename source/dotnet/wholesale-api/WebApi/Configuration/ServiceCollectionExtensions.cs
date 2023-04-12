@@ -94,7 +94,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICalculationDomainService, CalculationDomainService>();
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
 
-        services.Configure<DatabricksWheelClientOptions>(configuration.GetSection(DatabricksWheelClientOptions.DatabricksWheelClient));
+        services.AddOptions<DatabricksOptions>().Bind(configuration);
         services.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
         services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();

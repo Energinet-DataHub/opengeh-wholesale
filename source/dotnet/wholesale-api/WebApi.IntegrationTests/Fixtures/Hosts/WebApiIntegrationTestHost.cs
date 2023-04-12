@@ -70,8 +70,8 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.BatchCreatedEventName, "batch-created");
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.DomainEventsTopicName, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.DateTimeZoneId, "Europe/Copenhagen");
-        Environment.SetEnvironmentVariable(TestConfigurationSettingNames.DatabricksWheelClientWorkspaceUrl, "http://localhost/");
-        Environment.SetEnvironmentVariable(TestConfigurationSettingNames.DatabricksWheelClientWorkspaceToken, "no_token");
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceUrl, "http://localhost/");
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceToken, "no_token");
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
