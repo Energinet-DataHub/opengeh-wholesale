@@ -29,6 +29,11 @@ namespace Energinet.DataHub.Wholesale.WebApi
         // JWT Token auth
         public const string ExternalOpenIdUrl = "EXTERNAL_OPEN_ID_URL";
         public const string InternalOpenIdUrl = "INTERNAL_OPEN_ID_URL";
+
+        /// <summary>
+        /// The id of the application registration that the JWT is expected to be issued to (audience claim).
+        /// Used to ensure that the received token, even if valid, is actually intended for BFF and current WebAPI.
+        /// </summary>
         public const string BackendBffAppId = "BACKEND_BFF_APP_ID";
 
         public const string CalculationStorageConnectionString = "STORAGE_CONNECTION_STRING";
