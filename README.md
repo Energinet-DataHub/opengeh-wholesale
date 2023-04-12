@@ -100,6 +100,8 @@ The set of supported process types can be found in [`calculation_result_complete
 
 Process results can be fetched using [the wholesale web API](source/dotnet/wholesale-api/).
 
+We expose a swagger.json from which a client can be generated using [NSwag](https://github.com/RicoSuter/NSwag). Check out a example [here!](https://github.com/Energinet-DataHub/greenforce-frontend/tree/main/apps/dh/api-dh/source/DataHub.WebApi/Clients/Wholesale/V3)
+
 ### Calculation Input Data Format
 
 Read about the contracts [here](docs/inter-domain-integration/README.md).
