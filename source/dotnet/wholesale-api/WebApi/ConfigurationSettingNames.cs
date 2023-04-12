@@ -59,8 +59,8 @@ namespace Energinet.DataHub.Wholesale.WebApi
 
         #endregion
 
-        public const string DatabricksWorkspaceUrl = "DATABRICKS__WORKSPACEURL";
+        public const string DatabricksWorkspaceUrl = "DATABRICKS__WORKSPACE_URL";
 
-        public const string DatabricksWorkspaceToken = "DATABRICKS__WORKSPACETOKEN";
+        public const string DatabricksWorkspaceToken = "DATABRICKS__WORKSPACE_TOKEN";
     }
 }
