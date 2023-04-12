@@ -45,14 +45,14 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
         /// <summary>
         /// Create client object with specified base URL, access token and timeout.
         /// </summary>
-        /// <param name="options">The databricks settings (options).</param>
+        /// <param name="optionsFactory">The databricks settings (options).</param>
         /// <param name="timeoutSeconds">Web request time out in seconds</param>
-        public DatabricksWheelClient(IOptions<DatabricksWheelClientOptions> options, long timeoutSeconds = 30)
+        public DatabricksWheelClient(IOptions<DatabricksWheelClientOptions> optionsFactory, long timeoutSeconds = 30)
         {
-            var value = options.Value;
-            var apiUrl = new Uri(new Uri(value.WorkspaceUrl), $"api/{Version}/");
+            var options = optionsFactory.Value;
+            var apiUrl = new Uri(new Uri(options.WorkspaceUrl), $"api/{Version}/");
 
-            _httpClient = CreateHttpClient(value.WorkspaceToken, timeoutSeconds, apiUrl);
+            _httpClient = CreateHttpClient(options.WorkspaceToken, timeoutSeconds, apiUrl);
 
             Jobs = new JobsApiClient21(_httpClient);
         }
