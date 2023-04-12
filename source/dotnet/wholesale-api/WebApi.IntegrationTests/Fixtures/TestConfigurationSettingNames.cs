@@ -12,19 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Components.DatabricksClient;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures;
 
-public class DatabricksOptions
+public static class TestConfigurationSettingNames
 {
-    public const string Databricks = "Databricks";
-
-    /// <summary>
-    /// Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net.
-    /// </summary>
-    public string WorkspaceUrl { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token.
-    /// </summary>
-    public string WorkspaceToken { get; set; } = string.Empty;
+    public const string DatabricksWheelClientWorkspaceUrl = "DATABRICKSWHEELCLIENT__WORKSPACEURL";
+    public const string DatabricksWheelClientWorkspaceToken = "DATABRICKSWHEELCLIENT__WORKSPACETOKEN";
 }
