@@ -23,6 +23,7 @@ limitations under the License.
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="1.1.2515.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>

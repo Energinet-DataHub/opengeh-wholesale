@@ -51,7 +51,9 @@ using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
+using Google.Protobuf;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NodaTime;
@@ -157,13 +159,13 @@ public static class Program
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         serviceCollection.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
-        serviceCollection.AddSingleton(_ =>
+        serviceCollection.AddOptions<DatabricksOptions>()
+            .Configure<IConfiguration>((settings, configuration) =>
         {
-            var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
-            var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
-
-            return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
+            configuration.GetSection(DatabricksOptions.Databricks).Bind(settings);
         });
+        serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
+
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         serviceCollection.AddScoped<IActorRepository, ActorRepository>();
