@@ -268,9 +268,7 @@ public static class Program
             // This ought to be a Data Lake (gen 2) file system check.
             // It is, however, not easily tested so for now we stick with testing resource existence
             // and connectivity through the lesser blob storage API.
-            .AddBlobStorageContainerCheck(
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageContainerName))
+            .NewAddBlobStorageContainerCheck(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageAccountName), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageContainerName))
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,
                 topicName: integrationEventsTopicName,

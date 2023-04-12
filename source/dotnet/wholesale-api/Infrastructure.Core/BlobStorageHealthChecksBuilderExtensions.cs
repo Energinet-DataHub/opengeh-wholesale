@@ -43,5 +43,30 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Core
                 }
             });
         }
+
+        public static IHealthChecksBuilder NewAddBlobStorageContainerCheck(this IHealthChecksBuilder builder, string storageAccountName, string containerName)
+        {
+            var storageAccountUri = new Uri($"https://{storageAccountName}.dfs.core.windows.net/");
+            return builder.AddAsyncCheck("BlobStorageContainer", async () =>
+            {
+                var client = new BlobServiceClient(storageAccountUri);
+                try
+                {
+                    var containersPageable = client.GetBlobContainersAsync();
+
+                    await foreach (var blobContainerItem in containersPageable)
+                    {
+                        if (blobContainerItem.Name == containerName)
+                            return HealthCheckResult.Healthy();
+                    }
+
+                    return HealthCheckResult.Unhealthy();
+                }
+                catch (Exception)
+                {
+                    return HealthCheckResult.Unhealthy();
+                }
+            });
+        }
     }
 }
