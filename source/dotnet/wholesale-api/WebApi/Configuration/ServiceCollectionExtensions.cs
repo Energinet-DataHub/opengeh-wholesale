@@ -56,7 +56,7 @@ internal static class ServiceCollectionExtensions
     {
         var externalOpenIdUrl = configuration[ConfigurationSettingNames.ExternalOpenIdUrl]!;
         var internalOpenIdUrl = configuration[ConfigurationSettingNames.InternalOpenIdUrl]!;
-        var backendAppId = configuration[ConfigurationSettingNames.BackendAppId]!;
+        var backendAppId = configuration[ConfigurationSettingNames.BackendBffAppId]!;
 
         serviceCollection.AddJwtBearerAuthentication(externalOpenIdUrl, internalOpenIdUrl, backendAppId);
         serviceCollection.AddPermissionAuthorization();
