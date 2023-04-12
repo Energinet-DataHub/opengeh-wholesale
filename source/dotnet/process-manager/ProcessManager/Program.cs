@@ -138,14 +138,12 @@ public static class Program
 
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
-        var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
-        var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
-        // var calculationStorageContainerUri = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerUri);
-        // var storageAccountName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageAccountName);
+        var containerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageContainerName);
+        var storageAccountName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageAccountName);
         var credential = new ManagedIdentityCredential();
-        var containerUri = new Uri("https://wholesale@stdatalakesharedresu001.dfs.core.windows.net/");
+        var containerUri = new Uri($"https://{containerName}@{storageAccountName}.dfs.core.windows.net/");
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(containerUri, credential);
-        // var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
+
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
 
@@ -272,7 +270,7 @@ public static class Program
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName))
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageContainerName))
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,
                 topicName: integrationEventsTopicName,

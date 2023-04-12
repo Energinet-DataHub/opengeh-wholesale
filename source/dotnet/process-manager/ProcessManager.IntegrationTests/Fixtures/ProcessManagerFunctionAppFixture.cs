@@ -93,7 +93,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.StorageContainerName, "wholesale");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.StorageAccountName, "anyName");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
@@ -162,7 +162,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             // Create storage container - ought to be a Data Lake file system
             var blobContainerClient = new BlobContainerClient(
                 Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
-                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.StorageContainerName));
 
             if (!await blobContainerClient.ExistsAsync())
                 await blobContainerClient.CreateAsync();
