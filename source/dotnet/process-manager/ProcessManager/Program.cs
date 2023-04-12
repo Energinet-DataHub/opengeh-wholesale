@@ -141,9 +141,9 @@ public static class Program
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
         // var calculationStorageContainerUri = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerUri);
-        var storageAccountName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageAccountName);
+        // var storageAccountName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageAccountName);
         var credential = new ManagedIdentityCredential();
-        var containerUri = new Uri($"abfss://wholesale@{storageAccountName}.dfs.core.windows.net/");
+        var containerUri = new Uri("abfss://wholesale@stdatalakesharedresu001.dfs.core.windows.net/");
         var dataLakeFileSystemClientIAM = new DataLakeFileSystemClient(containerUri, credential);
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
