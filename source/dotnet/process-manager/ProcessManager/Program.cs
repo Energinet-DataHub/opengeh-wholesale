@@ -139,9 +139,9 @@ public static class Program
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
         var containerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageContainerName);
-        var storageAccountName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageAccountName);
+        var storageAccountDomainName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageAccountDomainName);
         var credential = new ManagedIdentityCredential();
-        var containerUri = new Uri($"https://{containerName}@{storageAccountName}.dfs.core.windows.net/");
+        var containerUri = new Uri($"abfss://{containerName}@{storageAccountDomainName}");
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(containerUri, credential);
 
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
@@ -268,7 +268,7 @@ public static class Program
             // This ought to be a Data Lake (gen 2) file system check.
             // It is, however, not easily tested so for now we stick with testing resource existence
             // and connectivity through the lesser blob storage API.
-            .NewAddBlobStorageContainerCheck(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageAccountName), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageContainerName))
+            .NewAddBlobStorageContainerCheck(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageAccountDomainName), EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StorageContainerName))
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,
                 topicName: integrationEventsTopicName,

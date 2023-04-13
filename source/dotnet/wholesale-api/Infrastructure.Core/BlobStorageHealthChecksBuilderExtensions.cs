@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -44,23 +45,15 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Core
             });
         }
 
-        public static IHealthChecksBuilder NewAddBlobStorageContainerCheck(this IHealthChecksBuilder builder, string storageAccountName, string containerName)
+        public static IHealthChecksBuilder NewAddBlobStorageContainerCheck(this IHealthChecksBuilder builder, string storageAccountUri, string containerName)
         {
-            var storageAccountUri = new Uri($"https://{storageAccountName}.dfs.core.windows.net/");
             return builder.AddAsyncCheck("BlobStorageContainer", async () =>
             {
-                var client = new BlobServiceClient(storageAccountUri);
                 try
                 {
-                    var containersPageable = client.GetBlobContainersAsync();
-
-                    await foreach (var blobContainerItem in containersPageable)
-                    {
-                        if (blobContainerItem.Name == containerName)
-                            return HealthCheckResult.Healthy();
-                    }
-
-                    return HealthCheckResult.Unhealthy();
+                    var serviceClient = new BlobServiceClient(new Uri(storageAccountUri), new DefaultAzureCredential());
+                    var containerClient = serviceClient.GetBlobContainerClient(containerName);
+                    return await containerClient.ExistsAsync().ConfigureAwait(false) ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
                 }
                 catch (Exception)
                 {

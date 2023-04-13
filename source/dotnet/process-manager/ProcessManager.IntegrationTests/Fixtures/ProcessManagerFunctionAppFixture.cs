@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
@@ -92,9 +93,8 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.StorageAccountDomainName, "127.0.0.1:10000/devstoreaccount1");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.StorageContainerName, "wholesale");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.StorageAccountName, "anyName");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
         }
@@ -160,12 +160,14 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             ProcessCompletedIntegrationEventListener = new ServiceBusTestListener(publishIntegrationEventWhenProcessCompletedListener);
 
             // Create storage container - ought to be a Data Lake file system
-            var blobContainerClient = new BlobContainerClient(
-                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
-                Environment.GetEnvironmentVariable(EnvironmentSettingNames.StorageContainerName));
+            var domainName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.StorageAccountDomainName) ??
+                             throw new InvalidOperationException();
 
-            if (!await blobContainerClient.ExistsAsync())
-                await blobContainerClient.CreateAsync();
+            var containerName = Environment.GetEnvironmentVariable(EnvironmentSettingNames.StorageContainerName) ?? throw new InvalidOperationException();
+            var storageContainerUri = Path.Combine("https://", domainName, containerName);
+
+            var client = new BlobContainerClient(new Uri(storageContainerUri), new DefaultAzureCredential());
+            await client.CreateIfNotExistsAsync().ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -180,8 +182,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
         /// <inheritdoc/>
         protected override async Task OnDisposeFunctionAppDependenciesAsync()
         {
-            AzuriteManager.Dispose();
-
+            // AzuriteManager.Dispose();
             await ServiceBusResourceProvider.DisposeAsync();
             await DatabaseManager.DeleteDatabaseAsync();
         }

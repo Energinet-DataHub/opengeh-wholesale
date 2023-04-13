@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Net;
+using Azure.Identity;
+using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
@@ -30,6 +32,15 @@ public class HealthCheckEndpointTests : FunctionAppTestBase<ProcessManagerFuncti
     public HealthCheckEndpointTests(ProcessManagerFunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
         : base(fixture, testOutputHelper)
     {
+    }
+
+    [Fact]
+    public async Task Azurite_experiment()
+    {
+        var client = new BlobContainerClient(
+            new Uri("https://127.0.0.1:10000/devstoreaccount1/wholesale"), new DefaultAzureCredential());
+
+        bool exists = await client.ExistsAsync();
     }
 
     [Fact]
