@@ -158,12 +158,12 @@ public static class Program
         serviceCollection.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
         serviceCollection.AddSingleton(_ =>
-        {
-            var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
-            var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
+            {
+                var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
+                var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
+                return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
+            });
 
-            return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
-        });
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         serviceCollection.AddScoped<IActorRepository, ActorRepository>();
