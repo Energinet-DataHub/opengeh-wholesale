@@ -52,7 +52,7 @@ ENV PATH=$SPARK_HOME/bin:$HADOOP_HOME/bin:$PATH \
 # Dynamically downloading spark dependencies from conf/spark-defaults.conf. This is done to safe time in the build pipeline so that we don't need to download on every build.
 # Use of --repositories is needed as an alternative to Maven Central as this package repo is not working when downloading delta-core_2.12-2.3.0
 # See https://github.com/Energinet-DataHub/the-outlaws/issues/1053 for details
-RUN spark-shell --repositories "https://repo.maven.apache.org/maven2"
+RUN spark-shell --packages io.delta:delta-core_2.12:2.3.0
 
 # Make $HOME owned by the root, which is the user used in the container
 # This is needed for e.g. commands that create files or folders in $HOME
