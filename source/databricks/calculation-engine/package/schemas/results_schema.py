@@ -56,11 +56,21 @@ results_schema = StructType(
         # Null when quality is missing.
         # Example: 1234.534
         StructField(ResultSchemaField.quantity, DecimalType(18, 3), True),
-        # "missing" | "estimated" | "measured" | "calculated"
-        # Example: measured
         StructField(ResultSchemaField.quantity_quality, StringType(), False),
         StructField(ResultSchemaField.aggregation_level, StringType(), False),
     ]
 )
 """Schema for calculation results created by the calculator job.
 IMPORTANT: Any semantic change to this schema most likely requires a corresponding data migration of the results Delta table."""
+
+constraints = (
+    [
+        f"""{ResultSchemaField.batch_process_type} in ('BalanceFixing', 'Aggregation')""",
+        f"""{ResultSchemaField.time_series_type}
+                IN ('production', 'non_profiled_consumption', 'net_exchange_per_neighboring_ga', 'net_exchange_per_ga')""",
+        f"""DATALENGTH({ResultSchemaField.grid_area}) = 3""",
+        f"""DATALENGTH({ResultSchemaField.out_grid_area}) = 3""",
+        f"""{ResultSchemaField.quantity_quality} IN ('missing', 'estimated', 'measured', 'calculated', 'incomplete')""",
+        f"""{ResultSchemaField.aggregation_level} IN ('total_ga', 'es_brp_ga', 'es_ga', 'brp_ga')""",
+    ],
+)
