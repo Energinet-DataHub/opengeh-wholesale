@@ -50,7 +50,8 @@ ENV PATH=$SPARK_HOME/bin:$HADOOP_HOME/bin:$PATH \
     SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info"
 
 # Dynamically downloading spark dependencies from conf/spark-defaults.conf. This is done to safe time in the build pipeline so that we don't need to download on every build.
-RUN spark-shell
+# Use of --repositories is needed as an alternative to Maven Central as this package repo is not working when downloading download delta-core_2.12-2.3.0
+RUN spark-shell --repositories 	"https://repo1.maven.org/maven2/,http://mirrors.ibiblio.org/pub/mirrors/maven2"
 
 # Make $HOME owned by the root, which is the user used in the container
 # This is needed for e.g. commands that create files or folders in $HOME
