@@ -53,8 +53,8 @@ public static class EnvironmentSettingNames
     public const string DatabricksWorkspaceUrl = "DATABRICKS_WORKSPACE_URL";
     public const string DatabricksWorkspaceToken = "DATABRICKS_WORKSPACE_TOKEN";
 
-    public const string CalculationStorageConnectionString = "STORAGE_CONNECTION_STRING";
-    public const string CalculationStorageContainerName = "STORAGE_CONTAINER_NAME";
+    public const string StorageAccountDomainName = "STORAGE_ACCOUNT_DOMAIN_NAME";
+    public const string StorageContainerName = "STORAGE_CONTAINER_NAME";
 
     #endregion
 }
