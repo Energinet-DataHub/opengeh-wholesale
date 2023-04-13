@@ -46,7 +46,8 @@ public class Startup
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
         // https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
         services.AddHttpClient<ICalculationResultClient>();
-        services.AddOptions<CalculationResultClientOptions>();
+        services.AddOptions<CalculationResultClientOptions>()
+            .Bind(Configuration.GetSection("CalculationResultClientOptions"));
 
         services.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
             options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });

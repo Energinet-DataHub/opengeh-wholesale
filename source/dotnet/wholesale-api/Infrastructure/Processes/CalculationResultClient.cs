@@ -51,7 +51,7 @@ public class CalculationResultClient : ICalculationResultClient
             on_wait_timeout = "CANCEL",
             wait_timeout = "30s", // Make the operation synchronous
             statement = sql,
-            warehouse_id = _options.Value.SqlWarehouseId,
+            warehouse_id = _options.Value.DataBricksSqlWarehouseId,
         };
         var requestString = _jsonSerializer.Serialize(requestObject);
 
@@ -62,7 +62,7 @@ public class CalculationResultClient : ICalculationResultClient
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
 
-        return GetResult(response.Content);
+        return await GetResultAsync(response.Content).ConfigureAwait(false);
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<CalculationResultClientOptions> options)
@@ -74,17 +74,17 @@ public class CalculationResultClient : ICalculationResultClient
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
     }
 
-    private ProcessStepResult GetResult(HttpContent content)
+    private async Task<ProcessStepResult> GetResultAsync(HttpContent content)
     {
-        var body = content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<CalculationResultClientResponse>(body.Result);
+        var body = await content.ReadAsStringAsync().ConfigureAwait(false);
+        var result = _jsonSerializer.Deserialize<IEnumerable<CalculationResult>>(body);
         throw new NotImplementedException();
     }
 
     // TODO: Unit test the SQL (ensure it works as expected)
     private string CreateSqlStatement(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
     {
-        return $@"select *
+        return $@"select time, quantity, quantity_quality
 from wholesale_output.result
 where batch_id = '{batchId}'
   and grid_area = '{gridAreaCode.Code}'

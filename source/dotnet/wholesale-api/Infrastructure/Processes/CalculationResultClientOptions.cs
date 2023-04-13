@@ -17,9 +17,11 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 // TODO: Set up in dh3infrastructure: dbw-shared-workspace-token/dbw-shared-workspace-url/dbw-shared-warehouse-id
 public class CalculationResultClientOptions
 {
+    public const string SectionName = "CalculationResultClient";
+
     public string DatabricksUrl { get; set; } = default!;
 
     public string DatabricksAccessToken { get; set; } = default!;
 
-    public string SqlWarehouseId { get; set; } = default!;
+    public string DataBricksSqlWarehouseId { get; set; } = default!;
 }
