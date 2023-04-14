@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
@@ -58,11 +59,23 @@ public class CalculationResultClient : ICalculationResultClient
         // TODO: Use databricks workspace url from config
         // TODO: Enable SQL statement execution API in terraform: https://registry.terraform.io/providers/databricks/databricks/latest/docs/data-sources/sql_warehouse#attribute-reference
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, new StringContent(requestString)).ConfigureAwait(false);
+
+        var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+        dynamic jsonObject = JsonConvert.DeserializeObject(jsonResponse) ?? throw new InvalidOperationException();
+        var result = jsonObject.result.data_array;
+
+        var list = new List<ProcessResultPoint>();
+        foreach (var res in result)
+        {
+            // the sql statement dictates order of the columns
+            list.Add(new ProcessResultPoint(res[1], res[2], res[0]));
+        }
+
         // TODO: Unit test
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
 
-        return await GetResultAsync(response.Content).ConfigureAwait(false);
+        return MapToProcessStepResultDto(timeSeriesType, list);
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<CalculationResultClientOptions> options)
@@ -72,13 +85,6 @@ public class CalculationResultClient : ICalculationResultClient
         httpClient.DefaultRequestHeaders.Accept.Clear();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-    }
-
-    private async Task<ProcessStepResult> GetResultAsync(HttpContent content)
-    {
-        var body = await content.ReadAsStringAsync().ConfigureAwait(false);
-        var result = _jsonSerializer.Deserialize<IEnumerable<CalculationResult>>(body);
-        throw new NotImplementedException();
     }
 
     // TODO: Unit test the SQL (ensure it works as expected)
