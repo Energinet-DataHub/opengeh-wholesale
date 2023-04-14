@@ -30,7 +30,7 @@ from package.file_writers.process_step_result_writer import ProcessStepResultWri
 from package.file_writers.actors_writer import ActorsWriter
 import package.calculation_input as input
 
-from .args_helper import valid_date, valid_list, valid_log_level
+from .args_helper import valid_date, valid_list
 from .calculator_args import CalculatorArgs
 from package.storage_account_access import islocked
 
@@ -40,12 +40,6 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
-
-    # Infrastructure settings
-    p.add("--data-storage-account-name", type=str, required=False)
-    p.add("--data-storage-account-key", type=str, required=False)
-    p.add("--time-zone", type=str, required=False)
-    p.add("--log-level", type=valid_log_level, help="debug|information", required=False)
 
     # Run parameters
     p.add("--batch-id", type=str, required=True)
@@ -115,9 +109,12 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
 
-def _start(storage_account_name: str, storage_account_credetial: ClientSecretCredential, time_zone: str, job_args: argparse.Namespace) -> None:
-    db_logging.loglevel = job_args.log_level
-
+def _start(
+    storage_account_name: str,
+    storage_account_credetial: ClientSecretCredential,
+    time_zone: str,
+    job_args: argparse.Namespace,
+) -> None:
     if islocked(storage_account_name, storage_account_credetial):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
@@ -150,4 +147,7 @@ def start() -> None:
     time_zone = env_vars.get_time_zone()
     storage_account_name = env_vars.get_storage_account_name()
     credential = env_vars.get_storage_account_credential()
+
+    db_logging.loglevel = "information"
+
     _start(storage_account_name, credential, time_zone, job_args)

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.Base;
 using Energinet.DataHub.Wholesale.Contracts;
 using MediatR;
 
@@ -24,4 +25,4 @@ public sealed record CreateBatchCommand(
     ProcessType ProcessType,
     IEnumerable<string> GridAreaCodes,
     DateTimeOffset StartDate,
-    DateTimeOffset EndDate) : IRequest<Guid>;
+    DateTimeOffset EndDate) : ICommand<Guid>;

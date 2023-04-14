@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Contracts;
+using MediatR;
 
-public sealed record ProcessStepResultRequestDtoV3(Guid BatchId, string GridAreaCode, TimeSeriesType TimeSeriesType, string? EnergySupplierGln, string? BalanceResponsiblePartyGln);
+namespace Energinet.DataHub.Wholesale.Application.Base;
+
+public interface IIntegrationEvent : INotification
+{
+}

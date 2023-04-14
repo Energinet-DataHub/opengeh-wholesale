@@ -19,10 +19,11 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
@@ -49,6 +50,7 @@ public class Startup
         services.AddSwaggerGen(config =>
         {
             config.SupportNonNullableReferenceTypes();
+            config.OperationFilter<BinaryContentFilter>();
 
             // Set the comments path for the Swagger JSON and UI.
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -98,6 +100,7 @@ public class Startup
             cfg.RegisterServicesFromAssembly(typeof(Domain.Root).Assembly);
             cfg.RegisterServicesFromAssembly(typeof(Infrastructure.Root).Assembly);
         });
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
     }
 
     public void Configure(IApplicationBuilder app)

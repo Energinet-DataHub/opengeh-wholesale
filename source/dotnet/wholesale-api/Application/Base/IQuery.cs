@@ -11,9 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-namespace Energinet.DataHub.Wholesale.Contracts;
 
-/// <summary>
-/// An immutable batch.
-/// </summary>
-public sealed record BatchDtoV2(Guid BatchNumber, DateTimeOffset PeriodStart, DateTimeOffset PeriodEnd, DateTimeOffset? ExecutionTimeStart, DateTimeOffset? ExecutionTimeEnd, BatchState ExecutionState, bool IsBasisDataDownloadAvailable, string[] GridAreaCodes, ProcessType ProcessType);
+using MediatR;
+
+namespace Energinet.DataHub.Wholesale.Application.Base;
+
+public interface IQuery<out TResponse> : IRequest<TResponse>
+{
+}

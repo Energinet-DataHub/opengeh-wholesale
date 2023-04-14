@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Contracts;
+using MediatR;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V2;
+namespace Energinet.DataHub.Wholesale.Application.Base;
 
-public interface IBatchDtoV2Mapper
+public interface ICommand<out TResponse> : IRequest<TResponse>
 {
-    BatchDtoV2 Map(BatchDto batchDto);
+}
+
+public interface ICommand : IRequest
+{
 }

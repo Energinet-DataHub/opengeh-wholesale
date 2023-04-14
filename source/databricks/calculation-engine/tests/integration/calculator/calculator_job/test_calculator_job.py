@@ -50,19 +50,7 @@ def dummy_job_parameters(contracts_path: str) -> list[str]:
         f"{contracts_path}/calculation-job-parameters-reference.txt"
     )
 
-    command_line_args = [
-        "--data-storage-account-name",
-        "foo",
-        "--data-storage-account-key",
-        "foo",
-        "--time-zone",
-        "Europe/Copenhagen",
-        "--log-level",
-        "information",
-    ]
-    command_line_args.extend(process_manager_parameters)
-
-    return command_line_args
+    return process_manager_parameters
 
 
 def test__get_valid_args_or_throw__when_invoked_with_incorrect_parameters_fails() -> (
