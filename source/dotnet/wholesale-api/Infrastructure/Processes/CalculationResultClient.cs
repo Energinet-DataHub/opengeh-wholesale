@@ -29,12 +29,14 @@ public class CalculationResultClient : ICalculationResultClient
     private readonly HttpClient _httpClient;
     private readonly IOptions<CalculationResultClientOptions> _options;
     private readonly IJsonSerializer _jsonSerializer;
+    private readonly IProcessResultPointFactory _processResultPointFactory;
 
-    public CalculationResultClient(HttpClient httpClient, IOptions<CalculationResultClientOptions> options, IJsonSerializer jsonSerializer)
+    public CalculationResultClient(HttpClient httpClient, IOptions<CalculationResultClientOptions> options, IJsonSerializer jsonSerializer, IProcessResultPointFactory processResultPointFactory)
     {
         _httpClient = httpClient;
         _options = options;
         _jsonSerializer = jsonSerializer;
+        _processResultPointFactory = processResultPointFactory;
         ConfigureHttpClient(httpClient, options);
     }
 
@@ -61,15 +63,7 @@ public class CalculationResultClient : ICalculationResultClient
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, new StringContent(requestString)).ConfigureAwait(false);
 
         var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-        dynamic jsonObject = JsonConvert.DeserializeObject(jsonResponse) ?? throw new InvalidOperationException();
-        var result = jsonObject.result.data_array;
-
-        var list = new List<ProcessResultPoint>();
-        foreach (var res in result)
-        {
-            // the sql statement dictates order of the columns
-            list.Add(new ProcessResultPoint(res[1], res[2], res[0]));
-        }
+        var list = _processResultPointFactory.Create(jsonResponse);
 
         // TODO: Unit test
         if (!response.IsSuccessStatusCode)
