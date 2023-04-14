@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-public class BatchCreatedDomainEventHandler : IDomainEventHandler<BatchCreatedDomainEvent> // TODO LRN: Test + registering?
+public class BatchCreatedDomainEventHandler : IDomainEventHandler<BatchCreatedDomainEvent>
 {
     private readonly ICalculationDomainService _calculationDomainService;
 
