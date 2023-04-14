@@ -24,11 +24,10 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Core
         {
             return builder.AddAsyncCheck("DataLakeContainer", async () =>
             {
-                var client = new DataLakeServiceClient(connectionString);
                 try
                 {
-                    var container = client.GetFileSystemClient(containerName);
-                    return await container.ExistsAsync().ConfigureAwait(false)
+                    var containerClient = new DataLakeFileSystemClient(connectionString, containerName);
+                    return await containerClient.ExistsAsync().ConfigureAwait(false)
                         ? HealthCheckResult.Healthy()
                         : HealthCheckResult.Unhealthy();
                 }
