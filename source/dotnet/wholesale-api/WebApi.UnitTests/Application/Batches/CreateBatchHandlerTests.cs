@@ -32,6 +32,19 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Batches;
 public class CreateBatchHandlerTests
 {
     [Theory]
+    [AutoMoqData]
+    public async Task Handle_WhenCalled_ReturnsGuid(
+        CreateBatchCommand createBatchCommand,
+        CreateBatchHandler sut)
+    {
+        // Arrange & Act
+        var actual = await sut.Handle(createBatchCommand, default);
+
+        // Assert
+        actual.GetType().Should().Be(typeof(Guid));
+    }
+
+    [Theory]
     [InlineAutoMoqData]
     public async Task Handle_AddsBatchToRepository(
         [Frozen] Mock<IBatchFactory> batchFactoryMock,

@@ -17,12 +17,12 @@ using MediatR;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
 
-public class DomainEventsDispatcherPipeline<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class DomainEventsDispatcherPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
     private readonly IDomainEventDispatcher _domainEventDispatcher;
 
-    public DomainEventsDispatcherPipeline(IDomainEventDispatcher domainEventDispatcher)
+    public DomainEventsDispatcherPipelineBehavior(IDomainEventDispatcher domainEventDispatcher)
     {
         _domainEventDispatcher = domainEventDispatcher;
     }

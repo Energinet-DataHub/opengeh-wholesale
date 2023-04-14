@@ -101,7 +101,7 @@ public class Startup
             cfg.RegisterServicesFromAssembly(typeof(Infrastructure.Root).Assembly);
         });
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DomainEventsDispatcherPipeline<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DomainEventsDispatcherPipelineBehavior<,>));
     }
 
     public void Configure(IApplicationBuilder app)
