@@ -14,7 +14,7 @@
 
 # The spark version should should follow the spark version in databricks.
 # The databricks version of spark is controlled from dh3-infrastructure and uses latest LTS (ATTOW - Spark v3.3.0)
-FROM jupyter/pyspark-notebook:spark-3.3.2
+FROM jupyter/pyspark-notebook:spark-3.3.0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -29,15 +29,15 @@ RUN apt-get update; \
 
 # Install spark packages with mamba (packages has to be updated according to spark version)
 RUN mamba install --quiet --yes --satisfied-skip-solve \
-    'pyarrow=11.0.*' 'rope=1.6.*' 'pytest=7.3.*' 'configargparse=1.5.3'  \
-    'coverage=7.2.*' 'azure-storage-blob=12.14.*' 'pytest-mock=3.10.*' \
+    'pyarrow=9.0.*' 'rope=1.6.*' 'pytest=7.3.*' 'configargparse=1.5.3'  \
+    'coverage=7.0.*' 'azure-storage-blob=12.14.*' 'pytest-mock=3.10.*' \
     'virtualenv=20.*'
 
 # Install python packages used in pyspark development (keep spark dependent packages alligned)
 # delta-spark version has to have compatibility with spark version (https://docs.delta.io/latest/releases.html)
 # example (delta 2.2.x = spark 3.3.x)
 RUN pip --no-cache-dir install pyspelling azure-eventhub azure-identity azure-storage-file-datalake coverage-threshold types-python-dateutil \
-    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli mypy delta-spark==2.3.0 \
+    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli mypy delta-spark==2.2.0 \
     build
 
 # Below will make everything in the directory owned by the group ${NB_GID}
@@ -49,9 +49,7 @@ ENV PATH=$SPARK_HOME/bin:$HADOOP_HOME/bin:$PATH \
     PYTHONPATH="${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.9-src.zip" \
     SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info"
 
-# Dynamically downloading spark dependencies from conf/spark-defaults.conf. This is done to safe time in the build pipeline so that we don't need to download on every build.
-# Use of --repositories is needed as an alternative to Maven Central as this package repo is not working when downloading delta-core_2.12-2.3.0
-# See https://github.com/Energinet-DataHub/the-outlaws/issues/1053 for details
+# Dynamically downloading spark dependencies from conf/spark-defaults.conf. This is done to save time in the build pipeline so that we don't need to download on every build.
 RUN spark-shell
 
 # Make $HOME owned by the root, which is the user used in the container
