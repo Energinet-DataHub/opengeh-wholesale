@@ -45,7 +45,7 @@ public class RequestMatchingHandlerTests
         foreach (var requestType in commandTypes)
         {
             // Assert
-            handlerTypes.Should().ContainSingle(handlerType => IsHandlerForCommand(handlerType, requestType), $"handler for type {requestType} expected");
+            handlerTypes.Should().ContainSingle(handlerType => IsHandlerForRequest(handlerType, requestType), $"handler for type {requestType} expected");
         }
     }
 
@@ -65,7 +65,7 @@ public class RequestMatchingHandlerTests
         return type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IRequestHandler<,>));
     }
 
-    private static bool IsHandlerForCommand(Type handlerType, Type requestType)
+    private static bool IsHandlerForRequest(Type handlerType, Type requestType)
     {
         return handlerType.GetInterfaces().Any(i => i.GenericTypeArguments.Any(ta => ta == requestType));
     }
