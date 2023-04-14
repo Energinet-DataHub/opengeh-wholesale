@@ -106,11 +106,8 @@ def test_data_factory(
 def test_flex_consumption_calculation_per_ga_and_es(
     test_data_factory: Callable[..., DataFrame]
 ) -> None:
-    results = {}
-    results[
-        ResultKeyName.flex_consumption_with_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(test_data_factory())
-    result = aggregate_flex_consumption_ga_es(results).sort(
+    df = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    result = aggregate_flex_consumption_ga_es(df).sort(
         Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
     )
     result_collect = result.collect()
@@ -126,11 +123,8 @@ def test_flex_consumption_calculation_per_ga_and_es(
 def test_flex_consumption_calculation_per_ga_and_brp(
     test_data_factory: Callable[..., DataFrame]
 ) -> None:
-    results = {}
-    results[
-        ResultKeyName.flex_consumption_with_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(test_data_factory())
-    result = aggregate_flex_consumption_ga_brp(results).sort(
+    df = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    result = aggregate_flex_consumption_ga_brp(df).sort(
         Colname.grid_area, Colname.balance_responsible_id, Colname.time_window
     )
     result_collect = result.collect()

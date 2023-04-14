@@ -119,6 +119,29 @@ def _calculate_flex_consumption(
     # temporay_flex_consumption_per_per_ga_and_brp_and_es needs to be replaced with the one that includes grid loss when it is ready
     flex_consumption_per_per_ga_and_brp_and_es = temporay_flex_consumption_per_per_ga_and_brp_and_es  # replace this with grid loss calculation
 
+    # flex consumption per energy supplier
+    flex_consumption_per_ga_and_es = agg_steps.aggregate_flex_consumption_ga_es(
+        flex_consumption_per_per_ga_and_brp_and_es
+    )
+
+    result_writer.write(
+        flex_consumption_per_ga_and_es,
+        TimeSeriesType.FLEX_CONSUMPTION,
+        AggregationLevel.es_per_ga,
+    )
+
+    # flex consumption per balance responsible
+    flex_consumption_per_ga_and_brp = agg_steps.aggregate_flex_consumption_ga_brp(
+        flex_consumption_per_per_ga_and_brp_and_es
+    )
+
+    result_writer.write(
+        flex_consumption_per_ga_and_brp,
+        TimeSeriesType.FLEX_CONSUMPTION,
+        AggregationLevel.brp_per_ga,
+    )
+
+    # flex consumption per grid area
     flex_consumption_per_ga = agg_steps.aggregate_flex_consumption_ga(
         flex_consumption_per_per_ga_and_brp_and_es
     )
@@ -135,7 +158,7 @@ def _calculate_non_profiled_consumption(
     result_writer: ProcessStepResultWriter,
     enriched_time_series_point_df: DataFrame,
 ) -> None:
-    # Non-profiled consumption per balance responsible party and energy supplier
+    # flex consumption per balance responsible party and energy supplier
     consumption_per_ga_and_brp_and_es = (
         agg_steps.aggregate_non_profiled_consumption_ga_brp_es(
             enriched_time_series_point_df

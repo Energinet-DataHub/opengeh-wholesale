@@ -137,9 +137,9 @@ def aggregate_non_profiled_consumption_ga_es(
     )
 
 
-def aggregate_flex_consumption_ga_es(results: dict) -> DataFrame:
+def aggregate_flex_consumption_ga_es(result: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_es(
-        results[ResultKeyName.flex_consumption_with_grid_loss],
+        result,
         MeteringPointType.consumption,
     )
 
@@ -175,9 +175,9 @@ def aggregate_non_profiled_consumption_ga_brp(result: DataFrame) -> DataFrame:
     )
 
 
-def aggregate_flex_consumption_ga_brp(results: dict) -> DataFrame:
+def aggregate_flex_consumption_ga_brp(result: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_brp(
-        results[ResultKeyName.flex_consumption_with_grid_loss],
+        result,
         MeteringPointType.consumption,
     )
 
