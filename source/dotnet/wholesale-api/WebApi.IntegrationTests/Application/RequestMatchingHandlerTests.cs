@@ -33,7 +33,7 @@ public class RequestMatchingHandlerTests
     public void EachCommand_HasASingleHandler(Type type)
     {
         // Arrange
-        var commandTypes = type.Assembly.GetTypes()
+        var requestTypes = type.Assembly.GetTypes()
             .Where(IsIRequest)
             .ToList();
 
@@ -42,7 +42,7 @@ public class RequestMatchingHandlerTests
             .ToList();
 
         // Act
-        foreach (var requestType in commandTypes)
+        foreach (var requestType in requestTypes)
         {
             // Assert
             handlerTypes.Should().ContainSingle(handlerType => IsHandlerForRequest(handlerType, requestType), $"handler for type {requestType} expected");
