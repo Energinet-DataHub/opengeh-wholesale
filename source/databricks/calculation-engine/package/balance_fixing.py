@@ -112,9 +112,12 @@ def _calculate_production(
 def _calculate_flex_consumption(
     result_writer: ProcessStepResultWriter, enriched_time_series: DataFrame
 ) -> None:
-    flex_consumption_per_per_ga_and_brp_and_es = (
+    temporay_flex_consumption_per_per_ga_and_brp_and_es = (
         agg_steps.aggregate_flex_consumption_ga_brp_es(enriched_time_series)
     )
+
+    # temporay_flex_consumption_per_per_ga_and_brp_and_es needs to be replaced with the one that includes grid loss when it is ready
+    flex_consumption_per_per_ga_and_brp_and_es = temporay_flex_consumption_per_per_ga_and_brp_and_es  # replace this with grid loss calculation
 
     flex_consumption_per_ga = agg_steps.aggregate_flex_consumption_ga(
         flex_consumption_per_per_ga_and_brp_and_es
