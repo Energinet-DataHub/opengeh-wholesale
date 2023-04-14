@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -59,7 +61,7 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         const string anyServiceBusConnectionString = "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=someKeyName;SharedAccessKey=someKeyValue";
 
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.AppInsightsInstrumentationKey, anyValue);
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendAppId, anyValue);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendBffAppId, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.ExternalOpenIdUrl, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.InternalOpenIdUrl, anyValue);
         Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{ConfigurationSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
@@ -70,11 +72,15 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.BatchCreatedEventName, "batch-created");
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.DomainEventsTopicName, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.DateTimeZoneId, "Europe/Copenhagen");
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceUrl, "http://localhost/");
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceToken, "no_token");
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
+        serviceCollection.AddOptions<DatabricksOptions>()
+            .Configure<IConfiguration>((options, _) =>
+            {
+                options.DATABRICKS_WORKSPACE_URL = "http://localhost/";
+                options.DATABRICKS_WORKSPACE_TOKEN = "no_token";
+            });
     }
 }
