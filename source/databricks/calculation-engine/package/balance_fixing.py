@@ -97,9 +97,36 @@ def _calculate_net_exchange_per_ga(
 def _calculate_production(
     result_writer: ProcessStepResultWriter, enriched_time_series: DataFrame
 ) -> None:
-    production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production_ga_brp_es(
-        enriched_time_series
+    temporay_production_per_per_ga_and_brp_and_es = (
+        agg_steps.aggregate_production_ga_brp_es(enriched_time_series)
     )
+
+    # temporay_production_per_per_ga_and_brp_and_es is without system correction, this has to be added at a later date
+    production_per_per_ga_and_brp_and_es = temporay_production_per_per_ga_and_brp_and_es  # replace with system correction calculation
+
+    # production per energy supplier
+    production_per_ga_and_es = agg_steps.aggregate_production_ga_es(
+        production_per_per_ga_and_brp_and_es
+    )
+
+    result_writer.write(
+        production_per_ga_and_es,
+        TimeSeriesType.PRODUCTION,
+        AggregationLevel.es_per_ga,
+    )
+
+    # production per balance responsible
+    production_per_ga_and_brp = agg_steps.aggregate_production_ga_brp(
+        production_per_per_ga_and_brp_and_es
+    )
+
+    result_writer.write(
+        production_per_ga_and_brp,
+        TimeSeriesType.PRODUCTION,
+        AggregationLevel.brp_per_ga,
+    )
+
+    # production per grid area
     production_per_ga = agg_steps.aggregate_production_ga(
         production_per_per_ga_and_brp_and_es
     )
@@ -116,7 +143,7 @@ def _calculate_flex_consumption(
         agg_steps.aggregate_flex_consumption_ga_brp_es(enriched_time_series)
     )
 
-    # temporay_flex_consumption_per_per_ga_and_brp_and_es needs to be replaced with the one that includes grid loss when it is ready
+    # temporay_flex_consumption_per_per_ga_and_brp_and_es is without grid loss, this has to be added at a later date
     flex_consumption_per_per_ga_and_brp_and_es = temporay_flex_consumption_per_per_ga_and_brp_and_es  # replace this with grid loss calculation
 
     # flex consumption per energy supplier
