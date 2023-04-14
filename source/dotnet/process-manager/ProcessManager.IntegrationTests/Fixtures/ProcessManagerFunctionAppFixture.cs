@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics;
-using Azure.Storage.Blobs;
+using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -158,13 +158,9 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             await publishIntegrationEventWhenProcessCompletedListener.AddTopicSubscriptionListenerAsync(IntegrationEventsTopic.Name, publishIntegrationEventWhenProcessCompletedSubscriptionName);
             ProcessCompletedIntegrationEventListener = new ServiceBusTestListener(publishIntegrationEventWhenProcessCompletedListener);
 
-            // Create storage container - ought to be a Data Lake file system
-            var blobContainerClient = new BlobContainerClient(
-                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
-                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
-
-            if (!await blobContainerClient.ExistsAsync())
-                await blobContainerClient.CreateAsync();
+            // Create storage container
+            var dataLakeFileSystemClient = new DataLakeFileSystemClient(EnvironmentSettingNames.CalculationStorageConnectionString, EnvironmentSettingNames.CalculationStorageContainerName);
+            await dataLakeFileSystemClient.CreateIfNotExistsAsync().ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
