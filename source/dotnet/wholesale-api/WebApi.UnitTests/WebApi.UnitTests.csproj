@@ -77,6 +77,8 @@ limitations under the License.
     </EmbeddedResource>
     <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
     <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
+    <None Remove="Infrastructure\Processes\CalculationResultTest.json" />
+    <EmbeddedResource Include="Infrastructure\Processes\CalculationResultTest.json" />
   </ItemGroup>
 
   <ItemGroup>
