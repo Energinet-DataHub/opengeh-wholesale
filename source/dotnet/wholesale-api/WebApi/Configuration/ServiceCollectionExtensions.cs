@@ -56,7 +56,7 @@ internal static class ServiceCollectionExtensions
     {
         var externalOpenIdUrl = configuration[ConfigurationSettingNames.ExternalOpenIdUrl]!;
         var internalOpenIdUrl = configuration[ConfigurationSettingNames.InternalOpenIdUrl]!;
-        var backendAppId = configuration[ConfigurationSettingNames.BackendAppId]!;
+        var backendAppId = configuration[ConfigurationSettingNames.BackendBffAppId]!;
 
         serviceCollection.AddJwtBearerAuthentication(externalOpenIdUrl, internalOpenIdUrl, backendAppId);
         serviceCollection.AddPermissionAuthorization();
@@ -94,13 +94,9 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ICalculationDomainService, CalculationDomainService>();
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
 
-        services.AddSingleton(_ =>
-        {
-            var dbwUrl = configuration[ConfigurationSettingNames.DatabricksWorkspaceUrl];
-            var dbwToken = configuration[ConfigurationSettingNames.DatabricksWorkspaceToken];
+        services.AddOptions<DatabricksOptions>().Bind(configuration);
+        services.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
-            return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
-        });
         services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         services.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
         services.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
