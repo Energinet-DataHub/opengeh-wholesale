@@ -65,12 +65,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.ExternalOpenIdUrl, "disabled");
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.InternalOpenIdUrl, "disabled");
-            Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendAppId, "disabled");
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendBffAppId, "disabled");
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
-
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, "wholesale");
 
