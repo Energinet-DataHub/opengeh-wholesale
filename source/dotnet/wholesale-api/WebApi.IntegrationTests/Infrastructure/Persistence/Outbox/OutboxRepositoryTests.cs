@@ -48,7 +48,6 @@ public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
         actual.Should().BeEquivalentTo(expected);
 
-        // TODO AJW
         writeContext.Remove(expected);
         await writeContext.SaveChangesAsync();
     }

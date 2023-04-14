@@ -14,6 +14,7 @@
 
 using System.Net;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
 {
@@ -39,6 +40,19 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
         public static IDatabricksWheelClient CreateClient(string baseUrl, string token, long timeoutSeconds = 30)
         {
             return new DatabricksWheelClient(baseUrl, token, timeoutSeconds);
+        }
+
+        /// <summary>
+        /// Create client object with specified base URL, access token and timeout.
+        /// </summary>
+        /// <param name="optionsFactory">The databricks settings (options).</param>
+        /// <param name="timeoutSeconds">Web request time out in seconds</param>
+        public DatabricksWheelClient(IOptions<DatabricksOptions> optionsFactory, long timeoutSeconds = 30)
+        {
+            var options = optionsFactory.Value;
+            var apiUrl = new Uri(new Uri(options.DATABRICKS_WORKSPACE_URL), $"api/{Version}/");
+            _httpClient = CreateHttpClient(options.DATABRICKS_WORKSPACE_TOKEN, timeoutSeconds, apiUrl);
+            Jobs = new JobsApiClient21(_httpClient);
         }
 
         /// <summary>
