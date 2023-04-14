@@ -21,7 +21,7 @@ from pyspark.sql import SparkSession
 import package.infrastructure as infra
 from package.codelists import MarketRole, TimeSeriesType, AggregationLevel
 from package.constants import Colname, PartitionKeyName
-from package.schemas import results_schema, ResultSchemaField
+from package.schemas import results_schema, ResultSchemaField, constraints
 
 DATABASE_NAME = "wholesale_output"
 RESULT_TABLE_NAME = "result"
@@ -201,6 +201,9 @@ class ProcessStepResultWriter:
             .addColumns(results_schema)
             .execute()
         )
+        # Add constraints
+        for constraint in constraints:
+            spark.sql(f"ALTER TABLE {RESULT_TABLE_NAME} ADD CONSTRAINT {constraint}")
 
     def _write_result_to_table(
         self,
