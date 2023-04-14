@@ -64,6 +64,7 @@ def _calculate(
     )
     _calculate_net_exchange_per_ga(result_writer, enriched_time_series_point_df)
     _calculate_production(result_writer, enriched_time_series_point_df)
+    _calculate_flex_consumption(result_writer, enriched_time_series_point_df)
     _calculate_non_profiled_consumption(
         actors_writer, result_writer, enriched_time_series_point_df
     )
@@ -105,6 +106,24 @@ def _calculate_production(
 
     result_writer.write(
         production_per_ga, TimeSeriesType.PRODUCTION, AggregationLevel.total_ga
+    )
+
+
+def _calculate_flex_consumption(
+    result_writer: ProcessStepResultWriter, enriched_time_series: DataFrame
+) -> None:
+    flex_consumption_per_per_ga_and_brp_and_es = (
+        agg_steps.aggregate_flex_consumption_ga_brp_es(enriched_time_series)
+    )
+
+    flex_consumption_per_ga = agg_steps.aggregate_flex_consumption_ga(
+        flex_consumption_per_per_ga_and_brp_and_es
+    )
+
+    result_writer.write(
+        flex_consumption_per_ga,
+        TimeSeriesType.FLEX_CONSUMPTION,
+        AggregationLevel.total_ga,
     )
 
 
