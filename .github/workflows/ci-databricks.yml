@@ -105,7 +105,7 @@ jobs:
       path_static_checks: ./source/databricks/calculation-engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
-      test_report_path: ./source/databricks/calculation-engine/tests/htmlcov/
+      test_report_path: ./source/databricks/calculation-engine/tests
 
   mypy_check:
     runs-on: ubuntu-latest
