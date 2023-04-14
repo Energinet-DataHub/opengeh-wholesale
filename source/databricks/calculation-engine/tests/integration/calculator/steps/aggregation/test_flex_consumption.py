@@ -146,11 +146,8 @@ def test_flex_consumption_calculation_per_ga_and_brp(
 def test_flex_consumption_calculation_per_ga(
     test_data_factory: Callable[..., DataFrame]
 ) -> None:
-    results = {}
-    results[
-        ResultKeyName.flex_consumption_with_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(test_data_factory())
-    result = aggregate_flex_consumption_ga(results).sort(
+    df = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    result = aggregate_flex_consumption_ga(df).sort(
         Colname.grid_area, Colname.time_window
     )
     result_collect = result.collect()
