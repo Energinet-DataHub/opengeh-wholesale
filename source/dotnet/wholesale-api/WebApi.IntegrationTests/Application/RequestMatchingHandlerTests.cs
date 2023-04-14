@@ -26,9 +26,9 @@ public class RequestMatchingHandlerTests
     /// A request can be either a command or a query.
     /// </summary>
     [Theory]
-    [InlineAutoData(typeof(Root))]
+    [InlineAutoData(typeof(Wholesale.WebApi.Root))]
     [InlineAutoData(typeof(Wholesale.Application.Root))]
-    [InlineAutoData(typeof(Domain.Root))]
+    [InlineAutoData(typeof(Wholesale.Domain.Root))]
     [InlineAutoData(typeof(Wholesale.Infrastructure.Root))]
     public void EachRequest_HasMatchingHandler(Type type)
     {
