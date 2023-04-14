@@ -27,8 +27,8 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.0.1" />
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.0.1" />
+    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.1.0-alpha-322" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.1.0-alpha-322" />
     <PackageReference Include="Energinet.DataHub.MessageHub.IntegrationTesting" Version="3.2.0" />
     <PackageReference Include="Energinet.DataHub.MeteringPoints.IntegrationEvents" Version="1.0.4" />
     <PackageReference Include="Energinet.DataHub.MessageHub.Core" Version="3.4.0" />
