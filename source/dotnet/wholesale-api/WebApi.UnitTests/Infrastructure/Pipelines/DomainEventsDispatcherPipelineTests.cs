@@ -30,7 +30,7 @@ public class DomainEventsDispatcherPipelineTests
 
     [Theory]
     [AutoMoqData]
-    public async Task Handle_WhenCalled_CallsCommit(
+    public async Task Handle_WhenCalled_CallsDispatch(
         [Frozen] Mock<IDomainEventDispatcher> unitOfWorkMock,
         CreateBatchCommand createBatchCommand,
         DomainEventsDispatcherPipelineBehavior<CreateBatchCommand, Guid> sut)

@@ -25,7 +25,7 @@ public class BatchCreatedDomainEventHandlerTests
 {
     [Theory]
     [AutoMoqData]
-    public async Task Handle_WhenCalled_ReturnsGuid(
+    public async Task Handle_WhenCalled_CallsStart(
         [Frozen]Mock<ICalculationDomainService> calculationDomainService,
         BatchCreatedDomainEvent batchCreatedDomainEvent,
         BatchCreatedDomainEventHandler sut)
