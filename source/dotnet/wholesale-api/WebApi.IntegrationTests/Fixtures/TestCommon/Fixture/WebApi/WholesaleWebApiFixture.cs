@@ -79,9 +79,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 .CreateAsync();
 
             // Create storage container
-            var dataLakeFileSystemClient = new DataLakeFileSystemClient(
-                ConfigurationSettingNames.CalculationStorageConnectionString,
-                ConfigurationSettingNames.CalculationStorageContainerName);
+            var dataLakeFileSystemClient = new DataLakeFileSystemClient(Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString), Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName));
             await dataLakeFileSystemClient.CreateIfNotExistsAsync().ConfigureAwait(false);
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);

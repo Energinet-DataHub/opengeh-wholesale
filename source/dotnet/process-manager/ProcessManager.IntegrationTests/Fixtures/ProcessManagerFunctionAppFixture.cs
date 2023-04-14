@@ -159,7 +159,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             ProcessCompletedIntegrationEventListener = new ServiceBusTestListener(publishIntegrationEventWhenProcessCompletedListener);
 
             // Create storage container
-            var dataLakeFileSystemClient = new DataLakeFileSystemClient(EnvironmentSettingNames.CalculationStorageConnectionString, EnvironmentSettingNames.CalculationStorageContainerName);
+            var dataLakeFileSystemClient = new DataLakeFileSystemClient(Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString), Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
             await dataLakeFileSystemClient.CreateIfNotExistsAsync().ConfigureAwait(false);
         }
 
