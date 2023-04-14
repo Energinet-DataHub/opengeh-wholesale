@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
+using Energinet.DataHub.Wholesale.Domain.Base;
 
-namespace Energinet.DataHub.Wholesale.Application.Base;
+namespace Energinet.DataHub.Wholesale.Infrastructure.EventDispatching;
 
-public interface IQueryHandler<in TQuery, TResponse> : IRequestHandler<TQuery, TResponse>
-    where TQuery : IQuery<TResponse>
+public interface IDomainEventContainer
 {
+    IReadOnlyCollection<IDomainEvent> GetAllDomainEvents();
+
+    void ClearAllDomainEvents();
 }

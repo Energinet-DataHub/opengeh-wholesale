@@ -122,7 +122,7 @@ internal static class ServiceCollectionExtensions
         var messageTypes = new Dictionary<Type, string>
         {
             {
-                typeof(BatchCreatedDomainEventDto),
+                typeof(BatchCreatedDomainEvent),
                 configuration[ConfigurationSettingNames.BatchCreatedEventName]!
             },
         };
