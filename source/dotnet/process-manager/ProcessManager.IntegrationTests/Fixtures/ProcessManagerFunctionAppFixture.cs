@@ -158,7 +158,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             await publishIntegrationEventWhenProcessCompletedListener.AddTopicSubscriptionListenerAsync(IntegrationEventsTopic.Name, publishIntegrationEventWhenProcessCompletedSubscriptionName);
             ProcessCompletedIntegrationEventListener = new ServiceBusTestListener(publishIntegrationEventWhenProcessCompletedListener);
 
-            // Create storage container
+            // Create storage container. Note: Azurite is based on the Blob Storage API, but since the Data Lake Storage Gen2 API is built on top of it, we can still create the container like this
             var dataLakeFileSystemClient = new DataLakeFileSystemClient(Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString), Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
             await dataLakeFileSystemClient.CreateIfNotExistsAsync().ConfigureAwait(false);
         }

@@ -78,7 +78,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 .SetEnvironmentVariableToTopicName(ConfigurationSettingNames.DomainEventsTopicName)
                 .CreateAsync();
 
-            // Create storage container
+            // Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
             var dataLakeFileSystemClient = new DataLakeFileSystemClient(Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString), Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName));
             await dataLakeFileSystemClient.CreateIfNotExistsAsync().ConfigureAwait(false);
 
