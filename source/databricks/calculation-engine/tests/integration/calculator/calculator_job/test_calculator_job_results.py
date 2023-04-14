@@ -37,6 +37,14 @@ from package.constants import Colname
         ),
         (
             TimeSeriesType.PRODUCTION.value,
+            AggregationLevel.es_per_ga.value,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            AggregationLevel.brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
             AggregationLevel.total_ga.value,
         ),
         (
@@ -53,6 +61,18 @@ from package.constants import Colname
         ),
         (
             TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            AggregationLevel.es_per_ga.value,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            AggregationLevel.brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
             AggregationLevel.total_ga.value,
         ),
     ],
