@@ -56,6 +56,8 @@ results_schema = StructType(
         # Null when quality is missing.
         # Example: 1234.534
         StructField(ResultSchemaField.quantity, DecimalType(18, 3), True),
+        # "missing" | "estimated" | "measured" | "calculated" | "incomplete"
+        # Example: measured
         StructField(ResultSchemaField.quantity_quality, StringType(), False),
         StructField(ResultSchemaField.aggregation_level, StringType(), False),
     ]

@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
 using Moq;
+using Test.Core;
 using Xunit;
 using Xunit.Abstractions;
 
