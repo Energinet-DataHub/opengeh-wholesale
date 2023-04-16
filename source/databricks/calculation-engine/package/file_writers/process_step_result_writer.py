@@ -203,7 +203,9 @@ class ProcessStepResultWriter:
         )
         # Add constraints
         for constraint in constraints:
-            spark.sql(f"ALTER TABLE {RESULT_TABLE_NAME} ADD CONSTRAINT {constraint}")
+            spark.sql(
+                f"ALTER TABLE {RESULT_TABLE_NAME} ADD CONSTRAINT {constraint[0]}_chk ({constraint[1]})"
+            )
 
     def _write_result_to_table(
         self,
