@@ -22,6 +22,7 @@ from package.datamigration.migration_script_args import MigrationScriptArgs
 
 
 MIGRATION_SCRIPT_NAME = "202304130900_Add_result_table_constraints"
+TABLE_NAME = "result"
 
 
 @pytest.mark.parametrize(
@@ -40,28 +41,25 @@ MIGRATION_SCRIPT_NAME = "202304130900_Add_result_table_constraints"
     ],
 )
 def test__apply__enforces_data_constraints(
-    tests_temp_path: str,
+    tests_path: str,
     spark: SparkSession,
     column_name: str,
     invalid_column_value: str,
 ) -> None:
     # Arrange
     sut = _get_migration_script()
-    path = f"{tests_temp_path}/{MIGRATION_SCRIPT_NAME}"
-    shutil.rmtree(path, ignore_errors=True)  # Clean up after previous runs
-    delta_table_path = f"{path}/calculation-output/result"
-    _create_result_table(spark, delta_table_path)  # Create table to be migrated
+    _create_result_table(spark, tests_path)  # Create table to be migrated
     migration_args = MigrationScriptArgs("", "", "", spark)
 
     # Act
     sut.apply(migration_args)
 
-    # Assert: Column `out_grid_area` has been added as a string column with null values for existing rows
-    results_df = spark.read.format("delta").load(delta_table_path)
+    # Assert:
+    results_df = spark.read.table(TABLE_NAME)
 
     invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
     with pytest.raises(Exception) as ex:
-        invalid_df.write.format("delta").mode("overwrite").save(delta_table_path)
+        invalid_df.write.format("delta").mode("overwrite").saveAsTable(TABLE_NAME)
 
     assert str(ex) == "foo"
 
@@ -72,7 +70,12 @@ def _get_migration_script() -> ModuleType:
     )
 
 
-def _create_result_table(spark: SparkSession, delta_table_path: str) -> None:
+def _create_result_table(spark: SparkSession, tests_path: str) -> None:
+    spark.sql(f"DROP TABLE IF EXISTS {TABLE_NAME}")
+    shutil.rmtree(
+        f"{tests_path}/datamigration/migration_scripts/spark-warehouse/{TABLE_NAME}",
+        ignore_errors=True,
+    )
     row = {
         "grid_area": "543",
         "out_grid_area": "543",
@@ -82,4 +85,4 @@ def _create_result_table(spark: SparkSession, delta_table_path: str) -> None:
         "aggregation_level": "total_ga",
     }
     df = spark.createDataFrame(data=[row])
-    df.write.format("delta").mode("overwrite").save(delta_table_path)
+    df.write.format("delta").saveAsTable(TABLE_NAME)

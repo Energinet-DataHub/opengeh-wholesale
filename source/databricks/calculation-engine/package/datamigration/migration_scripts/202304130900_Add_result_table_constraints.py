@@ -20,8 +20,8 @@ RESULT_TABLE_NAME = "result"
 CONSTRAINTS = [
     "batch_process_type in ('BalanceFixing', 'Aggregation')",
     "time_series_type IN ('production', 'non_profiled_consumption', 'net_exchange_per_neighboring_ga', 'net_exchange_per_ga')",
-    "DATALENGTH(grid_area) = 3",
-    "DATALENGTH(out_grid_area) = 3",
+    "LENGTH(grid_area) = 3",
+    "LENGTH(out_grid_area) = 3",
     "quantity_quality IN ('missing', 'estimated', 'measured', 'calculated', 'incomplete')",
     "aggregation_level IN ('total_ga', 'es_brp_ga', 'es_ga', 'brp_ga')",
 ]
@@ -32,7 +32,7 @@ def apply(args: MigrationScriptArgs) -> None:
         args.spark,
         RESULT_TABLE_NAME,
     )
-    ids = range(len(CONSTRAINTS))
+    ids = iter(range(len(CONSTRAINTS)))
     statements = [
         f"ALTER TABLE {{table_name}} ADD CONSTRAINT {next(ids)}_chk CHECK ({s})"
         for s in CONSTRAINTS
