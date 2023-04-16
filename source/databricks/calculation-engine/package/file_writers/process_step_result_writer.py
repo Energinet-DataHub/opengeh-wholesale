@@ -186,6 +186,9 @@ class ProcessStepResultWriter:
             f"{container_path}/{infra.get_calculation_output_folder()}/result"
         )
 
+        if DeltaTable.isDeltaTable(spark, table_location):
+            return
+
         # First create database if not already existing
         spark.sql(
             f"CREATE DATABASE IF NOT EXISTS {DATABASE_NAME} \
@@ -204,7 +207,7 @@ class ProcessStepResultWriter:
         # Add constraints
         for constraint in constraints:
             spark.sql(
-                f"ALTER TABLE {RESULT_TABLE_NAME} ADD CONSTRAINT {constraint[0]}_chk ({constraint[1]})"
+                f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD CONSTRAINT {constraint[0]} CHECK ({constraint[1]})"
             )
 
     def _write_result_to_table(

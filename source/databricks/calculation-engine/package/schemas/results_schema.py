@@ -65,32 +65,30 @@ results_schema = StructType(
 """Schema for calculation results created by the calculator job.
 IMPORTANT: Any semantic change to this schema most likely requires a corresponding data migration of the results Delta table."""
 
-constraints = (
-    [
-        (
-            f"{ResultSchemaField.batch_process_type}_chk",
-            f"{ResultSchemaField.batch_process_type} in ('BalanceFixing', 'Aggregation')",
-        ),
-        (
-            f"{ResultSchemaField.time_series_type}_chk",
-            f"""{ResultSchemaField.time_series_type}
+constraints = [
+    (
+        f"{ResultSchemaField.batch_process_type}_chk",
+        f"{ResultSchemaField.batch_process_type} in ('BalanceFixing', 'Aggregation')",
+    ),
+    (
+        f"{ResultSchemaField.time_series_type}_chk",
+        f"""{ResultSchemaField.time_series_type}
                 IN ('production', 'non_profiled_consumption', 'net_exchange_per_neighboring_ga', 'net_exchange_per_ga')""",
-        ),
-        (
-            f"LENGTH({ResultSchemaField.grid_area}_chk",
-            f"LENGTH({ResultSchemaField.grid_area}) = 3",
-        ),
-        (
-            f"{ResultSchemaField.out_grid_area}_chk",
-            f"{ResultSchemaField.out_grid_area} IS NULL OR LENGTH({ResultSchemaField.out_grid_area}) = 3",
-        ),
-        (
-            f"{ResultSchemaField.quantity_quality}_chk",
-            f"{ResultSchemaField.quantity_quality} IN ('missing', 'estimated', 'measured', 'calculated', 'incomplete')",
-        ),
-        (
-            f"{ResultSchemaField.aggregation_level}_chk",
-            f"{ResultSchemaField.aggregation_level} IN ('total_ga', 'es_brp_ga', 'es_ga', 'brp_ga')",
-        ),
-    ],
-)
+    ),
+    (
+        f"{ResultSchemaField.grid_area}_chk",
+        f"LENGTH({ResultSchemaField.grid_area}) = 3",
+    ),
+    (
+        f"{ResultSchemaField.out_grid_area}_chk",
+        f"{ResultSchemaField.out_grid_area} IS NULL OR LENGTH({ResultSchemaField.out_grid_area}) = 3",
+    ),
+    (
+        f"{ResultSchemaField.quantity_quality}_chk",
+        f"{ResultSchemaField.quantity_quality} IN ('missing', 'estimated', 'measured', 'calculated', 'incomplete')",
+    ),
+    (
+        f"{ResultSchemaField.aggregation_level}_chk",
+        f"{ResultSchemaField.aggregation_level} IN ('total_ga', 'es_brp_ga', 'es_ga', 'brp_ga')",
+    ),
+]
