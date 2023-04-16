@@ -31,7 +31,6 @@ TABLE_NAME = "result"
         ("grid_area", None),
         ("grid_area", "12"),
         ("grid_area", "1234"),
-        ("out_grid_area", None),  # TODO: Should not fail
         ("out_grid_area", "12"),
         ("out_grid_area", "1234"),
         ("batch_process_type", "foo"),
@@ -61,7 +60,11 @@ def test__apply__enforces_data_constraints(
     with pytest.raises(Exception) as ex:
         invalid_df.write.format("delta").mode("overwrite").saveAsTable(TABLE_NAME)
 
-    assert str(ex) == "foo"
+    actual_error_message = str(ex.value)
+
+    # Do sufficient assertions to be confident that the expected violation has been caught
+    assert "DeltaInvariantViolationException" in actual_error_message
+    assert column_name in actual_error_message
 
 
 def _get_migration_script() -> ModuleType:

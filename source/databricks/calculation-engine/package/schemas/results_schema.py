@@ -69,7 +69,7 @@ constraints = (
         f"""{ResultSchemaField.time_series_type}
                 IN ('production', 'non_profiled_consumption', 'net_exchange_per_neighboring_ga', 'net_exchange_per_ga')""",
         f"""LENGTH({ResultSchemaField.grid_area}) = 3""",
-        f"""LENGTH({ResultSchemaField.out_grid_area}) = 3""",
+        f"""{ResultSchemaField.out_grid_area} IS NULL OR LENGTH({ResultSchemaField.out_grid_area}) = 3""",
         f"""{ResultSchemaField.quantity_quality} IN ('missing', 'estimated', 'measured', 'calculated', 'incomplete')""",
         f"""{ResultSchemaField.aggregation_level} IN ('total_ga', 'es_brp_ga', 'es_ga', 'brp_ga')""",
     ],
