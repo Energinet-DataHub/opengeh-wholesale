@@ -31,27 +31,29 @@ prod_result = "prod_result"
 
 
 # Function used to calculate grid loss (step 6)
-def calculate_grid_loss(results: dict) -> DataFrame:
-    agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
-    agg_hourly_consumption = results[ResultKeyName.non_profiled_consumption]
-    agg_flex_consumption = results[ResultKeyName.flex_consumption]
-    agg_production = results[ResultKeyName.production]
+def calculate_grid_loss(
+    net_exchange_per_ga: DataFrame,
+    non_profiled_consumption: DataFrame,
+    flex_consumption: DataFrame,
+    production: DataFrame,
+) -> DataFrame:
     return __calculate_grid_loss_or_residual_ga(
-        agg_net_exchange,
-        agg_hourly_consumption,
-        agg_flex_consumption,
-        agg_production,
+        net_exchange_per_ga,
+        non_profiled_consumption,
+        flex_consumption,
+        production,
     )
 
 
+# (step 22)
 def calculate_residual_ga(results: dict) -> DataFrame:
     agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
-    agg_hourly_consumption = results[ResultKeyName.non_profiled_consumption_ga]
+    agg_non_profiled_consumption = results[ResultKeyName.non_profiled_consumption_ga]
     agg_flex_consumption = results[ResultKeyName.flex_consumption_ga]
     agg_production = results[ResultKeyName.production_ga]
     return __calculate_grid_loss_or_residual_ga(
         agg_net_exchange,
-        agg_hourly_consumption,
+        agg_non_profiled_consumption,
         agg_flex_consumption,
         agg_production,
     )
@@ -59,7 +61,7 @@ def calculate_residual_ga(results: dict) -> DataFrame:
 
 def __calculate_grid_loss_or_residual_ga(
     agg_net_exchange: DataFrame,
-    agg_hourly_consumption: DataFrame,
+    agg_non_profiled_consumption: DataFrame,
     agg_flex_consumption: DataFrame,
     agg_production: DataFrame,
 ) -> DataFrame:
@@ -68,8 +70,8 @@ def __calculate_grid_loss_or_residual_ga(
         f"{Colname.sum_quantity} as net_exchange_result",
         Colname.time_window,
     )
-    agg_hourly_consumption_result = (
-        agg_hourly_consumption.selectExpr(
+    agg_non_profiled_consumption_result = (
+        agg_non_profiled_consumption.selectExpr(
             Colname.grid_area,
             f"{Colname.sum_quantity} as {hourly_result}",
             Colname.time_window,
@@ -105,7 +107,7 @@ def __calculate_grid_loss_or_residual_ga(
         )
         .join(
             agg_flex_consumption_result.join(
-                agg_hourly_consumption_result,
+                agg_non_profiled_consumption_result,
                 [Colname.grid_area, Colname.time_window],
                 "left",
             ),
@@ -133,9 +135,8 @@ def __calculate_grid_loss_or_residual_ga(
 
 
 # Function to calculate system correction to be added (step 8)
-def calculate_added_system_correction(results: dict) -> DataFrame:
-    df = results[ResultKeyName.grid_loss]
-    result = df.withColumn(
+def calculate_added_system_correction(grid_loss: DataFrame) -> DataFrame:
+    result = grid_loss.withColumn(
         Colname.added_system_correction,
         when(
             col(Colname.sum_quantity) < 0, (col(Colname.sum_quantity)) * (-1)
@@ -153,9 +154,8 @@ def calculate_added_system_correction(results: dict) -> DataFrame:
 
 
 # Function to calculate grid loss to be added (step 9)
-def calculate_added_grid_loss(results: dict) -> DataFrame:
-    df = results[ResultKeyName.grid_loss]
-    result = df.withColumn(
+def calculate_added_grid_loss(grid_loss: DataFrame) -> DataFrame:
+    result = grid_loss.withColumn(
         Colname.added_grid_loss,
         when(col(Colname.sum_quantity) > 0, col(Colname.sum_quantity)).otherwise(0),
     )
