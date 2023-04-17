@@ -29,9 +29,11 @@ from package.steps.aggregation.transformations import (
 )
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql.functions import col
+from pyspark.sql import DataFrame, SparkSession
 import pytest
 import pandas as pd
 from package.constants import Colname, ResultKeyName
+from typing import Callable
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -47,7 +49,7 @@ class AggregationMethod(Enum):
 
 
 @pytest.fixture(scope="module")
-def agg_net_exchange_schema():
+def agg_net_exchange_schema() -> StructType:
     return (
         StructType()
         .add(Colname.grid_area, StringType(), False)
@@ -66,7 +68,7 @@ def agg_net_exchange_schema():
 
 
 @pytest.fixture(scope="module")
-def agg_consumption_and_production_schema():
+def agg_consumption_and_production_schema() -> StructType:
     return (
         StructType()
         .add(Colname.grid_area, StringType(), False)
@@ -88,13 +90,15 @@ def agg_consumption_and_production_schema():
 
 @pytest.fixture(scope="module")
 def agg_result_factory(
-    spark, agg_net_exchange_schema, agg_consumption_and_production_schema
-):
+    spark: SparkSession,
+    agg_net_exchange_schema: StructType,
+    agg_consumption_and_production_schema: StructType,
+) -> Callable[[AggregationMethod], DataFrame]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
 
-    def factory(agg_method: AggregationMethod):
+    def factory(agg_method: AggregationMethod) -> DataFrame:
         if agg_method == AggregationMethod.net_exchange:
             pandas_df = pd.DataFrame(
                 {
@@ -226,8 +230,10 @@ def agg_result_factory(
 
 
 @pytest.fixture(scope="module")
-def agg_net_exchange_factory(spark, agg_net_exchange_schema):
-    def factory():
+def agg_net_exchange_factory(
+    spark: SparkSession, agg_net_exchange_schema: StructType
+) -> Callable[[], DataFrame]:
+    def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "2", "2", "3"],
@@ -291,8 +297,10 @@ def agg_net_exchange_factory(spark, agg_net_exchange_schema):
 
 
 @pytest.fixture(scope="module")
-def agg_flex_consumption_factory(spark, agg_consumption_and_production_schema):
-    def factory():
+def agg_flex_consumption_factory(
+    spark: SparkSession, agg_consumption_and_production_schema: StructType
+) -> Callable[[], DataFrame]:
+    def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "2", "2", "3"],
@@ -360,8 +368,10 @@ def agg_flex_consumption_factory(spark, agg_consumption_and_production_schema):
 
 
 @pytest.fixture(scope="module")
-def agg_hourly_consumption_factory(spark, agg_consumption_and_production_schema):
-    def factory():
+def agg_hourly_consumption_factory(
+    spark: SparkSession, agg_consumption_and_production_schema: StructType
+) -> Callable[[], DataFrame]:
+    def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "2", "2", "3"],
@@ -429,8 +439,10 @@ def agg_hourly_consumption_factory(spark, agg_consumption_and_production_schema)
 
 
 @pytest.fixture(scope="module")
-def agg_hourly_production_factory(spark, agg_consumption_and_production_schema):
-    def factory():
+def agg_hourly_production_factory(
+    spark: SparkSession, agg_consumption_and_production_schema: StructType
+) -> Callable[[], DataFrame]:
+    def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "2", "2", "3"],
@@ -497,18 +509,20 @@ def agg_hourly_production_factory(spark, agg_consumption_and_production_schema):
     return factory
 
 
-def test_grid_loss_calculation(agg_result_factory):
+def test_grid_loss_calculation(
+    agg_result_factory: Callable[[AggregationMethod], DataFrame]
+) -> None:
     net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(agg_method=AggregationMethod.net_exchange)
+        agg_result_factory(AggregationMethod.net_exchange)
     )
     non_profiled_consumption = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(agg_method=AggregationMethod.hourly_consumption)
+        agg_result_factory(AggregationMethod.hourly_consumption)
     )
     flex_consumption = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(agg_method=AggregationMethod.flex_consumption)
+        agg_result_factory(AggregationMethod.flex_consumption)
     )
     production = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(agg_method=AggregationMethod.production)
+        agg_result_factory(AggregationMethod.production)
     )
 
     result = calculate_grid_loss(
@@ -520,11 +534,11 @@ def test_grid_loss_calculation(agg_result_factory):
 
 
 def test_grid_loss_calculation_calculates_correctly_on_grid_area(
-    agg_net_exchange_factory,
-    agg_hourly_consumption_factory,
-    agg_flex_consumption_factory,
-    agg_hourly_production_factory,
-):
+    agg_net_exchange_factory: Callable[[], DataFrame],
+    agg_hourly_consumption_factory: Callable[[], DataFrame],
+    agg_flex_consumption_factory: Callable[[], DataFrame],
+    agg_hourly_production_factory: Callable[[], DataFrame],
+) -> None:
     results = {}
     results[
         ResultKeyName.net_exchange_per_ga
