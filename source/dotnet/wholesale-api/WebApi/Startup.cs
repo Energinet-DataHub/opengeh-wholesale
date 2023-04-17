@@ -152,10 +152,7 @@ public class Startup
         services.AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
-            // This ought to be a Data Lake (gen 2) file system check.
-            // It is, however, not easily tested so for now we stick with testing resource existence
-            // and connectivity through the lesser blob storage API.
-            .AddBlobStorageContainerCheck(
+            .AddDataLakeContainerCheck(
                 Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
                 Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
             .AddAzureServiceBusTopic(
