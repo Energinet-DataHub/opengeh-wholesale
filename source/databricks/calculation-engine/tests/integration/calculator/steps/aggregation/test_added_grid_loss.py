@@ -23,7 +23,7 @@ from package.schemas.output import aggregation_result_schema
 from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )
-from pyspark.sql.dataframe import DataFrame, SparkSession
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql.functions import col
 import pytest
