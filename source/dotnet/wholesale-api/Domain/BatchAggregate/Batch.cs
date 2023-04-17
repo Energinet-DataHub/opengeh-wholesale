@@ -43,7 +43,7 @@ public class Batch : AggregateRoot
         ExecutionTimeStart = executionTimeStart;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
-        AddDomainEvent(new BatchCreatedDomainEvent(Id)); // TODO: LRN Test (what happens if domain events are lost?)
+        AddDomainEvent(new BatchCreatedDomainEvent(Id));
     }
 
     /// <summary>
