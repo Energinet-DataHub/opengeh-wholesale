@@ -498,27 +498,22 @@ def agg_hourly_production_factory(spark, agg_consumption_and_production_schema):
 
 
 def test_grid_loss_calculation(agg_result_factory):
-    results = {}
-    results[
-        ResultKeyName.net_exchange_per_ga
-    ] = create_dataframe_from_aggregation_result_schema(
+    net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(
         agg_result_factory(agg_method=AggregationMethod.net_exchange)
     )
-    results[
-        ResultKeyName.non_profiled_consumption
-    ] = create_dataframe_from_aggregation_result_schema(
+    non_profiled_consumption = create_dataframe_from_aggregation_result_schema(
         agg_result_factory(agg_method=AggregationMethod.hourly_consumption)
     )
-    results[
-        ResultKeyName.flex_consumption
-    ] = create_dataframe_from_aggregation_result_schema(
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
         agg_result_factory(agg_method=AggregationMethod.flex_consumption)
     )
-    results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
+    production = create_dataframe_from_aggregation_result_schema(
         agg_result_factory(agg_method=AggregationMethod.production)
     )
 
-    result = calculate_grid_loss(results)
+    result = calculate_grid_loss(
+        net_exchange_per_ga, non_profiled_consumption, flex_consumption, production
+    )
 
     # Verify the calculation result is correct by checking 50+i + 20+i - (13+i + 14+i) equals 43 for all i in range 0 to 9
     assert result.filter(col(Colname.sum_quantity) != 43).count() == 0

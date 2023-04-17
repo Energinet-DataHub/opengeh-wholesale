@@ -111,11 +111,8 @@ def agg_result_factory(spark, grid_loss_schema):
 
 
 def call_calculate_added_system_correction(agg_result_factory) -> DataFrame:
-    results = {}
-    results[ResultKeyName.grid_loss] = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory()
-    )
-    return calculate_added_system_correction(results)
+    df = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    return calculate_added_system_correction(df)
 
 
 def test_added_system_correction_has_no_values_below_zero(agg_result_factory):

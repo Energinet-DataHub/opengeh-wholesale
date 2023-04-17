@@ -112,11 +112,8 @@ def agg_result_factory(spark, grid_loss_schema):
 
 
 def call_calculate_grid_loss(agg_result_factory) -> DataFrame:
-    results = {}
-    results[ResultKeyName.grid_loss] = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory()
-    )
-    return calculate_added_grid_loss(results)
+    df = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    return calculate_added_grid_loss(df)
 
 
 def test_grid_area_grid_loss_has_no_values_below_zero(agg_result_factory):

@@ -22,3 +22,6 @@ class TimeSeriesType(Enum):
     NET_EXCHANGE_PER_NEIGHBORING_GA = "net_exchange_per_neighboring_ga"
     NET_EXCHANGE_PER_GA = "net_exchange_per_ga"
     FLEX_CONSUMPTION = "flex_consumption"
+    GRID_LOSS = "grid_loss"
+    ADDED_SYSTEM_CORRECTION = "added_system_correction"
+    ADDED_GRID_LOSS = "added_grid_loss"
