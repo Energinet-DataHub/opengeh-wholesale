@@ -19,7 +19,3 @@ namespace Energinet.DataHub.Wholesale.Application.Base;
 public interface IQuery<out TResponse> : IRequest<TResponse>
 {
 }
-
-public interface IQuery : IRequest
-{
-}
