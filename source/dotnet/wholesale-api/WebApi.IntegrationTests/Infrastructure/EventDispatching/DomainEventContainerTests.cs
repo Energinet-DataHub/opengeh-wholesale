@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.EventDispatching;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DomainEvents;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using FluentAssertions;
 using NodaTime;
@@ -40,7 +41,7 @@ public class DomainEventContainerTests : IClassFixture<WholesaleDatabaseFixture>
         var batch = CreateBatch(ProcessType.BalanceFixing, new List<GridAreaCode> { new("805") });
         databaseContext.Batches.Add(batch);
 
-        var sut = new DomainEventContainer(databaseContext);
+        var sut = new DomainEventRepository(databaseContext);
 
         // Act
         var actual = sut.GetAllDomainEvents();
@@ -59,7 +60,7 @@ public class DomainEventContainerTests : IClassFixture<WholesaleDatabaseFixture>
         var batch = CreateBatch(ProcessType.BalanceFixing, new List<GridAreaCode> { new("805") });
         writeContext.Batches.Add(batch);
 
-        var sut = new DomainEventContainer(readContext);
+        var sut = new DomainEventRepository(readContext);
 
         // Act
         var actual = sut.GetAllDomainEvents();
@@ -76,7 +77,7 @@ public class DomainEventContainerTests : IClassFixture<WholesaleDatabaseFixture>
         var batch = CreateBatch(ProcessType.BalanceFixing, new List<GridAreaCode> { new("805") });
         databaseContext.Batches.Add(batch);
 
-        var sut = new DomainEventContainer(databaseContext);
+        var sut = new DomainEventRepository(databaseContext);
 
         // Act
         sut.ClearAllDomainEvents();

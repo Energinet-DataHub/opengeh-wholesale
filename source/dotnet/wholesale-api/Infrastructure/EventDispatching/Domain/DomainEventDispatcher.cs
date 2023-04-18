@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DomainEvents;
 using MediatR;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.EventDispatching.Domain;
@@ -19,22 +20,22 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventDispatching.Domain;
 public class DomainEventDispatcher : IDomainEventDispatcher
 {
     private readonly IMediator _mediator;
-    private readonly IDomainEventContainer _domainEventContainer;
+    private readonly IDomainEventRepository _domainEventRepository;
 
-    public DomainEventDispatcher(IMediator mediator, IDomainEventContainer domainEventContainer)
+    public DomainEventDispatcher(IMediator mediator, IDomainEventRepository domainEventRepository)
     {
         _mediator = mediator;
-        _domainEventContainer = domainEventContainer;
+        _domainEventRepository = domainEventRepository;
     }
 
     public async Task DispatchAsync(CancellationToken token)
     {
-        var domainEvents = _domainEventContainer.GetAllDomainEvents();
+        var domainEvents = _domainEventRepository.GetAllDomainEvents();
         foreach (var domainEvent in domainEvents)
         {
             await _mediator.Publish(domainEvent, token).ConfigureAwait(false);
         }
 
-        _domainEventContainer.ClearAllDomainEvents();
+        _domainEventRepository.ClearAllDomainEvents();
     }
 }

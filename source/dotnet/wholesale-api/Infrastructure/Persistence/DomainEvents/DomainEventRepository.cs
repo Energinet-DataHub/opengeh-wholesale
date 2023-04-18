@@ -13,15 +13,15 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.Base;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Infrastructure.EventDispatching;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.EventDispatching;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DomainEvents;
 
-public class DomainEventContainer : IDomainEventContainer
+public class DomainEventRepository : IDomainEventRepository
 {
     private readonly IDatabaseContext _databaseContext;
 
-    public DomainEventContainer(IDatabaseContext databaseContext)
+    public DomainEventRepository(IDatabaseContext databaseContext)
     {
         _databaseContext = databaseContext;
     }

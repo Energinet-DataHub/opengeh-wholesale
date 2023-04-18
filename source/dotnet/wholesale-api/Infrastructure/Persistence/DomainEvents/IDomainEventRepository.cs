@@ -14,9 +14,9 @@
 
 using Energinet.DataHub.Wholesale.Domain.Base;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.EventDispatching;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DomainEvents;
 
-public interface IDomainEventContainer
+public interface IDomainEventRepository
 {
     IReadOnlyCollection<IDomainEvent> GetAllDomainEvents();
 
