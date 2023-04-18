@@ -37,3 +37,11 @@ module "func_receiver" {
     AGGREGATION_RESULTS_API_PATH                            = "/v2/processstepresult"
   }
 }
+
+module "kvs_edi_api_base_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+
+  name         = "func-edi-api-base-url"
+  value        = "https://${module.func_receiver.default_hostname}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
