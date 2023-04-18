@@ -19,7 +19,7 @@ from typing import List
 
 import package.infrastructure as infra
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, lit
 import pytest
 import uuid
 
@@ -56,8 +56,8 @@ TABLE_NAME = f"{DATABASE_NAME}.{RESULT_TABLE_NAME}"
 
 
 def _create_result_row(
-    grid_area: str,
-    to_grid_area: str,
+    grid_area=DEFAULT_GRID_AREA,
+    to_grid_area=DEFAULT_TO_GRID_AREA,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
     quantity: str = DEFAULT_QUANTITY,
@@ -93,13 +93,7 @@ def test__write___when_aggregation_level_is_es_per_ga__result_file_path_matches_
     migrations_executed: None,
 ) -> None:
     # Arrange
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-        )
-    ]
+    row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     relative_output_path = infra.get_result_file_relative_path(
         DEFAULT_BATCH_ID,
@@ -142,13 +136,7 @@ def test__write___when_aggregation_level_is_total_ga__result_file_path_matches_c
     migrations_executed: None,
 ) -> None:
     # Arrange
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id="None",
-        )
-    ]
+    row = [_create_result_row(energy_supplier_id="None")]
     result_df = _create_result_df(spark, row)
     relative_output_path = infra.get_result_file_relative_path(
         DEFAULT_BATCH_ID,
@@ -191,14 +179,7 @@ def test__write___when_aggregation_level_is_ga_brp_es__result_file_path_matches_
     migrations_executed: None,
 ) -> None:
     # Arrange
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
-        )
-    ]
+    row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     relative_output_path = infra.get_result_file_relative_path(
         DEFAULT_BATCH_ID,
@@ -245,14 +226,7 @@ def test__write__writes_aggregation_level(
     migrations_executed: None,
 ) -> None:
     # Arrange
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
-        )
-    ]
+    row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     batch_id = str(uuid.uuid4())
     sut = ProcessStepResultWriter(
@@ -290,10 +264,7 @@ batch_id = str(uuid.uuid4())  # Needed in both test param and test implementatio
         (ResultTableColName.out_grid_area, DEFAULT_TO_GRID_AREA),
         (ResultTableColName.balance_responsible_id, DEFAULT_BALANCE_RESPONSIBLE_ID),
         (ResultTableColName.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
-        (
-            ResultTableColName.time,
-            datetime(2020, 1, 1, 0, 0),
-        ),  # TODO: Fix these magic values
+        (ResultTableColName.time, datetime(2020, 1, 1, 0, 0)),
         (ResultTableColName.quantity, Decimal("1.100")),
         (ResultTableColName.quantity_quality, DEFAULT_QUALITY.value),
         (ResultTableColName.aggregation_level, DEFAULT_AGGREGATION_LEVEL.value),
@@ -307,16 +278,7 @@ def test__write__writes_column(
     migrations_executed: None,
 ) -> None:
     # Arrange
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
-            quality=DEFAULT_QUALITY,
-            quantity=DEFAULT_QUANTITY,
-        )
-    ]
+    row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     sut = ProcessStepResultWriter(
         str(tmpdir),
@@ -337,3 +299,130 @@ def test__write__writes_column(
         col(ResultTableColName.batch_id) == batch_id
     )
     assert actual_df.collect()[0][column_name] == column_value
+
+
+def assert_is_constraint_violation(ex):
+    actual_error_message = str(ex.value.java_exception)
+    assert "DeltaInvariantViolationException" in actual_error_message
+
+
+@pytest.mark.parametrize(
+    "column_name,invalid_column_value",
+    [
+        (Colname.grid_area, None),
+        (Colname.grid_area, "12"),
+        (Colname.grid_area, "1234"),
+        (Colname.out_grid_area, "12"),
+        (Colname.out_grid_area, "1234"),
+        (Colname.quality, "foo"),
+    ],
+)
+def test__write__fails_when_data_violates_table_constraints(
+    spark: SparkSession,
+    tmpdir: Path,
+    migrations_executed: None,
+    column_name: str,
+    invalid_column_value: str,
+) -> None:
+    # Arrange
+    row = [_create_result_row()]
+    result_df = _create_result_df(spark, row)
+    invalid_df = result_df.withColumn(column_name, lit(invalid_column_value))
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        batch_id,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act
+    with pytest.raises(Exception) as ex:
+        sut.write(
+            invalid_df,
+            DEFAULT_TIME_SERIES_TYPE,
+            DEFAULT_AGGREGATION_LEVEL,
+        )
+
+    # Assert
+    assert_is_constraint_violation(ex)
+
+
+def test__write__fails_when_invalid_process_type(
+    spark: SparkSession,
+    tmpdir: Path,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    row = [_create_result_row()]
+    result_df = _create_result_df(spark, row)
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        batch_id,
+        "invalid-process-type",
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act
+    with pytest.raises(Exception) as ex:
+        sut.write(
+            result_df,
+            DEFAULT_TIME_SERIES_TYPE,
+            DEFAULT_AGGREGATION_LEVEL,
+        )
+
+    # Assert
+    assert_is_constraint_violation(ex)
+
+
+def test__write__fails_when_invalid_time_series_type(
+    spark: SparkSession,
+    tmpdir: Path,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    row = [_create_result_row()]
+    result_df = _create_result_df(spark, row)
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        batch_id,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act
+    with pytest.raises(Exception) as ex:
+        sut.write(
+            result_df,
+            "invalid-time-series-type",
+            DEFAULT_AGGREGATION_LEVEL,
+        )
+
+    # Assert
+    assert_is_constraint_violation(ex)
+
+
+def test__write__fails_when_invalid_aggregation_level(
+    spark: SparkSession,
+    tmpdir: Path,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    row = [_create_result_row()]
+    result_df = _create_result_df(spark, row)
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        batch_id,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act
+    with pytest.raises(Exception) as ex:
+        sut.write(
+            result_df,
+            DEFAULT_TIME_SERIES_TYPE,
+            "invalid-aggregation-level",
+        )
+
+    # Assert
+    assert_is_constraint_violation(ex)

@@ -54,7 +54,7 @@ RESULTS_SCHEMA = StructType(
 CONSTRAINTS = [
     (
         "batch_process_type_chk",
-        "batch_process_type in ('BalanceFixing', 'Aggregation')",
+        "batch_process_type IN ('BalanceFixing', 'Aggregation')",
     ),
     (
         "time_series_type_chk",
