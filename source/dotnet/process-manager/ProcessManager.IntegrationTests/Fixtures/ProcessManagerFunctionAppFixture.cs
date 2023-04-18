@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
     {
         public ProcessManagerFunctionAppFixture()
         {
-            AzuriteManager = new AzuriteManager();
+            AzuriteManager = new AzuriteManager(useOAuth: true);
             DatabaseManager = new WholesaleDatabaseManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
             AuthorizationConfiguration = new AuthorizationConfiguration(
@@ -82,17 +82,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
         protected override void OnConfigureEnvironment()
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
-
-            // Uses the well-known storage account name and key.
-            // See: https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json&tabs=visual-studio#well-known-storage-account-and-key
-            var wellKnownStorageAccountName = "devstoreaccount1";
-            var wellKnownStorageAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
-            var blobStorageConnectionString = $"DefaultEndpointsProtocol=https;AccountName={wellKnownStorageAccountName};AccountKey={wellKnownStorageAccountKey};BlobEndpoint=https://localhost:10000/devstoreaccount1;";
-            //// BlobEndpoint=https://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=https://127.0.0.1:10001/devstoreaccount1;TableEndpoint=https://127.0.0.1:10002/devstoreaccount1;
-
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, blobStorageConnectionString);
-            ////Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
-
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, AzuriteManager.BlobStorageConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
@@ -103,8 +93,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionUri, "https://127.0.0.1:10000/devstoreaccount1");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, blobStorageConnectionString);
-            ////Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, AzuriteManager.BlobStorageConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
