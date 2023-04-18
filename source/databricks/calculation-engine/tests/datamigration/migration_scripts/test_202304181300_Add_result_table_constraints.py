@@ -21,7 +21,7 @@ import pytest
 from package.datamigration.migration_script_args import MigrationScriptArgs
 
 
-MIGRATION_SCRIPT_NAME = "202304130900_Add_result_table_constraints"
+MIGRATION_SCRIPT_NAME = "202304181300_Add_result_table_constraints"
 TABLE_NAME = "result"
 
 
