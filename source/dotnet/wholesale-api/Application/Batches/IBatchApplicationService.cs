@@ -20,12 +20,6 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public interface IBatchApplicationService
 {
-    /// <summary>
-    /// Create and start all processes of batches with state <see cref="BatchExecutionState.Submitted"/>.
-    /// </summary>
-    /// <param name="batchId"></param>
-    Task StartCalculationAsync(Guid batchId);
-
     Task UpdateExecutionStateAsync();
 
     Task<IEnumerable<BatchDto>> SearchAsync(
