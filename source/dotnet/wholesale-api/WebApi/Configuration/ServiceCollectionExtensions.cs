@@ -34,10 +34,12 @@ using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Infrastructure.EventDispatching;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DomainEvents;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
@@ -86,6 +88,15 @@ internal static class ServiceCollectionExtensions
         var calculationStorageContainerName = configuration[ConfigurationSettingNames.CalculationStorageContainerName];
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
+        serviceCollection.AddScoped<HttpClient>(_ => null!);
+        serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
+        serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
+        serviceCollection.AddScoped<IDomainEventRepository, DomainEventRepository>();
+        serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
+        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+        serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
+        serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
+        serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
 
         serviceCollection.AddScoped<HttpClient>(_ => null!);
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
@@ -123,7 +134,7 @@ internal static class ServiceCollectionExtensions
         var messageTypes = new Dictionary<Type, string>
         {
             {
-                typeof(BatchCreatedDomainEventDto),
+                typeof(BatchCreatedDomainEvent),
                 configuration[ConfigurationSettingNames.BatchCreatedEventName]!
             },
         };
