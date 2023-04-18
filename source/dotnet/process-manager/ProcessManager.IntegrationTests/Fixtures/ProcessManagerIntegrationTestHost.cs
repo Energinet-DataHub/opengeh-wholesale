@@ -71,7 +71,17 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.StartCalculationWhenBatchCreatedSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName, anyValue);
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+
+        // Uses the well-known storage account name and key.
+        // See: https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json&tabs=visual-studio#well-known-storage-account-and-key
+        var wellKnownStorageAccountName = "devstoreaccount1";
+        var wellKnownStorageAccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+        var blobStorageConnectionString = $"DefaultEndpointsProtocol=https;AccountName={wellKnownStorageAccountName};AccountKey={wellKnownStorageAccountKey};BlobEndpoint=https://localhost:10000/devstoreaccount1;";
+        //// BlobEndpoint=https://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=https://127.0.0.1:10001/devstoreaccount1;TableEndpoint=https://127.0.0.1:10002/devstoreaccount1;
+
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, blobStorageConnectionString);
+        ////Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, databaseManagerConnectionString);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, anyValue);

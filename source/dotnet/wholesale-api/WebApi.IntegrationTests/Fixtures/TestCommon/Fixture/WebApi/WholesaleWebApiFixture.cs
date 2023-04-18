@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
     {
         public WholesaleWebApiFixture()
         {
-            AzuriteManager = new AzuriteManager();
+            AzuriteManager = new AzuriteManager(useOAuth: true);
             DatabaseManager = new WholesaleDatabaseManager();
             DatabricksTestManager = new DatabricksTestManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
@@ -70,7 +70,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
-            Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString, AzuriteManager.BlobStorageConnectionString);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, "wholesale");
 
             await ServiceBusResourceProvider

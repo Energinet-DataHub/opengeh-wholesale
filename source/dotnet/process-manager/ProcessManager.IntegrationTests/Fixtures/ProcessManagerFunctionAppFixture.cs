@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
     {
         public ProcessManagerFunctionAppFixture()
         {
-            AzuriteManager = new AzuriteManager();
+            AzuriteManager = new AzuriteManager(useOAuth: true);
             DatabaseManager = new WholesaleDatabaseManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
             AuthorizationConfiguration = new AuthorizationConfiguration(
@@ -82,7 +82,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
         protected override void OnConfigureEnvironment()
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, AzuriteManager.BlobStorageConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
@@ -92,7 +92,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, AzuriteManager.BlobStorageConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");

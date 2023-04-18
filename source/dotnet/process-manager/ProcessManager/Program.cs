@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Abstractions.IntegrationEventContext;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
@@ -142,7 +143,9 @@ public static class Program
 
         var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
-        var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
+        ////var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
+        var dataLakeFileSystemClient = new DataLakeFileSystemClient(new Uri("https://localhost:10000/devstoreaccount1"), new DefaultAzureCredential());
+
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
 
