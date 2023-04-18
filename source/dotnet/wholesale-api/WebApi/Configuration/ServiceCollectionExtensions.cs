@@ -87,16 +87,16 @@ internal static class ServiceCollectionExtensions
         var calculationStorageConnectionString = configuration[ConfigurationSettingNames.CalculationStorageConnectionString];
         var calculationStorageContainerName = configuration[ConfigurationSettingNames.CalculationStorageContainerName];
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
-        services.AddSingleton(dataLakeFileSystemClient);
-        services.AddScoped<HttpClient>(_ => null!);
-        services.AddScoped<IBatchFactory, BatchFactory>();
-        services.AddScoped<IBatchRepository, BatchRepository>();
-        services.AddScoped<IDomainEventRepository, DomainEventRepository>();
-        services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
-        services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
-        services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        services.AddScoped<ICalculationDomainService, CalculationDomainService>();
-        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
+        serviceCollection.AddSingleton(dataLakeFileSystemClient);
+        serviceCollection.AddScoped<HttpClient>(_ => null!);
+        serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
+        serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
+        serviceCollection.AddScoped<IDomainEventRepository, DomainEventRepository>();
+        serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
+        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+        serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
+        serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
+        serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
 
         serviceCollection.AddScoped<HttpClient>(_ => null!);
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();

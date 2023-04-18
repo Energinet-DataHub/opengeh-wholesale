@@ -100,8 +100,8 @@ public class Startup
             cfg.RegisterServicesFromAssembly(typeof(Domain.Root).Assembly);
             cfg.RegisterServicesFromAssembly(typeof(Infrastructure.Root).Assembly);
         });
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DomainEventsDispatcherPipelineBehavior<,>));
+        serviceCollection.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
+        serviceCollection.AddScoped(typeof(IPipelineBehavior<,>), typeof(DomainEventsDispatcherPipelineBehavior<,>));
     }
 
     public void Configure(IApplicationBuilder app)
