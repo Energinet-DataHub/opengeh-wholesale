@@ -62,7 +62,9 @@ public class RequestMatchingHandlerTests
 
     private static bool IsRequestHandler(Type type)
     {
-        return type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(IRequestHandler<,>));
+        return type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType &&
+                                                         (interfaceType.GetGenericTypeDefinition() == typeof(IRequestHandler<,>) ||
+                                                          interfaceType.GetGenericTypeDefinition() == typeof(IRequestHandler<>)));
     }
 
     private static bool IsHandlerForRequest(Type handlerType, Type requestType)
