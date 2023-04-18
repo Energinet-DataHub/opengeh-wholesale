@@ -18,7 +18,7 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.steps.aggregation import calculate_added_grid_loss
+from package.steps.aggregation import calculate_positive_grid_loss
 from package.schemas.output import aggregation_result_schema
 from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
@@ -116,7 +116,7 @@ def agg_result_factory(
 
 def call_calculate_grid_loss(agg_result_factory: Callable[[], DataFrame]) -> DataFrame:
     df = create_dataframe_from_aggregation_result_schema(agg_result_factory())
-    return calculate_added_grid_loss(df)
+    return calculate_positive_grid_loss(df)
 
 
 def test_grid_area_grid_loss_has_no_values_below_zero(
@@ -124,7 +124,7 @@ def test_grid_area_grid_loss_has_no_values_below_zero(
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.filter(col(Colname.added_grid_loss) < 0).count() == 0
+    assert result.filter(col(Colname.positive_grid_loss) < 0).count() == 0
 
 
 def test_grid_area_grid_loss_changes_negative_values_to_zero(
@@ -132,7 +132,7 @@ def test_grid_area_grid_loss_changes_negative_values_to_zero(
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.collect()[0][Colname.added_grid_loss] == Decimal("0.00000")
+    assert result.collect()[0][Colname.positive_grid_loss] == Decimal("0.00000")
 
 
 def test_grid_area_grid_loss_positive_values_will_not_change(
@@ -140,7 +140,7 @@ def test_grid_area_grid_loss_positive_values_will_not_change(
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.collect()[1][Colname.added_grid_loss] == Decimal("34.32000")
+    assert result.collect()[1][Colname.positive_grid_loss] == Decimal("34.32000")
 
 
 def test_grid_area_grid_loss_values_that_are_zero_stay_zero(
@@ -148,7 +148,7 @@ def test_grid_area_grid_loss_values_that_are_zero_stay_zero(
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.collect()[2][Colname.added_grid_loss] == Decimal("0.00000")
+    assert result.collect()[2][Colname.positive_grid_loss] == Decimal("0.00000")
 
 
 def test_returns_correct_schema(agg_result_factory: Callable[[], DataFrame]) -> None:
