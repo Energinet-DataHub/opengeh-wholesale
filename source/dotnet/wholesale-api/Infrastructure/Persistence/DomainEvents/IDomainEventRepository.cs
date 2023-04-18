@@ -12,6 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.Base;
 
-public record BatchCreatedDomainEventDto(Guid BatchId) : DomainEventDto;
+namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DomainEvents;
+
+public interface IDomainEventRepository
+{
+    IReadOnlyCollection<IDomainEvent> GetAllDomainEvents();
+
+    void ClearAllDomainEvents();
+}

@@ -12,20 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Infrastructure.EventDispatching.Domain;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
-
-public interface IBatchApplicationService
+public interface IDomainEventDispatcher
 {
-    Task<IEnumerable<BatchDto>> SearchAsync(
-        IEnumerable<string> filterByGridAreaCodes,
-        BatchState? filterByExecutionState,
-        DateTimeOffset? minExecutionTime,
-        DateTimeOffset? maxExecutionTime,
-        DateTimeOffset? periodStart,
-        DateTimeOffset? periodEnd);
-
-    Task<BatchDto> GetAsync(Guid batchId);
+    Task DispatchAsync(CancellationToken token);
 }

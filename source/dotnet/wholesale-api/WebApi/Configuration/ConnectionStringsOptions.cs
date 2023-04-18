@@ -12,20 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
-using Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
-
-public interface IBatchApplicationService
+public class ConnectionStringsOptions
 {
-    Task<IEnumerable<BatchDto>> SearchAsync(
-        IEnumerable<string> filterByGridAreaCodes,
-        BatchState? filterByExecutionState,
-        DateTimeOffset? minExecutionTime,
-        DateTimeOffset? maxExecutionTime,
-        DateTimeOffset? periodStart,
-        DateTimeOffset? periodEnd);
+    public const string ConnectionStrings = "ConnectionStrings";
 
-    Task<BatchDto> GetAsync(Guid batchId);
+    // ReSharper disable once InconsistentNaming
+    public string DB_CONNECTION_STRING { get; set; } = string.Empty;
 }
