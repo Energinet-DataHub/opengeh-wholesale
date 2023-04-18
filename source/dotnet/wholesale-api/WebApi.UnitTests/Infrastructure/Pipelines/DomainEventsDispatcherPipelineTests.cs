@@ -14,8 +14,8 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Infrastructure.EventDispatching.Domain;
 using Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
 using Moq;
 using Xunit;
@@ -24,22 +24,23 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Pipelines;
 
 [UnitTest]
-public class UnitOfWorkPipelineBehaviorTests
+public class DomainEventsDispatcherPipelineTests
 {
     private readonly Guid _guid = Guid.NewGuid();
 
     [Theory]
     [AutoMoqData]
-    public async Task Handle_WhenCalled_CallsCommit(
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+    public async Task Handle_WhenCalled_CallsDispatch(
+        [Frozen] Mock<IDomainEventDispatcher> unitOfWorkMock,
         CreateBatchCommand createBatchCommand,
-        UnitOfWorkPipelineBehavior<CreateBatchCommand, Guid> sut)
+        DomainEventsDispatcherPipelineBehavior<CreateBatchCommand, Guid> sut)
     {
         // Arrange & Act
-        await sut.Handle(createBatchCommand, RequestHandlerDelegate, default);
+        var cancellationToken = new CancellationToken(false);
+        await sut.Handle(createBatchCommand, RequestHandlerDelegate, cancellationToken);
 
         // Assert
-        unitOfWorkMock.Verify(x => x.CommitAsync());
+        unitOfWorkMock.Verify(x => x.DispatchAsync(cancellationToken));
     }
 
     private async Task<Guid> RequestHandlerDelegate()
