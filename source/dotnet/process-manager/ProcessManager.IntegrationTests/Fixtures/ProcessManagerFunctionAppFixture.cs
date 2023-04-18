@@ -102,7 +102,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
         /// <inheritdoc/>
         protected override async Task OnInitializeFunctionAppDependenciesAsync(IConfiguration localSettingsSnapshot)
         {
-            AzuriteManager.StartAzurite(useOAuth: true);
+            AzuriteManager.StartAzurite();
 
             await DatabaseManager.CreateDatabaseAsync();
             DatabricksTestManager.BeginListen();
