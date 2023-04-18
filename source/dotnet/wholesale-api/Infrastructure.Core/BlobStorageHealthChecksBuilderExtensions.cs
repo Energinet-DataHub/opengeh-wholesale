@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Azure.Identity;
-using Azure.Storage.Blobs;
+using Azure.Storage.Files.DataLake;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -25,14 +25,14 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Core
         {
             return builder.AddAsyncCheck("BlobStorageContainer", async () =>
             {
-                var client = new BlobServiceClient(new Uri(storageAccountUri), new DefaultAzureCredential());
+                var client = new DataLakeServiceClient(new Uri(storageAccountUri), new DefaultAzureCredential());
                 try
                 {
-                    var containersPageable = client.GetBlobContainersAsync();
+                    var containersPageable = client.GetFileSystemsAsync();
 
-                    await foreach (var blobContainerItem in containersPageable)
+                    await foreach (var dataLakeContainerItem in containersPageable)
                     {
-                        if (blobContainerItem.Name == containerName)
+                        if (dataLakeContainerItem.Name == containerName)
                             return HealthCheckResult.Healthy();
                     }
 
