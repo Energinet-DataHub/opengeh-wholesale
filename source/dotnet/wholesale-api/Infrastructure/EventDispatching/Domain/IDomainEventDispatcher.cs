@@ -12,23 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+namespace Energinet.DataHub.Wholesale.Infrastructure.EventDispatching.Domain;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public interface IDatabaseContext
+public interface IDomainEventDispatcher
 {
-    DbSet<Batch> Batches { get; }
-
-    DbSet<OutboxMessage> OutboxMessages { get; }
-
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
-
-    ChangeTracker ChangeTracker { get; }
+    Task DispatchAsync(CancellationToken token);
 }
