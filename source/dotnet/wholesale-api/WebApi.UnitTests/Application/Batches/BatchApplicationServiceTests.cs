@@ -49,21 +49,6 @@ public class BatchApplicationServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task UpdateExecutionStateAsync_ActivatesDomainServiceAndCommits(
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<IBatchExecutionStateDomainService> calculationDomainServiceMock,
-        BatchApplicationService sut)
-    {
-        // Arrange & Act
-        await sut.UpdateExecutionStateAsync();
-
-        // Assert
-        unitOfWorkMock.Verify(x => x.CommitAsync());
-        calculationDomainServiceMock.Verify(x => x.UpdateExecutionStateAsync());
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
     public async Task SearchAsync_NoMatchingBatches_ReturnsZeroBatches(
        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
        BatchApplicationService sut)

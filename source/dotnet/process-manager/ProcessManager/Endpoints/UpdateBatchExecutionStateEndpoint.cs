@@ -14,20 +14,21 @@
 
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Wholesale.Application.Batches;
+using MediatR;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 
 public class UpdateBatchExecutionStateEndpoint
 {
-    private readonly IBatchApplicationService _batchApplicationService;
+    private readonly IMediator _mediator;
     private readonly ICorrelationContext _correlationContext;
 
     public UpdateBatchExecutionStateEndpoint(
-        IBatchApplicationService batchApplicationService,
+        IMediator mediator,
         ICorrelationContext correlationContext)
     {
-        _batchApplicationService = batchApplicationService;
+        _mediator = mediator;
         _correlationContext = correlationContext;
     }
 
@@ -39,6 +40,6 @@ public class UpdateBatchExecutionStateEndpoint
         // so we need to add a correlation ID ourselves
         _correlationContext.SetId(Guid.NewGuid().ToString());
 
-        await _batchApplicationService.UpdateExecutionStateAsync().ConfigureAwait(false);
+        await _mediator.Send(new UpdateBatchStateCommand()).ConfigureAwait(false);
     }
 }

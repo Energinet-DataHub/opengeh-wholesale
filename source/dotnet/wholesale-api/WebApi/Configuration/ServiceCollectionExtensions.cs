@@ -88,7 +88,6 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<HttpClient>(_ => null!);
         services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();
-        services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         services.AddScoped<ICalculationDomainService, CalculationDomainService>();

@@ -10,29 +10,31 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.using Energinet.DataHub.Wholesale.Application.JobRunner;
+// limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.Base;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public class BatchExecutionStateDomainService : IBatchExecutionStateDomainService
+public class UpdateBatchStateHandler : ICommandHandler<UpdateBatchStateCommand>
 {
     private readonly IBatchRepository _batchRepository;
     private readonly ICalculationDomainService _calculationDomainService;
+    private readonly ILogger<UpdateBatchStateHandler> _logger;
     private readonly IClock _clock;
     private readonly IDomainEventPublisher _domainEventPublisher;
-    private readonly ILogger _logger;
 
-    public BatchExecutionStateDomainService(
-        IBatchRepository batchRepository,
-        ICalculationDomainService calculationDomainService,
-        ILogger<BatchExecutionStateDomainService> logger,
-        IClock clock,
-        IDomainEventPublisher domainEventPublisher)
+    public UpdateBatchStateHandler(
+    IBatchRepository batchRepository,
+    ICalculationDomainService calculationDomainService,
+    ILogger<UpdateBatchStateHandler> logger,
+    IClock clock,
+    IDomainEventPublisher domainEventPublisher)
     {
         _batchRepository = batchRepository;
         _calculationDomainService = calculationDomainService;
@@ -41,11 +43,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
         _domainEventPublisher = domainEventPublisher;
     }
 
-    /// <summary>
-    /// Update the execution states in the batch repository by mapping the job states from the runs <see cref="ICalculationDomainService"/>
-    /// </summary>
-    /// <returns>Batches that have been completed</returns>
-    public async Task UpdateExecutionStateAsync()
+    public async Task Handle(UpdateBatchStateCommand request, CancellationToken cancellationToken)
     {
         var completedBatches = new List<Batch>();
         var states = new List<BatchExecutionState>

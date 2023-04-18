@@ -26,8 +26,6 @@ public interface IBatchApplicationService
     /// <param name="batchId"></param>
     Task StartCalculationAsync(Guid batchId);
 
-    Task UpdateExecutionStateAsync();
-
     Task<IEnumerable<BatchDto>> SearchAsync(
         IEnumerable<string> filterByGridAreaCodes,
         BatchState? filterByExecutionState,
