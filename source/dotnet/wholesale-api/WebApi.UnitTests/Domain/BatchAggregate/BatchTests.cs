@@ -180,7 +180,7 @@ public class BatchTests
             DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!));
 
         // Assert
-        actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}'must be midnight.");
+        actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}' must be midnight.");
     }
 
     [Fact]

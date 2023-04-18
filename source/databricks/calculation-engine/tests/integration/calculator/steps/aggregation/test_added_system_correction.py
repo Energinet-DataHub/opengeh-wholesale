@@ -23,16 +23,17 @@ from package.schemas.output import aggregation_result_schema
 from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )
-from pyspark.sql.dataframe import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql.functions import col
 import pytest
 import pandas as pd
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
+from typing import Callable
 
 
 @pytest.fixture(scope="module")
-def grid_loss_schema():
+def grid_loss_schema() -> StructType:
     return (
         StructType()
         .add(Colname.grid_area, StringType(), False)
@@ -51,12 +52,14 @@ def grid_loss_schema():
 
 
 @pytest.fixture(scope="module")
-def agg_result_factory(spark, grid_loss_schema):
+def agg_result_factory(
+    spark: SparkSession, grid_loss_schema: StructType
+) -> Callable[[], DataFrame]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
 
-    def factory():
+    def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [],
@@ -110,38 +113,45 @@ def agg_result_factory(spark, grid_loss_schema):
     return factory
 
 
-def call_calculate_added_system_correction(agg_result_factory) -> DataFrame:
-    results = {}
-    results[ResultKeyName.grid_loss] = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory()
-    )
-    return calculate_added_system_correction(results)
+def call_calculate_added_system_correction(
+    agg_result_factory: Callable[[], DataFrame]
+) -> DataFrame:
+    df = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    return calculate_added_system_correction(df)
 
 
-def test_added_system_correction_has_no_values_below_zero(agg_result_factory):
+def test_added_system_correction_has_no_values_below_zero(
+    agg_result_factory: Callable[[], DataFrame]
+) -> None:
     result = call_calculate_added_system_correction(agg_result_factory)
 
     assert result.filter(col(Colname.added_system_correction) < 0).count() == 0
 
 
-def test_added_system_correction_change_negative_value_to_positive(agg_result_factory):
+def test_added_system_correction_change_negative_value_to_positive(
+    agg_result_factory: Callable[[], DataFrame]
+) -> None:
     result = call_calculate_added_system_correction(agg_result_factory)
 
     assert result.collect()[0][Colname.added_system_correction] == Decimal("12.56700")
 
 
-def test_added_system_correction_change_positive_value_to_zero(agg_result_factory):
+def test_added_system_correction_change_positive_value_to_zero(
+    agg_result_factory: Callable[[], DataFrame]
+) -> None:
     result = call_calculate_added_system_correction(agg_result_factory)
 
     assert result.collect()[1][Colname.added_system_correction] == Decimal("0.00000")
 
 
-def test_added_system_correction_values_that_are_zero_stay_zero(agg_result_factory):
+def test_added_system_correction_values_that_are_zero_stay_zero(
+    agg_result_factory: Callable[[], DataFrame]
+) -> None:
     result = call_calculate_added_system_correction(agg_result_factory)
 
     assert result.collect()[2][Colname.added_system_correction] == Decimal("0.00000")
 
 
-def test_returns_correct_schema(agg_result_factory):
+def test_returns_correct_schema(agg_result_factory: Callable[[], DataFrame]) -> None:
     result = call_calculate_added_system_correction(agg_result_factory)
     assert result.schema == aggregation_result_schema

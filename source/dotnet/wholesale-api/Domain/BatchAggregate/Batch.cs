@@ -73,7 +73,7 @@ public class Batch
             errors.Add($"The period end '{periodEnd.ToString()}' must be midnight.");
 
         if (new ZonedDateTime(periodStart, dateTimeZone).TimeOfDay != LocalTime.Midnight)
-            errors.Add($"The period start '{periodStart.ToString()}'must be midnight.");
+            errors.Add($"The period start '{periodStart.ToString()}' must be midnight.");
 
         validationErrors = errors;
         return !errors.Any();

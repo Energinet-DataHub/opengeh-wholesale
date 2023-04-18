@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Microsoft.Extensions.Configuration;
+using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -32,7 +32,6 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         Action<IServiceCollection>? serviceConfiguration = default)
     {
         ConfigureEnvironmentVars();
-
         var hostBuilder = Program
             .CreateWebHostBuilder(new[] { string.Empty })
             .ConfigureServices(ConfigureServices);
@@ -64,7 +63,7 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendBffAppId, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.ExternalOpenIdUrl, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.InternalOpenIdUrl, anyValue);
-        Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{ConfigurationSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
+        Environment.SetEnvironmentVariable($"{ConnectionStringsOptions.ConnectionStrings}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}", "UseDevelopmentStorage=true");
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusManageConnectionString, anyServiceBusConnectionString);
@@ -72,15 +71,11 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.BatchCreatedEventName, "batch-created");
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.DomainEventsTopicName, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.DateTimeZoneId, "Europe/Copenhagen");
+        Environment.SetEnvironmentVariable(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_URL), "http://localhost/");
+        Environment.SetEnvironmentVariable(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_TOKEN), "no_token");
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddOptions<DatabricksOptions>()
-            .Configure<IConfiguration>((options, _) =>
-            {
-                options.DATABRICKS_WORKSPACE_URL = "http://localhost/";
-                options.DATABRICKS_WORKSPACE_TOKEN = "no_token";
-            });
     }
 }
