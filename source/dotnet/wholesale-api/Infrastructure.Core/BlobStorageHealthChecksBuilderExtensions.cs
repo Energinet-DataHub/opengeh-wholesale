@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Core
 {
     public static class BlobStorageHealthChecksBuilderExtensions
     {
-        public static IHealthChecksBuilder AddBlobStorageContainerCheck(this IHealthChecksBuilder builder, string connectionString, string storageAccountUri, string containerName)
+        public static IHealthChecksBuilder AddBlobStorageContainerCheck(this IHealthChecksBuilder builder, string storageAccountUri, string containerName)
         {
             return builder.AddAsyncCheck("BlobStorageContainer", async () =>
             {

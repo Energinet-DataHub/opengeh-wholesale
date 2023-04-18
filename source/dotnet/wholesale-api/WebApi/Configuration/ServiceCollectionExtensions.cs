@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
@@ -34,6 +35,7 @@ using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -81,10 +83,12 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<IStreamZipper, StreamZipper>();
-        var calculationStorageConnectionString = configuration[ConfigurationSettingNames.CalculationStorageConnectionString];
-        var calculationStorageContainerName = configuration[ConfigurationSettingNames.CalculationStorageContainerName];
-        var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
+
+        var calculationStorageConnectionUri = EnvironmentVariableHelper.GetEnvVariable(ConfigurationSettingNames.CalculationStorageConnectionUri);
+        var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(ConfigurationSettingNames.CalculationStorageContainerName);
+        var dataLakeFileSystemClient = new DataLakeFileSystemClient(new Uri(calculationStorageConnectionUri), new DefaultAzureCredential());
         services.AddSingleton(dataLakeFileSystemClient);
+
         services.AddScoped<HttpClient>(_ => null!);
         services.AddScoped<IBatchFactory, BatchFactory>();
         services.AddScoped<IBatchRepository, BatchRepository>();

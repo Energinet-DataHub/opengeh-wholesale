@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Wholesale.ProcessManager;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
@@ -70,7 +72,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
-            Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString, AzuriteManager.BlobStorageConnectionString);
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionUri, AzuriteManager.BlobStorageServiceUri.ToString());
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, "wholesale");
 
             await ServiceBusResourceProvider
@@ -78,19 +80,13 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 .SetEnvironmentVariableToTopicName(ConfigurationSettingNames.DomainEventsTopicName)
                 .CreateAsync();
 
-            // Create storage container - ought to be a Data Lake file system
-            var blobContainerClient = new BlobContainerClient(
-                Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString),
-                Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName));
-
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.BatchCreatedEventName, "batch-created");
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DateTimeZoneId, "Europe/Copenhagen");
 
-            if (!await blobContainerClient.ExistsAsync())
-                await blobContainerClient.CreateAsync();
+            await EnsureCalculationStorageContainerExistsAsync();
         }
 
         /// <inheritdoc/>
@@ -98,6 +94,22 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
         {
             AzuriteManager.Dispose();
             return DatabaseManager.DeleteDatabaseAsync();
+        }
+
+        /// <summary>
+        /// Create storage container - ought to be a Data Lake file system.
+        /// </summary>
+        private async Task EnsureCalculationStorageContainerExistsAsync()
+        {
+            var blobServiceClient = new BlobServiceClient(
+                serviceUri: AzuriteManager.BlobStorageServiceUri,
+                credential: new DefaultAzureCredential());
+
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(
+                Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName));
+
+            if (!await blobContainerClient.ExistsAsync())
+                await blobContainerClient.CreateAsync();
         }
     }
 }

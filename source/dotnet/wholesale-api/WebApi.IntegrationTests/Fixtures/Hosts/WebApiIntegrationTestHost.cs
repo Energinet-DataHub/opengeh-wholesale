@@ -59,13 +59,14 @@ public sealed class WebApiIntegrationTestHost : IDisposable
     {
         const string anyValue = "fake_value";
         const string anyServiceBusConnectionString = "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=someKeyName;SharedAccessKey=someKeyValue";
+        const string anyBlobServiceUri = "https://localhost:10000/anyaccount";
 
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.AppInsightsInstrumentationKey, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendBffAppId, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.ExternalOpenIdUrl, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.InternalOpenIdUrl, anyValue);
         Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{ConfigurationSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionUri, anyBlobServiceUri);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, anyValue);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusManageConnectionString, anyServiceBusConnectionString);
         Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusSendConnectionString, anyServiceBusConnectionString);

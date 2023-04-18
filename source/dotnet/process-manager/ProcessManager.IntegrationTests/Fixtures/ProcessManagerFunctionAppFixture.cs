@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Diagnostics;
+using Azure.Core;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
@@ -92,8 +94,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionUri, "https://127.0.0.1:10000/devstoreaccount1");
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, AzuriteManager.BlobStorageConnectionString);
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionUri, AzuriteManager.BlobStorageServiceUri.ToString());
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
@@ -159,13 +160,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             await publishIntegrationEventWhenProcessCompletedListener.AddTopicSubscriptionListenerAsync(IntegrationEventsTopic.Name, publishIntegrationEventWhenProcessCompletedSubscriptionName);
             ProcessCompletedIntegrationEventListener = new ServiceBusTestListener(publishIntegrationEventWhenProcessCompletedListener);
 
-            // Create storage container - ought to be a Data Lake file system
-            var blobContainerClient = new BlobContainerClient(
-                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
-                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
-
-            if (!await blobContainerClient.ExistsAsync())
-                await blobContainerClient.CreateAsync();
+            await EnsureCalculationStorageContainerExistsAsync();
         }
 
         /// <inheritdoc/>
@@ -193,6 +188,22 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
 #else
             return "Release";
 #endif
+        }
+
+        /// <summary>
+        /// Create storage container - ought to be a Data Lake file system.
+        /// </summary>
+        private async Task EnsureCalculationStorageContainerExistsAsync()
+        {
+            var blobServiceClient = new BlobServiceClient(
+                serviceUri: AzuriteManager.BlobStorageServiceUri,
+                credential: new DefaultAzureCredential());
+
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+
+            if (!await blobContainerClient.ExistsAsync())
+                await blobContainerClient.CreateAsync();
         }
     }
 }

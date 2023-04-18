@@ -155,7 +155,6 @@ public class Startup
             // It is, however, not easily tested so for now we stick with testing resource existence
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
-                Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
                 Configuration[ConfigurationSettingNames.CalculationStorageConnectionUri]!,
                 Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
             .AddAzureServiceBusTopic(

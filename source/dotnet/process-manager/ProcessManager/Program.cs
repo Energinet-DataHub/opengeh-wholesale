@@ -138,10 +138,9 @@ public static class Program
 
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
-        var calculationStorageConnectionString = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString);
+        var calculationStorageConnectionUri = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionUri);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName);
-        ////var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
-        var dataLakeFileSystemClient = new DataLakeFileSystemClient(new Uri("https://localhost:10000/devstoreaccount1"), new DefaultAzureCredential());
+        var dataLakeFileSystemClient = new DataLakeFileSystemClient(new Uri(calculationStorageConnectionUri), new DefaultAzureCredential());
 
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
@@ -268,7 +267,6 @@ public static class Program
             // It is, however, not easily tested so for now we stick with testing resource existence
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionUri),
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName))
             .AddAzureServiceBusTopic(
