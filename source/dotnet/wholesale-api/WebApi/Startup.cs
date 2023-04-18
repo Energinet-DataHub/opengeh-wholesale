@@ -152,9 +152,10 @@ public class Startup
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
-            .AddDataLakeContainerCheck(
-                Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
-                Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
+            // TODO: turn on container health check again after checking ci/cd stability
+            // .AddDataLakeContainerCheck(
+            //     Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
+            //     Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,
