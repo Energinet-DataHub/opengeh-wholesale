@@ -62,60 +62,64 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddPermissionAuthorization();
     }
 
-    public static void AddCommandStack(this IServiceCollection services, IConfiguration configuration)
+    public static void AddCommandStack(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString(ConfigurationSettingNames.DbConnectionString);
-        if (connectionString == null)
-            throw new ArgumentNullException(ConfigurationSettingNames.DbConnectionString, "does not exist in configuration settings");
-
-        services.AddDbContext<DatabaseContext>(
-            options => options.UseSqlServer(connectionString, o =>
+        //var connectionString = configuration.GetConnectionString("CONNECTIONSTRINGS:DB_CONNECTION_STRING");
+        //if (connectionString == null)
+        //throw new ArgumentNullException(ConfigurationSettingNames.DbConnectionString, "does not exist in configuration settings");
+        serviceCollection.AddDbContext<DatabaseContext>(
+            options => options.UseSqlServer(
+                configuration
+                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
+                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
+                o =>
             {
                 o.UseNodaTime();
                 o.EnableRetryOnFailure();
             }));
-        services.AddScoped<IClock>(_ => SystemClock.Instance);
-        services.AddScoped<IDatabaseContext, DatabaseContext>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IBatchApplicationService, BatchApplicationService>();
-        services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
-        services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
-        services.AddScoped<IStreamZipper, StreamZipper>();
+        serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
+        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
+        serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+        serviceCollection.AddScoped<IBatchApplicationService, BatchApplicationService>();
+        serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
+        serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
+        serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
+
         var calculationStorageConnectionString = configuration[ConfigurationSettingNames.CalculationStorageConnectionString];
         var calculationStorageContainerName = configuration[ConfigurationSettingNames.CalculationStorageContainerName];
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
-        services.AddSingleton(dataLakeFileSystemClient);
-        services.AddScoped<HttpClient>(_ => null!);
-        services.AddScoped<IBatchFactory, BatchFactory>();
-        services.AddScoped<IBatchRepository, BatchRepository>();
-        services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
-        services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
-        services.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        services.AddScoped<ICalculationDomainService, CalculationDomainService>();
-        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
+        serviceCollection.AddSingleton(dataLakeFileSystemClient);
 
-        services.AddOptions<DatabricksOptions>().Bind(configuration);
-        services.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
+        serviceCollection.AddScoped<HttpClient>(_ => null!);
+        serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
+        serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
+        serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
+        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+        serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
+        serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
+        serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
+        serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
+        serviceCollection.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
+        serviceCollection.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
+        serviceCollection.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
+        serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
+        serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
+        serviceCollection.AddScoped<IActorRepository, ActorRepository>();
+        serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
+        serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
+        serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
+        serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
+        serviceCollection.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
 
-        services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
-        services.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
-        services.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
-        services.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
-        services.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
-        services.AddScoped<IDataLakeClient, DataLakeClient>();
-        services.AddScoped<IActorRepository, ActorRepository>();
-        services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
-        services.AddScoped<ICorrelationContext, CorrelationContext>();
-        services.AddScoped<IJsonSerializer, JsonSerializer>();
-        services.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
-        services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
+        serviceCollection.AddOptions<DatabricksOptions>().Bind(configuration);
+        serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
-        RegisterDomainEventPublisher(services, configuration);
+        RegisterDomainEventPublisher(serviceCollection, configuration);
 
-        services.ConfigureDateTime(configuration);
+        serviceCollection.ConfigureDateTime(configuration);
     }
 
-    private static void RegisterDomainEventPublisher(IServiceCollection services, IConfiguration configuration)
+    private static void RegisterDomainEventPublisher(IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var serviceBusConnectionString =
             configuration[ConfigurationSettingNames.ServiceBusSendConnectionString]!;
@@ -128,7 +132,7 @@ internal static class ServiceCollectionExtensions
         };
 
         var domainEventTopicName = configuration[ConfigurationSettingNames.DomainEventsTopicName]!;
-        services.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
+        serviceCollection.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
     }
 
     private static void ConfigureDateTime(this IServiceCollection serviceCollection, IConfiguration configuration)
