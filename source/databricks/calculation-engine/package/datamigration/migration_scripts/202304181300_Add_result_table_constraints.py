@@ -25,7 +25,6 @@ from pyspark.sql.types import (
 from package.datamigration.migration_script_args import MigrationScriptArgs
 
 
-CONTAINER = "wholesale"
 OUTPUT_FOLDER = "calculation-output"
 DATABASE_NAME = "wholesale_output"  # Also known as schema
 RESULT_TABLE_NAME = "result"
@@ -52,7 +51,6 @@ RESULTS_SCHEMA = StructType(
     ]
 )
 
-
 CONSTRAINTS = [
     (
         "batch_process_type_chk",
@@ -76,17 +74,10 @@ CONSTRAINTS = [
 
 
 def apply(args: MigrationScriptArgs) -> None:
-    container_path = _get_container_path(args.storage_account_name)
-    db_location = f"{container_path}/{OUTPUT_FOLDER}"
-    table_location = f"{container_path}/{OUTPUT_FOLDER}/{RESULT_TABLE_NAME}"
-
-    # TODO: Remove and clean up in fixture migrations_executed instead
-    import shutil
-
-    shutil.rmtree(table_location, ignore_errors=True)
-    args.spark.sql(f"DROP DATABASE IF EXISTS {DATABASE_NAME}")
-    args.spark.sql(f"DROP TABLE IF EXISTS {DATABASE_NAME}.{RESULT_TABLE_NAME}")
-    # End of TODO
+    db_location = f"{args.storage_container_path}/{OUTPUT_FOLDER}"
+    table_location = (
+        f"{args.storage_container_path}/{OUTPUT_FOLDER}/{RESULT_TABLE_NAME}"
+    )
 
     # Functionality to create the delta table was moved from production code.
     # That's the reason why this guard is required.
@@ -113,9 +104,3 @@ def apply(args: MigrationScriptArgs) -> None:
         args.spark.sql(
             f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD CONSTRAINT {constraint[0]} CHECK ({constraint[1]})"
         )
-
-
-# Separate function in order to be able to mock
-def _get_container_path(storage_account_name: str) -> str:
-    # return f"abfss://{CONTAINER}@{storage_account_name}.dfs.core.windows.net"
-    return "/workspaces/opengeh-wholesale/source/databricks/calculation-engine/tests/integration/calculator/file_writers/spark-warehouse/foo"  # TODO: Fix

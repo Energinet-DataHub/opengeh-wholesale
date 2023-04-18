@@ -49,7 +49,7 @@ def test__apply__enforces_data_constraints(
     # Arrange
     sut = _get_migration_script()
     _create_result_table(spark, tests_path)  # Create table to be migrated
-    migration_args = MigrationScriptArgs("", "", "", spark)
+    migration_args = MigrationScriptArgs("", "", "", "", spark)
 
     # Act
     sut.apply(migration_args)
