@@ -14,6 +14,7 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchAggregate;
@@ -23,17 +24,17 @@ using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Batches;
 
 [UnitTest]
-public class BatchExecutionStateDomainServiceTests
+public class UpdateBatchStateHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_WhenJobStateIsRunning_UpdateBatchToExecuting(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        UpdateBatchStateHandler sut)
     {
         // Arrange
         var batch = new BatchBuilder().WithStatePending().Build();
@@ -43,7 +44,7 @@ public class BatchExecutionStateDomainServiceTests
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Running);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.Handle(new UpdateBatchStateCommand(), new CancellationToken(false));
 
         // Assert
         batch.ExecutionState.Should().Be(BatchExecutionState.Executing);
@@ -55,7 +56,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        UpdateBatchStateHandler sut)
     {
         // Arrange
         var batch = new BatchBuilder().WithStateExecuting().Build();
@@ -67,7 +68,7 @@ public class BatchExecutionStateDomainServiceTests
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Completed);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.Handle(new UpdateBatchStateCommand(), new CancellationToken(false));
 
         // Assert
         batch.ExecutionState.Should().Be(BatchExecutionState.Completed);
@@ -82,7 +83,7 @@ public class BatchExecutionStateDomainServiceTests
     public async Task UpdateExecutionState_WhenJobStateIsCancelled_UpdateBatchToCreated(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        UpdateBatchStateHandler sut)
     {
         // Arrange
         var batch = new BatchBuilder().WithStateExecuting().Build();
@@ -92,7 +93,7 @@ public class BatchExecutionStateDomainServiceTests
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Canceled);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.Handle(new UpdateBatchStateCommand(), new CancellationToken(false));
 
         // Assert
         batch.ExecutionState.Should().Be(BatchExecutionState.Created);
@@ -104,7 +105,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        UpdateBatchStateHandler sut)
     {
         // Arrange
         var batch1 = new BatchBuilder().WithStatePending().Build();
@@ -119,7 +120,7 @@ public class BatchExecutionStateDomainServiceTests
             .ReturnsAsync(CalculationState.Completed);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.Handle(new UpdateBatchStateCommand(), new CancellationToken(false));
 
         // Assert
         batch2.ExecutionState.Should().Be(BatchExecutionState.Completed);
@@ -133,7 +134,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
         [Frozen] Mock<IDomainEventPublisher> batchCompletedPublisherMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        UpdateBatchStateHandler sut)
     {
         // Arrange
         var batch1 = new BatchBuilder().WithStatePending().Build();
@@ -147,7 +148,7 @@ public class BatchExecutionStateDomainServiceTests
             .ReturnsAsync(CalculationState.Completed);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.Handle(new UpdateBatchStateCommand(), new CancellationToken(false));
 
         // Assert
         batchCompletedPublisherMock
@@ -163,7 +164,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
         [Frozen] Mock<IDomainEventPublisher> batchCompletedPublisherMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        UpdateBatchStateHandler sut)
     {
         // Arrange
         var batch1 = new BatchBuilder().WithStateSubmitted().Build();
@@ -182,7 +183,7 @@ public class BatchExecutionStateDomainServiceTests
             .ReturnsAsync(CalculationState.Completed);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.Handle(new UpdateBatchStateCommand(), new CancellationToken(false));
 
         // Assert: Events was published for batch1 and batch3, but not for batch2
         batchCompletedPublisherMock

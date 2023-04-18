@@ -14,14 +14,11 @@
 
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public interface IBatchApplicationService
 {
-    Task UpdateExecutionStateAsync();
-
     Task<IEnumerable<BatchDto>> SearchAsync(
         IEnumerable<string> filterByGridAreaCodes,
         BatchState? filterByExecutionState,

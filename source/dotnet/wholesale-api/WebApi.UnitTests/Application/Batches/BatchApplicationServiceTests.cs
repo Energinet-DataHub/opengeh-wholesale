@@ -14,11 +14,8 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchAggregate;
 using FluentAssertions;
@@ -31,21 +28,6 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Batches;
 [UnitTest]
 public class BatchApplicationServiceTests
 {
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task UpdateExecutionStateAsync_ActivatesDomainServiceAndCommits(
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<IBatchExecutionStateDomainService> calculationDomainServiceMock,
-        BatchApplicationService sut)
-    {
-        // Arrange & Act
-        await sut.UpdateExecutionStateAsync();
-
-        // Assert
-        unitOfWorkMock.Verify(x => x.CommitAsync());
-        calculationDomainServiceMock.Verify(x => x.UpdateExecutionStateAsync());
-    }
-
     [Theory]
     [InlineAutoMoqData]
     public async Task SearchAsync_NoMatchingBatches_ReturnsZeroBatches(

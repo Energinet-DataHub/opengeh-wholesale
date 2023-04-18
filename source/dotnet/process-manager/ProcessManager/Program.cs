@@ -49,10 +49,12 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DomainEvents;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -95,6 +97,7 @@ public static class Program
             cfg.RegisterServicesFromAssembly(typeof(Domain.Root).Assembly);
             cfg.RegisterServicesFromAssembly(typeof(Infrastructure.Root).Assembly);
         });
+        serviceCollection.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
     }
 
     private static void Middlewares(IServiceCollection serviceCollection)
@@ -108,7 +111,6 @@ public static class Program
     private static void Applications(IServiceCollection services)
     {
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
-        services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
