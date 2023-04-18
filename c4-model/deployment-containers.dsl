@@ -2,8 +2,7 @@
 # showing how domain services (containers)
 # are deployed onto infrastructure (deployment nodes).
 
-# TODO: Change reference to 'main' branch when ready
-workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-arch-diagrams/dstenroejl/model-suggestions/source/datahub3-model/model.dsl {
+workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-arch-diagrams/main/source/datahub3-model/model.dsl {
 
     model {
         #
