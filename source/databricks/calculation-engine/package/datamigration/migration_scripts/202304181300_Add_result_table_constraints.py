@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from delta import DeltaTable
+import os
 from pyspark.sql.types import (
     DecimalType,
     StringType,
@@ -79,9 +80,19 @@ def apply(args: MigrationScriptArgs) -> None:
     db_location = f"{container_path}/{OUTPUT_FOLDER}"
     table_location = f"{container_path}/{OUTPUT_FOLDER}/{RESULT_TABLE_NAME}"
 
+    # TODO: Remove and clean up in fixture migrations_executed instead
+    import shutil
+
+    shutil.rmtree(table_location, ignore_errors=True)
+    args.spark.sql(f"DROP DATABASE IF EXISTS {DATABASE_NAME}")
+    args.spark.sql(f"DROP TABLE IF EXISTS {DATABASE_NAME}.{RESULT_TABLE_NAME}")
+    # End of TODO
+
     # Functionality to create the delta table was moved from production code.
     # That's the reason why this guard is required.
-    if DeltaTable.isDeltaTable(args.spark, table_location):
+    if os.path.exists(table_location) and DeltaTable.isDeltaTable(
+        args.spark, table_location
+    ):
         return
 
     args.spark.sql(
@@ -98,13 +109,13 @@ def apply(args: MigrationScriptArgs) -> None:
         .execute()
     )
 
-    statements = [
-        f"ALTER TABLE {{table_name}} ADD CONSTRAINT {constraint[0]}_chk CHECK ({constraint[1]})"
-        for constraint in CONSTRAINTS
-    ]
-    args.spark.sql(statements)
+    for constraint in CONSTRAINTS:
+        args.spark.sql(
+            f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD CONSTRAINT {constraint[0]} CHECK ({constraint[1]})"
+        )
 
 
 # Separate function in order to be able to mock
 def _get_container_path(storage_account_name: str) -> str:
-    return f"abfss://{CONTAINER}@{storage_account_name}.dfs.core.windows.net"
+    # return f"abfss://{CONTAINER}@{storage_account_name}.dfs.core.windows.net"
+    return "/workspaces/opengeh-wholesale/source/databricks/calculation-engine/tests/integration/calculator/file_writers/spark-warehouse/foo"  # TODO: Fix

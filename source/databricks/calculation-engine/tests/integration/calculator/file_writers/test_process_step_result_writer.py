@@ -285,15 +285,18 @@ batch_id = str(uuid.uuid4())  # Needed in both test param and test implementatio
         (ResultTableColName.batch_id, batch_id),
         (ResultTableColName.batch_execution_time_start, DEFAULT_BATCH_EXECUTION_START),
         (ResultTableColName.batch_process_type, DEFAULT_PROCESS_TYPE),
-        (ResultTableColName.time_series_type, DEFAULT_TIME_SERIES_TYPE),
+        (ResultTableColName.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
         (ResultTableColName.grid_area, DEFAULT_GRID_AREA),
         (ResultTableColName.out_grid_area, DEFAULT_TO_GRID_AREA),
         (ResultTableColName.balance_responsible_id, DEFAULT_BALANCE_RESPONSIBLE_ID),
         (ResultTableColName.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
-        (ResultTableColName.time, datetime(2020, 1, 1, 0, 0)),
-        (ResultTableColName.quantity, DEFAULT_QUANTITY),
-        (ResultTableColName.quantity_quality, DEFAULT_QUALITY),
-        (ResultTableColName.aggregation_level, DEFAULT_AGGREGATION_LEVEL),
+        (
+            ResultTableColName.time,
+            datetime(2020, 1, 1, 0, 0),
+        ),  # TODO: Fix these magic values
+        (ResultTableColName.quantity, Decimal("1.100")),
+        (ResultTableColName.quantity_quality, DEFAULT_QUALITY.value),
+        (ResultTableColName.aggregation_level, DEFAULT_AGGREGATION_LEVEL.value),
     ],
 )
 def test__write__writes_column(

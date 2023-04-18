@@ -25,6 +25,7 @@ MIGRATION_SCRIPT_NAME = "202304181300_Add_result_table_constraints"
 TABLE_NAME = "result"
 
 
+# TODO: Make this a ProcessStepResultWriter test
 @pytest.mark.parametrize(
     "column_name,invalid_column_value",
     [
