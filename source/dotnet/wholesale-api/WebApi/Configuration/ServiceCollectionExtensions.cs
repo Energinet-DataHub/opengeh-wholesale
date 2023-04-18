@@ -86,7 +86,9 @@ internal static class ServiceCollectionExtensions
 
         var calculationStorageConnectionUri = EnvironmentVariableHelper.GetEnvVariable(ConfigurationSettingNames.CalculationStorageConnectionUri);
         var calculationStorageContainerName = EnvironmentVariableHelper.GetEnvVariable(ConfigurationSettingNames.CalculationStorageContainerName);
-        var dataLakeFileSystemClient = new DataLakeFileSystemClient(new Uri(calculationStorageConnectionUri), new DefaultAzureCredential());
+        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(calculationStorageConnectionUri), new DefaultAzureCredential());
+        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(calculationStorageContainerName);
+
         services.AddSingleton(dataLakeFileSystemClient);
 
         services.AddScoped<HttpClient>(_ => null!);
