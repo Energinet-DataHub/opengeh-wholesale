@@ -64,9 +64,6 @@ internal static class ServiceCollectionExtensions
 
     public static void AddCommandStack(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        //var connectionString = configuration.GetConnectionString("CONNECTIONSTRINGS:DB_CONNECTION_STRING");
-        //if (connectionString == null)
-        //throw new ArgumentNullException(ConfigurationSettingNames.DbConnectionString, "does not exist in configuration settings");
         serviceCollection.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
                 configuration
