@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Azure.Identity;
-using Azure.Storage.Blobs;
+using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
@@ -101,15 +101,14 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
         /// </summary>
         private async Task EnsureCalculationStorageContainerExistsAsync()
         {
-            var blobServiceClient = new BlobServiceClient(
+            var dataLakeServiceClient = new DataLakeServiceClient(
                 serviceUri: AzuriteManager.BlobStorageServiceUri,
                 credential: new DefaultAzureCredential());
 
-            var blobContainerClient = blobServiceClient.GetBlobContainerClient(
-                Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName));
+            var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
 
-            if (!await blobContainerClient.ExistsAsync())
-                await blobContainerClient.CreateAsync();
+            await fileSystemClient.CreateIfNotExistsAsync();
         }
     }
 }
