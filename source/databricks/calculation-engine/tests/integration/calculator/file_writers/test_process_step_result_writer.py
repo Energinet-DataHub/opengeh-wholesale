@@ -318,7 +318,6 @@ def test__write__writes_column(
         )
     ]
     result_df = _create_result_df(spark, row)
-    batch_id = str(uuid.uuid4())
     sut = ProcessStepResultWriter(
         str(tmpdir),
         batch_id,
