@@ -191,14 +191,14 @@ class ProcessStepResultWriter:
 
         # First create database if not already existing
         spark.sql(
-            f"CREATE DATABASE IF NOT EXISTS {DATABASE_NAME} \
+            f"CREATE DATABASE {DATABASE_NAME} \
             COMMENT 'Contains result data from wholesale domain.' \
             LOCATION '{db_location}'"
         )
 
         # Now create table if not already existing
         (
-            DeltaTable.createIfNotExists(spark)
+            DeltaTable.create(spark)
             .tableName(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
             .location(table_location)
             .addColumns(results_schema)
