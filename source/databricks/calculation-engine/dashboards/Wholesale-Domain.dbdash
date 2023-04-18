@@ -1,0 +1,1278 @@
+{
+  "queries": [
+    {
+      "id": "fa2cbf17-7f52-4854-8394-56a846953086",
+      "name": "wholesale_time_series_types",
+      "description": null,
+      "query": "select distinct(time_series_type)\nfrom wholesale_output.result\norder by time_series_type asc\n",
+      "options": {
+        "parent": "folders/2647594842131230",
+        "apply_auto_limit": true,
+        "folder_node_status": "ACTIVE",
+        "folder_node_internal_name": "tree/2085172179166706",
+        "visualization_control_order": [],
+        "catalog": "hive_metastore",
+        "schema": "wholesale_output",
+        "parameters": []
+      },
+      "visualizations": [
+        {
+          "id": "74d07dad-e786-49dd-abf7-6f2fc1cfeaae",
+          "type": "TABLE",
+          "name": "Results",
+          "description": "",
+          "options": {
+            "version": 2
+          },
+          "query_plan": null
+        }
+      ]
+    },
+    {
+      "id": "8e571878-35e3-4d96-bfd7-3a6f8c1ac36b",
+      "name": "wholesale_aggregation_levels",
+      "description": null,
+      "query": "select distinct(aggregation_level)\nfrom wholesale_output.result\norder by aggregation_level asc\n",
+      "options": {
+        "parent": "folders/2647594842131230",
+        "apply_auto_limit": true,
+        "folder_node_status": "ACTIVE",
+        "folder_node_internal_name": "tree/2085172179166704",
+        "visualization_control_order": [],
+        "catalog": "hive_metastore",
+        "schema": "wholesale_output",
+        "parameters": []
+      },
+      "visualizations": [
+        {
+          "id": "95a83166-7b23-4e43-bded-811dd395b8e3",
+          "type": "TABLE",
+          "name": "Results",
+          "description": "",
+          "options": {
+            "version": 2
+          },
+          "query_plan": null
+        }
+      ]
+    },
+    {
+      "id": "910fccf2-7373-4066-9613-0a41db0b837c",
+      "name": "wholesale_result",
+      "description": null,
+      "query": "select *, cast(quantity as decimal) as `quantity_decimal`\nfrom wholesale_output.result\nwhere batch_id = \"{{Batch}}\"\n  and grid_area = \"{{Grid Area}}\"\n  and aggregation_level = \"{{Aggregation Level}}\"\n  and time_series_type = \"{{Time Series Type}}\"\norder by `time` asc\nlimit 30000\n",
+      "options": {
+        "parent": "folders/2647594842131230",
+        "apply_auto_limit": true,
+        "folder_node_status": "ACTIVE",
+        "folder_node_internal_name": "tree/2085172179166633",
+        "visualization_control_order": [
+          "Batch",
+          "Grid Area",
+          "Aggregation Level",
+          "Time Series Type"
+        ],
+        "catalog": "hive_metastore",
+        "schema": "bjm",
+        "parameters": [
+          {
+            "queryId": "c90e6ebe-ed3e-4eae-b555-7c89756e6400",
+            "title": "Batch",
+            "name": "Batch",
+            "type": "query",
+            "global": false,
+            "parentQueryId": "910fccf2-7373-4066-9613-0a41db0b837c",
+            "locals": [],
+            "urlPrefix": "p_",
+            "value": "a6736509-5c43-4607-b8e6-1e66422ee540",
+            "$$value": "a6736509-5c43-4607-b8e6-1e66422ee540",
+            "pendingValue": "4e691264-7841-46cd-a536-adfcfcc4bccb"
+          },
+          {
+            "queryId": "3d1f1fa1-38ba-4002-abec-88b45cffcbcc",
+            "title": "Grid Area",
+            "name": "Grid Area",
+            "type": "query",
+            "global": false,
+            "parentQueryId": "910fccf2-7373-4066-9613-0a41db0b837c",
+            "locals": [],
+            "urlPrefix": "p_",
+            "value": "543",
+            "$$value": "543"
+          },
+          {
+            "queryId": "8e571878-35e3-4d96-bfd7-3a6f8c1ac36b",
+            "title": "Aggregation Level",
+            "name": "Aggregation Level",
+            "type": "query",
+            "global": false,
+            "parentQueryId": "910fccf2-7373-4066-9613-0a41db0b837c",
+            "locals": [],
+            "urlPrefix": "p_",
+            "value": "total_ga",
+            "$$value": "total_ga"
+          },
+          {
+            "queryId": "fa2cbf17-7f52-4854-8394-56a846953086",
+            "title": "Time Series Type",
+            "name": "Time Series Type",
+            "type": "query",
+            "global": false,
+            "parentQueryId": "910fccf2-7373-4066-9613-0a41db0b837c",
+            "locals": [],
+            "urlPrefix": "p_",
+            "value": "non_profiled_consumption",
+            "$$value": "non_profiled_consumption"
+          }
+        ]
+      },
+      "visualizations": [
+        {
+          "id": "005cc603-29f2-498c-aee6-bcc5a5c8bdae",
+          "type": "TABLE",
+          "name": "Table 1",
+          "description": "",
+          "options": {
+            "itemsPerPage": 100,
+            "condensed": true,
+            "withRowNumber": true,
+            "columns": [
+              {
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "grid_area",
+                "type": "string",
+                "displayAs": "string",
+                "visible": false,
+                "order": 0,
+                "title": "grid_area",
+                "allowSearch": false,
+                "alignContent": "left",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "energy_supplier_id",
+                "type": "string",
+                "displayAs": "string",
+                "visible": false,
+                "order": 1,
+                "title": "energy_supplier_id",
+                "allowSearch": false,
+                "alignContent": "left",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "balance_responsible_id",
+                "type": "string",
+                "displayAs": "string",
+                "visible": false,
+                "order": 2,
+                "title": "balance_responsible_id",
+                "allowSearch": false,
+                "alignContent": "left",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "quantity",
+                "type": "string",
+                "displayAs": "string",
+                "visible": false,
+                "order": 3,
+                "title": "quantity",
+                "allowSearch": false,
+                "alignContent": "left",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "dateTimeFormat": "YYYY-MM-DD HH:mm:ss.SSS",
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "time",
+                "type": "datetime",
+                "displayAs": "datetime",
+                "visible": true,
+                "order": 4,
+                "title": "time",
+                "allowSearch": false,
+                "alignContent": "right",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "numberFormat": "0.000",
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "quantity_decimal",
+                "type": "float",
+                "displayAs": "number",
+                "visible": true,
+                "order": 5,
+                "title": "quantity_decimal",
+                "allowSearch": false,
+                "alignContent": "right",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "quantity_quality",
+                "type": "string",
+                "displayAs": "string",
+                "visible": true,
+                "order": 6,
+                "title": "quantity_quality",
+                "allowSearch": false,
+                "alignContent": "left",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "aggregation_level",
+                "type": "string",
+                "displayAs": "string",
+                "visible": false,
+                "order": 7,
+                "title": "aggregation_level",
+                "allowSearch": false,
+                "alignContent": "left",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "time_series_type",
+                "type": "string",
+                "displayAs": "string",
+                "visible": false,
+                "order": 8,
+                "title": "time_series_type",
+                "allowSearch": false,
+                "alignContent": "left",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "batch_id",
+                "type": "string",
+                "displayAs": "string",
+                "visible": false,
+                "order": 9,
+                "title": "batch_id",
+                "allowSearch": false,
+                "alignContent": "left",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "batch_process_type",
+                "type": "string",
+                "displayAs": "string",
+                "visible": false,
+                "order": 10,
+                "title": "batch_process_type",
+                "allowSearch": false,
+                "alignContent": "left",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "dateTimeFormat": "YYYY-MM-DD HH:mm:ss.SSS",
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "batch_execution_time_start",
+                "type": "datetime",
+                "displayAs": "datetime",
+                "visible": false,
+                "order": 11,
+                "title": "batch_execution_time_start",
+                "allowSearch": false,
+                "alignContent": "right",
+                "allowHTML": true,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              }
+            ]
+          },
+          "query_plan": null
+        },
+        {
+          "id": "6022990e-65b1-447f-91ec-9c9b4e4a5248",
+          "type": "CHART",
+          "name": "Line 1",
+          "description": "",
+          "options": {
+            "version": 2,
+            "globalSeriesType": "line",
+            "sortX": true,
+            "sortY": true,
+            "legend": {
+              "traceorder": "normal"
+            },
+            "xAxis": {
+              "type": "-",
+              "labels": {
+                "enabled": true
+              },
+              "title": {
+                "text": " "
+              }
+            },
+            "yAxis": [
+              {
+                "type": "-",
+                "title": {
+                  "text": "kWh"
+                },
+                "rangeMin": 0
+              },
+              {
+                "type": "-",
+                "opposite": true
+              }
+            ],
+            "alignYAxesAtZero": false,
+            "error_y": {
+              "type": "data",
+              "visible": true
+            },
+            "series": {
+              "stacking": null,
+              "error_y": {
+                "type": "data",
+                "visible": true
+              }
+            },
+            "seriesOptions": {
+              "column_5cce9d6d97": {
+                "yAxis": 0,
+                "type": "line",
+                "name": "Quantity (kWh)"
+              }
+            },
+            "valuesOptions": {},
+            "direction": {
+              "type": "counterclockwise"
+            },
+            "sizemode": "diameter",
+            "coefficient": 1,
+            "numberFormat": "0,0[.]00000",
+            "percentFormat": "0[.]00%",
+            "textFormat": "",
+            "missingValuesAsZero": true,
+            "useAggregationsUi": true,
+            "swappedAxes": false,
+            "dateTimeFormat": "YYYY-MM-DD HH:mm",
+            "showDataLabels": false,
+            "columnConfigurationMap": {
+              "x": {
+                "column": "time",
+                "id": "column_5cce9d6d95"
+              },
+              "y": [
+                {
+                  "id": "column_5cce9d6d97",
+                  "column": "quantity_decimal",
+                  "transform": "SUM"
+                }
+              ]
+            },
+            "isAggregationOn": true
+          },
+          "query_plan": {
+            "selects": [
+              {
+                "column": "time"
+              },
+              {
+                "function": "SUM",
+                "args": [
+                  {
+                    "column": "quantity_decimal"
+                  }
+                ],
+                "alias": "column_5cce9d6d97"
+              }
+            ],
+            "groups": [
+              {
+                "column": "time"
+              }
+            ]
+          }
+        },
+        {
+          "id": "91666288-57d5-43d8-aad7-1043dbed67ce",
+          "type": "CHART",
+          "name": "Results",
+          "description": "",
+          "options": {
+            "version": 2,
+            "globalSeriesType": "line",
+            "sortX": true,
+            "sortY": true,
+            "legend": {
+              "traceorder": "normal"
+            },
+            "xAxis": {
+              "type": "-",
+              "labels": {
+                "enabled": true
+              },
+              "title": {
+                "text": " "
+              }
+            },
+            "yAxis": [
+              {
+                "type": "-",
+                "title": {
+                  "text": "kWh"
+                },
+                "rangeMin": 0
+              },
+              {
+                "type": "-",
+                "opposite": true
+              }
+            ],
+            "alignYAxesAtZero": false,
+            "error_y": {
+              "type": "data",
+              "visible": true
+            },
+            "series": {
+              "stacking": null,
+              "error_y": {
+                "type": "data",
+                "visible": true
+              }
+            },
+            "seriesOptions": {
+              "column_e879ed6659": {
+                "yAxis": 0,
+                "type": "line"
+              },
+              "column_e879ed66138": {
+                "yAxis": 0,
+                "type": "line"
+              }
+            },
+            "valuesOptions": {},
+            "direction": {
+              "type": "counterclockwise"
+            },
+            "sizemode": "diameter",
+            "coefficient": 1,
+            "numberFormat": "0,0[.]00000",
+            "percentFormat": "0[.]00%",
+            "textFormat": "",
+            "missingValuesAsZero": true,
+            "useAggregationsUi": true,
+            "swappedAxes": false,
+            "dateTimeFormat": "YYYY-MM-DD HH:mm",
+            "showDataLabels": false,
+            "columnConfigurationMap": {
+              "x": {
+                "column": "time",
+                "transform": "MINUTE_LEVEL",
+                "id": "column_e879ed6657"
+              },
+              "y": [
+                {
+                  "id": "column_e879ed6659",
+                  "column": "quantity_decimal",
+                  "transform": "SUM"
+                }
+              ],
+              "series": {
+                "column": "time_series_type",
+                "id": "column_e879ed66139"
+              }
+            },
+            "isAggregationOn": true,
+            "hideXAxis": false
+          },
+          "query_plan": {
+            "selects": [
+              {
+                "function": "DATE_TRUNC",
+                "args": [
+                  {
+                    "column": "time"
+                  },
+                  {
+                    "string": "MINUTE"
+                  }
+                ],
+                "alias": "column_e879ed6657"
+              },
+              {
+                "function": "SUM",
+                "args": [
+                  {
+                    "column": "quantity_decimal"
+                  }
+                ],
+                "alias": "column_e879ed6659"
+              },
+              {
+                "column": "time_series_type"
+              }
+            ],
+            "groups": [
+              {
+                "column": "column_e879ed6657"
+              },
+              {
+                "column": "time_series_type"
+              }
+            ]
+          }
+        },
+        {
+          "id": "fafbc8ab-abea-4dbc-bc83-05d1b4440f2b",
+          "type": "CHART",
+          "name": "Line 1",
+          "description": "",
+          "options": {
+            "version": 2,
+            "globalSeriesType": "line",
+            "sortX": true,
+            "sortY": true,
+            "legend": {
+              "traceorder": "normal"
+            },
+            "xAxis": {
+              "type": "-",
+              "labels": {
+                "enabled": true
+              },
+              "title": {
+                "text": " "
+              }
+            },
+            "yAxis": [
+              {
+                "type": "-",
+                "rangeMin": 0,
+                "title": {
+                  "text": "kWh"
+                }
+              },
+              {
+                "type": "-",
+                "opposite": true
+              }
+            ],
+            "alignYAxesAtZero": false,
+            "error_y": {
+              "type": "data",
+              "visible": true
+            },
+            "series": {
+              "stacking": null,
+              "error_y": {
+                "type": "data",
+                "visible": true
+              }
+            },
+            "seriesOptions": {
+              "column_d2751de6160": {
+                "yAxis": 0,
+                "type": "line",
+                "name": "Quantity (kWh)"
+              }
+            },
+            "valuesOptions": {},
+            "direction": {
+              "type": "counterclockwise"
+            },
+            "sizemode": "diameter",
+            "coefficient": 1,
+            "numberFormat": "0,0[.]00000",
+            "percentFormat": "0[.]00%",
+            "textFormat": "",
+            "missingValuesAsZero": true,
+            "useAggregationsUi": true,
+            "swappedAxes": false,
+            "dateTimeFormat": "YYYY-MM-DD HH:mm",
+            "showDataLabels": false,
+            "columnConfigurationMap": {
+              "x": {
+                "column": "time",
+                "id": "column_d2751de6158"
+              },
+              "y": [
+                {
+                  "id": "column_d2751de6160",
+                  "column": "quantity_decimal",
+                  "transform": "SUM"
+                }
+              ]
+            },
+            "isAggregationOn": true
+          },
+          "query_plan": {
+            "selects": [
+              {
+                "column": "time"
+              },
+              {
+                "function": "SUM",
+                "args": [
+                  {
+                    "column": "quantity_decimal"
+                  }
+                ],
+                "alias": "column_d2751de6160"
+              }
+            ],
+            "groups": [
+              {
+                "column": "time"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c4489ea9-9e2d-420d-a641-8cd7e045d3fb",
+      "name": "batch_all_time_series_types",
+      "description": null,
+      "query": "select *, cast(quantity as decimal) as `quantity_decimal`\nfrom wholesale_output.result\nwhere batch_id = \"{{Batch}}\"\n  and grid_area = \"{{Grid Area}}\"\n  and aggregation_level = \"{{Aggregation Level}}\"\norder by `time` asc\nlimit 30000\n",
+      "options": {
+        "parent": "folders/2647594842131230",
+        "apply_auto_limit": true,
+        "folder_node_status": "ACTIVE",
+        "folder_node_internal_name": "tree/373755295286141",
+        "visualization_control_order": [
+          "Batch",
+          "Grid Area",
+          "Aggregation Level"
+        ],
+        "catalog": "hive_metastore",
+        "schema": "bjm",
+        "parameters": [
+          {
+            "queryId": "c90e6ebe-ed3e-4eae-b555-7c89756e6400",
+            "title": "Batch",
+            "name": "Batch",
+            "type": "query",
+            "global": false,
+            "parentQueryId": "c4489ea9-9e2d-420d-a641-8cd7e045d3fb",
+            "locals": [],
+            "urlPrefix": "p_",
+            "value": "a228e908-d0af-4fec-b5ef-17d4216bddea",
+            "$$value": "a228e908-d0af-4fec-b5ef-17d4216bddea"
+          },
+          {
+            "queryId": "3d1f1fa1-38ba-4002-abec-88b45cffcbcc",
+            "title": "Grid Area",
+            "name": "Grid Area",
+            "type": "query",
+            "global": false,
+            "parentQueryId": "c4489ea9-9e2d-420d-a641-8cd7e045d3fb",
+            "locals": [],
+            "urlPrefix": "p_",
+            "value": "543",
+            "$$value": "543"
+          },
+          {
+            "queryId": "8e571878-35e3-4d96-bfd7-3a6f8c1ac36b",
+            "title": "Aggregation Level",
+            "name": "Aggregation Level",
+            "type": "query",
+            "global": false,
+            "parentQueryId": "c4489ea9-9e2d-420d-a641-8cd7e045d3fb",
+            "locals": [],
+            "urlPrefix": "p_",
+            "value": "brp_ga",
+            "$$value": "brp_ga"
+          }
+        ]
+      },
+      "visualizations": [
+        {
+          "id": "93deb7ae-cf25-491f-9e76-11cb01b416fa",
+          "type": "CHART",
+          "name": "Line 1",
+          "description": "",
+          "options": {
+            "version": 2,
+            "globalSeriesType": "line",
+            "sortX": true,
+            "sortY": true,
+            "legend": {
+              "traceorder": "normal"
+            },
+            "xAxis": {
+              "type": "-",
+              "labels": {
+                "enabled": true
+              },
+              "title": {
+                "text": " "
+              }
+            },
+            "yAxis": [
+              {
+                "type": "-",
+                "title": {
+                  "text": "kWh"
+                },
+                "rangeMin": 0
+              },
+              {
+                "type": "-",
+                "opposite": true
+              }
+            ],
+            "alignYAxesAtZero": false,
+            "error_y": {
+              "type": "data",
+              "visible": true
+            },
+            "series": {
+              "stacking": null,
+              "error_y": {
+                "type": "data",
+                "visible": true
+              },
+              "percentValues": true
+            },
+            "seriesOptions": {
+              "column_74e518cd5738": {
+                "yAxis": 0,
+                "type": "line"
+              }
+            },
+            "valuesOptions": {},
+            "direction": {
+              "type": "counterclockwise"
+            },
+            "sizemode": "diameter",
+            "coefficient": 1,
+            "numberFormat": "0,0[.]00000",
+            "percentFormat": "0[.]00%",
+            "textFormat": "",
+            "missingValuesAsZero": true,
+            "useAggregationsUi": true,
+            "swappedAxes": false,
+            "dateTimeFormat": "YYYY-MM-DD HH:mm",
+            "showDataLabels": false,
+            "columnConfigurationMap": {
+              "x": {
+                "column": "time",
+                "id": "column_74e518cd5737"
+              },
+              "y": [
+                {
+                  "id": "column_74e518cd5738",
+                  "column": "quantity_decimal",
+                  "transform": "SUM"
+                }
+              ],
+              "series": {
+                "column": "time_series_type",
+                "id": "column_74e518cd5739"
+              }
+            },
+            "isAggregationOn": true
+          },
+          "query_plan": {
+            "selects": [
+              {
+                "column": "time"
+              },
+              {
+                "function": "SUM",
+                "args": [
+                  {
+                    "column": "quantity_decimal"
+                  }
+                ],
+                "alias": "column_74e518cd5738"
+              },
+              {
+                "column": "time_series_type"
+              }
+            ],
+            "groups": [
+              {
+                "column": "time"
+              },
+              {
+                "column": "time_series_type"
+              }
+            ]
+          }
+        },
+        {
+          "id": "d7a69fb2-ab3c-4c2c-a6cb-24e0ae31c897",
+          "type": "TABLE",
+          "name": "Results",
+          "description": "",
+          "options": {
+            "version": 2
+          },
+          "query_plan": null
+        }
+      ]
+    },
+    {
+      "id": "c90e6ebe-ed3e-4eae-b555-7c89756e6400",
+      "name": "wholesale_latest_batches",
+      "description": null,
+      "query": "select distinct concat(batch_process_type, \" \", batch_execution_time_start) as name, batch_id as value, batch_id, batch_process_type as `Process Type`, batch_execution_time_start as `Execution Time`\nfrom wholesale_output.result\norder by `Execution Time` desc\n",
+      "options": {
+        "parent": "folders/2647594842131230",
+        "apply_auto_limit": true,
+        "folder_node_status": "ACTIVE",
+        "folder_node_internal_name": "tree/2085172179166634",
+        "visualization_control_order": [],
+        "catalog": "hive_metastore",
+        "schema": "wholesale_output",
+        "parameters": []
+      },
+      "visualizations": [
+        {
+          "id": "af432b6c-5ba4-4488-9cd3-bc8489a9809b",
+          "type": "TABLE",
+          "name": "Table 1",
+          "description": "",
+          "options": {
+            "itemsPerPage": 25,
+            "condensed": true,
+            "withRowNumber": true,
+            "columns": [
+              {
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "Batch",
+                "type": "string",
+                "displayAs": "string",
+                "visible": true,
+                "order": 100000,
+                "title": "Batch",
+                "allowSearch": false,
+                "alignContent": "left",
+                "allowHTML": false,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              },
+              {
+                "dateTimeFormat": "YYYY-MM-DD HH:mm:ss.SSS",
+                "booleanValues": [
+                  "false",
+                  "true"
+                ],
+                "imageUrlTemplate": "{{ @ }}",
+                "imageTitleTemplate": "{{ @ }}",
+                "imageWidth": "",
+                "imageHeight": "",
+                "linkUrlTemplate": "{{ @ }}",
+                "linkTextTemplate": "{{ @ }}",
+                "linkTitleTemplate": "{{ @ }}",
+                "linkOpenInNewTab": true,
+                "name": "Execution Time",
+                "type": "datetime",
+                "displayAs": "datetime",
+                "visible": true,
+                "order": 100001,
+                "title": "Execution Time",
+                "allowSearch": false,
+                "alignContent": "right",
+                "allowHTML": false,
+                "highlightLinks": false,
+                "useMonospaceFont": false,
+                "preserveWhitespace": false
+              }
+            ],
+            "version": 2
+          },
+          "query_plan": null
+        },
+        {
+          "id": "c1e5a65f-67a6-4e73-9eb6-4e943a5be0bf",
+          "type": "TABLE",
+          "name": "Results",
+          "description": "",
+          "options": {
+            "version": 2
+          },
+          "query_plan": null
+        }
+      ]
+    },
+    {
+      "id": "3d1f1fa1-38ba-4002-abec-88b45cffcbcc",
+      "name": "wholesale_grid_areas",
+      "description": null,
+      "query": "select distinct(grid_area)\nfrom wholesale_output.result\norder by grid_area asc\n",
+      "options": {
+        "parent": "folders/2647594842131230",
+        "apply_auto_limit": true,
+        "folder_node_status": "ACTIVE",
+        "folder_node_internal_name": "tree/2085172179166705",
+        "visualization_control_order": [],
+        "catalog": "hive_metastore",
+        "schema": "wholesale_output",
+        "parameters": []
+      },
+      "visualizations": [
+        {
+          "id": "2c6859a2-8e4f-4334-b3b7-2bde32fae819",
+          "type": "TABLE",
+          "name": "Results",
+          "description": "",
+          "options": {
+            "version": 2
+          },
+          "query_plan": null
+        }
+      ]
+    }
+  ],
+  "dashboard": {
+    "id": "ba40247d-7128-494b-a0cc-791d3209d16e",
+    "name": "Wholesale Domain",
+    "widgets": [
+      {
+        "id": "d257f833-6278-4333-aa86-e9bf11fefde0",
+        "width": 1,
+        "options": {
+          "parameterMappings": {
+            "Batch": {
+              "name": "Batch",
+              "type": "dashboard-level",
+              "mapTo": "Batch",
+              "value": null,
+              "title": ""
+            },
+            "Grid Area": {
+              "name": "Grid Area",
+              "type": "dashboard-level",
+              "mapTo": "Grid Area",
+              "value": null,
+              "title": ""
+            },
+            "Aggregation Level": {
+              "name": "Aggregation Level",
+              "type": "dashboard-level",
+              "mapTo": "Aggregation Level",
+              "value": null,
+              "title": ""
+            },
+            "Time Series Type": {
+              "name": "Time Series Type",
+              "type": "dashboard-level",
+              "mapTo": "Time Series Type",
+              "value": null,
+              "title": "Time Series Type"
+            }
+          },
+          "title": "Batch Calculation Result",
+          "description": "",
+          "isHidden": false,
+          "position": {
+            "autoHeight": false,
+            "sizeX": 3,
+            "sizeY": 20,
+            "minSizeX": 2,
+            "maxSizeX": 6,
+            "minSizeY": 1,
+            "maxSizeY": 1000,
+            "col": 3,
+            "row": 0
+          },
+          "overrideColors": false
+        },
+        "dashboard_id": "ba40247d-7128-494b-a0cc-791d3209d16e",
+        "text": "",
+        "visualization_id": "005cc603-29f2-498c-aee6-bcc5a5c8bdae"
+      },
+      {
+        "id": "fbb1431f-717e-4522-be67-42b20bf219dd",
+        "width": 1,
+        "options": {
+          "parameterMappings": {
+            "Batch": {
+              "name": "Batch",
+              "type": "dashboard-level",
+              "mapTo": "Batch",
+              "value": null,
+              "title": ""
+            },
+            "Grid Area": {
+              "name": "Grid Area",
+              "type": "dashboard-level",
+              "mapTo": "Grid Area",
+              "value": null,
+              "title": ""
+            },
+            "Aggregation Level": {
+              "name": "Aggregation Level",
+              "type": "dashboard-level",
+              "mapTo": "Aggregation Level",
+              "value": null,
+              "title": ""
+            },
+            "Time Series Type": {
+              "name": "Time Series Type",
+              "type": "dashboard-level",
+              "mapTo": "Time Series Type",
+              "value": null,
+              "title": "Time Series Type"
+            }
+          },
+          "title": "Result",
+          "description": "",
+          "isHidden": false,
+          "position": {
+            "autoHeight": false,
+            "sizeX": 3,
+            "sizeY": 12,
+            "minSizeX": 1,
+            "maxSizeX": 6,
+            "minSizeY": 5,
+            "maxSizeY": 1000,
+            "col": 0,
+            "row": 0
+          },
+          "overrideColors": false
+        },
+        "dashboard_id": "ba40247d-7128-494b-a0cc-791d3209d16e",
+        "text": "",
+        "visualization_id": "fafbc8ab-abea-4dbc-bc83-05d1b4440f2b"
+      },
+      {
+        "id": "2ce9b38d-c10b-4859-a5aa-b7d10c755535",
+        "width": 1,
+        "options": {
+          "parameterMappings": {
+            "Batch": {
+              "name": "Batch",
+              "type": "dashboard-level",
+              "mapTo": "Batch",
+              "value": null,
+              "title": ""
+            },
+            "Grid Area": {
+              "name": "Grid Area",
+              "type": "dashboard-level",
+              "mapTo": "Grid Area",
+              "value": null,
+              "title": ""
+            },
+            "Aggregation Level": {
+              "name": "Aggregation Level",
+              "type": "dashboard-level",
+              "mapTo": "Aggregation Level",
+              "value": null,
+              "title": ""
+            }
+          },
+          "title": "Compare",
+          "description": "",
+          "isHidden": false,
+          "position": {
+            "autoHeight": false,
+            "sizeX": 3,
+            "sizeY": 8,
+            "minSizeX": 1,
+            "maxSizeX": 6,
+            "minSizeY": 5,
+            "maxSizeY": 1000,
+            "col": 0,
+            "row": 12
+          }
+        },
+        "dashboard_id": "ba40247d-7128-494b-a0cc-791d3209d16e",
+        "text": "",
+        "visualization_id": "93deb7ae-cf25-491f-9e76-11cb01b416fa"
+      }
+    ],
+    "tags": [
+      "BJM",
+      "Mandalorian"
+    ],
+    "color_palette": null,
+    "dashboard_filters_enabled": false,
+    "parent": "folders/2647594842131230",
+    "is_archived": false
+  },
+  "version": "1.0"
+}
