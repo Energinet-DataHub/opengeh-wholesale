@@ -92,16 +92,6 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
         serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
         serviceCollection.AddScoped<IDomainEventRepository, DomainEventRepository>();
-        serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
-        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
-        serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
-        serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
-
-        serviceCollection.AddScoped<HttpClient>(_ => null!);
-        serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
-        serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
-        serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
         serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
