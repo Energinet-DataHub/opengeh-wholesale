@@ -18,7 +18,7 @@ from package.codelists import (
     SettlementMethod,
     TimeSeriesQuality,
 )
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 from . import transformations as T
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
@@ -121,9 +121,9 @@ def _aggregate_per_ga_and_brp_and_es(
     return T.create_dataframe_from_aggregation_result_schema(result)
 
 
-def aggregate_production_ga_es(results: dict) -> DataFrame:
+def aggregate_production_ga_es(production: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_es(
-        results[ResultKeyName.production_with_system_correction_and_grid_loss],
+        production,
         MeteringPointType.production,
     )
 
@@ -137,9 +137,9 @@ def aggregate_non_profiled_consumption_ga_es(
     )
 
 
-def aggregate_flex_consumption_ga_es(results: dict) -> DataFrame:
+def aggregate_flex_consumption_ga_es(flex_consumption: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_es(
-        results[ResultKeyName.flex_consumption_with_grid_loss],
+        flex_consumption,
         MeteringPointType.consumption,
     )
 
@@ -161,23 +161,20 @@ def _aggregate_per_ga_and_es(
     return T.create_dataframe_from_aggregation_result_schema(result)
 
 
-def aggregate_production_ga_brp(results: dict) -> DataFrame:
-    return _aggregate_per_ga_and_brp(
-        results[ResultKeyName.production_with_system_correction_and_grid_loss],
-        MeteringPointType.production,
-    )
+def aggregate_production_ga_brp(production: DataFrame) -> DataFrame:
+    return _aggregate_per_ga_and_brp(production, MeteringPointType.production)
 
 
-def aggregate_non_profiled_consumption_ga_brp(result: DataFrame) -> DataFrame:
+def aggregate_non_profiled_consumption_ga_brp(non_profiled_consumption: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_brp(
-        result,
+        non_profiled_consumption,
         MeteringPointType.consumption,
     )
 
 
-def aggregate_flex_consumption_ga_brp(results: dict) -> DataFrame:
+def aggregate_flex_consumption_ga_brp(flex_consumption: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_brp(
-        results[ResultKeyName.flex_consumption_with_grid_loss],
+        flex_consumption,
         MeteringPointType.consumption,
     )
 
@@ -215,9 +212,11 @@ def aggregate_non_profiled_consumption_ga(consumption: DataFrame) -> DataFrame:
     )
 
 
-def aggregate_flex_consumption_ga(results: dict) -> DataFrame:
+def aggregate_flex_consumption_ga(
+    flex_consumption: DataFrame,
+) -> DataFrame:
     return _aggregate_per_ga(
-        results[ResultKeyName.flex_consumption_with_grid_loss],
+        flex_consumption,
         MeteringPointType.consumption,
     )
 

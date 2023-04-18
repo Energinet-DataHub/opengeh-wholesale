@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Storage.Blobs;
+using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
@@ -78,19 +78,15 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 .SetEnvironmentVariableToTopicName(ConfigurationSettingNames.DomainEventsTopicName)
                 .CreateAsync();
 
-            // Create storage container - ought to be a Data Lake file system
-            var blobContainerClient = new BlobContainerClient(
-                Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString),
-                Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName));
+            // Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
+            var dataLakeFileSystemClient = new DataLakeFileSystemClient(Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString), Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName));
+            await dataLakeFileSystemClient.CreateIfNotExistsAsync().ConfigureAwait(false);
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.BatchCreatedEventName, "batch-created");
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DateTimeZoneId, "Europe/Copenhagen");
-
-            if (!await blobContainerClient.ExistsAsync())
-                await blobContainerClient.CreateAsync();
         }
 
         /// <inheritdoc/>
