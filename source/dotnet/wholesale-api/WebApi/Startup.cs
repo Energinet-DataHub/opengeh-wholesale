@@ -151,9 +151,9 @@ public class Startup
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
-            .AddDataLakeContainerCheck(
-                Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
-                Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
+            // .AddDataLakeContainerCheck(
+            //     Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
+            //     Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,
