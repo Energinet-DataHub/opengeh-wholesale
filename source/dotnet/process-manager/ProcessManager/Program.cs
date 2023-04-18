@@ -266,6 +266,7 @@ public static class Program
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionString),
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionUri),
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName))
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,

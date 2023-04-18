@@ -79,6 +79,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         var blobStorageConnectionString = $"DefaultEndpointsProtocol=https;AccountName={wellKnownStorageAccountName};AccountKey={wellKnownStorageAccountKey};BlobEndpoint=https://localhost:10000/devstoreaccount1;";
         //// BlobEndpoint=https://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=https://127.0.0.1:10001/devstoreaccount1;TableEndpoint=https://127.0.0.1:10002/devstoreaccount1;
 
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionUri, "https://127.0.0.1:10000/devstoreaccount1");
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, blobStorageConnectionString);
         ////Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
 

@@ -156,6 +156,7 @@ public class Startup
             // and connectivity through the lesser blob storage API.
             .AddBlobStorageContainerCheck(
                 Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
+                Configuration[ConfigurationSettingNames.CalculationStorageConnectionUri]!,
                 Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,

@@ -102,6 +102,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionUri, "https://127.0.0.1:10000/devstoreaccount1");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, blobStorageConnectionString);
             ////Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
