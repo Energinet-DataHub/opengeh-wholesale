@@ -18,7 +18,12 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit
 import pytest
 
-from package.codelists import TimeSeriesType, TimeSeriesQuality, AggregationLevel
+from package.codelists import (
+    AggregationLevel,
+    ProcessType,
+    TimeSeriesType,
+    TimeSeriesQuality,
+)
 from package.constants import ResultTableColName
 from package.schemas import results_schema
 
@@ -97,7 +102,6 @@ def test__migrated_table_rejects_invalid_data(
     "column_name,column_value",
     [
         (ResultTableColName.batch_id, "some string"),
-        # (ResultTableColName.batch_process_type, "BalanceFixing"),
         (ResultTableColName.grid_area, "123"),
         (ResultTableColName.grid_area, "007"),
         (ResultTableColName.out_grid_area, None),
@@ -131,6 +135,7 @@ def test__migrated_table_accepts_valid_data(
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
+        *[(ResultTableColName.batch_process_type, x.value) for x in ProcessType],
         *[(ResultTableColName.time_series_type, x.value) for x in TimeSeriesType],
         *[(ResultTableColName.quantity_quality, x.value) for x in TimeSeriesQuality],
         *[(ResultTableColName.aggregation_level, x.value) for x in AggregationLevel],
