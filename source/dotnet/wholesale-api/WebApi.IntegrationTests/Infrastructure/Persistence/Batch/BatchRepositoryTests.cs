@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
@@ -51,7 +52,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         await using var readContext = _databaseManager.CreateDbContext();
         var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
 
-        actual.Should().BeEquivalentTo(batch, assertionOptions => assertionOptions.Excluding(b => b.DomainEvents));
+        actual.Should().BeEquivalentTo(batch);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
         actual.ProcessType.Should().Be(ProcessType.Aggregation);
     }
@@ -99,7 +100,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         await using var readContext = _databaseManager.CreateDbContext();
         var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
 
-        actual.Should().BeEquivalentTo(batch, assertionOptions => assertionOptions.Excluding(b => b.DomainEvents));
+        actual.Should().BeEquivalentTo(batch);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
         actual.ExecutionTimeEnd.Should().BeNull();
         actual.ExecutionTimeStart.Should().NotBeNull();
