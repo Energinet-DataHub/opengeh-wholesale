@@ -1,0 +1,16 @@
+name: Include Databricks assets in release
+description: Include Databricks dashboards assets in release package together with wheel distribution
+
+inputs:
+  wheel_working_directory:
+    description: Path to wheel working directory
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Call include assets script
+      shell: pwsh
+      run: |
+        . ${{ github.action_path }}/Add-Assets.ps1
+        Add-Assets -WorkingDirectory ${{ inputs.wheel_working_directory }}
