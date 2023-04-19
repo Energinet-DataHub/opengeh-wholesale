@@ -34,7 +34,7 @@ using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Infrastructure.EventDispatching;
+using Energinet.DataHub.Wholesale.Infrastructure.EventDispatching.Domain;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -97,7 +97,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
         serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
-
+        serviceCollection.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         serviceCollection.AddScoped<HttpClient>(_ => null!);
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
         serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
