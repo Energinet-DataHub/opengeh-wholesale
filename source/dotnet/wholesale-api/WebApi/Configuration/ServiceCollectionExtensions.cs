@@ -85,7 +85,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
 
-        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(configuration[ConfigurationSettingNames.CalculationStorageConnectionUri]!), new DefaultAzureCredential());
+        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(configuration[ConfigurationSettingNames.CalculationStorageAccountUri]!), new DefaultAzureCredential());
         var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(configuration[ConfigurationSettingNames.CalculationStorageContainerName]!);
 
         serviceCollection.AddSingleton(dataLakeFileSystemClient);

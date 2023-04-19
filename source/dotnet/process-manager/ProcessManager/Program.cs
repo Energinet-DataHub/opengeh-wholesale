@@ -141,7 +141,7 @@ public static class Program
 
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
-        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionUri)!), new DefaultAzureCredential());
+        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri)!), new DefaultAzureCredential());
         var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName)!);
 
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
@@ -266,7 +266,7 @@ public static class Program
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl),
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken))
             .AddDataLakeContainerCheck(
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageConnectionUri),
+                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri),
                 EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName))
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,

@@ -72,7 +72,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
-            Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionUri, AzuriteManager.BlobStorageServiceUri.ToString());
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageAccountUri, AzuriteManager.BlobStorageServiceUri.ToString());
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, "wholesale");
 
             await ServiceBusResourceProvider

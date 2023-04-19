@@ -23,20 +23,15 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Core
     {
         public static IHealthChecksBuilder AddDataLakeContainerCheck(this IHealthChecksBuilder builder, string storageAccountUri, string containerName)
         {
-            return builder.AddAsyncCheck("BlobStorageContainer", async () =>
+            return builder.AddAsyncCheck("DataLakeContainer", async () =>
             {
-                var client = new DataLakeServiceClient(new Uri(storageAccountUri), new DefaultAzureCredential());
                 try
                 {
-                    var containersPageable = client.GetFileSystemsAsync();
-
-                    await foreach (var dataLakeContainerItem in containersPageable)
-                    {
-                        if (dataLakeContainerItem.Name == containerName)
-                            return HealthCheckResult.Healthy();
-                    }
-
-                    return HealthCheckResult.Unhealthy();
+                    var serviceClient = new DataLakeServiceClient(new Uri(storageAccountUri), new DefaultAzureCredential());
+                    var fileSystemClient = serviceClient.GetFileSystemClient(containerName);
+                    return await fileSystemClient.ExistsAsync().ConfigureAwait(false)
+                        ? HealthCheckResult.Healthy()
+                        : HealthCheckResult.Unhealthy();
                 }
                 catch (Exception)
                 {

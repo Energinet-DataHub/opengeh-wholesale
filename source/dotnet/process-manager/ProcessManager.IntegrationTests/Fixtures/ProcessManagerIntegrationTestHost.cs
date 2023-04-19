@@ -73,7 +73,7 @@ public sealed class ProcessManagerIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName, anyValue);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName, anyValue);
 
-        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionUri, anyBlobServiceUri);
+        Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageAccountUri, anyBlobServiceUri);
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, anyValue);
 
         Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabaseConnectionString, databaseManagerConnectionString);

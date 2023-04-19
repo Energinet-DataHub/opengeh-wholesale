@@ -93,7 +93,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionUri, AzuriteManager.BlobStorageServiceUri.ToString());
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageAccountUri, AzuriteManager.BlobStorageServiceUri.ToString());
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
@@ -190,7 +190,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
         }
 
         /// <summary>
-        /// Create storage container - ought to be a Data Lake file system.
+        /// Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
         /// </summary>
         private async Task EnsureCalculationStorageContainerExistsAsync()
         {
