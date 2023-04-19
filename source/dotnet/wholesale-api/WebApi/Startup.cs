@@ -21,9 +21,11 @@ using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
+using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
@@ -88,9 +90,16 @@ public class Startup
         });
         serviceCollection.ConfigureOptions<ConfigureSwaggerOptions>();
 
-        serviceCollection.AddJwtTokenSecurity(Configuration);
+        serviceCollection.AddOptions<JwtOptions>().Bind(Configuration);
+#pragma warning disable ASP0000
+
+        // It is considered bad practice to use BuildServiceProvider in ConfigureServices. To get rid of the warning, Titans have to support the options pattern.
+        // Source: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-3.1#recommendations
+        serviceCollection.AddJwtTokenSecurity(() => serviceCollection.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>());
+#pragma warning restore ASP0000
         serviceCollection.AddCommandStack(Configuration);
         serviceCollection.AddApplicationInsightsTelemetry();
+
         RegisterCorrelationContext(serviceCollection);
         ConfigureHealthChecks(serviceCollection);
         serviceCollection.AddMediatR(cfg =>
