@@ -23,15 +23,18 @@ public class CreateBatchHandler : ICommandHandler<CreateBatchCommand, Guid>
     private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
     private readonly IProcessTypeMapper _processTypeMapper;
+    private readonly IDomainEventPublisher _domainEventPublisher;
 
     public CreateBatchHandler(
         IBatchFactory batchFactory,
         IBatchRepository batchRepository,
-        IProcessTypeMapper processTypeMapper)
+        IProcessTypeMapper processTypeMapper,
+        IDomainEventPublisher domainEventPublisher)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
         _processTypeMapper = processTypeMapper;
+        _domainEventPublisher = domainEventPublisher;
     }
 
     public async Task<Guid> Handle(CreateBatchCommand command, CancellationToken cancellationToken)
@@ -39,6 +42,7 @@ public class CreateBatchHandler : ICommandHandler<CreateBatchCommand, Guid>
         var processType = _processTypeMapper.MapFrom(command.ProcessType);
         var batch = _batchFactory.Create(processType, command.GridAreaCodes, command.StartDate, command.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
+        await _domainEventPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
         return batch.Id;
     }
 }
