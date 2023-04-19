@@ -286,11 +286,4 @@ public class BatchTests
         var sut = new BatchBuilder().WithStateCompleted().Build();
         Assert.Throws<BusinessValidationException>(() => sut.Reset());
     }
-
-    [Fact]
-    public void Batch_WhenCreated_HasBatchCreatedDomainEvent()
-    {
-        var sut = new BatchBuilder().Build();
-        sut.DomainEvents.Should().ContainSingle(e => e is BatchCreatedDomainEvent);
-    }
 }
