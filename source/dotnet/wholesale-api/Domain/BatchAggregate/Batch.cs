@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.Base;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-public class Batch : AggregateRoot
+public class Batch
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
 
@@ -43,7 +42,6 @@ public class Batch : AggregateRoot
         ExecutionTimeStart = executionTimeStart;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
-        AddDomainEvent(new BatchCreatedDomainEvent(Id));
     }
 
     /// <summary>

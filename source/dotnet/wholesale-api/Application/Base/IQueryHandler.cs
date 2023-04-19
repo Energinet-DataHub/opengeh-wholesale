@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.Base;
+using MediatR;
 
-public abstract class AggregateRoot : Entity
+namespace Energinet.DataHub.Wholesale.Application.Base;
+
+public interface IQueryHandler<in TQuery, TResponse> : IRequestHandler<TQuery, TResponse>
+    where TQuery : IQuery<TResponse>
 {
 }
