@@ -1,5 +1,5 @@
 module "app_wholesale_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v11"
 
   name                                     = "webapi"
   project_name                             = var.domain_name_short
@@ -15,6 +15,12 @@ module "app_wholesale_api" {
   health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
   health_check_alert_enabled               = var.enable_health_check_alerts
   ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
+  role_assignments = [
+    {
+      resource_id          = data.azurerm_key_vault_secret.st_shared_data_lake_id.value
+      role_definition_name = "Storage Blob Data Contributor"
+    }
+  ]
 
   app_settings = {
     TIME_ZONE                 = local.TIME_ZONE
@@ -23,6 +29,7 @@ module "app_wholesale_api" {
     BACKEND_BFF_APP_ID        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
     STORAGE_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)",
     STORAGE_CONTAINER_NAME    = local.STORAGE_CONTAINER_NAME
+    STORAGE_ACCOUNT_URI      = local.STORAGE_ACCOUNT_URI
 
     # Service Bus
     SERVICE_BUS_SEND_CONNECTION_STRING   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"

@@ -1,5 +1,6 @@
 locals {
   STORAGE_CONTAINER_NAME = "wholesale"
+  STORAGE_ACCOUNT_URI = "https://${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net"
 
   # Service Bus domain event subscriptions
   # The names are made shorter due to name length limit of 50 characters in Azure and the module eats up like 15 of the characters for convention based naming

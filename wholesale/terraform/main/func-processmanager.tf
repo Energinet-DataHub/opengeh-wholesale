@@ -1,5 +1,5 @@
 module "func_processmanager" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v10"
+  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v11"
 
   name                                      = "processmanager"
   project_name                              = var.domain_name_short
@@ -14,11 +14,19 @@ module "func_processmanager" {
   log_analytics_workspace_id                = data.azurerm_key_vault_secret.log_shared_id.value
   always_on                                 = true
   health_check_path                         = "/api/monitor/ready"
-  health_check_alert_action_group_id        = data.azurerm_key_vault_secret.primary_action_group_id.value
-  health_check_alert_enabled                = var.enable_health_check_alerts
+  health_check_alert = {
+    action_group_id = data.azurerm_key_vault_secret.primary_action_group_id.value
+    enabled         = var.enable_health_check_alerts
+  }
   dotnet_framework_version                  = "6"
   use_dotnet_isolated_runtime               = true
   ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
+  role_assignments = [
+    {
+      resource_id          = data.azurerm_key_vault_secret.st_shared_data_lake_id.value
+      role_definition_name = "Storage Blob Data Contributor"
+    }
+  ]
 
   app_settings                              = {
     TIME_ZONE                                                          = local.TIME_ZONE
@@ -26,8 +34,11 @@ module "func_processmanager" {
     # Database
     DB_CONNECTION_STRING                                               = local.DB_CONNECTION_STRING
 
+    # Datalake
     STORAGE_CONNECTION_STRING                                          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
     STORAGE_CONTAINER_NAME                                             = local.STORAGE_CONTAINER_NAME
+    STORAGE_ACCOUNT_URI                                               = local.STORAGE_ACCOUNT_URI
+
 
     # Service bus
     SERVICE_BUS_SEND_CONNECTION_STRING                                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
@@ -39,7 +50,7 @@ module "func_processmanager" {
     PUBLISH_PROCESSES_COMPLETED_WHEN_COMPLETED_BATCH_SUBSCRIPTION_NAME = module.sbtsub_publish_process_completed_when_batch_completed.name
     PUBLISH_PROCESSESCOMPLETEDINTEGRATIONEVENT_WHEN_PROCESSCOMPLETED_SUBSCRIPTION_NAME = module.sbtsub_publish_processescompletedintegrationevent_when_processcompleted.name
     START_CALCULATION_WHEN_BATCH_CREATED_SUBSCRIPTION_NAME              = module.sbtsub_publish_batch_created_event_when_batch_created.name
-    
+
     # Databricks
     DATABRICKS_WORKSPACE_TOKEN                                         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
     DATABRICKS_WORKSPACE_URL                                           = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
