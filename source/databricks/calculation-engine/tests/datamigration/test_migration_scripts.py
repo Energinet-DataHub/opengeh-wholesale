@@ -1,0 +1,124 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from datetime import datetime
+from decimal import Decimal
+from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.functions import lit
+import pytest
+
+from package.constants import ResultTableColName
+from package.schemas import results_schema
+
+TABLE_NAME = "result"
+DATABASE_NAME = "wholesale_output"
+
+
+def _create_df(spark: SparkSession) -> DataFrame:
+    row = {
+        ResultTableColName.batch_id: "batch_id",
+        ResultTableColName.batch_execution_time_start: datetime(2020, 1, 1, 0, 0),
+        ResultTableColName.batch_process_type: "BalanceFixing",
+        ResultTableColName.time_series_type: "production",
+        ResultTableColName.grid_area: "543",
+        ResultTableColName.out_grid_area: "843",
+        ResultTableColName.balance_responsible_id: "balance_responsible_id",
+        ResultTableColName.energy_supplier_id: "energy_supplier_id",
+        ResultTableColName.time: datetime(2020, 1, 1, 0, 0),
+        ResultTableColName.quantity: Decimal("1.123"),
+        ResultTableColName.quantity_quality: "missing",
+        ResultTableColName.aggregation_level: "total_ga",
+    }
+    return spark.createDataFrame(data=[row], schema=results_schema)
+
+
+@pytest.mark.parametrize(
+    "column_name,invalid_column_value",
+    [
+        (ResultTableColName.batch_id, None),
+        (ResultTableColName.batch_execution_time_start, None),
+        (ResultTableColName.batch_process_type, None),
+        (ResultTableColName.batch_process_type, "foo"),
+        (ResultTableColName.time_series_type, None),
+        (ResultTableColName.time_series_type, "foo"),
+        (ResultTableColName.grid_area, None),
+        (ResultTableColName.grid_area, "12"),
+        (ResultTableColName.grid_area, "1234"),
+        (ResultTableColName.out_grid_area, "12"),
+        (ResultTableColName.out_grid_area, "1234"),
+        (ResultTableColName.time, None),
+        (ResultTableColName.quantity, Decimal("1.1")),
+        (ResultTableColName.quantity, Decimal("1.1234")),
+        (ResultTableColName.quantity, Decimal("12345678901234567890.123")),
+        (ResultTableColName.quantity_quality, None),
+        (ResultTableColName.quantity_quality, "foo"),
+        (ResultTableColName.aggregation_level, None),
+        (ResultTableColName.aggregation_level, "foo"),
+    ],
+)
+def test__migrated_table_rejects_invalid_data(
+    spark: SparkSession,
+    column_name: str,
+    invalid_column_value: str,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    results_df = _create_df(spark)
+    invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
+
+    # Act
+    with pytest.raises(Exception) as ex:
+        invalid_df.write.format("delta").insertInto(f"{DATABASE_NAME}.{TABLE_NAME}")
+
+    # Assert: Do sufficient assertions to be confident that the expected violation has been caught
+    actual_error_message = str(ex.value)
+    assert "DeltaInvariantViolationException" in actual_error_message
+    assert column_name in actual_error_message
+
+
+# TODO: Test all enum values
+@pytest.mark.parametrize(
+    "column_name,column_value",
+    [
+        (ResultTableColName.batch_id, "some string"),
+        (ResultTableColName.batch_process_type, "Balance_Fixing"),
+        (ResultTableColName.time_series_type, "production"),
+        (ResultTableColName.grid_area, "123"),
+        (ResultTableColName.grid_area, "007"),
+        (ResultTableColName.out_grid_area, None),
+        (ResultTableColName.out_grid_area, "123"),
+        (ResultTableColName.out_grid_area, "007"),
+        (ResultTableColName.balance_responsible_id, None),
+        (ResultTableColName.balance_responsible_id, "some string"),
+        (ResultTableColName.energy_supplier_id, None),
+        (ResultTableColName.energy_supplier_id, "some string"),
+        (ResultTableColName.quantity, Decimal("1.123")),
+        (ResultTableColName.quantity, Decimal("999999999999999999.999")),
+        (ResultTableColName.quantity, Decimal("-999999999999999999.999")),
+        (ResultTableColName.quantity_quality, "estimated"),
+        (ResultTableColName.aggregation_level, "total_ga"),
+    ],
+)
+def test__migrated_table_accepts_valid_data(
+    spark: SparkSession,
+    column_name: str,
+    column_value: str,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    result_df = _create_df(spark)
+    result_df = result_df.withColumn(column_name, lit(column_value))
+
+    # Act and assert: Expectation is that no exception is raised
+    result_df.write.format("delta").insertInto(f"{DATABASE_NAME}.{TABLE_NAME}")

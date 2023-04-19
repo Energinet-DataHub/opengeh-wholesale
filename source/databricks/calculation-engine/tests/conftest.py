@@ -16,14 +16,19 @@ By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
 
-import os
-import pytest
-from pyspark.sql import SparkSession
 from datetime import datetime
+from delta import configure_spark_with_delta_pip
+import os
+from pyspark.sql import SparkSession
+import pytest
+import shutil
 import subprocess
 from typing import Generator, Callable, Optional
 
-from delta import configure_spark_with_delta_pip
+from package.datamigration.migration import _apply_migration
+from package.datamigration.uncommitted_migrations import _get_all_migrations
+from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.file_writers.process_step_result_writer import DATABASE_NAME
 
 
 @pytest.fixture(scope="session")
@@ -132,6 +137,29 @@ def timestamp_factory() -> Callable[[str], Optional[datetime]]:
         return datetime.strptime(date_time_string, date_time_formatting_string)
 
     return factory
+
+
+@pytest.fixture(scope="session")
+def migrations_executed(spark: SparkSession, tests_temp_path: str) -> None:
+    # Clean up to prevent problems from previous test runs
+    container_path = f"{tests_temp_path}/spark-warehouse/wholesale"
+    shutil.rmtree(container_path, ignore_errors=True)
+    spark.sql(f"DROP DATABASE IF EXISTS {DATABASE_NAME}")
+
+    migration_args = MigrationScriptArgs(
+        data_storage_account_url="foo",
+        data_storage_account_name="foo",
+        data_storage_container_name="foo",
+        data_storage_credential="foo",
+        spark=spark,
+    )
+    # Overwrite in test
+    migration_args.storage_container_path = container_path
+
+    # Execute all migrations
+    migrations = _get_all_migrations()
+    for name in migrations:
+        _apply_migration(name, migration_args)
 
 
 @pytest.fixture(scope="session")

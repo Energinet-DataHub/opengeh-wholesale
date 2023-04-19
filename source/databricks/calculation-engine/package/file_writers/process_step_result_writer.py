@@ -215,4 +215,4 @@ class ProcessStepResultWriter:
 
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
-        ).saveAsTable(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
+        ).insertInto(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
