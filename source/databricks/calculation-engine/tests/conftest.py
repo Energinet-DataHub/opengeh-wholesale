@@ -140,10 +140,25 @@ def timestamp_factory() -> Callable[[str], Optional[datetime]]:
 
 
 @pytest.fixture(scope="session")
-def migrations_executed(spark: SparkSession, tests_temp_path: str) -> None:
+def integration_tests_path(calculation_engine_path: str) -> str:
+    """
+    Returns the integration tests folder path.
+    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
+    The correctness also relies on the prerequisite that this function is actually located in a
+    file located directly in the integration tests folder.
+    """
+    return f"{calculation_engine_path}/tests/integration"
+
+
+@pytest.fixture(scope="session")
+def data_lake_path(integration_tests_path: str, worker_id: str) -> str:
+    return f"{integration_tests_path}/__data_lake__/{worker_id}"
+
+
+@pytest.fixture(scope="session")
+def migrations_executed(spark: SparkSession, data_lake_path: str) -> None:
     # Clean up to prevent problems from previous test runs
-    container_path = f"{tests_temp_path}/spark-warehouse/wholesale"
-    shutil.rmtree(container_path, ignore_errors=True)
+    shutil.rmtree(data_lake_path, ignore_errors=True)
     spark.sql(f"DROP DATABASE IF EXISTS {DATABASE_NAME}")
 
     migration_args = MigrationScriptArgs(
@@ -154,7 +169,7 @@ def migrations_executed(spark: SparkSession, tests_temp_path: str) -> None:
         spark=spark,
     )
     # Overwrite in test
-    migration_args.storage_container_path = container_path
+    migration_args.storage_container_path = data_lake_path
 
     # Execute all migrations
     migrations = _get_all_migrations()
