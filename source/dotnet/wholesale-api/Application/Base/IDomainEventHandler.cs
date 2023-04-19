@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.Base;
+using MediatR;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.DomainEvents;
+namespace Energinet.DataHub.Wholesale.Application.Base;
 
-public interface IDomainEventRepository
+public interface IDomainEventHandler<in TEvent> : INotificationHandler<TEvent>
+    where TEvent : IDomainEvent
 {
-    IReadOnlyCollection<IDomainEvent> GetAllDomainEvents();
+}
 
-    void ClearAllDomainEvents();
+public interface IDomainEvent : INotification
+{
 }

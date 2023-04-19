@@ -14,8 +14,9 @@
 
 using MediatR;
 
-namespace Energinet.DataHub.Wholesale.Domain.Base;
+namespace Energinet.DataHub.Wholesale.Application.Base;
 
-public interface IDomainEvent : INotification
+public interface IQueryHandler<in TQuery, TResponse> : IRequestHandler<TQuery, TResponse>
+    where TQuery : IQuery<TResponse>
 {
 }

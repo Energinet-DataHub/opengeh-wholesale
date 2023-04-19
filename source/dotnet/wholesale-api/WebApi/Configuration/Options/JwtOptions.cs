@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.Base;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 
-public abstract class Entity
+public class JwtOptions
 {
-    private readonly List<IDomainEvent> _domainEvents = new();
+    public string EXTERNAL_OPEN_ID_URL { get; set; } = string.Empty;
 
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    public string INTERNAL_OPEN_ID_URL { get; set; } = string.Empty;
 
-    public void ClearDomainEvents()
-    {
-        _domainEvents.Clear();
-    }
-
-    protected void AddDomainEvent(IDomainEvent domainEvent)
-    {
-        _domainEvents.Add(domainEvent);
-    }
+    /// <summary>
+    /// The id of the application registration that the JWT is expected to be issued to (audience claim).
+    /// Used to ensure that the received token, even if valid, is actually intended for BFF and current WebAPI.
+    /// </summary>
+    public string BACKEND_BFF_APP_ID { get; set; } = string.Empty;
 }

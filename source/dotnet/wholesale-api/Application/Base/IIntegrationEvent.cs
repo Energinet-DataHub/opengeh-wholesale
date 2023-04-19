@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.Base;
+using MediatR;
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Application.Base;
 
-public record BatchCreatedDomainEvent(Guid BatchId) : IDomainEvent;
+public interface IIntegrationEvent : INotification
+{
+}

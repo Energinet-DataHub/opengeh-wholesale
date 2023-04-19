@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Microsoft.EntityFrameworkCore;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public interface IDatabaseContext
+public class ServiceBusOptions
 {
-    DbSet<Batch> Batches { get; }
-
-    DbSet<OutboxMessage> OutboxMessages { get; }
+    /// <summary>
+    /// Connection string to subscribe to the wholesale domain service bus queues and topics.
+    /// </summary>
+    public string SERVICE_BUS_SEND_CONNECTION_STRING { get; set; } = string.Empty;
 
     /// <summary>
-    /// Saves changes to the database.
+    /// Connection string to manage the wholesale domain service bus namespace.
     /// </summary>
-    Task<int> SaveChangesAsync();
+    public string SERVICE_BUS_MANAGE_CONNECTION_STRING { get; set; } = string.Empty;
+
+    public string BATCH_CREATED_EVENT_NAME { get; set; } = string.Empty;
+
+    public string DOMAIN_EVENTS_TOPIC_NAME { get; set; } = string.Empty;
 }

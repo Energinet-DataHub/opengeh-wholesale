@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
+using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
@@ -40,6 +41,20 @@ public class UnitOfWorkPipelineBehaviorTests
 
         // Assert
         unitOfWorkMock.Verify(x => x.CommitAsync());
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public async Task Handle_WhenCalled_ReturnsGuid(
+        CreateBatchCommand createBatchCommand,
+        UnitOfWorkPipelineBehavior<CreateBatchCommand, Guid> sut)
+    {
+        // Arrange & Act
+        var actual = await sut.Handle(createBatchCommand, RequestHandlerDelegate, default);
+
+        // Assert
+        actual.GetType().Should().Be(typeof(Guid));
+        actual.Should().Be(_guid);
     }
 
     private async Task<Guid> RequestHandlerDelegate()

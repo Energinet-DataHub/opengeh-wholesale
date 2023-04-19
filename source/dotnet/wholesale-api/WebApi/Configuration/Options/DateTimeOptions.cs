@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 
-namespace Energinet.DataHub.Wholesale.Domain.Base;
-
-public interface IDomainEventHandler<in TEvent> : INotificationHandler<TEvent>
-    where TEvent : IDomainEvent
+public class DateTimeOptions
 {
+    public string TIME_ZONE { get; set; } = string.Empty;
 }

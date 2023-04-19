@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.Base;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 
-public abstract class AggregateRoot : Entity
+public class ConnectionStringsOptions
 {
+    // This is the section name. It must match the section name in setting storage.
+    public const string ConnectionStrings = "ConnectionStrings";
+
+    public string DB_CONNECTION_STRING { get; set; } = string.Empty;
 }

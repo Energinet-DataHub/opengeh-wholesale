@@ -34,16 +34,16 @@ using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Infrastructure.EventDispatching.Domain;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.DomainEvents;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
+using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NodaTime;
 using ProcessTypeMapper = Energinet.DataHub.Wholesale.Application.Processes.Model.ProcessTypeMapper;
 
@@ -54,13 +54,10 @@ internal static class ServiceCollectionExtensions
     /// <summary>
     /// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
     /// </summary>
-    public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection, IConfiguration configuration)
+    public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection, Func<IOptions<JwtOptions>> optionsFactory)
     {
-        var externalOpenIdUrl = configuration[ConfigurationSettingNames.ExternalOpenIdUrl]!;
-        var internalOpenIdUrl = configuration[ConfigurationSettingNames.InternalOpenIdUrl]!;
-        var backendAppId = configuration[ConfigurationSettingNames.BackendBffAppId]!;
-
-        serviceCollection.AddJwtBearerAuthentication(externalOpenIdUrl, internalOpenIdUrl, backendAppId);
+        var options = optionsFactory.Invoke().Value;
+        serviceCollection.AddJwtBearerAuthentication(options.EXTERNAL_OPEN_ID_URL, options.INTERNAL_OPEN_ID_URL, options.BACKEND_BFF_APP_ID);
         serviceCollection.AddPermissionAuthorization();
     }
 
@@ -76,6 +73,7 @@ internal static class ServiceCollectionExtensions
                 o.UseNodaTime();
                 o.EnableRetryOnFailure();
             }));
+
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -88,16 +86,7 @@ internal static class ServiceCollectionExtensions
         var calculationStorageContainerName = configuration[ConfigurationSettingNames.CalculationStorageContainerName];
         var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
-        serviceCollection.AddScoped<HttpClient>(_ => null!);
-        serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
-        serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
-        serviceCollection.AddScoped<IDomainEventRepository, DomainEventRepository>();
-        serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
-        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
-        serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
-        serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
-        serviceCollection.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+
         serviceCollection.AddScoped<HttpClient>(_ => null!);
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
         serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
@@ -122,34 +111,32 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddOptions<DatabricksOptions>().Bind(configuration);
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
-        RegisterDomainEventPublisher(serviceCollection, configuration);
+        serviceCollection.AddOptions<ServiceBusOptions>().Bind(configuration);
+        serviceCollection.AddDomainEventPublisher(() => serviceCollection.BuildServiceProvider().GetRequiredService<IOptions<ServiceBusOptions>>());
 
-        serviceCollection.ConfigureDateTime(configuration);
+        serviceCollection.AddOptions<DateTimeOptions>().Bind(configuration);
+        serviceCollection.AddDataTimeConfiguration(() => serviceCollection.BuildServiceProvider().GetRequiredService<IOptions<DateTimeOptions>>());
     }
 
-    private static void RegisterDomainEventPublisher(IServiceCollection serviceCollection, IConfiguration configuration)
+    private static void AddDomainEventPublisher(this IServiceCollection serviceCollection, Func<IOptions<ServiceBusOptions>> optionsFactory)
     {
-        var serviceBusConnectionString =
-            configuration[ConfigurationSettingNames.ServiceBusSendConnectionString]!;
+        var options = optionsFactory.Invoke().Value;
         var messageTypes = new Dictionary<Type, string>
         {
             {
-                typeof(BatchCreatedDomainEvent),
-                configuration[ConfigurationSettingNames.BatchCreatedEventName]!
+                typeof(BatchCreatedDomainEventDto),
+                options.BATCH_CREATED_EVENT_NAME
             },
         };
 
-        var domainEventTopicName = configuration[ConfigurationSettingNames.DomainEventsTopicName]!;
-        serviceCollection.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
+        serviceCollection.AddDomainEventPublisher(options.SERVICE_BUS_SEND_CONNECTION_STRING, options.DOMAIN_EVENTS_TOPIC_NAME, new MessageTypeDictionary(messageTypes));
     }
 
-    private static void ConfigureDateTime(this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static void AddDataTimeConfiguration(this IServiceCollection serviceCollection, Func<IOptions<DateTimeOptions>> optionsFactory)
     {
-        serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
-        var dateTimeZoneId = configuration[ConfigurationSettingNames.DateTimeZoneId]!;
-        var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId);
-        if (dateTimeZone == null)
-            throw new ArgumentNullException($"Cannot resolve date time zone object for zone id '{dateTimeZoneId}' from application setting '{ConfigurationSettingNames.DateTimeZoneId}'");
+        var options = optionsFactory.Invoke().Value;
+        var dateTimeZoneId = options.TIME_ZONE;
+        var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId)!;
         serviceCollection.AddSingleton(dateTimeZone);
     }
 }
