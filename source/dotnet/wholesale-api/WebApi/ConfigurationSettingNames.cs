@@ -19,9 +19,6 @@ namespace Energinet.DataHub.Wholesale.WebApi
     /// </summary>
     public static class ConfigurationSettingNames
     {
-        // Function
-        public const string AzureWebJobsStorage = "AzureWebJobsStorage";
-
         // Environment specific settings
         public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
         public const string DbConnectionString = "DB_CONNECTION_STRING";

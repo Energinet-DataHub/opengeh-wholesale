@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 
-public class ConnectionStringsOptions
+public class JwtOptions
 {
-    public const string ConnectionStrings = "ConnectionStrings";
+    public string EXTERNAL_OPEN_ID_URL { get; set; } = string.Empty;
 
-    // ReSharper disable once InconsistentNaming
-    public string DB_CONNECTION_STRING { get; set; } = string.Empty;
+    public string INTERNAL_OPEN_ID_URL { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The id of the application registration that the JWT is expected to be issued to (audience claim).
+    /// Used to ensure that the received token, even if valid, is actually intended for BFF and current WebAPI.
+    /// </summary>
+    public string BACKEND_BFF_APP_ID { get; set; } = string.Empty;
 }
