@@ -53,5 +53,7 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
             .HasConversion(
                 l => JsonSerializer.Serialize(l.Select(code => code.Code), (JsonSerializerOptions?)null),
                 s => JsonSerializer.Deserialize<List<string>>(s, (JsonSerializerOptions?)null)!.Select(code => new GridAreaCode(code)).ToList());
+
+        builder.Ignore(x => x.DomainEvents);
     }
 }
