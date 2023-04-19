@@ -97,7 +97,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
         }
 
         /// <summary>
-        /// Create storage container - ought to be a Data Lake file system.
+        /// Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
         /// </summary>
         private async Task EnsureCalculationStorageContainerExistsAsync()
         {

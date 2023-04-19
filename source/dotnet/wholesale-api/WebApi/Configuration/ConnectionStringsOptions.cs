@@ -12,23 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-
-public interface IDatabaseContext
+public class ConnectionStringsOptions
 {
-    DbSet<Batch> Batches { get; }
+    public const string ConnectionStrings = "ConnectionStrings";
 
-    DbSet<OutboxMessage> OutboxMessages { get; }
-
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
-
-    ChangeTracker ChangeTracker { get; }
+    // ReSharper disable once InconsistentNaming
+    public string DB_CONNECTION_STRING { get; set; } = string.Empty;
 }

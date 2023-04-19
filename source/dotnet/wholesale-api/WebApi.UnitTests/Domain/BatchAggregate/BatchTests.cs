@@ -180,7 +180,7 @@ public class BatchTests
             DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!));
 
         // Assert
-        actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}'must be midnight.");
+        actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}' must be midnight.");
     }
 
     [Fact]
@@ -285,5 +285,12 @@ public class BatchTests
     {
         var sut = new BatchBuilder().WithStateCompleted().Build();
         Assert.Throws<BusinessValidationException>(() => sut.Reset());
+    }
+
+    [Fact]
+    public void Batch_WhenCreated_HasBatchCreatedDomainEvent()
+    {
+        var sut = new BatchBuilder().Build();
+        sut.DomainEvents.Should().ContainSingle(e => e is BatchCreatedDomainEvent);
     }
 }

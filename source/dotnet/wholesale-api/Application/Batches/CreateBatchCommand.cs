@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.Application.Base;
 using Energinet.DataHub.Wholesale.Contracts;
-using MediatR;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 

@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Domain.Base;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-public class Batch
+public class Batch : AggregateRoot
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
 
@@ -42,6 +43,7 @@ public class Batch
         ExecutionTimeStart = executionTimeStart;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
+        AddDomainEvent(new BatchCreatedDomainEvent(Id));
     }
 
     /// <summary>
@@ -73,7 +75,7 @@ public class Batch
             errors.Add($"The period end '{periodEnd.ToString()}' must be midnight.");
 
         if (new ZonedDateTime(periodStart, dateTimeZone).TimeOfDay != LocalTime.Midnight)
-            errors.Add($"The period start '{periodStart.ToString()}'must be midnight.");
+            errors.Add($"The period start '{periodStart.ToString()}' must be midnight.");
 
         validationErrors = errors;
         return !errors.Any();
