@@ -15,8 +15,9 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import lit
+from pyspark.sql.functions import lit, col
 import pytest
+import uuid
 
 from package.codelists import (
     AggregationLevel,
@@ -49,7 +50,6 @@ def _create_df(spark: SparkSession) -> DataFrame:
     return spark.createDataFrame(data=[row], schema=results_schema)
 
 
-# TODO: What are the quantity type requirements?
 @pytest.mark.parametrize(
     "column_name,invalid_column_value",
     [
@@ -65,11 +65,6 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (ResultTableColName.out_grid_area, "12"),
         (ResultTableColName.out_grid_area, "1234"),
         (ResultTableColName.time, None),
-        (ResultTableColName.quantity, Decimal("1.1")),
-        (ResultTableColName.quantity, Decimal("1.1234")),
-        (ResultTableColName.quantity, Decimal("-1.1234")),
-        (ResultTableColName.quantity, Decimal("100000000000000.000")),
-        (ResultTableColName.quantity, Decimal("-100000000000000.000")),
         (ResultTableColName.quantity_quality, None),
         (ResultTableColName.quantity_quality, "foo"),
         (ResultTableColName.aggregation_level, None),
@@ -98,6 +93,13 @@ def test__migrated_table_rejects_invalid_data(
     assert column_name in actual_error_message
 
 
+# According to SME there is no upper bounds limit from a business perspective.
+# The chosen precision of 18 should however not cause any problems as the limit on time series
+# is precision 6. Thus 1e9 time series points can be summed without any problem.
+min_decimal = Decimal(f"-{'9'*15}.999")  # Precision=18 and scale=3
+max_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
+
+
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
@@ -111,9 +113,10 @@ def test__migrated_table_rejects_invalid_data(
         (ResultTableColName.balance_responsible_id, "some string"),
         (ResultTableColName.energy_supplier_id, None),
         (ResultTableColName.energy_supplier_id, "some string"),
+        (ResultTableColName.quantity, None),
         (ResultTableColName.quantity, Decimal("1.123")),
-        (ResultTableColName.quantity, Decimal("999999999999999.999")),
-        (ResultTableColName.quantity, Decimal("-999999999999999.999")),
+        (ResultTableColName.quantity, max_decimal),
+        (ResultTableColName.quantity, -max_decimal),
     ],
 )
 def test__migrated_table_accepts_valid_data(
@@ -157,3 +160,37 @@ def test__migrated_table_accepts_enum_value(
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
         f"{DATABASE_NAME}.{TABLE_NAME}"
     )
+
+
+@pytest.mark.parametrize(
+    "quantity",
+    [
+        min_decimal,
+        max_decimal,
+        Decimal("0.000"),
+        Decimal("0.001"),
+        Decimal("0.005"),
+        Decimal("0.009"),
+    ],
+)
+def test__migrated_table_does_not_round_valid_decimal(
+    spark: SparkSession,
+    quantity: Decimal,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    result_df = _create_df(spark)
+    result_df = result_df.withColumn("quantity", lit(quantity))
+    batch_id = str(uuid.uuid4())
+    result_df = result_df.withColumn(ResultTableColName.batch_id, lit(batch_id))
+
+    # Act
+    result_df.write.format("delta").option("mergeSchema", "false").insertInto(
+        f"{DATABASE_NAME}.{TABLE_NAME}"
+    )
+
+    # Assert
+    actual_df = spark.read.table(f"{DATABASE_NAME}.{TABLE_NAME}").where(
+        col(ResultTableColName.batch_id) == batch_id
+    )
+    assert actual_df.collect()[0].quantity == quantity
