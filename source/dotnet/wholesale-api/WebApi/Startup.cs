@@ -152,7 +152,7 @@ public class Startup
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
-            .AddBlobStorageContainerCheck(
+            .AddDataLakeContainerCheck(
                 Configuration[ConfigurationSettingNames.CalculationStorageConnectionUri]!,
                 Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
             .AddAzureServiceBusTopic(
