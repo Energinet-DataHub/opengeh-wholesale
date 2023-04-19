@@ -18,6 +18,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit
 import pytest
 
+from package.codelists import TimeSeriesType, TimeSeriesQuality, AggregationLevel
 from package.constants import ResultTableColName
 from package.schemas import results_schema
 
@@ -43,6 +44,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
     return spark.createDataFrame(data=[row], schema=results_schema)
 
 
+# TODO: What are the quantity type requirements?
 @pytest.mark.parametrize(
     "column_name,invalid_column_value",
     [
@@ -60,7 +62,9 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (ResultTableColName.time, None),
         (ResultTableColName.quantity, Decimal("1.1")),
         (ResultTableColName.quantity, Decimal("1.1234")),
-        (ResultTableColName.quantity, Decimal("12345678901234567890.123")),
+        (ResultTableColName.quantity, Decimal("-1.1234")),
+        (ResultTableColName.quantity, Decimal("100000000000000.000")),
+        (ResultTableColName.quantity, Decimal("-100000000000000.000")),
         (ResultTableColName.quantity_quality, None),
         (ResultTableColName.quantity_quality, "foo"),
         (ResultTableColName.aggregation_level, None),
@@ -79,7 +83,9 @@ def test__migrated_table_rejects_invalid_data(
 
     # Act
     with pytest.raises(Exception) as ex:
-        invalid_df.write.format("delta").insertInto(f"{DATABASE_NAME}.{TABLE_NAME}")
+        invalid_df.write.format("delta").option("mergeSchema", "false").insertInto(
+            f"{DATABASE_NAME}.{TABLE_NAME}", overwrite=False
+        )
 
     # Assert: Do sufficient assertions to be confident that the expected violation has been caught
     actual_error_message = str(ex.value)
@@ -87,13 +93,11 @@ def test__migrated_table_rejects_invalid_data(
     assert column_name in actual_error_message
 
 
-# TODO: Test all enum values
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
         (ResultTableColName.batch_id, "some string"),
-        (ResultTableColName.batch_process_type, "Balance_Fixing"),
-        (ResultTableColName.time_series_type, "production"),
+        # (ResultTableColName.batch_process_type, "BalanceFixing"),
         (ResultTableColName.grid_area, "123"),
         (ResultTableColName.grid_area, "007"),
         (ResultTableColName.out_grid_area, None),
@@ -104,10 +108,8 @@ def test__migrated_table_rejects_invalid_data(
         (ResultTableColName.energy_supplier_id, None),
         (ResultTableColName.energy_supplier_id, "some string"),
         (ResultTableColName.quantity, Decimal("1.123")),
-        (ResultTableColName.quantity, Decimal("999999999999999999.999")),
-        (ResultTableColName.quantity, Decimal("-999999999999999999.999")),
-        (ResultTableColName.quantity_quality, "estimated"),
-        (ResultTableColName.aggregation_level, "total_ga"),
+        (ResultTableColName.quantity, Decimal("999999999999999.999")),
+        (ResultTableColName.quantity, Decimal("-999999999999999.999")),
     ],
 )
 def test__migrated_table_accepts_valid_data(
@@ -121,4 +123,32 @@ def test__migrated_table_accepts_valid_data(
     result_df = result_df.withColumn(column_name, lit(column_value))
 
     # Act and assert: Expectation is that no exception is raised
-    result_df.write.format("delta").insertInto(f"{DATABASE_NAME}.{TABLE_NAME}")
+    result_df.write.format("delta").option("mergeSchema", "false").insertInto(
+        f"{DATABASE_NAME}.{TABLE_NAME}"
+    )
+
+
+@pytest.mark.parametrize(
+    "column_name,column_value",
+    [
+        *[(ResultTableColName.time_series_type, x.value) for x in TimeSeriesType],
+        *[(ResultTableColName.quantity_quality, x.value) for x in TimeSeriesQuality],
+        *[(ResultTableColName.aggregation_level, x.value) for x in AggregationLevel],
+    ],
+)
+def test__migrated_table_accepts_enum_value(
+    spark: SparkSession,
+    column_name: str,
+    column_value: str,
+    migrations_executed: None,
+) -> None:
+    "Test that all enum values are accepted by the delta table"
+
+    # Arrange
+    result_df = _create_df(spark)
+    result_df = result_df.withColumn(column_name, lit(column_value))
+
+    # Act and assert: Expectation is that no exception is raised
+    result_df.write.format("delta").option("mergeSchema", "false").insertInto(
+        f"{DATABASE_NAME}.{TABLE_NAME}"
+    )

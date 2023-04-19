@@ -58,7 +58,15 @@ CONSTRAINTS = [
     ),
     (
         "time_series_type_chk",
-        "time_series_type IN ('production', 'non_profiled_consumption', 'net_exchange_per_neighboring_ga', 'net_exchange_per_ga')",
+        """time_series_type IN (
+            'production',
+            'non_profiled_consumption',
+            'net_exchange_per_neighboring_ga',
+            'net_exchange_per_ga',
+            'flex_consumption',
+            'grid_loss',
+            'negative_grid_loss',
+            'positive_grid_loss')""",
     ),
     ("grid_area_chk", "LENGTH(grid_area) = 3"),
     ("out_grid_area_chk", "out_grid_area IS NULL OR LENGTH(out_grid_area) = 3"),
