@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from delta import DeltaTable
-import os
 from pyspark.sql.types import (
     DecimalType,
     StringType,
@@ -51,35 +50,6 @@ RESULTS_SCHEMA = StructType(
     ]
 )
 
-CONSTRAINTS = [
-    (
-        "batch_process_type_chk",
-        "batch_process_type IN ('BalanceFixing', 'Aggregation')",
-    ),
-    (
-        "time_series_type_chk",
-        """time_series_type IN (
-            'production',
-            'non_profiled_consumption',
-            'net_exchange_per_neighboring_ga',
-            'net_exchange_per_ga',
-            'flex_consumption',
-            'grid_loss',
-            'negative_grid_loss',
-            'positive_grid_loss')""",
-    ),
-    ("grid_area_chk", "LENGTH(grid_area) = 3"),
-    ("out_grid_area_chk", "out_grid_area IS NULL OR LENGTH(out_grid_area) = 3"),
-    (
-        "quantity_quality_chk",
-        "quantity_quality IN ('missing', 'estimated', 'measured', 'calculated', 'incomplete')",
-    ),
-    (
-        "aggregation_level_chk",
-        "aggregation_level IN ('total_ga', 'es_brp_ga', 'es_ga', 'brp_ga')",
-    ),
-]
-
 
 def apply(args: MigrationScriptArgs) -> None:
     db_location = f"{args.storage_container_path}/{OUTPUT_FOLDER}"
@@ -89,9 +59,7 @@ def apply(args: MigrationScriptArgs) -> None:
 
     # Functionality to create the delta table was moved from production code.
     # That's the reason why this guard is required.
-    if os.path.exists(table_location) and DeltaTable.isDeltaTable(
-        args.spark, table_location
-    ):
+    if DeltaTable.isDeltaTable(args.spark, table_location):
         return
 
     args.spark.sql(
@@ -107,8 +75,3 @@ def apply(args: MigrationScriptArgs) -> None:
         .addColumns(RESULTS_SCHEMA)
         .execute()
     )
-
-    for constraint in CONSTRAINTS:
-        args.spark.sql(
-            f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD CONSTRAINT {constraint[0]} CHECK ({constraint[1]})"
-        )
