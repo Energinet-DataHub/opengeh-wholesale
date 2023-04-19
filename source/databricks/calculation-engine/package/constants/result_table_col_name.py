@@ -14,7 +14,6 @@
 
 
 class ResultTableColName:
-    "IMPORTANT: Any semantic change to these field names most likely requires a corresponding data migration of the results Delta table."
     batch_id = "batch_id"
     batch_execution_time_start = "batch_execution_time_start"
     batch_process_type = "batch_process_type"
