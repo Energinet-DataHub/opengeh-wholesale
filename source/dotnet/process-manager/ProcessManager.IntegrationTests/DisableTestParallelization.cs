@@ -17,4 +17,4 @@ using Xunit;
 // xUnit documentation:
 //  * https://xunit.net/docs/running-tests-in-parallel.html
 // This is required because our fixtures cannot be executed in parallel.
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
+[assembly: CollectionBehavior(DisableTestParallelization = false)]
