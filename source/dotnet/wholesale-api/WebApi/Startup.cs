@@ -14,18 +14,14 @@
 
 using System.Reflection;
 using System.Text.Json.Serialization;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Wholesale.Infrastructure.Core;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
@@ -90,18 +86,18 @@ public class Startup
         });
         serviceCollection.ConfigureOptions<ConfigureSwaggerOptions>();
 
+        // Options
         serviceCollection.AddOptions<JwtOptions>().Bind(Configuration);
-#pragma warning disable ASP0000
+        serviceCollection.AddOptions<ServiceBusOptions>().Bind(Configuration);
+        serviceCollection.AddOptions<DatabricksOptions>().Bind(Configuration);
+        serviceCollection.AddOptions<DateTimeOptions>().Bind(Configuration);
+        serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
 
-        // It is considered bad practice to use BuildServiceProvider in ConfigureServices. To get rid of the warning, Titans have to support the options pattern.
-        // Source: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-3.1#recommendations
-        serviceCollection.AddJwtTokenSecurity(() => serviceCollection.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>());
-#pragma warning restore ASP0000
+        serviceCollection.AddJwtTokenSecurity(Configuration);
+        serviceCollection.AddHealthCheck(Configuration);
         serviceCollection.AddCommandStack(Configuration);
         serviceCollection.AddApplicationInsightsTelemetry();
-
-        RegisterCorrelationContext(serviceCollection);
-        ConfigureHealthChecks(serviceCollection);
+        serviceCollection.AddCorrelationContext();
         serviceCollection.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(typeof(Root).Assembly);
@@ -127,7 +123,7 @@ public class Startup
         var apiVersionDescriptionProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
         app.UseSwaggerUI(options =>
         {
-            // Reverse the API's in order to make the latest API versions appear first in select box in UI
+            // Reverse the APIs in order to make the latest API versions appear first in select box in UI
             foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
             {
                 options.SwaggerEndpoint(
@@ -147,41 +143,6 @@ public class Startup
             // Health check
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
-        });
-    }
-
-    private void ConfigureHealthChecks(IServiceCollection serviceCollection)
-    {
-        var serviceBusConnectionString =
-            Configuration[ConfigurationSettingNames.ServiceBusManageConnectionString]!;
-        var domainEventsTopicName =
-            Configuration[ConfigurationSettingNames.DomainEventsTopicName]!;
-
-        serviceCollection.AddHealthChecks()
-            .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
-            .AddDataLakeContainerCheck(
-                Configuration[ConfigurationSettingNames.CalculationStorageAccountUri]!,
-                Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
-            .AddAzureServiceBusTopic(
-                connectionString: serviceBusConnectionString,
-                topicName: domainEventsTopicName,
-                name: "DomainEventsTopicExists");
-    }
-
-    /// <summary>
-    /// The middleware to handle properly set a CorrelationContext is only supported for Functions.
-    /// This registry will ensure a new CorrelationContext (with a new Id) is set for each session
-    /// </summary>
-    private static void RegisterCorrelationContext(IServiceCollection serviceCollection)
-    {
-        var serviceDescriptor = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(ICorrelationContext));
-        serviceCollection.Remove(serviceDescriptor!);
-        serviceCollection.AddScoped<ICorrelationContext>(_ =>
-        {
-            var correlationContext = new CorrelationContext();
-            correlationContext.SetId(Guid.NewGuid().ToString());
-            return correlationContext;
         });
     }
 }

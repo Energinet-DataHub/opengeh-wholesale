@@ -20,7 +20,6 @@ namespace Energinet.DataHub.Wholesale.WebApi
     public static class ConfigurationSettingNames
     {
         // Environment specific settings
-        public const string AppInsightsInstrumentationKey = "APPINSIGHTS_INSTRUMENTATIONKEY";
         public const string DbConnectionString = "DB_CONNECTION_STRING";
 
         // JWT Token auth
