@@ -58,6 +58,7 @@ public sealed class WebApiIntegrationTestHost : IDisposable
     {
         const string anyValue = "fake_value";
         const string anyServiceBusConnectionString = "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=someKeyName;SharedAccessKey=someKeyValue";
+        const string anyBlobServiceUri = "https://localhost:10000/anyaccount";
 
         Environment.SetEnvironmentVariable(nameof(AppInsightOptions.APPINSIGHTS_INSTRUMENTATIONKEY), anyValue);
         Environment.SetEnvironmentVariable(nameof(JwtOptions.BACKEND_BFF_APP_ID), anyValue);
@@ -66,6 +67,8 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable($"{ConnectionStringsOptions.ConnectionStrings}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}", anyValue);
         Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONNECTION_STRING), "UseDevelopmentStorage=true");
         Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME), anyValue);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageAccountUri, anyBlobServiceUri);
+        Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, anyValue);
         Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING), anyServiceBusConnectionString);
         Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING), anyServiceBusConnectionString);
         Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.BATCH_CREATED_EVENT_NAME), "batch-created");
