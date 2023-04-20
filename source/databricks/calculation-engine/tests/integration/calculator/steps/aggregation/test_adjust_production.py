@@ -39,7 +39,7 @@ default_domain = "D1"
 default_responsible = "R1"
 default_supplier = "S1"
 default_sum_quantity = Decimal(1)
-default_added_system_correction = Decimal(3)
+default_negative_grid_loss = Decimal(3)
 default_aggregated_quality = TimeSeriesQuality.estimated.value
 default_resolution = MeteringPointResolution.hour.value
 default_metering_point_type = MeteringPointType.production.value
@@ -82,14 +82,14 @@ def hourly_production_result_schema():
 
 
 @pytest.fixture(scope="module")
-def added_system_correction_result_schema():
+def negative_grid_loss_result_schema():
     """
     Input system correction result schema
     """
     return (
         StructType()
         .add(Colname.grid_area, StringType(), False)
-        .add(Colname.added_system_correction, DecimalType())
+        .add(Colname.negative_grid_loss, DecimalType())
         .add(
             Colname.time_window,
             StructType()
@@ -116,7 +116,7 @@ def sys_cor_schema():
         .add(Colname.energy_supplier_id, StringType())
         .add(Colname.from_date, TimestampType())
         .add(Colname.to_date, TimestampType())
-        .add(Colname.is_system_correction, BooleanType())
+        .add(Colname.is_negative_grid_loss_responsible, BooleanType())
     )
 
 
@@ -181,16 +181,14 @@ def hourly_production_result_row_factory(spark, hourly_production_result_schema)
 
 
 @pytest.fixture(scope="module")
-def added_system_correction_result_row_factory(
-    spark, added_system_correction_result_schema
-):
+def negative_grid_loss_result_row_factory(spark, negative_grid_loss_result_schema):
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
 
     def factory(
         domain=default_domain,
-        added_system_correction=default_added_system_correction,
+        negative_grid_loss=default_negative_grid_loss,
         time_window=default_time_window,
         sum_quantity=default_sum_quantity,
         aggregated_quality=default_aggregated_quality,
@@ -200,7 +198,7 @@ def added_system_correction_result_row_factory(
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
-                Colname.added_system_correction: [added_system_correction],
+                Colname.negative_grid_loss: [negative_grid_loss],
                 Colname.time_window: [time_window],
                 Colname.sum_quantity: [sum_quantity],
                 Colname.quality: [aggregated_quality],
@@ -208,9 +206,7 @@ def added_system_correction_result_row_factory(
                 Colname.metering_point_type: [metering_point_type],
             }
         )
-        return spark.createDataFrame(
-            pandas_df, schema=added_system_correction_result_schema
-        )
+        return spark.createDataFrame(pandas_df, schema=negative_grid_loss_result_schema)
 
     return factory
 
@@ -227,7 +223,7 @@ def sys_cor_row_factory(spark, sys_cor_schema):
         supplier=default_supplier,
         valid_from=default_valid_from,
         valid_to=default_valid_to,
-        is_system_correction=True,
+        is_negative_grid_loss_responsible=True,
     ):
         pandas_df = pd.DataFrame(
             {
@@ -236,7 +232,9 @@ def sys_cor_row_factory(spark, sys_cor_schema):
                 Colname.energy_supplier_id: [supplier],
                 Colname.from_date: [valid_from],
                 Colname.to_date: [valid_to],
-                Colname.is_system_correction: [is_system_correction],
+                Colname.is_negative_grid_loss_responsible: [
+                    is_negative_grid_loss_responsible
+                ],
             }
         )
         return spark.createDataFrame(pandas_df, schema=sys_cor_schema)
@@ -246,7 +244,7 @@ def sys_cor_row_factory(spark, sys_cor_schema):
 
 def test_grid_area_system_correction_is_added_to_system_correction_energy_responsible(
     hourly_production_result_row_factory,
-    added_system_correction_result_row_factory,
+    negative_grid_loss_result_row_factory,
     sys_cor_row_factory,
 ):
     results = {}
@@ -255,9 +253,9 @@ def test_grid_area_system_correction_is_added_to_system_correction_energy_respon
     )
 
     results[
-        ResultKeyName.added_system_correction
+        ResultKeyName.negative_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(
-        added_system_correction_result_row_factory()
+        negative_grid_loss_result_row_factory()
     )
 
     results[ResultKeyName.grid_loss_sys_cor_master_data] = sys_cor_row_factory(
@@ -270,13 +268,13 @@ def test_grid_area_system_correction_is_added_to_system_correction_energy_respon
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
             Colname.sum_quantity
         ]
-        == default_added_system_correction + default_sum_quantity
+        == default_negative_grid_loss + default_sum_quantity
     )
 
 
 def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     hourly_production_result_row_factory,
-    added_system_correction_result_row_factory,
+    negative_grid_loss_result_row_factory,
     sys_cor_row_factory,
 ):
     results = {}
@@ -285,9 +283,9 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     )
 
     results[
-        ResultKeyName.added_system_correction
+        ResultKeyName.negative_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(
-        added_system_correction_result_row_factory()
+        negative_grid_loss_result_row_factory()
     )
 
     results[ResultKeyName.grid_loss_sys_cor_master_data] = sys_cor_row_factory(
@@ -306,7 +304,7 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
 
 def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppliers_as_flex_consumption_result_dataframe(
     hourly_production_result_row_factory,
-    added_system_correction_result_row_factory,
+    negative_grid_loss_result_row_factory,
     sys_cor_row_factory,
 ):
     results = {}
@@ -319,9 +317,9 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     )
 
     results[
-        ResultKeyName.added_system_correction
+        ResultKeyName.negative_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(
-        added_system_correction_result_row_factory()
+        negative_grid_loss_result_row_factory()
     )
 
     results[ResultKeyName.grid_loss_sys_cor_master_data] = sys_cor_row_factory(
@@ -339,7 +337,7 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
 
 def test_correct_system_correction_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_hourly_production_result_dataframe(
     hourly_production_result_row_factory,
-    added_system_correction_result_row_factory,
+    negative_grid_loss_result_row_factory,
     sys_cor_row_factory,
 ):
     results = {}
@@ -374,18 +372,18 @@ def test_correct_system_correction_entry_is_used_to_determine_energy_responsible
     gasc_result_2 = Decimal(2)
     gasc_result_3 = Decimal(3)
 
-    gasc_row_1 = added_system_correction_result_row_factory(
-        time_window=time_window_1, added_system_correction=gasc_result_1
+    gasc_row_1 = negative_grid_loss_result_row_factory(
+        time_window=time_window_1, negative_grid_loss=gasc_result_1
     )
-    gasc_row_2 = added_system_correction_result_row_factory(
-        time_window=time_window_2, added_system_correction=gasc_result_2
+    gasc_row_2 = negative_grid_loss_result_row_factory(
+        time_window=time_window_2, negative_grid_loss=gasc_result_2
     )
-    gasc_row_3 = added_system_correction_result_row_factory(
-        time_window=time_window_3, added_system_correction=gasc_result_3
+    gasc_row_3 = negative_grid_loss_result_row_factory(
+        time_window=time_window_3, negative_grid_loss=gasc_result_3
     )
 
     results[
-        ResultKeyName.added_system_correction
+        ResultKeyName.negative_grid_loss
     ] = create_dataframe_from_aggregation_result_schema(
         gasc_row_1.union(gasc_row_2).union(gasc_row_3)
     )

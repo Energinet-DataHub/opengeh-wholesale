@@ -15,8 +15,8 @@
 
 class Colname:
     market_role = "market_role"
-    added_grid_loss = "added_grid_loss"
-    added_system_correction = "added_system_correction"
+    positive_grid_loss = "positive_grid_loss"
+    negative_grid_loss = "negative_grid_loss"
     aggregation_level = "aggregation_level"
     aggregated_quality = "aggregated_quality"
     balance_responsible_id = "BalanceResponsibleId"
@@ -46,8 +46,8 @@ class Colname:
     grid_loss = "grid_loss"
     gsrn_number = "gsrn_number"
     in_grid_area = "FromGridAreaCode"
-    is_grid_loss = "is_grid_loss"
-    is_system_correction = "is_system_correction"
+    is_positive_grid_loss_responsible = "is_positive_grid_loss_responsible"
+    is_negative_grid_loss_responsible = "is_negative_grid_loss_responsible"
     job_id = "job_id"
     local_date = "localDate"
     metering_method = "metering_method"

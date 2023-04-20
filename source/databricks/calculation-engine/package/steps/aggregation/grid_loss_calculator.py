@@ -135,9 +135,9 @@ def __calculate_grid_loss_or_residual_ga(
 
 
 # Function to calculate system correction to be added (step 8)
-def calculate_added_system_correction(grid_loss: DataFrame) -> DataFrame:
+def calculate_negative_grid_loss(grid_loss: DataFrame) -> DataFrame:
     result = grid_loss.withColumn(
-        Colname.added_system_correction,
+        Colname.negative_grid_loss,
         when(
             col(Colname.sum_quantity) < 0, (col(Colname.sum_quantity)) * (-1)
         ).otherwise(0),
@@ -145,7 +145,7 @@ def calculate_added_system_correction(grid_loss: DataFrame) -> DataFrame:
     result = result.select(
         Colname.grid_area,
         Colname.time_window,
-        Colname.added_system_correction,
+        Colname.negative_grid_loss,
         Colname.sum_quantity,
         lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
         Colname.quality,
@@ -154,15 +154,15 @@ def calculate_added_system_correction(grid_loss: DataFrame) -> DataFrame:
 
 
 # Function to calculate grid loss to be added (step 9)
-def calculate_added_grid_loss(grid_loss: DataFrame) -> DataFrame:
+def calculate_positive_grid_loss(grid_loss: DataFrame) -> DataFrame:
     result = grid_loss.withColumn(
-        Colname.added_grid_loss,
+        Colname.positive_grid_loss,
         when(col(Colname.sum_quantity) > 0, col(Colname.sum_quantity)).otherwise(0),
     )
     result = result.select(
         Colname.grid_area,
         Colname.time_window,
-        Colname.added_grid_loss,
+        Colname.positive_grid_loss,
         Colname.sum_quantity,
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         Colname.quality,

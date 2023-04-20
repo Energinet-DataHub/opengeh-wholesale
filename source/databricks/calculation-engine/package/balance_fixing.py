@@ -175,7 +175,7 @@ def _calculate_grid_loss(
         AggregationLevel.total_ga,
     )
 
-    positive_grid_loss = agg_steps.calculate_added_grid_loss(grid_loss)
+    positive_grid_loss = agg_steps.calculate_positive_grid_loss(grid_loss)
 
     result_writer.write(
         positive_grid_loss,
@@ -183,7 +183,7 @@ def _calculate_grid_loss(
         AggregationLevel.total_ga,
     )
 
-    negative_grid_loss = agg_steps.calculate_added_system_correction(grid_loss)
+    negative_grid_loss = agg_steps.calculate_negative_grid_loss(grid_loss)
 
     result_writer.write(
         negative_grid_loss,
@@ -199,9 +199,9 @@ def _calculate_production(
     temporay_production_per_ga_and_brp_and_es: DataFrame,
     negative_grid_loss: DataFrame,
 ) -> None:
-    # temporay_production_per_per_ga_and_brp_and_es is without system correction, this has to be added at a later date
+    # temporay_production_per_per_ga_and_brp_and_es is without negative_grid_loss, this has to be added at a later date
     # negative_grid_loss + temporay_production_per_per_ga_and_brp_and_es = production_per_ga_and_brp_and_es
-    production_per_ga_and_brp_and_es = temporay_production_per_ga_and_brp_and_es  # replace with system correction calculation
+    production_per_ga_and_brp_and_es = temporay_production_per_ga_and_brp_and_es  # replace with negative_grid_loss calculation
 
     result_writer.write(
         production_per_ga_and_brp_and_es,
@@ -246,9 +246,9 @@ def _calculate_flex_consumption(
     temporay_flex_consumption_per_ga_and_brp_and_es: DataFrame,
     positive_grid_loss: DataFrame,
 ) -> None:
-    # temporay_flex_consumption_per_ga_and_brp_and_es is without grid loss, this has to be added at a later date
+    # temporay_flex_consumption_per_ga_and_brp_and_es is without positive_grid_loss, this has to be added at a later date
     # positive_grid_loss + temporay_flex_consumption_per_ga_and_brp_and_es = flex_consumption_per_ga_and_brp_and_es
-    flex_consumption_per_ga_and_brp_and_es = temporay_flex_consumption_per_ga_and_brp_and_es  # replace this with grid loss calculation
+    flex_consumption_per_ga_and_brp_and_es = temporay_flex_consumption_per_ga_and_brp_and_es  # replace this with positive_grid_loss calculation
 
     result_writer.write(
         flex_consumption_per_ga_and_brp_and_es,

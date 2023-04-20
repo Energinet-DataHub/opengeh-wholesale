@@ -19,29 +19,29 @@ from pyspark.sql.functions import col, when
 metering_grid_area_domain_mrid_drop = "MeteringGridArea_Domain_mRID_drop"
 
 
-def combine_added_system_correction_with_master_data(results: dict) -> DataFrame:
-    added_system_correction_df = results[ResultKeyName.added_system_correction]
+def combine_negative_grid_loss_with_master_data(results: dict) -> DataFrame:
+    negative_grid_loss_df = results[ResultKeyName.negative_grid_loss]
     grid_loss_sys_cor_master_data_df = results[
         ResultKeyName.grid_loss_sys_cor_master_data
     ]
     return combine_master_data(
-        added_system_correction_df,
+        negative_grid_loss_df,
         grid_loss_sys_cor_master_data_df,
-        Colname.added_system_correction,
-        Colname.is_system_correction,
+        Colname.negative_grid_loss,
+        Colname.is_negative_grid_loss_responsible,
     )
 
 
-def combine_added_grid_loss_with_master_data(results: dict) -> DataFrame:
-    added_grid_loss_df = results[ResultKeyName.added_grid_loss]
+def combine_positive_grid_loss_with_master_data(results: dict) -> DataFrame:
+    positive_grid_loss_df = results[ResultKeyName.positive_grid_loss]
     grid_loss_sys_cor_master_data_df = results[
         ResultKeyName.grid_loss_sys_cor_master_data
     ]
     return combine_master_data(
-        added_grid_loss_df,
+        positive_grid_loss_df,
         grid_loss_sys_cor_master_data_df,
-        Colname.added_grid_loss,
-        Colname.is_grid_loss,
+        Colname.positive_grid_loss,
+        Colname.is_positive_grid_loss_responsible,
     )
 
 
@@ -82,6 +82,6 @@ def combine_master_data(
         df[Colname.out_grid_area],
         df[Colname.metering_point_type],
         df[Colname.settlement_method],
-        mddf[Colname.is_grid_loss],
-        mddf[Colname.is_system_correction],
+        mddf[Colname.is_positive_grid_loss_responsible],
+        mddf[Colname.is_negative_grid_loss_responsible],
     )

@@ -33,8 +33,8 @@ from .aggregators import (
 from .grid_loss_calculator import (
     calculate_grid_loss,
     calculate_residual_ga,
-    calculate_added_system_correction,
-    calculate_added_grid_loss,
+    calculate_negative_grid_loss,
+    calculate_positive_grid_loss,
     calculate_total_consumption,
 )
 from .transformations.adjust_production import adjust_production
