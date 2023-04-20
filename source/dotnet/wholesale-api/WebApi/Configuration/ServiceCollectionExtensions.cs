@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
@@ -43,7 +44,6 @@ using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using NodaTime;
 using ProcessTypeMapper = Energinet.DataHub.Wholesale.Application.Processes.Model.ProcessTypeMapper;
 
@@ -54,9 +54,9 @@ internal static class ServiceCollectionExtensions
     /// <summary>
     /// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
     /// </summary>
-    public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection, Func<IOptions<JwtOptions>> optionsFactory)
+    public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        var options = optionsFactory.Invoke().Value;
+        var options = configuration.Get<JwtOptions>()!;
         serviceCollection.AddJwtBearerAuthentication(options.EXTERNAL_OPEN_ID_URL, options.INTERNAL_OPEN_ID_URL, options.BACKEND_BFF_APP_ID);
         serviceCollection.AddPermissionAuthorization();
     }
@@ -69,10 +69,10 @@ internal static class ServiceCollectionExtensions
                     .GetSection(ConnectionStringsOptions.ConnectionStrings)
                     .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
                 o =>
-            {
-                o.UseNodaTime();
-                o.EnableRetryOnFailure();
-            }));
+                {
+                    o.UseNodaTime();
+                    o.EnableRetryOnFailure();
+                }));
 
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
@@ -81,12 +81,6 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-
-        var calculationStorageConnectionString = configuration[ConfigurationSettingNames.CalculationStorageConnectionString];
-        var calculationStorageContainerName = configuration[ConfigurationSettingNames.CalculationStorageContainerName];
-        var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
-        serviceCollection.AddSingleton(dataLakeFileSystemClient);
-
         serviceCollection.AddScoped<HttpClient>(_ => null!);
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
         serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
@@ -108,33 +102,66 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
         serviceCollection.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
 
-        serviceCollection.AddOptions<DatabricksOptions>().Bind(configuration);
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
-        serviceCollection.AddOptions<ServiceBusOptions>().Bind(configuration);
-        serviceCollection.AddDomainEventPublisher(() => serviceCollection.BuildServiceProvider().GetRequiredService<IOptions<ServiceBusOptions>>());
-
-        serviceCollection.AddOptions<DateTimeOptions>().Bind(configuration);
-        serviceCollection.AddDataTimeConfiguration(() => serviceCollection.BuildServiceProvider().GetRequiredService<IOptions<DateTimeOptions>>());
+        serviceCollection.AddDomainEventPublisher(configuration);
+        serviceCollection.AddDataTimeConfiguration(configuration);
+        serviceCollection.AddDataLakeFileSystemClient(configuration);
     }
 
-    private static void AddDomainEventPublisher(this IServiceCollection serviceCollection, Func<IOptions<ServiceBusOptions>> optionsFactory)
+    public static void AddHealthCheck(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        var options = optionsFactory.Invoke().Value;
+        var options = configuration.Get<ServiceBusOptions>()!;
+        serviceCollection.AddHealthChecks()
+            .AddLiveCheck()
+            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
+            // TODO: turn on container health check again after checking ci/cd stability
+            // .AddDataLakeContainerCheck(
+            //     Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
+            //     Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
+            .AddAzureServiceBusTopic(
+                options.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                options.DOMAIN_EVENTS_TOPIC_NAME,
+                name: "DomainEventsTopicExists");
+    }
+
+    /// <summary>
+    /// The middleware to handle properly set a CorrelationContext is only supported for Functions.
+    /// This registry will ensure a new CorrelationContext (with a new Id) is set for each session
+    /// </summary>
+    public static void AddCorrelationContext(this IServiceCollection serviceCollection)
+    {
+        var serviceDescriptor =
+            serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(ICorrelationContext));
+        serviceCollection.Remove(serviceDescriptor!);
+        serviceCollection.AddScoped<ICorrelationContext>(_ =>
+        {
+            var correlationContext = new CorrelationContext();
+            correlationContext.SetId(Guid.NewGuid().ToString());
+            return correlationContext;
+        });
+    }
+
+    private static void AddDomainEventPublisher(this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
+        var options = configuration.Get<ServiceBusOptions>()!;
         var messageTypes = new Dictionary<Type, string>
         {
-            {
-                typeof(BatchCreatedDomainEventDto),
-                options.BATCH_CREATED_EVENT_NAME
-            },
+            { typeof(BatchCreatedDomainEventDto), options.BATCH_CREATED_EVENT_NAME },
         };
 
         serviceCollection.AddDomainEventPublisher(options.SERVICE_BUS_SEND_CONNECTION_STRING, options.DOMAIN_EVENTS_TOPIC_NAME, new MessageTypeDictionary(messageTypes));
     }
 
-    private static void AddDataTimeConfiguration(this IServiceCollection serviceCollection, Func<IOptions<DateTimeOptions>> optionsFactory)
+    private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        var options = optionsFactory.Invoke().Value;
+        var options = configuration.Get<DataLakeOptions>()!;
+        serviceCollection.AddSingleton(new DataLakeFileSystemClient(options.STORAGE_CONNECTION_STRING, options.STORAGE_CONTAINER_NAME));
+    }
+
+    private static void AddDataTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
+        var options = configuration.Get<DateTimeOptions>()!;
         var dateTimeZoneId = options.TIME_ZONE;
         var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId)!;
         serviceCollection.AddSingleton(dateTimeZone);
