@@ -126,7 +126,17 @@ def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
         exchange_out["out_time_window"],
     )
     result_df = (
-        joined.withColumn(Colname.sum_quantity, joined[in_sum] - joined[out_sum])
+        joined
+        # Set null sums to 0 to avoid null values in the sum column
+        .withColumn(
+            in_sum,
+            F.when(joined[in_sum].isNotNull(), joined[in_sum]).otherwise(F.lit(0)),
+        )
+        .withColumn(
+            out_sum,
+            F.when(joined[out_sum].isNotNull(), joined[out_sum]).otherwise(F.lit(0)),
+        )
+        .withColumn(Colname.sum_quantity, F.col(in_sum) - F.col(out_sum))
         # when().otherwise() cases to handle the case where a metering point exists with an out-grid-area, which never occurs as an in-grid-area
         .withColumn(
             Colname.grid_area,
