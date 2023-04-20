@@ -31,8 +31,8 @@ class DataframeDefaults:
     default_result_id: str = "1"
     default_result_name: str = "1"
     default_result_path: str = "1"
-    default_added_grid_loss: Decimal = Decimal("1.234")
-    default_added_system_correction: Decimal = Decimal("1.234")
+    default_positive_grid_loss: Decimal = Decimal("1.234")
+    default_negative_grid_loss: Decimal = Decimal("1.234")
     default_balance_responsible_id: str = "1"
     default_charge_id: str = const_charge_id
     default_charge_key: str = (

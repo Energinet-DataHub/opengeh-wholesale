@@ -22,8 +22,8 @@ class ResultKeyName:
     flex_consumption = 40
     production = 50
     grid_loss = 60
-    added_system_correction = 70
-    added_grid_loss = 80
+    negative_grid_loss = 70
+    positive_grid_loss = 80
     combined_system_correction = 90
     combined_grid_loss = 100
     flex_consumption_with_grid_loss = 110
