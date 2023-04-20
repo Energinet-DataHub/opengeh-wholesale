@@ -12,14 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .aggregation_result_formatter import (
-    create_dataframe_from_aggregation_result_schema,
-)
-from .adjust_flex_consumption import adjust_flex_consumption
-from .aggregate_quality import aggregate_total_consumption_quality, aggregate_quality
-from .aggregate_sum_and_set_quality import aggregate_sum_and_set_quality
-from .adjust_production import adjust_production
-from .combine_master_data import (
-    combine_negative_grid_loss_with_master_data,
-    combine_positive_grid_loss_with_master_data,
-)
+from enum import Enum
+
+
+class ProcessType(Enum):
+    BALANCE_FIXING = "BalanceFixing"
+    AGGREGATION = "Aggregation"

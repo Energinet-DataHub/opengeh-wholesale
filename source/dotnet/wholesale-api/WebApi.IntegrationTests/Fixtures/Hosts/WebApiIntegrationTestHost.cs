@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Microsoft.Extensions.Configuration;
+using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -32,7 +32,6 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         Action<IServiceCollection>? serviceConfiguration = default)
     {
         ConfigureEnvironmentVars();
-
         var hostBuilder = Program
             .CreateWebHostBuilder(new[] { string.Empty })
             .ConfigureServices(ConfigureServices);
@@ -59,28 +58,25 @@ public sealed class WebApiIntegrationTestHost : IDisposable
     {
         const string anyValue = "fake_value";
         const string anyServiceBusConnectionString = "Endpoint=sb://foo.servicebus.windows.net/;SharedAccessKeyName=someKeyName;SharedAccessKey=someKeyValue";
+        const string anyBlobServiceUri = "https://localhost:10000/anyaccount";
 
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.AppInsightsInstrumentationKey, anyValue);
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.BackendBffAppId, anyValue);
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.ExternalOpenIdUrl, anyValue);
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.InternalOpenIdUrl, anyValue);
-        Environment.SetEnvironmentVariable($"CONNECTIONSTRINGS:{ConfigurationSettingNames.DbConnectionString}", "UseDevelopmentStorage=true");
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, anyValue);
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusManageConnectionString, anyServiceBusConnectionString);
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusSendConnectionString, anyServiceBusConnectionString);
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.BatchCreatedEventName, "batch-created");
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.DomainEventsTopicName, anyValue);
-        Environment.SetEnvironmentVariable(ConfigurationSettingNames.DateTimeZoneId, "Europe/Copenhagen");
+        Environment.SetEnvironmentVariable(nameof(AppInsightOptions.APPINSIGHTS_INSTRUMENTATIONKEY), anyValue);
+        Environment.SetEnvironmentVariable(nameof(JwtOptions.BACKEND_BFF_APP_ID), anyValue);
+        Environment.SetEnvironmentVariable(nameof(JwtOptions.EXTERNAL_OPEN_ID_URL), anyValue);
+        Environment.SetEnvironmentVariable(nameof(JwtOptions.INTERNAL_OPEN_ID_URL), anyValue);
+        Environment.SetEnvironmentVariable($"{ConnectionStringsOptions.ConnectionStrings}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}", anyValue);
+        Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_ACCOUNT_URI), anyBlobServiceUri);
+        Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME), anyValue);
+        Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING), anyServiceBusConnectionString);
+        Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING), anyServiceBusConnectionString);
+        Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.BATCH_CREATED_EVENT_NAME), "batch-created");
+        Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.DOMAIN_EVENTS_TOPIC_NAME), anyValue);
+        Environment.SetEnvironmentVariable(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
+        Environment.SetEnvironmentVariable(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_URL), "http://localhost/");
+        Environment.SetEnvironmentVariable(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_TOKEN), "no_token");
     }
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddOptions<DatabricksOptions>()
-            .Configure<IConfiguration>((options, _) =>
-            {
-                options.DATABRICKS_WORKSPACE_URL = "http://localhost/";
-                options.DATABRICKS_WORKSPACE_TOKEN = "no_token";
-            });
     }
 }

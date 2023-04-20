@@ -14,8 +14,8 @@
 from decimal import Decimal
 from datetime import datetime
 from package.steps.aggregation.transformations import (
-    combine_added_system_correction_with_master_data,
-    combine_added_grid_loss_with_master_data,
+    combine_negative_grid_loss_with_master_data,
+    combine_positive_grid_loss_with_master_data,
 )
 from pyspark.sql.types import (
     StructType,
@@ -45,8 +45,8 @@ def aggregation_result_factory(spark):
         quality=DataframeDefaults.default_quality,
         metering_point_type=DataframeDefaults.default_metering_point_type,
         settlement_method=None,
-        added_grid_loss=None,
-        added_system_correction=None,
+        positive_grid_loss=None,
+        negative_grid_loss=None,
         position=None,
     ):
         pandas_df = pd.DataFrame().append(
@@ -65,8 +65,8 @@ def aggregation_result_factory(spark):
                     Colname.quality: quality,
                     Colname.metering_point_type: metering_point_type,
                     Colname.settlement_method: settlement_method,
-                    Colname.added_grid_loss: added_grid_loss,
-                    Colname.added_system_correction: added_system_correction,
+                    Colname.positive_grid_loss: positive_grid_loss,
+                    Colname.negative_grid_loss: negative_grid_loss,
                     Colname.position: position,
                 }
             ],
@@ -90,8 +90,8 @@ def grid_loss_sys_cor_master_data_result_schema():
         .add(Colname.to_date, TimestampType())
         .add(Colname.grid_area, StringType(), False)
         .add(Colname.energy_supplier_id, StringType())
-        .add(Colname.is_grid_loss, BooleanType())
-        .add(Colname.is_system_correction, BooleanType())
+        .add(Colname.is_positive_grid_loss_responsible, BooleanType())
+        .add(Colname.is_negative_grid_loss_responsible, BooleanType())
     )
 
 
@@ -113,8 +113,8 @@ def grid_loss_sys_cor_master_data_result_factory(
                 ],
                 Colname.grid_area: ["500", "500"],
                 Colname.energy_supplier_id: ["8100000000115", "8100000000115"],
-                Colname.is_grid_loss: [True, False],
-                Colname.is_system_correction: [False, True],
+                Colname.is_positive_grid_loss_responsible: [True, False],
+                Colname.is_negative_grid_loss_responsible: [False, True],
             }
         )
 
@@ -150,8 +150,8 @@ def expected_combined_data_schema():
         .add(Colname.out_grid_area, StringType())
         .add(Colname.metering_point_type, StringType())
         .add(Colname.settlement_method, StringType())
-        .add(Colname.is_grid_loss, BooleanType())
-        .add(Colname.is_system_correction, BooleanType())
+        .add(Colname.is_positive_grid_loss_responsible, BooleanType())
+        .add(Colname.is_negative_grid_loss_responsible, BooleanType())
     )
 
 
@@ -161,7 +161,7 @@ def expected_combined_data_factory(spark, expected_combined_data_schema):
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["500", "500"],
-                Colname.added_grid_loss: [Decimal(6.0), Decimal(6.0)],
+                Colname.positive_grid_loss: [Decimal(6.0), Decimal(6.0)],
                 Colname.time_window: [
                     {
                         Colname.start: datetime(2019, 1, 1, 0, 0),
@@ -187,8 +187,8 @@ def expected_combined_data_factory(spark, expected_combined_data_schema):
                 Colname.out_grid_area: [None, None],
                 Colname.metering_point_type: ["E17", "E17"],
                 Colname.settlement_method: ["D01", "D01"],
-                Colname.is_grid_loss: [True, False],
-                Colname.is_system_correction: [False, True],
+                Colname.is_positive_grid_loss_responsible: [True, False],
+                Colname.is_negative_grid_loss_responsible: [False, True],
             }
         )
 
@@ -197,7 +197,7 @@ def expected_combined_data_factory(spark, expected_combined_data_schema):
     return factory
 
 
-def test_combine_added_system_correction_with_master_data(
+def test_combine_negative_grid_loss_with_master_data(
     grid_loss_sys_cor_master_data_result_factory,
     aggregation_result_factory,
     expected_combined_data_factory,
@@ -208,7 +208,7 @@ def test_combine_added_system_correction_with_master_data(
     ] = grid_loss_sys_cor_master_data_result_factory()
     added_sys_cor_1 = aggregation_result_factory(
         grid_area="500",
-        added_system_correction=Decimal(6.0),
+        negative_grid_loss=Decimal(6.0),
         time_window_start=datetime(2019, 1, 1, 0, 0),
         time_window_end=datetime(2019, 1, 1, 1, 0),
         energy_supplier_id="8100000000115",
@@ -217,25 +217,23 @@ def test_combine_added_system_correction_with_master_data(
     )
     added_sys_cor_2 = aggregation_result_factory(
         grid_area="500",
-        added_system_correction=Decimal(6.0),
+        negative_grid_loss=Decimal(6.0),
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",
     )
-    results[ResultKeyName.added_system_correction] = added_sys_cor_1.union(
-        added_sys_cor_2
-    )
+    results[ResultKeyName.negative_grid_loss] = added_sys_cor_1.union(added_sys_cor_2)
     expected_combined_data_factory = expected_combined_data_factory()
 
-    result = combine_added_system_correction_with_master_data(results)
+    result = combine_negative_grid_loss_with_master_data(results)
 
-    # expected data for combine_added_grid_loss_with_master_data is at index 1 in expected_combined_data_factory
+    # expected data for combine_positive_grid_loss_with_master_data is at index 1 in expected_combined_data_factory
     assert result.collect()[0] == expected_combined_data_factory.collect()[1]
 
 
-def test_combine_added_grid_loss_with_master_data(
+def test_combine_positive_grid_loss_with_master_data(
     grid_loss_sys_cor_master_data_result_factory,
     aggregation_result_factory,
     expected_combined_data_factory,
@@ -244,28 +242,30 @@ def test_combine_added_grid_loss_with_master_data(
     results[
         ResultKeyName.grid_loss_sys_cor_master_data
     ] = grid_loss_sys_cor_master_data_result_factory()
-    added_grid_loss_1 = aggregation_result_factory(
+    positive_grid_loss_1 = aggregation_result_factory(
         grid_area="500",
-        added_grid_loss=Decimal(6.0),
+        positive_grid_loss=Decimal(6.0),
         time_window_start=datetime(2019, 1, 1, 0, 0),
         time_window_end=datetime(2019, 1, 1, 1, 0),
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",
     )
-    added_grid_loss_2 = aggregation_result_factory(
+    positive_grid_loss_2 = aggregation_result_factory(
         grid_area="500",
-        added_grid_loss=Decimal(6.0),
+        positive_grid_loss=Decimal(6.0),
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
         energy_supplier_id="8100000000115",
         balance_responsible_id="8100000000214",
         settlement_method="D01",
     )
-    results[ResultKeyName.added_grid_loss] = added_grid_loss_1.union(added_grid_loss_2)
+    results[ResultKeyName.positive_grid_loss] = positive_grid_loss_1.union(
+        positive_grid_loss_2
+    )
     expected_combined_data_factory = expected_combined_data_factory()
 
-    result = combine_added_grid_loss_with_master_data(results)
+    result = combine_positive_grid_loss_with_master_data(results)
 
-    # expected data for combine_added_grid_loss_with_master_data is at index 0 in expected_combined_data_factory
+    # expected data for combine_positive_grid_loss_with_master_data is at index 0 in expected_combined_data_factory
     assert result.collect()[0] == expected_combined_data_factory.collect()[0]

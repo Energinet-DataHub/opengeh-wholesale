@@ -53,6 +53,7 @@ def _migrate_data_lake(
     migration_args = MigrationScriptArgs(
         data_storage_account_url=storage_account_url,
         data_storage_account_name=storage_account_name,
+        data_storage_container_name=WHOLESALE_CONTAINER_NAME,
         data_storage_credential=storage_account_credential,
         spark=spark,
     )

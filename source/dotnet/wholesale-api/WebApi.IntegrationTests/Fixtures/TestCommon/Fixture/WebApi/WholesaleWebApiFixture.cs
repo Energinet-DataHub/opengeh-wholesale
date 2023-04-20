@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Wholesale.ProcessManager;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
@@ -27,7 +29,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
     {
         public WholesaleWebApiFixture()
         {
-            AzuriteManager = new AzuriteManager();
+            AzuriteManager = new AzuriteManager(useOAuth: true);
             DatabaseManager = new WholesaleDatabaseManager();
             DatabricksTestManager = new DatabricksTestManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
@@ -70,7 +72,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
-            Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageAccountUri, AzuriteManager.BlobStorageServiceUri.ToString());
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName, "wholesale");
 
             await ServiceBusResourceProvider
@@ -78,15 +80,13 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 .SetEnvironmentVariableToTopicName(ConfigurationSettingNames.DomainEventsTopicName)
                 .CreateAsync();
 
-            // Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
-            var dataLakeFileSystemClient = new DataLakeFileSystemClient(Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageConnectionString), Environment.GetEnvironmentVariable(ConfigurationSettingNames.CalculationStorageContainerName));
-            await dataLakeFileSystemClient.CreateIfNotExistsAsync().ConfigureAwait(false);
-
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.BatchCreatedEventName, "batch-created");
 
             Environment.SetEnvironmentVariable(ConfigurationSettingNames.DateTimeZoneId, "Europe/Copenhagen");
+
+            await EnsureCalculationStorageContainerExistsAsync();
         }
 
         /// <inheritdoc/>
@@ -94,6 +94,21 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
         {
             AzuriteManager.Dispose();
             return DatabaseManager.DeleteDatabaseAsync();
+        }
+
+        /// <summary>
+        /// Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
+        /// </summary>
+        private async Task EnsureCalculationStorageContainerExistsAsync()
+        {
+            var dataLakeServiceClient = new DataLakeServiceClient(
+                serviceUri: AzuriteManager.BlobStorageServiceUri,
+                credential: new DefaultAzureCredential());
+
+            var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+
+            await fileSystemClient.CreateIfNotExistsAsync();
         }
     }
 }
