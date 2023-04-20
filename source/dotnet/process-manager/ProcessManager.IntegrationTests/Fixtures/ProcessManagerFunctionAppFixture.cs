@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics;
+using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
@@ -32,7 +33,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
     {
         public ProcessManagerFunctionAppFixture()
         {
-            AzuriteManager = new AzuriteManager();
+            AzuriteManager = new AzuriteManager(useOAuth: true);
             DatabaseManager = new WholesaleDatabaseManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
             AuthorizationConfiguration = new AuthorizationConfiguration(
@@ -82,7 +83,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
         protected override void OnConfigureEnvironment()
         {
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.AppInsightsInstrumentationKey, IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.AzureWebJobsStorage, AzuriteManager.BlobStorageConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusSendConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusListenConnectionString, ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.ServiceBusManageConnectionString, ServiceBusResourceProvider.ConnectionString);
@@ -92,7 +93,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl, DatabricksTestManager.DatabricksUrl);
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DatabricksWorkspaceToken, DatabricksTestManager.DatabricksToken);
 
-            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString, "UseDevelopmentStorage=true");
+            Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageAccountUri, AzuriteManager.BlobStorageServiceUri.ToString());
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName, "wholesale");
 
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.DateTimeZoneId, "Europe/Copenhagen");
@@ -158,9 +159,7 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             await publishIntegrationEventWhenProcessCompletedListener.AddTopicSubscriptionListenerAsync(IntegrationEventsTopic.Name, publishIntegrationEventWhenProcessCompletedSubscriptionName);
             ProcessCompletedIntegrationEventListener = new ServiceBusTestListener(publishIntegrationEventWhenProcessCompletedListener);
 
-            // Create storage container. Note: Azurite is based on the Blob Storage API, but since the Data Lake Storage Gen2 API is built on top of it, we can still create the container like this
-            var dataLakeFileSystemClient = new DataLakeFileSystemClient(Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageConnectionString), Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
-            await dataLakeFileSystemClient.CreateIfNotExistsAsync().ConfigureAwait(false);
+            await EnsureCalculationStorageContainerExistsAsync();
         }
 
         /// <inheritdoc/>
@@ -188,6 +187,21 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
 #else
             return "Release";
 #endif
+        }
+
+        /// <summary>
+        /// Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
+        /// </summary>
+        private async Task EnsureCalculationStorageContainerExistsAsync()
+        {
+            var dataLakeServiceClient = new DataLakeServiceClient(
+                serviceUri: AzuriteManager.BlobStorageServiceUri,
+                credential: new DefaultAzureCredential());
+
+            var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(
+                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+
+            await fileSystemClient.CreateIfNotExistsAsync();
         }
     }
 }
