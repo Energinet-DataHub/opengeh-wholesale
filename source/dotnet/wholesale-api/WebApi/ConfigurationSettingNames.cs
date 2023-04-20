@@ -33,7 +33,7 @@ namespace Energinet.DataHub.Wholesale.WebApi
         /// </summary>
         public const string BackendBffAppId = "BACKEND_BFF_APP_ID";
 
-        public const string CalculationStorageConnectionString = "STORAGE_CONNECTION_STRING";
+        public const string CalculationStorageAccountUri = "STORAGE_ACCOUNT_URI";
         public const string CalculationStorageContainerName = "STORAGE_CONTAINER_NAME";
 
         public const string DateTimeZoneId = "TIME_ZONE";

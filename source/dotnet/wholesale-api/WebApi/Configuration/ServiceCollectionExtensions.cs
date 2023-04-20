@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
@@ -82,9 +83,9 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
 
-        var calculationStorageConnectionString = configuration[ConfigurationSettingNames.CalculationStorageConnectionString];
-        var calculationStorageContainerName = configuration[ConfigurationSettingNames.CalculationStorageContainerName];
-        var dataLakeFileSystemClient = new DataLakeFileSystemClient(calculationStorageConnectionString, calculationStorageContainerName);
+        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(configuration[ConfigurationSettingNames.CalculationStorageAccountUri]!), new DefaultAzureCredential());
+        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(configuration[ConfigurationSettingNames.CalculationStorageContainerName]!);
+
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
 
         serviceCollection.AddScoped<HttpClient>(_ => null!);
