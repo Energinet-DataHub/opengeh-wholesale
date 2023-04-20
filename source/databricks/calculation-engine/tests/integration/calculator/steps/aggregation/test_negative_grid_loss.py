@@ -18,7 +18,7 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.steps.aggregation import calculate_added_grid_loss
+from package.steps.aggregation import calculate_negative_grid_loss
 from package.schemas.output import aggregation_result_schema
 from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
@@ -65,7 +65,6 @@ def agg_result_factory(
                 Colname.grid_area: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
-                Colname.quality: [],
                 Colname.resolution: [],
                 Colname.metering_point_type: [],
             }
@@ -114,47 +113,45 @@ def agg_result_factory(
     return factory
 
 
-def call_calculate_grid_loss(agg_result_factory: Callable[[], DataFrame]) -> DataFrame:
+def call_calculate_negative_grid_loss(
+    agg_result_factory: Callable[[], DataFrame]
+) -> DataFrame:
     df = create_dataframe_from_aggregation_result_schema(agg_result_factory())
-    return calculate_added_grid_loss(df)
+    return calculate_negative_grid_loss(df)
 
 
-def test_grid_area_grid_loss_has_no_values_below_zero(
+def test_negative_grid_loss_has_no_values_below_zero(
     agg_result_factory: Callable[[], DataFrame]
 ) -> None:
-    result = call_calculate_grid_loss(agg_result_factory)
+    result = call_calculate_negative_grid_loss(agg_result_factory)
 
-    assert result.filter(col(Colname.added_grid_loss) < 0).count() == 0
+    assert result.filter(col(Colname.negative_grid_loss) < 0).count() == 0
 
 
-def test_grid_area_grid_loss_changes_negative_values_to_zero(
+def test_negative_grid_loss_change_negative_value_to_positive(
     agg_result_factory: Callable[[], DataFrame]
 ) -> None:
-    result = call_calculate_grid_loss(agg_result_factory)
+    result = call_calculate_negative_grid_loss(agg_result_factory)
 
-    assert result.collect()[0][Colname.added_grid_loss] == Decimal("0.00000")
+    assert result.collect()[0][Colname.negative_grid_loss] == Decimal("12.56700")
 
 
-def test_grid_area_grid_loss_positive_values_will_not_change(
+def test_negative_grid_loss_change_positive_value_to_zero(
     agg_result_factory: Callable[[], DataFrame]
 ) -> None:
-    result = call_calculate_grid_loss(agg_result_factory)
+    result = call_calculate_negative_grid_loss(agg_result_factory)
 
-    assert result.collect()[1][Colname.added_grid_loss] == Decimal("34.32000")
+    assert result.collect()[1][Colname.negative_grid_loss] == Decimal("0.00000")
 
 
-def test_grid_area_grid_loss_values_that_are_zero_stay_zero(
+def test_negative_grid_loss_values_that_are_zero_stay_zero(
     agg_result_factory: Callable[[], DataFrame]
 ) -> None:
-    result = call_calculate_grid_loss(agg_result_factory)
+    result = call_calculate_negative_grid_loss(agg_result_factory)
 
-    assert result.collect()[2][Colname.added_grid_loss] == Decimal("0.00000")
+    assert result.collect()[2][Colname.negative_grid_loss] == Decimal("0.00000")
 
 
 def test_returns_correct_schema(agg_result_factory: Callable[[], DataFrame]) -> None:
-    """
-    Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the single-hour resolution specified in the aggregator).
-    """
-    result = call_calculate_grid_loss(agg_result_factory)
+    result = call_calculate_negative_grid_loss(agg_result_factory)
     assert result.schema == aggregation_result_schema
