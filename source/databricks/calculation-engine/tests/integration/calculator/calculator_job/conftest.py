@@ -12,31 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import datetime
 from os import path
-from shutil import rmtree
 from pyspark.sql import SparkSession, DataFrame
 import pytest
+from shutil import rmtree
+from typing import Callable, Optional
+
 from . import configuration as C
 from package.calculator_job import (
     _start_calculator,
 )
 from package.calculator_args import CalculatorArgs
-import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
-from typing import Callable, Optional
-from datetime import datetime
+from package.file_writers.process_step_result_writer import (
+    DATABASE_NAME,
+    RESULT_TABLE_NAME,
+)
 
 
 @pytest.fixture(scope="session")
 def test_data_job_parameters(
     data_lake_path: str,
     timestamp_factory: Callable[[str], Optional[datetime]],
-    worker_id: str,
 ) -> CalculatorArgs:
     return C.DictObj(
         {
             "data_storage_account_name": "foo",
-            "wholesale_container_path": f"{data_lake_path}/{worker_id}",
+            "wholesale_container_path": f"{data_lake_path}",
             "batch_id": C.executed_batch_id,
             "batch_process_type": "BalanceFixing",
             "batch_grid_areas": [805, 806],
@@ -56,7 +59,7 @@ def executed_calculation_job(
     test_data_job_parameters: CalculatorArgs,
     test_files_folder_path: str,
     data_lake_path: str,
-    worker_id: str,
+    migrations_executed: None,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -64,19 +67,13 @@ def executed_calculation_job(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    output_path = f"{data_lake_path}/{worker_id}/{infra.OUTPUT_FOLDER}"
-
-    if path.isdir(output_path):
-        # Since we are appending the result dataframes we must ensure that the path is removed before executing the tests
-        rmtree(output_path)
-
     metering_points_df = spark.read.csv(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         header=True,
         schema=metering_point_period_schema,
     )
     metering_points_df.write.format("delta").save(
-        f"{data_lake_path}/{worker_id}/calculation-input-v2/metering-point-periods",
+        f"{data_lake_path}/calculation-input-v2/metering-point-periods",
         mode="overwrite",
     )
     timeseries_points_df = spark.read.csv(
@@ -86,7 +83,7 @@ def executed_calculation_job(
     )
 
     timeseries_points_df.write.format("delta").save(
-        f"{data_lake_path}/{worker_id}/calculation-input-v2/time-series-points",
+        f"{data_lake_path}/calculation-input-v2/time-series-points",
         mode="overwrite",
     )
 
@@ -94,7 +91,8 @@ def executed_calculation_job(
 
 
 @pytest.fixture(scope="session")
-def results_df(spark: SparkSession, data_lake_path: str, worker_id: str, executed_calculation_job: None) -> DataFrame:
-    CONTAINER_PATH = "calculation-output/result"
-    results_table_path = f"{data_lake_path}/{worker_id}/{CONTAINER_PATH}"
-    return spark.read.load(results_table_path)
+def results_df(
+    spark: SparkSession,
+    executed_calculation_job: None,
+) -> DataFrame:
+    return spark.read.table(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")

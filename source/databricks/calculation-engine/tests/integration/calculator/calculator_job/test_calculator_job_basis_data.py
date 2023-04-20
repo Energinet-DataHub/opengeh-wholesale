@@ -23,7 +23,6 @@ import package.infrastructure as infra
 def test__creates_hour_for_total_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -35,7 +34,7 @@ def test__creates_hour_for_total_ga__with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_relative_path}"
+        f"{data_lake_path}/{basis_data_relative_path}"
     )
     assert actual.columns == [
         "METERINGPOINTID",
@@ -48,7 +47,6 @@ def test__creates_hour_for_total_ga__with_expected_columns_names(
 def test__creates_hour_for_es_per_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -63,7 +61,7 @@ def test__creates_hour_for_es_per_ga__with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_relative_path}"
+        f"{data_lake_path}/{basis_data_relative_path}"
     )
     assert actual.columns == [
         "METERINGPOINTID",
@@ -76,7 +74,6 @@ def test__creates_hour_for_es_per_ga__with_expected_columns_names(
 def test__creates_quarter_for_total_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -88,7 +85,7 @@ def test__creates_quarter_for_total_ga__with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{relative_path}"
+        f"{data_lake_path}/{relative_path}"
     )
 
     assert actual.columns == [
@@ -102,7 +99,6 @@ def test__creates_quarter_for_total_ga__with_expected_columns_names(
 def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -117,7 +113,7 @@ def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{relative_path}"
+        f"{data_lake_path}/{relative_path}"
     )
 
     assert actual.columns == [
@@ -131,7 +127,6 @@ def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
 def test__creates_quarter_for_total_ga__per_grid_area(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -146,11 +141,11 @@ def test__creates_quarter_for_total_ga__per_grid_area(
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_805}"
+        f"{data_lake_path}/{basis_data_relative_path_805}"
     )
 
     basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_806}"
+        f"{data_lake_path}/{basis_data_relative_path_806}"
     )
 
     assert (
@@ -165,7 +160,6 @@ def test__creates_quarter_for_total_ga__per_grid_area(
 def test__creates_quarter_for_es_per_ga__per_energy_supplier(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -186,11 +180,11 @@ def test__creates_quarter_for_es_per_ga__per_energy_supplier(
 
     # Assert
     basis_data_a = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_a}"
+        f"{data_lake_path}/{basis_data_relative_path_a}"
     )
 
     basis_data_b = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_b}"
+        f"{data_lake_path}/{basis_data_relative_path_b}"
     )
 
     assert (
@@ -205,7 +199,6 @@ def test__creates_quarter_for_es_per_ga__per_energy_supplier(
 def test__creates_hour_for_total_ga__per_grid_area(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -220,11 +213,11 @@ def test__creates_hour_for_total_ga__per_grid_area(
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_805}"
+        f"{data_lake_path}/{basis_data_relative_path_805}"
     )
 
     basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_806}"
+        f"{data_lake_path}/{basis_data_relative_path_806}"
     )
 
     assert (
@@ -239,7 +232,6 @@ def test__creates_hour_for_total_ga__per_grid_area(
 def test__creates_hour_for_es_per_ga__per_energy_supplier(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -260,11 +252,11 @@ def test__creates_hour_for_es_per_ga__per_energy_supplier(
 
     # Assert
     basis_data_a = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_a}"
+        f"{data_lake_path}/{basis_data_relative_path_a}"
     )
 
     basis_data_b = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_relative_path_b}"
+        f"{data_lake_path}/{basis_data_relative_path_b}"
     )
 
     assert (
@@ -279,7 +271,6 @@ def test__creates_hour_for_es_per_ga__per_energy_supplier(
 def test__master_basis_data_for_total_ga_has_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -291,7 +282,7 @@ def test__master_basis_data_for_total_ga_has_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_path}"
+        f"{data_lake_path}/{basis_data_path}"
     )
 
     assert actual.columns == [
@@ -310,7 +301,6 @@ def test__master_basis_data_for_total_ga_has_expected_columns_names(
 def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -325,7 +315,7 @@ def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
 
     # Assert
     actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_path}"
+        f"{data_lake_path}/{basis_data_path}"
     )
 
     assert actual.columns == [
@@ -343,7 +333,6 @@ def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
 def test__creates_master_basis_data_per_grid_area(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -358,11 +347,11 @@ def test__creates_master_basis_data_per_grid_area(
 
     # Assert
     master_basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_path_805}"
+        f"{data_lake_path}/{basis_data_path_805}"
     )
 
     master_basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{worker_id}/{basis_data_path_806}"
+        f"{data_lake_path}/{basis_data_path_806}"
     )
 
     assert (
