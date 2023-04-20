@@ -46,7 +46,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi
             actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
         }
 
-        [Fact(Skip = "TODO: Fix in upcoming PR (requires at least topic to be added)")]
+        [Fact(Skip = "TODO: don't skip as soon as CI/CD stability has been investigated")]
         public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
         {
             // Act
