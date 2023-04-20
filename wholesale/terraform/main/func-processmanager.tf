@@ -35,10 +35,8 @@ module "func_processmanager" {
     DB_CONNECTION_STRING                                               = local.DB_CONNECTION_STRING
 
     # Datalake
-    STORAGE_CONNECTION_STRING                                          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)"
     STORAGE_CONTAINER_NAME                                             = local.STORAGE_CONTAINER_NAME
     STORAGE_ACCOUNT_URI                                               = local.STORAGE_ACCOUNT_URI
-
 
     # Service bus
     SERVICE_BUS_SEND_CONNECTION_STRING                                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"

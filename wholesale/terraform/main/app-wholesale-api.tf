@@ -27,7 +27,6 @@ module "app_wholesale_api" {
     EXTERNAL_OPEN_ID_URL      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
     INTERNAL_OPEN_ID_URL      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
     BACKEND_BFF_APP_ID        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
-    STORAGE_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-data-lake-primary-connection-string)",
     STORAGE_CONTAINER_NAME    = local.STORAGE_CONTAINER_NAME
     STORAGE_ACCOUNT_URI      = local.STORAGE_ACCOUNT_URI
 

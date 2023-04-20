@@ -16,14 +16,6 @@ module "st_data_lake" {
   ip_rules                        = var.hosted_deployagent_public_ip_range
 }
 
-module "kvs_st_data_lake_primary_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
-
-  name         = "st-data-lake-primary-connection-string"
-  value        = module.st_data_lake.primary_connection_string
-  key_vault_id = module.kv_shared.id
-}
-
 module "kvs_st_data_lake_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
@@ -32,13 +24,6 @@ module "kvs_st_data_lake_name" {
   key_vault_id = module.kv_shared.id
 }
 
-module "kvs_st_data_lake_primary_access_key" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
-
-  name         = "st-data-lake-primary-access-key"
-  value        = module.st_data_lake.primary_access_key
-  key_vault_id = module.kv_shared.id
-}
 
 module "kvs_st_data_lake_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
