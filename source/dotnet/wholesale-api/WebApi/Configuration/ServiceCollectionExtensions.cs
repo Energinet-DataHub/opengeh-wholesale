@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
@@ -36,6 +35,7 @@ using Energinet.DataHub.Wholesale.Domain.SettlementReportAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -82,12 +82,6 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-
-        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(configuration[ConfigurationSettingNames.CalculationStorageAccountUri]!), new DefaultAzureCredential());
-        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(configuration[ConfigurationSettingNames.CalculationStorageContainerName]!);
-
-        serviceCollection.AddSingleton(dataLakeFileSystemClient);
-
         serviceCollection.AddScoped<HttpClient>(_ => null!);
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
         serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
@@ -118,17 +112,15 @@ internal static class ServiceCollectionExtensions
 
     public static void AddHealthCheck(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        var options = configuration.Get<ServiceBusOptions>()!;
+        var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
+        var dataLakeOptions = configuration.Get<DataLakeOptions>()!;
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
-            // TODO: turn on container health check again after checking ci/cd stability
-            // .AddDataLakeContainerCheck(
-            //     Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
-            //     Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
+            .AddDataLakeContainerCheck(dataLakeOptions.STORAGE_ACCOUNT_URI, dataLakeOptions.STORAGE_CONTAINER_NAME)
             .AddAzureServiceBusTopic(
-                options.SERVICE_BUS_MANAGE_CONNECTION_STRING,
-                options.DOMAIN_EVENTS_TOPIC_NAME,
+                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                serviceBusOptions.DOMAIN_EVENTS_TOPIC_NAME,
                 name: "DomainEventsTopicExists");
     }
 
@@ -163,7 +155,9 @@ internal static class ServiceCollectionExtensions
     private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<DataLakeOptions>()!;
-        serviceCollection.AddSingleton(new DataLakeFileSystemClient(options.STORAGE_CONNECTION_STRING, options.STORAGE_CONTAINER_NAME));
+        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI));
+        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
+        serviceCollection.AddSingleton(dataLakeFileSystemClient);
     }
 
     private static void AddDataTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)

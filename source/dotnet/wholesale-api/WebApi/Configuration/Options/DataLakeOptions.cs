@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 
 public class DataLakeOptions
 {
-    public string STORAGE_CONNECTION_STRING { get; set; } = string.Empty;
+    public string STORAGE_ACCOUNT_URI { get; set; } = string.Empty;
 
     public string STORAGE_CONTAINER_NAME { get; set; } = string.Empty;
 }
