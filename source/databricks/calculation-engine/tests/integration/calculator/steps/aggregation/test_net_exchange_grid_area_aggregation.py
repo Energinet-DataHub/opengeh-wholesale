@@ -207,9 +207,6 @@ def test_exchange_aggregator_returns_correct_schema(aggregated_data_frame):
 
 def test_exchange_has_correct_sign(aggregated_data_frame):
     "Check that the sign of the net exchange is positive for the to-grid-area and negative for the from-grid-area"
-    # aggregated_data_frame.where(
-    #     (col("GridAreaCode") == "X") | (col("GridAreaCode") == "Y")
-    # ).select("GridAreaCode", "time_window", "sum_quantity").show(n=500, truncate=False)
     check_aggregation_row(
         aggregated_data_frame,
         "X",
