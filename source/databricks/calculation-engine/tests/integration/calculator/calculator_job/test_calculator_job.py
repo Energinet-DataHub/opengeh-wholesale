@@ -105,7 +105,6 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 def test__quantity_is_with_precision_3(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -131,10 +130,10 @@ def test__quantity_is_with_precision_3(
     # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
     # Note that any change or violation may impact consumers that expects exactly this precision from the result
     result_production = spark.read.json(
-        f"{data_lake_path}/{worker_id}/{result_relative_path_production}"
+        f"{data_lake_path}/{result_relative_path_production}"
     )
     result_non_profiled_consumption = spark.read.json(
-        f"{data_lake_path}/{worker_id}/{result_relative_path_non_profiled_consumption}"
+        f"{data_lake_path}/{result_relative_path_non_profiled_consumption}"
     )
 
     import re
@@ -174,7 +173,12 @@ def test__start__start_calculator_called_without_exceptions(
     dummy_job_args = Mock()
 
     # Act
-    _start("dummy_account", ClientSecretCredential("1", "1", "1"), "dummy_time_zone", dummy_job_args)
+    _start(
+        "dummy_account",
+        ClientSecretCredential("1", "1", "1"),
+        "dummy_time_zone",
+        dummy_job_args,
+    )
 
     # Assert
     mock_start_calculator.assert_called_once()

@@ -89,7 +89,6 @@ import package.infrastructure as infra
 def test__result_is_generated_for_requested_grid_areas(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
     grid_area: str,
     energy_supplier_gln: str,
@@ -109,7 +108,7 @@ def test__result_is_generated_for_requested_grid_areas(
         aggregation_level,
     )
     print(result_path)
-    result = spark.read.json(f"{data_lake_path}/{worker_id}/{result_path}")
+    result = spark.read.json(f"{data_lake_path}/{result_path}")
     assert result.count() >= 1, "Calculator job failed to write files"
 
 
@@ -117,7 +116,6 @@ def test__production_total_ga__schema_must_match_contract_with_dotnet(
     spark: SparkSession,
     data_lake_path: str,
     contracts_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -129,7 +127,7 @@ def test__production_total_ga__schema_must_match_contract_with_dotnet(
         TimeSeriesType.PRODUCTION,
         AggregationLevel.total_ga,
     )
-    result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
+    result_path = f"{data_lake_path}/{result_relative_path}"
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
@@ -146,7 +144,6 @@ def test__non_profiled_consumption_per_es__schema_must_match_contract_with_dotne
     spark: SparkSession,
     data_lake_path: str,
     contracts_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -158,7 +155,7 @@ def test__non_profiled_consumption_per_es__schema_must_match_contract_with_dotne
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         AggregationLevel.es_per_ga,
     )
-    result_path = f"{data_lake_path}/{worker_id}/{result_relative_path}"
+    result_path = f"{data_lake_path}/{result_relative_path}"
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
@@ -174,7 +171,6 @@ def test__non_profiled_consumption_per_es__schema_must_match_contract_with_dotne
 def test__non_profiled_consumption_per_es__has_expected_number_of_rows(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -190,16 +186,13 @@ def test__non_profiled_consumption_per_es__has_expected_number_of_rows(
     # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
-    consumption_806 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/{result_relative_path}"
-    )
+    consumption_806 = spark.read.json(f"{data_lake_path}/{result_relative_path}")
     assert consumption_806.count() == 192  # period is from 01-01 -> 01-03
 
 
 def test__production_total_ga__has_expected_number_of_rows(
     spark: SparkSession,
     data_lake_path: str,
-    worker_id: str,
     executed_calculation_job: None,
 ) -> None:
     # Arrange
@@ -215,7 +208,5 @@ def test__production_total_ga__has_expected_number_of_rows(
     # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
 
     # Assert
-    production_806 = spark.read.json(
-        f"{data_lake_path}/{worker_id}/{result_relative_path}"
-    )
+    production_806 = spark.read.json(f"{data_lake_path}/{result_relative_path}")
     assert production_806.count() == 192  # period is from 01-01 -> 01-03
