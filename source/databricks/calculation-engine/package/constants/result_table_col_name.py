@@ -12,8 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.datamigration.migration_script_args import MigrationScriptArgs
 
-
-def apply(args: MigrationScriptArgs) -> None:
-    print("Applying dummy migration")
+class ResultTableColName:
+    batch_id = "batch_id"
+    batch_execution_time_start = "batch_execution_time_start"
+    batch_process_type = "batch_process_type"
+    time_series_type = "time_series_type"
+    grid_area = "grid_area"
+    out_grid_area = "out_grid_area"
+    balance_responsible_id = "balance_responsible_id"
+    energy_supplier_id = "energy_supplier_id"
+    time = "time"
+    quantity = "quantity"
+    quantity_quality = "quantity_quality"
+    aggregation_level = "aggregation_level"
