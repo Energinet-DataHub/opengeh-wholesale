@@ -43,8 +43,8 @@ def adjust_flex_consumption(results: dict) -> DataFrame:
         positive_grid_loss_result_df, [Colname.time_window, Colname.grid_area], "inner"
     ).select(
         flex_consumption_result_df[Colname.grid_area],
-        flex_consumption_result_df[Colname.in_grid_area],
-        flex_consumption_result_df[Colname.out_grid_area],
+        flex_consumption_result_df[Colname.to_grid_area],
+        flex_consumption_result_df[Colname.from_grid_area],
         flex_consumption_result_df[Colname.balance_responsible_id],
         flex_consumption_result_df[Colname.energy_supplier_id],
         flex_consumption_result_df[Colname.time_window],

@@ -40,8 +40,8 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
     pandas_df = pd.DataFrame(
         {
             Colname.metering_point_type: [],
-            Colname.in_grid_area: [],
-            Colname.out_grid_area: [],
+            Colname.to_grid_area: [],
+            Colname.from_grid_area: [],
             Colname.quantity: [],
             Colname.observation_time: [],
             Colname.quality: [],
@@ -126,7 +126,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
             Decimal("1.5") * quarter_number,
             default_obs_time + timedelta(minutes=quarter_number * 15),
         )
-        # "D" only appears as a out-grid-area (case used to prove bug in implementation)
+        # "D" only appears as a from-grid-area (case used to prove bug in implementation)
         pandas_df = add_row_of_data(
             pandas_df,
             e_20,
@@ -135,7 +135,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
             Decimal("1.6") * quarter_number,
             default_obs_time + timedelta(minutes=quarter_number * 15),
         )
-        # "E" only appears as an in-grid-area (case used to prove bug in implementation)
+        # "E" only appears as a to-grid-area (case used to prove bug in implementation)
         pandas_df = add_row_of_data(
             pandas_df,
             e_20,
@@ -144,7 +144,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
             Decimal("44.4") * quarter_number,
             default_obs_time + timedelta(minutes=quarter_number * 15),
         )
-        # Test sign of net exchange. Net exchange should be IN - OUT
+        # Test sign of net exchange. Net exchange should be TO - FROM
         pandas_df = add_row_of_data(
             pandas_df,
             e_20,
@@ -170,8 +170,8 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
 def add_row_of_data(
     pandas_df: pd.DataFrame,
     point_type,
-    in_grid_area,
-    out_grid_area,
+    to_grid_area,
+    from_grid_area,
     quantity: Decimal,
     timestamp,
 ):
@@ -180,8 +180,8 @@ def add_row_of_data(
     """
     new_row = {
         Colname.metering_point_type: point_type,
-        Colname.in_grid_area: in_grid_area,
-        Colname.out_grid_area: out_grid_area,
+        Colname.to_grid_area: to_grid_area,
+        Colname.from_grid_area: from_grid_area,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
         Colname.quality: TimeSeriesQuality.estimated.value,

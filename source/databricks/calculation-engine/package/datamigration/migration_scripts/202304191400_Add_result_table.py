@@ -30,7 +30,7 @@ RESULT_TABLE_NAME = "result"
 
 RESULTS_SCHEMA = StructType(
     [
-        # The grid area in question. In case of exchange it's the in-grid area.
+        # The grid area in question. In case of exchange it's the to-grid area.
         StructField("grid_area", StringType(), False),
         StructField("energy_supplier_id", StringType(), True),
         StructField("balance_responsible_id", StringType(), True),
