@@ -56,8 +56,8 @@ def get_master_basis_data_df(
             col(Colname.from_date).alias(BasisDataColname.valid_from),
             col(Colname.to_date).alias(BasisDataColname.valid_to),
             col(Colname.grid_area).alias(BasisDataColname.grid_area),
-            col(Colname.out_grid_area).alias(BasisDataColname.out_grid_area),
             col(Colname.in_grid_area).alias(BasisDataColname.in_grid_area),
+            col(Colname.out_grid_area).alias(BasisDataColname.out_grid_area),
             col(Colname.metering_point_type).alias(
                 BasisDataColname.metering_point_type
             ),
