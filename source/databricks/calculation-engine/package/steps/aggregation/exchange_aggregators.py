@@ -20,12 +20,12 @@ from . import transformations as T
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
-in_sum = "in_sum"
-out_sum = "out_sum"
-exchange_in_in_grid_area = "ExIn_InMeteringGridArea_Domain_mRID"
-exchange_in_out_grid_area = "ExIn_OutMeteringGridArea_Domain_mRID"
-exchange_out_in_grid_area = "ExOut_InMeteringGridArea_Domain_mRID"
-exchange_out_out_grid_area = "ExOut_OutMeteringGridArea_Domain_mRID"
+to_sum = "to_sum"
+from_sum = "from_sum"
+exchange_in_to_grid_area = "ExIn_ToGridArea"
+exchange_in_from_grid_area = "ExIn_FromGridArea"
+exchange_out_to_grid_area = "ExOut_ToGridArea"
+exchange_out_from_grid_area = "ExOut_FromGridArea"
 
 
 # Function to aggregate net exchange per neighbouring grid areas
@@ -37,45 +37,45 @@ def aggregate_net_exchange_per_neighbour_ga(
     )
 
     group_by = [
-        Colname.in_grid_area,
-        Colname.out_grid_area,
+        Colname.to_grid_area,
+        Colname.from_grid_area,
         Colname.time_window,
     ]
 
-    exchange_in = (
+    exchange_to = (
         T.aggregate_sum_and_set_quality(df, Colname.quantity, group_by)
-        .withColumnRenamed(Colname.sum_quantity, in_sum)
-        .withColumnRenamed(Colname.in_grid_area, exchange_in_in_grid_area)
-        .withColumnRenamed(Colname.out_grid_area, exchange_in_out_grid_area)
+        .withColumnRenamed(Colname.sum_quantity, to_sum)
+        .withColumnRenamed(Colname.to_grid_area, exchange_in_to_grid_area)
+        .withColumnRenamed(Colname.from_grid_area, exchange_in_from_grid_area)
     )
-    exchange_out = (
+    exchange_from = (
         T.aggregate_sum_and_set_quality(df, Colname.quantity, group_by)
-        .withColumnRenamed(Colname.sum_quantity, out_sum)
-        .withColumnRenamed(Colname.in_grid_area, exchange_out_in_grid_area)
-        .withColumnRenamed(Colname.out_grid_area, exchange_out_out_grid_area)
+        .withColumnRenamed(Colname.sum_quantity, from_sum)
+        .withColumnRenamed(Colname.to_grid_area, exchange_out_to_grid_area)
+        .withColumnRenamed(Colname.from_grid_area, exchange_out_from_grid_area)
     )
 
     exchange = (
-        exchange_in.join(exchange_out, [Colname.time_window], "inner")
+        exchange_to.join(exchange_from, [Colname.time_window], "inner")
         .filter(
-            exchange_in.ExIn_InMeteringGridArea_Domain_mRID
-            == exchange_out.ExOut_OutMeteringGridArea_Domain_mRID
+            exchange_to[exchange_in_to_grid_area]
+            == exchange_from[exchange_out_from_grid_area]
         )
         .filter(
-            exchange_in.ExIn_OutMeteringGridArea_Domain_mRID
-            == exchange_out.ExOut_InMeteringGridArea_Domain_mRID
+            exchange_to[exchange_in_from_grid_area]
+            == exchange_from[exchange_out_to_grid_area]
         )
-        .select(exchange_in["*"], exchange_out[out_sum])
-        .withColumn(Colname.sum_quantity, F.col(in_sum) - F.col(out_sum))
-        .withColumnRenamed(exchange_in_in_grid_area, Colname.in_grid_area)
-        .withColumnRenamed(exchange_in_out_grid_area, Colname.out_grid_area)
+        .select(exchange_to["*"], exchange_from[from_sum])
+        .withColumn(Colname.sum_quantity, F.col(to_sum) - F.col(from_sum))
+        .withColumnRenamed(exchange_in_to_grid_area, Colname.to_grid_area)
+        .withColumnRenamed(exchange_in_from_grid_area, Colname.from_grid_area)
         .select(
-            Colname.in_grid_area,
-            Colname.out_grid_area,
+            Colname.to_grid_area,
+            Colname.from_grid_area,
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            F.col(Colname.in_grid_area).alias(Colname.grid_area),
+            F.col(Colname.to_grid_area).alias(Colname.grid_area),
             F.lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
         )
     )
@@ -84,71 +84,71 @@ def aggregate_net_exchange_per_neighbour_ga(
 
 # Function to aggregate net exchange per grid area
 def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
-    exchange_in = df.filter(
+    exchange_to = df.filter(
         F.col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
-    exchange_in_group_by = [
-        Colname.in_grid_area,
+    exchange_to_group_by = [
+        Colname.to_grid_area,
         Colname.time_window,
     ]
-    exchange_in = (
+    exchange_to = (
         T.aggregate_sum_and_set_quality(
-            exchange_in, Colname.quantity, exchange_in_group_by
+            exchange_to, Colname.quantity, exchange_to_group_by
         )
-        .withColumnRenamed(Colname.sum_quantity, in_sum)
-        .withColumnRenamed(Colname.in_grid_area, Colname.grid_area)
+        .withColumnRenamed(Colname.sum_quantity, to_sum)
+        .withColumnRenamed(Colname.to_grid_area, Colname.grid_area)
     )
 
-    exchange_out = df.filter(
+    exchange_from = df.filter(
         F.col(Colname.metering_point_type) == MeteringPointType.exchange.value
     )
-    exchange_out_group_by = [
-        Colname.out_grid_area,
+    exchange_from_group_by = [
+        Colname.from_grid_area,
         Colname.time_window,
     ]
-    exchange_out = (
+    exchange_from = (
         T.aggregate_sum_and_set_quality(
-            exchange_out, Colname.quantity, exchange_out_group_by
+            exchange_from, Colname.quantity, exchange_from_group_by
         )
-        .withColumnRenamed(Colname.sum_quantity, out_sum)
-        .withColumnRenamed(Colname.out_grid_area, Colname.grid_area)
-        .withColumnRenamed(Colname.time_window, "out_time_window")
+        .withColumnRenamed(Colname.sum_quantity, from_sum)
+        .withColumnRenamed(Colname.from_grid_area, Colname.grid_area)
+        .withColumnRenamed(Colname.time_window, "from_time_window")
     )
-    joined = exchange_in.join(
-        exchange_out,
-        (exchange_in[Colname.grid_area] == exchange_out[Colname.grid_area])
-        & (exchange_in[Colname.time_window] == exchange_out["out_time_window"]),
+    joined = exchange_to.join(
+        exchange_from,
+        (exchange_to[Colname.grid_area] == exchange_from[Colname.grid_area])
+        & (exchange_to[Colname.time_window] == exchange_from["from_time_window"]),
         how="outer",
     ).select(
-        exchange_in["*"],
-        exchange_out[out_sum],
-        exchange_out[Colname.grid_area].alias("out_grid_area"),
-        exchange_out["out_time_window"],
+        exchange_to["*"],
+        exchange_from[from_sum],
+        exchange_from[Colname.grid_area].alias("from_grid_area"),
+        exchange_from["from_time_window"],
     )
     result_df = (
         joined
         # Set null sums to 0 to avoid null values in the sum column
         .withColumn(
-            in_sum,
-            F.when(joined[in_sum].isNotNull(), joined[in_sum]).otherwise(F.lit(0)),
+            to_sum,
+            F.when(joined[to_sum].isNotNull(), joined[to_sum]).otherwise(F.lit(0)),
         )
         .withColumn(
-            out_sum,
-            F.when(joined[out_sum].isNotNull(), joined[out_sum]).otherwise(F.lit(0)),
+            from_sum,
+            F.when(joined[from_sum].isNotNull(), joined[from_sum]).otherwise(F.lit(0)),
         )
-        .withColumn(Colname.sum_quantity, F.col(in_sum) - F.col(out_sum))
-        # when().otherwise() cases to handle the case where a metering point exists with an out-grid-area, which never occurs as an in-grid-area
+        .withColumn(Colname.sum_quantity, F.col(to_sum) - F.col(from_sum))
+        # when().otherwise() cases to handle the case where a metering point exists with an from-grid-area, which never occurs as an to-grid-area
         .withColumn(
             Colname.grid_area,
             F.when(
                 F.col(Colname.grid_area).isNotNull(), F.col(Colname.grid_area)
-            ).otherwise(F.col("out_grid_area")),
+            ).otherwise(F.col("from_grid_area")),
         )
         .withColumn(
             Colname.time_window,
             F.when(
                 F.col(Colname.time_window).isNotNull(), F.col(Colname.time_window)
-            ).otherwise(F.col("out_time_window")),
+            ).otherwise(F.col("from_time_window")),
         )
         .select(
             Colname.grid_area,

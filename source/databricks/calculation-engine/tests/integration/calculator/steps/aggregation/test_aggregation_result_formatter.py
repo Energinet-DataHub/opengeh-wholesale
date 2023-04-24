@@ -32,8 +32,8 @@ from package.constants import Colname
 def aggregation_result_factory(spark):
     def factory(
         grid_area=DataframeDefaults.default_grid_area,
-        in_grid_area=None,
-        out_grid_area=None,
+        to_grid_area=None,
+        from_grid_area=None,
         balance_responsible_id=None,
         energy_supplier_id=None,
         time_window_start=DataframeDefaults.default_time_window_start,
@@ -50,8 +50,8 @@ def aggregation_result_factory(spark):
             [
                 {
                     Colname.grid_area: grid_area,
-                    Colname.in_grid_area: in_grid_area,
-                    Colname.out_grid_area: out_grid_area,
+                    Colname.to_grid_area: to_grid_area,
+                    Colname.from_grid_area: from_grid_area,
                     Colname.balance_responsible_id: balance_responsible_id,
                     Colname.energy_supplier_id: energy_supplier_id,
                     Colname.time_window: {
