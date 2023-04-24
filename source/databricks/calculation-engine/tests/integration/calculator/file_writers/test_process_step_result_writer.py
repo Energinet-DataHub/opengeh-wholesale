@@ -250,8 +250,8 @@ def test__write__writes_aggregation_level(
     assert actual_df.collect()[0]["aggregation_level"] == aggregation_level.value
 
 
-# Batch id needs to be static due to pytest-xdist in CI, which requires parameters in parameterized tests to be static across invocations
-batch_id = "some static batch id"  # Needed in both test param and test implementation
+# The batch id is used in parameterized test executed using xdist, which does not allow parameters to change
+batch_id = "some batch id"  # Needed in both test param and test implementation
 
 
 @pytest.mark.parametrize(

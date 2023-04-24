@@ -34,18 +34,18 @@ DATABASE_NAME = "wholesale_output"
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
-        ResultTableColName.batch_id: "batch_id",
-        ResultTableColName.batch_execution_time_start: datetime(2020, 1, 1, 0, 0),
-        ResultTableColName.batch_process_type: "BalanceFixing",
-        ResultTableColName.time_series_type: "production",
         ResultTableColName.grid_area: "543",
-        ResultTableColName.out_grid_area: "843",
-        ResultTableColName.balance_responsible_id: "balance_responsible_id",
         ResultTableColName.energy_supplier_id: "energy_supplier_id",
-        ResultTableColName.time: datetime(2020, 1, 1, 0, 0),
+        ResultTableColName.balance_responsible_id: "balance_responsible_id",
         ResultTableColName.quantity: Decimal("1.123"),
         ResultTableColName.quantity_quality: "missing",
+        ResultTableColName.time: datetime(2020, 1, 1, 0, 0),
         ResultTableColName.aggregation_level: "total_ga",
+        ResultTableColName.time_series_type: "production",
+        ResultTableColName.batch_id: "batch_id",
+        ResultTableColName.batch_process_type: "BalanceFixing",
+        ResultTableColName.batch_execution_time_start: datetime(2020, 1, 1, 0, 0),
+        ResultTableColName.out_grid_area: "843",
     }
     return spark.createDataFrame(data=[row], schema=results_schema)
 

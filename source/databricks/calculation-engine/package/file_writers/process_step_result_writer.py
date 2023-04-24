@@ -191,26 +191,26 @@ class ProcessStepResultWriter:
 
         # Map column names to the Delta table field names
         df = df.select(
-            col(Colname.batch_id).alias(ResultTableColName.batch_id),
-            col(Colname.batch_execution_time_start).alias(
-                ResultTableColName.batch_execution_time_start
-            ),
-            col(Colname.batch_process_type).alias(
-                ResultTableColName.batch_process_type
-            ),
-            lit(time_series_type.value).alias(ResultTableColName.time_series_type),
             col(Colname.grid_area).alias(ResultTableColName.grid_area),
-            col(Colname.out_grid_area).alias(ResultTableColName.out_grid_area),
-            col(Colname.balance_responsible_id).alias(
-                ResultTableColName.balance_responsible_id
-            ),
             col(Colname.energy_supplier_id).alias(
                 ResultTableColName.energy_supplier_id
             ),
-            col(Colname.time_window_start).alias(ResultTableColName.time),
+            col(Colname.balance_responsible_id).alias(
+                ResultTableColName.balance_responsible_id
+            ),
             col(Colname.sum_quantity).alias(ResultTableColName.quantity),
             col(Colname.quality).alias(ResultTableColName.quantity_quality),
+            col(Colname.time_window_start).alias(ResultTableColName.time),
             lit(aggregation_level.value).alias(ResultTableColName.aggregation_level),
+            lit(time_series_type.value).alias(ResultTableColName.time_series_type),
+            col(Colname.batch_id).alias(ResultTableColName.batch_id),
+            col(Colname.batch_process_type).alias(
+                ResultTableColName.batch_process_type
+            ),
+            col(Colname.batch_execution_time_start).alias(
+                ResultTableColName.batch_execution_time_start
+            ),
+            col(Colname.out_grid_area).alias(ResultTableColName.out_grid_area),
         )
 
         df.write.format("delta").mode("append").option(
