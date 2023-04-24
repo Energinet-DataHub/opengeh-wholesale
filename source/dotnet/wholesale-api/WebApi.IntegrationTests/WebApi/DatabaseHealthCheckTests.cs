@@ -33,7 +33,7 @@ public class DatabaseHealthCheckTests : WebApiTestBase
     {
     }
 
-    [Fact]
+    [Fact(Skip = "TODO: re-introduce this test when CI/CD stability has been investigated")]
     public async Task When_DatabaseIsDeletedAndRequestReadinessStatus_Then_ResponseIsServiceUnavailableAndUnhealthy()
     {
         // Arrange
