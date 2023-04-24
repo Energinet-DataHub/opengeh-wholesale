@@ -25,7 +25,7 @@ setup(
         "ConfigArgParse==1.5.3",
         "pyspark==3.3.0",
         "azure-identity==1.12.0",
-        "azure-storage-file-datalake==12.9.1",
+        "azure-storage-file-datalake==12.11.0",
         "databricks-cli==0.17.6",
         "delta-spark==2.2.0",
         "python-dateutil==2.8.2",
