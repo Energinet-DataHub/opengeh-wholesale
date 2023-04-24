@@ -35,8 +35,8 @@ from package.constants import Colname, ResultKeyName
 def aggregation_result_factory(spark):
     def factory(
         grid_area=DataframeDefaults.default_grid_area,
-        in_grid_area=None,
-        out_grid_area=None,
+        to_grid_area=None,
+        from_grid_area=None,
         balance_responsible_id=None,
         energy_supplier_id=None,
         time_window_start=DataframeDefaults.default_time_window_start,
@@ -53,8 +53,8 @@ def aggregation_result_factory(spark):
             [
                 {
                     Colname.grid_area: grid_area,
-                    Colname.in_grid_area: in_grid_area,
-                    Colname.out_grid_area: out_grid_area,
+                    Colname.to_grid_area: to_grid_area,
+                    Colname.from_grid_area: from_grid_area,
                     Colname.balance_responsible_id: balance_responsible_id,
                     Colname.energy_supplier_id: energy_supplier_id,
                     Colname.time_window: {
@@ -146,8 +146,8 @@ def expected_combined_data_schema():
         .add(Colname.to_date, TimestampType())
         .add(Colname.energy_supplier_id, StringType())
         .add(Colname.balance_responsible_id, StringType())
-        .add(Colname.in_grid_area, StringType())
-        .add(Colname.out_grid_area, StringType())
+        .add(Colname.to_grid_area, StringType())
+        .add(Colname.from_grid_area, StringType())
         .add(Colname.metering_point_type, StringType())
         .add(Colname.settlement_method, StringType())
         .add(Colname.is_positive_grid_loss_responsible, BooleanType())
@@ -183,8 +183,8 @@ def expected_combined_data_factory(spark, expected_combined_data_schema):
                 ],
                 Colname.energy_supplier_id: ["8100000000115", "8100000000115"],
                 Colname.balance_responsible_id: ["8100000000214", "8100000000214"],
-                Colname.in_grid_area: [None, None],
-                Colname.out_grid_area: [None, None],
+                Colname.to_grid_area: [None, None],
+                Colname.from_grid_area: [None, None],
                 Colname.metering_point_type: ["E17", "E17"],
                 Colname.settlement_method: ["D01", "D01"],
                 Colname.is_positive_grid_loss_responsible: [True, False],

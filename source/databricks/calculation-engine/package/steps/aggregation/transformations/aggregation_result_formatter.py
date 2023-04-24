@@ -20,10 +20,10 @@ from package.codelists import TimeSeriesQuality
 
 
 def __add_missing_nullable_columns(result: DataFrame) -> DataFrame:
-    if Colname.in_grid_area not in result.columns:
-        result = result.withColumn(Colname.in_grid_area, lit(None))
-    if Colname.out_grid_area not in result.columns:
-        result = result.withColumn(Colname.out_grid_area, lit(None))
+    if Colname.to_grid_area not in result.columns:
+        result = result.withColumn(Colname.to_grid_area, lit(None))
+    if Colname.from_grid_area not in result.columns:
+        result = result.withColumn(Colname.from_grid_area, lit(None))
     if Colname.balance_responsible_id not in result.columns:
         result = result.withColumn(Colname.balance_responsible_id, lit(None))
     if Colname.energy_supplier_id not in result.columns:
@@ -54,8 +54,8 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
     return SparkSession.builder.getOrCreate().createDataFrame(
         result.select(
             Colname.grid_area,
-            Colname.in_grid_area,
-            Colname.out_grid_area,
+            Colname.to_grid_area,
+            Colname.from_grid_area,
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
             Colname.time_window,

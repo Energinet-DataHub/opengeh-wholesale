@@ -46,8 +46,8 @@ def adjust_production(results: dict) -> DataFrame:
         "inner",
     ).select(
         hourly_production_result_df[Colname.grid_area],
-        hourly_production_result_df[Colname.in_grid_area],
-        hourly_production_result_df[Colname.out_grid_area],
+        hourly_production_result_df[Colname.to_grid_area],
+        hourly_production_result_df[Colname.from_grid_area],
         hourly_production_result_df[Colname.balance_responsible_id],
         hourly_production_result_df[Colname.energy_supplier_id],
         hourly_production_result_df[Colname.time_window],

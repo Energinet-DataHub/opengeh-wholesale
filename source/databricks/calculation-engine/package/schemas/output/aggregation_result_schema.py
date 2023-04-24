@@ -26,8 +26,8 @@ from pyspark.sql.types import (
 aggregation_result_schema = StructType(
     [
         StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.in_grid_area, StringType(), True),
-        StructField(Colname.out_grid_area, StringType(), True),
+        StructField(Colname.to_grid_area, StringType(), True),
+        StructField(Colname.from_grid_area, StringType(), True),
         StructField(Colname.balance_responsible_id, StringType(), True),
         StructField(Colname.energy_supplier_id, StringType(), True),
         StructField(

@@ -210,7 +210,7 @@ class ProcessStepResultWriter:
             col(Colname.batch_execution_time_start).alias(
                 ResultTableColName.batch_execution_time_start
             ),
-            col(Colname.out_grid_area).alias(ResultTableColName.out_grid_area),
+            col(Colname.from_grid_area).alias(ResultTableColName.from_grid_area),
         )
 
         df.write.format("delta").mode("append").option(
