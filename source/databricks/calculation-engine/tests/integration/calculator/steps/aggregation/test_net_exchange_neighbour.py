@@ -37,8 +37,8 @@ estimated_quality = TimeSeriesQuality.estimated.value
 df_template = {
     Colname.grid_area: [],
     Colname.metering_point_type: [],
-    Colname.in_grid_area: [],
-    Colname.out_grid_area: [],
+    Colname.to_grid_area: [],
+    Colname.from_grid_area: [],
     Colname.quantity: [],
     Colname.observation_time: [],
     Colname.quality: [],
@@ -51,8 +51,8 @@ def time_series_schema():
         StructType()
         .add(Colname.grid_area, StringType())
         .add(Colname.metering_point_type, StringType())
-        .add(Colname.in_grid_area, StringType())
-        .add(Colname.out_grid_area, StringType())
+        .add(Colname.to_grid_area, StringType())
+        .add(Colname.from_grid_area, StringType())
         .add(Colname.quantity, DecimalType(38))
         .add(Colname.observation_time, TimestampType())
         .add(Colname.quality, StringType())
@@ -157,8 +157,8 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
     new_row = {
         Colname.grid_area: domain,
         Colname.metering_point_type: e_20,
-        Colname.in_grid_area: in_domain,
-        Colname.out_grid_area: out_domain,
+        Colname.to_grid_area: in_domain,
+        Colname.from_grid_area: out_domain,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
         Colname.quality: estimated_quality,
@@ -168,13 +168,13 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
 
 def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test_data):
     df = aggregate_net_exchange_per_neighbour_ga(single_quarter_test_data).orderBy(
-        Colname.in_grid_area, Colname.out_grid_area, Colname.time_window
+        Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
     )
     values = df.collect()
     assert df.count() == 4
-    assert values[0][Colname.in_grid_area] == "A"
-    assert values[1][Colname.out_grid_area] == "C"
-    assert values[2][Colname.in_grid_area] == "B"
+    assert values[0][Colname.to_grid_area] == "A"
+    assert values[1][Colname.from_grid_area] == "C"
+    assert values[2][Colname.to_grid_area] == "B"
     assert values[0][Colname.sum_quantity] == Decimal("10")
     assert values[1][Colname.sum_quantity] == Decimal("5")
     assert values[2][Colname.sum_quantity] == Decimal("-10")
@@ -183,12 +183,12 @@ def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test
 
 def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_data):
     df = aggregate_net_exchange_per_neighbour_ga(multi_quarter_test_data).orderBy(
-        Colname.in_grid_area, Colname.out_grid_area, Colname.time_window
+        Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
     )
     values = df.collect()
     assert df.count() == 384
-    assert values[0][Colname.in_grid_area] == "A"
-    assert values[0][Colname.out_grid_area] == "B"
+    assert values[0][Colname.to_grid_area] == "A"
+    assert values[0][Colname.from_grid_area] == "B"
     assert (
         values[0][Colname.time_window][Colname.start].strftime(
             date_time_formatting_string
@@ -202,8 +202,8 @@ def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_d
         == "2020-01-01T00:15:00"
     )
     assert values[0][Colname.sum_quantity] == Decimal("10")
-    assert values[19][Colname.in_grid_area] == "A"
-    assert values[19][Colname.out_grid_area] == "B"
+    assert values[19][Colname.to_grid_area] == "A"
+    assert values[19][Colname.from_grid_area] == "B"
     assert (
         values[19][Colname.time_window][Colname.start].strftime(
             date_time_formatting_string
@@ -221,6 +221,6 @@ def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_d
 
 def test_expected_schema(single_quarter_test_data):
     df = aggregate_net_exchange_per_neighbour_ga(single_quarter_test_data).orderBy(
-        Colname.in_grid_area, Colname.out_grid_area, Colname.time_window
+        Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
     )
     assert df.schema == aggregation_result_schema
