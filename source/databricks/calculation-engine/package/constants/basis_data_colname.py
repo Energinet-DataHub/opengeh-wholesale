@@ -15,14 +15,14 @@
 
 class BasisDataColname:
     energy_supplier_id = "ENERGYSUPPLIERID"
+    from_grid_area = "FROMGRIDAREA"
     grid_area = "GRIDAREA"
-    in_grid_area = "TOGRIDAREA"
     metering_point_id = "METERINGPOINTID"
     metering_point_type = "TYPEOFMP"
-    out_grid_area = "FROMGRIDAREA"
     quantity_prefix = "ENERGYQUANTITY"
     "The column name prefix. The full quantity column names are suffixed with a number. E.g. 'ENERGYQUANTITY1'"
     settlement_method = "SETTLEMENTMETHOD"
     start_datetime = "STARTDATETIME"
+    to_grid_area = "TOGRIDAREA"
     valid_from = "VALIDFROM"
     valid_to = "VALIDTO"

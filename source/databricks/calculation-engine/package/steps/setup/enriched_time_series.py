@@ -140,8 +140,8 @@ def get_enriched_time_series_points_df(
         )
         .select(
             Colname.grid_area,
-            Colname.in_grid_area,
-            Colname.out_grid_area,
+            Colname.to_grid_area,
+            Colname.from_grid_area,
             master_basis_data_renamed_df["master_MeteringPointId"].alias(
                 Colname.metering_point_id
             ),

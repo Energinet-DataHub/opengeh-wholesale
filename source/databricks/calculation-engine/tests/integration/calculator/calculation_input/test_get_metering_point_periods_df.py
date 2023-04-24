@@ -63,8 +63,8 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
         SettlementMethod=settlement_method,
         GridAreaCode=grid_area_code,
         Resolution=resolution,
-        FromGridArea="some-in-gride-area",
-        ToGridArea="some-out-gride-area",
+        FromGridArea="some-to-grid-area",
+        ToGridArea="some-from-grid-area",
         ParentMeteringPointId="some-parent-metering-point-id",
         FromDate=june_1th,
         ToDate=june_3th,
@@ -97,11 +97,11 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                         Colname.resolution: period[Colname.resolution]
                         if (Colname.resolution in period)
                         else Resolution,
-                        Colname.in_grid_area: period[Colname.in_grid_area]
-                        if (Colname.in_grid_area in period)
+                        Colname.to_grid_area: period[Colname.to_grid_area]
+                        if (Colname.to_grid_area in period)
                         else FromGridArea,
-                        Colname.out_grid_area: period[Colname.out_grid_area]
-                        if (Colname.out_grid_area in period)
+                        Colname.from_grid_area: period[Colname.from_grid_area]
+                        if (Colname.from_grid_area in period)
                         else ToGridArea,
                         Colname.parent_metering_point_id: period[
                             Colname.parent_metering_point_id
@@ -125,8 +125,8 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                     Colname.settlement_method: SettlementMethod,
                     Colname.grid_area: GridAreaCode,
                     Colname.resolution: Resolution,
-                    Colname.in_grid_area: FromGridArea,
-                    Colname.out_grid_area: ToGridArea,
+                    Colname.to_grid_area: FromGridArea,
+                    Colname.from_grid_area: ToGridArea,
                     Colname.parent_metering_point_id: ParentMeteringPointId,
                     Colname.from_date: FromDate,
                     Colname.to_date: ToDate,
@@ -142,8 +142,8 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
                 StructField(Colname.settlement_method, StringType(), False),
                 StructField(Colname.grid_area, StringType(), False),
                 StructField(Colname.resolution, StringType(), False),
-                StructField(Colname.in_grid_area, StringType(), False),
-                StructField(Colname.out_grid_area, StringType(), False),
+                StructField(Colname.to_grid_area, StringType(), False),
+                StructField(Colname.from_grid_area, StringType(), False),
                 StructField(Colname.parent_metering_point_id, StringType(), False),
                 StructField(Colname.from_date, TimestampType(), False),
                 StructField(Colname.to_date, TimestampType(), True),
@@ -209,8 +209,8 @@ def test__metering_points_have_expected_columns(
             & (col(Colname.to_date) == june_2th)
             & (col(Colname.metering_point_type) == metering_point_type)
             & (col(Colname.settlement_method) == settlement_method)
-            & (col(Colname.in_grid_area) == "some-in-gride-area")
-            & (col(Colname.out_grid_area) == "some-out-gride-area")
+            & (col(Colname.to_grid_area) == "some-to-grid-area")
+            & (col(Colname.from_grid_area) == "some-from-grid-area")
             & (col(Colname.resolution) == MeteringPointResolution.hour.value)
             & (col(Colname.energy_supplier_id) == energy_supplier_id)
         ).count()
