@@ -250,7 +250,8 @@ def test__write__writes_aggregation_level(
     assert actual_df.collect()[0]["aggregation_level"] == aggregation_level.value
 
 
-batch_id = str(uuid.uuid4())  # Needed in both test param and test implementation
+# The batch id is used in parameterized test executed using xdist, which does not allow parameters to change
+batch_id = "some batch id"  # Needed in both test param and test implementation
 
 
 @pytest.mark.parametrize(

@@ -30,23 +30,23 @@ RESULT_TABLE_NAME = "result"
 
 RESULTS_SCHEMA = StructType(
     [
-        StructField("batch_id", StringType(), False),
-        StructField("batch_execution_time_start", TimestampType(), False),
-        StructField("batch_process_type", StringType(), False),
-        StructField("time_series_type", StringType(), False),
         # The grid area in question. In case of exchange it's the in-grid area.
         StructField("grid_area", StringType(), False),
-        StructField("out_grid_area", StringType(), True),
-        StructField("balance_responsible_id", StringType(), True),
         StructField("energy_supplier_id", StringType(), True),
-        # The time when the energy was consumed/produced/exchanged
-        StructField("time", TimestampType(), False),
+        StructField("balance_responsible_id", StringType(), True),
         # Energy quantity in kWh for the given observation time.
         # Null when quality is missing.
         # Example: 1234.534
         StructField("quantity", DecimalType(18, 3), True),
         StructField("quantity_quality", StringType(), False),
+        # The time when the energy was consumed/produced/exchanged
+        StructField("time", TimestampType(), False),
         StructField("aggregation_level", StringType(), False),
+        StructField("time_series_type", StringType(), False),
+        StructField("batch_id", StringType(), False),
+        StructField("batch_process_type", StringType(), False),
+        StructField("batch_execution_time_start", TimestampType(), False),
+        StructField("out_grid_area", StringType(), True),
     ]
 )
 

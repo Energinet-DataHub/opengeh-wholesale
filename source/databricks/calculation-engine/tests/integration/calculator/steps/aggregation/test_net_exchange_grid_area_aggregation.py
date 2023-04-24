@@ -126,13 +126,39 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
             Decimal("1.5") * quarter_number,
             default_obs_time + timedelta(minutes=quarter_number * 15),
         )
-        # "D" _only_ appears as a out-grid-area (case used to prove bug in implementation)
+        # "D" only appears as a out-grid-area (case used to prove bug in implementation)
         pandas_df = add_row_of_data(
             pandas_df,
             e_20,
             "A",
             "D",
-            Decimal("1.5") * quarter_number,
+            Decimal("1.6") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
+        )
+        # "E" only appears as an in-grid-area (case used to prove bug in implementation)
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "E",
+            "F",
+            Decimal("44.4") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
+        )
+        # Test sign of net exchange. Net exchange should be IN - OUT
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "X",
+            "Y",
+            Decimal("42") * quarter_number,
+            default_obs_time + timedelta(minutes=quarter_number * 15),
+        )
+        pandas_df = add_row_of_data(
+            pandas_df,
+            e_20,
+            "Y",
+            "X",
+            Decimal("12") * quarter_number,
             default_obs_time + timedelta(minutes=quarter_number * 15),
         )
 
@@ -171,7 +197,7 @@ def aggregated_data_frame(enriched_time_series_data_frame):
 
 def test_test_data_has_correct_row_count(enriched_time_series_data_frame):
     """Check sample data row count"""
-    assert enriched_time_series_data_frame.count() == (10 * numberOfQuarters)
+    assert enriched_time_series_data_frame.count() == (13 * numberOfQuarters)
 
 
 def test_exchange_aggregator_returns_correct_schema(aggregated_data_frame):
@@ -179,14 +205,54 @@ def test_exchange_aggregator_returns_correct_schema(aggregated_data_frame):
     assert aggregated_data_frame.schema == aggregation_result_schema
 
 
-def test_exchange_aggregator_returns_correct_aggregations(aggregated_data_frame):
+def test_exchange_has_correct_sign(aggregated_data_frame):
+    "Check that the sign of the net exchange is positive for the to-grid-area and negative for the from-grid-area"
+    check_aggregation_row(
+        aggregated_data_frame,
+        "X",
+        Decimal("30"),
+        default_obs_time + timedelta(minutes=15),
+    )
+    check_aggregation_row(
+        aggregated_data_frame,
+        "Y",
+        Decimal("-30"),
+        default_obs_time + timedelta(minutes=15),
+    )
+
+
+def test_exchange_aggregator__when_only_outgoing_quantity__returns_correct_aggregations(
+    aggregated_data_frame,
+):
+    check_aggregation_row(
+        aggregated_data_frame,
+        "D",
+        Decimal("-1.6"),
+        default_obs_time + timedelta(minutes=15),
+    )
+
+
+def test_exchange_aggregator__when_only_incoming_quantity__returns_correct_aggregations(
+    aggregated_data_frame,
+):
+    check_aggregation_row(
+        aggregated_data_frame,
+        "E",
+        Decimal("44.4"),
+        default_obs_time + timedelta(minutes=15),
+    )
+
+
+def test_exchange_aggregator_returns_correct_aggregations(
+    aggregated_data_frame,
+):
     """Check accuracy of aggregations"""
 
     for quarter_number in range(numberOfQuarters):
         check_aggregation_row(
             aggregated_data_frame,
             "A",
-            Decimal("5.3") * quarter_number,
+            Decimal("5.4") * quarter_number,
             default_obs_time + timedelta(minutes=quarter_number * 15),
         )
         check_aggregation_row(
