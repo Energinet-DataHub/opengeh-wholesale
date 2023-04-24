@@ -65,7 +65,7 @@ def _create_result_row(
 ) -> dict:
     row = {
         Colname.grid_area: grid_area,
-        Colname.out_grid_area: to_grid_area,
+        Colname.from_grid_area: to_grid_area,
         Colname.sum_quantity: Decimal(quantity),
         Colname.quality: quality.value,
         Colname.resolution: MeteringPointResolution.quarter.value,
@@ -262,7 +262,7 @@ batch_id = "some batch id"  # Needed in both test param and test implementation
         (ResultTableColName.batch_process_type, DEFAULT_PROCESS_TYPE),
         (ResultTableColName.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
         (ResultTableColName.grid_area, DEFAULT_GRID_AREA),
-        (ResultTableColName.out_grid_area, DEFAULT_TO_GRID_AREA),
+        (ResultTableColName.from_grid_area, DEFAULT_TO_GRID_AREA),
         (ResultTableColName.balance_responsible_id, DEFAULT_BALANCE_RESPONSIBLE_ID),
         (ResultTableColName.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (ResultTableColName.time, datetime(2020, 1, 1, 0, 0)),

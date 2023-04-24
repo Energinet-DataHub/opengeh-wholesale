@@ -22,9 +22,10 @@ from pyspark.sql.types import (
 
 from package.constants import ResultTableColName
 
+# Note: The order of the columns must match the order of the columns in the Delta table
 results_schema = StructType(
     [
-        # The grid area in question. In case of exchange it's the in-grid area.
+        # The grid area in question. In case of exchange it's the to-grid area.
         StructField(ResultTableColName.grid_area, StringType(), False),
         StructField(ResultTableColName.energy_supplier_id, StringType(), True),
         StructField(ResultTableColName.balance_responsible_id, StringType(), True),
@@ -42,6 +43,6 @@ results_schema = StructType(
             ResultTableColName.batch_execution_time_start, TimestampType(), False
         ),
         # The time when the energy was consumed/produced/exchanged
-        StructField(ResultTableColName.out_grid_area, StringType(), True),
+        StructField(ResultTableColName.from_grid_area, StringType(), True),
     ]
 )

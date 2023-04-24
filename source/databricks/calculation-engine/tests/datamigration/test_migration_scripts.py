@@ -45,7 +45,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         ResultTableColName.batch_id: "batch_id",
         ResultTableColName.batch_process_type: "BalanceFixing",
         ResultTableColName.batch_execution_time_start: datetime(2020, 1, 1, 0, 0),
-        ResultTableColName.out_grid_area: "843",
+        ResultTableColName.from_grid_area: "843",
     }
     return spark.createDataFrame(data=[row], schema=results_schema)
 
@@ -62,8 +62,8 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (ResultTableColName.grid_area, None),
         (ResultTableColName.grid_area, "12"),
         (ResultTableColName.grid_area, "1234"),
-        (ResultTableColName.out_grid_area, "12"),
-        (ResultTableColName.out_grid_area, "1234"),
+        (ResultTableColName.from_grid_area, "12"),
+        (ResultTableColName.from_grid_area, "1234"),
         (ResultTableColName.time, None),
         (ResultTableColName.quantity_quality, None),
         (ResultTableColName.quantity_quality, "foo"),
@@ -106,9 +106,9 @@ max_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
         (ResultTableColName.batch_id, "some string"),
         (ResultTableColName.grid_area, "123"),
         (ResultTableColName.grid_area, "007"),
-        (ResultTableColName.out_grid_area, None),
-        (ResultTableColName.out_grid_area, "123"),
-        (ResultTableColName.out_grid_area, "007"),
+        (ResultTableColName.from_grid_area, None),
+        (ResultTableColName.from_grid_area, "123"),
+        (ResultTableColName.from_grid_area, "007"),
         (ResultTableColName.balance_responsible_id, None),
         (ResultTableColName.balance_responsible_id, "some string"),
         (ResultTableColName.energy_supplier_id, None),
