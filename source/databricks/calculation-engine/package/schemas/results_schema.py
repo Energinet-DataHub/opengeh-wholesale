@@ -22,6 +22,7 @@ from pyspark.sql.types import (
 
 from package.constants import ResultTableColName
 
+# Note: The order of the columns must match the order of the columns in the Delta table
 results_schema = StructType(
     [
         # The grid area in question. In case of exchange it's the to-grid area.

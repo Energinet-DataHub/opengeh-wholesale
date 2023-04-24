@@ -190,6 +190,7 @@ class ProcessStepResultWriter:
         )
 
         # Map column names to the Delta table field names
+        # Note: The order of the columns must match the order of the columns in the Delta table
         df = df.select(
             col(Colname.grid_area).alias(ResultTableColName.grid_area),
             col(Colname.energy_supplier_id).alias(
