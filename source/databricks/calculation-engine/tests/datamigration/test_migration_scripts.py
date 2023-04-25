@@ -201,10 +201,32 @@ def test__migrated_table_does_not_round_valid_decimal(
     assert actual_df.collect()[0].quantity == quantity
 
 
-def test__result_table__is_not_managed(
-    spark: SparkSession, data_lake_path: str
-) -> None:
+def test__result_table__is_not_managed(data_lake_path: str) -> None:
     # Arrange
+    spark = (
+        SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
+        .config("spark.ui.showConsoleProgress", "false")
+        .config("spark.ui.enabled", "false")
+        .config("spark.ui.dagGraph.retainedRootRDDs", "1")
+        .config("spark.ui.retainedJobs", "1")
+        .config("spark.ui.retainedStages", "1")
+        .config("spark.ui.retainedTasks", "1")
+        .config("spark.sql.ui.retainedExecutions", "1")
+        .config("spark.worker.ui.retainedExecutors", "1")
+        .config("spark.worker.ui.retainedDrivers", "1")
+        .config("spark.default.parallelism", 1)
+        .config("spark.rdd.compress", False)
+        .config("spark.shuffle.compress", False)
+        .config("spark.shuffle.spill.compress", False)
+        .config("spark.sql.shuffle.partitions", 1)
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+        .config(
+            "spark.sql.catalog.spark_catalog",
+            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+        )
+        .getOrCreate()
+    )
+
     path = f"{data_lake_path}/__test_result_table_is_not_managed__"
 
     # Clean up to prevent problems from previous test runs
