@@ -16,22 +16,24 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
+// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
+// https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
 public class CalculationResultClient : ICalculationResultClient
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
-    private readonly IOptions<CalculationResultClientOptions> _options;
+    private readonly IOptions<DatabricksOptions> _options;
     private readonly IJsonSerializer _jsonSerializer;
     private readonly IProcessResultPointFactory _processResultPointFactory;
 
-    public CalculationResultClient(HttpClient httpClient, IOptions<CalculationResultClientOptions> options, IJsonSerializer jsonSerializer, IProcessResultPointFactory processResultPointFactory)
+    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IJsonSerializer jsonSerializer, IProcessResultPointFactory processResultPointFactory)
     {
         _httpClient = httpClient;
         _options = options;
@@ -54,7 +56,7 @@ public class CalculationResultClient : ICalculationResultClient
             on_wait_timeout = "CANCEL",
             wait_timeout = "30s", // Make the operation synchronous
             statement = sql,
-            warehouse_id = _options.Value.DataBricksSqlWarehouseId,
+            warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
         var requestString = _jsonSerializer.Serialize(requestObject);
 
@@ -72,10 +74,10 @@ public class CalculationResultClient : ICalculationResultClient
         return MapToProcessStepResultDto(timeSeriesType, list);
     }
 
-    private static void ConfigureHttpClient(HttpClient httpClient, IOptions<CalculationResultClientOptions> options)
+    private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
     {
         httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", options.Value.DatabricksAccessToken);
+            new AuthenticationHeaderValue("Bearer", options.Value.DATABRICKS_WORKSPACE_TOKEN);
         httpClient.DefaultRequestHeaders.Accept.Clear();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");

@@ -16,7 +16,9 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using MediatR;
@@ -40,12 +42,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection serviceCollection)
     {
-        // See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-7.0
-        // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
-        // https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
-        services.AddHttpClient<ICalculationResultClient>();
-        services.AddOptions<CalculationResultClientOptions>()
-            .Bind(Configuration.GetSection("CalculationResultClient"));
+        serviceCollection.AddHttpClient<ICalculationResultClient>();
 
         serviceCollection.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
             options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
