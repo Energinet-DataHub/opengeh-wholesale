@@ -13,44 +13,16 @@
 # limitations under the License.
 
 import importlib
-import sys
 from azure.identity import ClientSecretCredential
+from typing import Any
 
-import configargparse
 from package import infrastructure, initialize_spark, log
-from package.args_helper import valid_log_level
 import package.environment_variables as env_vars
 from .committed_migrations import upload_committed_migration
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
-from package.storage_account_access.data_lake_file_manager import (
-    DataLakeFileManager
-)
+from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
-from typing import Any
-from configargparse import argparse
-
-
-def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
-    p = configargparse.ArgParser(
-        description="Apply uncommitted migations",
-        formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
-    )
-
-    p.add("--data-storage-account-name", type=str, required=False)
-    p.add("--data-storage-account-key", type=str, required=False)
-    p.add(
-        "--log-level",
-        type=valid_log_level,
-        help="debug|information",
-    )
-
-    args, unknown_args = p.parse_known_args(command_line_args)
-    if len(unknown_args):
-        unknown_args_text = ", ".join(unknown_args)
-        raise Exception(f"Unknown args: {unknown_args_text}")
-
-    return args
 
 
 def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
@@ -62,8 +34,12 @@ def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -
     )
 
 
-def _migrate_data_lake(storage_account_name: str, storage_account_credential: ClientSecretCredential) -> None:
-    file_manager = DataLakeFileManager(storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME)
+def _migrate_data_lake(
+    storage_account_name: str, storage_account_credential: ClientSecretCredential
+) -> None:
+    file_manager = DataLakeFileManager(
+        storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME
+    )
 
     spark = initialize_spark()
 
@@ -89,7 +65,6 @@ def _migrate_data_lake(storage_account_name: str, storage_account_credential: Cl
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake() -> None:
-    _get_valid_args_or_throw(sys.argv[1:])
     storage_account_name = env_vars.get_storage_account_name()
     credential = env_vars.get_storage_account_credential()
     _migrate_data_lake(storage_account_name, credential)
