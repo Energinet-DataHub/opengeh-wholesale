@@ -43,7 +43,6 @@ data "azurerm_key_vault_secret" "st_shared_data_lake_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-
 # ID of the shared servicebus namespace
 data "azurerm_key_vault_secret" "sb_integration_events_id" {
   name         = "sb-domain-relay-namespace-id"

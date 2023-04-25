@@ -14,6 +14,12 @@ module "st_data_lake" {
   private_endpoint_subnet_id      = module.snet_private_endpoints.id
   private_dns_resource_group_name = module.dbw_shared.private_dns_zone_resource_group_name
   ip_rules                        = var.hosted_deployagent_public_ip_range
+  role_assignments = [
+    {
+      principal_id         = data.azurerm_client_config.current.object_id
+      role_definition_name = "Storage Blob Data Contributor"
+    }
+  ]
 }
 
 module "kvs_st_data_lake_name" {
@@ -24,17 +30,10 @@ module "kvs_st_data_lake_name" {
   key_vault_id = module.kv_shared.id
 }
 
-
 module "kvs_st_data_lake_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "st-data-lake-id"
   value        = module.st_data_lake.id
   key_vault_id = module.kv_shared.id
-}
-
-resource "azurerm_role_assignment" "st_datalake_spn" {
-  scope                = module.st_data_lake.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = data.azurerm_client_config.current.object_id
 }
