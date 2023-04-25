@@ -21,7 +21,7 @@ export PYSPARK_PYTHON=/opt/conda/bin/python
 export PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python
 
 # Writing output to log with 'tee' cause exit code to be '0' even if tests fails
-coverage run --branch -m pytest -n 2 . | tee pytest-results.log
+coverage run --branch -m pytest --junitxml=pytest-results.xml . | tee pytest-results.log
 
 ################################################
 # Scenario: Test errors (exceptions) occured

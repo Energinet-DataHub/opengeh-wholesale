@@ -20,47 +20,29 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
+from package.constants import ResultTableColName
 
-class ResultSchemaField:
-    "IMPORTANT: Any semantic change to these field names most likely requires a corresponding data migration of the results Delta table."
-    batch_id = "batch_id"
-    batch_execution_time_start = "batch_execution_time_start"
-    batch_process_type = "batch_process_type"
-    time_series_type = "time_series_type"
-    grid_area = "grid_area"
-    out_grid_area = "out_grid_area"
-    balance_responsible_id = "balance_responsible_id"
-    energy_supplier_id = "energy_supplier_id"
-    time = "time"
-    quantity = "quantity"
-    quantity_quality = "quantity_quality"
-    aggregation_level = "aggregation_level"
-
-
+# Note: The order of the columns must match the order of the columns in the Delta table
 results_schema = StructType(
     [
-        StructField(ResultSchemaField.batch_id, StringType(), False),
-        StructField(
-            ResultSchemaField.batch_execution_time_start, TimestampType(), False
-        ),
-        StructField(ResultSchemaField.batch_process_type, StringType(), False),
-        StructField(ResultSchemaField.time_series_type, StringType(), False),
-        # The grid area in question. In case of exchange it's the in-grid area.
-        StructField(ResultSchemaField.grid_area, StringType(), False),
-        StructField(ResultSchemaField.out_grid_area, StringType(), True),
-        StructField(ResultSchemaField.balance_responsible_id, StringType(), True),
-        StructField(ResultSchemaField.energy_supplier_id, StringType(), True),
-        # The time when the energy was consumed/produced/exchanged
-        StructField(ResultSchemaField.time, TimestampType(), False),
+        # The grid area in question. In case of exchange it's the to-grid area.
+        StructField(ResultTableColName.grid_area, StringType(), False),
+        StructField(ResultTableColName.energy_supplier_id, StringType(), True),
+        StructField(ResultTableColName.balance_responsible_id, StringType(), True),
         # Energy quantity in kWh for the given observation time.
         # Null when quality is missing.
         # Example: 1234.534
-        StructField(ResultSchemaField.quantity, DecimalType(18, 3), True),
-        # "missing" | "estimated" | "measured" | "calculated"
-        # Example: measured
-        StructField(ResultSchemaField.quantity_quality, StringType(), False),
-        StructField(ResultSchemaField.aggregation_level, StringType(), False),
+        StructField(ResultTableColName.quantity, DecimalType(18, 3), True),
+        StructField(ResultTableColName.quantity_quality, StringType(), False),
+        StructField(ResultTableColName.time, TimestampType(), False),
+        StructField(ResultTableColName.aggregation_level, StringType(), False),
+        StructField(ResultTableColName.time_series_type, StringType(), False),
+        StructField(ResultTableColName.batch_id, StringType(), False),
+        StructField(ResultTableColName.batch_process_type, StringType(), False),
+        StructField(
+            ResultTableColName.batch_execution_time_start, TimestampType(), False
+        ),
+        # The time when the energy was consumed/produced/exchanged
+        StructField(ResultTableColName.from_grid_area, StringType(), True),
     ]
 )
-"""Schema for calculation results created by the calculator job.
-IMPORTANT: Any semantic change to this schema most likely requires a corresponding data migration of the results Delta table."""

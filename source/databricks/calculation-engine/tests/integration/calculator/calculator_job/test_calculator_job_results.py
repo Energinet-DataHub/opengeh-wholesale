@@ -14,40 +14,94 @@
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
+import pytest
 
 from . import configuration as C
 from package.codelists import (
+    AggregationLevel,
     TimeSeriesType,
 )
 from package.constants import Colname
 
 
-def test__net_exchange_per_neighboring_ga__is_created(
-    executed_calculation_job: None,
+@pytest.mark.parametrize(
+    "time_series_type, aggregation_level",
+    [
+        (
+            TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.NET_EXCHANGE_PER_GA.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            AggregationLevel.es_per_ga.value,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            AggregationLevel.brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            AggregationLevel.es_per_brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            AggregationLevel.es_per_ga.value,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            AggregationLevel.brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            AggregationLevel.es_per_ga.value,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            AggregationLevel.brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.GRID_LOSS.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.POSITIVE_GRID_LOSS.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.NEGATIVE_GRID_LOSS.value,
+            AggregationLevel.total_ga.value,
+        ),
+    ],
+)
+def test__result__is_created(
     results_df: DataFrame,
+    time_series_type: str,
+    aggregation_level: str,
 ) -> None:
     # Arrange
-    result_df = results_df.where(F.col(Colname.batch_id) == C.executed_batch_id).where(
-        F.col(Colname.time_series_type)
-        == TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value
+    result_df = (
+        results_df.where(F.col(Colname.batch_id) == C.executed_batch_id)
+        .where(F.col(Colname.time_series_type) == time_series_type)
+        .where(F.col(Colname.aggregation_level) == aggregation_level)
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
-
-    # Assert: The result is created if there are rows
-    assert result_df.count() > 0
-
-
-def test__net_exchange_per_ga__is_created(
-    executed_calculation_job: None,
-    results_df: DataFrame,
-) -> None:
-    # Arrange
-    result_df = results_df.where(F.col(Colname.batch_id) == C.executed_batch_id).where(
-        F.col(Colname.time_series_type) == TimeSeriesType.NET_EXCHANGE_PER_GA.value
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_calculation_job`
 
     # Assert: The result is created if there are rows
     assert result_df.count() > 0

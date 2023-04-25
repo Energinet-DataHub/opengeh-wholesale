@@ -138,8 +138,8 @@ def test_metering_point(metering_point_factory):
         result[Colname.resolution]
         == DataframeDefaults.default_metering_point_resolution
     )
-    assert result[Colname.in_grid_area] == DataframeDefaults.default_in_grid_area
-    assert result[Colname.out_grid_area] == DataframeDefaults.default_out_grid_area
+    assert result[Colname.to_grid_area] == DataframeDefaults.default_to_grid_area
+    assert result[Colname.from_grid_area] == DataframeDefaults.default_from_grid_area
     assert result[Colname.metering_method] == DataframeDefaults.default_metering_method
     assert (
         result[Colname.parent_metering_point_id]

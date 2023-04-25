@@ -32,8 +32,8 @@ from package.constants import Colname
 def aggregation_result_factory(spark):
     def factory(
         grid_area=DataframeDefaults.default_grid_area,
-        in_grid_area=None,
-        out_grid_area=None,
+        to_grid_area=None,
+        from_grid_area=None,
         balance_responsible_id=None,
         energy_supplier_id=None,
         time_window_start=DataframeDefaults.default_time_window_start,
@@ -42,16 +42,16 @@ def aggregation_result_factory(spark):
         quality=DataframeDefaults.default_quality,
         metering_point_type=DataframeDefaults.default_metering_point_type,
         settlement_method=None,
-        added_grid_loss=None,
-        added_system_correction=None,
+        positive_grid_loss=None,
+        negative_grid_loss=None,
         position=None,
     ):
         pandas_df = pd.DataFrame().append(
             [
                 {
                     Colname.grid_area: grid_area,
-                    Colname.in_grid_area: in_grid_area,
-                    Colname.out_grid_area: out_grid_area,
+                    Colname.to_grid_area: to_grid_area,
+                    Colname.from_grid_area: from_grid_area,
                     Colname.balance_responsible_id: balance_responsible_id,
                     Colname.energy_supplier_id: energy_supplier_id,
                     Colname.time_window: {
@@ -62,8 +62,8 @@ def aggregation_result_factory(spark):
                     Colname.quality: quality,
                     Colname.metering_point_type: metering_point_type,
                     Colname.settlement_method: settlement_method,
-                    Colname.added_grid_loss: added_grid_loss,
-                    Colname.added_system_correction: added_system_correction,
+                    Colname.positive_grid_loss: positive_grid_loss,
+                    Colname.negative_grid_loss: negative_grid_loss,
                     Colname.position: position,
                 }
             ],

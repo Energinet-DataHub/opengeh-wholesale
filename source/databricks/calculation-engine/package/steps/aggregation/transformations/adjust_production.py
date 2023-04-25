@@ -28,7 +28,7 @@ adjusted_sum_quantity = "adjusted_sum_quantity"
 # step 11
 def adjust_production(results: dict) -> DataFrame:
     hourly_production_result_df = results[ResultKeyName.production]
-    added_system_correction_result_df = results[ResultKeyName.added_system_correction]
+    negative_grid_loss_result_df = results[ResultKeyName.negative_grid_loss]
     sys_cor_df = results[ResultKeyName.grid_loss_sys_cor_master_data]
     # select columns from dataframe that contains information about metering points registered as SystemCorrection to use in join.
     sc_df = sys_cor_df.selectExpr(
@@ -36,18 +36,18 @@ def adjust_production(results: dict) -> DataFrame:
         Colname.to_date,
         f"{Colname.energy_supplier_id} as {sys_cor_energy_supplier}",
         f"{Colname.grid_area} as {sys_cor_grid_area}",
-        Colname.is_system_correction,
+        Colname.is_negative_grid_loss_responsible,
     )
 
     # join result dataframes from previous steps on time window and grid area.
     df = hourly_production_result_df.join(
-        added_system_correction_result_df,
+        negative_grid_loss_result_df,
         [Colname.time_window, Colname.grid_area],
         "inner",
     ).select(
         hourly_production_result_df[Colname.grid_area],
-        hourly_production_result_df[Colname.in_grid_area],
-        hourly_production_result_df[Colname.out_grid_area],
+        hourly_production_result_df[Colname.to_grid_area],
+        hourly_production_result_df[Colname.from_grid_area],
         hourly_production_result_df[Colname.balance_responsible_id],
         hourly_production_result_df[Colname.energy_supplier_id],
         hourly_production_result_df[Colname.time_window],
@@ -55,8 +55,8 @@ def adjust_production(results: dict) -> DataFrame:
         hourly_production_result_df[Colname.quality],
         hourly_production_result_df[Colname.metering_point_type],
         hourly_production_result_df[Colname.settlement_method],
-        added_system_correction_result_df[Colname.added_grid_loss],
-        added_system_correction_result_df[Colname.added_system_correction],
+        negative_grid_loss_result_df[Colname.positive_grid_loss],
+        negative_grid_loss_result_df[Colname.negative_grid_loss],
     )
 
     # join information from system correction dataframe on to joined result dataframe with information about which energy supplier,
@@ -73,14 +73,14 @@ def adjust_production(results: dict) -> DataFrame:
             | (col(Colname.time_window_end) <= col(Colname.to_date))
         )
         & (col(Colname.grid_area) == col(sys_cor_grid_area))
-        & (col(Colname.is_system_correction)),
+        & (col(Colname.is_negative_grid_loss_responsible)),
         "left",
     )
 
     # update function that selects the sum of two columns if condition is met, or selects data from a single column if condition is not met.
     update_func = when(
         col(Colname.energy_supplier_id) == col(sys_cor_energy_supplier),
-        col(Colname.sum_quantity) + col(Colname.added_system_correction),
+        col(Colname.sum_quantity) + col(Colname.negative_grid_loss),
     ).otherwise(col(Colname.sum_quantity))
 
     result_df = (

@@ -20,20 +20,20 @@ from package.codelists import TimeSeriesQuality
 
 
 def __add_missing_nullable_columns(result: DataFrame) -> DataFrame:
-    if Colname.in_grid_area not in result.columns:
-        result = result.withColumn(Colname.in_grid_area, lit(None))
-    if Colname.out_grid_area not in result.columns:
-        result = result.withColumn(Colname.out_grid_area, lit(None))
+    if Colname.to_grid_area not in result.columns:
+        result = result.withColumn(Colname.to_grid_area, lit(None))
+    if Colname.from_grid_area not in result.columns:
+        result = result.withColumn(Colname.from_grid_area, lit(None))
     if Colname.balance_responsible_id not in result.columns:
         result = result.withColumn(Colname.balance_responsible_id, lit(None))
     if Colname.energy_supplier_id not in result.columns:
         result = result.withColumn(Colname.energy_supplier_id, lit(None))
     if Colname.settlement_method not in result.columns:
         result = result.withColumn(Colname.settlement_method, lit(None))
-    if Colname.added_grid_loss not in result.columns:
-        result = result.withColumn(Colname.added_grid_loss, lit(None))
-    if Colname.added_system_correction not in result.columns:
-        result = result.withColumn(Colname.added_system_correction, lit(None))
+    if Colname.positive_grid_loss not in result.columns:
+        result = result.withColumn(Colname.positive_grid_loss, lit(None))
+    if Colname.negative_grid_loss not in result.columns:
+        result = result.withColumn(Colname.negative_grid_loss, lit(None))
     if Colname.position not in result.columns:
         result = result.withColumn(Colname.position, lit(None))
     return result
@@ -54,8 +54,8 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
     return SparkSession.builder.getOrCreate().createDataFrame(
         result.select(
             Colname.grid_area,
-            Colname.in_grid_area,
-            Colname.out_grid_area,
+            Colname.to_grid_area,
+            Colname.from_grid_area,
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
             Colname.time_window,
@@ -63,8 +63,8 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
             Colname.quality,
             Colname.metering_point_type,
             Colname.settlement_method,
-            Colname.added_grid_loss,
-            Colname.added_system_correction,
+            Colname.positive_grid_loss,
+            Colname.negative_grid_loss,
             Colname.position,
         ).rdd,
         aggregation_result_schema,

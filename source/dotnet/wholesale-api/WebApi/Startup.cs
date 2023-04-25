@@ -14,14 +14,12 @@
 
 using System.Reflection;
 using System.Text.Json.Serialization;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Core;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
+using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
@@ -40,21 +38,21 @@ public class Startup
 
     public IWebHostEnvironment Environment { get; }
 
-    public void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection serviceCollection)
     {
         // See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-7.0
         // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
         // https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
         services.AddHttpClient<ICalculationResultClient>();
         services.AddOptions<CalculationResultClientOptions>()
-            .Bind(Configuration.GetSection("CalculationResultClientOptions"));
+            .Bind(Configuration.GetSection("CalculationResultClient"));
 
-        services.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
+        serviceCollection.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
             options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
-        services.AddEndpointsApiExplorer();
+        serviceCollection.AddEndpointsApiExplorer();
         // Register the Swagger generator, defining 1 or more Swagger documents.
-        services.AddSwaggerGen(config =>
+        serviceCollection.AddSwaggerGen(config =>
         {
             config.SupportNonNullableReferenceTypes();
             config.OperationFilter<BinaryContentFilter>();
@@ -81,32 +79,40 @@ public class Startup
             config.AddSecurityRequirement(securityRequirement);
         });
 
-        services.AddApiVersioning(config =>
+        serviceCollection.AddApiVersioning(config =>
         {
             config.DefaultApiVersion = new ApiVersion(3, 0);
             config.AssumeDefaultVersionWhenUnspecified = true;
             config.ReportApiVersions = true;
         });
 
-        services.AddVersionedApiExplorer(setup =>
+        serviceCollection.AddVersionedApiExplorer(setup =>
         {
             setup.GroupNameFormat = "'v'VVV";
             setup.SubstituteApiVersionInUrl = true;
         });
-        services.ConfigureOptions<ConfigureSwaggerOptions>();
+        serviceCollection.ConfigureOptions<ConfigureSwaggerOptions>();
 
-        services.AddJwtTokenSecurity(Configuration);
-        services.AddCommandStack(Configuration);
-        services.AddApplicationInsightsTelemetry();
-        RegisterCorrelationContext(services);
-        ConfigureHealthChecks(services);
-        services.AddMediatR(cfg =>
+        // Options
+        serviceCollection.AddOptions<JwtOptions>().Bind(Configuration);
+        serviceCollection.AddOptions<ServiceBusOptions>().Bind(Configuration);
+        serviceCollection.AddOptions<DatabricksOptions>().Bind(Configuration);
+        serviceCollection.AddOptions<DateTimeOptions>().Bind(Configuration);
+        serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
+
+        serviceCollection.AddJwtTokenSecurity(Configuration);
+        serviceCollection.AddHealthCheck(Configuration);
+        serviceCollection.AddCommandStack(Configuration);
+        serviceCollection.AddApplicationInsightsTelemetry();
+        serviceCollection.AddCorrelationContext();
+        serviceCollection.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(typeof(Root).Assembly);
             cfg.RegisterServicesFromAssembly(typeof(Application.Root).Assembly);
             cfg.RegisterServicesFromAssembly(typeof(Domain.Root).Assembly);
             cfg.RegisterServicesFromAssembly(typeof(Infrastructure.Root).Assembly);
         });
+        serviceCollection.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
     }
 
     public void Configure(IApplicationBuilder app)
@@ -124,7 +130,7 @@ public class Startup
         var apiVersionDescriptionProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
         app.UseSwaggerUI(options =>
         {
-            // Reverse the API's in order to make the latest API versions appear first in select box in UI
+            // Reverse the APIs in order to make the latest API versions appear first in select box in UI
             foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
             {
                 options.SwaggerEndpoint(
@@ -144,44 +150,6 @@ public class Startup
             // Health check
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
-        });
-    }
-
-    private void ConfigureHealthChecks(IServiceCollection services)
-    {
-        var serviceBusConnectionString =
-            Configuration[ConfigurationSettingNames.ServiceBusManageConnectionString]!;
-        var domainEventsTopicName =
-            Configuration[ConfigurationSettingNames.DomainEventsTopicName]!;
-
-        services.AddHealthChecks()
-            .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
-            // This ought to be a Data Lake (gen 2) file system check.
-            // It is, however, not easily tested so for now we stick with testing resource existence
-            // and connectivity through the lesser blob storage API.
-            .AddBlobStorageContainerCheck(
-                Configuration[ConfigurationSettingNames.CalculationStorageConnectionString]!,
-                Configuration[ConfigurationSettingNames.CalculationStorageContainerName]!)
-            .AddAzureServiceBusTopic(
-                connectionString: serviceBusConnectionString,
-                topicName: domainEventsTopicName,
-                name: "DomainEventsTopicExists");
-    }
-
-    /// <summary>
-    /// The middleware to handle properly set a CorrelationContext is only supported for Functions.
-    /// This registry will ensure a new CorrelationContext (with a new Id) is set for each session
-    /// </summary>
-    private static void RegisterCorrelationContext(IServiceCollection services)
-    {
-        var serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(ICorrelationContext));
-        services.Remove(serviceDescriptor!);
-        services.AddScoped<ICorrelationContext>(_ =>
-        {
-            var correlationContext = new CorrelationContext();
-            correlationContext.SetId(Guid.NewGuid().ToString());
-            return correlationContext;
         });
     }
 }

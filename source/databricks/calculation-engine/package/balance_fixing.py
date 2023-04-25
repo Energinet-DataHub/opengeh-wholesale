@@ -21,6 +21,7 @@ from package.file_writers.actors_writer import ActorsWriter
 from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from pyspark.sql import DataFrame
+from typing import Tuple
 
 
 def calculate_balance_fixing(
@@ -62,10 +63,42 @@ def _calculate(
     _calculate_net_exchange_per_neighboring_ga(
         result_writer, enriched_time_series_point_df
     )
-    _calculate_net_exchange_per_ga(result_writer, enriched_time_series_point_df)
-    _calculate_production(result_writer, enriched_time_series_point_df)
+    net_exchange_per_ga = _calculate_net_exchange_per_ga(
+        result_writer, enriched_time_series_point_df
+    )
+
+    temporay_production_per_ga_and_brp_and_es = (
+        _calculate_temporay_production_per_per_ga_and_brp_and_es(
+            enriched_time_series_point_df
+        )
+    )
+    temporay_flex_consumption_per_ga_and_brp_and_es = (
+        _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
+            enriched_time_series_point_df
+        )
+    )
+    consumption_per_ga_and_brp_and_es = _calculate_consumption_per_ga_and_brp_and_es(
+        enriched_time_series_point_df
+    )
+
+    positive_grid_loss, negative_grid_loss = _calculate_grid_loss(
+        result_writer,
+        net_exchange_per_ga,
+        temporay_production_per_ga_and_brp_and_es,
+        temporay_flex_consumption_per_ga_and_brp_and_es,
+        consumption_per_ga_and_brp_and_es,
+    )
+
     _calculate_non_profiled_consumption(
-        actors_writer, result_writer, enriched_time_series_point_df
+        actors_writer, result_writer, consumption_per_ga_and_brp_and_es
+    )
+    _calculate_production(
+        result_writer, temporay_production_per_ga_and_brp_and_es, negative_grid_loss
+    )
+    _calculate_flex_consumption(
+        result_writer,
+        temporay_flex_consumption_per_ga_and_brp_and_es,
+        positive_grid_loss,
     )
 
 
@@ -83,7 +116,7 @@ def _calculate_net_exchange_per_neighboring_ga(
 
 def _calculate_net_exchange_per_ga(
     result_writer: ProcessStepResultWriter, enriched_time_series: DataFrame
-) -> None:
+) -> DataFrame:
     exchange = agg_steps.aggregate_net_exchange_per_ga(enriched_time_series)
 
     result_writer.write(
@@ -92,15 +125,115 @@ def _calculate_net_exchange_per_ga(
         AggregationLevel.total_ga,
     )
 
+    return exchange
+
+
+def _calculate_consumption_per_ga_and_brp_and_es(
+    enriched_time_series: DataFrame,
+) -> DataFrame:
+    # Non-profiled consumption per balance responsible party and energy supplier
+    consumption_per_ga_and_brp_and_es = (
+        agg_steps.aggregate_non_profiled_consumption_ga_brp_es(enriched_time_series)
+    )
+    return consumption_per_ga_and_brp_and_es
+
+
+def _calculate_temporay_production_per_per_ga_and_brp_and_es(
+    enriched_time_series: DataFrame,
+) -> DataFrame:
+    temporay_production_per_per_ga_and_brp_and_es = (
+        agg_steps.aggregate_production_ga_brp_es(enriched_time_series)
+    )
+    return temporay_production_per_per_ga_and_brp_and_es
+
+
+def _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
+    enriched_time_series: DataFrame,
+) -> DataFrame:
+    temporay_flex_consumption_per_ga_and_brp_and_es = (
+        agg_steps.aggregate_flex_consumption_ga_brp_es(enriched_time_series)
+    )
+    return temporay_flex_consumption_per_ga_and_brp_and_es
+
+
+def _calculate_grid_loss(
+    result_writer: ProcessStepResultWriter,
+    net_exchange_per_ga: DataFrame,
+    temporay_production_per_ga_and_brp_and_es: DataFrame,
+    temporay_flex_consumption_per_ga_and_brp_and_es: DataFrame,
+    consumption_per_ga_and_brp_and_es: DataFrame,
+) -> Tuple[DataFrame, DataFrame]:
+    grid_loss = agg_steps.calculate_grid_loss(
+        net_exchange_per_ga,
+        temporay_production_per_ga_and_brp_and_es,
+        temporay_flex_consumption_per_ga_and_brp_and_es,
+        consumption_per_ga_and_brp_and_es,
+    )
+    result_writer.write(
+        grid_loss,
+        TimeSeriesType.GRID_LOSS,
+        AggregationLevel.total_ga,
+    )
+
+    positive_grid_loss = agg_steps.calculate_positive_grid_loss(grid_loss)
+
+    result_writer.write(
+        positive_grid_loss,
+        TimeSeriesType.POSITIVE_GRID_LOSS,
+        AggregationLevel.total_ga,
+    )
+
+    negative_grid_loss = agg_steps.calculate_negative_grid_loss(grid_loss)
+
+    result_writer.write(
+        negative_grid_loss,
+        TimeSeriesType.NEGATIVE_GRID_LOSS,
+        AggregationLevel.total_ga,
+    )
+
+    return positive_grid_loss, negative_grid_loss
+
 
 def _calculate_production(
-    result_writer: ProcessStepResultWriter, enriched_time_series: DataFrame
+    result_writer: ProcessStepResultWriter,
+    temporay_production_per_ga_and_brp_and_es: DataFrame,
+    negative_grid_loss: DataFrame,
 ) -> None:
-    production_per_per_ga_and_brp_and_es = agg_steps.aggregate_production_ga_brp_es(
-        enriched_time_series
+    # temporay_production_per_per_ga_and_brp_and_es is without negative_grid_loss, this has to be added at a later date
+    # negative_grid_loss + temporay_production_per_per_ga_and_brp_and_es = production_per_ga_and_brp_and_es
+    production_per_ga_and_brp_and_es = temporay_production_per_ga_and_brp_and_es  # replace with negative_grid_loss calculation
+
+    result_writer.write(
+        production_per_ga_and_brp_and_es,
+        TimeSeriesType.PRODUCTION,
+        AggregationLevel.es_per_brp_per_ga,
     )
+
+    # production per energy supplier
+    production_per_ga_and_es = agg_steps.aggregate_production_ga_es(
+        production_per_ga_and_brp_and_es
+    )
+
+    result_writer.write(
+        production_per_ga_and_es,
+        TimeSeriesType.PRODUCTION,
+        AggregationLevel.es_per_ga,
+    )
+
+    # production per balance responsible
+    production_per_ga_and_brp = agg_steps.aggregate_production_ga_brp(
+        production_per_ga_and_brp_and_es
+    )
+
+    result_writer.write(
+        production_per_ga_and_brp,
+        TimeSeriesType.PRODUCTION,
+        AggregationLevel.brp_per_ga,
+    )
+
+    # production per grid area
     production_per_ga = agg_steps.aggregate_production_ga(
-        production_per_per_ga_and_brp_and_es
+        production_per_ga_and_brp_and_es
     )
 
     result_writer.write(
@@ -108,18 +241,60 @@ def _calculate_production(
     )
 
 
+def _calculate_flex_consumption(
+    result_writer: ProcessStepResultWriter,
+    temporay_flex_consumption_per_ga_and_brp_and_es: DataFrame,
+    positive_grid_loss: DataFrame,
+) -> None:
+    # temporay_flex_consumption_per_ga_and_brp_and_es is without positive_grid_loss, this has to be added at a later date
+    # positive_grid_loss + temporay_flex_consumption_per_ga_and_brp_and_es = flex_consumption_per_ga_and_brp_and_es
+    flex_consumption_per_ga_and_brp_and_es = temporay_flex_consumption_per_ga_and_brp_and_es  # replace this with positive_grid_loss calculation
+
+    result_writer.write(
+        flex_consumption_per_ga_and_brp_and_es,
+        TimeSeriesType.PRODUCTION,
+        AggregationLevel.es_per_brp_per_ga,
+    )
+
+    # flex consumption per energy supplier
+    flex_consumption_per_ga_and_es = agg_steps.aggregate_flex_consumption_ga_es(
+        flex_consumption_per_ga_and_brp_and_es
+    )
+
+    result_writer.write(
+        flex_consumption_per_ga_and_es,
+        TimeSeriesType.FLEX_CONSUMPTION,
+        AggregationLevel.es_per_ga,
+    )
+
+    # flex consumption per balance responsible
+    flex_consumption_per_ga_and_brp = agg_steps.aggregate_flex_consumption_ga_brp(
+        flex_consumption_per_ga_and_brp_and_es
+    )
+
+    result_writer.write(
+        flex_consumption_per_ga_and_brp,
+        TimeSeriesType.FLEX_CONSUMPTION,
+        AggregationLevel.brp_per_ga,
+    )
+
+    # flex consumption per grid area
+    flex_consumption_per_ga = agg_steps.aggregate_flex_consumption_ga(
+        flex_consumption_per_ga_and_brp_and_es
+    )
+
+    result_writer.write(
+        flex_consumption_per_ga,
+        TimeSeriesType.FLEX_CONSUMPTION,
+        AggregationLevel.total_ga,
+    )
+
+
 def _calculate_non_profiled_consumption(
     actors_writer: ActorsWriter,
     result_writer: ProcessStepResultWriter,
-    enriched_time_series_point_df: DataFrame,
+    consumption_per_ga_and_brp_and_es: DataFrame,
 ) -> None:
-    # Non-profiled consumption per balance responsible party and energy supplier
-    consumption_per_ga_and_brp_and_es = (
-        agg_steps.aggregate_non_profiled_consumption_ga_brp_es(
-            enriched_time_series_point_df
-        )
-    )
-
     result_writer.write(
         consumption_per_ga_and_brp_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,

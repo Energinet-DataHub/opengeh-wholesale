@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -20,23 +21,17 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Core
 {
     public static class DataLakeHealthChecksBuilderExtensions
     {
-        public static IHealthChecksBuilder AddDataLakeFileSystemCheck(this IHealthChecksBuilder builder, string connectionString, string token)
+        public static IHealthChecksBuilder AddDataLakeContainerCheck(this IHealthChecksBuilder builder, string storageAccountUri, string containerName)
         {
-            return builder.AddAsyncCheck("DataLakeFileSystem", async () =>
+            return builder.AddAsyncCheck("DataLakeContainer", async () =>
             {
-                var client = new DataLakeFileSystemClient(connectionString, token);
                 try
                 {
-                    var pathPageable = client.GetPathsAsync().ConfigureAwait(false);
-
-                    // A check to see if contents can be enumerated.
-                    // No actual files are required to be present.
-                    await foreach (var unused in pathPageable)
-                    {
-                        break;
-                    }
-
-                    return HealthCheckResult.Healthy();
+                    var serviceClient = new DataLakeServiceClient(new Uri(storageAccountUri), new DefaultAzureCredential());
+                    var fileSystemClient = serviceClient.GetFileSystemClient(containerName);
+                    return await fileSystemClient.ExistsAsync().ConfigureAwait(false)
+                        ? HealthCheckResult.Healthy()
+                        : HealthCheckResult.Unhealthy();
                 }
                 catch (Exception)
                 {

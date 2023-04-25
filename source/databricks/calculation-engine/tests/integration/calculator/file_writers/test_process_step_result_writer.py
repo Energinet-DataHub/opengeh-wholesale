@@ -18,29 +18,25 @@ from pathlib import Path
 from typing import List
 
 import package.infrastructure as infra
+from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.functions import col, lit
 import pytest
+import uuid
+
 from package.codelists import (
     AggregationLevel,
     MeteringPointResolution,
     TimeSeriesQuality,
     TimeSeriesType,
 )
-from package.constants import Colname
+from package.constants import Colname, ResultTableColName
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
-from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col
-from pyspark.sql.types import (
-    DecimalType,
-    StringType,
-    StructField,
-    StructType,
-    TimestampType,
-)
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
 )
 from tests.helpers.file_utils import find_file
+from typing import Any
 
 DATABASE_NAME = "wholesale_output"
 RESULT_TABLE_NAME = "result"
@@ -49,22 +45,27 @@ DEFAULT_GRID_AREA = "105"
 DEFAULT_TO_GRID_AREA = "106"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
-DEFAULT_PROCESS_TYPE = "Balance_Fixing"
+DEFAULT_PROCESS_TYPE = "BalanceFixing"
 DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
+DEFAULT_QUANTITY = "1.1"
+DEFAULT_QUALITY = TimeSeriesQuality.measured
+DEFAULT_TIME_SERIES_TYPE = TimeSeriesType.PRODUCTION
+DEFAULT_AGGREGATION_LEVEL = AggregationLevel.total_ga
+
 TABLE_NAME = f"{DATABASE_NAME}.{RESULT_TABLE_NAME}"
 
 
 def _create_result_row(
-    grid_area: str,
-    to_grid_area: str,
+    grid_area=DEFAULT_GRID_AREA,
+    to_grid_area=DEFAULT_TO_GRID_AREA,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
-    quantity: str = "1.1",
-    quality: TimeSeriesQuality = TimeSeriesQuality.measured,
+    quantity: str = DEFAULT_QUANTITY,
+    quality: TimeSeriesQuality = DEFAULT_QUALITY,
 ) -> dict:
     row = {
         Colname.grid_area: grid_area,
-        Colname.out_grid_area: to_grid_area,
+        Colname.from_grid_area: to_grid_area,
         Colname.sum_quantity: Decimal(quantity),
         Colname.quality: quality.value,
         Colname.resolution: MeteringPointResolution.quarter.value,
@@ -89,15 +90,10 @@ def test__write___when_aggregation_level_is_es_per_ga__result_file_path_matches_
     spark: SparkSession,
     contracts_path: str,
     tmpdir: Path,
+    migrations_executed: None,
 ) -> None:
     # Arrange
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-        )
-    ]
+    row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     relative_output_path = infra.get_result_file_relative_path(
         DEFAULT_BATCH_ID,
@@ -108,7 +104,6 @@ def test__write___when_aggregation_level_is_es_per_ga__result_file_path_matches_
         AggregationLevel.es_per_ga,
     )
     sut = ProcessStepResultWriter(
-        spark,
         str(tmpdir),
         DEFAULT_BATCH_ID,
         DEFAULT_PROCESS_TYPE,
@@ -138,15 +133,10 @@ def test__write___when_aggregation_level_is_total_ga__result_file_path_matches_c
     spark: SparkSession,
     contracts_path: str,
     tmpdir: Path,
+    migrations_executed: None,
 ) -> None:
     # Arrange
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id="None",
-        )
-    ]
+    row = [_create_result_row(energy_supplier_id="None")]
     result_df = _create_result_df(spark, row)
     relative_output_path = infra.get_result_file_relative_path(
         DEFAULT_BATCH_ID,
@@ -157,7 +147,6 @@ def test__write___when_aggregation_level_is_total_ga__result_file_path_matches_c
         AggregationLevel.total_ga,
     )
     sut = ProcessStepResultWriter(
-        spark,
         str(tmpdir),
         DEFAULT_BATCH_ID,
         DEFAULT_PROCESS_TYPE,
@@ -187,16 +176,10 @@ def test__write___when_aggregation_level_is_ga_brp_es__result_file_path_matches_
     spark: SparkSession,
     contracts_path: str,
     tmpdir: Path,
+    migrations_executed: None,
 ) -> None:
     # Arrange
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
-        )
-    ]
+    row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     relative_output_path = infra.get_result_file_relative_path(
         DEFAULT_BATCH_ID,
@@ -207,7 +190,6 @@ def test__write___when_aggregation_level_is_ga_brp_es__result_file_path_matches_
         AggregationLevel.es_per_brp_per_ga,
     )
     sut = ProcessStepResultWriter(
-        spark,
         str(tmpdir),
         DEFAULT_BATCH_ID,
         DEFAULT_PROCESS_TYPE,
@@ -237,26 +219,19 @@ def test__write___when_aggregation_level_is_ga_brp_es__result_file_path_matches_
     "aggregation_level",
     AggregationLevel,
 )
-def test__write__writes_aggregation_level_column(
-    spark: SparkSession, tmpdir: Path, aggregation_level: AggregationLevel
+def test__write__writes_aggregation_level(
+    spark: SparkSession,
+    tmpdir: Path,
+    aggregation_level: AggregationLevel,
+    migrations_executed: None,
 ) -> None:
     # Arrange
-    spark.sql(
-        f"DROP TABLE IF EXISTS {TABLE_NAME}"
-    )  # needed to avoid conflict between parametrized tests
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
-        )
-    ]
+    row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
+    batch_id = str(uuid.uuid4())
     sut = ProcessStepResultWriter(
-        spark,
         str(tmpdir),
-        DEFAULT_BATCH_ID,
+        batch_id,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
     )
@@ -269,35 +244,46 @@ def test__write__writes_aggregation_level_column(
     )
 
     # Assert
-    actual_df = spark.read.table(TABLE_NAME)
+    actual_df = spark.read.table(TABLE_NAME).where(
+        col(ResultTableColName.batch_id) == batch_id
+    )
     assert actual_df.collect()[0]["aggregation_level"] == aggregation_level.value
 
 
+# The batch id is used in parameterized test executed using xdist, which does not allow parameters to change
+batch_id = "some batch id"  # Needed in both test param and test implementation
+
+
 @pytest.mark.parametrize(
-    "time_series_type",
-    TimeSeriesType,
+    "column_name, column_value",
+    [
+        (ResultTableColName.batch_id, batch_id),
+        (ResultTableColName.batch_execution_time_start, DEFAULT_BATCH_EXECUTION_START),
+        (ResultTableColName.batch_process_type, DEFAULT_PROCESS_TYPE),
+        (ResultTableColName.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
+        (ResultTableColName.grid_area, DEFAULT_GRID_AREA),
+        (ResultTableColName.from_grid_area, DEFAULT_TO_GRID_AREA),
+        (ResultTableColName.balance_responsible_id, DEFAULT_BALANCE_RESPONSIBLE_ID),
+        (ResultTableColName.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
+        (ResultTableColName.time, datetime(2020, 1, 1, 0, 0)),
+        (ResultTableColName.quantity, Decimal("1.100")),
+        (ResultTableColName.quantity_quality, DEFAULT_QUALITY.value),
+        (ResultTableColName.aggregation_level, DEFAULT_AGGREGATION_LEVEL.value),
+    ],
 )
-def test__write__writes_time_series_type_column(
-    spark: SparkSession, tmpdir: Path, time_series_type: TimeSeriesType
+def test__write__writes_column(
+    spark: SparkSession,
+    tmpdir: Path,
+    column_name: str,
+    column_value: Any,
+    migrations_executed: None,
 ) -> None:
     # Arrange
-    spark.sql(
-        f"DROP TABLE IF EXISTS {TABLE_NAME}"
-    )  # needed to avoid conflict between parametrized tests
-
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
-        )
-    ]
+    row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     sut = ProcessStepResultWriter(
-        spark,
         str(tmpdir),
-        DEFAULT_BATCH_ID,
+        batch_id,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
     )
@@ -305,100 +291,12 @@ def test__write__writes_time_series_type_column(
     # Act
     sut.write(
         result_df,
-        time_series_type,
-        AggregationLevel.total_ga,
+        DEFAULT_TIME_SERIES_TYPE,
+        DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
-    actual_df = spark.read.table(TABLE_NAME)
-    assert actual_df.collect()[0]["time_series_type"] == time_series_type.value
-
-
-def test__write__writes_batch_id(spark: SparkSession, tmpdir: Path) -> None:
-    # Arrange
-    spark.sql(
-        f"DROP TABLE IF EXISTS {TABLE_NAME}"
-    )  # needed to avoid conflict between parametrized tests
-
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
-        )
-    ]
-    result_df = _create_result_df(spark, row)
-    sut = ProcessStepResultWriter(
-        spark,
-        str(tmpdir),
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
+    actual_df = spark.read.table(TABLE_NAME).where(
+        col(ResultTableColName.batch_id) == batch_id
     )
-
-    # Act
-    sut.write(
-        result_df,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.total_ga,
-    )
-
-    # Assert
-    actual_df = spark.read.table(TABLE_NAME)
-    assert actual_df.collect()[0]["batch_id"] == DEFAULT_BATCH_ID
-
-
-def test__write__uses_expected_delta_schema(spark: SparkSession, tmpdir: Path) -> None:
-    """IMPORTANT: Any semantic change to the expected schema most likely requires a corresponding
-    data migration of the results Delta table."""
-
-    # Arrange
-    expected_schema = StructType(
-        [
-            StructField("batch_id", StringType(), False),
-            StructField("batch_execution_time_start", TimestampType(), False),
-            StructField("batch_process_type", StringType(), False),
-            StructField("time_series_type", StringType(), False),
-            StructField("grid_area", StringType(), False),
-            StructField("out_grid_area", StringType(), True),
-            StructField("balance_responsible_id", StringType(), True),
-            StructField("energy_supplier_id", StringType(), True),
-            StructField("time", TimestampType(), False),
-            StructField("quantity", DecimalType(18, 3), True),
-            StructField("quantity_quality", StringType(), False),
-            StructField("aggregation_level", StringType(), False),
-        ]
-    )
-
-    spark.sql(
-        f"DROP TABLE IF EXISTS {TABLE_NAME}"
-    )  # needed to avoid conflict between parametrized tests
-
-    row = [
-        _create_result_row(
-            grid_area=DEFAULT_GRID_AREA,
-            to_grid_area=DEFAULT_TO_GRID_AREA,
-            energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
-            balance_responsible_id=DEFAULT_BALANCE_RESPONSIBLE_ID,
-        )
-    ]
-    result_df = _create_result_df(spark, row)
-    sut = ProcessStepResultWriter(
-        spark,
-        str(tmpdir),
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
-    )
-
-    # Act
-    sut.write(
-        result_df,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.total_ga,
-    )
-
-    # Assert
-    actual_df = spark.read.table(TABLE_NAME)
-    assert actual_df.schema == expected_schema
+    assert actual_df.collect()[0][column_name] == column_value

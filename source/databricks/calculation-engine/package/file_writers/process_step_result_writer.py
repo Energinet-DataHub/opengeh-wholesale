@@ -13,15 +13,12 @@
 # limitations under the License.
 
 from datetime import datetime
-from delta.tables import DeltaTable
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit
-from pyspark.sql import SparkSession
 
 import package.infrastructure as infra
 from package.codelists import MarketRole, TimeSeriesType, AggregationLevel
-from package.constants import Colname, PartitionKeyName
-from package.schemas import results_schema, ResultSchemaField
+from package.constants import Colname, PartitionKeyName, ResultTableColName
 
 DATABASE_NAME = "wholesale_output"
 RESULT_TABLE_NAME = "result"
@@ -30,7 +27,6 @@ RESULT_TABLE_NAME = "result"
 class ProcessStepResultWriter:
     def __init__(
         self,
-        spark: SparkSession,
         container_path: str,
         batch_id: str,
         batch_process_type: str,
@@ -42,7 +38,6 @@ class ProcessStepResultWriter:
         self.__output_path = (
             f"{container_path}/{infra.get_batch_relative_path(batch_id)}"
         )
-        self._create_delta_table_if_not_exists(spark, container_path)
 
     def write(
         self,
@@ -178,30 +173,6 @@ class ProcessStepResultWriter:
             .json(result_data_directory)
         )
 
-    def _create_delta_table_if_not_exists(
-        self, spark: SparkSession, container_path: str
-    ) -> None:
-        db_location = f"{container_path}/{infra.get_calculation_output_folder()}"
-        table_location = (
-            f"{container_path}/{infra.get_calculation_output_folder()}/result"
-        )
-
-        # First create database if not already existing
-        spark.sql(
-            f"CREATE DATABASE IF NOT EXISTS {DATABASE_NAME} \
-            COMMENT 'Contains result data from wholesale domain.' \
-            LOCATION '{db_location}'"
-        )
-
-        # Now create table if not already existing
-        (
-            DeltaTable.createIfNotExists(spark)
-            .tableName(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
-            .location(table_location)
-            .addColumns(results_schema)
-            .execute()
-        )
-
     def _write_result_to_table(
         self,
         df: DataFrame,
@@ -219,25 +190,30 @@ class ProcessStepResultWriter:
         )
 
         # Map column names to the Delta table field names
+        # Note: The order of the columns must match the order of the columns in the Delta table
         df = df.select(
-            col(Colname.batch_id).alias(ResultSchemaField.batch_id),
-            col(Colname.batch_execution_time_start).alias(
-                ResultSchemaField.batch_execution_time_start
+            col(Colname.grid_area).alias(ResultTableColName.grid_area),
+            col(Colname.energy_supplier_id).alias(
+                ResultTableColName.energy_supplier_id
             ),
-            col(Colname.batch_process_type).alias(ResultSchemaField.batch_process_type),
-            lit(time_series_type.value).alias(ResultSchemaField.time_series_type),
-            col(Colname.grid_area).alias(ResultSchemaField.grid_area),
-            col(Colname.out_grid_area).alias(ResultSchemaField.out_grid_area),
             col(Colname.balance_responsible_id).alias(
-                ResultSchemaField.balance_responsible_id
+                ResultTableColName.balance_responsible_id
             ),
-            col(Colname.energy_supplier_id).alias(ResultSchemaField.energy_supplier_id),
-            col(Colname.time_window_start).alias(ResultSchemaField.time),
-            col(Colname.sum_quantity).alias(ResultSchemaField.quantity),
-            col(Colname.quality).alias(ResultSchemaField.quantity_quality),
-            lit(aggregation_level.value).alias(ResultSchemaField.aggregation_level),
+            col(Colname.sum_quantity).alias(ResultTableColName.quantity),
+            col(Colname.quality).alias(ResultTableColName.quantity_quality),
+            col(Colname.time_window_start).alias(ResultTableColName.time),
+            lit(aggregation_level.value).alias(ResultTableColName.aggregation_level),
+            lit(time_series_type.value).alias(ResultTableColName.time_series_type),
+            col(Colname.batch_id).alias(ResultTableColName.batch_id),
+            col(Colname.batch_process_type).alias(
+                ResultTableColName.batch_process_type
+            ),
+            col(Colname.batch_execution_time_start).alias(
+                ResultTableColName.batch_execution_time_start
+            ),
+            col(Colname.from_grid_area).alias(ResultTableColName.from_grid_area),
         )
 
-        df.write.format("delta").mode("append").option("mergeSchema", "false").option(
+        df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
-        ).saveAsTable(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
+        ).insertInto(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
