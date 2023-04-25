@@ -208,7 +208,7 @@ def test__result_table__is_not_managed(
     path = f"{data_lake_path}/__test_result_table_is_not_managed__"
 
     # Clean up to prevent problems from previous test runs
-    spark.sql(f"DROP DATABASE IF EXISTS {DATABASE_NAME}")
+    spark.sql(f"DROP DATABASE IF EXISTS {DATABASE_NAME} CASCADE")
     shutil.rmtree(path, ignore_errors=True)
 
     migration_args = MigrationScriptArgs(
