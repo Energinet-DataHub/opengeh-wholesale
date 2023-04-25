@@ -524,6 +524,7 @@ resource "databricks_instance_pool" "my_pool" {
 
 resource "databricks_cluster" "shared_all_purpose" {
   cluster_name            = "Shared all-purpose"
+  num_workers             = 1
   instance_pool_id        = databricks_instance_pool.my_pool.id
   spark_version           = data.databricks_spark_version.latest_lts.id
   spark_conf = {
