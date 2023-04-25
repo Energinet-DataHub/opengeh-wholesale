@@ -14,9 +14,11 @@
 
 from datetime import datetime
 from decimal import Decimal
+import os
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 import pytest
+import shutil
 import uuid
 
 from package.codelists import (
@@ -26,6 +28,9 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.constants import ResultTableColName
+from package.datamigration.migration import _apply_migration
+from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.schemas import results_schema
 
 TABLE_NAME = "result"
@@ -194,3 +199,34 @@ def test__migrated_table_does_not_round_valid_decimal(
         col(ResultTableColName.batch_id) == batch_id
     )
     assert actual_df.collect()[0].quantity == quantity
+
+
+def test__result_table__is_not_managed(
+    spark: SparkSession, data_lake_path: str
+) -> None:
+    # Arrange
+    path = f"{data_lake_path}/__test_result_table_is_not_managed__"
+
+    # Clean up to prevent problems from previous test runs
+    spark.sql(f"DROP DATABASE IF EXISTS {DATABASE_NAME}")
+    shutil.rmtree(path, ignore_errors=True)
+
+    migration_args = MigrationScriptArgs(
+        data_storage_account_url="foo",
+        data_storage_account_name="foo",
+        data_storage_container_name="foo",
+        data_storage_credential="foo",
+        spark=spark,
+    )
+    migration_args.storage_container_path = path
+
+    # Execute all migrations
+    migrations = _get_all_migrations()
+    for name in migrations:
+        _apply_migration(name, migration_args)
+
+    # Act: Drop database, which will delete all managed tables
+    spark.sql(f"DROP DATABASE {DATABASE_NAME} CASCADE")
+
+    # Assert: The data files still exists after dropping the database implies that the table is not managed
+    assert os.path.exists(f"{path}/calculation-output/result/_delta_log")
