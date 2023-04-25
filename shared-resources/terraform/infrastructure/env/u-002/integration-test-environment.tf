@@ -543,10 +543,6 @@ resource "databricks_cluster" "shared_all_purpose" {
     "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.playground.name
     "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.playground.name
   }
-
-  library {
-    whl = "dbfs:/opengeh-migration/GEHMigrationPackage-1.0-py3-none-any.whl"
-  }
 }
 
 resource "databricks_job" "migration_playground_workflow" {
