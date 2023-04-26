@@ -18,3 +18,15 @@ variable "b2c_tenant_name" {
   type        = string
   description = "The name of the B2C tenant, e.g. dev002DataHubB2C."
 }
+
+variable "mitid_client_id" {
+  type        = string
+  description = "Client id for OpenID Connect configuration of the MitID provider."
+  sensitive   = true
+}
+
+variable "mitid_client_secret" {
+  type        = string
+  description = "Client secret for OpenID Connect configuration of the MitID provider."
+  sensitive   = true
+}

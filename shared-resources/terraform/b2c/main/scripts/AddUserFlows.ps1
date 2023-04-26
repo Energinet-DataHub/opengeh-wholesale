@@ -23,7 +23,7 @@ using module "./modules/ManageUserFlow.psd1"
   The user flows are not recreated if they already exist.
 
   .EXAMPLE
-  PS> ./Add-UserFlows.ps1 <TenantId> <ClientId> <ClientSecret>
+  PS> ./AddUserFlows.ps1 <TenantId> <ClientId> <ClientSecret>
 #>
 param (
     [Parameter(Mandatory)]
