@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
+using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
@@ -21,16 +26,37 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 [UnitTest]
 public class CalculationResultClientTests
 {
-    [Fact]
-    public async Task DeserializeJson_ShouldReturnValidObject()
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task DeserializeJson_ShouldReturnValidObject(
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        string energySupplierGln,
+        string balanceResponsiblePartyGln,
+        CalculationResultClient sut)
     {
         // Arrange
+        int expectedRowCount = 96;
+        var expectedFirstTimeSeriesPoint = new TimeSeriesPoint(
+            DateTimeOffset.Parse("2023-04-04T22:00:00.000Z"),
+            0.000m,
+            QuantityQuality.Missing);
+        var expectedLastTimeSeriesPoint = new TimeSeriesPoint(
+            DateTimeOffset.Parse("2023-04-05T08:47:41.000Z"),
+            1.235m,
+            QuantityQuality.Estimated);
+
         var stream = EmbeddedResources.GetStream("Infrastructure.Processes.CalculationResultTest.json");
         using var reader = new StreamReader(stream);
-        var json = await reader.ReadToEndAsync();
+
         // Act
+        var actual = await sut.GetAsync(batchId, new GridAreaCode(gridAreaCode), timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
 
         // Assert
-        Assert.NotNull(json);
+        actual.TimeSeriesType.Should().Be(timeSeriesType);
+        actual.TimeSeriesPoints.Length.Should().Be(expectedRowCount);
+        actual.TimeSeriesPoints.First().Should().Be(expectedFirstTimeSeriesPoint);
+        actual.TimeSeriesPoints.Last().Should().Be(expectedLastTimeSeriesPoint);
     }
 }

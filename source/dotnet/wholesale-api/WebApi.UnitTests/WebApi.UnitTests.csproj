@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -74,8 +74,7 @@ limitations under the License.
     </EmbeddedResource>
     <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
     <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
-    <None Remove="Infrastructure\Processes\CalculationResultTest.json" />
-    <EmbeddedResource Include="Infrastructure\Processes\CalculationResultTest.json" />
+    <EmbeddedResource Include="Infrastructure\Processes\CalculationResult.json" />
   </ItemGroup>
 
   <ItemGroup>
