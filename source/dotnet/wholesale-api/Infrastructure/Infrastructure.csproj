@@ -23,13 +23,13 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\DatabricksClient\DatabricksClient.csproj" />
   </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.13.1" />
       <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.13.0" />
       <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.0" />
+      <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
       <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
       <PackageReference Include="Google.Protobuf" Version="3.22.1" />

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Microsoft.Azure.Databricks.Client;
+using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 
@@ -48,7 +48,7 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
             .RunNow(calculatorJob.JobId, runParameters)
             .ConfigureAwait(false);
 
-        return new CalculationId(runId.RunId);
+        return new CalculationId(runId);
     }
 
     public async Task<CalculationState> GetStatusAsync(CalculationId calculationId)
@@ -58,7 +58,7 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
             .RunsGet(calculationId.Id)
             .ConfigureAwait(false);
 
-        return runState.State.LifeCycleState switch
+        return runState.Item1.LifeCycleState switch
         {
             RunLifeCycleState.PENDING => CalculationState.Pending,
             RunLifeCycleState.RUNNING => CalculationState.Running,
