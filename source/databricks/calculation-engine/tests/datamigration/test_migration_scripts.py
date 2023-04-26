@@ -201,54 +201,74 @@ def test__migrated_table_does_not_round_valid_decimal(
     assert actual_df.collect()[0].quantity == quantity
 
 
-def test__result_table__is_not_managed(data_lake_path: str) -> None:
-    # Arrange
-    spark = (
-        SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
-        .config("spark.ui.showConsoleProgress", "false")
-        .config("spark.ui.enabled", "false")
-        .config("spark.ui.dagGraph.retainedRootRDDs", "1")
-        .config("spark.ui.retainedJobs", "1")
-        .config("spark.ui.retainedStages", "1")
-        .config("spark.ui.retainedTasks", "1")
-        .config("spark.sql.ui.retainedExecutions", "1")
-        .config("spark.worker.ui.retainedExecutors", "1")
-        .config("spark.worker.ui.retainedDrivers", "1")
-        .config("spark.default.parallelism", 1)
-        .config("spark.rdd.compress", False)
-        .config("spark.shuffle.compress", False)
-        .config("spark.shuffle.spill.compress", False)
-        .config("spark.sql.shuffle.partitions", 1)
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config(
-            "spark.sql.catalog.spark_catalog",
-            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
-        )
-        .getOrCreate()
-    )
+def test__result_table__is_not_managed(
+    spark: SparkSession, migrations_executed: None
+) -> None:
+    """
+    It is desired that the table is unmanaged to provide for greater flexibility.
+    According to https://learn.microsoft.com/en-us/azure/databricks/lakehouse/data-objects#--what-is-a-database:
+    "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
+    Thus we check whether the table is managed by comparing its location to the location of the database/schema.
+    """
+    database_details = spark.sql(f"DESCRIBE DATABASE {DATABASE_NAME}")
+    table_details = spark.sql(f"DESCRIBE DETAIL {DATABASE_NAME}.{TABLE_NAME}")
 
-    path = f"{data_lake_path}/__test_result_table_is_not_managed__"
+    database_location = database_details.where(
+        col("info_name") == "Location"
+    ).collect()[0]["info_value"]
+    table_location = table_details.collect()[0]["location"]
 
-    # Clean up to prevent problems from previous test runs
-    spark.sql(f"DROP DATABASE IF EXISTS {DATABASE_NAME} CASCADE")
-    shutil.rmtree(path, ignore_errors=True)
+    assert not table_location.startswith(database_location)
 
-    migration_args = MigrationScriptArgs(
-        data_storage_account_url="foo",
-        data_storage_account_name="foo",
-        data_storage_container_name="foo",
-        data_storage_credential="foo",
-        spark=spark,
-    )
-    migration_args.storage_container_path = path
 
-    # Execute all migrations
-    migrations = _get_all_migrations()
-    for name in migrations:
-        _apply_migration(name, migration_args)
+# def test__result_table__is_not_managed(data_lake_path: str) -> None:
+#     # Arrange
+#     spark = (
+#         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
+#         .config("spark.ui.showConsoleProgress", "false")
+#         .config("spark.ui.enabled", "false")
+#         .config("spark.ui.dagGraph.retainedRootRDDs", "1")
+#         .config("spark.ui.retainedJobs", "1")
+#         .config("spark.ui.retainedStages", "1")
+#         .config("spark.ui.retainedTasks", "1")
+#         .config("spark.sql.ui.retainedExecutions", "1")
+#         .config("spark.worker.ui.retainedExecutors", "1")
+#         .config("spark.worker.ui.retainedDrivers", "1")
+#         .config("spark.default.parallelism", 1)
+#         .config("spark.rdd.compress", False)
+#         .config("spark.shuffle.compress", False)
+#         .config("spark.shuffle.spill.compress", False)
+#         .config("spark.sql.shuffle.partitions", 1)
+#         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+#         .config(
+#             "spark.sql.catalog.spark_catalog",
+#             "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+#         )
+#         .getOrCreate()
+#     )
 
-    # Act: Drop database, which will delete all managed tables
-    spark.sql(f"DROP DATABASE {DATABASE_NAME} CASCADE")
+#     path = f"{data_lake_path}/__test_result_table_is_not_managed__"
 
-    # Assert: The data files still exists after dropping the database implies that the table is not managed
-    assert os.path.exists(f"{path}/calculation-output/result/_delta_log")
+#     # Clean up to prevent problems from previous test runs
+#     spark.sql(f"DROP DATABASE IF EXISTS {DATABASE_NAME} CASCADE")
+#     shutil.rmtree(path, ignore_errors=True)
+
+#     migration_args = MigrationScriptArgs(
+#         data_storage_account_url="foo",
+#         data_storage_account_name="foo",
+#         data_storage_container_name="foo",
+#         data_storage_credential="foo",
+#         spark=spark,
+#     )
+#     migration_args.storage_container_path = path
+
+#     # Execute all migrations
+#     migrations = _get_all_migrations()
+#     for name in migrations:
+#         _apply_migration(name, migration_args)
+
+#     # Act: Drop database, which will delete all managed tables
+#     spark.sql(f"DROP DATABASE {DATABASE_NAME} CASCADE")
+
+#     # Assert: The data files still exists after dropping the database implies that the table is not managed
+#     assert os.path.exists(f"{path}/calculation-output/result/_delta_log")

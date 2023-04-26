@@ -52,6 +52,10 @@ RESULTS_SCHEMA = StructType(
 
 
 def apply(args: MigrationScriptArgs) -> None:
+    """Functionality to create the delta table was moved from production code.
+    That's the reason why this guard is required.
+    """
+
     table_location = (
         f"{args.storage_container_path}/{OUTPUT_FOLDER}/{RESULT_TABLE_NAME}"
     )
@@ -61,13 +65,8 @@ def apply(args: MigrationScriptArgs) -> None:
         COMMENT 'Contains result data from wholesale domain.'"
     )
 
-    # Functionality to create the delta table was moved from production code.
-    # That's the reason why this guard is required.
-    if DeltaTable.isDeltaTable(args.spark, table_location):
-        return
-
     (
-        DeltaTable.create(args.spark)
+        DeltaTable.createIfNotExists(args.spark)
         .tableName(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
         .location(table_location)
         .addColumns(RESULTS_SCHEMA)
