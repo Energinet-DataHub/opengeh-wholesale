@@ -14,9 +14,11 @@
 
 from datetime import datetime
 from decimal import Decimal
+import os
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 import pytest
+import shutil
 import uuid
 
 from package.codelists import (
@@ -26,6 +28,9 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.constants import ResultTableColName
+from package.datamigration.migration import _apply_migration
+from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.schemas import results_schema
 
 TABLE_NAME = "result"
@@ -194,3 +199,23 @@ def test__migrated_table_does_not_round_valid_decimal(
         col(ResultTableColName.batch_id) == batch_id
     )
     assert actual_df.collect()[0].quantity == quantity
+
+
+def test__result_table__is_not_managed(
+    spark: SparkSession, migrations_executed: None
+) -> None:
+    """
+    It is desired that the table is unmanaged to provide for greater flexibility.
+    According to https://learn.microsoft.com/en-us/azure/databricks/lakehouse/data-objects#--what-is-a-database:
+    "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
+    Thus we check whether the table is managed by comparing its location to the location of the database/schema.
+    """
+    database_details = spark.sql(f"DESCRIBE DATABASE {DATABASE_NAME}")
+    table_details = spark.sql(f"DESCRIBE DETAIL {DATABASE_NAME}.{TABLE_NAME}")
+
+    database_location = database_details.where(
+        col("info_name") == "Location"
+    ).collect()[0]["info_value"]
+    table_location = table_details.collect()[0]["location"]
+
+    assert not table_location.startswith(database_location)
