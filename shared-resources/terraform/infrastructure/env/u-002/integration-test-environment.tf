@@ -572,6 +572,21 @@ resource "databricks_job" "migration_playground_workflow" {
     }
   }
 
+  git_source {
+    url      = "https://github.com/Energinet-DataHub/opengeh-migration.git"
+    provider = "gitHub"
+    branch   = "main"
+  }
+
+  task {
+    task_key = "dummy_task_1"
+
+    notebook_task {
+      notebook_path = "dummy_task_1"
+    }
+    job_cluster_key = "playground_job_cluster"
+  }
+
   depends_on = [
     databricks_instance_pool.my_pool
   ]
