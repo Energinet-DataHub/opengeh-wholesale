@@ -522,6 +522,29 @@ resource "databricks_instance_pool" "my_pool" {
   idle_instance_autotermination_minutes = 60
 }
 
+resource "databricks_cluster" "shared_all_purpose" {
+  cluster_name            = "Shared all-purpose"
+  num_workers             = 1
+  instance_pool_id        = databricks_instance_pool.my_pool.id
+  spark_version           = data.databricks_spark_version.latest_lts.id
+  spark_conf = {
+    "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
+    "fs.azure.account.auth.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "OAuth"
+    "fs.azure.account.oauth.provider.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+    "fs.azure.account.oauth2.client.id.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : databricks_secret.spn_app_id.config_reference
+    "fs.azure.account.oauth2.client.secret.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : databricks_secret.spn_app_secret.config_reference
+    "spark.databricks.delta.preview.enabled" : true
+    "spark.databricks.io.cache.enabled" : true
+    "spark.master" : "local[*, 4]"
+  }
+  spark_env_vars = {
+    "APPI_INSTRUMENTATION_KEY"        = azurerm_key_vault_secret.kvs-appi-instrumentation-key.value
+    "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.playground.name
+    "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.playground.name
+    "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.playground.name
+  }
+}
+
 resource "databricks_job" "migration_playground_workflow" {
   name = "Landing_To_Wholesale_Gold_Fully_In_Playground"
 
