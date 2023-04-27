@@ -16,10 +16,8 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
@@ -98,14 +96,6 @@ public class Startup
         serviceCollection.AddCommandStack(Configuration);
         serviceCollection.AddApplicationInsightsTelemetry();
         serviceCollection.AddCorrelationContext();
-        serviceCollection.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssembly(typeof(Root).Assembly);
-            cfg.RegisterServicesFromAssembly(typeof(Application.Root).Assembly);
-            cfg.RegisterServicesFromAssembly(typeof(Domain.Root).Assembly);
-            cfg.RegisterServicesFromAssembly(typeof(Infrastructure.Root).Assembly);
-        });
-        serviceCollection.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkPipelineBehavior<,>));
     }
 
     public void Configure(IApplicationBuilder app)

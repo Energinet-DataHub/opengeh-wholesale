@@ -102,6 +102,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
         serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
         serviceCollection.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
+        serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
 
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 

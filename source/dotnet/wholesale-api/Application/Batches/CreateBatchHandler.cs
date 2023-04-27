@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Base;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public class CreateBatchHandler : ICommandHandler<CreateBatchCommand, Guid>
+public class CreateBatchHandler : ICreateBatchHandler
 {
     private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
@@ -37,7 +36,7 @@ public class CreateBatchHandler : ICommandHandler<CreateBatchCommand, Guid>
         _domainEventPublisher = domainEventPublisher;
     }
 
-    public async Task<Guid> Handle(CreateBatchCommand command, CancellationToken cancellationToken)
+    public async Task<Guid> HandleAsync(CreateBatchCommand command)
     {
         var processType = _processTypeMapper.MapFrom(command.ProcessType);
         var batch = _batchFactory.Create(processType, command.GridAreaCodes, command.StartDate, command.EndDate);
