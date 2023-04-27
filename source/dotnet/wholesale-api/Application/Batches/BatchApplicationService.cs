@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using NodaTime;
 
@@ -24,33 +23,21 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 
 public class BatchApplicationService : IBatchApplicationService
 {
-    private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICalculationDomainService _calculationDomainService;
     private readonly IBatchExecutionStateDomainService _batchExecutionStateDomainService;
     private readonly IBatchDtoMapper _batchDtoMapper;
 
     public BatchApplicationService(
-        IBatchFactory batchFactory,
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
-        ICalculationDomainService calculationDomainService,
         IBatchExecutionStateDomainService batchExecutionStateDomainService,
         IBatchDtoMapper batchDtoMapper)
     {
-        _batchFactory = batchFactory;
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
-        _calculationDomainService = calculationDomainService;
         _batchExecutionStateDomainService = batchExecutionStateDomainService;
         _batchDtoMapper = batchDtoMapper;
-    }
-
-    public async Task StartCalculationAsync(Guid batchId)
-    {
-        await _calculationDomainService.StartAsync(batchId).ConfigureAwait(false);
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     public async Task UpdateExecutionStateAsync()
