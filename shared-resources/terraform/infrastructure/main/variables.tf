@@ -98,6 +98,11 @@ variable "authentication_invitation_user_flow_id" {
   description = "The id of the user flow used for inviting users."
 }
 
+variable "authentication_mitid_invitation_user_flow_id" {
+  type        = string
+  description = "The id of the user flow used for inviting users for MitID."
+}
+
 variable "virtual_network_resource_group_name" {
   type        = string
   description = "Name of the resource group where the landing zone virtual network is deployed"

@@ -77,3 +77,11 @@ module "kvs_authentication_invitation_user_flow_id" {
   value        = var.authentication_invitation_user_flow_id
   key_vault_id = module.kv_shared.id
 }
+
+module "kvs_authentication_mitid_invitation_user_flow_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+
+  name         = "authentication-mitid-invitation-user-flow-id"
+  value        = var.authentication_mitid_invitation_user_flow_id
+  key_vault_id = module.kv_shared.id
+}

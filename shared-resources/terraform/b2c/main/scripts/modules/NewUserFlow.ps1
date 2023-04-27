@@ -32,7 +32,10 @@ function New-UserFlow {
         $UserFlowId,
         [Parameter(Mandatory)]
         [string]
-        $UserFlowType
+        $UserFlowType,
+        [AllowNull()]
+        [string]
+        $IdentityProviderId
     )
 
     Write-Information "Trying to create '$UserFlowId' user flow"
@@ -49,6 +52,17 @@ function New-UserFlow {
         defaultLanguageTag             = "da"
     }
 
+    if (-not [string]::IsNullOrEmpty($IdentityProviderId)) {
+        $body += @{
+            identityProviders = @(
+                @{
+                    id   = $IdentityProviderId
+                    name = $IdentityProviderId
+                }
+            )
+        }
+    }
+
     try {
         Invoke-RestMethod `
             -Uri "https://graph.microsoft.com/beta/identity/b2cUserFlows" -Method Post `
@@ -58,9 +72,11 @@ function New-UserFlow {
 
         Write-Information "Created user flow '$UserFlowId' successfully"
 
-    } catch [System.Net.WebException] {
+    }
+    catch [System.Net.WebException] {
         Write-Warning "User flow '$UserFlowId' was not created (maybe it already exists)"
         Invoke-AssertUserFlow -AccessToken $AccessToken -ExpectedUserFlowId $UserFlowId -ExpectedUserFlowType $UserFlowType
+        Invoke-AssertIdentityProvider -AccessToken $AccessToken -UserFlowId $UserFlowId -ExpectedIdentityProviderId $IdentityProviderId
     }
 
     Invoke-AddUserFlowLanguage -AccessToken $AccessToken -UserFlowId $UserFlowId -Language "en"
@@ -134,9 +150,56 @@ function Invoke-AssertUserFlow {
             return
         }
 
-    } catch [System.Net.WebException] {
+    }
+    catch [System.Net.WebException] {
         Write-Error "Could not assert '$ExpectedUserFlowId' user flow: $_"
     }
 
     throw "Assertion of '$ExpectedUserFlowId' failed"
+}
+
+<#
+    .SYNOPSIS
+    Checks that the specified user flow uses the correct identity provider; throws otherwise.
+#>
+function Invoke-AssertIdentityProvider {
+    param (
+        [Parameter(Mandatory)]
+        [string]
+        $AccessToken,
+        [Parameter(Mandatory)]
+        [string]
+        $UserFlowId,
+        [AllowNull()]
+        [string]
+        $ExpectedIdentityProviderId
+    )
+
+    if ([string]::IsNullOrEmpty($ExpectedIdentityProviderId)) {
+        return
+    }
+
+    Write-Information "Asserting if '$UserFlowId' user flow uses '$ExpectedIdentityProviderId' as identity provider"
+
+    $headers = @{
+        Authorization = "Bearer $AccessToken"
+    }
+
+    try {
+        $existingProviders = Invoke-RestMethod `
+            -Uri "https://graph.microsoft.com/beta/identity/b2cUserFlows/B2C_1_$UserFlowId/identityProviders" -Method Get `
+            -Headers $headers
+
+        foreach ($idProvider in $existingProviders.value) {
+            if ($idProvider.id -eq $ExpectedIdentityProviderId) {
+                Write-Information "Assertion of identity provider for '$UserFlowId' succeeded"
+                return
+            }
+        }
+    }
+    catch [System.Net.WebException] {
+        Write-Error "Could not assert '$UserFlowId' user flow: $_"
+    }
+
+    throw "Assertion of identity provider for '$UserFlowId' failed"
 }

@@ -119,19 +119,19 @@ function Invoke-GetOpenIdProvider {
         -Uri "https://graph.microsoft.com/beta/identity/identityProviders" -Method Get `
         -Headers $headers
 
-    foreach ($idProviderItem in $existingProviders.value) {
+    foreach ($idProvider in $existingProviders.value) {
 
-        if ($idProviderItem.displayName -eq $Identifier -and
-            $idProviderItem."@odata.type" -eq "#microsoft.graph.openIdConnectIdentityProvider") {
+        if ($idProvider.displayName -eq $Identifier -and
+            $idProvider."@odata.type" -eq "#microsoft.graph.openIdConnectIdentityProvider") {
 
-            if ($idProviderItem.metadataUrl -ne $MetadataUrl) {
+            if ($idProvider.metadataUrl -ne $MetadataUrl) {
                 throw "Cannot change metadata url on an existing OpenId identity provider."
             }
 
-            Write-Information "Found identity provider with '${$idProviderItem.id}' id"
+            Write-Information "Found identity provider with '${$idProvider.id}' id"
             return @{
                 exists = $true
-                id     = $idProviderItem.id
+                id     = $idProvider.id
             }
         }
     }

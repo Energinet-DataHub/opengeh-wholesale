@@ -23,7 +23,7 @@ using module "./modules/ManageUserFlow.psd1"
   The user flows are not recreated if they already exist.
 
   .EXAMPLE
-  PS> ./AddUserFlows.ps1 <TenantId> <ClientId> <ClientSecret>
+  PS> ./AddUserFlows.ps1 <TenantId> <ClientId> <ClientSecret> <MitIdProviderId>
 #>
 param (
     [Parameter(Mandatory)]
@@ -34,7 +34,10 @@ param (
     $B2CClientId,
     [Parameter(Mandatory)]
     [string]
-    $B2CClientSecret
+    $B2CClientSecret,
+    [Parameter(Mandatory)]
+    [string]
+    $MitIdProviderId
 )
 
 [string]$accessToken = Get-AccessToken -B2CTenantId $B2CTenantId -B2CClientId $B2CClientId -B2CClientSecret $B2CClientSecret
@@ -45,10 +48,19 @@ New-UserFlow -AccessToken $AccessToken -UserFlowId "InvitationFlow" -UserFlowTyp
 Write-Information "Creating user flow for signing users in using TOTP"
 New-UserFlow -AccessToken $AccessToken -UserFlowId "SignInFlow" -UserFlowType "signIn"
 
+Write-Information "Creating user flow for inviting users using MitID"
+New-UserFlow -AccessToken $AccessToken -UserFlowId "MitID_InvitationFlow" -UserFlowType "signUp" -IdentityProviderId $MitIdProviderId
+New-UserFlowAttribute -AccessToken $AccessToken -UserFlowId "MitID_InvitationFlow" -AttributeId "email" -AttributeType "emailBox"
+
+Write-Information "Creating user flow for signing users in using MidID"
+New-UserFlow -AccessToken $AccessToken -UserFlowId "MitID_SignInFlow" -UserFlowType "signIn" -IdentityProviderId $MitIdProviderId
+
 $user_flows = @"
 {
   "inviteUserFlowId": "B2C_1_InvitationFlow",
-  "signInUserFlowId": "B2C_1_SignInFlow"
+  "signInUserFlowId": "B2C_1_SignInFlow",
+  "mitIdInviteUserFlowId": "B2C_1_MitID_InvitationFlow",
+  "mitIdSignInUserFlowId": "B2C_1_MitID_SignInFlow"
 }
 "@
 

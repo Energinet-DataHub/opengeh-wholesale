@@ -51,3 +51,9 @@ output "authentication_invitation_user_flow_id" {
   value       = data.external.user_flows.result.inviteUserFlowId
   sensitive   = false
 }
+
+output "authentication_mitid_invitation_user_flow_id" {
+  description = "The id of the user flow used for inviting users using MitID."
+  value       = data.external.user_flows.result.mitIdInviteUserFlowId
+  sensitive   = false
+}
