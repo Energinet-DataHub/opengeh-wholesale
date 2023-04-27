@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
@@ -143,7 +144,7 @@ internal static class ServiceCollectionExtensions
     private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<DataLakeOptions>()!;
-        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI));
+        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
         var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
     }
