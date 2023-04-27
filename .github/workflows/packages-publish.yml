@@ -23,7 +23,6 @@ on:
       - source/dotnet/wholesale-integration-events-package/**
       - source/dotnet/wholesale-api/Infrastructure/IntegrationEvents/**
       - .github/workflows/packages-publish.yml
-      - .github/workflows/detect-changes.yml
   # Build, test, pack
   # Executed if package folder or build scripts has changed; including if documentation or tests has changed
   workflow_call: {}
