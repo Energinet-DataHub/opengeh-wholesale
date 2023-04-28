@@ -14,8 +14,10 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using FluentAssertions;
@@ -29,14 +31,14 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Batches;
 
 [UnitTest]
-public class CreateBatchHandlerTests
+public class CreateAndStartBatchHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
     public async Task Handle_AddsBatchToRepository(
         [Frozen] Mock<IBatchFactory> batchFactoryMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-        CreateBatchHandler sut)
+        CreateAndStartBatchHandler sut)
     {
         // Arrange
         var batchCommand = CreateBatchCommand();
@@ -52,17 +54,39 @@ public class CreateBatchHandlerTests
         batchRepositoryMock.Verify(x => x.AddAsync(batch));
     }
 
-    private static CreateBatchCommand CreateBatchCommand()
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StartCalculationAsync_ActivatesDomainServiceAndCommits(
+        [Frozen] Mock<IBatchFactory> batchFactoryMock,
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+        [Frozen] Mock<ICalculationDomainService> calculationDomainServiceMock,
+        CreateAndStartBatchHandler sut)
+    {
+        // Arrange
+        var batchCommand = CreateBatchCommand();
+        var batch = CreateBatchFromCommand(batchCommand);
+        batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate))
+            .Returns(batch);
+
+        // Act
+        await sut.Handle(batchCommand, default);
+
+        // Assert
+        unitOfWorkMock.Verify(x => x.CommitAsync());
+        calculationDomainServiceMock.Verify(x => x.StartAsync(batch.Id));
+    }
+
+    private static CreateAndStartBatchCommand CreateBatchCommand()
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
-        return new CreateBatchCommand(
+        return new CreateAndStartBatchCommand(
             Contracts.ProcessType.BalanceFixing,
             new List<string> { "805" },
             period.PeriodStart.ToDateTimeOffset(),
             period.PeriodEnd.ToDateTimeOffset());
     }
 
-    private static Batch CreateBatchFromCommand(CreateBatchCommand command)
+    private static Batch CreateBatchFromCommand(CreateAndStartBatchCommand command)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Batch(

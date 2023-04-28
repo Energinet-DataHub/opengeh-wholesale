@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.Application.Batches;
 /// <summary>
 /// An immutable command to create a batch.
 /// </summary>
-public sealed record CreateBatchCommand(
+public sealed record CreateAndStartBatchCommand(
     ProcessType ProcessType,
     IEnumerable<string> GridAreaCodes,
     DateTimeOffset StartDate,

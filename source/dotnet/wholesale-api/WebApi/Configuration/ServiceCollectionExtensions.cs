@@ -86,7 +86,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<HttpClient>(_ => null!);
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
         serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
-        serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
+        serviceCollection.AddScoped<IBatchExecutionStateDomainService>(_ => null!);
         serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
@@ -106,7 +106,6 @@ internal static class ServiceCollectionExtensions
 
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
-        serviceCollection.AddDomainEventPublisher(configuration);
         serviceCollection.AddDataTimeConfiguration(configuration);
         serviceCollection.AddDataLakeFileSystemClient(configuration);
     }
@@ -140,17 +139,6 @@ internal static class ServiceCollectionExtensions
             correlationContext.SetId(Guid.NewGuid().ToString());
             return correlationContext;
         });
-    }
-
-    private static void AddDomainEventPublisher(this IServiceCollection serviceCollection, IConfiguration configuration)
-    {
-        var options = configuration.Get<ServiceBusOptions>()!;
-        var messageTypes = new Dictionary<Type, string>
-        {
-            { typeof(BatchCreatedDomainEventDto), options.BATCH_CREATED_EVENT_NAME },
-        };
-
-        serviceCollection.AddDomainEventPublisher(options.SERVICE_BUS_SEND_CONNECTION_STRING, options.DOMAIN_EVENTS_TOPIC_NAME, new MessageTypeDictionary(messageTypes));
     }
 
     private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)

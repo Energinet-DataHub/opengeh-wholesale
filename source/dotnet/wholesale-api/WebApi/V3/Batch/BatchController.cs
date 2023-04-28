@@ -47,7 +47,7 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(Guid))]
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
-        return await _mediator.Send(new CreateBatchCommand(
+        return await _mediator.Send(new CreateAndStartBatchCommand(
             batchRequestDto.ProcessType,
             batchRequestDto.GridAreaCodes,
             batchRequestDto.StartDate,
