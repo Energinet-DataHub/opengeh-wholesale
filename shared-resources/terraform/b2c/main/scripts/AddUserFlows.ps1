@@ -52,7 +52,7 @@ Write-Information "Creating user flow for inviting users using MitID"
 New-UserFlow -AccessToken $AccessToken -UserFlowId "MitID_InvitationFlow" -UserFlowType "signUp" -IdentityProviderId $MitIdProviderId
 New-UserFlowAttribute -AccessToken $AccessToken -UserFlowId "MitID_InvitationFlow" -AttributeId "email" -AttributeType "emailBox"
 
-Write-Information "Creating user flow for signing users in using MidID"
+Write-Information "Creating user flow for signing users in using MitID"
 New-UserFlow -AccessToken $AccessToken -UserFlowId "MitID_SignInFlow" -UserFlowType "signIn" -IdentityProviderId $MitIdProviderId
 
 $user_flows = @"
