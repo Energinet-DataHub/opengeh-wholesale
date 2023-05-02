@@ -17,9 +17,9 @@ using System.Web;
 using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
@@ -71,7 +71,7 @@ public class ServiceCollectionConfigurator
         foreach (var gridAreaCode in _withBasisDataFilesForBatch!.Value.Batch.GridAreaCodes)
         {
             var fileDescriptorProviders =
-                new List<Func<Guid, GridAreaCode, (string Directory, string Extension, string EntryPath)>>
+                new List<Func<Guid, string, (string Directory, string Extension, string EntryPath)>>
                 {
                     SettlementReportRepository.GetTimeSeriesHourBasisDataForTotalGridAreaFileSpecification,
                     SettlementReportRepository.GetTimeSeriesQuarterBasisDataForTotalGridAreaFileSpecification,
@@ -82,7 +82,7 @@ public class ServiceCollectionConfigurator
             foreach (var descriptorProvider in fileDescriptorProviders)
             {
                 var (directory, _, entryPath) =
-                    descriptorProvider(_withBasisDataFilesForBatch.Value.Batch.Id, gridAreaCode);
+                    descriptorProvider(_withBasisDataFilesForBatch.Value.Batch.Id, gridAreaCode.Code);
 
                 var response = new Mock<Response<bool>>();
                 var dataLakeDirectoryClient = new Mock<DataLakeDirectoryClient>();
@@ -137,7 +137,18 @@ public class ServiceCollectionConfigurator
             .Setup(x => x.OpenReadAsync(It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<int?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => File.OpenWrite(_withBasisDataFilesForBatch.Value.ZipFileName));
         dataLakeFileSystemClientMock
-            .Setup(client => client.GetFileClient(SettlementReportRepository.GetZipFileName(_withBasisDataFilesForBatch.Value.Batch)))
+            .Setup(client => client.GetFileClient(SettlementReportRepository.GetZipFileName(Map(_withBasisDataFilesForBatch.Value.Batch))))
             .Returns(zipFileClient.Object);
+    }
+
+    private BatchInfo Map(Batch batch)
+    {
+        return new BatchInfo
+        {
+            Id = batch.Id,
+            PeriodStart = batch.PeriodStart,
+            PeriodEnd = batch.PeriodEnd,
+            GridAreaCodes = batch.GridAreaCodes.Select(c => c.Code).ToList(),
+        };
     }
 }

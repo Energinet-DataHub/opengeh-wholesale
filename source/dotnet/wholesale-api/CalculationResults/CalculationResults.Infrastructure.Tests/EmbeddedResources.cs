@@ -16,7 +16,7 @@ using System.Reflection;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests;
 
-// TODO: Copied from other project. Can we share instead?
+// TODO: Copied from other project. Can we share instead? Possibly in Test.Core?
 public static class EmbeddedResources
 {
     /// <summary>

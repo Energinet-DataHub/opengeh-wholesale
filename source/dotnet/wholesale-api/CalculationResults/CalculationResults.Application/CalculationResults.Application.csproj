@@ -11,4 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SettlementReportAggregate" />
+  </ItemGroup>
 </Project>

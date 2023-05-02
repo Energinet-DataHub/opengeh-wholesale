@@ -13,12 +13,31 @@
         <PackageReference Include="NUnit.Analyzers" Version="3.6.1" />
         <PackageReference Include="coverlet.collector" Version="3.2.0" />
         <PackageReference Include="xunit.categories" Version="2.0.6" />
+        <PackageReference Include="YamlDotNet" Version="13.1.0" />
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Include="CalculationResult.json" />
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculation-file-paths.yml">
+        <Link>BasisData\calculation-file-paths.yml</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculator-actor.json">
+        <Link>Actor\calculator-actor.json</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculator-result.json">
+        <Link>Integration\CalculationOutput\calculator-result.json</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\time-series-point-quality.json">
+        <Link>Integration\CalculationOutput\time-series-point-quality.json</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Actor\actor-list.json" />
+      <EmbeddedResource Include="CalculationResultClient\CalculationResult.json" />
+      <EmbeddedResource Include="ProcessStep\Model\ProcessResult.json" />
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
       <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
       <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Integration" />
     </ItemGroup>
 </Project>
