@@ -40,6 +40,6 @@ public sealed class WholesaleDatabaseFixture : IAsyncLifetime
 
     public Task DisposeAsync()
     {
-        return DatabaseManager.DeleteDatabaseAsync();
+        return Task.CompletedTask;
     }
 }
