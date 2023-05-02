@@ -93,7 +93,8 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
         protected override Task OnDisposeWebApiDependenciesAsync()
         {
             AzuriteManager.Dispose();
-            return DatabaseManager.DeleteDatabaseAsync();
+
+            return Task.CompletedTask;
         }
 
         /// <summary>

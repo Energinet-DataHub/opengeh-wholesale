@@ -177,7 +177,6 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             AzuriteManager.Dispose();
 
             await ServiceBusResourceProvider.DisposeAsync();
-            await DatabaseManager.DeleteDatabaseAsync();
         }
 
         private static string GetBuildConfiguration()

@@ -34,6 +34,6 @@ public sealed class ProcessManagerDatabaseFixture : IAsyncLifetime
 
     public Task DisposeAsync()
     {
-        return DatabaseManager.DeleteDatabaseAsync();
+        return Task.CompletedTask;
     }
 }
