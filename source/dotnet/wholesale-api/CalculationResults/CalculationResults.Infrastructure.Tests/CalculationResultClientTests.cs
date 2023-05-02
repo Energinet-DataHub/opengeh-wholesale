@@ -13,15 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests;
 
 [UnitTest]
 public class CalculationResultClientTests
@@ -51,7 +50,7 @@ public class CalculationResultClientTests
         using var reader = new StreamReader(stream);
 
         // Act
-        var actual = await sut.GetAsync(batchId, new GridAreaCode(gridAreaCode), timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
+        var actual = await sut.GetAsync(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
 
         // Assert
         actual.TimeSeriesType.Should().Be(timeSeriesType);

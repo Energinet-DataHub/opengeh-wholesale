@@ -15,6 +15,7 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Pipelines;
@@ -42,7 +43,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddHttpClient<ICalculationResultClient>();
+        serviceCollection.AddCalculationResultsModule();
 
         serviceCollection.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
             options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });

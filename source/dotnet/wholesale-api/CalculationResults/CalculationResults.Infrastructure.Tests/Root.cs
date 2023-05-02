@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests;
 
-public enum QuantityQuality
+// TODO: Do we want to introduce one test project per project? Instead of the "generic" test project *.UnitTests?
+internal class Root
 {
-    Missing,
-    Estimated,
-    Measured,
-    Incomplete,
-    Calculated,
 }

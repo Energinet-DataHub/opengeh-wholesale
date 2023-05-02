@@ -16,12 +16,14 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+// TODO: Should we avoid referencing the DatabricksClient project "just" to get access to the DatabricksOptions?
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
 // https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
@@ -44,7 +46,7 @@ public class CalculationResultClient : ICalculationResultClient
 
     public async Task<ProcessStepResult> GetAsync(
         Guid batchId,
-        GridAreaCode gridAreaCode,
+        string gridAreaCode,
         TimeSeriesType timeSeriesType,
         string? energySupplierGln,
         string? balanceResponsiblePartyGln)
@@ -84,12 +86,12 @@ public class CalculationResultClient : ICalculationResultClient
     }
 
     // TODO: Unit test the SQL (ensure it works as expected)
-    private string CreateSqlStatement(Guid batchId, GridAreaCode gridAreaCode, TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
+    private string CreateSqlStatement(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
     {
         return $@"select time, quantity, quantity_quality
 from wholesale_output.result
 where batch_id = '{batchId}'
-  and grid_area = '{gridAreaCode.Code}'
+  and grid_area = '{gridAreaCode}'
   and time_series_type = '{ToDeltaValue(timeSeriesType)}'
   and aggregation_level = '{GetAggregationLevelDeltaValue(timeSeriesType, energySupplierGln, balanceResponsiblePartyGln)}'
 order by time
@@ -126,6 +128,7 @@ order by time
         }
     }
 
+    // TODO: Why do we have both ProcessResultPoint and TimeSeriesPoint?
     private static ProcessStepResult MapToProcessStepResultDto(
         TimeSeriesType timeSeriesType,
         IEnumerable<ProcessResultPoint> points)

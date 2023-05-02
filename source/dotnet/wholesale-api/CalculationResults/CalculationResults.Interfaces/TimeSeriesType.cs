@@ -12,16 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-
-public interface ICalculationResultClient
+public enum TimeSeriesType
 {
-    Task<ProcessStepResult> GetAsync(
-        Guid batchId,
-        GridAreaCode gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln);
+    NonProfiledConsumption = 1,
+    FlexConsumption = 2,
+    Production = 3,
 }

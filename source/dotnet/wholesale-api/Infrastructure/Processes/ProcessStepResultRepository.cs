@@ -13,10 +13,12 @@
 // limitations under the License.
 
 using System.Globalization;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
-using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
