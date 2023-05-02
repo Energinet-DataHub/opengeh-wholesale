@@ -12,9 +12,10 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 
 public class ProcessResultPointFactory : IProcessResultPointFactory
 {
@@ -23,6 +24,7 @@ public class ProcessResultPointFactory : IProcessResultPointFactory
      dynamic jsonObject = JsonConvert.DeserializeObject(input) ?? throw new InvalidOperationException();
      var result = jsonObject.result.data_array;
 
+     // TODO: Why is the list not used?
      var list = new List<ProcessResultPoint>();
      foreach (var res in result)
      {
