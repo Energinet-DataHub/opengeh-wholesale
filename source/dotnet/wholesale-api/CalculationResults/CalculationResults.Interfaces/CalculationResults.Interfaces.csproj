@@ -1,3 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.CalculationResults.Interfaces</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.CalculationResults.Interfaces</RootNamespace>
+  </PropertyGroup>
 </Project>
