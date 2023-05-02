@@ -8,18 +8,18 @@ adding a job to schedule the alert
 */
 
 resource "databricks_sql_endpoint" "this" {
-  name = "Migration endpoint"
-  cluster_size = "Small"
+  name             = "Migration endpoint"
+  cluster_size     = "Small"
   max_num_clusters = 1
-  auto_stop_mins = 60
-  warehouse_type = "PRO"
+  auto_stop_mins   = 60
+  warehouse_type   = "PRO"
 }
 
 # query for duplicates in silver.time_series
 resource "databricks_sql_query" "duplicates_time_series_silver" {
   data_source_id = databricks_sql_endpoint.this.data_source_id
-  name = "QCTS30-01_duplicates_in_time_series_silver"
-  query =  <<EOT
+  name           = "QCTS07-01_duplicates_in_time_series_silver"
+  query          = <<EOT
     select * from
     (select ts.metering_point_id, ts.transaction_id, ts.transaction_insert_date, ts.historical_flag, ts.valid_from_date, ts.valid_to_date, ROW_NUMBER()
     OVER (PARTITION BY ts.metering_point_id, ts.transaction_id, ts.transaction_insert_date, ts.historical_flag, ts.valid_from_date, ts.valid_to_date ORDER BY ts.metering_point_id DESC, ts.valid_from_date DESC) as rownumber
@@ -30,14 +30,14 @@ resource "databricks_sql_query" "duplicates_time_series_silver" {
 
 # alert for duplicates in silver.time_series
 resource "databricks_sql_alert" "duplicates_time_series_silver" {
-  name = "Duplicates found in time series silver"
+  name     = "Duplicates found in time series silver"
   query_id = databricks_sql_query.duplicates_time_series_silver.id
-  rearm = 1
+  rearm    = 1
   options {
     column = "rownumber"
-    op = "!="
-    value = "0"
-    muted = false
+    op     = "!="
+    value  = "0"
+    muted  = false
   }
 }
 
@@ -47,7 +47,7 @@ resource "databricks_job" "duplicates_time_series_silver" {
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron
-    timezone_id = "UTC"
+    timezone_id            = "UTC"
   }
 
   email_notifications {
@@ -69,8 +69,8 @@ resource "databricks_job" "duplicates_time_series_silver" {
 # query for duplicates in gold.time_series_points
 resource "databricks_sql_query" "duplicates_time_series_gold" {
   data_source_id = databricks_sql_endpoint.this.data_source_id
-  name = "QCTS30-01_duplicates_in_time_series_gold"
-  query =  <<EOT
+  name           = "QCTS15-02_duplicates_in_time_series_gold"
+  query          = <<EOT
     select *
     from (select ts.metering_point_id, ts.observation_time, ROW_NUMBER()
     OVER (PARTITION BY ts.metering_point_id, ts.observation_time ORDER BY ts.metering_point_id DESC, ts.observation_time DESC) as rownumber from gold.time_series_points as ts) as withRownumber
@@ -80,14 +80,14 @@ resource "databricks_sql_query" "duplicates_time_series_gold" {
 
 # alert for duplicates in gold.time_series_points
 resource "databricks_sql_alert" "duplicates_time_series_gold" {
-  name = "Duplicates found in time series gold"
+  name     = "Duplicates found in time series gold"
   query_id = databricks_sql_query.duplicates_time_series_gold.id
-  rearm = 1
+  rearm    = 1
   options {
     column = "rownumber"
-    op = "!="
-    value = "0"
-    muted = false
+    op     = "!="
+    value  = "0"
+    muted  = false
   }
 }
 
@@ -97,7 +97,7 @@ resource "databricks_job" "duplicates_time_series_gold" {
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron
-    timezone_id = "UTC"
+    timezone_id            = "UTC"
   }
 
   email_notifications {
@@ -119,8 +119,8 @@ resource "databricks_job" "duplicates_time_series_gold" {
 # query for duplicates in wholesale.time_series_points
 resource "databricks_sql_query" "duplicates_time_series_wholesale" {
   data_source_id = databricks_sql_endpoint.this.data_source_id
-  name = "QCTS30-01_duplicates_in_time_series_wholesale"
-  query =  <<EOT
+  name           = "QCTS23-01_duplicates_in_time_series_wholesale"
+  query          = <<EOT
     select *
     from (select ts.MeteringPointId, ts.ObservationTime, ROW_NUMBER()
     OVER (PARTITION BY ts.MeteringPointId, ts.ObservationTime ORDER BY ts.MeteringPointId DESC, ts.ObservationTime DESC) as rownumber from wholesale.time_series_points as ts) as withRownumber
@@ -130,14 +130,14 @@ resource "databricks_sql_query" "duplicates_time_series_wholesale" {
 
 # alert for duplicates in wholesale.time_series_points
 resource "databricks_sql_alert" "duplicates_time_series_wholesale" {
-  name = "Duplicates found in time series wholesale"
+  name     = "Duplicates found in time series wholesale"
   query_id = databricks_sql_query.duplicates_time_series_wholesale.id
-  rearm = 1
+  rearm    = 1
   options {
     column = "rownumber"
-    op = "!="
-    value = "0"
-    muted = false
+    op     = "!="
+    value  = "0"
+    muted  = false
   }
 }
 
@@ -147,7 +147,7 @@ resource "databricks_job" "duplicates_time_series_wholesale" {
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron
-    timezone_id = "UTC"
+    timezone_id            = "UTC"
   }
 
   email_notifications {
@@ -169,8 +169,8 @@ resource "databricks_job" "duplicates_time_series_wholesale" {
 # query for duplicates in eloverblik.time_series_points
 resource "databricks_sql_query" "duplicates_time_series_eloverblik" {
   data_source_id = databricks_sql_endpoint.this.data_source_id
-  name = "QCTS30-01_duplicates_in_time_series_eloverblik"
-  query =  <<EOT
+  name           = "QCTS31-01_duplicates_in_time_series_eloverblik"
+  query          = <<EOT
   select * from (select ets.metering_point_id, ets.observation_time, ROW_NUMBER()
   OVER (PARTITION BY ets.metering_point_id, ets.observation_time ORDER BY ets.metering_point_id DESC, ets.observation_time DESC) as rownumber
   from eloverblik.eloverblik_time_series_points as ets) as withRownumber where withRownumber.rownumber > 1
@@ -179,14 +179,14 @@ resource "databricks_sql_query" "duplicates_time_series_eloverblik" {
 
 # alert for duplicates in eloverblik.time_series_points
 resource "databricks_sql_alert" "duplicates_time_series_eloverblik" {
-  name = "Duplicates found in time series eloverblik"
+  name     = "Duplicates found in time series eloverblik"
   query_id = databricks_sql_query.duplicates_time_series_eloverblik.id
-  rearm = 1
+  rearm    = 1
   options {
     column = "rownumber"
-    op = "!="
-    value = "0"
-    muted = false
+    op     = "!="
+    value  = "0"
+    muted  = false
   }
 }
 
@@ -196,7 +196,7 @@ resource "databricks_job" "duplicates_time_series_eloverblik" {
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron
-    timezone_id = "UTC"
+    timezone_id            = "UTC"
   }
 
   email_notifications {
