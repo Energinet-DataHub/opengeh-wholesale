@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 
-public interface IProcessStepResultMapper
+public interface IProcessResultPointFactory
 {
-    ProcessStepResultDto MapToDto(ProcessStepResult processStepResult);
+    IEnumerable<ProcessResultPoint> Create(string input);
 }
