@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
@@ -23,9 +24,9 @@ using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Xunit;
 using ProcessType = Energinet.DataHub.Wholesale.Contracts.ProcessType;
-using QuantityQuality = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.QuantityQuality;
+using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.QuantityQuality;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesPoint;
-using TimeSeriesType = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Integration;
 

@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
-
-public interface IProcessStepResultMapper
+public interface ICalculationResultClient
 {
-    ProcessStepResultDto MapToDto(ProcessStepResult processStepResult);
+    Task<ProcessStepResult> GetAsync(
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        string? energySupplierGln,
+        string? balanceResponsiblePartyGln);
 }

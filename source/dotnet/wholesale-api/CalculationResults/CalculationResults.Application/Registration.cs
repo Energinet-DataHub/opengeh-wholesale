@@ -13,12 +13,21 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 
-public interface IProcessStepResultMapper
+/// <summary>
+/// Registration of services required for the CalculationResults module.
+/// </summary>
+public static class Registration
 {
-    ProcessStepResultDto MapToDto(ProcessStepResult processStepResult);
+    public static void AddCalculationResultsModule(
+        this IServiceCollection serviceCollection)
+    {
+        // TODO: This registration depends on IOptions<DatabricksOptions> - how do we make that explicit?
+        serviceCollection.AddHttpClient<ICalculationResultClient>();
+
+        // TODO: Should we add all required stuff? What if it's shared - like e.g. IJsonSerializer?
+    }
 }

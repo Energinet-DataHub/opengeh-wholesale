@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
@@ -37,7 +38,7 @@ public class ProcessStepMapperTests
     public void MapToDto_ReturnsDto(ProcessStepResultMapper sut, ProcessStepResult processStepResult)
     {
         // Arrange
-        processStepResult.SetPrivateProperty(p => p.TimeSeriesType, Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType.Production);
+        processStepResult.SetPrivateProperty(p => p.TimeSeriesType, CalculationResults.Interfaces.TimeSeriesType.Production);
         var expected = new ProcessStepResultDto(
             TimeSeriesType.Production,
             processStepResult.Sum,

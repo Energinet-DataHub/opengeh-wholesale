@@ -23,20 +23,20 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.ProcessStep.M
 public class TimeSeriesTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(TimeSeriesType.Production, Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType.Production)]
-    [InlineAutoMoqData(TimeSeriesType.FlexConsumption, Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption, Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType.NonProfiledConsumption)]
-    public void MapContractType_ReturnsExpectedDomainType(TimeSeriesType source, Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType expected)
+    [InlineAutoMoqData(TimeSeriesType.Production, CalculationResults.Interfaces.TimeSeriesType.Production)]
+    [InlineAutoMoqData(TimeSeriesType.FlexConsumption, CalculationResults.Interfaces.TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption, CalculationResults.Interfaces.TimeSeriesType.NonProfiledConsumption)]
+    public void MapContractType_ReturnsExpectedDomainType(TimeSeriesType source, CalculationResults.Interfaces.TimeSeriesType expected)
     {
         var actual = TimeSeriesTypeMapper.Map(source);
         actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineAutoMoqData(Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType.Production, TimeSeriesType.Production)]
-    [InlineAutoMoqData(Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType.FlexConsumption, TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData(Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType.NonProfiledConsumption, TimeSeriesType.NonProfiledConsumption)]
-    public void MapDomainType_ReturnsExpectedContractType(Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesType source, TimeSeriesType expected)
+    [InlineAutoMoqData(CalculationResults.Interfaces.TimeSeriesType.Production, TimeSeriesType.Production)]
+    [InlineAutoMoqData(CalculationResults.Interfaces.TimeSeriesType.FlexConsumption, TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(CalculationResults.Interfaces.TimeSeriesType.NonProfiledConsumption, TimeSeriesType.NonProfiledConsumption)]
+    public void MapDomainType_ReturnsExpectedContractType(CalculationResults.Interfaces.TimeSeriesType source, TimeSeriesType expected)
     {
         var actual = TimeSeriesTypeMapper.Map(source);
         actual.Should().Be(expected);
