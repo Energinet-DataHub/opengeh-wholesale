@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
+namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-namespace Energinet.DataHub.Wholesale.Application.Base;
-
-public interface IQuery<out TResponse> : IRequest<TResponse>
+public interface ICreateBatchHandler
 {
+    Task<Guid> HandleAsync(CreateBatchCommand command);
 }

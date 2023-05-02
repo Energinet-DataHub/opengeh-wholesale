@@ -84,7 +84,7 @@ public class BatchControllerTests : WebApiTestBase
 
     private static BatchRequestDto CreateBatchRequestDto()
     {
-        var period = Periods.January_EuropeCopenhagen_1ms;
+        var period = Periods.January_EuropeCopenhagen;
         var batchRequest = new BatchRequestDto(
             ProcessType.BalanceFixing,
             new List<string> { "805" },
