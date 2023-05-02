@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 
 public static class QuantityQualityMapper
 {
