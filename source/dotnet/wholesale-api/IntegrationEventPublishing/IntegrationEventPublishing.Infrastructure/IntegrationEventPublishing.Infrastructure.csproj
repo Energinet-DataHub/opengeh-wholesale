@@ -1,2 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventsPublising.Infrastructure</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventsPublising.Infrastructure</RootNamespace>
+  </PropertyGroup>
 </Project>
