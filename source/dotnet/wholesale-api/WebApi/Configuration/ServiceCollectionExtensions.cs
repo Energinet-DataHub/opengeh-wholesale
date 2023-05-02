@@ -109,7 +109,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
         serviceCollection.AddDomainEventPublisher(configuration);
-        serviceCollection.AddDataTimeConfiguration(configuration);
+        serviceCollection.AddDateTimeConfiguration(configuration);
         serviceCollection.AddDataLakeFileSystemClient(configuration);
     }
 
@@ -163,7 +163,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
     }
 
-    private static void AddDataTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static void AddDateTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<DateTimeOptions>()!;
         var dateTimeZoneId = options.TIME_ZONE;
