@@ -12,9 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Microsoft.Azure.Databricks.Client;
 
-public interface IDatabricksWheelClient
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
 {
-    IJobsWheelApi Jobs { get; }
+    public class JobsApiClient21 : JobsApiClient, IJobsWheelApi
+    {
+        public JobsApiClient21(HttpClient httpClient)
+            : base(httpClient)
+        {
+        }
+
+        public async Task<WheelJob> GetWheel(long jobId, CancellationToken cancellationToken = default)
+        {
+            var requestUri = $"jobs/get?job_id={jobId}";
+            return await HttpGet<WheelJob>(HttpClient, requestUri, cancellationToken).ConfigureAwait(false);
+        }
+    }
 }

@@ -27,6 +27,7 @@ using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;

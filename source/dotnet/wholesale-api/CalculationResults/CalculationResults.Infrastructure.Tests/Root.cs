@@ -14,7 +14,6 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests;
 
-// TODO: Do we want to introduce one test project per project? Instead of the "generic" test project *.UnitTests?
 internal class Root
 {
 }

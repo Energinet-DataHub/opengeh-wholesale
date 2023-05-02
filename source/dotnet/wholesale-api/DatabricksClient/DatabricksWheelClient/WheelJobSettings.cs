@@ -15,7 +15,7 @@
 using Microsoft.Azure.Databricks.Client;
 using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
 {
     /// <summary>
     /// Settings for a job. These settings can be updated using the resetJob method.

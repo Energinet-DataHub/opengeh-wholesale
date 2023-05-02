@@ -16,7 +16,6 @@ using System.Reflection;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests;
 
-// TODO: Copied from other project. Can we share instead?
 public static class EmbeddedResources
 {
     /// <summary>
