@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.Batches.Infrastructure</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Batches.Infrastructure</RootNamespace>
+  </PropertyGroup>
+</Project>
