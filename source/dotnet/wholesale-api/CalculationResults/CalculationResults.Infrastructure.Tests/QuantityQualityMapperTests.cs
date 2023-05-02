@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using FluentAssertions;
 using Xunit;
-using QuantityQuality = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.QuantityQuality;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests;
 
 public class QuantityQualityMapperTests
 {

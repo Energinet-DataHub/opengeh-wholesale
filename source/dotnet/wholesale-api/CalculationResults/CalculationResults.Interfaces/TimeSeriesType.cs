@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 
-public enum QuantityQuality
+public enum TimeSeriesType
 {
-    Missing,
-    Estimated,
-    Measured,
-    Incomplete,
-    Calculated,
+    NonProfiledConsumption = 1,
+    FlexConsumption = 2,
+    Production = 3,
 }
