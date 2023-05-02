@@ -86,7 +86,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<HttpClient>(_ => null!);
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
         serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
-        serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
+        serviceCollection.AddScoped<IBatchExecutionStateDomainService>(_ => null!); // Unused in the use cases of this app
         serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
@@ -103,6 +103,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
         serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
         serviceCollection.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
+        serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
 
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 

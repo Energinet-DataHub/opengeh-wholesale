@@ -45,7 +45,7 @@ public class CreateBatchHandlerTests
             .Returns(batch);
 
         // Act
-        var actual = await sut.Handle(batchCommand, default);
+        var actual = await sut.HandleAsync(batchCommand);
 
         // Assert
         batch.Id.Should().Be(actual);
