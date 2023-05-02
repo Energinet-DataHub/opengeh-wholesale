@@ -28,6 +28,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll
+      tests_filter_expression: HealthCheckTests.When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy
       aspnetcore_test_contentroot_variable_name: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
       aspnetcore_test_contentroot_variable_value: \source\dotnet\wholesale-api\WebApi
       download_attempt_limit: 20
@@ -44,6 +45,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
     with:
       tests_dll_file_path: \source\dotnet\process-manager\ProcessManager.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.dll
+      tests_filter_expression: HealthCheckEndpointTests.When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy
       download_attempt_limit: 20
       use_azure_functions_tools: true
       environment: AzureAuth
