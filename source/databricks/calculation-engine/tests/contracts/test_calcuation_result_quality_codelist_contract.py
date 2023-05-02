@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from tests.contract_utils import assert_codelist_matches_contract
 from package.codelists import TimeSeriesQuality
+from tests.contract_utils import assert_codelist_matches_contract
 
 
 def test_quality_codelist_matches_contract(contracts_path):
