@@ -12,37 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Base;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Batches;
 
-public class CreateBatchHandler : ICommandHandler<CreateBatchCommand, Guid>
+public class CreateBatchHandler : ICreateBatchHandler
 {
     private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
     private readonly IProcessTypeMapper _processTypeMapper;
     private readonly IDomainEventPublisher _domainEventPublisher;
+    private readonly IUnitOfWork _unitOfWork;
 
     public CreateBatchHandler(
         IBatchFactory batchFactory,
         IBatchRepository batchRepository,
         IProcessTypeMapper processTypeMapper,
-        IDomainEventPublisher domainEventPublisher)
+        IDomainEventPublisher domainEventPublisher,
+        IUnitOfWork unitOfWork)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
         _processTypeMapper = processTypeMapper;
         _domainEventPublisher = domainEventPublisher;
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task<Guid> Handle(CreateBatchCommand command, CancellationToken cancellationToken)
+    public async Task<Guid> HandleAsync(CreateBatchCommand command)
     {
         var processType = _processTypeMapper.MapFrom(command.ProcessType);
         var batch = _batchFactory.Create(processType, command.GridAreaCodes, command.StartDate, command.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _domainEventPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
+        await _unitOfWork.CommitAsync().ConfigureAwait(false);
         return batch.Id;
     }
 }

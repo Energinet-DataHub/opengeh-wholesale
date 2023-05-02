@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.ProcessStep;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -61,7 +60,6 @@ public class WebApiFactory : WebApplicationFactory<Startup>
             services.AddScoped(_ =>
                 ProcessStepApplicationServiceMock?.Object ?? new Mock<IProcessStepApplicationService>().Object);
             services.AddScoped(_ => BatchApplicationServiceMock?.Object ?? new Mock<IBatchApplicationService>().Object);
-            services.AddScoped(_ => MediatorMock?.Object ?? new Mock<IMediator>().Object);
         });
     }
 
@@ -74,8 +72,6 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     public Mock<IProcessStepApplicationService>? ProcessStepApplicationServiceMock { get; set; }
 
     public Mock<IBatchApplicationService>? BatchApplicationServiceMock { get; set; }
-
-    public Mock<IMediator>? MediatorMock { get; set; }
 
     private sealed class AllowAnonymous : IAuthorizationHandler
     {
