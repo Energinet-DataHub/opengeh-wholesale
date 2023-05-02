@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Application.ProcessStep;
@@ -26,16 +26,16 @@ namespace Energinet.DataHub.Wholesale.Application.ProcessStep;
 /// </summary>
 public class ProcessStepApplicationService : IProcessStepApplicationService
 {
-    private readonly IProcessStepResultRepository _processStepResultRepository;
+    private readonly ICalculationResultClient _calculationResultClient;
     private readonly IProcessStepResultMapper _processStepResultMapper;
     private readonly IActorRepository _actorRepository;
 
     public ProcessStepApplicationService(
-        IProcessStepResultRepository processStepResultRepository,
+        ICalculationResultClient calculationResultClient,
         IProcessStepResultMapper processStepResultMapper,
         IActorRepository actorRepository)
     {
-        _processStepResultRepository = processStepResultRepository;
+        _calculationResultClient = calculationResultClient;
         _processStepResultMapper = processStepResultMapper;
         _actorRepository = actorRepository;
     }
@@ -65,9 +65,9 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
         string? energySupplierGln,
         string? balanceResponsibleParty)
     {
-        var processStepResult = await _processStepResultRepository.GetAsync(
+        var processStepResult = await _calculationResultClient.GetAsync(
                 batchId,
-                new GridAreaCode(gridAreaCode),
+                gridAreaCode,
                 TimeSeriesTypeMapper.Map(timeSeriesType),
                 energySupplierGln,
                 balanceResponsibleParty)

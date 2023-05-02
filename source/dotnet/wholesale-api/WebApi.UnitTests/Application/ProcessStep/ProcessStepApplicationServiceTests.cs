@@ -132,8 +132,7 @@ public class ProcessStepApplicationServiceTests
     [Theory]
     [AutoMoqData]
     public async Task GetResultAsync_TimeSeriesPoint_IsRead(
-        [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock,
-        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
         [Frozen] Mock<IActorRepository> actorRepositoryMock)
     {
         // Arrange
@@ -145,11 +144,11 @@ public class ProcessStepApplicationServiceTests
         var batchId = Guid.NewGuid();
 
         var sut = new ProcessStepApplicationService(
-            processStepResultRepositoryMock.Object,
+            calculationResultClientMock.Object,
             new ProcessStepResultMapper(),
             actorRepositoryMock.Object);
 
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, new GridAreaCode(gridAreaCode), TimeSeriesType.Production, null, null))
+        calculationResultClientMock.Setup(p => p.GetAsync(batchId, gridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(new ProcessStepResult(TimeSeriesType.Production, new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         // Act
@@ -172,14 +171,14 @@ public class ProcessStepApplicationServiceTests
         ProcessStepResultRequestDto request,
         ProcessStepResult result,
         ProcessStepResultDto resultDto,
-        [Frozen] Mock<IProcessStepResultRepository> repositoryMock,
+        [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
         [Frozen] Mock<IProcessStepResultMapper> mapperMock,
         ProcessStepApplicationService sut)
     {
         // Arrange
         request.SetPrivateProperty(dto => dto.GridAreaCode, "123");
-        repositoryMock
-            .Setup(repository => repository.GetAsync(request.BatchId, new GridAreaCode(request.GridAreaCode), TimeSeriesType.Production, null, null))
+        calculationResultClientMock
+            .Setup(repository => repository.GetAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => result);
         mapperMock
             .Setup(mapper => mapper.MapToDto(result))

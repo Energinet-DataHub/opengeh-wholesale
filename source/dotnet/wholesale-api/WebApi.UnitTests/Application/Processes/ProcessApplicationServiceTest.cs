@@ -49,7 +49,7 @@ public class ProcessApplicationServiceTest
     public async Task
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaProductionOnce(
             [Frozen] Mock<IActorRepository> actorRepositoryMock,
-            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
@@ -68,9 +68,9 @@ public class ProcessApplicationServiceTest
             TimeSeriesType.Production,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
-        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+        calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
-            It.IsAny<GridAreaCode>(),
+            It.IsAny<string>(),
             TimeSeriesType.Production,
             null,
             null)).ReturnsAsync(processStepResult);
@@ -100,7 +100,7 @@ public class ProcessApplicationServiceTest
     public async Task
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaNonProfiledConsumptionOnce(
             [Frozen] Mock<IActorRepository> actorRepositoryMock,
-            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
@@ -119,9 +119,9 @@ public class ProcessApplicationServiceTest
             TimeSeriesType.Production,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
-        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+        calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
-            It.IsAny<GridAreaCode>(),
+            It.IsAny<string>(),
             TimeSeriesType.NonProfiledConsumption,
             null,
             null)).ReturnsAsync(processStepResult);
@@ -150,7 +150,7 @@ public class ProcessApplicationServiceTest
     [InlineAutoMoqData]
     public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplier(
         [Frozen] Mock<IActorRepository> actorRepositoryMock,
-        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
         [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
@@ -170,9 +170,9 @@ public class ProcessApplicationServiceTest
             TimeSeriesType.NonProfiledConsumption,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
-        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+        calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
-            It.IsAny<GridAreaCode>(),
+            It.IsAny<string>(),
             TimeSeriesType.NonProfiledConsumption,
             glnNumber,
             null)).ReturnsAsync(processStepResult);
@@ -203,7 +203,7 @@ public class ProcessApplicationServiceTest
     public async Task
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForBalanceResponsibleParty(
             [Frozen] Mock<IActorRepository> actorRepositoryMock,
-            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
@@ -223,9 +223,9 @@ public class ProcessApplicationServiceTest
             TimeSeriesType.NonProfiledConsumption,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
-        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+        calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
-            It.IsAny<GridAreaCode>(),
+            It.IsAny<string>(),
             TimeSeriesType.NonProfiledConsumption,
             null,
             brpGlnNumber)).ReturnsAsync(processStepResult);
@@ -253,7 +253,7 @@ public class ProcessApplicationServiceTest
     public async Task
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplierByBalanceResponsibleParty(
             [Frozen] Mock<IActorRepository> actorRepositoryMock,
-            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
@@ -274,9 +274,9 @@ public class ProcessApplicationServiceTest
             TimeSeriesType.NonProfiledConsumption,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
-        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+        calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
-            It.IsAny<GridAreaCode>(),
+            It.IsAny<string>(),
             TimeSeriesType.NonProfiledConsumption,
             glnNumber,
             brpGlnNumber)).ReturnsAsync(processStepResult);
