@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,6 +28,8 @@ public static class Registration
     {
         // TODO: This registration depends on IOptions<DatabricksOptions> - how do we make that explicit?
         serviceCollection.AddHttpClient<ICalculationResultClient>();
+        serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
+        serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
 
         // TODO: Should we add all required stuff? What if it's shared - like e.g. IJsonSerializer?
     }

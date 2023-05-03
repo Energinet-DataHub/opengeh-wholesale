@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
     <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
   </ItemGroup>
 </Project>
