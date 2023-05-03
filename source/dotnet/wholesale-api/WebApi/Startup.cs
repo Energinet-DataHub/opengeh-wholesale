@@ -99,6 +99,7 @@ public class Startup
         serviceCollection.AddCommandStack(Configuration);
         serviceCollection.AddApplicationInsightsTelemetry();
         serviceCollection.AddCorrelationContext();
+        serviceCollection.AddCalculationResultsModule();
     }
 
     public void Configure(IApplicationBuilder app)

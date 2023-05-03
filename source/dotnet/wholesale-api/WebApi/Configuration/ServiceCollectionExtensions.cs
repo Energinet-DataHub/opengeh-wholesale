@@ -81,7 +81,6 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<HttpClient>(_ => null!);
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
         serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
         serviceCollection.AddScoped<IBatchExecutionStateDomainService>(_ => null!); // Unused in the use cases of this app
