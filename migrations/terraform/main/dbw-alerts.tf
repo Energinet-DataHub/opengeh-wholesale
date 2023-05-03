@@ -122,8 +122,8 @@ resource "databricks_sql_query" "duplicates_time_series_wholesale" {
   name           = "QCTS23-01_duplicates_in_time_series_wholesale"
   query          = <<EOT
     select *
-    from (select ts.MeteringPointId, ts.ObservationTime, ROW_NUMBER()
-    OVER (PARTITION BY ts.MeteringPointId, ts.ObservationTime ORDER BY ts.MeteringPointId DESC, ts.ObservationTime DESC) as rownumber from wholesale.time_series_points as ts) as withRownumber
+    from (select ts.metering_point_id, ts.observation_time, ROW_NUMBER()
+    OVER (PARTITION BY ts.metering_point_id, ts.observation_time ORDER BY ts.metering_point_id DESC, ts.observation_time DESC) as rownumber from wholesale.time_series_points as ts) as withRownumber
     where withRownumber.rownumber > 1
   EOT
 }
