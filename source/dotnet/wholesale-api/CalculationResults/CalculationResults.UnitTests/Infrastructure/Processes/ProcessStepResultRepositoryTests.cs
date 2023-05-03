@@ -18,14 +18,14 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationR
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.SettlementReport;
+using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Processes;
 
 [UnitTest]
 public class ProcessStepResultRepositoryTests

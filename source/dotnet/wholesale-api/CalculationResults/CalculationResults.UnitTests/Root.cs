@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests;
 
 // TODO: Do we want to introduce one test project per project? Instead of the "generic" test project *.UnitTests?
 internal class Root

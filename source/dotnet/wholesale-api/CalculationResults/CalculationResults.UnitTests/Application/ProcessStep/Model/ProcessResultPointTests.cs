@@ -17,7 +17,7 @@ using Test.Core;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Application.ProcessStep.Model;
 
 [UnitTest]
 public sealed class ProcessResultPointTests

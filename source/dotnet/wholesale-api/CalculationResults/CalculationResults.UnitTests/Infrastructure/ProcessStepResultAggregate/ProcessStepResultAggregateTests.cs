@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.ProcessStepResultAggregate;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.ProcessStepResultAggregate;
 
 public class ProcessStepResultAggregateTests
 {

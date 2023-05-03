@@ -25,7 +25,7 @@ using Xunit;
 using Xunit.Categories;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Application.ProcessStep;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Application.ProcessStep;
 
 [UnitTest]
 public class ProcessStepApplicationServiceTests

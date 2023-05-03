@@ -20,7 +20,7 @@ using Test.Core;
 using Xunit;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Application.ProcessStep.Model;
 
 public class ProcessStepMapperTests
 {

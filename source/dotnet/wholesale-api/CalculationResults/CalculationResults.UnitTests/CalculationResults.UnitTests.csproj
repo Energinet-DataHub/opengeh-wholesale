@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-      <AssemblyName>Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests</AssemblyName>
-      <RootNamespace>Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests</RootNamespace>
+      <AssemblyName>Energinet.DataHub.Wholesale.CalculationResults.UnitTests</AssemblyName>
+      <RootNamespace>Energinet.DataHub.Wholesale.CalculationResults.UnitTests</RootNamespace>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>

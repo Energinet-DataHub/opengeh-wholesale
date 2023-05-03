@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Mode
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Application.ProcessStep.Model;
 
 public class TimeSeriesTypeMapperTests
 {
