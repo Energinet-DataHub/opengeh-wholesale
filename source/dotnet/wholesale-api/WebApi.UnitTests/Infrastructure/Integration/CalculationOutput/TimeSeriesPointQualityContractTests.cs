@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
+using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Integration.CalculationOutput;

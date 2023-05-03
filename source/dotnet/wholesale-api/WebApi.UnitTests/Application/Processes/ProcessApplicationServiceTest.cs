@@ -19,15 +19,13 @@ using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Moq;
 using NodaTime;
 using Xunit;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Processes;
 
@@ -78,7 +76,7 @@ public class ProcessApplicationServiceTest
         actorRepositoryMock
             .Setup(a => a.GetEnergySuppliersAsync(
                 eventDto.BatchId,
-                new GridAreaCode(eventDto.GridAreaCode),
+                eventDto.GridAreaCode,
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
 
         calculationResultCompletedFactoryMock
@@ -129,7 +127,7 @@ public class ProcessApplicationServiceTest
         actorRepositoryMock
             .Setup(a => a.GetEnergySuppliersAsync(
                 eventDto.BatchId,
-                new GridAreaCode(eventDto.GridAreaCode),
+                eventDto.GridAreaCode,
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
 
         calculationResultCompletedFactoryMock
@@ -180,7 +178,7 @@ public class ProcessApplicationServiceTest
         actorRepositoryMock
             .Setup(a => a.GetEnergySuppliersAsync(
                 eventDto.BatchId,
-                It.IsAny<GridAreaCode>(),
+                It.IsAny<string>(),
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(glnNumber) });
 
         calculationResultCompletedFactoryMock
@@ -233,7 +231,7 @@ public class ProcessApplicationServiceTest
         actorRepositoryMock
             .Setup(a => a.GetBalanceResponsiblePartiesAsync(
                 eventDto.BatchId,
-                It.IsAny<GridAreaCode>(),
+                It.IsAny<string>(),
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(brpGlnNumber) });
 
         calculationResultCompletedFactoryMock
@@ -284,13 +282,13 @@ public class ProcessApplicationServiceTest
         actorRepositoryMock
             .Setup(a => a.GetBalanceResponsiblePartiesAsync(
                 eventDto.BatchId,
-                It.IsAny<GridAreaCode>(),
+                It.IsAny<string>(),
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(brpGlnNumber) });
 
         actorRepositoryMock
             .Setup(a => a.GetEnergySuppliersByBalanceResponsiblePartyAsync(
                 eventDto.BatchId,
-                It.IsAny<GridAreaCode>(),
+                It.IsAny<string>(),
                 It.IsAny<TimeSeriesType>(),
                 brpGlnNumber)).ReturnsAsync(new[] { new Actor(glnNumber) });
 
