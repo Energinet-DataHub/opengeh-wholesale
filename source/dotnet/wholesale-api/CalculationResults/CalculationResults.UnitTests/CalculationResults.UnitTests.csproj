@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+      <AssemblyName>Energinet.DataHub.Wholesale.CalculationResults.UnitTests</AssemblyName>
+      <RootNamespace>Energinet.DataHub.Wholesale.CalculationResults.UnitTests</RootNamespace>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentAssertions" Version="6.10.0" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+      <PackageReference Include="Moq" Version="4.18.4" />
+      <PackageReference Include="xunit" Version="2.4.2" />
+      <PackageReference Include="YamlDotNet" Version="13.1.0" />
+      <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.1.0" />
+      <PackageReference Include="xunit.categories" Version="2.0.6" />
+      <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PrivateAssets>all</PrivateAssets>
+      </PackageReference>
+      <PackageReference Include="coverlet.collector" Version="3.2.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+  
+    <ItemGroup>
+      <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.5.22">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+  
+    <ItemGroup>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculation-file-paths.yml">
+        <Link>BasisData\calculation-file-paths.yml</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculator-actor.json">
+        <Link>Actor\calculator-actor.json</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculator-result.json">
+        <Link>Integration\CalculationOutput\calculator-result.json</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\time-series-point-quality.json">
+        <Link>Integration\CalculationOutput\time-series-point-quality.json</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
+      <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
+      <EmbeddedResource Include="Infrastructure\CalculationResultClient\CalculationResult.json" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
+      <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
+      <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Application" />
+      <Folder Include="Infrastructure" />
+    </ItemGroup>
+</Project>

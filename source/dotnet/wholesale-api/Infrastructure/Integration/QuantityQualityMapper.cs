@@ -18,14 +18,14 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 
 public static class QuantityQualityMapper
 {
-    public static QuantityQuality MapQuantityQuality(CalculationResults.Interfaces.QuantityQuality quantityQuality)
+    public static QuantityQuality MapQuantityQuality(CalculationResults.Interfaces.CalculationResultClient.QuantityQuality quantityQuality)
     {
         return quantityQuality switch
         {
-            CalculationResults.Interfaces.QuantityQuality.Estimated => QuantityQuality.Estimated,
-            CalculationResults.Interfaces.QuantityQuality.Incomplete => QuantityQuality.Incomplete,
-            CalculationResults.Interfaces.QuantityQuality.Measured => QuantityQuality.Measured,
-            CalculationResults.Interfaces.QuantityQuality.Missing => QuantityQuality.Missing,
+            CalculationResults.Interfaces.CalculationResultClient.QuantityQuality.Estimated => QuantityQuality.Estimated,
+            CalculationResults.Interfaces.CalculationResultClient.QuantityQuality.Incomplete => QuantityQuality.Incomplete,
+            CalculationResults.Interfaces.CalculationResultClient.QuantityQuality.Measured => QuantityQuality.Measured,
+            CalculationResults.Interfaces.CalculationResultClient.QuantityQuality.Missing => QuantityQuality.Missing,
             _ => throw new ArgumentException($"No matching 'QuantityQuality' for: {quantityQuality.ToString()}"),
         };
     }
