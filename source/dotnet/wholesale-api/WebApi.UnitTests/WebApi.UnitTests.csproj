@@ -52,7 +52,6 @@ limitations under the License.
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="YamlDotNet" Version="13.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,8 +71,6 @@ limitations under the License.
     <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\time-series-point-quality.json">
       <Link>Infrastructure\Integration\CalculationOutput\time-series-point-quality.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
-    <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
   </ItemGroup>
 
   <ItemGroup>
