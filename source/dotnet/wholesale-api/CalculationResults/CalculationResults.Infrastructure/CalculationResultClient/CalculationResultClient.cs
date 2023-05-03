@@ -58,24 +58,22 @@ public class CalculationResultClient : ICalculationResultClient
             statement = sql,
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
-        var requestString = _jsonSerializer.Serialize(requestObject);
 
-        // TODO: Use databricks workspace url from config
-        // TODO: Enable SQL statement execution API in terraform: https://registry.terraform.io/providers/databricks/databricks/latest/docs/data-sources/sql_warehouse#attribute-reference
-        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, new StringContent(requestString)).ConfigureAwait(false);
-
-        var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-        var list = _processResultPointFactory.Create(jsonResponse);
+        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
         // TODO: Unit test
         if (!response.IsSuccessStatusCode)
             throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
+
+        var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+        var list = _processResultPointFactory.Create(jsonResponse);
 
         return MapToProcessStepResultDto(timeSeriesType, list);
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
     {
+        httpClient.BaseAddress = new Uri(options.Value.DATABRICKS_WORKSPACE_URL);
         httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", options.Value.DATABRICKS_WORKSPACE_TOKEN);
         httpClient.DefaultRequestHeaders.Accept.Clear();
