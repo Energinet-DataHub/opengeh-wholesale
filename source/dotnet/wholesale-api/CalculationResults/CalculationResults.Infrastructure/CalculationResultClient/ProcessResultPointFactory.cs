@@ -31,6 +31,6 @@ public class ProcessResultPointFactory : IProcessResultPointFactory
          list.Add(new ProcessResultPoint(res[1], res[2], res[0]));
      }
 
-     return result;
+     return list;
  }
 }

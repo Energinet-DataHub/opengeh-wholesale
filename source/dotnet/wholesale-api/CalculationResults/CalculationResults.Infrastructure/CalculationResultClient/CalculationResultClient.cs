@@ -133,9 +133,9 @@ order by time
     {
         var pointsDto = points.Select(
                 point => new TimeSeriesPoint(
-                    DateTimeOffset.Parse(point.quarter_time),
+                    DateTimeOffset.Parse(point.time),
                     decimal.Parse(point.quantity, CultureInfo.InvariantCulture),
-                    QuantityQualityMapper.MapQuality(point.quality)))
+                    QuantityQualityMapper.MapQuality(point.quantity_quality)))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());

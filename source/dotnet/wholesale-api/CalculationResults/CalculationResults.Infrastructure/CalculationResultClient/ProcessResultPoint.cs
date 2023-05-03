@@ -19,4 +19,4 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 /// All values of the PointDto must be in lower casing to conform with the spark json output.
 /// </summary>
 #pragma warning disable SA1300
-public sealed record ProcessResultPoint(string quantity, string quality, string quarter_time);
+public sealed record ProcessResultPoint(string quantity, string quantity_quality, string time);
