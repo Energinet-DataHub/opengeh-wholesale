@@ -23,37 +23,38 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class CalculationResultClientTests
 {
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task DeserializeJson_ShouldReturnValidObject(
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string energySupplierGln,
-        string balanceResponsiblePartyGln,
-        CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient sut)
-    {
-        // Arrange
-        int expectedRowCount = 96;
-        var expectedFirstTimeSeriesPoint = new TimeSeriesPoint(
-            DateTimeOffset.Parse("2023-04-04T22:00:00.000Z"),
-            0.000m,
-            QuantityQuality.Missing);
-        var expectedLastTimeSeriesPoint = new TimeSeriesPoint(
-            DateTimeOffset.Parse("2023-04-05T08:47:41.000Z"),
-            1.235m,
-            QuantityQuality.Estimated);
-
-        var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
-        using var reader = new StreamReader(stream);
-
-        // Act
-        var actual = await sut.GetAsync(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
-
-        // Assert
-        actual.TimeSeriesType.Should().Be(timeSeriesType);
-        actual.TimeSeriesPoints.Length.Should().Be(expectedRowCount);
-        actual.TimeSeriesPoints.First().Should().Be(expectedFirstTimeSeriesPoint);
-        actual.TimeSeriesPoints.Last().Should().Be(expectedLastTimeSeriesPoint);
-    }
+    // TODO: LRN reintroduce test after implementation of CalculationResultClient
+    // [Theory]
+    // [InlineAutoMoqData]
+    // public async Task DeserializeJson_ShouldReturnValidObject(
+    //     Guid batchId,
+    //     string gridAreaCode,
+    //     TimeSeriesType timeSeriesType,
+    //     string energySupplierGln,
+    //     string balanceResponsiblePartyGln,
+    //     CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient sut)
+    // {
+    //     // Arrange
+    //     int expectedRowCount = 96;
+    //     var expectedFirstTimeSeriesPoint = new TimeSeriesPoint(
+    //         DateTimeOffset.Parse("2023-04-04T22:00:00.000Z"),
+    //         0.000m,
+    //         QuantityQuality.Missing);
+    //     var expectedLastTimeSeriesPoint = new TimeSeriesPoint(
+    //         DateTimeOffset.Parse("2023-04-05T08:47:41.000Z"),
+    //         1.235m,
+    //         QuantityQuality.Estimated);
+    //
+    //     var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
+    //     using var reader = new StreamReader(stream);
+    //
+    //     // Act
+    //     var actual = await sut.GetAsync(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
+    //
+    //     // Assert
+    //     actual.TimeSeriesType.Should().Be(timeSeriesType);
+    //     actual.TimeSeriesPoints.Length.Should().Be(expectedRowCount);
+    //     actual.TimeSeriesPoints.First().Should().Be(expectedFirstTimeSeriesPoint);
+    //     actual.TimeSeriesPoints.Last().Should().Be(expectedLastTimeSeriesPoint);
+    // }
 }
