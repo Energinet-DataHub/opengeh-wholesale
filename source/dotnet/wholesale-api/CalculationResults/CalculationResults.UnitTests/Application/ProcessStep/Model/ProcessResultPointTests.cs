@@ -12,18 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Test.Core;
 using Xunit;
+using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.ProcessStepResultAggregate;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Application.ProcessStep.Model;
 
-public class TimeSeriesPointQualityContractTests
+[UnitTest]
+public sealed class ProcessResultPointTests
 {
     [Fact]
-    public async Task TimeSeriesPointQualityEnum_Matches_Contract()
+    public async Task PropertyNamesAndTypesMatchContractWithCalculator()
     {
-        await using var stream = EmbeddedResources.GetStream("Integration.CalculationOutput.time-series-point-quality.json");
-        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<QuantityQuality>(stream);
+        await using var stream = EmbeddedResources.GetStream("Integration.CalculationOutput.calculator-result.json");
+
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<ProcessResultPoint>(stream);
     }
 }

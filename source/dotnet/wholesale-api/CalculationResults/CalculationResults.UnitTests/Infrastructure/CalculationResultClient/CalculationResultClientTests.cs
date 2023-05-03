@@ -13,14 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.CalculationResultClient;
 
 [UnitTest]
 public class CalculationResultClientTests
@@ -33,7 +31,7 @@ public class CalculationResultClientTests
         TimeSeriesType timeSeriesType,
         string energySupplierGln,
         string balanceResponsiblePartyGln,
-        Infrastructure.CalculationResultClient sut)
+        CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient sut)
     {
         // Arrange
         int expectedRowCount = 96;

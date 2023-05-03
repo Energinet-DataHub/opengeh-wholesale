@@ -25,7 +25,7 @@ public class ProcessStepResultFactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void Create_ReturnsExpectedStepResult(
-        Contracts.ProcessStepResultDto resultDto,
+        CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto resultDto,
         BatchDto batchDto,
         ProcessStepResultFactory sut)
     {

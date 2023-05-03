@@ -14,18 +14,18 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.SettlementReport;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Processes;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.Processes;
 
 [UnitTest]
 public class ProcessStepResultRepositoryTests

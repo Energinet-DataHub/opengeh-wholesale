@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Google.Protobuf.WellKnownTypes;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
 

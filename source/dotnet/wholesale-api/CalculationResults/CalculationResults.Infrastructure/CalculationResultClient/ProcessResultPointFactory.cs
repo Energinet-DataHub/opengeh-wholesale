@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
 public class ProcessResultPointFactory : IProcessResultPointFactory
 {

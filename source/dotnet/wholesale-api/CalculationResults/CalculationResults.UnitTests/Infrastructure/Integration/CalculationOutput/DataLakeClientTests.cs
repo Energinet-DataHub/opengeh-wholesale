@@ -17,13 +17,13 @@ using Azure;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Integration.CalculationOutput;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.Integration.CalculationOutput;
 
 [UnitTest]
 public class DataLakeClientTests

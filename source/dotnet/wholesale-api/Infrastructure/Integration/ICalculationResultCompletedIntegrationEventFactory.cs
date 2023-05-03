@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Infrastructure.Integration;
 

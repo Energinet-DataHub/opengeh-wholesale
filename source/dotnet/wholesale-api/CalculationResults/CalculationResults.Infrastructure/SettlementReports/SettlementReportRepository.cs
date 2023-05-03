@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
-using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 

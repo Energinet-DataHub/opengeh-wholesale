@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
 
@@ -21,16 +21,16 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
 /// </summary>
 public interface IProcessStepApplicationService
 {
-    Task<WholesaleActorDto[]> GetEnergySuppliersAsync(Guid batchId, string gridAreaCode, Contracts.TimeSeriesType timeSeriesType);
+    Task<WholesaleActorDto[]> GetEnergySuppliersAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType);
 
-    Task<WholesaleActorDto[]> GetEnergySuppliersByBalanceResponsiblePartyAsync(Guid batchId, string gridAreaCode, Contracts.TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln);
+    Task<WholesaleActorDto[]> GetEnergySuppliersByBalanceResponsiblePartyAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln);
 
-    Task<WholesaleActorDto[]> GetBalanceResponsiblePartiesAsync(Guid batchId, string gridAreaCode, Contracts.TimeSeriesType timeSeriesType);
+    Task<WholesaleActorDto[]> GetBalanceResponsiblePartiesAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType);
 
     Task<ProcessStepResultDto> GetResultAsync(
         Guid batchId,
         string gridAreaCode,
-        Contracts.TimeSeriesType timeSeriesType,
+        TimeSeriesType timeSeriesType,
         string? energySupplierGln,
         string? balanceResponsibleParty);
 }

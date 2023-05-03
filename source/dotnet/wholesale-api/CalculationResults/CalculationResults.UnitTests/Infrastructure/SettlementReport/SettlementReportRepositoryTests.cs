@@ -15,22 +15,20 @@
 using System.Text;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.SettlementReports;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.SettlementReport;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.SettlementReport;
 
 [UnitTest]
 public class SettlementReportRepositoryTests
@@ -256,7 +254,7 @@ public class SettlementReportRepositoryTests
         var actual = await sut.GetResultAsync(
                 batchId,
                 gridAreaCode,
-                Contracts.TimeSeriesType.Production,
+                Interfaces.ProcessStep.Model.TimeSeriesType.Production,
                 null,
                 null);
 

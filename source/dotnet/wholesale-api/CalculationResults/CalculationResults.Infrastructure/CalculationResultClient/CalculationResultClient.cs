@@ -16,15 +16,12 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 // TODO: Should we avoid referencing the DatabricksClient project "just" to get access to the DatabricksOptions?
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
 // https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial

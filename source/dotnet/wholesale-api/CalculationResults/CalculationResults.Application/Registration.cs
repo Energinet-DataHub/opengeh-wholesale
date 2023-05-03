@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application;

@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
@@ -26,8 +25,8 @@ using NodaTime;
 using Xunit;
 using ProcessType = Energinet.DataHub.Wholesale.Contracts.ProcessType;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.QuantityQuality;
-using TimeSeriesPoint = Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate.TimeSeriesPoint;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.TimeSeriesType;
+using TimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesPoint;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Integration;
 

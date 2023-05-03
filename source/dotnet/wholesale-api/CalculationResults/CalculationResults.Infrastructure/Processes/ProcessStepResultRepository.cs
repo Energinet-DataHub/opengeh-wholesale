@@ -14,13 +14,12 @@
 
 using System.Globalization;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 

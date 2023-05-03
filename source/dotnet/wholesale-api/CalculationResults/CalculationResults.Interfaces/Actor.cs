@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.ActorAggregate;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 
 public record Actor(string Gln);

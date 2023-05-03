@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 using Test.Core;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Actor;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.Actor;
 
 [UnitTest]
 public class ActorRelationTests
@@ -26,6 +27,6 @@ public class ActorRelationTests
     {
         await using var stream = EmbeddedResources.GetStream("Actor.calculator-actor.json");
 
-        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<Wholesale.Infrastructure.BatchActor.ActorRelation>(stream);
+        await ContractComplianceTestHelper.VerifyTypeCompliesWithContractAsync<ActorRelation>(stream);
     }
 }

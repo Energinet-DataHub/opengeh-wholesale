@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 
 public interface ICalculationResultClient
 {

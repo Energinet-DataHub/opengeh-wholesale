@@ -12,31 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
-
-namespace Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 
 public static class TimeSeriesTypeMapper
 {
-    public static TimeSeriesType Map(Contracts.TimeSeriesType timeSeriesType)
+    public static CalculationResultClient.TimeSeriesType Map(TimeSeriesType timeSeriesType)
     {
         return timeSeriesType switch
         {
-            Contracts.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
-            Contracts.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
-            Contracts.TimeSeriesType.Production => TimeSeriesType.Production,
+            TimeSeriesType.NonProfiledConsumption => CalculationResultClient.TimeSeriesType.NonProfiledConsumption,
+            TimeSeriesType.FlexConsumption => CalculationResultClient.TimeSeriesType.FlexConsumption,
+            TimeSeriesType.Production => CalculationResultClient.TimeSeriesType.Production,
             _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
         };
     }
 
-    public static Contracts.TimeSeriesType Map(TimeSeriesType timeSeriesType)
+    public static TimeSeriesType Map(CalculationResultClient.TimeSeriesType timeSeriesType)
     {
         return timeSeriesType switch
         {
-            TimeSeriesType.NonProfiledConsumption => Contracts.TimeSeriesType.NonProfiledConsumption,
-            TimeSeriesType.FlexConsumption => Contracts.TimeSeriesType.FlexConsumption,
-            TimeSeriesType.Production => Contracts.TimeSeriesType.Production,
+            CalculationResultClient.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
+            CalculationResultClient.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
+            CalculationResultClient.TimeSeriesType.Production => TimeSeriesType.Production,
             _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
         };
     }

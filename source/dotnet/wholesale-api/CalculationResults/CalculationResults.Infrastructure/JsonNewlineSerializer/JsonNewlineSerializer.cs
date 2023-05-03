@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 
 public class JsonNewlineSerializer : IJsonNewlineSerializer
 {

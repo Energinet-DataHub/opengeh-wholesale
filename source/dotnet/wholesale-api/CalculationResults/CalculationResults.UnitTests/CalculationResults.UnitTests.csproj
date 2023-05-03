@@ -28,9 +28,9 @@
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\time-series-point-quality.json">
         <Link>Integration\CalculationOutput\time-series-point-quality.json</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="Actor\actor-list.json" />
-      <EmbeddedResource Include="CalculationResultClient\CalculationResult.json" />
-      <EmbeddedResource Include="ProcessStep\Model\ProcessResult.json" />
+      <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
+      <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
+      <EmbeddedResource Include="Infrastructure\CalculationResultClient\CalculationResult.json" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
@@ -38,6 +38,7 @@
       <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Integration" />
+      <Folder Include="Application" />
+      <Folder Include="Infrastructure" />
     </ItemGroup>
 </Project>

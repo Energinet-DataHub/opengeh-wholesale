@@ -13,17 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using FluentAssertions;
 using Test.Core;
 using Xunit;
-using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.ProcessStep.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Application.ProcessStep.Model;
 
 public class ProcessStepMapperTests
 {
@@ -39,7 +36,7 @@ public class ProcessStepMapperTests
     public void MapToDto_ReturnsDto(ProcessStepResultMapper sut, ProcessStepResult processStepResult)
     {
         // Arrange
-        processStepResult.SetPrivateProperty(p => p.TimeSeriesType, CalculationResults.Interfaces.TimeSeriesType.Production);
+        processStepResult.SetPrivateProperty(p => p.TimeSeriesType, Interfaces.CalculationResultClient.TimeSeriesType.Production);
         var expected = new ProcessStepResultDto(
             TimeSeriesType.Production,
             processStepResult.Sum,

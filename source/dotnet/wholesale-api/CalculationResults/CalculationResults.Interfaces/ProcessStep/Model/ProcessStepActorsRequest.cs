@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 
 public sealed record ProcessStepActorsRequest(Guid BatchId, string GridAreaCode, TimeSeriesType Type, MarketRole MarketRole);

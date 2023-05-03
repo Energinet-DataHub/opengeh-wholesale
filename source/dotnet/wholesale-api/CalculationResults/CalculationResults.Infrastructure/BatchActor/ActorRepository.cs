@@ -14,10 +14,9 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
-using Energinet.DataHub.Wholesale.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 

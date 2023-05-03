@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Integration.DataLake;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 
 /// <inheritdoc />
 public sealed class DataLakeClient : IDataLakeClient

@@ -14,20 +14,18 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using FluentAssertions;
 using Moq;
 using Test.Core;
 using Xunit;
 using Xunit.Categories;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.ProcessStep;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Application.ProcessStep;
 
 [UnitTest]
 public class ProcessStepApplicationServiceTests
@@ -41,13 +39,13 @@ public class ProcessStepApplicationServiceTests
     {
         // Arrange
         const string gridAreaCode = "805";
-        const Contracts.TimeSeriesType timeSeriesType = Contracts.TimeSeriesType.Production;
+        const Interfaces.ProcessStep.Model.TimeSeriesType timeSeriesType = Interfaces.ProcessStep.Model.TimeSeriesType.Production;
 
         actorRepositoryMock
             .Setup(x => x.GetEnergySuppliersAsync(
                 batchId,
                 gridAreaCode,
-                TimeSeriesType.Production)).ReturnsAsync(Array.Empty<Domain.ActorAggregate.Actor>());
+                TimeSeriesType.Production)).ReturnsAsync(Array.Empty<Interfaces.Actor>());
 
         // Act
         var actors = await sut.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType);
@@ -65,13 +63,13 @@ public class ProcessStepApplicationServiceTests
     {
         // Arrange
         const string gridAreaCode = "805";
-        const Contracts.TimeSeriesType timeSeriesType = Contracts.TimeSeriesType.Production;
+        const Interfaces.ProcessStep.Model.TimeSeriesType timeSeriesType = Interfaces.ProcessStep.Model.TimeSeriesType.Production;
 
         actorRepositoryMock
             .Setup(x => x.GetBalanceResponsiblePartiesAsync(
                 batchId,
                 gridAreaCode,
-                TimeSeriesType.Production)).ReturnsAsync(Array.Empty<Domain.ActorAggregate.Actor>());
+                TimeSeriesType.Production)).ReturnsAsync(Array.Empty<Interfaces.Actor>());
 
         // Act
         var actors = await sut.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType);
@@ -89,13 +87,13 @@ public class ProcessStepApplicationServiceTests
     {
         // Arrange
         const string gridAreaCode = "805";
-        const Contracts.TimeSeriesType timeSeriesType = Contracts.TimeSeriesType.Production;
+        const Interfaces.ProcessStep.Model.TimeSeriesType timeSeriesType = Interfaces.ProcessStep.Model.TimeSeriesType.Production;
         const string expectedGlnNumber = "ExpectedGlnNumber";
         actorRepositoryMock
             .Setup(x => x.GetEnergySuppliersAsync(
                 batchId,
                 gridAreaCode,
-                TimeSeriesType.Production)).ReturnsAsync(new Domain.ActorAggregate.Actor[] { new(expectedGlnNumber) });
+                TimeSeriesType.Production)).ReturnsAsync(new Interfaces.Actor[] { new(expectedGlnNumber) });
 
         // Act
         var actors = await sut.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType);
@@ -113,13 +111,13 @@ public class ProcessStepApplicationServiceTests
     {
         // Arrange
         const string gridAreaCode = "805";
-        const Contracts.TimeSeriesType timeSeriesType = Contracts.TimeSeriesType.Production;
+        const Interfaces.ProcessStep.Model.TimeSeriesType timeSeriesType = Interfaces.ProcessStep.Model.TimeSeriesType.Production;
         const string expectedGlnNumber = "ExpectedGlnNumber";
         actorRepositoryMock
             .Setup(x => x.GetBalanceResponsiblePartiesAsync(
                 batchId,
                 gridAreaCode,
-                TimeSeriesType.Production)).ReturnsAsync(new Domain.ActorAggregate.Actor[] { new(expectedGlnNumber) });
+                TimeSeriesType.Production)).ReturnsAsync(new Interfaces.Actor[] { new(expectedGlnNumber) });
 
         // Act
         var actors = await sut.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType);
@@ -155,7 +153,7 @@ public class ProcessStepApplicationServiceTests
         var actual = await sut.GetResultAsync(
             batchId,
             gridAreaCode,
-            Contracts.TimeSeriesType.Production,
+            Interfaces.ProcessStep.Model.TimeSeriesType.Production,
             null,
             null);
 
@@ -185,7 +183,7 @@ public class ProcessStepApplicationServiceTests
             .Returns(() => resultDto);
 
         // Act
-        var actual = await sut.GetResultAsync(request.BatchId, request.GridAreaCode, Contracts.TimeSeriesType.Production, null, null);
+        var actual = await sut.GetResultAsync(request.BatchId, request.GridAreaCode, Interfaces.ProcessStep.Model.TimeSeriesType.Production, null, null);
 
         actual.Should().BeEquivalentTo(resultDto);
     }

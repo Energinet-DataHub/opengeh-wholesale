@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
-using Energinet.DataHub.Wholesale.Contracts;
-using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
-using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.TimeSeriesType;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 

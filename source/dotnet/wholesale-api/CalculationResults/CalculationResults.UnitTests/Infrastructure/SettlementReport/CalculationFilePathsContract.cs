@@ -14,7 +14,7 @@
 
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.SettlementReport;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.SettlementReport;
 
 /// <summary>
 /// Represents the contract of calculation files between .NET and Databricks applications.

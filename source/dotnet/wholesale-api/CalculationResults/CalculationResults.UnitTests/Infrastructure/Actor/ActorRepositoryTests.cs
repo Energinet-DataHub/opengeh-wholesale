@@ -17,15 +17,14 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.SettlementReport;
-using Energinet.DataHub.Wholesale.Infrastructure.BatchActor;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Actor;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Tests.Infrastructure.Actor;
 
 [UnitTest]
 public class ActorRepositoryTests
@@ -62,7 +61,7 @@ public class ActorRepositoryTests
             new("123", "333"),
         };
 
-        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor> { new("123"), new("234") }; // distinct gln list
+        var expectedGln = new List<Interfaces.Actor> { new("123"), new("234") }; // distinct gln list
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
@@ -91,7 +90,7 @@ public class ActorRepositoryTests
             new("345", "333"),
         };
 
-        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor> { new("111"), new("333") }; // distinct gln list
+        var expectedGln = new List<Interfaces.Actor> { new("111"), new("333") }; // distinct gln list
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
@@ -124,7 +123,7 @@ public class ActorRepositoryTests
             new(targetEs2Gln, targetBrpGln),
         };
 
-        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor> { new(targetEs1Gln), new(targetEs2Gln) };
+        var expectedGln = new List<Interfaces.Actor> { new(targetEs1Gln), new(targetEs2Gln) };
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
@@ -184,7 +183,7 @@ public class ActorRepositoryTests
             new(energySupplierGln, brp2Gln),
         };
 
-        var expectedGln = new List<Wholesale.Domain.ActorAggregate.Actor> { new(energySupplierGln) };
+        var expectedGln = new List<Interfaces.Actor> { new(energySupplierGln) };
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
