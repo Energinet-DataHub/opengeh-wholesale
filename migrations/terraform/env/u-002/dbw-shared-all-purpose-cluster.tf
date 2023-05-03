@@ -1,7 +1,7 @@
 resource "databricks_cluster" "shared_all_purpose" {
   cluster_name            = "Shared all-purpose"
   spark_version           = data.databricks_spark_version.latest_lts.id
-  node_type_id            = "Standard_DS5_v2"
+  node_type_id            = "Standard_DS3_v2"
   autotermination_minutes = 15
   num_workers             = 1
   spark_conf = {
