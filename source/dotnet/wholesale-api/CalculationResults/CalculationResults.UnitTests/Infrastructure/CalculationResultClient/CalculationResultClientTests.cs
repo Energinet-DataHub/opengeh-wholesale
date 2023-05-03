@@ -44,7 +44,7 @@ public class CalculationResultClientTests
             1.235m,
             QuantityQuality.Estimated);
 
-        var stream = EmbeddedResources.GetStream("Infrastructure.Processes.CalculationResult.json");
+        var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
         using var reader = new StreamReader(stream);
 
         // Act
