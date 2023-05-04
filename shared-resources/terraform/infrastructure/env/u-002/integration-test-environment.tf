@@ -517,7 +517,7 @@ module "kvs_databricks_dbw_playground_workspace_id" {
 module "kvs_databricks_dbw_playground_storage_account_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
-  name         = "dbw_playground_storage_account_name"
+  name         = "dbw-playground-storage-account-name"
   value        = azurerm_storage_account.playground.name
   key_vault_id = azurerm_key_vault.integration-test-kv.id
 }
