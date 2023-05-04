@@ -22,10 +22,10 @@ public enum ProcessType
     /// <summary>
     /// Balance fixing
     /// </summary>
-    BalanceFixing,
+    BalanceFixing = 0,
 
     /// <summary>
     /// Aggregation.
     /// </summary>
-    Aggregation,
+    Aggregation = 1,
 }
