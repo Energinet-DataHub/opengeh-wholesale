@@ -437,13 +437,13 @@ resource "azurerm_storage_container" "playground" {
 }
 
 resource "azurerm_storage_container" "playground_timeseries_testdata" {
-  name                  = "timeseries-testdata"
+  name                  = "time-series-testdata"
   storage_account_name  = azurerm_storage_account.playground.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "playground_meteringpoints_testdata" {
-  name                  = "meteringpoints-testdata"
+  name                  = "metering-points-testdata"
   storage_account_name  = azurerm_storage_account.playground.name
   container_access_type = "private"
 }
