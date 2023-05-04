@@ -98,13 +98,15 @@ order by time
         switch (timeSeriesType)
         {
             case TimeSeriesType.NonProfiledConsumption:
+            case TimeSeriesType.Production:
+            case TimeSeriesType.FlexConsumption:
                 if (energySupplierGln != null && balanceResponsiblePartyGln != null)
-                    return "energy_supplier_and_balance_responsible_party";
+                    return "es_brp_ga";
                 if (energySupplierGln != null)
-                    return "energy_supplier";
+                    return "es_ga";
                 if (balanceResponsiblePartyGln != null)
-                    return "balance_responsible_party";
-                return "grid_area";
+                    return "brp_ga";
+                return "total_ga";
             default:
                 throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
         }
