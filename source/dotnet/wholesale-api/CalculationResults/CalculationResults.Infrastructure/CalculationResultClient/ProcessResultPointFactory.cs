@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
@@ -20,17 +21,11 @@ public class ProcessResultPointFactory : IProcessResultPointFactory
 {
  public IEnumerable<ProcessResultPoint> Create(string input)
  {
-     dynamic jsonObject = JsonConvert.DeserializeObject(input) ?? throw new InvalidOperationException();
-     var result = jsonObject.result.data_array;
+     var jsonObject = JsonConvert.DeserializeObject<JObject>(input) ?? throw new InvalidOperationException();
+     var result = jsonObject["result"] ?? throw new InvalidOperationException();
+     var data = result["data_array"] ?? throw new InvalidOperationException();
+     var dataArrays = data.ToObject<List<string[]>>() ?? throw new InvalidOperationException();
 
-     // TODO: Why is the list not used?
-     var list = new List<ProcessResultPoint>();
-     foreach (var res in result)
-     {
-         // the sql statement dictates order of the columns
-         list.Add(new ProcessResultPoint(res[1], res[2], res[0]));
-     }
-
-     return list;
+     return dataArrays.Select(res => new ProcessResultPoint(res[1], res[2], res[0]));
  }
 }
