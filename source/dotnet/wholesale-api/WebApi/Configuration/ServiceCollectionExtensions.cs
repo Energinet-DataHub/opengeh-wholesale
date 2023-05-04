@@ -19,7 +19,6 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Batches.Application;
@@ -28,6 +27,7 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
@@ -49,7 +49,9 @@ using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
+using IUnitOfWork = Energinet.DataHub.Wholesale.Application.IUnitOfWork;
 using ProcessTypeMapper = Energinet.DataHub.Wholesale.Application.Processes.Model.ProcessTypeMapper;
+using UnitOfWork = Energinet.DataHub.Wholesale.Infrastructure.Persistence.UnitOfWork;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -67,6 +69,17 @@ internal static class ServiceCollectionExtensions
 
     public static void AddCommandStack(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        serviceCollection.AddDbContext<IntegrationEventPublishingDatabaseContext>(
+            options => options.UseSqlServer(
+                configuration
+                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
+                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
+                o =>
+                {
+                    o.UseNodaTime();
+                    o.EnableRetryOnFailure();
+                }));
+
         serviceCollection.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
                 configuration
@@ -79,8 +92,11 @@ internal static class ServiceCollectionExtensions
                 }));
 
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
+        serviceCollection.AddScoped<IIntegrationEventPublishingDatabaseContext, IntegrationEventPublishingDatabaseContext>();
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
+        // This is a temporary fix until we move registration out to each of the modules
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+        serviceCollection.AddScoped<Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
         serviceCollection.AddScoped<IBatchApplicationService, BatchApplicationService>();
         serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
@@ -120,7 +136,7 @@ internal static class ServiceCollectionExtensions
         var dataLakeOptions = configuration.Get<DataLakeOptions>()!;
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
+            .AddDbContextCheck<IntegrationEventPublishingDatabaseContext>(name: "SqlDatabaseContextCheck")
             .AddDataLakeContainerCheck(dataLakeOptions.STORAGE_ACCOUNT_URI, dataLakeOptions.STORAGE_CONTAINER_NAME)
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,

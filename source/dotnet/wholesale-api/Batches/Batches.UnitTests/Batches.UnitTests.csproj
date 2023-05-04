@@ -23,4 +23,9 @@
       <ProjectReference Include="..\Batches.Application\Batches.Application.csproj" />
       <ProjectReference Include="..\Batches.Infrastructure\Batches.Infrastructure.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculation-job-parameters-reference.txt">
+        <Link>Infrastructure\Calculations\calculation-job-parameters-reference.txt</Link>
+      </EmbeddedResource>
+    </ItemGroup>
 </Project>

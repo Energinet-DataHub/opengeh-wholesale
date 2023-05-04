@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixture.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Infrastructure.Persistence.Batch;
+namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.Persistence.Batch;
 
 public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 {
@@ -199,7 +197,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         await using var writeContext = _databaseManager.CreateDbContext();
 
         var period = Periods.January_EuropeCopenhagen_Instant;
-        var batch = new Domain.BatchAggregate.Batch(
+        var batch = new Batches.Infrastructure.BatchAggregate.Batch(
            ProcessType.BalanceFixing,
            new List<GridAreaCode> { new("004") },
            period.PeriodStart,
@@ -227,15 +225,15 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
             actual.Should().NotContain(batch);
     }
 
-    private static Domain.BatchAggregate.Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
+    private static Batches.Infrastructure.BatchAggregate.Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
         return CreateBatch(ProcessType.BalanceFixing, someGridAreasIds);
     }
 
-    private static Domain.BatchAggregate.Batch CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
+    private static Batches.Infrastructure.BatchAggregate.Batch CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
-        return new Domain.BatchAggregate.Batch(
+        return new Batches.Infrastructure.BatchAggregate.Batch(
             processType,
             someGridAreasIds,
             period.PeriodStart,

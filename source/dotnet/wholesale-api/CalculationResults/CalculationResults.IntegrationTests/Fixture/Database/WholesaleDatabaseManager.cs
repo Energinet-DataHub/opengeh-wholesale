@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.DatabaseMigration;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
+namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixture.Database;
 
-public class WholesaleDatabaseManager : SqlServerDatabaseManager<IntegrationEventPublishingDatabaseContext>
+public class WholesaleDatabaseManager : SqlServerDatabaseManager<DatabaseContext>
 {
     public WholesaleDatabaseManager()
         : base("Wholesale")
@@ -27,22 +27,22 @@ public class WholesaleDatabaseManager : SqlServerDatabaseManager<IntegrationEven
     }
 
     /// <inheritdoc/>
-    public override IntegrationEventPublishingDatabaseContext CreateDbContext()
+    public override DatabaseContext CreateDbContext()
     {
-        var optionsBuilder = new DbContextOptionsBuilder<IntegrationEventPublishingDatabaseContext>()
+        var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>()
             .UseSqlServer(ConnectionString, options =>
             {
                 options.UseNodaTime();
                 options.EnableRetryOnFailure();
             });
 
-        return new IntegrationEventPublishingDatabaseContext(optionsBuilder.Options);
+        return new DatabaseContext(optionsBuilder.Options);
     }
 
     /// <summary>
     /// Creates the database schema using DbUp instead of a database context.
     /// </summary>
-    protected override Task<bool> CreateDatabaseSchemaAsync(IntegrationEventPublishingDatabaseContext context)
+    protected override Task<bool> CreateDatabaseSchemaAsync(DatabaseContext context)
     {
         return Task.FromResult(CreateDatabaseSchema(context));
     }
@@ -50,7 +50,7 @@ public class WholesaleDatabaseManager : SqlServerDatabaseManager<IntegrationEven
     /// <summary>
     /// Creates the database schema using DbUp instead of a database context.
     /// </summary>
-    protected override bool CreateDatabaseSchema(IntegrationEventPublishingDatabaseContext context)
+    protected override bool CreateDatabaseSchema(DatabaseContext context)
     {
         var result = Upgrader.DatabaseUpgrade(ConnectionString);
         if (!result.Successful)

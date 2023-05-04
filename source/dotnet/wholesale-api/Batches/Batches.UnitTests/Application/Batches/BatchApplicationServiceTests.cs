@@ -110,7 +110,7 @@ public class BatchApplicationServiceTests
 
         batchRepositoryMock
             .Setup(x => x.SearchAsync(
-                Array.Empty<GridAreaCode>(),
+                It.IsAny<List<GridAreaCode>>(),
                 Array.Empty<BatchExecutionState>(),
                 null,
                 null,

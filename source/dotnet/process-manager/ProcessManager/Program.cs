@@ -22,7 +22,6 @@ using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
@@ -33,6 +32,7 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
@@ -103,7 +103,9 @@ public static class Program
         services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
         services.AddScoped<ICalculationDomainService, CalculationDomainService>();
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        // This is a temporary fix until we move registration out to each of the modules
+        services.AddScoped<Energinet.DataHub.Wholesale.Application.IUnitOfWork, Energinet.DataHub.Wholesale.Infrastructure.Persistence.UnitOfWork>();
+        services.AddScoped<Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services
             .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
@@ -122,6 +124,7 @@ public static class Program
     {
         serviceCollection.AddApplicationInsights();
 
+        serviceCollection.AddScoped<IIntegrationEventPublishingDatabaseContext, IntegrationEventPublishingDatabaseContext>();
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
@@ -135,6 +138,12 @@ public static class Program
 
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
+        serviceCollection.AddDbContext<IntegrationEventPublishingDatabaseContext>(options =>
+            options.UseSqlServer(connectionString, o =>
+            {
+                o.UseNodaTime();
+                o.EnableRetryOnFailure();
+            }));
         serviceCollection.AddDbContext<DatabaseContext>(options =>
             options.UseSqlServer(connectionString, o =>
             {
@@ -228,7 +237,7 @@ public static class Program
         serviceCollection
             .AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
+            .AddDbContextCheck<IntegrationEventPublishingDatabaseContext>(name: "SqlDatabaseContextCheck")
             .AddAzureServiceBusTopic(
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,

@@ -19,15 +19,15 @@ using Microsoft.EntityFrameworkCore;
 namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Private setters are needed by EF Core")]
-public class DatabaseContext : DbContext, IDatabaseContext
+public class IntegrationEventPublishingDatabaseContext : DbContext, IIntegrationEventPublishingDatabaseContext
 {
-    public DatabaseContext(DbContextOptions<DatabaseContext> options)
+    public IntegrationEventPublishingDatabaseContext(DbContextOptions<IntegrationEventPublishingDatabaseContext> options)
         : base(options)
     {
     }
 
     // Added to support Moq in tests
-    public DatabaseContext()
+    public IntegrationEventPublishingDatabaseContext()
     {
     }
 
