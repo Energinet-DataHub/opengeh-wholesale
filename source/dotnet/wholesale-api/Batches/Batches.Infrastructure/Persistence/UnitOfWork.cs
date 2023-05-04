@@ -12,19 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Microsoft.EntityFrameworkCore;
+using Energinet.DataHub.Wholesale.Batches.Application;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 
-public interface IDatabaseContext
+public class UnitOfWork : IUnitOfWork
 {
-    DbSet<OutboxMessage> OutboxMessages { get; }
+    private readonly IDatabaseContext _databaseContext;
 
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
+    public UnitOfWork(IDatabaseContext databaseContext)
+    {
+        _databaseContext = databaseContext;
+    }
+
+    public async Task CommitAsync()
+    {
+        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
+    }
 }

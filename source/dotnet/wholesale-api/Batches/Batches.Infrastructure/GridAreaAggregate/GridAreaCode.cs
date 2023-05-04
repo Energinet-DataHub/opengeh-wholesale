@@ -12,19 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 
-public interface IDatabaseContext
+public sealed record GridAreaCode
 {
-    DbSet<OutboxMessage> OutboxMessages { get; }
+    public GridAreaCode(string code)
+    {
+        ArgumentNullException.ThrowIfNull(code);
+        if (!Regex.IsMatch(code, @"^((00\d)|(0[1-9]\d)|([1-9]\d\d))$", RegexOptions.ECMAScript))
+            throw new BusinessValidationException("Code must be 3 characters number with left padded zeros");
+
+        Code = code;
+    }
 
     /// <summary>
-    /// Saves changes to the database.
+    /// A max 3 digit number with left padded zeros to ensure an exact total of 3 characters.
+    /// Examples: 001, 010, 987
     /// </summary>
-    Task<int> SaveChangesAsync();
+    public string Code { get; }
 }

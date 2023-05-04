@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using System.Text.Json;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 
 public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
 {

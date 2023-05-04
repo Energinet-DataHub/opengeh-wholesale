@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
-public interface ICalculationEngineClient
+public interface ICalculationParametersFactory
 {
-    Task<CalculationId> StartAsync(Batch batch);
-
-    Task<CalculationState> GetStatusAsync(CalculationId calculationId);
+    RunParameters CreateParameters(Batch batch);
 }

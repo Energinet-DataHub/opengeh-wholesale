@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Calculations;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
 public sealed class DatabricksCalculatorJobSelector : IDatabricksCalculatorJobSelector
 {

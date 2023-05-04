@@ -13,10 +13,12 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Private setters are needed by EF Core")]
 public class DatabaseContext : DbContext, IDatabaseContext
@@ -31,13 +33,13 @@ public class DatabaseContext : DbContext, IDatabaseContext
     {
     }
 
-    public DbSet<OutboxMessage> OutboxMessages { get; private set; } = null!;
+    public virtual DbSet<Batch> Batches { get; private set; } = null!;
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new OutboxMessageEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new BatchEntityConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

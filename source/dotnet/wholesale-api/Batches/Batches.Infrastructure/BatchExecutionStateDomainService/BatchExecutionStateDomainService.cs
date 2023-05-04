@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.using Energinet.DataHub.Wholesale.Application.JobRunner;
 
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
 
 public class BatchExecutionStateDomainService : IBatchExecutionStateDomainService
 {
@@ -74,9 +77,23 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
         }
 
         var batchCompletedEvents = completedBatches
-            .Select(b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), b.ProcessType, b.PeriodStart, b.PeriodEnd))
+            .Select(b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), SwitchProcessType(b.ProcessType), b.PeriodStart, b.PeriodEnd))
             .ToList();
         await _domainEventPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
+    }
+
+    // This is a temporary solution until we cut ties with the old domain stack and use the IntegrationEventPublisher module.
+    private ProcessType SwitchProcessType(Interfaces.Models.ProcessType processType)
+    {
+        switch (processType)
+        {
+            case Interfaces.Models.ProcessType.BalanceFixing:
+                return ProcessType.BalanceFixing;
+            case Interfaces.Models.ProcessType.Aggregation:
+                return ProcessType.Aggregation;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(processType), processType, null);
+        }
     }
 
     private void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)

@@ -12,24 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.RegularExpressions;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 
-public sealed record GridAreaCode
+public interface IDatabaseContext
 {
-    public GridAreaCode(string code)
-    {
-        ArgumentNullException.ThrowIfNull(code);
-        if (!Regex.IsMatch(code, @"^((00\d)|(0[1-9]\d)|([1-9]\d\d))$", RegexOptions.ECMAScript))
-            throw new BusinessValidationException("Code must be 3 characters number with left padded zeros");
-
-        Code = code;
-    }
+    DbSet<Batch> Batches { get; }
 
     /// <summary>
-    /// A max 3 digit number with left padded zeros to ensure an exact total of 3 characters.
-    /// Examples: 001, 010, 987
+    /// Saves changes to the database.
     /// </summary>
-    public string Code { get; }
+    Task<int> SaveChangesAsync();
 }
