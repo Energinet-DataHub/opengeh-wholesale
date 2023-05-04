@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.GridAreaAggregate;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.GridAreaAggregate;
 
 [UnitTest]
 public class GridAreaCodeTests

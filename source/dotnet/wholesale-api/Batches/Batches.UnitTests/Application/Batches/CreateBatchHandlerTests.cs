@@ -14,10 +14,10 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using FluentAssertions;
 using Moq;
 using NodaTime;
@@ -26,7 +26,7 @@ using Test.Core;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
 
 [UnitTest]
 public class CreateBatchHandlerTests

@@ -13,18 +13,16 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.WebApi.UnitTests.TestHelpers;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 using FluentAssertions;
 using Microsoft.Azure.Databricks.Client;
 using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Calculations;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.Calculations;
 
 public class DatabricksCalculatorJobParametersFactoryTests
 {

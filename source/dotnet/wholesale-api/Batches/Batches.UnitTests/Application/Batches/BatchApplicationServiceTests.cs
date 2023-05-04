@@ -14,19 +14,19 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
 
 [UnitTest]
 public class BatchApplicationServiceTests

@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchExecutionStateDomainService;
 
 public class BatchStateMapperTests
 {

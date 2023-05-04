@@ -14,16 +14,17 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
-using Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
 using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Domain.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchExecutionStateDomainService;
 
 [UnitTest]
 public class BatchExecutionStateDomainServiceTests
@@ -33,7 +34,7 @@ public class BatchExecutionStateDomainServiceTests
     public async Task UpdateExecutionState_WhenJobStateIsRunning_UpdateBatchToExecuting(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        Batches.Infrastructure.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
         var batch = new BatchBuilder().WithStatePending().Build();
@@ -55,7 +56,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        Batches.Infrastructure.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
         var batch = new BatchBuilder().WithStateExecuting().Build();
@@ -82,7 +83,7 @@ public class BatchExecutionStateDomainServiceTests
     public async Task UpdateExecutionState_WhenJobStateIsCancelled_UpdateBatchToCreated(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        Batches.Infrastructure.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
         var batch = new BatchBuilder().WithStateExecuting().Build();
@@ -104,7 +105,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        Batches.Infrastructure.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
         var batch1 = new BatchBuilder().WithStatePending().Build();
@@ -133,7 +134,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
         [Frozen] Mock<IDomainEventPublisher> batchCompletedPublisherMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        Batches.Infrastructure.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
         var batch1 = new BatchBuilder().WithStatePending().Build();
@@ -163,7 +164,7 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
         [Frozen] Mock<IDomainEventPublisher> batchCompletedPublisherMock,
-        Wholesale.Domain.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
+        Batches.Infrastructure.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
         var batch1 = new BatchBuilder().WithStateSubmitted().Build();
