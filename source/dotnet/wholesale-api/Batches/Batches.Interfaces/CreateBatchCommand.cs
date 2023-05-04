@@ -12,9 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Application;
+using Energinet.DataHub.Wholesale.Contracts;
 
-public interface IUnitOfWork
-{
-    Task CommitAsync();
-}
+namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
+
+/// <summary>
+/// An immutable command to create a batch.
+/// </summary>
+public sealed record CreateBatchCommand(
+    ProcessType ProcessType,
+    IEnumerable<string> GridAreaCodes,
+    DateTimeOffset StartDate,
+    DateTimeOffset EndDate);

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 
-/// <summary>
-/// An immutable request to create a batch.
-/// </summary>
-public sealed record BatchRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);
+public interface ICreateBatchHandler
+{
+    Task<Guid> HandleAsync(CreateBatchCommand command);
+}

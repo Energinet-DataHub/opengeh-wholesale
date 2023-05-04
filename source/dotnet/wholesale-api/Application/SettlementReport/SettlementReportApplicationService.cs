@@ -13,33 +13,25 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
 
 public class SettlementReportApplicationService : ISettlementReportApplicationService
 {
-    private readonly IBatchRepository _batchRepository;
+    private readonly IBatchApplicationService _batchRepository;
     private readonly ISettlementReportRepository _settlementReportRepository;
-    private readonly IUnitOfWork _unitOfWork;
 
     public SettlementReportApplicationService(
-        IBatchRepository batchRepository,
-        ISettlementReportRepository settlementReportRepository,
-        IUnitOfWork unitOfWork)
+        IBatchApplicationService batchRepository,
+        ISettlementReportRepository settlementReportRepository)
     {
         _batchRepository = batchRepository;
         _settlementReportRepository = settlementReportRepository;
-        _unitOfWork = unitOfWork;
-    }
-
-    public async Task CreateSettlementReportAsync(BatchCompletedEventDto batchCompletedEvent)
-    {
-        var batch = await _batchRepository.GetAsync(batchCompletedEvent.BatchId).ConfigureAwait(false);
-        await _settlementReportRepository.CreateSettlementReportsAsync(Map(batch)).ConfigureAwait(false);
-        batch.AreSettlementReportsCreated = true;
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     public async Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId)
@@ -57,14 +49,14 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
             .ConfigureAwait(false);
     }
 
-    private BatchInfo Map(Batch batch)
+    private BatchInfo Map(BatchDto batch)
     {
         return new BatchInfo
         {
-            Id = batch.Id,
-            PeriodStart = batch.PeriodStart,
-            PeriodEnd = batch.PeriodEnd,
-            GridAreaCodes = batch.GridAreaCodes.Select(c => c.Code).ToList(),
+            Id = batch.BatchId,
+            PeriodStart = Instant.FromDateTimeOffset(batch.PeriodStart),
+            PeriodEnd = Instant.FromDateTimeOffset(batch.PeriodEnd),
+            GridAreaCodes = batch.GridAreaCodes.ToList(),
         };
     }
 }

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
 
 public class BatchStateMapper
 {

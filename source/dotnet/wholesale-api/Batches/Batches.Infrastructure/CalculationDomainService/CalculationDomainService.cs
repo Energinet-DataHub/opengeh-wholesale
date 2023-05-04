@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 
 public class CalculationDomainService : ICalculationDomainService
 {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.using Energinet.DataHub.Wholesale.Application.JobRunner;
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
 
 public interface IBatchExecutionStateDomainService
 {

@@ -12,11 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Contracts;
 
-namespace Energinet.DataHub.Wholesale.Application.Batches.Model;
+namespace Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 
-public interface IBatchDtoMapper
-{
-    BatchDto Map(Batch batch);
-}
+/// <summary>
+/// An immutable batch.
+/// </summary>
+public sealed record BatchDto(
+    long? RunId,
+    Guid BatchId,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd,
+    string Resolution,
+    string Unit,
+    DateTimeOffset? ExecutionTimeStart,
+    DateTimeOffset? ExecutionTimeEnd,
+    BatchState ExecutionState,
+    bool AreSettlementReportsCreated,
+    string[] GridAreaCodes,
+    ProcessType ProcessType);

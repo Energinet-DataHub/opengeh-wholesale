@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 
-public interface ICreateBatchHandler
+namespace Energinet.DataHub.Wholesale.Batches.Application.Model;
+
+public interface IBatchDtoMapper
 {
-    Task<Guid> HandleAsync(CreateBatchCommand command);
+    BatchDto Map(Batch batch);
 }

@@ -13,12 +13,11 @@
 // limitations under the License.using Energinet.DataHub.Wholesale.Application.JobRunner;
 
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Microsoft.Extensions.Logging;
 using NodaTime;
+using ProcessType = Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
 
@@ -83,14 +82,14 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
     }
 
     // This is a temporary solution until we cut ties with the old domain stack and use the IntegrationEventPublisher module.
-    private ProcessType SwitchProcessType(Interfaces.Models.ProcessType processType)
+    private Domain.ProcessAggregate.ProcessType SwitchProcessType(ProcessType processType)
     {
         switch (processType)
         {
-            case Interfaces.Models.ProcessType.BalanceFixing:
-                return ProcessType.BalanceFixing;
-            case Interfaces.Models.ProcessType.Aggregation:
-                return ProcessType.Aggregation;
+            case ProcessType.BalanceFixing:
+                return Domain.ProcessAggregate.ProcessType.BalanceFixing;
+            case ProcessType.Aggregation:
+                return Domain.ProcessAggregate.ProcessType.Aggregation;
             default:
                 throw new ArgumentOutOfRangeException(nameof(processType), processType, null);
         }

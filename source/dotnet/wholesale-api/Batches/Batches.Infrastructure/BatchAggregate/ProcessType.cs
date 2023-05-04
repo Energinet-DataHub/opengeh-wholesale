@@ -12,13 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
-
-public interface ICalculationDomainService
+/// <summary>
+/// Defines the wholesale process type
+/// </summary>
+public enum ProcessType
 {
-    Task<CalculationState> GetStatusAsync(CalculationId calculationId);
+    /// <summary>
+    /// Balance fixing
+    /// </summary>
+    BalanceFixing,
 
-    Task StartAsync(Guid batchId);
+    /// <summary>
+    /// Aggregation.
+    /// </summary>
+    Aggregation,
 }
