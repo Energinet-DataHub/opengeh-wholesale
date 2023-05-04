@@ -15,7 +15,6 @@
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 // TODO: Should we avoid referencing the DatabricksClient project "just" to get access to the DatabricksOptions?
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
@@ -30,16 +29,13 @@ public class CalculationResultClient : ICalculationResultClient
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
-    private readonly IJsonSerializer _jsonSerializer;
     private readonly IProcessResultPointFactory _processResultPointFactory;
 
-    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IJsonSerializer jsonSerializer, IProcessResultPointFactory processResultPointFactory)
+    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IProcessResultPointFactory processResultPointFactory)
     {
         _httpClient = httpClient;
         _options = options;
-        _jsonSerializer = jsonSerializer;
         _processResultPointFactory = processResultPointFactory;
-        ConfigureHttpClient(httpClient, options);
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -49,6 +45,8 @@ public class CalculationResultClient : ICalculationResultClient
         string? energySupplierGln,
         string? balanceResponsiblePartyGln)
     {
+        ConfigureHttpClient(_httpClient, _options);
+
         var sql = CreateSqlStatement(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
 
         var requestObject = new
