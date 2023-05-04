@@ -437,13 +437,13 @@ resource "azurerm_storage_container" "playground" {
 }
 
 resource "azurerm_storage_container" "playground_timeseries_testdata" {
-  name                  = "timeseries-testdata"
+  name                  = "time-series-testdata"
   storage_account_name  = azurerm_storage_account.playground.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "playground_meteringpoints_testdata" {
-  name                  = "meteringpoints-testdata"
+  name                  = "metering-points-testdata"
   storage_account_name  = azurerm_storage_account.playground.name
   container_access_type = "private"
 }
@@ -511,6 +511,14 @@ module "kvs_databricks_dbw_playground_workspace_id" {
 
   name         = "dbw-playground-workspace-id"
   value        = azurerm_databricks_workspace.playground.id
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+}
+
+module "kvs_databricks_dbw_playground_storage_account_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+
+  name         = "dbw-playground-storage-account-name"
+  value        = azurerm_storage_account.playground.name
   key_vault_id = azurerm_key_vault.integration-test-kv.id
 }
 
