@@ -514,6 +514,14 @@ module "kvs_databricks_dbw_playground_workspace_id" {
   key_vault_id = azurerm_key_vault.integration-test-kv.id
 }
 
+module "kvs_databricks_dbw_playground_storage_account_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+
+  name         = "dbw_playground_storage_account_name"
+  value        = azurerm_storage_account.playground.name
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+}
+
 resource "databricks_instance_pool" "my_pool" {
   instance_pool_name                    = "migration-playground-instance-pool"
   min_idle_instances                    = 0
