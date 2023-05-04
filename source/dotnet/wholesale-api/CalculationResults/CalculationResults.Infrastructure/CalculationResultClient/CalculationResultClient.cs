@@ -54,7 +54,7 @@ public class CalculationResultClient : ICalculationResultClient
             on_wait_timeout = "CANCEL",
             wait_timeout = "30s", // Make the operation synchronous
             statement = sql,
-            warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
+            warehouse_id = "62868069f0b689f4", // _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
 
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
