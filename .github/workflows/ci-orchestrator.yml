@@ -20,6 +20,7 @@ jobs:
   # TF Sec
   #
   ci_codeql:
+    name: "Terraform Security scan"
     uses: ./.github/workflows/tfsec.yml
 
   #
