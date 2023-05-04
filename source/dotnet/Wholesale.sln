@@ -74,9 +74,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculationResults.Infrastr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEventPublishing.Interfaces", "wholesale-api\IntegrationEventPublishing\IntegrationEventPublishing.Interfaces\IntegrationEventPublishing.Interfaces.csproj", "{CA37A471-51C6-43A4-B1FC-5C6B47E71AD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Batches.Application.Tests", "wholesale-api\Batches\Batches.Application.Tests\Batches.Application.Tests.csproj", "{2AFAF921-3EBA-4D96-95A0-8B68BFBCAF0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Batches.UnitTests", "wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj", "{2AFAF921-3EBA-4D96-95A0-8B68BFBCAF0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Batches.Infrastructure.Tests", "wholesale-api\Batches\Batches.Infrastructure.Tests\Batches.Infrastructure.Tests.csproj", "{46A60588-8944-403F-8DD6-B29FDFC0AB1E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Batches.IntegrationTests", "wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj", "{46A60588-8944-403F-8DD6-B29FDFC0AB1E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculationResults.IntegrationTests", "wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj", "{DD64438F-A696-4703-A2F4-5B05C6FFF27A}"
 EndProject
