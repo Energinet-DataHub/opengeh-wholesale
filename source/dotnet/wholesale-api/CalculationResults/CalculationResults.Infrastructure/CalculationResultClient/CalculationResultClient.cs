@@ -119,6 +119,10 @@ order by time
         {
             case TimeSeriesType.NonProfiledConsumption:
                 return "non_profiled_consumption";
+            case TimeSeriesType.Production:
+                return "production";
+            case TimeSeriesType.FlexConsumption:
+                return "flex_consumption";
             default:
                 throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
         }
