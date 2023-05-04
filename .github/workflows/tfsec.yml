@@ -6,7 +6,7 @@
 name: tfsec
 
 on:
-  workflow_dispatch: { }
+  workflow_call: {}
   schedule: 
     - cron: '37 13 * * 0'
 
