@@ -1,0 +1,42 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Structurizr Lite: Run in docker",
+            "type": "shell",
+            "command": "docker run -it --rm -p 8080:8080 -v ${workspaceFolder}/docs/diagrams/c4-model:/usr/local/structurizr -e STRUCTURIZR_WORKSPACE_FILENAME=views structurizr/lite",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "close": true
+            },
+            "problemMatcher": {
+                "pattern": "$tsc",
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": {
+                        "regexp": "(.*?)"
+                    },
+                    "endsPattern": {
+                        "regexp": "Structurizr Lite"
+                    }
+                }
+            },
+            "dependsOn": [
+                "Structurizr Lite: Pull docker image"
+            ]
+        },
+        {
+            "label": "Structurizr Lite: Pull docker image",
+            "type": "shell",
+            "command": "docker pull structurizr/lite",
+            "presentation": {
+                "reveal": "always",
+                "close": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
