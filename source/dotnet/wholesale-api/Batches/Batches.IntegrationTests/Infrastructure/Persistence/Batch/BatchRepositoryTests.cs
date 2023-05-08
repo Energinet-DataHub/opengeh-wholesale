@@ -15,14 +15,14 @@
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixture.Database;
+using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.Persistence.Batch;
+namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Infrastructure.Persistence.Batch;
 
 public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 {
