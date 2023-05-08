@@ -20,9 +20,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox
 {
     public class OutboxMessageRepository : IOutboxMessageRepository
     {
-        private readonly IDatabaseContext _context;
+        private readonly IIntegrationEventPublishingDatabaseContext _context;
 
-        public OutboxMessageRepository(IDatabaseContext context)
+        public OutboxMessageRepository(IIntegrationEventPublishingDatabaseContext context)
         {
             _context = context;
         }

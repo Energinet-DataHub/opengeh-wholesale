@@ -3,4 +3,8 @@
     <AssemblyName>Energinet.DataHub.Wholesale.Batches.Application</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.Batches.Application</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Batches.Interfaces\Batches.Interfaces.csproj" />
+    <ProjectReference Include="..\Batches.Infrastructure\Batches.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>
