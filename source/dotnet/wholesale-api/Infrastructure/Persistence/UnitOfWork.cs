@@ -18,15 +18,15 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly IDatabaseContext _databaseContext;
+    private readonly IIntegrationEventPublishingDatabaseContext _integrationEventPublishingDatabaseContext;
 
-    public UnitOfWork(IDatabaseContext databaseContext)
+    public UnitOfWork(IIntegrationEventPublishingDatabaseContext integrationEventPublishingDatabaseContext)
     {
-        _databaseContext = databaseContext;
+        _integrationEventPublishingDatabaseContext = integrationEventPublishingDatabaseContext;
     }
 
     public async Task CommitAsync()
     {
-        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
+        await _integrationEventPublishingDatabaseContext.SaveChangesAsync().ConfigureAwait(false);
     }
 }

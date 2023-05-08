@@ -13,17 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
 using Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Function;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using NodaTime;
 using Xunit;
 using Xunit.Abstractions;
 
