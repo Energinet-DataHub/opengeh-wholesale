@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
@@ -41,7 +40,7 @@ public class CreateBatchHandler : ICreateBatchHandler
 
     public async Task<Guid> HandleAsync(CreateBatchCommand command)
     {
-        var batch = _batchFactory.Create(ProcessTypeMapper.MapFrom(command.ProcessType), command.GridAreaCodes, command.StartDate, command.EndDate);
+        var batch = _batchFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _domainEventPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);

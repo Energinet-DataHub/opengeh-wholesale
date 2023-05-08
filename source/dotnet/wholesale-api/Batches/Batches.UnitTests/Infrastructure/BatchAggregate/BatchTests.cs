@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Contracts;
 using FluentAssertions;
 using Moq;
 using NodaTime;
@@ -99,8 +100,8 @@ public class BatchTests
     }
 
     [Theory]
-    [InlineAutoMoqData(Contracts.ProcessType.BalanceFixing, "PT15M")]
-    [InlineAutoMoqData(Contracts.ProcessType.Aggregation, "PT15M")]
+    [InlineAutoMoqData(ProcessType.BalanceFixing, "PT15M")]
+    [InlineAutoMoqData(ProcessType.Aggregation, "PT15M")]
     public void GetResolution_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedIso8601Duration)
     {
         // Arrange

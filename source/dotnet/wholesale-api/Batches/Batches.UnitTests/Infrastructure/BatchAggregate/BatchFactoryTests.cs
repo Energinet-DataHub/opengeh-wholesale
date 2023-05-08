@@ -15,6 +15,7 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Contracts;
 using FluentAssertions;
 using Moq;
 using NodaTime;

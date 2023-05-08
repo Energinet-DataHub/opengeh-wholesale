@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Contracts;
 using FluentAssertions;
 using Moq;
 using NodaTime;
@@ -56,7 +57,7 @@ public class CreateBatchHandlerTests
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new CreateBatchCommand(
-            Contracts.ProcessType.BalanceFixing,
+            ProcessType.BalanceFixing,
             new List<string> { "805" },
             period.PeriodStart.ToDateTimeOffset(),
             period.PeriodEnd.ToDateTimeOffset());

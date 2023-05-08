@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Contracts;
 using NodaTime;
 using Test.Core;
 

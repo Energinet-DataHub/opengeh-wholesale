@@ -14,10 +14,10 @@
 
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Microsoft.Extensions.Logging;
 using NodaTime;
-using ProcessType = Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
 
