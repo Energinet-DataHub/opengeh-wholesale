@@ -16,7 +16,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 // TODO: Should we avoid referencing the DatabricksClient project "just" to get access to the DatabricksOptions?
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Microsoft.Extensions.Options;

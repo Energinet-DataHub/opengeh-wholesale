@@ -34,7 +34,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
