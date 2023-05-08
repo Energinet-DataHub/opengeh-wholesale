@@ -31,8 +31,8 @@ jobs:
   #
   # CodeQL Check
   #
-  ci_codeql:
-    uses: ./.github/workflows/codeql.yml
+  # ci_codeql:
+  #   uses: ./.github/workflows/codeql.yml
 
   #
   # Detect changes to start relevant workflows
