@@ -5,7 +5,7 @@ on:
 
 jobs:
   render_c4:
-    uses: Energinet-DataHub/.github/.github/workflows/structurizr.yml@v11
+    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@dstenroejl/refactor-structurizr
     with:
-      dsl: docs/diagrams/c4-model/views.dsl
+      structurizr_workspace_filename: views # TODO: We need another parameter to be able to specify that any changes to views.dsl + model.dsl should be detected
     secrets: inherit
