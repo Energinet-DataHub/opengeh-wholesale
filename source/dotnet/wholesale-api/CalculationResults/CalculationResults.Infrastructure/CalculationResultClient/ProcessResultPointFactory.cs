@@ -23,7 +23,6 @@ public class ProcessResultPointFactory : IProcessResultPointFactory
      dynamic jsonObject = JsonConvert.DeserializeObject(input) ?? throw new InvalidOperationException();
      var result = jsonObject.result.data_array;
 
-     // TODO: Why is the list not used?
      var list = new List<ProcessResultPoint>();
      foreach (var res in result)
      {
@@ -31,6 +30,6 @@ public class ProcessResultPointFactory : IProcessResultPointFactory
          list.Add(new ProcessResultPoint(res[1], res[2], res[0]));
      }
 
-     return result;
+     return list;
  }
 }

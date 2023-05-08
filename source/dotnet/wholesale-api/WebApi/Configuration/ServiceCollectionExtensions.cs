@@ -34,7 +34,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
@@ -108,7 +108,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
         serviceCollection.AddDomainEventPublisher(configuration);
-        serviceCollection.AddDataTimeConfiguration(configuration);
+        serviceCollection.AddDateTimeConfiguration(configuration);
         serviceCollection.AddDataLakeFileSystemClient(configuration);
     }
 
@@ -162,7 +162,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
     }
 
-    private static void AddDataTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static void AddDateTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<DateTimeOptions>()!;
         var dateTimeZoneId = options.TIME_ZONE;
