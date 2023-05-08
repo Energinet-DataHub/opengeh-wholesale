@@ -14,6 +14,6 @@ module "kvs_databricks_sql_endpoint_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "dbw-databricks-sql-endpoint-id"
-  value        = resource.databricks_sql_endpoint.this.data_source_id
+  value        = resource.databricks_sql_endpoint.this.id
   key_vault_id = module.kv_internal.id
 }
