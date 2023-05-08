@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;

@@ -15,8 +15,8 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
-using Energinet.DataHub.Wholesale.Contracts;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
