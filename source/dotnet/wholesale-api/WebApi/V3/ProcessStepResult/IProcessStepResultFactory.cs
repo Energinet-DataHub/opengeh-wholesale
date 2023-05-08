@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
 public interface IProcessStepResultFactory
 {
-    public ProcessStepResultDto Create(Contracts.ProcessStepResultDto stepResult, BatchDto batch);
+    public ProcessStepResultDto Create(CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto stepResult, BatchDto batch);
 }

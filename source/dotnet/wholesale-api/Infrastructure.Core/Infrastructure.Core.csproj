@@ -21,12 +21,12 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.8.1" />
+    <PackageReference Include="Azure.Identity" Version="1.8.2" />
     <PackageReference Include="Azure.Messaging.EventHubs" Version="5.8.1" />
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.13.0" />
     <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.5" />
   </ItemGroup>
 
   <ItemGroup>

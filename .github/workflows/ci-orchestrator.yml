@@ -29,6 +29,12 @@ jobs:
       skip_actions_casing_validation: false
 
   #
+  # CodeQL Check
+  #
+  ci_codeql:
+    uses: ./.github/workflows/codeql.yml
+
+  #
   # Detect changes to start relevant workflows
   #
   changes:
@@ -58,7 +64,7 @@ jobs:
 
   allow_merge_ci_orchestrator:
     runs-on: ubuntu-latest
-    needs: [ci_base, ci_dotnet, ci_databricks, ci_packages]
+    needs: [ci_base, ci_dotnet, ci_databricks, ci_packages, ci_codeql]
     if: |
       always()
     steps:

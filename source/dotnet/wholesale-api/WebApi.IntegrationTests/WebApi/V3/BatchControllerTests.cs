@@ -15,11 +15,10 @@
 using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
 using Moq;
@@ -84,7 +83,7 @@ public class BatchControllerTests : WebApiTestBase
 
     private static BatchRequestDto CreateBatchRequestDto()
     {
-        var period = Periods.January_EuropeCopenhagen_1ms;
+        var period = Periods.January_EuropeCopenhagen;
         var batchRequest = new BatchRequestDto(
             ProcessType.BalanceFixing,
             new List<string> { "805" },

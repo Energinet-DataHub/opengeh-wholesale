@@ -22,6 +22,7 @@ limitations under the License.
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\DatabricksClient\DatabricksClient.csproj" />
   </ItemGroup>
@@ -29,11 +30,11 @@ limitations under the License.
     <ItemGroup>
       <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.13.1" />
       <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.13.0" />
-      <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.0" />
+      <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.3" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
       <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
       <PackageReference Include="Google.Protobuf" Version="3.22.1" />
-      <PackageReference Include="Grpc.Tools" Version="2.53.0" PrivateAssets="All" />
+      <PackageReference Include="Grpc.Tools" Version="2.54.0" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>

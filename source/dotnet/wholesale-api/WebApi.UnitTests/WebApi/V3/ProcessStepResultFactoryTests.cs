@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using FluentAssertions;
 using Xunit;
@@ -25,7 +25,7 @@ public class ProcessStepResultFactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void Create_ReturnsExpectedStepResult(
-        Contracts.ProcessStepResultDto resultDto,
+        CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto resultDto,
         BatchDto batchDto,
         ProcessStepResultFactory sut)
     {

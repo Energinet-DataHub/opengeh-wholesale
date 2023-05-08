@@ -14,10 +14,9 @@
 
 using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain.ActorAggregate;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.ProcessStepResultAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
@@ -80,14 +79,14 @@ public class ProcessApplicationService : IProcessApplicationService
         var brps = await _actorRepository
             .GetBalanceResponsiblePartiesAsync(
                 processCompletedEvent.BatchId,
-                new GridAreaCode(processCompletedEvent.GridAreaCode),
+                processCompletedEvent.GridAreaCode,
                 timeSeriesType).ConfigureAwait(false);
         foreach (var brp in brps)
         {
             var energySuppliersByBalanceResponsibleParty = await _actorRepository
                 .GetEnergySuppliersByBalanceResponsiblePartyAsync(
                     processCompletedEvent.BatchId,
-                    new GridAreaCode(processCompletedEvent.GridAreaCode),
+                    processCompletedEvent.GridAreaCode,
                     timeSeriesType,
                     brp.Gln).ConfigureAwait(false);
 
@@ -95,7 +94,7 @@ public class ProcessApplicationService : IProcessApplicationService
             {
                 var result = await _processStepResultRepository.GetAsync(
                         processCompletedEvent.BatchId,
-                        new GridAreaCode(processCompletedEvent.GridAreaCode),
+                        processCompletedEvent.GridAreaCode,
                         timeSeriesType,
                         energySupplier.Gln,
                         brp.Gln)
@@ -112,7 +111,7 @@ public class ProcessApplicationService : IProcessApplicationService
             var productionForTotalGa = await _processStepResultRepository
                 .GetAsync(
                     processCompletedEvent.BatchId,
-                    new GridAreaCode(processCompletedEvent.GridAreaCode),
+                    processCompletedEvent.GridAreaCode,
                     timeSeriesType,
                     null,
                     null)
@@ -126,7 +125,7 @@ public class ProcessApplicationService : IProcessApplicationService
     {
             var energySuppliers = await _actorRepository.GetEnergySuppliersAsync(
                 processCompletedEvent.BatchId,
-                new GridAreaCode(processCompletedEvent.GridAreaCode),
+                processCompletedEvent.GridAreaCode,
                 timeSeriesType).ConfigureAwait(false);
 
             foreach (var energySupplier in energySuppliers)
@@ -134,7 +133,7 @@ public class ProcessApplicationService : IProcessApplicationService
                 var processStepResultDto = await _processStepResultRepository
                     .GetAsync(
                         processCompletedEvent.BatchId,
-                        new GridAreaCode(processCompletedEvent.GridAreaCode),
+                        processCompletedEvent.GridAreaCode,
                         timeSeriesType,
                         energySupplier.Gln,
                         null)
@@ -149,7 +148,7 @@ public class ProcessApplicationService : IProcessApplicationService
     {
         var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(
             processCompletedEvent.BatchId,
-            new GridAreaCode(processCompletedEvent.GridAreaCode),
+            processCompletedEvent.GridAreaCode,
             timeSeriesType).ConfigureAwait(false);
 
         foreach (var balanceResponsibleParty in balanceResponsibleParties)
@@ -157,7 +156,7 @@ public class ProcessApplicationService : IProcessApplicationService
             var processStepResultDto = await _processStepResultRepository
                 .GetAsync(
                     processCompletedEvent.BatchId,
-                    new GridAreaCode(processCompletedEvent.GridAreaCode),
+                    processCompletedEvent.GridAreaCode,
                     timeSeriesType,
                     null,
                     balanceResponsibleParty.Gln)
