@@ -12,21 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Azure.Databricks.Client;
+using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
 {
-    public class JobsApiClient21 : JobsApiClient, IJobsWheelApi
+    public class PythonWheelTask
     {
-        public JobsApiClient21(HttpClient httpClient)
-            : base(httpClient)
-        {
-        }
-
-        public async Task<WheelJob> GetWheel(long jobId, CancellationToken cancellationToken = default)
-        {
-            var requestUri = $"jobs/get?job_id={jobId}";
-            return await HttpGet<WheelJob>(HttpClient, requestUri, cancellationToken).ConfigureAwait(false);
-        }
+        /// <summary>
+        /// Command line parameters that will be passed to spark submit.
+        /// </summary>
+        [JsonProperty(PropertyName = "parameters")]
+        public List<string> Parameters { get; set; }
     }
 }
