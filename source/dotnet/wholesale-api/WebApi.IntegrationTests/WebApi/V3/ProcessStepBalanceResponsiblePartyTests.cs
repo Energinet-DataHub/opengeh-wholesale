@@ -15,8 +15,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.ProcessStep;
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.V3;

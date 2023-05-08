@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
 
+// TODO: Move to calculation results module?
 public interface ISettlementReportApplicationService
 {
     Task CreateSettlementReportAsync(BatchCompletedEventDto batchCompletedEvent);

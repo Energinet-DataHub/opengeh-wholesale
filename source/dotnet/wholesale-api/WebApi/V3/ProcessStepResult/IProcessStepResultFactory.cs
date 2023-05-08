@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
 public interface IProcessStepResultFactory
 {
-    public ProcessStepResultDto Create(Contracts.ProcessStepResultDto stepResult, BatchDto batch);
+    public ProcessStepResultDto Create(CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto stepResult, BatchDto batch);
 }
