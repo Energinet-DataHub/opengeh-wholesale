@@ -15,7 +15,7 @@
 using Microsoft.Azure.Databricks.Client;
 using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Components.DatabricksClient
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
 {
     public class WheelJob
     {
