@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Contracts;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Microsoft.Extensions.Logging;
 using NodaTime;
