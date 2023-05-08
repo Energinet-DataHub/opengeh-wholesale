@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.Domain.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
@@ -205,7 +204,8 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
            period.PeriodStart,
            period.PeriodEnd,
            Instant.FromUtc(2022, 5, 1, 0, 0),
-           period.DateTimeZone);
+           period.DateTimeZone,
+           Guid.NewGuid());
 
         var sut = new BatchRepository(writeContext);
         await sut.AddAsync(batch);
@@ -241,6 +241,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
             period.PeriodStart,
             period.PeriodEnd,
             SystemClock.Instance.GetCurrentInstant(),
-            period.DateTimeZone);
+            period.DateTimeZone,
+            Guid.NewGuid());
     }
 }

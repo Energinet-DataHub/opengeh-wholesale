@@ -41,7 +41,7 @@ public class CreateBatchHandlerTests
         // Arrange
         var batchCommand = CreateBatchCommand();
         var batch = CreateBatchFromCommand(batchCommand);
-        batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate))
+        batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate, batchCommand.CreatedByUserId))
             .Returns(batch);
 
         // Act
@@ -59,7 +59,8 @@ public class CreateBatchHandlerTests
             Contracts.ProcessType.BalanceFixing,
             new List<string> { "805" },
             period.PeriodStart.ToDateTimeOffset(),
-            period.PeriodEnd.ToDateTimeOffset());
+            period.PeriodEnd.ToDateTimeOffset(),
+            Guid.NewGuid());
     }
 
     private static Batch CreateBatchFromCommand(CreateBatchCommand command)
@@ -71,6 +72,7 @@ public class CreateBatchHandlerTests
             command.StartDate.ToInstant(),
             command.EndDate.ToInstant(),
             SystemClock.Instance.GetCurrentInstant(),
-            period.DateTimeZone);
+            period.DateTimeZone,
+            command.CreatedByUserId);
     }
 }

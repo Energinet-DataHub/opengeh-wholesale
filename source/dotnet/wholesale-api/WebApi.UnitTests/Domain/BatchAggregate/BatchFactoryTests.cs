@@ -39,7 +39,7 @@ public class BatchFactoryTests
         var sut = new BatchFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate);
+        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
 
         // Assert
         batch.PeriodStart.Should().Be(Instant.FromDateTimeOffset(_startDate));
@@ -53,7 +53,7 @@ public class BatchFactoryTests
         var sut = new BatchFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate);
+        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
 
         // Assert
         batch.GridAreaCodes.Select(x => x.Code).Should().Contain(_someGridAreasIds);
@@ -70,7 +70,7 @@ public class BatchFactoryTests
         var sut = new BatchFactory(clockMock.Object, _timeZone);
 
         // Act
-        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate);
+        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
 
         // Assert
         batch.ExecutionTimeStart.Should().Be(expected);

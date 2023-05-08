@@ -55,7 +55,8 @@ public class BatchTests
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
             SystemClock.Instance.GetCurrentInstant(),
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!));
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+            Guid.NewGuid()));
         actual.Message.Should().Contain("Batch must contain at least one grid area code");
     }
 
@@ -154,7 +155,8 @@ public class BatchTests
             Instant.MinValue,
             periodEnd,
             SystemClock.Instance.GetCurrentInstant(),
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!));
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!,
+            Guid.NewGuid()));
 
         // Assert
         actual.Message.Should().ContainAll("period", "end");
@@ -177,7 +179,8 @@ public class BatchTests
             startPeriod,
             Instant.FromDateTimeOffset(new DateTimeOffset(2023, 02, 01, 23, 0, 0, new TimeSpan(0))),
             SystemClock.Instance.GetCurrentInstant(),
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!));
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!,
+            Guid.NewGuid()));
 
         // Assert
         actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}' must be midnight.");

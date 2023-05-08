@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using System.ComponentModel.DataAnnotations;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Application.Batches;
 using Energinet.DataHub.Wholesale.Application.Batches.Model;
+using Energinet.DataHub.Wholesale.Application.Security;
 using Energinet.DataHub.Wholesale.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,13 +30,16 @@ public class BatchController : V3ControllerBase
 {
     private readonly IBatchApplicationService _batchApplicationService;
     private readonly ICreateBatchHandler _createBatchHandler;
+    private readonly IUserContext<FrontendUser> _userContext;
 
     public BatchController(
         IBatchApplicationService batchApplicationService,
-        ICreateBatchHandler createBatchHandler)
+        ICreateBatchHandler createBatchHandler,
+        IUserContext<FrontendUser> userContext)
     {
         _batchApplicationService = batchApplicationService;
         _createBatchHandler = createBatchHandler;
+        _userContext = userContext;
     }
 
     /// <summary>
@@ -50,7 +55,8 @@ public class BatchController : V3ControllerBase
             batchRequestDto.ProcessType,
             batchRequestDto.GridAreaCodes,
             batchRequestDto.StartDate,
-            batchRequestDto.EndDate)).ConfigureAwait(false);
+            batchRequestDto.EndDate,
+            _userContext.CurrentUser.UserId)).ConfigureAwait(false);
     }
 
     /// <summary>

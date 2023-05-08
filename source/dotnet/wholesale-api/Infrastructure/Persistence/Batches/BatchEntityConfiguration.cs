@@ -43,6 +43,7 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
             calculationId => calculationId == null ? (long?)null : calculationId.Id,
             calculationId => calculationId == null ? null : new CalculationId(calculationId.Value));
         builder.Property(b => b.ProcessType);
+        builder.Property(b => b.CreatedByUserId);
 
         // Grid area IDs are stored as a JSON array
         var gridAreaCodes = builder.Metadata

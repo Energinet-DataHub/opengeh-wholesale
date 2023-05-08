@@ -155,7 +155,8 @@ public sealed class SettlementReportApplicationServiceTests
             period.PeriodStart,
             period.PeriodEnd,
             SystemClock.Instance.GetCurrentInstant(),
-            period.DateTimeZone);
+            period.DateTimeZone,
+            Guid.NewGuid());
         batch.SetPrivateProperty(b => b.Id, batchCompletedEvent.BatchId);
         return batch;
     }

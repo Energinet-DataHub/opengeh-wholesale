@@ -24,11 +24,12 @@ public class Batch
 
     public Batch(
         ProcessType processType,
-        List<GridAreaCode> gridAreaCodes,
+        IEnumerable<GridAreaCode> gridAreaCodes,
         Instant periodStart,
         Instant periodEnd,
         Instant executionTimeStart,
-        DateTimeZone dateTimeZone)
+        DateTimeZone dateTimeZone,
+        Guid createdByUserId)
         : this()
     {
         _gridAreaCodes = gridAreaCodes.ToList();
@@ -40,6 +41,7 @@ public class Batch
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         ExecutionTimeStart = executionTimeStart;
+        CreatedByUserId = createdByUserId;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
     }
@@ -98,7 +100,9 @@ public class Batch
 
     public BatchExecutionState ExecutionState { get; private set; }
 
-    public Instant ExecutionTimeStart { get; private set; }
+    public Instant ExecutionTimeStart { get; }
+
+    public Guid CreatedByUserId { get; }
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
