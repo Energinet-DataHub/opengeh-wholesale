@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-
-namespace Energinet.DataHub.Wholesale.Contracts;
+namespace Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 
 /// <summary>
 /// An immutable request to create a batch.

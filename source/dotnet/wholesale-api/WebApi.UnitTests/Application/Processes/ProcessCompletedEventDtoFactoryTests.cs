@@ -35,13 +35,13 @@ public class ProcessCompletedEventDtoFactoryTests
             new(
                 "153",
                 completedBatch.BatchId,
-                Contracts.ProcessType.BalanceFixing,
+                Batches.Interfaces.Models.ProcessType.BalanceFixing,
                 completedBatch.PeriodStart,
                 completedBatch.PeriodEnd),
             new(
                 "805",
                 completedBatch.BatchId,
-                Contracts.ProcessType.BalanceFixing,
+                Batches.Interfaces.Models.ProcessType.BalanceFixing,
                 completedBatch.PeriodStart,
                 completedBatch.PeriodEnd),
         };

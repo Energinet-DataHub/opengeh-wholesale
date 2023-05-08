@@ -27,9 +27,9 @@ public class ProcessMapperTests
     public void Must_Map_From_Contract_ProcessType(ProcessTypeMapper sut)
     {
         // Arrange
-        foreach (var type in Enum.GetValues(typeof(Contracts.ProcessType)))
+        foreach (var type in Enum.GetValues(typeof(Batches.Interfaces.Models.ProcessType)))
         {
-            var expected = (Contracts.ProcessType)type;
+            var expected = (Batches.Interfaces.Models.ProcessType)type;
 
             // Act
             var actual = sut.MapFrom(expected);
