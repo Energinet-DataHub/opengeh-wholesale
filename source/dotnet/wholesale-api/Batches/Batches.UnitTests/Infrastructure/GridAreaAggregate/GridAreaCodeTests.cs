@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Batches.Infrastructure;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;

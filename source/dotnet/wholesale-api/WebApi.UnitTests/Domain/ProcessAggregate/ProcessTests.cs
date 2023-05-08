@@ -25,7 +25,7 @@ public class ProcessTests
     {
         // Arrange & Act
         var domainProcessTypeValues = Enum.GetValues(typeof(ProcessType));
-        var contractProcessTypeValues = Enum.GetValues(typeof(Contracts.ProcessType));
+        var contractProcessTypeValues = Enum.GetValues(typeof(Batches.Interfaces.Models.ProcessType));
 
         // Assert
         domainProcessTypeValues.Should().BeEquivalentTo(contractProcessTypeValues);

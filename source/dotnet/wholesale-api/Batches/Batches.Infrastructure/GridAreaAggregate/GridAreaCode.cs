@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Text.RegularExpressions;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 
