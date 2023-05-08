@@ -60,8 +60,6 @@ public class CalculationResultClient : ICalculationResultClient
         };
         var requestString = _jsonSerializer.Serialize(requestObject);
 
-        // TODO: Use databricks workspace url from config
-        // TODO: Enable SQL statement execution API in terraform: https://registry.terraform.io/providers/databricks/databricks/latest/docs/data-sources/sql_warehouse#attribute-reference
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, new StringContent(requestString)).ConfigureAwait(false);
 
         var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
@@ -81,6 +79,7 @@ public class CalculationResultClient : ICalculationResultClient
         httpClient.DefaultRequestHeaders.Accept.Clear();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+        httpClient.BaseAddress = new Uri(options.Value.DATABRICKS_WORKSPACE_URL);
     }
 
     // TODO: Unit test the SQL (ensure it works as expected)
