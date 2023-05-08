@@ -37,17 +37,6 @@ jobs:
   # CD Databricks
   #
 
-  databricks_update_coverage_report:
-    needs: changes
-    if: ${{ needs.changes.outputs.databricks == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v10
-    with:
-      operating_system: dh3-ubuntu-20.04-4core
-      path_static_checks: ./source/databricks/calculation-engine
-      # documented here https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
-      ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
-      test_report_path: ./source/databricks/calculation-engine/tests/htmlcov/
-
   databricks_promote_prerelease:
     needs: changes
     if: ${{ needs.changes.outputs.databricks == 'true' }}
@@ -58,21 +47,6 @@ jobs:
   #
   # CD .NET
   #
-
-  dotnet_update_coverage_report:
-    needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-solution-ci.yml@v10
-    with:
-      solution_file_path: source/dotnet/Wholesale.sln
-      use_azure_functions_tools: true
-      environment: AzureAuth
-    secrets:
-      azure_tenant_id: ${{ secrets.azure_tenant_id }}
-      azure_subscription_id: ${{ secrets.azure_subscription_id }}
-      azure_spn_id: ${{ secrets.azure_spn_id_OIDC }}
-      azure_keyvault_url: ${{ secrets.azure_keyvault_url }}
-      azure_b2csecrets_keyvault_url: ${{ secrets.azure_b2csecrets_keyvault_url }}
 
   dotnet_promote_prerelease:
     needs: changes

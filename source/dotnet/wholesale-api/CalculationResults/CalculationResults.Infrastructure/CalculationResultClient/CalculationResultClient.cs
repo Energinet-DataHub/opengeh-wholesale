@@ -54,7 +54,7 @@ public class CalculationResultClient : ICalculationResultClient
             on_wait_timeout = "CANCEL",
             wait_timeout = "30s", // Make the operation synchronous
             statement = sql,
-            warehouse_id = "62868069f0b689f4", // _options.Value.DATABRICKS_WAREHOUSE_ID,
+            warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
 
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
@@ -77,6 +77,7 @@ public class CalculationResultClient : ICalculationResultClient
         httpClient.DefaultRequestHeaders.Accept.Clear();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+        httpClient.BaseAddress = new Uri(options.Value.DATABRICKS_WORKSPACE_URL);
     }
 
     // TODO: Unit test the SQL (ensure it works as expected)

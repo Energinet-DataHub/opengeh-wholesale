@@ -45,6 +45,8 @@ limitations under the License.
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\wholesale-api\Application\Application.csproj" />
+      <ProjectReference Include="..\..\wholesale-api\Batches\Batches.Application\Batches.Application.csproj" />
+      <ProjectReference Include="..\..\wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" />
       <ProjectReference Include="..\..\wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" />
       <ProjectReference Include="..\..\wholesale-api\DatabricksClient\DatabricksClient.csproj" />
       <ProjectReference Include="..\..\wholesale-api\Domain\Domain.csproj" />

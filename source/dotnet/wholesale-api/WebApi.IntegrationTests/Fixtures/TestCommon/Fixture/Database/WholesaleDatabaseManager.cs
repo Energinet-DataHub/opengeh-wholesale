@@ -19,7 +19,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 
-public class WholesaleDatabaseManager : SqlServerDatabaseManager<DatabaseContext>
+public class WholesaleDatabaseManager : SqlServerDatabaseManager<IntegrationEventPublishingDatabaseContext>
 {
     public WholesaleDatabaseManager()
         : base("Wholesale")
@@ -27,22 +27,22 @@ public class WholesaleDatabaseManager : SqlServerDatabaseManager<DatabaseContext
     }
 
     /// <inheritdoc/>
-    public override DatabaseContext CreateDbContext()
+    public override IntegrationEventPublishingDatabaseContext CreateDbContext()
     {
-        var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>()
+        var optionsBuilder = new DbContextOptionsBuilder<IntegrationEventPublishingDatabaseContext>()
             .UseSqlServer(ConnectionString, options =>
             {
                 options.UseNodaTime();
                 options.EnableRetryOnFailure();
             });
 
-        return new DatabaseContext(optionsBuilder.Options);
+        return new IntegrationEventPublishingDatabaseContext(optionsBuilder.Options);
     }
 
     /// <summary>
     /// Creates the database schema using DbUp instead of a database context.
     /// </summary>
-    protected override Task<bool> CreateDatabaseSchemaAsync(DatabaseContext context)
+    protected override Task<bool> CreateDatabaseSchemaAsync(IntegrationEventPublishingDatabaseContext context)
     {
         return Task.FromResult(CreateDatabaseSchema(context));
     }
@@ -50,7 +50,7 @@ public class WholesaleDatabaseManager : SqlServerDatabaseManager<DatabaseContext
     /// <summary>
     /// Creates the database schema using DbUp instead of a database context.
     /// </summary>
-    protected override bool CreateDatabaseSchema(DatabaseContext context)
+    protected override bool CreateDatabaseSchema(IntegrationEventPublishingDatabaseContext context)
     {
         var result = Upgrader.DatabaseUpgrade(ConnectionString);
         if (!result.Successful)

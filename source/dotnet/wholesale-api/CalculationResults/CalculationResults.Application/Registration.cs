@@ -26,7 +26,6 @@ public static class Registration
     public static void AddCalculationResultsModule(
         this IServiceCollection serviceCollection)
     {
-        // TODO: This registration depends on IOptions<DatabricksOptions> - how do we make that explicit?
         serviceCollection.AddHttpClient<ICalculationResultClient>();
         serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
         serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
