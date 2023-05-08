@@ -41,14 +41,14 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             include ->wholesaleDomain->
             exclude "relationship.tag==OAuth"
             exclude "element.tag==Intermediate Technology"
-            autolayout
+            #autolayout
         }
 
         container dh3 "WholesaleDetailed" {
             title "[Container] DataHub 3.0 - Wholesale (Detailed with OAuth)"
             include ->wholesaleDomain->
             exclude "relationship.tag==Simple View"
-            autolayout
+            #autolayout
         }
     }
 }
