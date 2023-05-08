@@ -102,5 +102,36 @@ Describe "New-UserFlow" {
                 { New-UserFlow -AccessToken $accessToken -UserFlowId $userFlowId -UserFlowType $userFlowType } | Should -Throw
             }
         }
+
+        It "Should not re-assign existing languages" {
+            InModuleScope 'ManageUserFlow' {
+                Mock Invoke-RestMethod { }
+
+
+                $accessToken = "mocked_value"
+                $userFlowId = "SignInFlow"
+                $userFlowType = "signIn"
+
+                $additionalLanguage = "en"
+
+                $mockedResponse = @{
+                    value = @(
+                        @{
+                            id        = $additionalLanguage
+                            isEnabled = $true
+                        }
+                    )
+                }
+
+                Mock Invoke-RestMethod { $mockedResponse } -ParameterFilter { $uri -eq "https://graph.microsoft.com/beta/identity/b2cUserFlows/B2C_1_$UserFlowId/languages" }
+
+                # Act
+                New-UserFlow -AccessToken $accessToken -UserFlowId $userFlowId -UserFlowType $userFlowType
+
+                Should -Not -Invoke -CommandName Invoke-RestMethod -ParameterFilter {
+                    $uri -eq "https://graph.microsoft.com/beta/identity/b2cUserFlows/B2C_1_$userFlowId/languages/$additionalLanguage"
+                }
+            }
+        }
     }
 }

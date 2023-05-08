@@ -99,6 +99,11 @@ function Invoke-AddUserFlowLanguage {
         $Language
     )
 
+    $exists = Invoke-VerifyUserFlowLanguage -AccessToken $AccessToken -UserFlowId $UserFlowId -Language $Language
+    if ($exists -eq $true) {
+        return
+    }
+
     Write-Information "Adding language '$Language' to '$UserFlowId' user flow"
 
     $headers = @{
@@ -115,6 +120,43 @@ function Invoke-AddUserFlowLanguage {
         -Headers $headers `
         -ContentType "application/json" `
         -Body ($body | ConvertTo-Json) | Out-Null
+}
+
+<#
+    .SYNOPSIS
+    Verifies that the specified language is enabled on the given user flow.
+#>
+function Invoke-VerifyUserFlowLanguage {
+    param (
+        [Parameter(Mandatory)]
+        [string]
+        $AccessToken,
+        [Parameter(Mandatory)]
+        [string]
+        $UserFlowId,
+        [Parameter(Mandatory)]
+        [string]
+        $Language
+    )
+
+    Write-Information "Checking language '$Language' in '$UserFlowId' user flow"
+
+    $headers = @{
+        Authorization = "Bearer $AccessToken"
+    }
+
+    $languages = Invoke-RestMethod `
+        -Uri "https://graph.microsoft.com/beta/identity/b2cUserFlows/B2C_1_$UserFlowId/languages" -Method Get `
+        -Headers $headers
+
+    foreach ($lang in $languages.value) {
+        if ($lang.id -eq $Language -and $lang.isEnabled -eq $true) {
+            Write-Information "Verification of language '$Language' for '$UserFlowId' succeeded"
+            return $true
+        }
+    }
+
+    return $false
 }
 
 <#
