@@ -77,7 +77,7 @@ jobs:
         # ci_databricks,
         # ci_packages,
         render_diagrams,
-        ci_codeql,
+        # ci_codeql,
       ]
     if: |
       always()
