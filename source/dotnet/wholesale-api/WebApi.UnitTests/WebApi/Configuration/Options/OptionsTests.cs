@@ -31,23 +31,23 @@ public class OptionsTests
     [InlineAutoMoqData(typeof(DateTimeOptions), 1, "TIME_ZONE")]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "DB_CONNECTION_STRING")]
     [InlineAutoMoqData(typeof(DatabricksOptions), 3, "DATABRICKS_WORKSPACE_URL", "DATABRICKS_WORKSPACE_TOKEN", "DATABRICKS_WAREHOUSE_ID")]
-    public void CheckOptions_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] settingNames)
+    public void Options_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] expectedNames)
     {
         // Arrange & Act
         var properties = sut.GetProperties();
 
         // Assert
         settingsCount.Should().Be(properties.Length, $"the type {sut.Name}.");
-        settingNames.Length.Should().Be(properties.Length);
+        expectedNames.Length.Should().Be(properties.Length);
         foreach (var property in properties)
         {
-            settingNames.Should().Contain(property.Name);
+            property.Name.Should().BeOneOf(expectedNames);
         }
     }
 
     [Theory]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "CONNECTIONSTRINGS")]
-    public void CheckOptions_HaveTheCorrectSectionNames(Type sut, int numberOfSections,  params string[] settingNames)
+    public void Options_HaveTheCorrectSectionNames(Type sut, int numberOfSections,  params string[] expectedNames)
     {
         // Arrange & Act
         var members = sut.GetMembers(BindingFlags.GetField | BindingFlags.Public | BindingFlags.Static);
@@ -56,10 +56,10 @@ public class OptionsTests
         numberOfSections.Should().Be(members.Length);
         foreach (var member in members)
         {
-            var value = ((FieldInfo)member)
+            var actualName = ((FieldInfo)member)
                 .GetValue(sut)!
                 .ToString();
-            settingNames.Should().Contain(value);
+            actualName.Should().BeOneOf(expectedNames);
         }
     }
 }
