@@ -36,7 +36,7 @@ grid_area_period_schema = StructType(
         StructField("grid_area_code", StringType(), True),
         # The start date of the period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The date is inclusive.
-        StructField("From_date", TimestampType(), True),
+        StructField("from_date", TimestampType(), True),
         # The to-date of the period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The moment is exclusive.
         # The date of the last period is null.
