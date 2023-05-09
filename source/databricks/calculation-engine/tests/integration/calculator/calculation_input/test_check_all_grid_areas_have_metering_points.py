@@ -44,7 +44,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
 def grid_area_df_factory(spark):
     def factory(grid_area_code="805"):
         row = {
-            "GridAreaCode": grid_area_code,
+            "grid_area_code": grid_area_code,
             "GridAreaLinkId": "grid_area_link_id",
         }
         return spark.createDataFrame([row])

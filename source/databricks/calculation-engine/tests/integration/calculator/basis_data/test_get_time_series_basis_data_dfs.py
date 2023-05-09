@@ -64,12 +64,12 @@ def enriched_time_series_factory(spark, timestamp_factory):
             df_array.append(
                 {
                     Colname.grid_area: grid_area,
-                    Colname.Resolution: resolution,
+                    Colname.resolution: resolution,
                     "GridAreaLinkId": "GridAreaLinkId",
                     Colname.observation_time: time,
-                    Colname.Quantity: quantity + i,
-                    Colname.MeteringPointId: metering_point_id,
-                    Colname.MeteringPointType: metering_point_type,
+                    Colname.quantity: quantity + i,
+                    Colname.parent_metering_point_id: metering_point_id,
+                    Colname.metering_point_type: metering_point_type,
                     Colname.energy_supplier_id: "some-id",
                 }
             )
@@ -297,7 +297,7 @@ def test__missing_point_has_empty_quantity(
         time="2022-10-28T22:00:00.000Z",
         resolution=MeteringPointResolution.quarter.value,
         number_of_points=96,
-    ).withColumn("Quantity", lit(None).cast(DecimalType()))
+    ).withColumn("quantity", lit(None).cast(DecimalType()))
     (quarter_df, _) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
