@@ -58,10 +58,13 @@ jobs:
   #   uses: ./.github/workflows/packages-publish.yml
   #   secrets: inherit
 
-  render_diagrams:
+  render_c4model_views:
     needs: changes
-    if: ${{ needs.changes.outputs.render_diagrams == 'true' }}
-    uses: ./.github/workflows/render-diagrams.yml
+    if: ${{ needs.changes.outputs.render_c4model_views == 'true' }}
+    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@dstenroejl/refactor-structurizr
+    with:
+      structurizr_workspace_filename: views
+      included_model_filename: model
     secrets: inherit
 
   #
