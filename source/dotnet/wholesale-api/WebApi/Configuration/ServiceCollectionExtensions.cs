@@ -19,11 +19,17 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application;
-using Energinet.DataHub.Wholesale.Application.Batches;
-using Energinet.DataHub.Wholesale.Application.Batches.Model;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.Batches.Application;
+using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
@@ -34,20 +40,18 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Domain.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
+using IUnitOfWork = Energinet.DataHub.Wholesale.Application.IUnitOfWork;
 using ProcessTypeMapper = Energinet.DataHub.Wholesale.Application.Processes.Model.ProcessTypeMapper;
+using UnitOfWork = Energinet.DataHub.Wholesale.Infrastructure.Persistence.UnitOfWork;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -65,6 +69,17 @@ internal static class ServiceCollectionExtensions
 
     public static void AddCommandStack(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        serviceCollection.AddDbContext<IntegrationEventPublishingDatabaseContext>(
+            options => options.UseSqlServer(
+                configuration
+                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
+                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
+                o =>
+                {
+                    o.UseNodaTime();
+                    o.EnableRetryOnFailure();
+                }));
+
         serviceCollection.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
                 configuration
@@ -77,8 +92,11 @@ internal static class ServiceCollectionExtensions
                 }));
 
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
+        serviceCollection.AddScoped<IIntegrationEventPublishingDatabaseContext, IntegrationEventPublishingDatabaseContext>();
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
+        // This is a temporary fix until we move registration out to each of the modules
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+        serviceCollection.AddScoped<Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
         serviceCollection.AddScoped<IBatchApplicationService, BatchApplicationService>();
         serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
@@ -108,7 +126,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
         serviceCollection.AddDomainEventPublisher(configuration);
-        serviceCollection.AddDataTimeConfiguration(configuration);
+        serviceCollection.AddDateTimeConfiguration(configuration);
         serviceCollection.AddDataLakeFileSystemClient(configuration);
     }
 
@@ -118,7 +136,7 @@ internal static class ServiceCollectionExtensions
         var dataLakeOptions = configuration.Get<DataLakeOptions>()!;
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>(name: "SqlDatabaseContextCheck")
+            .AddDbContextCheck<IntegrationEventPublishingDatabaseContext>(name: "SqlDatabaseContextCheck")
             .AddDataLakeContainerCheck(dataLakeOptions.STORAGE_ACCOUNT_URI, dataLakeOptions.STORAGE_CONTAINER_NAME)
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
@@ -162,7 +180,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
     }
 
-    private static void AddDataTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static void AddDateTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<DateTimeOptions>()!;
         var dateTimeZoneId = options.TIME_ZONE;

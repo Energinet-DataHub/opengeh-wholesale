@@ -26,9 +26,6 @@ public static class Registration
     public static void AddCalculationResultsModule(
         this IServiceCollection serviceCollection)
     {
-        // TODO: This registration depends on IOptions<DatabricksOptions> - how do we make that explicit?
         serviceCollection.AddHttpClient<ICalculationResultClient>();
-
-        // TODO: Should we add all required stuff? What if it's shared - like e.g. IJsonSerializer?
     }
 }

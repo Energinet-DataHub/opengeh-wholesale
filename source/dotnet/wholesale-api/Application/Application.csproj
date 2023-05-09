@@ -21,6 +21,7 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Batches\Batches.Interfaces\Batches.Interfaces.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Wholesale.Application.Batches;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;

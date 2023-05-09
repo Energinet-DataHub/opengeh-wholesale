@@ -20,8 +20,6 @@ namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
 // TODO: Move to calculation results module?
 public interface ISettlementReportApplicationService
 {
-    Task CreateSettlementReportAsync(BatchCompletedEventDto batchCompletedEvent);
-
     Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId);
 
     Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream);
