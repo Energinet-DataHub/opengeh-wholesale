@@ -40,8 +40,9 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddCalculationResultsModule();
         serviceCollection.AddBatchesModule();
+        serviceCollection.AddCalculationResultsModule();
+        serviceCollection.AddIntegrationEventPublishingModule();
 
         serviceCollection.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
             options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
