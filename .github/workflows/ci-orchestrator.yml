@@ -79,7 +79,7 @@ jobs:
         # ci_dotnet,
         # ci_databricks,
         # ci_packages,
-        render_diagrams,
+        render_c4model_views,
         # ci_codeql,
       ]
     if: |
