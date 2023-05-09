@@ -12,19 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.BatchExecutionStateUpdateService;
-using Microsoft.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.Application.Workers;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
 /// <summary>
-/// Registration of services required for the Batches module.
+/// Registration of services required for the IntegrationEventPublishing module.
 /// </summary>
 public static class Registration
 {
-    public static void AddBatchesModule(
+    public static void AddIntegrationEventPublishingModule(
         this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddHostedService<UpdateBatchExecutionStateWorker>();
+        serviceCollection
+            .AddOptions<IntegrationEventRetentionOptions>()
+            .Configure(options => options.RetentionDays = 14);
+        serviceCollection.AddHostedService<IntegrationEventsRetentionWorker>();
     }
 }

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.BatchExecutionStateUpdateService;
+namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 
-public interface IBatchExecutionStateUpdateService
+public class IntegrationEventRetentionOptions
 {
-    Task UpdateBatchExecutionStatesAsync();
+    public int RetentionDays { get; set; }
 }

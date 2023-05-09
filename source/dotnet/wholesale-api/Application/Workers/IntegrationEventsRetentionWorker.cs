@@ -13,24 +13,25 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.BatchExecutionStateUpdateService;
+namespace Energinet.DataHub.Wholesale.Application.Workers;
 
 /// <summary>
-/// Timer triggered hosted service to invoke the service for updating batch execution states.
+/// Timer triggered hosted service to invoke the service for integration events retention.
 /// </summary>
-public class UpdateBatchExecutionStateWorker : BackgroundService
+public class IntegrationEventsRetentionWorker : BackgroundService
 {
-    private const int DelayInSecondsBeforeNextExecution = 20;
+    // Execute once per day (86400 seconds)
+    private const int DelayInSecondsBeforeNextExecution = 86400;
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<UpdateBatchExecutionStateWorker> _logger;
+    private readonly ILogger<IntegrationEventsRetentionWorker> _logger;
 
-    public UpdateBatchExecutionStateWorker(IServiceProvider serviceProvider, ILogger<UpdateBatchExecutionStateWorker> logger)
+    public IntegrationEventsRetentionWorker(IServiceProvider serviceProvider, ILogger<IntegrationEventsRetentionWorker> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -40,7 +41,7 @@ public class UpdateBatchExecutionStateWorker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("{Worker} running at: {Time}", nameof(UpdateBatchExecutionStateWorker), DateTimeOffset.Now);
+            _logger.LogInformation("{Worker} running at: {Time}", nameof(IntegrationEventsRetentionWorker), DateTimeOffset.Now);
 
             await ExecuteInScopeAsync().ConfigureAwait(false);
 
@@ -56,7 +57,7 @@ public class UpdateBatchExecutionStateWorker : BackgroundService
         var correlationContext = scope.ServiceProvider.GetRequiredService<ICorrelationContext>();
         correlationContext.SetId(Guid.NewGuid().ToString());
 
-        var batchApplicationService = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-        await batchApplicationService.UpdateExecutionStateAsync().ConfigureAwait(false);
+        var integrationEventService = scope.ServiceProvider.GetRequiredService<IIntegrationEventService>();
+        await integrationEventService.DeleteOlderDispatchedIntegrationEventsAsync().ConfigureAwait(false);
     }
 }
