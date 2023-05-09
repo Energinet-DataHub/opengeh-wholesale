@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 public static class ProcessTypeMapper
 {
-    public static Batches.Interfaces.Models.ProcessType MapProcessType(ProcessType batchDtoProcessType)
+    public static Batches.Interfaces.Models.ProcessType Map(ProcessType batchDtoProcessType)
     {
         return batchDtoProcessType switch
         {
@@ -26,7 +26,7 @@ public static class ProcessTypeMapper
         };
     }
 
-    public static ProcessType MapProcessType(Batches.Interfaces.Models.ProcessType batchDtoProcessType)
+    public static ProcessType Map(Batches.Interfaces.Models.ProcessType batchDtoProcessType)
     {
         return batchDtoProcessType switch
         {

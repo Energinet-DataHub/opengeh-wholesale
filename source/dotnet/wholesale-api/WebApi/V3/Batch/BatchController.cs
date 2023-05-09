@@ -45,7 +45,7 @@ public class BatchController : V3ControllerBase
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
         return await _createBatchHandler.HandleAsync(new CreateBatchCommand(
-            ProcessTypeMapper.MapProcessType(batchRequestDto.ProcessType),
+            ProcessTypeMapper.Map(batchRequestDto.ProcessType),
             batchRequestDto.GridAreaCodes,
             batchRequestDto.StartDate,
             batchRequestDto.EndDate)).ConfigureAwait(false);
