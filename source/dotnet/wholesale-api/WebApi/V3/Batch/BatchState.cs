@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
-public class ConnectionStringsOptions
+public enum BatchState
 {
-    // This is the section name. It must match the section name in setting storage.
-    public const string ConnectionStrings = "CONNECTIONSTRINGS";
-
-    public string DB_CONNECTION_STRING { get; set; } = string.Empty;
+    Pending,
+    Executing,
+    Completed,
+    Failed,
 }

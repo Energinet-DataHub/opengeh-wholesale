@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using BatchDto = Energinet.DataHub.Wholesale.WebApi.V3.Batch.BatchDto;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
