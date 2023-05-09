@@ -16,7 +16,6 @@ using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Application.Security;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
@@ -51,7 +50,7 @@ public class BatchController : V3ControllerBase
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
         return await _createBatchHandler.HandleAsync(new CreateBatchCommand(
-            batchRequestDto.ProcessType,
+            ProcessTypeMapper.Map(batchRequestDto.ProcessType),
             batchRequestDto.GridAreaCodes,
             batchRequestDto.StartDate,
             batchRequestDto.EndDate,
@@ -93,7 +92,7 @@ public class BatchController : V3ControllerBase
     {
         var batches = await _batchApplicationService.SearchAsync(
             gridAreaCodes ?? Array.Empty<string>(),
-            executionState,
+            BatchStateMapper.MapState(executionState),
             minExecutionTime,
             maxExecutionTime,
             periodStart,

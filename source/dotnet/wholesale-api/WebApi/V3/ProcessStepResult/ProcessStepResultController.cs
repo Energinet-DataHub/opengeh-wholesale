@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
+using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
@@ -69,6 +70,6 @@ public class ProcessStepResultController : V3ControllerBase
 
         var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
 
-        return _processStepResultFactory.Create(stepResult, batch);
+        return _processStepResultFactory.Create(stepResult, BatchDtoMapper.Map(batch));
     }
 }
