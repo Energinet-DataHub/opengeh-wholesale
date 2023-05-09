@@ -20,7 +20,6 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Contracts;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application;
