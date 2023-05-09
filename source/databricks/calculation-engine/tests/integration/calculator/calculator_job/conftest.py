@@ -73,7 +73,7 @@ def executed_calculation_job(
         schema=metering_point_period_schema,
     )
     metering_points_df.write.format("delta").save(
-        f"{data_lake_path}/calculation-input/metering-point-periods",
+        f"{data_lake_path}/calculation_input/metering_point_periods",
         mode="overwrite",
     )
     timeseries_points_df = spark.read.csv(
@@ -83,7 +83,7 @@ def executed_calculation_job(
     )
 
     timeseries_points_df.write.format("delta").save(
-        f"{data_lake_path}/calculation-input/time-series-points",
+        f"{data_lake_path}/calculation_input/time_series_points",
         mode="overwrite",
     )
 
