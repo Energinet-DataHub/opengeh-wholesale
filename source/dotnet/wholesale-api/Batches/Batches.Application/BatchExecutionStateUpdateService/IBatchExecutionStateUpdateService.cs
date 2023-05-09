@@ -12,20 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Microsoft.Extensions.DependencyInjection;
+namespace Energinet.DataHub.Wholesale.Batches.Application.BatchExecutionStateUpdateService;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
-
-/// <summary>
-/// Registration of services required for the CalculationResults module.
-/// </summary>
-public static class Registration
+public interface IBatchExecutionStateUpdateService
 {
-    public static void AddCalculationResultsModule(
-        this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddHttpClient<ICalculationResultClient>();
-    }
+    Task UpdateBatchExecutionStatesAsync();
 }
