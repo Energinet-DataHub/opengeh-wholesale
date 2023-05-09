@@ -64,9 +64,9 @@ public class CalculationResultClient : ICalculationResultClient
             throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
 
         var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-        var list = _processResultPointFactory.Create(jsonResponse);
+        var processResultPoints = _processResultPointFactory.Create(jsonResponse);
 
-        return MapToProcessStepResultDto(timeSeriesType, list);
+        return MapToProcessStepResultDto(timeSeriesType, processResultPoints);
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
