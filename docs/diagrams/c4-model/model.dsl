@@ -1,4 +1,4 @@
-# Read description in the 'views.dsl' file.
+# Read description in the 'views.dsl' file..
 
 wholesaleDomain = group "Wholesale" {
     wholesaleDataLake = container "Data Lake (Wholesale)" {
