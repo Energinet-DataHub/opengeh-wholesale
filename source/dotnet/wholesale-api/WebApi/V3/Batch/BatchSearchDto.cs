@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
-
-public interface IProcessStepResultFactory
-{
-    public ProcessStepResultDto Create(CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto stepResult, BatchDto batch);
-}
+/// <summary>
+/// An immutable criteria for batch search.
+/// </summary>
+public sealed record BatchSearchDto(DateTimeOffset MinExecutionTime, DateTimeOffset MaxExecutionTime);
