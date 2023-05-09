@@ -405,6 +405,8 @@ resource "azurerm_storage_account" "playground" {
   location                 = azurerm_resource_group.integration-test-rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  account_kind             = "StorageV2"
+  is_hns_enabled           = true
 }
 
 data "azuread_client_config" "current" {}
