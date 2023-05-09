@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
-
-public interface IProcessStepResultFactory
+public enum BatchState
 {
-    public ProcessStepResultDto Create(CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto stepResult, BatchDto batch);
+    Pending,
+    Executing,
+    Completed,
+    Failed,
 }

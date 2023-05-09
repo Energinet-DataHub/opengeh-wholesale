@@ -12,11 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
-
-public interface IProcessStepResultFactory
+/// <summary>
+/// Defines the wholesale process type
+/// </summary>
+public enum ProcessType
 {
-    public ProcessStepResultDto Create(CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto stepResult, BatchDto batch);
+    /// <summary>
+    /// Balance fixing
+    /// </summary>
+    BalanceFixing = 0,
+
+    /// <summary>
+    /// Aggregation.
+    /// </summary>
+    Aggregation = 1,
 }
