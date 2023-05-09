@@ -75,5 +75,4 @@ jobs:
               - 'docs/diagrams/c4-model/views.dsl'
               - 'docs/diagrams/c4-model/views.json'
               - 'docs/diagrams/c4-model/model.dsl'
-              - '.github/workflows/render-diagrams.yml'
               - '.github/workflows/detect-changes.yml'

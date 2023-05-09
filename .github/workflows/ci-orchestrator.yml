@@ -31,8 +31,8 @@ jobs:
   #
   # CodeQL Check
   #
-  # ci_codeql:
-  #   uses: ./.github/workflows/codeql.yml
+  ci_codeql:
+    uses: ./.github/workflows/codeql.yml
 
   #
   # Detect changes to start relevant workflows
@@ -40,23 +40,23 @@ jobs:
   changes:
     uses: ./.github/workflows/detect-changes.yml
 
-  # ci_dotnet:
-  #   needs: changes
-  #   if: ${{ needs.changes.outputs.dotnet == 'true' }}
-  #   uses: ./.github/workflows/ci-dotnet.yml
-  #   secrets: inherit
+  ci_dotnet:
+    needs: changes
+    if: ${{ needs.changes.outputs.dotnet == 'true' }}
+    uses: ./.github/workflows/ci-dotnet.yml
+    secrets: inherit
 
-  # ci_databricks:
-  #   needs: changes
-  #   if: ${{ needs.changes.outputs.databricks == 'true' }}
-  #   uses: ./.github/workflows/ci-databricks.yml
-  #   secrets: inherit
+  ci_databricks:
+    needs: changes
+    if: ${{ needs.changes.outputs.databricks == 'true' }}
+    uses: ./.github/workflows/ci-databricks.yml
+    secrets: inherit
 
-  # ci_packages:
-  #   needs: changes
-  #   if: ${{ needs.changes.outputs.packages == 'true' }}
-  #   uses: ./.github/workflows/packages-publish.yml
-  #   secrets: inherit
+  ci_packages:
+    needs: changes
+    if: ${{ needs.changes.outputs.packages == 'true' }}
+    uses: ./.github/workflows/packages-publish.yml
+    secrets: inherit
 
   render_c4model_views:
     needs: changes
@@ -76,11 +76,11 @@ jobs:
     needs:
       [
         ci_base,
-        # ci_dotnet,
-        # ci_databricks,
-        # ci_packages,
+        ci_codeql,
+        ci_dotnet,
+        ci_databricks,
+        ci_packages,
         render_c4model_views,
-        # ci_codeql,
       ]
     if: |
       always()
