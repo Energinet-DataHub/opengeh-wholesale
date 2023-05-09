@@ -13,19 +13,18 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application.BatchExecutionStateUpdateService;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
 /// <summary>
 /// Registration of services required for the Batches module.
 /// </summary>
-public static class Registration
+public static class BatchesRegistration
 {
     public static void AddBatchesModule(
         this IServiceCollection serviceCollection)
     {
         serviceCollection.AddHostedService<UpdateBatchExecutionStateWorker>();
-        serviceCollection.AddScoped<IBatchExecutionStateUpdateService, BatchExecutionStateUpdateService.BatchExecutionStateUpdateService>();
+        serviceCollection.AddScoped<IBatchExecutionStateUpdateService, BatchExecutionStateUpdateService>();
     }
 }
