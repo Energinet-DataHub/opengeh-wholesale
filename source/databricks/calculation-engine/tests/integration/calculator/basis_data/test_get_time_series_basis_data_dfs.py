@@ -47,13 +47,13 @@ def enriched_time_series_factory(spark, timestamp_factory):
 
         schema = StructType(
             [
-                StructField("GridAreaCode", StringType(), True),
-                StructField("Resolution", StringType(), True),
+                StructField(Colname.grid_area, StringType(), True),
+                StructField(Colname.resolution, StringType(), True),
                 StructField("GridAreaLinkId", StringType(), True),
                 StructField(Colname.observation_time, TimestampType(), True),
-                StructField("Quantity", DecimalType(18, 3), True),
-                StructField("MeteringPointId", StringType(), True),
-                StructField("Type", StringType(), True),
+                StructField(Colname.quantity, DecimalType(18, 3), True),
+                StructField(Colname.metering_point_id, StringType(), True),
+                StructField(Colname.metering_point_type, StringType(), True),
                 StructField(Colname.energy_supplier_id, StringType(), True),
             ]
         )
@@ -63,13 +63,13 @@ def enriched_time_series_factory(spark, timestamp_factory):
         for i in range(number_of_points):
             df_array.append(
                 {
-                    "GridAreaCode": grid_area,
-                    "Resolution": resolution,
+                    Colname.grid_area: grid_area,
+                    Colname.Resolution: resolution,
                     "GridAreaLinkId": "GridAreaLinkId",
                     Colname.observation_time: time,
-                    "Quantity": quantity + i,
-                    "MeteringPointId": metering_point_id,
-                    "MeteringPointType": metering_point_type,
+                    Colname.Quantity: quantity + i,
+                    Colname.MeteringPointId: metering_point_id,
+                    Colname.MeteringPointType: metering_point_type,
                     Colname.energy_supplier_id: "some-id",
                 }
             )

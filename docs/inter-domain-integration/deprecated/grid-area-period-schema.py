@@ -33,15 +33,13 @@ Grid access provider is not needed as it is related to B2B messaging.
 grid_area_period_schema = StructType(
     [
         # 3 character grid area code uniquely identifying the grid area. All characters must be digits (0-9).
-        StructField("GridAreaCode", StringType(), True),
-
+        StructField("grid_area_code", StringType(), True),
         # The start date of the period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The date is inclusive.
-        StructField("FromDate", TimestampType(), True),
-        
+        StructField("From_date", TimestampType(), True),
         # The to-date of the period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The moment is exclusive.
         # The date of the last period is null.
-        StructField("ToDate", TimestampType(), True),
+        StructField("to_date", TimestampType(), True),
     ]
 )

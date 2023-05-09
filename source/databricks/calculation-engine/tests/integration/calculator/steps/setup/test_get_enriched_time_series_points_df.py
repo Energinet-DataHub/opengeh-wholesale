@@ -431,8 +431,8 @@ def test__support_meteringpoint_period_switch_on_resolution_provides_correct_num
         timestamp_factory(to_date),
     )
 
-    hour = actual.filter(col("Resolution") == MeteringPointResolution.hour.value)
-    quarter = actual.filter(col("Resolution") == MeteringPointResolution.quarter.value)
+    hour = actual.filter(col("resolution") == MeteringPointResolution.hour.value)
+    quarter = actual.filter(col("resolution") == MeteringPointResolution.quarter.value)
 
     # Assert
     assert actual.count() == total
