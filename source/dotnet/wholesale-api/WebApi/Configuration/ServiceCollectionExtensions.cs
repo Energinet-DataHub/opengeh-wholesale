@@ -21,15 +21,7 @@ using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
@@ -92,25 +84,13 @@ internal static class ServiceCollectionExtensions
                 }));
 
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
-        serviceCollection.AddScoped<IIntegrationEventPublishingDatabaseContext, IntegrationEventPublishingDatabaseContext>();
-        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         // This is a temporary fix until we move registration out to each of the modules
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-        serviceCollection.AddScoped<Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
-        serviceCollection.AddScoped<IBatchApplicationService, BatchApplicationService>();
         serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<HttpClient>(_ => null!);
-        serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
-        serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
-        serviceCollection.AddScoped<IBatchExecutionStateDomainService>(_ => null!); // Unused in the use cases of this app
-        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
-        serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
-        serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
-        serviceCollection.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
         serviceCollection.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
         serviceCollection.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
         serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
@@ -121,8 +101,6 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
         serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
         serviceCollection.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
-        serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
-
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
         serviceCollection.AddDomainEventPublisher(configuration);

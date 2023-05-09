@@ -28,12 +28,9 @@ using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
@@ -79,7 +76,6 @@ public static class Program
             })
             .ConfigureServices(Middlewares)
             .ConfigureServices(Applications)
-            .ConfigureServices(Domains)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(DateTime)
             .ConfigureServices(HealthCheck);
@@ -96,28 +92,19 @@ public static class Program
     private static void Applications(IServiceCollection services)
     {
         services.AddScoped<IBatchApplicationService, BatchApplicationService>();
-        services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
         services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
         services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
-        services.AddScoped<ICalculationDomainService, CalculationDomainService>();
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         // This is a temporary fix until we move registration out to each of the modules
-        services.AddScoped<Energinet.DataHub.Wholesale.Application.IUnitOfWork, Energinet.DataHub.Wholesale.Infrastructure.Persistence.UnitOfWork>();
-        services.AddScoped<Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
+        services.AddScoped<Energinet.DataHub.Wholesale.Application.IUnitOfWork, Infrastructure.Persistence.UnitOfWork>();
+        services.AddScoped<IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services
             .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
                 CalculationResultCompletedIntegrationEventFactory>();
         services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-    }
-
-    private static void Domains(IServiceCollection services)
-    {
-        services.AddScoped<IBatchFactory, BatchFactory>();
-        services.AddScoped<IBatchRepository, BatchRepository>();
-        services.AddSingleton(new BatchStateMapper());
     }
 
     private static void Infrastructure(IServiceCollection serviceCollection)
@@ -130,8 +117,8 @@ public static class Program
 
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
-        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri)!), new DefaultAzureCredential());
-        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName)!);
+        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri)), new DefaultAzureCredential());
+        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName));
 
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
@@ -180,7 +167,6 @@ public static class Program
         {
             { typeof(CalculationResultCompleted), CalculationResultCompleted.BalanceFixingEventName },
         }));
-        serviceCollection.AddScoped<IIntegrationEventService, IntegrationEventService>();
     }
 
     private static void RegisterEventPublishers(IServiceCollection serviceCollection)
