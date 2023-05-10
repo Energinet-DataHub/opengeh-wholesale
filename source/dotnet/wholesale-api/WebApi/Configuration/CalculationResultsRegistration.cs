@@ -14,14 +14,13 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
 /// <summary>
 /// Registration of services required for the CalculationResults module.
 /// </summary>
-public static class Registration
+public static class CalculationResultsRegistration
 {
     public static void AddCalculationResultsModule(
         this IServiceCollection serviceCollection)
@@ -29,7 +28,5 @@ public static class Registration
         serviceCollection.AddHttpClient<ICalculationResultClient>();
         serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
         serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
-
-        // TODO: Should we add all required stuff? What if it's shared - like e.g. IJsonSerializer?
     }
 }

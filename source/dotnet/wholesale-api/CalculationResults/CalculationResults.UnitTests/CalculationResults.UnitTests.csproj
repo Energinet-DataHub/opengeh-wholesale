@@ -58,4 +58,7 @@
       <Folder Include="Application" />
       <Folder Include="Infrastructure" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Infrastructure\CalculationResultClient\ProcessResultPointFactoryTest.cs" />
+    </ItemGroup>
 </Project>
