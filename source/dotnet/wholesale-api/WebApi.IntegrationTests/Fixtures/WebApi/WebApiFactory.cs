@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Wholesale.Application.Security;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
@@ -60,6 +62,10 @@ public class WebApiFactory : WebApplicationFactory<Startup>
             services.AddScoped(_ =>
                 ProcessStepApplicationServiceMock?.Object ?? new Mock<IProcessStepApplicationService>().Object);
             services.AddScoped(_ => BatchApplicationServiceMock?.Object ?? new Mock<IBatchApplicationService>().Object);
+
+            var defaultUserContext = new Mock<IUserContext<FrontendUser>>();
+            defaultUserContext.Setup(x => x.CurrentUser).Returns(new FrontendUser(Guid.NewGuid(), Guid.NewGuid(), false));
+            services.AddScoped(_ => UserContextMock?.Object ?? defaultUserContext.Object);
         });
     }
 
@@ -72,6 +78,8 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     public Mock<IProcessStepApplicationService>? ProcessStepApplicationServiceMock { get; set; }
 
     public Mock<IBatchApplicationService>? BatchApplicationServiceMock { get; set; }
+
+    public Mock<IUserContext<FrontendUser>>? UserContextMock { get; set; }
 
     private sealed class AllowAnonymous : IAuthorizationHandler
     {

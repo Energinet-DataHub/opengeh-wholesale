@@ -204,7 +204,8 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
            period.PeriodStart,
            period.PeriodEnd,
            Instant.FromUtc(2022, 5, 1, 0, 0),
-           period.DateTimeZone);
+           period.DateTimeZone,
+           Guid.NewGuid());
 
         var sut = new BatchRepository(writeContext);
         await sut.AddAsync(batch);
@@ -240,6 +241,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
             period.PeriodStart,
             period.PeriodEnd,
             SystemClock.Instance.GetCurrentInstant(),
-            period.DateTimeZone);
+            period.DateTimeZone,
+            Guid.NewGuid());
     }
 }

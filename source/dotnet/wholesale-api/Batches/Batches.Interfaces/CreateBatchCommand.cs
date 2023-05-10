@@ -23,4 +23,5 @@ public sealed record CreateBatchCommand(
     ProcessType ProcessType,
     IEnumerable<string> GridAreaCodes,
     DateTimeOffset StartDate,
-    DateTimeOffset EndDate);
+    DateTimeOffset EndDate,
+    Guid CreatedByUserId);
