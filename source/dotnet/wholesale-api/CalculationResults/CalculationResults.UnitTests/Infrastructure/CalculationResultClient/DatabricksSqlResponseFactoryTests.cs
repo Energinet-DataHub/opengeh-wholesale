@@ -15,6 +15,8 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
+using Test.Core;
 using Xunit;
 using Xunit.Categories;
 using Xunit.Sdk;
@@ -80,5 +82,31 @@ public class DatabricksSqlResponseFactoryTests
 
         // Assert
         actual.DataArray.First().Should().Equal(expectedFirstArray);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public void Create_WhenValidJson_ThrowsNoException(DatabricksSqlResponseFactory sut)
+    {
+        // Arrange
+        var obj = new JObject(
+            new JProperty("status", new JObject(new JProperty("state", "PENDING"))),
+            new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>()))));
+
+        // Act + Assert
+        sut.Create(obj.ToString()!);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public void Create_WhenInvalidJson_ThrowsException(DatabricksSqlResponseFactory sut)
+    {
+        // Arrange
+        var obj = new JObject(
+            new JProperty("not_status", new JObject(new JProperty("state", "PENDING"))),
+            new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>()))));
+
+        // Act + Assert
+        Assert.Throws<InvalidOperationException>(() => sut.Create(obj.ToString()));
     }
 }
