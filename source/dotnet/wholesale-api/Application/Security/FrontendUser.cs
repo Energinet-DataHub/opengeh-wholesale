@@ -12,11 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+namespace Energinet.DataHub.Wholesale.Application.Security;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
-
-public interface IBatchFactory
+public sealed class FrontendUser
 {
-     Batch Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
+    public FrontendUser(Guid userId, Guid actorId, bool isFas)
+    {
+        UserId = userId;
+        ActorId = actorId;
+        IsFas = isFas;
+    }
+
+    public Guid UserId { get; }
+
+    public Guid ActorId { get; }
+
+    public bool IsFas { get; }
 }

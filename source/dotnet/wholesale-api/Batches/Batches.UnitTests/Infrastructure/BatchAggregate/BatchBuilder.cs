@@ -88,7 +88,8 @@ public class BatchBuilder
             _periodStart,
             _periodEnd,
             SystemClock.Instance.GetCurrentInstant(),
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+            Guid.NewGuid());
         var jobRunId = new CalculationId(new Random().Next(1, 1000));
 
         if (_state == BatchExecutionState.Submitted)

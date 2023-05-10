@@ -40,7 +40,7 @@ public class CreateBatchHandler : ICreateBatchHandler
 
     public async Task<Guid> HandleAsync(CreateBatchCommand command)
     {
-        var batch = _batchFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate);
+        var batch = _batchFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _domainEventPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);

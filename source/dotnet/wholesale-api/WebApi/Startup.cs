@@ -14,7 +14,9 @@
 
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Wholesale.Application.Security;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -99,6 +101,8 @@ public class Startup
         serviceCollection.AddCommandStack(Configuration);
         serviceCollection.AddApplicationInsightsTelemetry();
         serviceCollection.AddCorrelationContext();
+
+        serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -128,6 +132,11 @@ public class Startup
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
+
+        if (!Environment.IsEnvironment("Testing"))
+        {
+            app.UseUserMiddleware<FrontendUser>();
+        }
 
         app.UseEndpoints(endpoints =>
         {
