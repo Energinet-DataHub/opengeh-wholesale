@@ -132,7 +132,11 @@ public class Startup
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseUserMiddleware<FrontendUser>();
+
+        if (!Environment.IsEnvironment("Testing"))
+        {
+            app.UseUserMiddleware<FrontendUser>();
+        }
 
         app.UseEndpoints(endpoints =>
         {
