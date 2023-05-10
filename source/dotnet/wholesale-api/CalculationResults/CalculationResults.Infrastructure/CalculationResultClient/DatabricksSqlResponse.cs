@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class SqlWarehouseResponse
+public class DatabricksSqlResponse
 {
     private JObject _jsonObject = new();
 

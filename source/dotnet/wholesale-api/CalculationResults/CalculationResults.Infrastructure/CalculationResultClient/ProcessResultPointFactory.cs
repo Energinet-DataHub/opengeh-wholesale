@@ -16,8 +16,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class ProcessResultPointFactory : IProcessResultPointFactory
 {
- public IEnumerable<ProcessResultPoint> Create(SqlWarehouseResponse warehouseResponse)
+ public IEnumerable<ProcessResultPoint> Create(DatabricksSqlResponse response)
  {
-     return warehouseResponse.GetDataArray().Select(res => new ProcessResultPoint(res[1], res[2], res[0]));
+     return response.GetDataArray().Select(res => new ProcessResultPoint(res[1], res[2], res[0]));
  }
 }

@@ -49,14 +49,14 @@ public class CalculationResultClient : ICalculationResultClient
 
         var sql = CreateSqlStatement(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
 
-        var sqlWarehouseResponse = await ExecuteSqlStatementAsync(sql).ConfigureAwait(false);
+        var sqlWarehouseResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
 
         var processResultPoints = _processResultPointFactory.Create(sqlWarehouseResponse);
 
         return MapToProcessStepResultDto(timeSeriesType, processResultPoints);
     }
 
-    private async Task<SqlWarehouseResponse> ExecuteSqlStatementAsync(string sqlStatement)
+    private async Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
         const int maxAttempts = 16; // 8 minutes in total
@@ -69,7 +69,7 @@ public class CalculationResultClient : ICalculationResultClient
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
 
-        var sqlStatementResponse = new SqlWarehouseResponse();
+        var databricksSqlResponse = new DatabricksSqlResponse();
 
         for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
@@ -80,12 +80,12 @@ public class CalculationResultClient : ICalculationResultClient
 
             var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-            sqlStatementResponse.DeserializeFromJson(jsonResponse);
+            databricksSqlResponse.DeserializeFromJson(jsonResponse);
 
-            var statementState = sqlStatementResponse.GetState();
+            var statementState = databricksSqlResponse.GetState();
 
             if (statementState == "SUCCEEDED")
-                return sqlStatementResponse;
+                return databricksSqlResponse;
 
             if (statementState != "PENDING")
                 throw new Exception($"Unable to get calculation result from Databricks. State: {statementState}");

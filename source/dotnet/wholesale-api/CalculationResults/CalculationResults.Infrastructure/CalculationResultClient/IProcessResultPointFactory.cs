@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public interface IProcessResultPointFactory
 {
-    IEnumerable<ProcessResultPoint> Create(SqlWarehouseResponse input);
+    IEnumerable<ProcessResultPoint> Create(DatabricksSqlResponse input);
 }
