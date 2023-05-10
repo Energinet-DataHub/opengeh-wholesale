@@ -87,7 +87,7 @@ def _aggregate_per_ga_and_brp_and_es(
     ]
     result = T.aggregate_sum_and_set_quality(result, "quarter_quantity", sum_group_by)
 
-    win = Window.partitionBy("GridAreaCode").orderBy(col(Colname.time_window))
+    win = Window.partitionBy(Colname.grid_area).orderBy(col(Colname.time_window))
 
     result = (
         result.withColumn("position", row_number().over(win))
@@ -165,7 +165,9 @@ def aggregate_production_ga_brp(production: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_brp(production, MeteringPointType.production)
 
 
-def aggregate_non_profiled_consumption_ga_brp(non_profiled_consumption: DataFrame) -> DataFrame:
+def aggregate_non_profiled_consumption_ga_brp(
+    non_profiled_consumption: DataFrame,
+) -> DataFrame:
     return _aggregate_per_ga_and_brp(
         non_profiled_consumption,
         MeteringPointType.consumption,

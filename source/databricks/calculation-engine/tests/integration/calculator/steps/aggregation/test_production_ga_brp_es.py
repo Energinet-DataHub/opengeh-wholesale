@@ -387,7 +387,7 @@ def test__that_grid_area_code_in_input_is_in_output(
     "Test that the grid area codes in input are in result"
     df = enriched_time_series_quarterly_same_time_factory()
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
-    assert result_df.first().GridAreaCode == str(grid_area_code_805)
+    assert result_df.first().grid_area_code == str(grid_area_code_805)
 
 
 def test__each_grid_area_has_a_sum(
@@ -396,8 +396,8 @@ def test__each_grid_area_has_a_sum(
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
-    assert result_df.where("GridAreaCode == 805").count() == 1
-    assert result_df.where("GridAreaCode == 806").count() == 1
+    assert result_df.where("grid_area_code == 805").count() == 1
+    assert result_df.where("grid_area_code == 806").count() == 1
 
 
 # TODO: Turn into test of get_enriched_time_series function
@@ -472,7 +472,7 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
         .union(enriched_time_series_factory(quality=quality_3))
     )
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
-    assert result_df.first().Quality == expected_quality
+    assert result_df.first().quality == expected_quality
 
 
 def test__when_time_series_point_is_missing__quality_has_value_incomplete(
@@ -481,7 +481,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     df = enriched_time_series_factory().withColumn("quality", F.lit(None))
 
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
-    assert result_df.first().Quality == TimeSeriesQuality.missing.value
+    assert result_df.first().quality == TimeSeriesQuality.missing.value
 
 
 def test__when_time_series_point_is_missing__quantity_is_0(

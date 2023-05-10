@@ -47,13 +47,13 @@ def enriched_time_series_factory(spark, timestamp_factory):
 
         schema = StructType(
             [
-                StructField("GridAreaCode", StringType(), True),
-                StructField("Resolution", StringType(), True),
+                StructField(Colname.grid_area, StringType(), True),
+                StructField(Colname.resolution, StringType(), True),
                 StructField("GridAreaLinkId", StringType(), True),
                 StructField(Colname.observation_time, TimestampType(), True),
-                StructField("Quantity", DecimalType(18, 3), True),
-                StructField("MeteringPointId", StringType(), True),
-                StructField("Type", StringType(), True),
+                StructField(Colname.quantity, DecimalType(18, 3), True),
+                StructField(Colname.metering_point_id, StringType(), True),
+                StructField(Colname.metering_point_type, StringType(), True),
                 StructField(Colname.energy_supplier_id, StringType(), True),
             ]
         )
@@ -63,13 +63,13 @@ def enriched_time_series_factory(spark, timestamp_factory):
         for i in range(number_of_points):
             df_array.append(
                 {
-                    "GridAreaCode": grid_area,
-                    "Resolution": resolution,
+                    Colname.grid_area: grid_area,
+                    Colname.resolution: resolution,
                     "GridAreaLinkId": "GridAreaLinkId",
                     Colname.observation_time: time,
-                    "Quantity": quantity + i,
-                    "MeteringPointId": metering_point_id,
-                    "MeteringPointType": metering_point_type,
+                    Colname.quantity: quantity + i,
+                    Colname.parent_metering_point_id: metering_point_id,
+                    Colname.metering_point_type: metering_point_type,
                     Colname.energy_supplier_id: "some-id",
                 }
             )
@@ -297,7 +297,7 @@ def test__missing_point_has_empty_quantity(
         time="2022-10-28T22:00:00.000Z",
         resolution=MeteringPointResolution.quarter.value,
         number_of_points=96,
-    ).withColumn("Quantity", lit(None).cast(DecimalType()))
+    ).withColumn("quantity", lit(None).cast(DecimalType()))
     (quarter_df, _) = get_time_series_basis_data_dfs(
         enriched_time_series_points_df, "Europe/Copenhagen"
     )
