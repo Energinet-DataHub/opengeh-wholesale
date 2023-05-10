@@ -29,13 +29,11 @@ public class CalculationResultClient : ICalculationResultClient
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
-    private readonly IProcessResultPointFactory _processResultPointFactory;
 
-    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IProcessResultPointFactory processResultPointFactory)
+    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
     {
         _httpClient = httpClient;
         _options = options;
-        _processResultPointFactory = processResultPointFactory;
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -49,11 +47,9 @@ public class CalculationResultClient : ICalculationResultClient
 
         var sql = CreateSqlStatement(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
 
-        var sqlWarehouseResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
+        var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
 
-        var processResultPoints = _processResultPointFactory.Create(sqlWarehouseResponse);
-
-        return MapToProcessStepResultDto(timeSeriesType, processResultPoints);
+        return CreateProcessStepResult(timeSeriesType, databricksSqlResponse);
     }
 
     private async Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
@@ -154,18 +150,17 @@ order by time
         }
     }
 
-    // TODO: Why do we have both ProcessResultPoint and TimeSeriesPoint?
-    private static ProcessStepResult MapToProcessStepResultDto(
+    private static ProcessStepResult CreateProcessStepResult(
         TimeSeriesType timeSeriesType,
-        IEnumerable<ProcessResultPoint> points)
+        DatabricksSqlResponse databricksSqlResponse)
     {
-        var pointsDto = points.Select(
-                point => new TimeSeriesPoint(
-                    DateTimeOffset.Parse(point.quarter_time),
-                    decimal.Parse(point.quantity, CultureInfo.InvariantCulture),
-                    QuantityQualityMapper.MapQuality(point.quality)))
-            .ToList();
+        var pointsDto = databricksSqlResponse.GetDataArray().Select(
+                res => new TimeSeriesPoint(
+                    DateTimeOffset.Parse(res[0]),
+                    decimal.Parse(res[1], CultureInfo.InvariantCulture),
+                    QuantityQualityMapper.MapQuality(res[2])))
+            .ToArray();
 
-        return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
+        return new ProcessStepResult(timeSeriesType, pointsDto);
     }
 }
