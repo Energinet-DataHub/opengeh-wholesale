@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -23,7 +24,11 @@ public class DatabricksSqlResponse
 
     public void DeserializeFromJson(string jsonResponse)
     {
-        _jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse) ?? throw new InvalidOperationException();
+        var settings = new JsonSerializerSettings
+        {
+            DateParseHandling = DateParseHandling.None,
+        };
+        _jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ?? throw new InvalidOperationException();
     }
 
     public string GetState()
