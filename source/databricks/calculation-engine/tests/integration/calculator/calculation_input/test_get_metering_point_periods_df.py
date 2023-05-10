@@ -51,7 +51,7 @@ balance_responsible_id = "someBalanceResponsibleId"
 
 @pytest.fixture
 def batch_grid_areas_df(spark) -> DataFrame:
-    row = {"GridAreaCode": grid_area_code}
+    row = {Colname.grid_area: grid_area_code}
     return spark.createDataFrame([row])
 
 
