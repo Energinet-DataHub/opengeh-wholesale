@@ -36,16 +36,16 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         energy_supplier_id="some-energy-supplier-id",
     ):
         row = {
-            "MeteringPointId": meteringpoint_id,
-            "GridAreaCode": grid_area_code,
-            "Type": meteringpoint_type,
-            "FromDate": from_date,
-            "ToDate": to_date,
-            "FromGridAreaCode": from_grid_area,
-            "ToGridAreaCode": to_grid_area,
-            "SettlementMethod": settlement_method,
-            "Resolution": resolution,
-            "EnergySupplierID": energy_supplier_id,
+            "metering_point_id": meteringpoint_id,
+            "grid_area_code": grid_area_code,
+            "type": meteringpoint_type,
+            "from_date": from_date,
+            "to_date": to_date,
+            "from_grid_area_code": from_grid_area,
+            "to_grid_area_code": to_grid_area,
+            "settlement_method": settlement_method,
+            "resolution": resolution,
+            "energy_supplier_id": energy_supplier_id,
         }
         return spark.createDataFrame([row])
 
