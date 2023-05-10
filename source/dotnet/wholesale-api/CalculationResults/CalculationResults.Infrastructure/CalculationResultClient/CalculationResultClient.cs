@@ -15,7 +15,6 @@
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 // TODO: Should we avoid referencing the DatabricksClient project "just" to get access to the DatabricksOptions?
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
@@ -30,16 +29,13 @@ public class CalculationResultClient : ICalculationResultClient
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
-    private readonly IJsonSerializer _jsonSerializer;
     private readonly IProcessResultPointFactory _processResultPointFactory;
 
-    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IJsonSerializer jsonSerializer, IProcessResultPointFactory processResultPointFactory)
+    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IProcessResultPointFactory processResultPointFactory)
     {
         _httpClient = httpClient;
         _options = options;
-        _jsonSerializer = jsonSerializer;
         _processResultPointFactory = processResultPointFactory;
-        ConfigureHttpClient(httpClient, options);
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -49,31 +45,58 @@ public class CalculationResultClient : ICalculationResultClient
         string? energySupplierGln,
         string? balanceResponsiblePartyGln)
     {
+        ConfigureHttpClient(_httpClient, _options);
+
         var sql = CreateSqlStatement(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
+
+        var sqlWarehouseResponse = await ExecuteSqlStatementAsync(sql).ConfigureAwait(false);
+
+        var processResultPoints = _processResultPointFactory.Create(sqlWarehouseResponse);
+
+        return MapToProcessStepResultDto(timeSeriesType, processResultPoints);
+    }
+
+    private async Task<SqlWarehouseResponse> ExecuteSqlStatementAsync(string sqlStatement)
+    {
+        const int timeOutPerAttemptSeconds = 30;
+        const int maxAttempts = 16; // 8 minutes in total
 
         var requestObject = new
         {
             on_wait_timeout = "CANCEL",
-            wait_timeout = "30s", // Make the operation synchronous
-            statement = sql,
+            wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
+            statement = sqlStatement,
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
-        var requestString = _jsonSerializer.Serialize(requestObject);
 
-        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, new StringContent(requestString)).ConfigureAwait(false);
+        var sqlStatementResponse = new SqlWarehouseResponse();
 
-        var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-        var list = _processResultPointFactory.Create(jsonResponse);
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
-        // TODO: Unit test
-        if (!response.IsSuccessStatusCode)
-            throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
 
-        return MapToProcessStepResultDto(timeSeriesType, list);
+            var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+
+            sqlStatementResponse.DeserializeFromJson(jsonResponse);
+
+            var statementState = sqlStatementResponse.GetState();
+
+            if (statementState == "SUCCEEDED")
+                return sqlStatementResponse;
+
+            if (statementState != "PENDING")
+                throw new Exception($"Unable to get calculation result from Databricks. State: {statementState}");
+        }
+
+        throw new Exception($"Unable to get calculation result from Databricks.");
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
     {
+        httpClient.BaseAddress = new Uri(options.Value.DATABRICKS_WORKSPACE_URL);
         httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", options.Value.DATABRICKS_WORKSPACE_TOKEN);
         httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -101,13 +124,15 @@ order by time
         switch (timeSeriesType)
         {
             case TimeSeriesType.NonProfiledConsumption:
+            case TimeSeriesType.Production:
+            case TimeSeriesType.FlexConsumption:
                 if (energySupplierGln != null && balanceResponsiblePartyGln != null)
-                    return "energy_supplier_and_balance_responsible_party";
+                    return "es_brp_ga";
                 if (energySupplierGln != null)
-                    return "energy_supplier";
+                    return "es_ga";
                 if (balanceResponsiblePartyGln != null)
-                    return "balance_responsible_party";
-                return "grid_area";
+                    return "brp_ga";
+                return "total_ga";
             default:
                 throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
         }
@@ -120,6 +145,10 @@ order by time
         {
             case TimeSeriesType.NonProfiledConsumption:
                 return "non_profiled_consumption";
+            case TimeSeriesType.Production:
+                return "production";
+            case TimeSeriesType.FlexConsumption:
+                return "flex_consumption";
             default:
                 throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
         }

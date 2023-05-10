@@ -12,9 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public interface IProcessResultPointFactory
+public class SqlWarehouseResponse
 {
-    IEnumerable<ProcessResultPoint> Create(SqlWarehouseResponse input);
+    private JObject _jsonObject = new();
+
+    public void DeserializeFromJson(string jsonResponse)
+    {
+        _jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse) ?? throw new InvalidOperationException();
+    }
+
+    public string GetState()
+    {
+        return _jsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException();
+    }
+
+    public IEnumerable<string[]> GetDataArray()
+    {
+        return _jsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ?? throw new InvalidOperationException();
+    }
 }
