@@ -27,12 +27,12 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     ):
         df = [
             {
-                "MeteringPointId": "a-metering-point-id",
-                "GridAreaCode": grid_area_code,
-                "MeteringPointType": "the_metering_point_type",
-                "FromDate": timestamp_factory("2022-01-01T22:00:00.000Z"),
-                "ToDate": timestamp_factory("2022-01-11T22:00:00.000Z"),
-                "Resolution": MeteringPointResolution.hour.value,
+                "metering_point_id": "a-metering-point-id",
+                "grid_area_code": grid_area_code,
+                "metering_point_type": "the_metering_point_type",
+                "from_date": timestamp_factory("2022-01-01T22:00:00.000Z"),
+                "to_date": timestamp_factory("2022-01-11T22:00:00.000Z"),
+                "resolution": MeteringPointResolution.hour.value,
             }
         ]
         return spark.createDataFrame(df)
@@ -44,7 +44,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
 def grid_area_df_factory(spark):
     def factory(grid_area_code="805"):
         row = {
-            "GridAreaCode": grid_area_code,
+            "grid_area_code": grid_area_code,
             "GridAreaLinkId": "grid_area_link_id",
         }
         return spark.createDataFrame([row])

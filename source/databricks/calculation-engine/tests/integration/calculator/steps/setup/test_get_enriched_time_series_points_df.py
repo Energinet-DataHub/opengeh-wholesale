@@ -33,9 +33,9 @@ def raw_time_series_points_factory(spark, timestamp_factory):
     ):
         df = [
             {
-                "MeteringPointId": "the-meteringpoint-id",
-                "Quantity": Decimal("1.1"),
-                "Quality": TimeSeriesQuality.calculated.value,
+                "metering_point_id": "the-meteringpoint-id",
+                "quantity": Decimal("1.1"),
+                "quality": TimeSeriesQuality.calculated.value,
                 Colname.observation_time: time,
             }
         ]
@@ -151,7 +151,7 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
     actual = actual.filter(
         col(Colname.observation_time) != timestamp_factory(start_time)
     )
-    assert actual.where(col("Quantity").isNull()).count() == 95
+    assert actual.where(col("quantity").isNull()).count() == 95
 
 
 def test__missing_point_has_quantity_null_for_hourly_resolution(
@@ -183,7 +183,7 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
     actual = actual.filter(
         col(Colname.observation_time) != timestamp_factory(start_time)
     )
-    assert actual.where(col("Quantity").isNull()).count() == 23
+    assert actual.where(col("quantity").isNull()).count() == 23
 
 
 def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
@@ -257,7 +257,7 @@ def test__df_is_not_empty_when_no_time_series_points(
     end_time = "2022-06-09T22:00:00.000Z"
 
     empty_raw_time_series_points = raw_time_series_points_factory().filter(
-        col("MeteringPointId") == ""
+        col(Colname.metering_point_id) == ""
     )
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.quarter.value,
@@ -336,7 +336,7 @@ def test__df_has_expected_row_count_according_to_dst(
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(period_start)
-    ).filter(col("MeteringPointId") != "the-meteringpoint-id")
+    ).filter(col("metering_point_id") != "the-meteringpoint-id")
 
     metering_point_period_df = metering_point_period_df_factory(
         from_date=timestamp_factory(period_start),
@@ -431,8 +431,8 @@ def test__support_meteringpoint_period_switch_on_resolution_provides_correct_num
         timestamp_factory(to_date),
     )
 
-    hour = actual.filter(col("Resolution") == MeteringPointResolution.hour.value)
-    quarter = actual.filter(col("Resolution") == MeteringPointResolution.quarter.value)
+    hour = actual.filter(col("resolution") == MeteringPointResolution.hour.value)
+    quarter = actual.filter(col("resolution") == MeteringPointResolution.quarter.value)
 
     # Assert
     assert actual.count() == total
