@@ -12,21 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class DatabricksSqlResponse
+public class DatabricksSqlResponseFactory : IDatabricksSqlResponseFactory
 {
-    public DatabricksSqlResponse(string state, IEnumerable<string[]> dataArray)
+    public DatabricksSqlResponse Create(string jsonResponse)
     {
-        State = state;
-        DataArray = dataArray;
+        var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
+        var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
+                         throw new InvalidOperationException();
+        var state = jsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException();
+        var dataArray = jsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ??
+                        throw new InvalidOperationException();
+
+        return new DatabricksSqlResponse(state, dataArray);
     }
-
-    public IEnumerable<string[]> DataArray { get; }
-
-    public string State { get; }
 }

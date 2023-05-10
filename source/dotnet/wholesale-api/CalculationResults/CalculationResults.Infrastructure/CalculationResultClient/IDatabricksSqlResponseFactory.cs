@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public interface IProcessResultPointFactory
+public interface IDatabricksSqlResponseFactory
 {
-    IEnumerable<ProcessResultPoint> Create(DatabricksSqlResponse input);
+    DatabricksSqlResponse Create(string jsonResponse);
 }

@@ -22,11 +22,11 @@ using Xunit.Sdk;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient;
 
 [UnitTest]
-public class DatabricksSqlResponseTests
+public class DatabricksSqlResponseFactoryTests
 {
     private readonly string _sampleJson;
 
-    public DatabricksSqlResponseTests()
+    public DatabricksSqlResponseFactoryTests()
     {
         var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
         using var reader = new StreamReader(stream);
@@ -34,41 +34,36 @@ public class DatabricksSqlResponseTests
     }
 
     [Theory]
-    [InlineAutoMoqData]
-    public void GetState_ShouldReturnCorrectState(
-        DatabricksSqlResponse sut)
+    [AutoMoqData]
+    public void Create_ReturnsResponseWithCorrectState(DatabricksSqlResponseFactory sut)
     {
         // Arrange
         const string expectedState = "SUCCEEDED";
-        sut.DeserializeFromJson(_sampleJson);
 
         // Act
-        var actualState = sut.GetState();
+        var actual = sut.Create(_sampleJson);
 
         // Assert
-        actualState.Should().Be(expectedState);
+        actual.State.Should().Be(expectedState);
     }
 
     [Theory]
-    [InlineAutoMoqData]
-    public void GetDataArray_ShouldReturnArrayWithCorrectLength(
-        DatabricksSqlResponse sut)
+    [AutoMoqData]
+    public void Create_ReturnsResponseWithCorrectArrayLength(DatabricksSqlResponseFactory sut)
     {
         // Arrange
         const int expectedLength = 96;
-        sut.DeserializeFromJson(_sampleJson);
 
         // Act
-        var actual = sut.GetDataArray();
+        var actual = sut.Create(_sampleJson);
 
         // Assert
-        actual.Count().Should().Be(expectedLength);
+        actual.DataArray.Count().Should().Be(expectedLength);
     }
 
     [Theory]
-    [InlineAutoMoqData]
-    public void GetDataArray_ShouldContainCorrectArrays(
-        DatabricksSqlResponse sut)
+    [AutoMoqData]
+    public void Create_ReturnsDataArrayWithCorrectContent(DatabricksSqlResponseFactory sut)
     {
         // Arrange
         var expectedFirstArray = new[]
@@ -79,12 +74,11 @@ public class DatabricksSqlResponseTests
         {
             "543", null, null, "1.235", "estimated", "2023-04-05T21:45:00.000Z", "total_ga", "net_exchange_per_ga", "0ff76fd9-7d07-48f0-9752-e94d38d93498", "BalanceFixing", "2023-04-05T08:47:41.000Z", null,
         };
-        sut.DeserializeFromJson(_sampleJson);
 
         // Act
-        var actual = sut.GetDataArray();
+        var actual = sut.Create(_sampleJson);
 
         // Assert
-        actual.First().Should().Equal(expectedFirstArray);
+        actual.DataArray.First().Should().Equal(expectedFirstArray);
     }
 }

@@ -29,11 +29,13 @@ public class CalculationResultClient : ICalculationResultClient
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
+    private readonly IDatabricksSqlResponseFactory _databricksSqlResponseFactory;
 
-    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
+    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IDatabricksSqlResponseFactory databricksSqlResponseFactory)
     {
         _httpClient = httpClient;
         _options = options;
+        _databricksSqlResponseFactory = databricksSqlResponseFactory;
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -65,8 +67,6 @@ public class CalculationResultClient : ICalculationResultClient
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
 
-        var databricksSqlResponse = new DatabricksSqlResponse();
-
         for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
             var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
@@ -76,15 +76,13 @@ public class CalculationResultClient : ICalculationResultClient
 
             var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-            databricksSqlResponse.DeserializeFromJson(jsonResponse);
+            var databricksSqlResponse = _databricksSqlResponseFactory.Create(jsonResponse);
 
-            var statementState = databricksSqlResponse.GetState();
-
-            if (statementState == "SUCCEEDED")
+            if (databricksSqlResponse.State == "SUCCEEDED")
                 return databricksSqlResponse;
 
-            if (statementState != "PENDING")
-                throw new Exception($"Unable to get calculation result from Databricks. State: {statementState}");
+            if (databricksSqlResponse.State != "PENDING")
+                throw new Exception($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
         }
 
         throw new Exception($"Unable to get calculation result from Databricks.");
@@ -154,7 +152,7 @@ order by time
         TimeSeriesType timeSeriesType,
         DatabricksSqlResponse databricksSqlResponse)
     {
-        var pointsDto = databricksSqlResponse.GetDataArray().Select(
+        var pointsDto = databricksSqlResponse.DataArray.Select(
                 res => new TimeSeriesPoint(
                     DateTimeOffset.Parse(res[0]),
                     decimal.Parse(res[1], CultureInfo.InvariantCulture),

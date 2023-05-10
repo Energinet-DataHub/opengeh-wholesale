@@ -27,6 +27,6 @@ public static class CalculationResultsRegistration
     {
         serviceCollection.AddHttpClient<ICalculationResultClient>();
         serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
-        serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
+        serviceCollection.AddScoped<IDatabricksSqlResponseFactory, DatabricksSqlResponseFactory>();
     }
 }

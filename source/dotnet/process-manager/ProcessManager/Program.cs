@@ -92,7 +92,7 @@ public static class Program
     {
         serviceCollection.AddHttpClient<ICalculationResultClient>();
         serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
-        serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
+        serviceCollection.AddScoped<IDatabricksSqlResponseFactory, DatabricksSqlResponseFactory>();
     }
 
     private static void Middlewares(IServiceCollection serviceCollection)
