@@ -39,7 +39,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
@@ -174,7 +173,6 @@ public static class Program
             });
 
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         serviceCollection.AddScoped<IActorRepository, ActorRepository>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(

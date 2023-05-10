@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model.TimeSeriesType;
@@ -24,16 +25,16 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 /// </summary>
 public class ProcessStepApplicationService : IProcessStepApplicationService
 {
-    private readonly IProcessStepResultRepository _processStepResultRepository;
+    private readonly ICalculationResultClient _calculationResultClient;
     private readonly IProcessStepResultMapper _processStepResultMapper;
     private readonly IActorRepository _actorRepository;
 
     public ProcessStepApplicationService(
-        IProcessStepResultRepository processStepResultRepository,
+        ICalculationResultClient calculationResultClient,
         IProcessStepResultMapper processStepResultMapper,
         IActorRepository actorRepository)
     {
-        _processStepResultRepository = processStepResultRepository;
+        _calculationResultClient = calculationResultClient;
         _processStepResultMapper = processStepResultMapper;
         _actorRepository = actorRepository;
     }
@@ -63,7 +64,7 @@ public class ProcessStepApplicationService : IProcessStepApplicationService
         string? energySupplierGln,
         string? balanceResponsibleParty)
     {
-        var processStepResult = await _processStepResultRepository.GetAsync(
+        var processStepResult = await _calculationResultClient.GetAsync(
                 batchId,
                 gridAreaCode,
                 TimeSeriesTypeMapper.Map(timeSeriesType),

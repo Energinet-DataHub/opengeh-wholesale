@@ -101,7 +101,6 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<HttpClient>(_ => null!);
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
         serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
         serviceCollection.AddScoped<IBatchExecutionStateDomainService>(_ => null!); // Unused in the use cases of this app
@@ -113,7 +112,6 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
         serviceCollection.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
         serviceCollection.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
-        serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IActorRepository, ActorRepository>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();

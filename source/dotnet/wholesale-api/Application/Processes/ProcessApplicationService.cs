@@ -24,7 +24,7 @@ public class ProcessApplicationService : IProcessApplicationService
 {
     private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
     private readonly IDomainEventPublisher _domainEventPublisher;
-    private readonly IProcessStepResultRepository _processStepResultRepository;
+    private readonly ICalculationResultClient _calculationResultClient;
     private readonly IActorRepository _actorRepository;
     private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
     private readonly IIntegrationEventPublisher _integrationEventPublisher;
@@ -33,7 +33,7 @@ public class ProcessApplicationService : IProcessApplicationService
     public ProcessApplicationService(
         IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
         IDomainEventPublisher domainEventPublisher,
-        IProcessStepResultRepository processStepResultRepository,
+        ICalculationResultClient calculationResultClient,
         IActorRepository actorRepository,
         ICalculationResultCompletedFactory integrationEventFactory,
         IIntegrationEventPublisher integrationEventPublisher,
@@ -41,7 +41,7 @@ public class ProcessApplicationService : IProcessApplicationService
     {
         _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
         _domainEventPublisher = domainEventPublisher;
-        _processStepResultRepository = processStepResultRepository;
+        _calculationResultClient = calculationResultClient;
         _actorRepository = actorRepository;
         _calculationResultCompletedFactory = integrationEventFactory;
         _integrationEventPublisher = integrationEventPublisher;
@@ -92,7 +92,7 @@ public class ProcessApplicationService : IProcessApplicationService
 
             foreach (var energySupplier in energySuppliersByBalanceResponsibleParty)
             {
-                var result = await _processStepResultRepository.GetAsync(
+                var result = await _calculationResultClient.GetAsync(
                         processCompletedEvent.BatchId,
                         processCompletedEvent.GridAreaCode,
                         timeSeriesType,
@@ -108,7 +108,7 @@ public class ProcessApplicationService : IProcessApplicationService
 
     private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
-            var productionForTotalGa = await _processStepResultRepository
+            var productionForTotalGa = await _calculationResultClient
                 .GetAsync(
                     processCompletedEvent.BatchId,
                     processCompletedEvent.GridAreaCode,
@@ -130,7 +130,7 @@ public class ProcessApplicationService : IProcessApplicationService
 
             foreach (var energySupplier in energySuppliers)
             {
-                var processStepResultDto = await _processStepResultRepository
+                var processStepResultDto = await _calculationResultClient
                     .GetAsync(
                         processCompletedEvent.BatchId,
                         processCompletedEvent.GridAreaCode,
@@ -153,7 +153,7 @@ public class ProcessApplicationService : IProcessApplicationService
 
         foreach (var balanceResponsibleParty in balanceResponsibleParties)
         {
-            var processStepResultDto = await _processStepResultRepository
+            var processStepResultDto = await _calculationResultClient
                 .GetAsync(
                     processCompletedEvent.BatchId,
                     processCompletedEvent.GridAreaCode,

@@ -230,7 +230,7 @@ public class SettlementReportRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetResultAsync_TimeSeriesPoint_IsRead(
-        [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock,
+        [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
         [Frozen] Mock<IActorRepository> actorRepositoryMock)
     {
         // Arrange
@@ -243,11 +243,11 @@ public class SettlementReportRepositoryTests
         var batchId = Guid.NewGuid();
 
         var sut = new ProcessStepApplicationService(
-            processActorResultRepositoryMock.Object,
+            calculationResultClientMock.Object,
             new ProcessStepResultMapper(),
             actorRepositoryMock.Object);
 
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, gridAreaCode, TimeSeriesType.Production, null, null))
+        calculationResultClientMock.Setup(p => p.GetAsync(batchId, gridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(new ProcessStepResult(TimeSeriesType.Production, new[] { new TimeSeriesPoint(time, quantity, quality) }));
 
         // Act
