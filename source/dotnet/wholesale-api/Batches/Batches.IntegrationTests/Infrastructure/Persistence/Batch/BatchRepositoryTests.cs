@@ -16,12 +16,12 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Test.Core;
 using Xunit;
-using ProcessType = Energinet.DataHub.Wholesale.Batches.Interfaces.Models.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Infrastructure.Persistence.Batch;
 
