@@ -1,18 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.Batches.Application</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.Batches.Application</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.3" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Batches.Interfaces\Batches.Interfaces.csproj" />
     <ProjectReference Include="..\Batches.Infrastructure\Batches.Infrastructure.csproj" />
   </ItemGroup>
-
 </Project>
