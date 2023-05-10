@@ -64,15 +64,13 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     timeseries_points_df = (
         spark.read.option("mode", "FAILFAST")
         .format("delta")
-        .load(
-            f"{args.wholesale_container_path}/calculation-input-v2/time-series-points"
-        )
+        .load(f"{args.wholesale_container_path}/calculation_input/time_series_points")
     )
     metering_points_periods_df = (
         spark.read.option("mode", "FAILFAST")
         .format("delta")
         .load(
-            f"{args.wholesale_container_path}/calculation-input-v2/metering-point-periods"
+            f"{args.wholesale_container_path}/calculation_input/metering_point_periods"
         )
     )
     batch_grid_areas_df = input.get_batch_grid_areas_df(args.batch_grid_areas, spark)
