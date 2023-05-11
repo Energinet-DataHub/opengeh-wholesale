@@ -24,6 +24,24 @@ resource "databricks_secret" "appi_instrumentation_key" {
   scope        = databricks_secret_scope.spn_app_secret.id
 }
 
+resource "databricks_secret" "st_dropzone_storage_account" {
+  key          = "st_dropzone_storage_account"
+  string_value = data.azurerm_storage_account.drop.name
+  scope        = databricks_secret_scope.spn_app_secret.id
+}
+
+resource "databricks_secret" "st_shared_datalake_account" {
+  key          = "st_shared_datalake_account"
+  string_value = data.azurerm_key_vault_secret.st_data_lake_name.value
+  scope        = databricks_secret_scope.spn_app_secret.id
+}
+
+resource "databricks_secret" "st_migration_datalake_account" {
+  key          = "st_migration_datalake_account"
+  string_value = module.st_migrations.name
+  scope        = databricks_secret_scope.spn_app_secret.id
+}
+
 resource "databricks_sql_global_config" "this" {
   security_policy = "DATA_ACCESS_CONTROL"
   data_access_config = {
