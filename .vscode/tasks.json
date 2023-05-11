@@ -4,39 +4,27 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Structurizr Lite: Run in docker",
-            "type": "shell",
-            "command": "docker run -it --rm -p 8080:8080 -v ${workspaceFolder}/docs/diagrams/c4-model:/usr/local/structurizr -e STRUCTURIZR_WORKSPACE_FILENAME=views structurizr/lite",
-            "isBackground": true,
-            "presentation": {
-                "reveal": "always",
-                "close": true
-            },
-            "problemMatcher": {
-                "pattern": "$tsc",
-                "background": {
-                    "activeOnStart": true,
-                    "beginsPattern": {
-                        "regexp": "(.*?)"
-                    },
-                    "endsPattern": {
-                        "regexp": "Structurizr Lite"
+            "label": "Structurizr Lite: Load 'views'",
+            "type": "docker-run",
+            "dockerRun": {
+                "image": "structurizr/lite:latest",
+                "ports": [
+                    {
+                        "containerPort": 8080,
+                        "hostPort": 8080
                     }
-                }
-            },
-            "dependsOn": [
-                "Structurizr Lite: Pull docker image"
-            ]
-        },
-        {
-            "label": "Structurizr Lite: Pull docker image",
-            "type": "shell",
-            "command": "docker pull structurizr/lite",
-            "presentation": {
-                "reveal": "always",
-                "close": true
-            },
-            "problemMatcher": []
+                ],
+                "volumes": [
+                    {
+                        "localPath": "${workspaceFolder}/docs/diagrams/c4-model",
+                        "containerPath": "/usr/local/structurizr"
+                    }
+                ],
+                "env": {
+                    "STRUCTURIZR_WORKSPACE_FILENAME": "views"
+                },
+                "remove": true
+            }
         }
     ]
 }
