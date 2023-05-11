@@ -24,6 +24,11 @@
                     "STRUCTURIZR_WORKSPACE_FILENAME": "views"
                 },
                 "remove": true
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
             }
         }
     ]
