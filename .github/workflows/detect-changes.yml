@@ -56,23 +56,19 @@ jobs:
             databricks:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-databricks.yml'
-              - '.github/workflows/detect-changes.yml'
               - '.github/actions/python-*/**'
               - 'source/databricks/!(exploratory-notebooks/**)/**'
               - '.devcontainer/docker-compose.yml'
             dotnet:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-dotnet.yml'
-              - '.github/workflows/detect-changes.yml'
               - '.github/actions/dotnet-*/**'
               - 'source/dotnet/!(Packages/**)/**'
             packages:
               - 'source/dotnet/wholesale-integration-events-package/**'
               - 'source/dotnet/wholesale-api/Infrastructure/IntegrationEvents/**'
               - '.github/workflows/packages-publish.yml'
-              - '.github/workflows/detect-changes.yml'
             render_c4model_views:
               - 'docs/diagrams/c4-model/views.dsl'
               - 'docs/diagrams/c4-model/views.json'
               - 'docs/diagrams/c4-model/model.dsl'
-              - '.github/workflows/detect-changes.yml'

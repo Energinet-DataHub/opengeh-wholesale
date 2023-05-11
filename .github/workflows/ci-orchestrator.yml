@@ -61,11 +61,12 @@ jobs:
   render_c4model_views:
     needs: changes
     if: ${{ needs.changes.outputs.render_c4model_views == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@dstenroejl/refactor-structurizr
+    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v11
     with:
       structurizr_workspace_filename: views
       included_model_filename: model
-    secrets: inherit
+    secrets:
+      pat_token_retrigger_workflow: ${{ secrets.pat_token_repo_workflow }}
 
   #
   # Branch policy status check
