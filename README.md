@@ -16,12 +16,13 @@
     * [Web API](#web-api)
     * [Calculation Input Data Format](#calculation-input-data-format)
 * [Where can I get more help?](#where-can-i-get-more-help)
+* [Domain C4 model](#domain-c4-model)
 
 ## Introduction
 
 The wholesale domain is in charge of doing calculations on the time series sent to DataHub and executing the balance and wholesale settlement process.
 
-The main calculations the domain is responsible to process are consumption, production, exchange between grid areas and the current grid loss within a grid area.  
+The main calculations the domain is responsible to process are consumption, production, exchange between grid areas and the current grid loss within a grid area.
 All calculations return a result for grid area, balance responsible parties and energy suppliers.
 
 The times series sent to DataHub is processed and prepared for calculations in the (private) migration domain.
@@ -111,3 +112,18 @@ Read about the contracts [here](docs/inter-domain-integration/README.md).
 Read about community for Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/COMMUNITY.md) and learn about how to get involved and get help.
 
 Please note that we have provided a [Dictionary](https://github.com/Energinet-DataHub/green-energy-hub/tree/main/docs/dictionary-and-concepts) to help understand many of the terms used throughout the repository.
+
+## Domain C4 model
+
+In the DataHub 3 project we use the [C4 model](https://c4model.com/) to document the high-level software design.
+
+The [DataHub 3 base model](https://github.com/Energinet-DataHub/opengeh-arch-diagrams#datahub-3-base-model) describes elements like organizations, software systems and actors. In domain repositories we should `extend` on this model and add additional elements within the DataHub 3.0 Software System (`dh3`).
+
+The domain C4 model and rendered diagrams are located in the folder hierarchy [docs/diagrams/c4-model](./docs/diagrams/c4-model/) and consists of:
+
+* `model.dsl`: Structurizr DSL describing the domain C4 model.
+* `views.dsl`: Structurizr DSL extending the `dh3` software system by referencing domain C4 models using `!include`, and describing the views.
+* `views.json`: Structurizr layout information for views.
+* `/views/*.png`: A PNG file per view described in the Structurizr DSL.
+
+Maintenance of the C4 model should be performed using VS Code and a local version of Structurizr Lite running in Docker. See [DataHub 3 base model](https://github.com/Energinet-DataHub/opengeh-arch-diagrams#datahub-3-base-model) for a description of how to do this.
