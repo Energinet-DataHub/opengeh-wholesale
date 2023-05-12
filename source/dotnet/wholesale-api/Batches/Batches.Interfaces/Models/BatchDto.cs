@@ -29,4 +29,5 @@ public sealed record BatchDto(
     BatchState ExecutionState,
     bool AreSettlementReportsCreated,
     string[] GridAreaCodes,
-    ProcessType ProcessType);
+    ProcessType ProcessType,
+    Guid CreatedByUserId);
