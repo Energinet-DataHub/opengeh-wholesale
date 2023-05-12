@@ -49,9 +49,11 @@ public class CalculationResultClient : ICalculationResultClient
         Instant periodEnd,
         string? energySupplier)
     {
-        await Task.Delay(1000).ConfigureAwait(false);
+        var sql = CreateSqlStatement(gridAreaCodes, processType, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
 
-        throw new NotImplementedException("GetSettlementReportResultAsync is not implemented yet");
+        var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
+
+        return CreateProcessStepResult(timeSeriesType, databricksSqlResponse);
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -115,17 +117,7 @@ public class CalculationResultClient : ICalculationResultClient
     }
 
     // TODO: Unit test the SQL (ensure it works as expected)
-    private string CreateSqlStatement(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
-    {
-        return $@"select time, quantity, quantity_quality
-from wholesale_output.result
-where batch_id = '{batchId}'
-  and grid_area = '{gridAreaCode}'
-  and time_series_type = '{ToDeltaValue(timeSeriesType)}'
-  and aggregation_level = '{GetAggregationLevelDeltaValue(timeSeriesType, energySupplierGln, balanceResponsiblePartyGln)}'
-order by time
-";
-    }
+
 
     // TODO: Unit test and move to mapper
     private string GetAggregationLevelDeltaValue(TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
