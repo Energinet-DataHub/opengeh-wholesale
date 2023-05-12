@@ -34,17 +34,26 @@ public class BatchApplicationServiceTests
     [Theory]
     [InlineAutoMoqData]
     public async Task StartCalculationAsync_ActivatesDomainServiceAndCommits(
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICalculationDomainService> calculationDomainServiceMock,
-        Guid batchId,
         BatchApplicationService sut)
     {
+        // Arrange
+        var batches = new List<Batch> { new BatchBuilder().Build(), new BatchBuilder().Build() };
+        batchRepositoryMock
+            .Setup(repository => repository.GetCreatedAsync())
+            .ReturnsAsync(batches);
+
         // Arrange & Act
-        await sut.StartCalculationAsync(batchId);
+        await sut.StartCalculationsAsync();
 
         // Assert
         unitOfWorkMock.Verify(x => x.CommitAsync());
-        calculationDomainServiceMock.Verify(x => x.StartAsync(batchId));
+        foreach (var batch in batches)
+        {
+            calculationDomainServiceMock.Verify(x => x.StartAsync(batch.Id));
+        }
     }
 
     [Theory]
