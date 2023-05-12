@@ -15,7 +15,6 @@
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 // TODO: Should we avoid referencing the DatabricksClient project "just" to get access to the DatabricksOptions?
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
@@ -30,16 +29,14 @@ public class CalculationResultClient : ICalculationResultClient
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
-    private readonly IJsonSerializer _jsonSerializer;
-    private readonly IProcessResultPointFactory _processResultPointFactory;
+    private readonly IDatabricksSqlResponseParser _databricksSqlResponseParser;
 
-    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IJsonSerializer jsonSerializer, IProcessResultPointFactory processResultPointFactory)
+    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IDatabricksSqlResponseParser databricksSqlResponseParser)
     {
         _httpClient = httpClient;
         _options = options;
-        _jsonSerializer = jsonSerializer;
-        _processResultPointFactory = processResultPointFactory;
-        ConfigureHttpClient(httpClient, options);
+        _databricksSqlResponseParser = databricksSqlResponseParser;
+        ConfigureHttpClient(_httpClient, _options);
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -51,29 +48,49 @@ public class CalculationResultClient : ICalculationResultClient
     {
         var sql = CreateSqlStatement(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
 
+        var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
+
+        return CreateProcessStepResult(timeSeriesType, databricksSqlResponse);
+    }
+
+    private async Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
+    {
+        const int timeOutPerAttemptSeconds = 30;
+        const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
+
         var requestObject = new
         {
             on_wait_timeout = "CANCEL",
-            wait_timeout = "30s", // Make the operation synchronous
-            statement = sql,
+            wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
+            statement = sqlStatement,
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
-        var requestString = _jsonSerializer.Serialize(requestObject);
+        // TODO (JMG): Should we use Polly for retrying?
+        // TODO (JMG): Unit test this method
+        for (var attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
-        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, new StringContent(requestString)).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
 
-        var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-        var list = _processResultPointFactory.Create(jsonResponse);
+            var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-        // TODO: Unit test
-        if (!response.IsSuccessStatusCode)
-            throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
+            var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
 
-        return MapToProcessStepResultDto(timeSeriesType, list);
+            if (databricksSqlResponse.State == "SUCCEEDED")
+                return databricksSqlResponse;
+
+            if (databricksSqlResponse.State != "PENDING")
+                throw new Exception($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
+        }
+
+        throw new Exception($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
     {
+        httpClient.BaseAddress = new Uri(options.Value.DATABRICKS_WORKSPACE_URL);
         httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", options.Value.DATABRICKS_WORKSPACE_TOKEN);
         httpClient.DefaultRequestHeaders.Accept.Clear();
@@ -101,13 +118,15 @@ order by time
         switch (timeSeriesType)
         {
             case TimeSeriesType.NonProfiledConsumption:
+            case TimeSeriesType.Production:
+            case TimeSeriesType.FlexConsumption:
                 if (energySupplierGln != null && balanceResponsiblePartyGln != null)
-                    return "energy_supplier_and_balance_responsible_party";
+                    return "es_brp_ga";
                 if (energySupplierGln != null)
-                    return "energy_supplier";
+                    return "es_ga";
                 if (balanceResponsiblePartyGln != null)
-                    return "balance_responsible_party";
-                return "grid_area";
+                    return "brp_ga";
+                return "total_ga";
             default:
                 throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
         }
@@ -120,23 +139,26 @@ order by time
         {
             case TimeSeriesType.NonProfiledConsumption:
                 return "non_profiled_consumption";
+            case TimeSeriesType.Production:
+                return "production";
+            case TimeSeriesType.FlexConsumption:
+                return "flex_consumption";
             default:
                 throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
         }
     }
 
-    // TODO: Why do we have both ProcessResultPoint and TimeSeriesPoint?
-    private static ProcessStepResult MapToProcessStepResultDto(
+    private static ProcessStepResult CreateProcessStepResult(
         TimeSeriesType timeSeriesType,
-        IEnumerable<ProcessResultPoint> points)
+        DatabricksSqlResponse databricksSqlResponse)
     {
-        var pointsDto = points.Select(
-                point => new TimeSeriesPoint(
-                    DateTimeOffset.Parse(point.quarter_time),
-                    decimal.Parse(point.quantity, CultureInfo.InvariantCulture),
-                    QuantityQualityMapper.MapQuality(point.quality)))
-            .ToList();
+        var pointsDto = databricksSqlResponse.Rows.Select(
+                res => new TimeSeriesPoint(
+                    DateTimeOffset.Parse(res[0]),
+                    decimal.Parse(res[1], CultureInfo.InvariantCulture),
+                    QuantityQualityMapper.MapQuality(res[2])))
+            .ToArray();
 
-        return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
+        return new ProcessStepResult(timeSeriesType, pointsDto);
     }
 }
