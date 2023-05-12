@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using NodaTime;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 
 public interface ICalculationResultClient
@@ -22,4 +25,11 @@ public interface ICalculationResultClient
         TimeSeriesType timeSeriesType,
         string? energySupplierGln,
         string? balanceResponsiblePartyGln);
+
+    Task<IEnumerable<SettlementReportResultRow>> GetSettlementReportResultAsync(
+       string[] gridAreaCodes,
+       ProcessType processType,
+       Instant periodStart,
+       Instant periodEnd,
+       string? energySupplier);
 }
