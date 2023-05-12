@@ -26,13 +26,6 @@ using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -99,7 +92,7 @@ public static class Program
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
         services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
         // This is a temporary fix until we move registration out to each of the modules
-        services.AddScoped<Energinet.DataHub.Wholesale.Application.IUnitOfWork, Infrastructure.Persistence.UnitOfWork>();
+        services.AddScoped<Application.IUnitOfWork, UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services
             .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
@@ -120,7 +113,6 @@ public static class Program
         var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName));
 
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
-        serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
 
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
@@ -139,15 +131,6 @@ public static class Program
                 var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
                 return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
             });
-
-        serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
-        serviceCollection.AddScoped<IActorRepository, ActorRepository>();
-        serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
-        serviceCollection.AddScoped<ISettlementReportRepository>(
-            provider => new SettlementReportRepository(
-                provider.GetRequiredService<IDataLakeClient>(),
-                provider.GetRequiredService<IStreamZipper>()));
 
         serviceCollection.AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedToIntegrationEventFactory>();
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
