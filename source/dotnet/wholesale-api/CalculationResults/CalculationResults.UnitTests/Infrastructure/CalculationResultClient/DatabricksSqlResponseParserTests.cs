@@ -58,7 +58,7 @@ public class DatabricksSqlResponseParserTests
         var actual = sut.Parse(_sampleJson);
 
         // Assert
-        actual.DataArray.Count().Should().Be(expectedLength);
+        actual.Rows.Count().Should().Be(expectedLength);
     }
 
     [Theory]
@@ -79,7 +79,7 @@ public class DatabricksSqlResponseParserTests
         var actual = sut.Parse(_sampleJson);
 
         // Assert
-        actual.DataArray.First().Should().Equal(expectedFirstArray);
+        actual.Rows.First().Should().Equal(expectedFirstArray);
     }
 
     [Theory]

@@ -12,21 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class DatabricksSqlResponse
-{
-    public DatabricksSqlResponse(string state, IEnumerable<string[]> dataArray)
-    {
-        State = state;
-        DataArray = dataArray;
-    }
-
-    public IEnumerable<string[]> DataArray { get; }
-
-    public string State { get; }
-}
+public sealed record DatabricksSqlResponse(string State, IEnumerable<string[]> Rows);

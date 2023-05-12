@@ -36,6 +36,7 @@ public class CalculationResultClient : ICalculationResultClient
         _httpClient = httpClient;
         _options = options;
         _databricksSqlResponseParser = databricksSqlResponseParser;
+        ConfigureHttpClient(_httpClient, _options);
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -45,8 +46,6 @@ public class CalculationResultClient : ICalculationResultClient
         string? energySupplierGln,
         string? balanceResponsiblePartyGln)
     {
-        ConfigureHttpClient(_httpClient, _options);
-
         var sql = CreateSqlStatement(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
 
         var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
@@ -57,7 +56,7 @@ public class CalculationResultClient : ICalculationResultClient
     private async Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
-        const int maxAttempts = 16; // 8 minutes in total
+        const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
 
         var requestObject = new
         {
@@ -66,8 +65,8 @@ public class CalculationResultClient : ICalculationResultClient
             statement = sqlStatement,
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
-        // TODO: Should we use Polly for retrying?
-        // TODO: Unit test this method
+        // TODO (JMG): Should we use Polly for retrying?
+        // TODO (JMG): Unit test this method
         for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
             var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
@@ -86,7 +85,7 @@ public class CalculationResultClient : ICalculationResultClient
                 throw new Exception($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
         }
 
-        throw new Exception($"Unable to get calculation result from Databricks.");
+        throw new Exception($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
@@ -153,7 +152,7 @@ order by time
         TimeSeriesType timeSeriesType,
         DatabricksSqlResponse databricksSqlResponse)
     {
-        var pointsDto = databricksSqlResponse.DataArray.Select(
+        var pointsDto = databricksSqlResponse.Rows.Select(
                 res => new TimeSeriesPoint(
                     DateTimeOffset.Parse(res[0]),
                     decimal.Parse(res[1], CultureInfo.InvariantCulture),
