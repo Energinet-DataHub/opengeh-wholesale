@@ -36,13 +36,11 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Contracts.Events;
@@ -55,6 +53,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
+using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -90,9 +89,9 @@ public static class Program
 
     private static void Modules(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddHttpClient<ICalculationResultClient>();
-        serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
-        serviceCollection.AddScoped<IDatabricksSqlResponseFactory, DatabricksSqlResponseFactory>();
+        serviceCollection.AddBatchesModule();
+        serviceCollection.AddCalculationResultsModule();
+        serviceCollection.AddIntegrationEventPublishingModule();
     }
 
     private static void Middlewares(IServiceCollection serviceCollection)
@@ -114,8 +113,8 @@ public static class Program
         services.AddScoped<ICalculationDomainService, CalculationDomainService>();
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         // This is a temporary fix until we move registration out to each of the modules
-        services.AddScoped<Energinet.DataHub.Wholesale.Application.IUnitOfWork, Energinet.DataHub.Wholesale.Infrastructure.Persistence.UnitOfWork>();
-        services.AddScoped<Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
+        services.AddScoped<Energinet.DataHub.Wholesale.Application.IUnitOfWork, Infrastructure.Persistence.UnitOfWork>();
+        services.AddScoped<IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services
             .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
@@ -140,8 +139,8 @@ public static class Program
 
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
-        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri)!), new DefaultAzureCredential());
-        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName)!);
+        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri)), new DefaultAzureCredential());
+        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName));
 
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();

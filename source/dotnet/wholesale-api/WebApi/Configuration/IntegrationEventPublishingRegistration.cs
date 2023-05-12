@@ -12,22 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
 /// <summary>
-/// An immutable batch.
+/// Registration of services required for the Batches module.
 /// </summary>
-public sealed record BatchDto(
-    long? RunId,
-    Guid BatchId,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string Resolution,
-    string Unit,
-    DateTimeOffset? ExecutionTimeStart,
-    DateTimeOffset? ExecutionTimeEnd,
-    BatchState ExecutionState,
-    bool AreSettlementReportsCreated,
-    string[] GridAreaCodes,
-    ProcessType ProcessType,
-    Guid CreatedByUserId);
+public static class IntegrationEventPublishingRegistration
+{
+    public static void AddIntegrationEventPublishingModule(
+        this IServiceCollection serviceCollection)
+    {
+    }
+}

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Hosts;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests;
@@ -22,25 +22,24 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests;
 [Collection(nameof(CompositionRootTests))]
 public class CompositionRootTests
 {
-    #region Member data providers
-
-    public static IEnumerable<object[]> GetControllerRequirements()
+    /// <summary>
+    /// The test is composed from the ideas and examples at https://stackoverflow.com/questions/49149065/how-do-i-validate-the-di-container-in-asp-net-core
+    /// </summary>
+    [Fact]
+    public void AllServicesConstructSuccessfully()
     {
-        var constructorDependencies = ReflectionDelegates.FindAllConstructorDependenciesForType();
-
-        return typeof(Program).Assembly.GetTypes()
-            .Where(t => t.IsSubclassOf(typeof(ControllerBase)))
-            .Select(t => new object[] { new Requirement(t.Name, constructorDependencies(t)) });
-    }
-
-    #endregion
-
-    [Theory]
-    [MemberData(nameof(GetControllerRequirements))]
-    public async Task WebApi_can_resolve_dependencies_for(Requirement requirement)
-    {
-        using var host = await WebApiIntegrationTestHost.CreateAsync();
-        await using var scope = host.BeginScope();
-        Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
+        Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder
+                    .UseDefaultServiceProvider((_, options) =>
+                    {
+                        // Validate the service provider during build
+                        options.ValidateOnBuild = true;
+                    })
+                    // Add controllers as services to enable validation of controller dependencies
+                    .ConfigureServices(collection => collection.AddControllers().AddControllersAsServices())
+                    .UseStartup<Startup>();
+            }).Build();
     }
 }

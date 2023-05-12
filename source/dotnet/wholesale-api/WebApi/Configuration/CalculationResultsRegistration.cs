@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
