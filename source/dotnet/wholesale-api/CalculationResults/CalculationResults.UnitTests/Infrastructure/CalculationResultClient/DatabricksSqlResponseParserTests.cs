@@ -16,19 +16,17 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
-using Test.Core;
 using Xunit;
 using Xunit.Categories;
-using Xunit.Sdk;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient;
 
 [UnitTest]
-public class DatabricksSqlResponseFactoryTests
+public class DatabricksSqlResponseParserTests
 {
     private readonly string _sampleJson;
 
-    public DatabricksSqlResponseFactoryTests()
+    public DatabricksSqlResponseParserTests()
     {
         var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
         using var reader = new StreamReader(stream);
