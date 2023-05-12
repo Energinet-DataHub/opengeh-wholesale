@@ -22,6 +22,7 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -113,7 +114,13 @@ internal static class ServiceCollectionExtensions
     private static void AddDomainEventPublisher(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<ServiceBusOptions>()!;
-        serviceCollection.AddDomainEventPublisher(options.SERVICE_BUS_SEND_CONNECTION_STRING, options.DOMAIN_EVENTS_TOPIC_NAME);
+        // TODO BJM: These hardcoded values ought to be read from app settings, but it's not worth the effort as they are about to be removed
+        var messageTypes = new Dictionary<Type, string>
+        {
+            { typeof(BatchCompletedEventDto), "BatchCompleted" },
+            { typeof(ProcessCompletedEventDto), "ProcessCompleted" },
+        };
+        serviceCollection.AddDomainEventPublisher(options.SERVICE_BUS_SEND_CONNECTION_STRING, options.DOMAIN_EVENTS_TOPIC_NAME, new MessageTypeDictionary(messageTypes));
     }
 
     private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)
