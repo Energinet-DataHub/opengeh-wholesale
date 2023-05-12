@@ -40,7 +40,8 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddBatchesModule();
+        serviceCollection.AddBatchesModule(
+            () => Configuration.GetSection(ConnectionStringsOptions.ConnectionStrings).Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING);
         serviceCollection.AddCalculationResultsModule();
         serviceCollection.AddIntegrationEventPublishingModule();
 

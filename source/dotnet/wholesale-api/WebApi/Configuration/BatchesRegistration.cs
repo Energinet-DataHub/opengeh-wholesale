@@ -12,6 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Batches.Application;
+using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Application.Workers;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -22,7 +34,37 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 public static class BatchesRegistration
 {
     public static void AddBatchesModule(
-        this IServiceCollection serviceCollection)
+        this IServiceCollection serviceCollection,
+        Func<string> databaseConnectionStringProvider)
     {
+        serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
+        serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
+        serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
+        serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
+        serviceCollection.AddSingleton(new BatchStateMapper());
+
+        serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
+
+        serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
+        serviceCollection.AddScoped<IDatabricksWheelClient, DatabricksWheelClient>();
+        serviceCollection.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
+
+        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
+        serviceCollection.AddDbContext<DatabaseContext>(
+            options => options.UseSqlServer(
+                databaseConnectionStringProvider(),
+                o =>
+                {
+                    o.UseNodaTime();
+                    o.EnableRetryOnFailure();
+                }));
+
+        serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+        serviceCollection.AddScoped<IBatchApplicationService, BatchApplicationService>();
+        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+
+        serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
+
+        serviceCollection.AddHostedService<UpdateBatchExecutionStateWorker>();
     }
 }
