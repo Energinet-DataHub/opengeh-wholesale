@@ -269,8 +269,8 @@ resource "databricks_sql_query" "duplicates_metering_point_periods_wholesale" {
   data_source_id = databricks_sql_endpoint.this.data_source_id
   name           = "QCMP24-01_duplicates_in_metering_point_periods_wholesale"
   query          = <<EOT
-  select * from (select mp.metering_point_id, mp.valid_from_date, mp.valid_to_date, ROW_NUMBER()
-    OVER (PARTITION BY mp.metering_point_id, mp.valid_from_date, mp.valid_to_date ORDER BY mp.metering_point_id DESC, mp.valid_from_date DESC, mp.valid_to_date DESC) as rownumber
+  select * from (select mp.metering_point_id, mp.from_date, mp.to_date, ROW_NUMBER()
+    OVER (PARTITION BY mp.metering_point_id, mp.from_date, mp.to_date ORDER BY mp.metering_point_id DESC, mp.from_date DESC, mp.to_date DESC) as rownumber
   from wholesale.metering_point_periods as mp) as withRownumber where withRownumber.rownumber > 1
   EOT
 }
