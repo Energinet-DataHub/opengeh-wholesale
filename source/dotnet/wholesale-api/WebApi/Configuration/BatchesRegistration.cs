@@ -12,22 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
 /// <summary>
-/// Registration of services required for the CalculationResults module.
+/// Registration of services required for the Batches module.
 /// </summary>
-public static class CalculationResultsRegistration
+public static class BatchesRegistration
 {
-    public static void AddCalculationResultsModule(
+    public static void AddBatchesModule(
         this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddHttpClient<ICalculationResultClient>();
-        serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
-        serviceCollection.AddScoped<IProcessResultPointFactory, ProcessResultPointFactory>();
     }
 }
