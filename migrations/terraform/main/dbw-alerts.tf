@@ -241,7 +241,7 @@ resource "databricks_sql_alert" "duplicates_metering_points_gold" {
 
 # job for duplicates in gold.metering_points
 resource "databricks_job" "duplicates_metering_points_gold" {
-  name = "duplicates_metering_points_gold"
+  name = "Duplicates_metering_points_gold"
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron
