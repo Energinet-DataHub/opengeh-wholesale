@@ -107,7 +107,6 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             await DatabaseManager.CreateDatabaseAsync();
             DatabricksTestManager.BeginListen();
 
-            var batchCreatedEventName = "batch-created-event-name";
             var batchCompletedEventName = "batch-completed-event-name";
             Environment.SetEnvironmentVariable(EnvironmentSettingNames.BatchCompletedEventName, batchCompletedEventName);
 
@@ -121,9 +120,6 @@ namespace Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.Fixtures
             DomainEventsTopic = await ServiceBusResourceProvider
                 .BuildTopic("domain-events")
                 .SetEnvironmentVariableToTopicName(EnvironmentSettingNames.DomainEventsTopicName)
-                .AddSubscription("start-calculation-subscription")
-                .AddSubjectFilter(batchCreatedEventName)
-                .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.StartCalculationWhenBatchCreatedSubscriptionName)
                 .AddSubscription("zip-basis-data-subscription")
                 .AddSubjectFilter(batchCompletedEventName)
                 .SetEnvironmentVariableToSubscriptionName(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName)
