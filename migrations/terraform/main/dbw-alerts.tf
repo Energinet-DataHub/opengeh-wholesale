@@ -264,3 +264,51 @@ resource "databricks_job" "duplicates_metering_points_gold" {
   }
 }
 
+# query for duplicates in wholesale.metering_point_periods
+resource "databricks_sql_query" "duplicates_metering_point_periods_wholesale" {
+  data_source_id = databricks_sql_endpoint.this.data_source_id
+  name           = "QCMP24-01_duplicates_in_metering_point_periods_wholesale"
+  query          = <<EOT
+  select * from (select mp.metering_point_id, mp.valid_from_date, mp.valid_to_date, ROW_NUMBER()
+    OVER (PARTITION BY mp.metering_point_id, mp.valid_from_date, mp.valid_to_date ORDER BY mp.metering_point_id DESC, mp.valid_from_date DESC, mp.valid_to_date DESC) as rownumber
+  from wholesale.metering_point_periods as mp) as withRownumber where withRownumber.rownumber > 1
+  EOT
+}
+
+# alert for duplicates in wholesale.metering_point_periods
+resource "databricks_sql_alert" "duplicates_metering_point_periods_wholesale" {
+  name     = "Duplicates found in metering point periods wholesale (QCMP24-01)"
+  query_id = databricks_sql_query.duplicates_metering_point_periods_wholesale.id
+  rearm    = 1
+  options {
+    column = "rownumber"
+    op     = "!="
+    value  = "0"
+    muted  = false
+  }
+}
+
+# job for duplicates in wholesale.metering_point_periods
+resource "databricks_job" "duplicates_metering_point_periods_wholesale" {
+  name = "Duplicates_metering_point_periods_wholesale"
+
+  schedule {
+    quartz_cron_expression = local.alert_trigger_cron
+    timezone_id            = "UTC"
+  }
+
+  email_notifications {
+    on_failure = [local.alert_job_email_notification]
+  }
+
+  task {
+    task_key = "check"
+
+    sql_task {
+      warehouse_id = databricks_sql_endpoint.this.id
+      alert {
+        alert_id = databricks_sql_alert.duplicates_metering_point_periods_wholesale.id
+      }
+    }
+  }
+}
