@@ -14,9 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 
-public interface IIntegrationEventService
+public class IntegrationEventRetentionOptions
 {
-    Task DispatchIntegrationEventsAsync();
-
-    Task DeleteOlderDispatchedIntegrationEventsAsync();
+    public int RetentionDays { get; set; }
 }
