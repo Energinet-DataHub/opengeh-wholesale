@@ -30,7 +30,7 @@ resource "databricks_sql_query" "duplicates_time_series_silver" {
 
 # alert for duplicates in silver.time_series
 resource "databricks_sql_alert" "duplicates_time_series_silver" {
-  name     = "Duplicates found in time series silver"
+  name     = "Duplicates found in time series silver (QCTS07-01)"
   query_id = databricks_sql_query.duplicates_time_series_silver.id
   rearm    = 1
   options {
@@ -80,7 +80,7 @@ resource "databricks_sql_query" "duplicates_time_series_gold" {
 
 # alert for duplicates in gold.time_series_points
 resource "databricks_sql_alert" "duplicates_time_series_gold" {
-  name     = "Duplicates found in time series gold"
+  name     = "Duplicates found in time series gold (QCTS15-02)"
   query_id = databricks_sql_query.duplicates_time_series_gold.id
   rearm    = 1
   options {
@@ -130,7 +130,7 @@ resource "databricks_sql_query" "duplicates_time_series_wholesale" {
 
 # alert for duplicates in wholesale.time_series_points
 resource "databricks_sql_alert" "duplicates_time_series_wholesale" {
-  name     = "Duplicates found in time series wholesale"
+  name     = "Duplicates found in time series wholesale (QCTS23-01)"
   query_id = databricks_sql_query.duplicates_time_series_wholesale.id
   rearm    = 1
   options {
@@ -179,7 +179,7 @@ resource "databricks_sql_query" "duplicates_time_series_eloverblik" {
 
 # alert for duplicates in eloverblik.time_series_points
 resource "databricks_sql_alert" "duplicates_time_series_eloverblik" {
-  name     = "Duplicates found in time series eloverblik"
+  name     = "Duplicates found in time series eloverblik (QCTS31-01)"
   query_id = databricks_sql_query.duplicates_time_series_eloverblik.id
   rearm    = 1
   options {
@@ -214,3 +214,53 @@ resource "databricks_job" "duplicates_time_series_eloverblik" {
     }
   }
 }
+
+# query for duplicates in gold.metering_points
+resource "databricks_sql_query" "duplicates_metering_points_gold" {
+  data_source_id = databricks_sql_endpoint.this.data_source_id
+  name           = "QCMP16-01_duplicates_in_metering_points_gold"
+  query          = <<EOT
+  select * from (select mp.metering_point_id, mp.valid_from_date, mp.valid_to_date, ROW_NUMBER()
+    OVER (PARTITION BY mp.metering_point_id, mp.valid_from_date, mp.valid_to_date ORDER BY mp.metering_point_id DESC, mp.valid_from_date DESC, mp.valid_to_date DESC) as rownumber
+  from gold.metering_points as mp) as withRownumber where withRownumber.rownumber > 1
+  EOT
+}
+
+# alert for duplicates in gold.metering_points
+resource "databricks_sql_alert" "duplicates_metering_points_gold" {
+  name     = "Duplicates found in metering points gold (QCMP16-01)"
+  query_id = databricks_sql_query.duplicates_metering_points_gold.id
+  rearm    = 1
+  options {
+    column = "rownumber"
+    op     = "!="
+    value  = "0"
+    muted  = false
+  }
+}
+
+# job for duplicates in gold.metering_points
+resource "databricks_job" "duplicates_metering_points_gold" {
+  name = "duplicates_metering_points_gold"
+
+  schedule {
+    quartz_cron_expression = local.alert_trigger_cron
+    timezone_id            = "UTC"
+  }
+
+  email_notifications {
+    on_failure = [local.alert_job_email_notification]
+  }
+
+  task {
+    task_key = "check"
+
+    sql_task {
+      warehouse_id = databricks_sql_endpoint.this.id
+      alert {
+        alert_id = databricks_sql_alert.duplicates_metering_points_gold.id
+      }
+    }
+  }
+}
+
