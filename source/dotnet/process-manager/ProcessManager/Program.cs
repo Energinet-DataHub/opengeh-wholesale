@@ -26,15 +26,6 @@ using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
@@ -81,7 +72,6 @@ public static class Program
             .ConfigureServices(Modules)
             .ConfigureServices(Middlewares)
             .ConfigureServices(Applications)
-            .ConfigureServices(Domains)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(DateTime)
             .ConfigureServices(HealthCheck);
@@ -89,7 +79,8 @@ public static class Program
 
     private static void Modules(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddBatchesModule();
+        serviceCollection.AddBatchesModule(
+            () => EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString));
         serviceCollection.AddCalculationResultsModule();
         serviceCollection.AddIntegrationEventPublishingModule();
     }
@@ -104,17 +95,11 @@ public static class Program
 
     private static void Applications(IServiceCollection services)
     {
-        services.AddScoped<IBatchApplicationService, BatchApplicationService>();
-        services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
-        services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
         services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
-        services.AddScoped<ICalculationDomainService, CalculationDomainService>();
-        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         // This is a temporary fix until we move registration out to each of the modules
         services.AddScoped<Energinet.DataHub.Wholesale.Application.IUnitOfWork, Infrastructure.Persistence.UnitOfWork>();
-        services.AddScoped<IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services
             .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
@@ -122,19 +107,11 @@ public static class Program
         services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
     }
 
-    private static void Domains(IServiceCollection services)
-    {
-        services.AddScoped<IBatchFactory, BatchFactory>();
-        services.AddScoped<IBatchRepository, BatchRepository>();
-        services.AddSingleton(new BatchStateMapper());
-    }
-
     private static void Infrastructure(IServiceCollection serviceCollection)
     {
         serviceCollection.AddApplicationInsights();
 
         serviceCollection.AddScoped<IIntegrationEventPublishingDatabaseContext, IntegrationEventPublishingDatabaseContext>();
-        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
@@ -153,17 +130,8 @@ public static class Program
                 o.UseNodaTime();
                 o.EnableRetryOnFailure();
             }));
-        serviceCollection.AddDbContext<DatabaseContext>(options =>
-            options.UseSqlServer(connectionString, o =>
-            {
-                o.UseNodaTime();
-                o.EnableRetryOnFailure();
-            }));
 
         RegisterEventPublishers(serviceCollection);
-
-        serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
-        serviceCollection.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
         serviceCollection.AddSingleton(_ =>
             {

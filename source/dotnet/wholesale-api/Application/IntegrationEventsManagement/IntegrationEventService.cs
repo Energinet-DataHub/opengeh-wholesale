@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Options;
+
 namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 
 public class IntegrationEventService : IIntegrationEventService
@@ -19,15 +21,18 @@ public class IntegrationEventService : IIntegrationEventService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IIntegrationEventDispatcher _integrationEventDispatcher;
     private readonly IIntegrationEventCleanUpService _integrationEventCleanUpService;
+    private readonly IOptions<IntegrationEventRetentionOptions> _options;
 
     public IntegrationEventService(
         IUnitOfWork unitOfWork,
         IIntegrationEventDispatcher integrationEventDispatcher,
-        IIntegrationEventCleanUpService integrationEventCleanUpService)
+        IIntegrationEventCleanUpService integrationEventCleanUpService,
+        IOptions<IntegrationEventRetentionOptions> options)
     {
         _unitOfWork = unitOfWork;
         _integrationEventDispatcher = integrationEventDispatcher;
         _integrationEventCleanUpService = integrationEventCleanUpService;
+        _options = options;
     }
 
     public async Task DispatchIntegrationEventsAsync()
@@ -41,9 +46,9 @@ public class IntegrationEventService : IIntegrationEventService
         }
     }
 
-    public async Task DeleteOlderDispatchedIntegrationEventsAsync(int daysOld)
+    public async Task DeleteOlderDispatchedIntegrationEventsAsync()
     {
-        _integrationEventCleanUpService.DeleteOlderDispatchedIntegrationEvents(daysOld);
+        _integrationEventCleanUpService.DeleteOlderDispatchedIntegrationEvents(_options.Value.RetentionDays);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }
