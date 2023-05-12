@@ -12,8 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Application;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -28,6 +38,17 @@ public static class CalculationResultsRegistration
     {
         serviceCollection.AddHttpClient<ICalculationResultClient>();
         serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
+        serviceCollection.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
+        serviceCollection.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
         serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
+        serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
+        serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
+        serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
+        serviceCollection.AddScoped<IActorRepository, ActorRepository>();
+        serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
+        serviceCollection.AddScoped<ISettlementReportRepository>(
+            provider => new SettlementReportRepository(
+                provider.GetRequiredService<IDataLakeClient>(),
+                provider.GetRequiredService<IStreamZipper>()));
     }
 }
