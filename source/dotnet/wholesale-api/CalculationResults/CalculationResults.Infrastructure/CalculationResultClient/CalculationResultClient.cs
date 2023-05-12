@@ -66,7 +66,8 @@ public class CalculationResultClient : ICalculationResultClient
             statement = sqlStatement,
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
-
+        // TODO: Should we use Polly for retrying?
+        // TODO: Unit test this method
         for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
             var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
