@@ -22,7 +22,6 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
@@ -114,12 +113,7 @@ internal static class ServiceCollectionExtensions
     private static void AddDomainEventPublisher(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<ServiceBusOptions>()!;
-        var messageTypes = new Dictionary<Type, string>
-        {
-            { typeof(BatchCreatedDomainEventDto), options.BATCH_CREATED_EVENT_NAME },
-        };
-
-        serviceCollection.AddDomainEventPublisher(options.SERVICE_BUS_SEND_CONNECTION_STRING, options.DOMAIN_EVENTS_TOPIC_NAME, new MessageTypeDictionary(messageTypes));
+        serviceCollection.AddDomainEventPublisher(options.SERVICE_BUS_SEND_CONNECTION_STRING, options.DOMAIN_EVENTS_TOPIC_NAME);
     }
 
     private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)

@@ -26,7 +26,6 @@ namespace Energinet.DataHub.Wholesale.Batches.Application;
 
 public class BatchApplicationService : IBatchApplicationService
 {
-    private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICalculationDomainService _calculationDomainService;
@@ -34,14 +33,12 @@ public class BatchApplicationService : IBatchApplicationService
     private readonly IBatchDtoMapper _batchDtoMapper;
 
     public BatchApplicationService(
-        IBatchFactory batchFactory,
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         ICalculationDomainService calculationDomainService,
         IBatchExecutionStateDomainService batchExecutionStateDomainService,
         IBatchDtoMapper batchDtoMapper)
     {
-        _batchFactory = batchFactory;
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _calculationDomainService = calculationDomainService;
@@ -49,10 +46,14 @@ public class BatchApplicationService : IBatchApplicationService
         _batchDtoMapper = batchDtoMapper;
     }
 
-    public async Task StartCalculationAsync(Guid batchId)
+    public async Task StartCalculationsAsync()
     {
-        await _calculationDomainService.StartAsync(batchId).ConfigureAwait(false);
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
+        foreach (var batch in batches)
+        {
+            await _calculationDomainService.StartAsync(batch.Id).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        }
     }
 
     public async Task UpdateExecutionStateAsync()

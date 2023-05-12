@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection serviceCollection,
         string serviceBusConnectionString,
         string topicName,
-        MessageTypeDictionary messageTypes)
+        MessageTypeDictionary? messageTypes = null)
     {
         ServiceBusClientAndAndMessageFactoryRegistry(serviceCollection, serviceBusConnectionString, messageTypes);
 

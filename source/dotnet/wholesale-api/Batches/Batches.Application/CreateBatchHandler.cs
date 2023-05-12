@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application;
 
@@ -23,18 +22,15 @@ public class CreateBatchHandler : ICreateBatchHandler
 {
     private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
-    private readonly IDomainEventPublisher _domainEventPublisher;
     private readonly IUnitOfWork _unitOfWork;
 
     public CreateBatchHandler(
         IBatchFactory batchFactory,
         IBatchRepository batchRepository,
-        IDomainEventPublisher domainEventPublisher,
         IUnitOfWork unitOfWork)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
-        _domainEventPublisher = domainEventPublisher;
         _unitOfWork = unitOfWork;
     }
 
@@ -42,7 +38,6 @@ public class CreateBatchHandler : ICreateBatchHandler
     {
         var batch = _batchFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
-        await _domainEventPublisher.PublishAsync(new BatchCreatedDomainEventDto(batch.Id)).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
         return batch.Id;
     }
