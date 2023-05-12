@@ -37,13 +37,13 @@ public class DatabricksSqlResponseFactoryTests
 
     [Theory]
     [AutoMoqData]
-    public void Create_ReturnsResponseWithCorrectState(DatabricksSqlResponseFactory sut)
+    public void Create_ReturnsResponseWithCorrectState(DatabricksSqlResponseParser sut)
     {
         // Arrange
         const string expectedState = "SUCCEEDED";
 
         // Act
-        var actual = sut.Create(_sampleJson);
+        var actual = sut.Parse(_sampleJson);
 
         // Assert
         actual.State.Should().Be(expectedState);
@@ -51,13 +51,13 @@ public class DatabricksSqlResponseFactoryTests
 
     [Theory]
     [AutoMoqData]
-    public void Create_ReturnsResponseWithCorrectArrayLength(DatabricksSqlResponseFactory sut)
+    public void Create_ReturnsResponseWithCorrectArrayLength(DatabricksSqlResponseParser sut)
     {
         // Arrange
         const int expectedLength = 96;
 
         // Act
-        var actual = sut.Create(_sampleJson);
+        var actual = sut.Parse(_sampleJson);
 
         // Assert
         actual.DataArray.Count().Should().Be(expectedLength);
@@ -65,7 +65,7 @@ public class DatabricksSqlResponseFactoryTests
 
     [Theory]
     [AutoMoqData]
-    public void Create_ReturnsDataArrayWithCorrectContent(DatabricksSqlResponseFactory sut)
+    public void Create_ReturnsDataArrayWithCorrectContent(DatabricksSqlResponseParser sut)
     {
         // Arrange
         var expectedFirstArray = new[]
@@ -78,7 +78,7 @@ public class DatabricksSqlResponseFactoryTests
         };
 
         // Act
-        var actual = sut.Create(_sampleJson);
+        var actual = sut.Parse(_sampleJson);
 
         // Assert
         actual.DataArray.First().Should().Equal(expectedFirstArray);
@@ -86,7 +86,7 @@ public class DatabricksSqlResponseFactoryTests
 
     [Theory]
     [AutoMoqData]
-    public void Create_WhenValidJson_ThrowsNoException(DatabricksSqlResponseFactory sut)
+    public void Create_WhenValidJson_ThrowsNoException(DatabricksSqlResponseParser sut)
     {
         // Arrange
         var obj = new JObject(
@@ -94,12 +94,12 @@ public class DatabricksSqlResponseFactoryTests
             new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>()))));
 
         // Act + Assert
-        sut.Create(obj.ToString()!);
+        sut.Parse(obj.ToString()!);
     }
 
     [Theory]
     [AutoMoqData]
-    public void Create_WhenInvalidJson_ThrowsException(DatabricksSqlResponseFactory sut)
+    public void Create_WhenInvalidJson_ThrowsException(DatabricksSqlResponseParser sut)
     {
         // Arrange
         var obj = new JObject(
@@ -107,6 +107,6 @@ public class DatabricksSqlResponseFactoryTests
             new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>()))));
 
         // Act + Assert
-        Assert.Throws<InvalidOperationException>(() => sut.Create(obj.ToString()));
+        Assert.Throws<InvalidOperationException>(() => sut.Parse(obj.ToString()));
     }
 }

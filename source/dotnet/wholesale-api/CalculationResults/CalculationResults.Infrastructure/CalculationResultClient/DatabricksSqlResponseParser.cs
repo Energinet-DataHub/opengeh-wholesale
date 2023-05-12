@@ -17,9 +17,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class DatabricksSqlResponseFactory : IDatabricksSqlResponseFactory
+public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
 {
-    public DatabricksSqlResponse Create(string jsonResponse)
+    public DatabricksSqlResponse Parse(string jsonResponse)
     {
         var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
         var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??

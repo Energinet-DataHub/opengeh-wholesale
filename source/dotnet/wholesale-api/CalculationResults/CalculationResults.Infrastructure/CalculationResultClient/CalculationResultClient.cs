@@ -29,13 +29,13 @@ public class CalculationResultClient : ICalculationResultClient
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
-    private readonly IDatabricksSqlResponseFactory _databricksSqlResponseFactory;
+    private readonly IDatabricksSqlResponseParser _databricksSqlResponseParser;
 
-    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IDatabricksSqlResponseFactory databricksSqlResponseFactory)
+    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IDatabricksSqlResponseParser databricksSqlResponseParser)
     {
         _httpClient = httpClient;
         _options = options;
-        _databricksSqlResponseFactory = databricksSqlResponseFactory;
+        _databricksSqlResponseParser = databricksSqlResponseParser;
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -76,7 +76,7 @@ public class CalculationResultClient : ICalculationResultClient
 
             var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-            var databricksSqlResponse = _databricksSqlResponseFactory.Create(jsonResponse);
+            var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
 
             if (databricksSqlResponse.State == "SUCCEEDED")
                 return databricksSqlResponse;

@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public interface IDatabricksSqlResponseFactory
+public interface IDatabricksSqlResponseParser
 {
-    DatabricksSqlResponse Create(string jsonResponse);
+    DatabricksSqlResponse Parse(string jsonResponse);
 }
