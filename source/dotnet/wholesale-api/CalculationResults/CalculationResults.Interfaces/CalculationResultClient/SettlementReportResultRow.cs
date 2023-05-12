@@ -23,5 +23,4 @@ public sealed record SettlementReportResultRow(
     string Resolution,
     MeteringPointType MeteringPointType,
     SettlementMethod SettlementMethod,
-    decimal Quantity,
-    string? EnergySupplier);
+    decimal Quantity);
