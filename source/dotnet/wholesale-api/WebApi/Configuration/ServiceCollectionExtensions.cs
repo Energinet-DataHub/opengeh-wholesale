@@ -175,16 +175,20 @@ internal static class ServiceCollectionExtensions
     private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<DataLakeOptions>()!;
-        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
-        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
-        serviceCollection.AddSingleton(dataLakeFileSystemClient);
+        serviceCollection.AddSingleton<DataLakeFileSystemClient>(_ =>
+        {
+            var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
+            return dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
+        });
     }
 
     private static void AddDateTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<DateTimeOptions>()!;
-        var dateTimeZoneId = options.TIME_ZONE;
-        var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId)!;
-        serviceCollection.AddSingleton(dateTimeZone);
+        serviceCollection.AddSingleton<DateTimeZone>(_ =>
+        {
+            var dateTimeZoneId = options.TIME_ZONE;
+            return DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId)!;
+        });
     }
 }
