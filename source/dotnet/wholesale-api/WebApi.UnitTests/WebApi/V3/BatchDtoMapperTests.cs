@@ -42,5 +42,6 @@ public static class BatchDtoMapperTests
         actual.AreSettlementReportsCreated.Should().Be(source.AreSettlementReportsCreated);
         actual.BatchId.Should().Be(source.BatchId);
         actual.BatchId.Should().Be(source.BatchId);
+        actual.CreatedByUserId.Should().Be(source.CreatedByUserId);
     }
 }

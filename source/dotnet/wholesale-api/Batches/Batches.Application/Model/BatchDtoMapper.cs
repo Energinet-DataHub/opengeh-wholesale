@@ -34,7 +34,8 @@ public class BatchDtoMapper : IBatchDtoMapper
             MapState(batch.ExecutionState),
             batch.AreSettlementReportsCreated,
             MapGridAreaCodes(batch.GridAreaCodes),
-            batch.ProcessType);
+            batch.ProcessType,
+            batch.CreatedByUserId);
     }
 
     private static BatchState MapState(BatchExecutionState state)
