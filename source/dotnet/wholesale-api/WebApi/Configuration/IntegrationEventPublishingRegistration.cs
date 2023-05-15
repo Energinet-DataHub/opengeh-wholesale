@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Workers;
+using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -23,9 +28,22 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 public static class IntegrationEventPublishingRegistration
 {
     public static void AddIntegrationEventPublishingModule(
-        this IServiceCollection serviceCollection)
+        this IServiceCollection serviceCollection,
+        string serviceBusConnectionString,
+        string integrationEventTopicName)
     {
         serviceCollection.AddHostedService<DispatchIntegrationEventsWorker>();
         serviceCollection.AddHostedService<IntegrationEventsRetentionWorker>();
+
+        serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
+        serviceCollection.AddScoped<IIntegrationEventCleanUpService, IntegrationEventCleanUpService>();
+        serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
+        serviceCollection.AddScoped<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper(new Dictionary<Type, string>
+        {
+            { typeof(CalculationResultCompleted), CalculationResultCompleted.BalanceFixingEventName },
+        }));
+        serviceCollection.AddScoped<IIntegrationEventService, IntegrationEventService>();
+        serviceCollection.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+        serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName);
     }
 }

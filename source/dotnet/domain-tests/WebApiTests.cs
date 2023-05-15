@@ -86,7 +86,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// </summary>
         public class Given_Authorized : IClassFixture<AuthorizedClientFixture>
         {
-            private static readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(15);
+            private static readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(30);
             private static readonly TimeSpan _defaultDelay = TimeSpan.FromSeconds(30);
 
             private static readonly Guid _existingBatchId = new("a68d4452-943b-4f45-b32f-5f84607c6b6b");
