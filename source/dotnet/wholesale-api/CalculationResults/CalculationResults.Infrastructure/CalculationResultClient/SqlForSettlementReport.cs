@@ -29,9 +29,8 @@ public static class SqlForSettlementReport
     {
         var selectColumns = string.Join(", ", GetSelectColumnNames());
         var gridAreas = string.Join(",", gridAreaCodes);
-        var pattern = InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss");
-        var startTimeString = pattern.Format(periodStart);
-        var endTimeString = pattern.Format(periodEnd);
+        var startTimeString = periodStart.ToString();
+        var endTimeString = periodEnd.ToString();
 
         return $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) WHERE {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' order by time";
     }
