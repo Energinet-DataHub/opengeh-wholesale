@@ -27,15 +27,18 @@ public static class SqlForSettlementReport
         Instant periodEnd,
         string? energySupplier)
     {
+        var processTypeString = MapFrom(processType);
         var selectColumns = string.Join(", ", GetSelectColumnNames());
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
         var endTimeString = periodEnd.ToString();
 
-        return $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) WHERE {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' order by time";
+        return
+            $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) WHERE {ResultColumnNames.BatchProcessType} = {processTypeString} WHERE {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' order by time";
     }
 
-    public static IEnumerable<SettlementReportResultRow> CreateSettlementReportRows(DatabricksSqlResponse databricksSqlResponse)
+    public static IEnumerable<SettlementReportResultRow> CreateSettlementReportRows(
+        DatabricksSqlResponse databricksSqlResponse)
     {
         return new List<SettlementReportResultRow>()
         {
@@ -54,11 +57,17 @@ public static class SqlForSettlementReport
     {
         return new[]
         {
-            ResultColumnNames.GridArea,
-            ResultColumnNames.BatchProcessType,
-            ResultColumnNames.Time,
-            ResultColumnNames.TimeSeriesType,
-            ResultColumnNames.Quantity,
+            ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time,
+            ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity,
         };
     }
+
+    // TODO: Move to mapper
+    private static string MapFrom(ProcessType processType) =>
+        processType switch
+        {
+            ProcessType.BalanceFixing => "BalanceFixing",
+            ProcessType.Aggregation => "Aggregation",
+            _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
+        };
 }
