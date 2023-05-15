@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Application.Security;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

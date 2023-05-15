@@ -24,7 +24,6 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
@@ -89,7 +88,6 @@ public static class Program
         services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
         // This is a temporary fix until we move registration out to each of the modules
         services.AddScoped<Application.IUnitOfWork, UnitOfWork>();
-        services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services
             .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
                 CalculationResultCompletedIntegrationEventFactory>();
