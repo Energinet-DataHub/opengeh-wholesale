@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Application.Workers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -24,5 +25,7 @@ public static class IntegrationEventPublishingRegistration
     public static void AddIntegrationEventPublishingModule(
         this IServiceCollection serviceCollection)
     {
+        serviceCollection.AddHostedService<DispatchIntegrationEventsWorker>();
+        serviceCollection.AddHostedService<IntegrationEventsRetentionWorker>();
     }
 }
